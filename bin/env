@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker exec -it -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html/wp-content/plugins/font-awesome-plumbing fa-plumbing_wordpress_1 $@
