@@ -27,3 +27,7 @@ This will kill and remove docker containers and delete the data volume.
 `./bin/wp plugin activate font-awesome-plumbing`
 
 `./bin/wp plugin deactivate font-awesome-plumbing`
+
+# Run phpunit
+
+`./bin/phpunit`
