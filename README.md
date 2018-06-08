@@ -21,3 +21,9 @@ This will kill and remove docker containers and delete the data volume.
 # Use wp-cli with the Dockerized WordPress Instance
 
 `./bin/wp`
+
+# Activate and Deactivate Plugin
+
+`./bin/wp plugin activate font-awesome-plumbing`
+
+`./bin/wp plugin deactivate font-awesome-plumbing`
