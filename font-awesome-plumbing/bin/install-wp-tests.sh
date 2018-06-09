@@ -148,7 +148,7 @@ install_db() {
 }
 
 install_phpunit() {
-  download https://phar.phpunit.de/phpunit-7.phar /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
+  download https://phar.phpunit.de/phpunit-6.phar /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 }
 
 install_wp
