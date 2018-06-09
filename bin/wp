@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
 docker run -it --rm \
     --volumes-from fa-plumbing_wordpress_1 \
     --network container:fa-plumbing_wordpress_1 \
-    wordpress:cli $@
+    wordpress:cli wp $@
