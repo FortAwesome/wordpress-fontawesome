@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Set any boolean config in wp-config.php in the container.
+
+if [ $# -lt 2 ]; then
+	echo "usage: $0 <setting> <value>"
+	exit 1
+fi
+
+docker exec -it -w /var/www/html fa-plumbing_wordpress_1 grep -P "^define\W+$1\W" wp-config.php > /dev/null;
+
+if [ $? == 0 ]; then
+  echo "Found existing setting. Changing..."
+  docker exec -it -w /var/www/html fa-plumbing_wordpress_1 sed -ri "/^define.*?$1.+?(false|true)\);/ s/(false|true)/$2/" wp-config.php
+else
+  echo "Adding new setting..."
+  docker exec -it -w /var/www/html fa-plumbing_wordpress_1 sed -ri "2idefine(\'$1\', $2);" wp-config.php
+fi
+
+echo "Resulting value:"
+docker exec -it -w /var/www/html fa-plumbing_wordpress_1 grep -P "^define\W+$1\W" wp-config.php
