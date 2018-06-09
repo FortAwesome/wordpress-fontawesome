@@ -21,6 +21,7 @@ services:
      restart: always
      volumes:
        - ./font-awesome-plumbing:/var/www/html/wp-content/plugins/font-awesome-plumbing
+       - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
      environment:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress

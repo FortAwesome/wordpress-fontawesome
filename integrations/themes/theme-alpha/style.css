@@ -1,0 +1,17 @@
+/*
+ Theme Name:   Theme Alpha
+ Theme URI:    http://example.com/theme-alpha/
+ Description:  Twenty Seventeen Child Theme
+ Author:       John Doe
+ Author URI:   http://example.com
+ Template:     twentyseventeen
+ Version:      0.0.1
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+ Text Domain:  twenty-seventeen-child
+*/
+
+body.has-header-image .site-title a {
+    color: black;
+}
