@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker exec -it fa-plumbing_wordpress_1 /bin/sh -c 'apt-get update && apt-get -y install vim'
