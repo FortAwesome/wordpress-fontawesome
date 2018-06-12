@@ -2,7 +2,7 @@
 /**
  * Class SampleTest
  *
- * @package Font_Awesome_Plumbing
+ * @package Font_Awesome
  */
 
 /**

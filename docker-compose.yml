@@ -11,6 +11,8 @@ services:
        MYSQL_DATABASE: wordpress
        MYSQL_USER: wordpress
        MYSQL_PASSWORD: wordpress
+     labels:
+       - "com.fontawesome.wpdb"
 
    wordpress:
      depends_on:
@@ -20,12 +22,14 @@ services:
        - "8000:80"
      restart: always
      volumes:
-       - ./font-awesome-plumbing:/var/www/html/wp-content/plugins/font-awesome-plumbing
+       - ./font-awesome:/var/www/html/wp-content/plugins/font-awesome
        - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
        - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
      environment:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
+     labels:
+       - "com.fontawesome.wp"
 volumes:
     db_data:

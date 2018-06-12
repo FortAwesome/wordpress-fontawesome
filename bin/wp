@@ -1,6 +1,10 @@
-#!/bin/sh
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/.common.bash
+get_wp_container_id
 
 docker run -it --rm \
-    --volumes-from fa-plumbing_wordpress_1 \
-    --network container:fa-plumbing_wordpress_1 \
+    --volumes-from $WP_CONTAINER_ID \
+    --network container:$WP_CONTAINER_ID \
     wordpress:cli wp $@

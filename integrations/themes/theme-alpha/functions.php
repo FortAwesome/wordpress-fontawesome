@@ -18,13 +18,13 @@ add_action('after_switch_theme', function(){
 });
 
 add_action('font_awesome_dependencies', function(){
-  if ( class_exists('FontAwesomePlumbing') ) {
-    FontAwesomePlumbing()->register_dependency(array("client" => THEME_ALPHA_LOG_PREFIX));
+  if ( class_exists('FontAwesome') ) {
+    FontAwesome()->register_dependency(array("client" => THEME_ALPHA_LOG_PREFIX));
   }
 });
 
 add_action('font_awesome_enqueued', function($method, $host, $ver){
-  if ( class_exists('FontAwesomePlumbing') ) {
+  if ( class_exists('FontAwesome') ) {
     error_log( THEME_ALPHA_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $method . ", host: " . $host . ", ver: " . $ver);
   }
 }, 10, 3);

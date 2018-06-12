@@ -1,6 +1,2 @@
 #!/bin/sh
-docker kill fa-plumbing_wordpress_1
-docker kill fa-plumbing_db_1
-docker rm fa-plumbing_wordpress_1
-docker rm fa-plumbing_db_1
-docker volume rm fa-plumbing_db_data
+docker-compose down -v

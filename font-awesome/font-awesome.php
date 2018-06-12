@@ -1,27 +1,25 @@
 <?php
 
 /**
- * Plugin Name:       Font Awesome Plumbing
- * Plugin URI:        https://fontawesome.com/font-awesome-plumbing/
+ * Plugin Name:       Font Awesome
+ * Plugin URI:        https://fontawesome.com/wp-font-awesome/
  * Description:       Manage version resolution and loading for Font Awesome Free and Pro
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
- * License:           UNLICENSED
+ * License:           GPLv3
  */
 
 defined( 'WPINC' ) || die;
 
 // 1. Make sure we haven't already been loaded
-// 2. Run an action that tells all clients to say something about their version requirements
+// 2. Run an action that tells all clients to say something about their requirements
 // 3. Process the results of that to determine what will be loaded
 // 4. Run another action notifying everyone what will be loaded, or nothing, so they can respond
-//
-//
 
-if (! class_exists('FontAwesomePlumbing') ) :
+if (! class_exists('FontAwesome') ) :
 
-final class FontAwesomePlumbing {
+final class FontAwesome {
 
   /**
    * FontAwesome version.
@@ -43,9 +41,9 @@ final class FontAwesomePlumbing {
   protected $deps = array();
 
   /**
-   * Main FontAwesomePlumbing Instance.
+   * Main FontAwesome Instance.
    *
-   * Ensures only one instance of FontAwesomePlumbing is loaded or can be loaded.
+   * Ensures only one instance of FontAwesome is loaded or can be loaded.
    */
   public static function instance() {
     if ( is_null( self::$_instance ) ) {
@@ -98,13 +96,13 @@ final class FontAwesomePlumbing {
 endif; // ! class_exists
 
 /**
- * Main instance of FontAwesomePlumbing.
+ * Main instance of FontAwesome.
  *
- * Returns the main instance of FontAwesomePlumbing.
+ * Returns the main instance of FontAwesome.
  *
  */
-function FontAwesomePlumbing() {
-	return FontAwesomePlumbing::instance();
+function FontAwesome() {
+	return FontAwesome::instance();
 }
 
-FontAwesomePlumbing();
+FontAwesome();
