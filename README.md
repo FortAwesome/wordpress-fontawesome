@@ -42,7 +42,7 @@ Turn on debug logging, in general. Without it, the other `WP_DEBUG_` configs don
 
 `./bin/set-wp-config WP_DEBUG true`
 
-Send debug logging to the log file:
+Send debug logging to the log file, which will be found at `wp-content/debug.log`, and written to by calls to `error_log()`:
 
 `./bin/set-wp-config WP_DEBUG_LOG true`
 
@@ -50,3 +50,13 @@ Display debug logging in the browser:
 
 `./bin/set-wp-config WP_DEBUG_DISPLAY true`
 
+More on debugging on WordPress:
+
+https://codex.wordpress.org/Debugging_in_WordPress
+
+# Development Roadmap
+
+- Establish the best way to load this plugin and prescribe how dependent
+  themes and plugins should verify that it is active and register their requirements of it.
+
+- Test that it works no matter the order in which plugins are loaded.
