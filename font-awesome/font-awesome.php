@@ -101,9 +101,7 @@ final class FontAwesome {
   public function build_load_spec(callable $error_callback) {
     // 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
     // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
-    // 3. After going through all reqs to reduce a composed requirement that settles all constraints, iterate through
-    //    each key of the reduced requirements to make a final determination. For example, a method may not have been
-    //    required by any client, so we can pick the default.
+    // 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
 
     $loadSpec = array(
       'method' => array(
@@ -195,6 +193,7 @@ final class FontAwesome {
       'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], null) == 'require',
       'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
       'version' => '5.0.13',
+      // For now, we'll hard code pro as always false and implement it in the future.
       'pro' => false,
     );
   }
