@@ -28,5 +28,5 @@ add_action('font_awesome_enqueued', function($loadSpec){
     error_log( THEME_ALPHA_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . $loadSpec['version']);
   }
 }, 10, 3);
-?>
+
 
