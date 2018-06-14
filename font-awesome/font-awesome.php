@@ -35,10 +35,10 @@ final class FontAwesome {
   protected static $_instance = null;
 
   /**
-   * The list of client dependencies.
+   * The list of client requirements.
    *
    */
-  protected $deps = array();
+  protected $reqs = array();
 
   /**
    * Main FontAwesome Instance.
@@ -53,13 +53,8 @@ final class FontAwesome {
   }
 
   public function __construct() {
-    add_action( 'init', array( $this, 'gather_dependencies' ));
+    add_action( 'init', array( $this, 'load' ));
   }
-
-  public function gather_dependencies() {
-    do_action('font_awesome_dependencies');
-
-    error_log('all deps: ' . print_r($this->deps, true));
 
     // TODO:
     // - [ ] resolve method: SVG with JavaScript or Webfonts with CSS
@@ -70,8 +65,125 @@ final class FontAwesome {
     // - [ ] determine whether a subset of icons might suffice for loading
     // - [ ] resolve license: Free or Pro (future)
     // - [ ] Finally, enqueue either a style or a script
-    //
 
+  /**
+   * Main entry point for the loading process.
+   * Returns the enqueued loadSpec if successful.
+   * Otherwise, returns null.
+   */
+  public function load() {
+    do_action('font_awesome_requirements');
+    $loadSpec = $this->build_load_spec(function($data){
+      // TODO: figure out the best way to present diagnostic information.
+      // Probably in the error_log, but if we're on the admin screen, there's
+      // probably a more helpful way to do it.
+      // error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
+    });
+    if( isset($loadSpec) ) {
+      $this->enqueue($loadSpec);
+      do_action('font_awesome_enqueued', $loadSpec);
+      return $loadSpec;
+    } else {
+      do_action('font_awesome_failed');
+      return null;
+    }
+  }
+
+  /**
+   * Builds the loading specification based on all registered requirements.
+   * Returns the load spec if a valid one can be computed, else it returns null
+   *   after invoking the error_callback function.
+   */
+  public function build_load_spec(callable $error_callback) {
+    // 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
+    // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
+    // 3. After going through all reqs to reduce a composed requirement that settles all constraints, iterate through
+    //    each key of the reduced requirements to make a final determination. For example, a method may not have been
+    //    required by any client, so we can pick the default.
+
+    $loadSpec = array(
+      'method' => array(
+        // returns boolean: true if compatible.
+        'is_compatible' => function($prevReqVal, $curReqVal){ return $prevReqVal == $curReqVal; },
+        'keep_prev_when_compatible' => true,
+        'value' => 'webfont' // default
+        // 'client-reqs' => [ $req1, $req2 ]
+      ),
+      'v4shim' => array(
+        'is_compatible' => function($prevReqVal, $curReqVal){
+          // Cases:
+          // require, require => true
+          // require, forbid => false
+          // forbid, require => false
+          // forbid, forbid => true
+          if( 'require' == $prevReqVal ){
+            if ( 'require' == $curReqVal ){ return true; }
+            elseif ( 'forbid' == $curReqVal ) { return false; }
+            else { return false; }
+          } elseif ( 'forbid' == $prevReqVal ){
+            if ( 'forbid' == $curReqVal ){ return true; }
+            elseif ( 'require' == $curReqVal ){ return false; }
+            else { return false; }
+          } else { return false; }
+        },
+        'keep_prev_when_compatible' => false
+      ),
+    );
+
+    $bailEarlyReq = null;
+
+    $clients = array();
+
+    // Iterate through each set of requirements registered by a client
+    foreach( $this->reqs as $req ) {
+      $clients[$req['name']] = $req['client-call'];
+      // For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ]
+      foreach( $req as $key => $payload ){
+        if ( in_array($key, ['client-call', 'name']) ) continue; // these are meta keys that we won't process here.
+        if( array_key_exists('client-reqs', $loadSpec[$key]) ) {
+          // This client has registered a requirement on a key where a req has already been established.
+          // So we need to compare to see if these requirements are compatible.
+          // First, record that this client has made this new requirement.
+          array_unshift($loadSpec[$key]['client-reqs'], $req);
+          if (call_user_func( $loadSpec[$key]['is_compatible'], $loadSpec[$key]['value'], $req[$key] ) ) {
+            // The previous and current requirements are compatible, so (optionally) update the value
+            $loadSpec[$key]['keep_prev_when_compatible'] || $loadSpec[$key]['value'] = $req[$key];
+          } else {
+            // the compatibility test failed
+            $bailEarlyReq = $key;
+            break 2;
+          }
+        } else {
+          // Add this as the first client to make this requirement.
+          $loadSpec[$key]['value'] = $req[$key];
+          $loadSpec[$key]['client-reqs'] = [ $req ];
+        }
+      }
+    }
+
+    if($bailEarlyReq) {
+      // call the error_callback, indicating which clients registered incompatible requirements
+      $error_callback && call_user_func($error_callback, array(
+        'req' => $bailEarlyReq,
+        'client-reqs' => $loadSpec[$bailEarlyReq]['client-reqs']
+      ));
+      return null;
+    }
+
+    return array(
+      'method' => $loadSpec['method']['value'],
+      'v4shim' => array_key_exists('value', $loadSpec['v4shim']) ? $loadSpec['v4shim']['value'] == 'require' : false,
+      'version' => '5.0.13',
+      'pro' => false,
+      'pseudo-elements' => false
+    );
+  }
+
+  /**
+   * Given a loading specification, enqueues Font Awesome to load accordingly.
+   * Returns nothing.
+   */
+  protected function enqueue($loadSpec) {
     // Let's say that the default will be Webfonts with CSS, Free, all, (and when available, using the webfont shim)
     wp_enqueue_style('font-awesome-official', 'https://use.fontawesome.com/releases/v5.0.13/css/all.css', null, null);
 
@@ -83,13 +195,27 @@ final class FontAwesome {
         return $html;
       }
     }, 10, 2 );
-
-    // TODO: generalize a final action to report what we ended up enqueuing for loading so that clients have an opportunity to react accordingly.
-    do_action('font_awesome_enqueued', 'webfont', 'Free CDN', '5.0.13');
   }
 
-  public function register_dependency($dep) {
-    array_unshift($this->deps, $dep);
+  public function register_requirements($req) {
+    $bt = debug_backtrace(1);
+    $caller = array_shift($bt);
+    if ( ! array_key_exists('name', $req) ){
+      throw new InvalidArgumentException('missing required key: name');
+    }
+    // array (
+    //  'method' => 'webfont',
+    //  'v4shim' => 'require' | 'forbid',
+    //  'pro' => 'require' | 'forbid',
+    //  'pseudo-elements' => 'require',
+    //  'version' => '5.0.13',
+    //  'name' => 'clientA'
+    // )
+    $req['client-call'] = array(
+      'file' => $caller['file'],
+      'line' => $caller['line']
+    );
+    array_unshift($this->reqs, $req);
   }
 }
 
@@ -102,7 +228,7 @@ endif; // ! class_exists
  *
  */
 function FontAwesome() {
-	return FontAwesome::instance();
+  return FontAwesome::instance();
 }
 
 FontAwesome();

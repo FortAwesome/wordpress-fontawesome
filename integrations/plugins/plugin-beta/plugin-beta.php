@@ -14,15 +14,15 @@ defined( 'WPINC' ) || die;
 define( 'BETA_PLUGIN_VERSION', '0.0.1' );
 define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 
-add_action('font_awesome_dependencies', function(){
+add_action('font_awesome_requirements', function(){
   if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register_dependency(array("client" => BETA_PLUGIN_LOG_PREFIX));
+    FontAwesome()->register_requirements(array("name" => BETA_PLUGIN_LOG_PREFIX));
   }
 });
 
-add_action('font_awesome_enqueued', function($method, $host, $ver){
+add_action('font_awesome_enqueued', function($loadSpec){
   if ( class_exists('FontAwesome') ) {
-    error_log( BETA_PLUGIN_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $method . ", host: " . $host . ", ver: " . $ver);
+    error_log( BETA_PLUGIN_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . $loadSpec['version']);
   }
 }, 10, 3);
 
