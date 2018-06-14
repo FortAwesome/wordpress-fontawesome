@@ -56,6 +56,10 @@ final class FontAwesome {
     add_action( 'init', array( $this, 'load' ));
   }
 
+  public function reset(){
+    $this->reqs = array();
+  }
+
     // TODO:
     // - [ ] resolve method: SVG with JavaScript or Webfonts with CSS
     // - [ ] resolve version: (only 5? or what about v4 with shims?)
@@ -105,9 +109,7 @@ final class FontAwesome {
       'method' => array(
         // returns boolean: true if compatible.
         'is_compatible' => function($prevReqVal, $curReqVal){ return $prevReqVal == $curReqVal; },
-        'keep_prev_when_compatible' => true,
-        'value' => 'webfont' // default
-        // 'client-reqs' => [ $req1, $req2 ]
+        'keep_prev_when_compatible' => true
       ),
       'v4shim' => array(
         'is_compatible' => function($prevReqVal, $curReqVal){
@@ -128,6 +130,19 @@ final class FontAwesome {
         },
         'keep_prev_when_compatible' => false
       ),
+      'pseudo-elements' => array(
+        'is_compatible' => function($prevReqVal, $curReqVal){
+          if( 'require' == $prevReqVal ){
+            if ( 'require' == $curReqVal ){ return true; }
+            elseif ( 'forbid' == $curReqVal ) { return false; }
+            else { return false; }
+          } elseif ( 'forbid' == $prevReqVal ){
+            if ( 'forbid' == $curReqVal ){ return true; }
+            elseif ( 'require' == $curReqVal ){ return false; }
+            else { return false; }
+          } else { return false; }
+        }
+      )
     );
 
     $bailEarlyReq = null;
@@ -170,13 +185,22 @@ final class FontAwesome {
       return null;
     }
 
+    // This is a good place to set defaults
+    // pseudo-elements: when webfonts, true
+    // when svg, false
+    $method = $this->specified_requirement_or_default($loadSpec['method'], 'webfont');
+    $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
     return array(
-      'method' => $loadSpec['method']['value'],
-      'v4shim' => array_key_exists('value', $loadSpec['v4shim']) ? $loadSpec['v4shim']['value'] == 'require' : false,
+      'method' => $method,
+      'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], null) == 'require',
+      'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
       'version' => '5.0.13',
       'pro' => false,
-      'pseudo-elements' => false
     );
+  }
+
+  protected function specified_requirement_or_default($req, $default){
+    return array_key_exists('value', $req) ? $req['value'] : $default;
   }
 
   /**
