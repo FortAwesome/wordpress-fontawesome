@@ -78,13 +78,13 @@ final class FontAwesome {
       // Probably in the error_log, but if we're on the admin screen, there's
       // probably a more helpful way to do it.
       // error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
+      do_action('font_awesome_failed', $data);
     });
     if( isset($loadSpec) ) {
       $this->enqueue($loadSpec);
       do_action('font_awesome_enqueued', $loadSpec);
       return $loadSpec;
     } else {
-      do_action('font_awesome_failed');
       return null;
     }
   }
@@ -163,7 +163,7 @@ final class FontAwesome {
 
     if($bailEarlyReq) {
       // call the error_callback, indicating which clients registered incompatible requirements
-      $error_callback && call_user_func($error_callback, array(
+      is_callable($error_callback) && $error_callback(array(
         'req' => $bailEarlyReq,
         'client-reqs' => $loadSpec[$bailEarlyReq]['client-reqs']
       ));

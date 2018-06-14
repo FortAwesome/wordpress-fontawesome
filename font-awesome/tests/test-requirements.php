@@ -69,25 +69,23 @@ class RequirementsTest extends WP_UnitTestCase {
       ));
     });
 
-    $enqueued_callback = function(){
-      static $count = 0;
-    $bt = debug_backtrace(1);
-    $caller = array_shift($bt);
-      $count++;
-      return $count;
+    $enqueued = false;
+    $enqueued_callback = function() use(&$enqueued){
+      $enqueued = true;
     };
     add_action('font_awesome_enqueued', $enqueued_callback);
 
-    $failed_callback = function(){
-      static $count = 0;
-      $count++;
-      return $count;
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+      $this->assertEquals('method', $data['req']);
+      $this->assertEquals(2, count($data['client-reqs']));
+      error_log('failed_callback data: ' . print_r($data, true));
     };
     add_action('font_awesome_failed', $failed_callback);
 
     $this->assertNull(FontAwesome()->load());
-    $this->assertEquals(0, $enqueued_callback() - 1);
-    $this->assertEquals(1, $failed_callback() - 1);
+    $this->assertTrue($failed);
+    $this->assertFalse($enqueued);
   }
-
 }
