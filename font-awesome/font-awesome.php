@@ -261,7 +261,7 @@ class FontAwesome {
     do_action('font_awesome_enqueued', $loadSpec);
   }
 
-  public function register_requirements($req) {
+  public function register($req) {
     $bt = debug_backtrace(1);
     $caller = array_shift($bt);
     if ( ! array_key_exists('name', $req) ){

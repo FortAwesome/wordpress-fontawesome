@@ -17,7 +17,7 @@ class RequirementsTest extends WP_UnitTestCase {
   function test_register_without_name(){
     $this->expectException(InvalidArgumentException::class);
 
-    FontAwesome()->register_requirements(array(
+    FontAwesome()->register(array(
       'method' => 'svg',
       'v4shim' => 'require'
     ));
@@ -25,7 +25,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
   function test_single_client_gets_what_it_wants() {
     add_action('font_awesome_requirements', function(){
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'test',
         'method' => 'svg',
         'v4shim' => 'require'
@@ -43,13 +43,13 @@ class RequirementsTest extends WP_UnitTestCase {
   function test_two_compatible_clients() {
     add_action('font_awesome_requirements', function(){
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientA',
         'method' => 'svg',
         'v4shim' => 'require'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientB',
         'method' => 'svg'
         // leaves v4shim alone
@@ -67,12 +67,12 @@ class RequirementsTest extends WP_UnitTestCase {
   function test_incompatible_method() {
     add_action('font_awesome_requirements', function(){
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientA',
         'method' => 'svg'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientB',
         'method' => 'webfont' // not compatible with svg
       ));
@@ -99,7 +99,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
   function test_pseudo_element_default_false_when_svg(){
     add_action('font_awesome_requirements', function(){
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'test',
         'method' => 'svg'
       ));
@@ -115,7 +115,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
   function test_pseudo_element_default_true_when_webfont(){
     add_action('font_awesome_requirements', function(){
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'test',
         'method' => 'webfont'
       ));
@@ -135,12 +135,12 @@ class RequirementsTest extends WP_UnitTestCase {
   function test_incompatible_version() {
     add_action('font_awesome_requirements', function(){
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientA',
         'version' => '5.0.13'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientB',
         'version' => '5.0.12'
       ));
@@ -210,17 +210,17 @@ class RequirementsTest extends WP_UnitTestCase {
 
     add_action('font_awesome_requirements', function(){
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientA',
         'version' => '~5.0.0'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientB',
         'version' => '>=5.0.12'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientC',
         'version' => '^5'
       ));
@@ -260,17 +260,17 @@ class RequirementsTest extends WP_UnitTestCase {
       ));
     add_action('font_awesome_requirements', function(){
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientA',
         'version' => '~5.0.0'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientB',
         'version' => '>=5.0.12'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientC',
         'version' => '^5'
       ));
@@ -310,12 +310,12 @@ class RequirementsTest extends WP_UnitTestCase {
       ));
     add_action('font_awesome_requirements', function(){
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientA',
         'version' => '<=5.1'
       ));
 
-      FontAwesome()->register_requirements(array(
+      FontAwesome()->register(array(
         'name' => 'clientB',
         'version' => '>=5.0.10'
       ));
