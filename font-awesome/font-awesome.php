@@ -80,6 +80,9 @@ class FontAwesome {
    */
   public function load() {
     do_action('font_awesome_requirements');
+    // TODO: add some WP persistent cache here so we don't needlessly retrieve latest versions and re-process
+    // all requirements each time. We'd only need to do that when something changes.
+    // So what are those conditions for refreshing the cache?
     $loadSpec = $this->build_load_spec(function($data){
       // TODO: figure out the best way to present diagnostic information.
       // Probably in the error_log, but if we're on the admin screen, there's
@@ -89,7 +92,6 @@ class FontAwesome {
     });
     if( isset($loadSpec) ) {
       $this->enqueue($loadSpec);
-      do_action('font_awesome_enqueued', $loadSpec);
       return $loadSpec;
     } else {
       return null;
@@ -105,9 +107,6 @@ class FontAwesome {
     // 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
     // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
     // 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
-
-    // Dealing with the version: start with a default that is the latest stable, and then see why that wouldn't work for clients
-    // If it doesn't work for a given client, then use the latest that works for that client, then move to the next client's constraints.
 
     $loadSpec = array(
       'method' => array(
@@ -145,11 +144,19 @@ class FontAwesome {
           } else { return null; }
         }
       ),
+      // Version: start with a default that is the latest stable, and then see why that wouldn't work for clients
+      // If it doesn't work for a given client, then use the latest that works for that client, then move to the next client's constraints.
       'version' => array(
         'value' => $this->get_latest_stable_version(),
         'resolve' => function($prevReqVal, $curReqVal){
-          error_log("version-resolve. curReqVal " . $curReqVal . ", prevReqVal: " . $prevReqVal . ", get_latest_stable_version: " . $this->get_latest_stable_version());
-          return $curReqVal == $this->get_latest_stable_version() ? $curReqVal : null; // hardcode a trivial test for now
+          if( Semver::satisfies($prevReqVal, $curReqVal) ){
+            return $prevReqVal;
+          } else {
+            $hardcoded_alternative = '5.0.12';
+            return Semver::satisfies($hardcoded_alternative, $curReqVal) ? $hardcoded_alternative : null;
+            // Try some other versions
+            // Would be nice if we could generate a version number from the constraint
+          }
         },
       )
     );
@@ -241,6 +248,8 @@ class FontAwesome {
         return $html;
       }
     }, 10, 2 );
+
+    do_action('font_awesome_enqueued', $loadSpec);
   }
 
   public function register_requirements($req) {

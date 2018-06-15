@@ -200,7 +200,6 @@ class RequirementsTest extends WP_UnitTestCase {
 
   /**
    * @group version
-   * @requires function skipme
    */
   function test_compatible_with_latest_stable_version() {
     $stub = $this->createMock(FontAwesome::class);
@@ -226,7 +225,7 @@ class RequirementsTest extends WP_UnitTestCase {
     });
 
     $enqueued = false;
-    $enqueued_callback = function() use(&$enqueued){
+    $enqueued_callback = function($data) use(&$enqueued){
       $enqueued = true;
     };
     add_action('font_awesome_enqueued', $enqueued_callback);
@@ -237,6 +236,7 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
+    FontAwesome()->load();
     $this->assertFalse($failed);
     $this->assertTrue($enqueued);
   }
