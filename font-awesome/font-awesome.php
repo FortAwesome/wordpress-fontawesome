@@ -12,6 +12,9 @@
 
 defined( 'WPINC' ) || die;
 
+require_once('vendor/autoload.php');
+use Composer\Semver\Semver;
+
 // 1. Make sure we haven't already been loaded
 // 2. Run an action that tells all clients to say something about their requirements
 // 3. Process the results of that to determine what will be loaded
@@ -19,7 +22,7 @@ defined( 'WPINC' ) || die;
 
 if (! class_exists('FontAwesome') ) :
 
-final class FontAwesome {
+class FontAwesome {
 
   /**
    * FontAwesome version.
@@ -81,7 +84,7 @@ final class FontAwesome {
       // TODO: figure out the best way to present diagnostic information.
       // Probably in the error_log, but if we're on the admin screen, there's
       // probably a more helpful way to do it.
-      // error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
+      error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
       do_action('font_awesome_failed', $data);
     });
     if( isset($loadSpec) ) {
@@ -102,6 +105,9 @@ final class FontAwesome {
     // 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
     // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
     // 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
+
+    // Dealing with the version: start with a default that is the latest stable, and then see why that wouldn't work for clients
+    // If it doesn't work for a given client, then use the latest that works for that client, then move to the next client's constraints.
 
     $loadSpec = array(
       'method' => array(
@@ -140,6 +146,13 @@ final class FontAwesome {
             else { return false; }
           } else { return false; }
         }
+      ),
+      'version' => array(
+        'value' => $this->get_latest_stable_version(),
+        'is_compatible' => function($prevReqVal, $curReqVal){
+          return $prevReqVal == $curReqVal; // hardcode a trivial test for now
+        },
+        'keep_prev_when_compatible' => true
       )
     );
 
@@ -186,13 +199,14 @@ final class FontAwesome {
     // This is a good place to set defaults
     // pseudo-elements: when webfonts, true
     // when svg, false
+    // TODO: should this be set up in the initial loadSpec before, or must it be set at the end of the process here?
     $method = $this->specified_requirement_or_default($loadSpec['method'], 'webfont');
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
     return array(
       'method' => $method,
       'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], null) == 'require',
       'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
-      'version' => '5.0.13',
+      'version' => $loadSpec['version']['value'],
       // For now, we'll hard code pro as always false and implement it in the future.
       'pro' => false,
     );
@@ -200,6 +214,13 @@ final class FontAwesome {
 
   protected function specified_requirement_or_default($req, $default){
     return array_key_exists('value', $req) ? $req['value'] : $default;
+  }
+
+  /**
+   * Returns a full version string of the latest stable version.
+   */
+  public function get_latest_stable_version(){
+    return '5.0.13';
   }
 
   /**

@@ -2,6 +2,11 @@
 1. Make sure Docker is installed
 2. docker-compose up
 3. create a .env.email file with an admin email address WordPress can use:
+4. install composer (PHP package manager)
+
+On Mac OS X, it can be installed via `brew install composer`
+
+5. update composer dependencies: `composer install`
 
 ```
 WP_ADMIN_EMAIL=some_real_address@example.com
