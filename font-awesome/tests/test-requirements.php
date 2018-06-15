@@ -88,7 +88,7 @@ class RequirementsTest extends WP_UnitTestCase {
     $failed_callback = function($data) use(&$failed){
       $failed = true;
       $this->assertEquals('method', $data['req']);
-      $this->assertEquals(2, count($data['client-reqs']));
+      $this->assertTrue($this->client_requirement_exists('clientB', $data['client-reqs']));
     };
     add_action('font_awesome_failed', $failed_callback);
 
@@ -156,13 +156,24 @@ class RequirementsTest extends WP_UnitTestCase {
     $failed_callback = function($data) use(&$failed){
       $failed = true;
       $this->assertEquals('version', $data['req']);
-      $this->assertEquals(2, count($data['client-reqs']));
+      $this->assertTrue($this->client_requirement_exists('clientB', $data['client-reqs']));
     };
     add_action('font_awesome_failed', $failed_callback);
 
     $this->assertNull(FontAwesome()->load());
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
+  }
+
+  function client_requirement_exists($name, $reqs){
+    $found = false;
+    foreach($reqs as $req){
+      if($name == $req['name']){
+        $found = true;
+        break;
+      }
+    }
+    return $found;
   }
 
   // This is here mainly to provide development notes about what kind of

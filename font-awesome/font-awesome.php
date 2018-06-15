@@ -111,48 +111,46 @@ class FontAwesome {
 
     $loadSpec = array(
       'method' => array(
-        // returns boolean: true if compatible.
-        'is_compatible' => function($prevReqVal, $curReqVal){ return $prevReqVal == $curReqVal; },
-        'keep_prev_when_compatible' => true
+        // returns new value if compatible, else null
+        'resolve' => function($prevReqVal, $curReqVal){ return $prevReqVal == $curReqVal ? $prevReqVal : null; }
       ),
       'v4shim' => array(
-        'is_compatible' => function($prevReqVal, $curReqVal){
+        'resolve' => function($prevReqVal, $curReqVal){
           // Cases:
           // require, require => true
           // require, forbid => false
           // forbid, require => false
           // forbid, forbid => true
           if( 'require' == $prevReqVal ){
-            if ( 'require' == $curReqVal ){ return true; }
-            elseif ( 'forbid' == $curReqVal ) { return false; }
-            else { return false; }
+            if ( 'require' == $curReqVal ){ return $curReqVal; }
+            elseif ( 'forbid' == $curReqVal ) { return null; }
+            else { return null; }
           } elseif ( 'forbid' == $prevReqVal ){
-            if ( 'forbid' == $curReqVal ){ return true; }
-            elseif ( 'require' == $curReqVal ){ return false; }
-            else { return false; }
-          } else { return false; }
-        },
-        'keep_prev_when_compatible' => false
+            if ( 'forbid' == $curReqVal ){ return $curReqVal; }
+            elseif ( 'require' == $curReqVal ){ return null; }
+            else { return null; }
+          } else { return null; }
+        }
       ),
       'pseudo-elements' => array(
-        'is_compatible' => function($prevReqVal, $curReqVal){
+        'resolve' => function($prevReqVal, $curReqVal){
           if( 'require' == $prevReqVal ){
-            if ( 'require' == $curReqVal ){ return true; }
-            elseif ( 'forbid' == $curReqVal ) { return false; }
-            else { return false; }
+            if ( 'require' == $curReqVal ){ return $curReqVal; }
+            elseif ( 'forbid' == $curReqVal ) { return null; }
+            else { return null; }
           } elseif ( 'forbid' == $prevReqVal ){
-            if ( 'forbid' == $curReqVal ){ return true; }
-            elseif ( 'require' == $curReqVal ){ return false; }
-            else { return false; }
-          } else { return false; }
+            if ( 'forbid' == $curReqVal ){ return $curReqVal; }
+            elseif ( 'require' == $curReqVal ){ return null; }
+            else { return null; }
+          } else { return null; }
         }
       ),
       'version' => array(
         'value' => $this->get_latest_stable_version(),
-        'is_compatible' => function($prevReqVal, $curReqVal){
-          return $prevReqVal == $curReqVal; // hardcode a trivial test for now
+        'resolve' => function($prevReqVal, $curReqVal){
+          error_log("version-resolve. curReqVal " . $curReqVal . ", prevReqVal: " . $prevReqVal . ", get_latest_stable_version: " . $this->get_latest_stable_version());
+          return $curReqVal == $this->get_latest_stable_version() ? $curReqVal : null; // hardcode a trivial test for now
         },
-        'keep_prev_when_compatible' => true
       )
     );
 
@@ -166,18 +164,22 @@ class FontAwesome {
       // For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ]
       foreach( $req as $key => $payload ){
         if ( in_array($key, ['client-call', 'name']) ) continue; // these are meta keys that we won't process here.
-        if( array_key_exists('client-reqs', $loadSpec[$key]) ) {
-          // This client has registered a requirement on a key where a req has already been established.
-          // So we need to compare to see if these requirements are compatible.
+        if( array_key_exists('value', $loadSpec[$key])) {
+          // Check compatibility with existing requirement value.
           // First, record that this client has made this new requirement.
-          array_unshift($loadSpec[$key]['client-reqs'], $req);
-          if (call_user_func( $loadSpec[$key]['is_compatible'], $loadSpec[$key]['value'], $req[$key] ) ) {
-            // The previous and current requirements are compatible, so (optionally) update the value
-            $loadSpec[$key]['keep_prev_when_compatible'] || $loadSpec[$key]['value'] = $req[$key];
+          if(array_key_exists('client-reqs', $loadSpec[$key])){
+            array_unshift($loadSpec[$key]['client-reqs'], $req);
           } else {
+            $loadSpec[$key]['client-reqs'] = array( $req );
+          }
+          $resolved_req = $loadSpec[$key]['resolve']($loadSpec[$key]['value'], $req[$key]);
+          if (is_null($resolved_req)) {
             // the compatibility test failed
             $bailEarlyReq = $key;
             break 2;
+          } else {
+            // The previous and current requirements are compatible, so update the value
+            $loadSpec[$key]['value'] = $resolved_req;
           }
         } else {
           // Add this as the first client to make this requirement.
