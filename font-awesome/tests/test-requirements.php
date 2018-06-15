@@ -191,6 +191,8 @@ class RequirementsTest extends WP_UnitTestCase {
     $this->assertFalse(Semver::satisfies('5.1.0', '~5.0.10'));
     $this->assertTrue(Semver::satisfies('5.1.0', '^5.0.0'));
     $this->assertFalse(Semver::satisfies('5.0.13', '^5.1.0'));
+
+
     /**
      * probably we need to provide only stable versions, not development ones,
      * because this doesn't behave as might be expected.
@@ -201,9 +203,9 @@ class RequirementsTest extends WP_UnitTestCase {
   /**
    * @group version
    */
-  function test_compatible_with_latest_stable_version() {
+  function test_compatible_with_latest_version() {
     $stub = $this->createMock(FontAwesome::class);
-    $stub->method('get_latest_stable_version')
+    $stub->method('get_latest_version')
       ->willReturn('5.0.13');
 
     add_action('font_awesome_requirements', function(){
@@ -221,6 +223,101 @@ class RequirementsTest extends WP_UnitTestCase {
       FontAwesome()->register_requirements(array(
         'name' => 'clientC',
         'version' => '^5'
+      ));
+    });
+
+    $enqueued = false;
+    $enqueued_callback = function($data) use(&$enqueued){
+      $enqueued = true;
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    FontAwesome()->load();
+    $this->assertFalse($failed);
+    $this->assertTrue($enqueued);
+  }
+
+  /**
+   * @group version
+   */
+  function test_compatible_with_earlier_patch_level() {
+    $stub = $this->createMock(FontAwesome::class);
+    $stub->method('get_available_versions')
+      ->willReturn(array(
+        '5.1.0',
+        '5.0.13',
+        '5.0.12',
+        '5.0.11',
+        '5.0.10',
+        '5.0.9',
+        '5.0.0'
+      ));
+    add_action('font_awesome_requirements', function(){
+
+      FontAwesome()->register_requirements(array(
+        'name' => 'clientA',
+        'version' => '~5.0.0'
+      ));
+
+      FontAwesome()->register_requirements(array(
+        'name' => 'clientB',
+        'version' => '>=5.0.12'
+      ));
+
+      FontAwesome()->register_requirements(array(
+        'name' => 'clientC',
+        'version' => '^5'
+      ));
+    });
+
+    $enqueued = false;
+    $enqueued_callback = function($data) use(&$enqueued){
+      $enqueued = true;
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    FontAwesome()->load();
+    $this->assertFalse($failed);
+    $this->assertTrue($enqueued);
+  }
+
+  /**
+   * @group version
+   */
+  function test_compatible_with_earlier_minor_version() {
+    $stub = $this->createMock(FontAwesome::class);
+    $stub->method('get_available_versions')
+      ->willReturn(array(
+        '5.1.0',
+        '5.0.13',
+        '5.0.12',
+        '5.0.11',
+        '5.0.10',
+        '5.0.9',
+        '5.0.0'
+      ));
+    add_action('font_awesome_requirements', function(){
+
+      FontAwesome()->register_requirements(array(
+        'name' => 'clientA',
+        'version' => '<=5.1'
+      ));
+
+      FontAwesome()->register_requirements(array(
+        'name' => 'clientB',
+        'version' => '>=5.0.10'
       ));
     });
 

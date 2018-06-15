@@ -87,7 +87,7 @@ class FontAwesome {
       // TODO: figure out the best way to present diagnostic information.
       // Probably in the error_log, but if we're on the admin screen, there's
       // probably a more helpful way to do it.
-      error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
+      // error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
       do_action('font_awesome_failed', $data);
     });
     if( isset($loadSpec) ) {
@@ -144,19 +144,13 @@ class FontAwesome {
           } else { return null; }
         }
       ),
-      // Version: start with a default that is the latest stable, and then see why that wouldn't work for clients
-      // If it doesn't work for a given client, then use the latest that works for that client, then move to the next client's constraints.
+      // Version: start with all available versions. For each client requirement, narrow the list with that requirement's version constraint.
+      // Hopefully, we end up with a non-zero list, in which case, we'll sort the list and take the most recent satisfying version.
       'version' => array(
-        'value' => $this->get_latest_stable_version(),
+        'value' => $this->get_available_versions(),
         'resolve' => function($prevReqVal, $curReqVal){
-          if( Semver::satisfies($prevReqVal, $curReqVal) ){
-            return $prevReqVal;
-          } else {
-            $hardcoded_alternative = '5.0.12';
-            return Semver::satisfies($hardcoded_alternative, $curReqVal) ? $hardcoded_alternative : null;
-            // Try some other versions
-            // Would be nice if we could generate a version number from the constraint
-          }
+          $satisfyingVersions = Semver::satisfiedBy($prevReqVal, $curReqVal);
+          return count($satisfyingVersions) > 0 ? $satisfyingVersions : null;
         },
       )
     );
@@ -215,7 +209,7 @@ class FontAwesome {
       'method' => $method,
       'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], null) == 'require',
       'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
-      'version' => $loadSpec['version']['value'],
+      'version' => Semver::rsort($loadSpec['version']['value'])[0],
       // For now, we'll hard code pro as always false and implement it in the future.
       'pro' => false,
     );
@@ -226,10 +220,25 @@ class FontAwesome {
   }
 
   /**
-   * Returns a full version string of the latest stable version.
+   * Returns a full version string of the latest stable version, or null
+   * if there are no available versions.
    */
-  public function get_latest_stable_version(){
-    return '5.0.13';
+  public function get_latest_version(){
+    $versions = $this->get_available_versions();
+    return count($versions) > 0 ? Semver::rsort($versions)[0] : null;
+  }
+
+  // TODO: implement this for real, probably against some REST endpoint
+  public function get_available_versions(){
+    return array(
+      '5.1.0',
+      '5.0.13',
+      '5.0.12',
+      '5.0.11',
+      '5.0.10',
+      '5.0.9',
+      '5.0.0'
+    );
   }
 
   /**
