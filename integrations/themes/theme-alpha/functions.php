@@ -19,7 +19,7 @@ add_action('after_switch_theme', function(){
 
 add_action('font_awesome_requirements', function(){
   if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register_requirements(array("name" => THEME_ALPHA_LOG_PREFIX));
+    FontAwesome()->register(array("name" => THEME_ALPHA_LOG_PREFIX));
   }
 });
 
