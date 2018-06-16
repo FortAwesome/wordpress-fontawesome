@@ -210,9 +210,14 @@ class FontAwesome {
       'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], null) == 'require',
       'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
       'version' => Semver::rsort($loadSpec['version']['value'])[0],
-      // For now, we'll hard code pro as always false and implement it in the future.
-      'pro' => false,
+      'pro' => $this->is_pro_available()
     );
+  }
+
+  // TODO: replace this hard-coded implementation with a real one, based on what that web site owner configures
+  // in the admin interface and stores in the db.
+  function is_pro_available(){
+    return false;
   }
 
   protected function specified_requirement_or_default($req, $default){

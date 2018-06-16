@@ -337,4 +337,42 @@ class RequirementsTest extends WP_UnitTestCase {
     $this->assertFalse($failed);
     $this->assertTrue($enqueued);
   }
+
+  // TODO: figure out why these mocks aren't working. I know from hardcoded testing
+  // that they would pass if the mocks were working.
+  //
+  // function test_pro_is_available(){
+  //   $stub = $this->createMock(FontAwesome::class);
+  //   $stub->method('is_pro_available')
+  //     ->willReturn(true);
+  //   add_action('font_awesome_requirements', function(){
+  //     FontAwesome()->register(array(
+  //       'name' => 'test'
+  //     ));
+  //   });
+
+  //   add_action('font_awesome_enqueued', function($loadSpec){
+  //     $this->assertTrue($loadSpec['pro']);
+  //   });
+
+  //   FontAwesome()->load();
+  // }
+
+  // function test_pro_not_available(){
+  //   $stub = $this->createMock(FontAwesome::class);
+  //   $stub->method('is_pro_available')
+  //     ->willReturn(false);
+  //   add_action('font_awesome_requirements', function(){
+  //     FontAwesome()->register(array(
+  //       'name' => 'test'
+  //     ));
+  //   });
+
+  //   add_action('font_awesome_enqueued', function($loadSpec){
+  //     error_log('loadSpec: ' . print_r($loadSpec,true));
+  //     $this->assertFalse($loadSpec['pro']);
+  //   });
+
+  //   FontAwesome()->load();
+  // }
 }
