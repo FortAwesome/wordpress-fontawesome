@@ -338,41 +338,56 @@ class RequirementsTest extends WP_UnitTestCase {
     $this->assertTrue($enqueued);
   }
 
-  // TODO: figure out why these mocks aren't working. I know from hardcoded testing
-  // that they would pass if the mocks were working.
-  //
-  // function test_pro_is_available(){
-  //   $stub = $this->createMock(FontAwesome::class);
-  //   $stub->method('is_pro_available')
-  //     ->willReturn(true);
-  //   add_action('font_awesome_requirements', function(){
-  //     FontAwesome()->register(array(
-  //       'name' => 'test'
-  //     ));
-  //   });
+  function mock_singleton_method($method, callable $init){
+    $mockBuilder = $this->getMockBuilder(FontAwesome::class);
+    $mockBuilder->setMethods([$method]); // let all methods work as defined in the original
+    $mock = $mockBuilder->getMock();
+    $ref = new \ReflectionProperty('FontAwesome', '_instance');
+    $ref->setAccessible(true);
+    $ref->setValue(null, $mock);
+    $init($mock->method($method));
+    return $mock;
+  }
 
-  //   add_action('font_awesome_enqueued', function($loadSpec){
-  //     $this->assertTrue($loadSpec['pro']);
-  //   });
+  /**
+   * @group pro
+   */
+  function test_pro_is_available(){
+    $mock = $this->mock_singleton_method('is_pro_available', function($method){
+      $method->willReturn(true);
+    });
 
-  //   FontAwesome()->load();
-  // }
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'test'
+      ));
+    });
 
-  // function test_pro_not_available(){
-  //   $stub = $this->createMock(FontAwesome::class);
-  //   $stub->method('is_pro_available')
-  //     ->willReturn(false);
-  //   add_action('font_awesome_requirements', function(){
-  //     FontAwesome()->register(array(
-  //       'name' => 'test'
-  //     ));
-  //   });
+    add_action('font_awesome_enqueued', function($loadSpec){
+      $this->assertTrue($loadSpec['pro']);
+    });
 
-  //   add_action('font_awesome_enqueued', function($loadSpec){
-  //     error_log('loadSpec: ' . print_r($loadSpec,true));
-  //     $this->assertFalse($loadSpec['pro']);
-  //   });
+    FontAwesome()->load();
+  }
 
-  //   FontAwesome()->load();
-  // }
+  /**
+   * @group pro
+   */
+  function test_pro_not_available(){
+    $mock = $this->mock_singleton_method('is_pro_available', function($method){
+      $method->willReturn(false);
+    });
+
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'test'
+      ));
+    });
+
+    add_action('font_awesome_enqueued', function($loadSpec){
+      $this->assertFalse($loadSpec['pro']);
+    });
+
+    FontAwesome()->load();
+  }
 }
