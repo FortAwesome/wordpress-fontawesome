@@ -17,16 +17,16 @@ add_action('after_switch_theme', function(){
   error_log(THEME_ALPHA_LOG_PREFIX . ': switching theme to theme-alpha');
 });
 
-add_action('font_awesome_dependencies', function(){
+add_action('font_awesome_requirements', function(){
   if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register_dependency(array("client" => THEME_ALPHA_LOG_PREFIX));
+    FontAwesome()->register(array("name" => THEME_ALPHA_LOG_PREFIX));
   }
 });
 
-add_action('font_awesome_enqueued', function($method, $host, $ver){
+add_action('font_awesome_enqueued', function($loadSpec){
   if ( class_exists('FontAwesome') ) {
-    error_log( THEME_ALPHA_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $method . ", host: " . $host . ", ver: " . $ver);
+    error_log( THEME_ALPHA_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . $loadSpec['version']);
   }
 }, 10, 3);
-?>
+
 
