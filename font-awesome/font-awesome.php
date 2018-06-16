@@ -79,6 +79,7 @@ class FontAwesome {
    * Otherwise, returns null.
    */
   public function load() {
+    $this->reset(); // start from a clean slate on each load
     do_action('font_awesome_requirements');
     // TODO: add some WP persistent cache here so we don't needlessly retrieve latest versions and re-process
     // all requirements each time. We'd only need to do that when something changes.
