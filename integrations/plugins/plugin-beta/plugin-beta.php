@@ -16,7 +16,13 @@ define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 
 add_action('font_awesome_requirements', function(){
   if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register(array("name" => BETA_PLUGIN_LOG_PREFIX));
+    FontAwesome()->register(
+      array(
+        "name" => BETA_PLUGIN_LOG_PREFIX,
+        'version' => '5.0.13',
+        'method' => 'svg'
+      )
+    );
   }
 });
 

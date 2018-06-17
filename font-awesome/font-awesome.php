@@ -24,6 +24,25 @@ if (! class_exists('FontAwesome') ) :
 
 class FontAwesome {
 
+  protected static $integrityKeys = array(
+    'free' => array(
+      'webfont' => array(
+        'all' => 'sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp'
+      ),
+      'svg' => array(
+        'all' => 'sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe'
+      )
+    ),
+    'pro' => array(
+      'webfont' => array(
+        'all' => 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG'
+      ),
+      'svg' => array(
+        'all' => 'sha384-d84LGg2pm9KhR4mCAs3N29GQ4OYNy+K+FBHX8WhimHpPm86c839++MDABegrZ3gn'
+      )
+    )
+  );
+
   /**
    * FontAwesome version.
    *
@@ -156,6 +175,8 @@ class FontAwesome {
       )
     );
 
+    $validKeys = array_keys($loadSpec);
+
     $bailEarlyReq = null;
 
     $clients = array();
@@ -166,6 +187,8 @@ class FontAwesome {
       // For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ]
       foreach( $req as $key => $payload ){
         if ( in_array($key, ['client-call', 'name']) ) continue; // these are meta keys that we won't process here.
+        // TODO: die is not graceful. What would be a more graceful way to handle this error?
+        if ( ! in_array($key, $validKeys) ) die($key . " is an invalid requirement key. Only these are allowed: " . join(', ', $validKeys));
         if( array_key_exists('value', $loadSpec[$key])) {
           // Check compatibility with existing requirement value.
           // First, record that this client has made this new requirement.
@@ -252,17 +275,42 @@ class FontAwesome {
    * Returns nothing.
    */
   protected function enqueue($loadSpec) {
-    // Let's say that the default will be Webfonts with CSS, Free, all, (and when available, using the webfont shim)
-    wp_enqueue_style('font-awesome-official', 'https://use.fontawesome.com/releases/v5.0.13/css/all.css', null, null);
+    $method = $loadSpec['method'];
+    $license = $loadSpec['pro'] ? 'pro' : 'free';
+    ($method == 'webfont' || $method == 'svg') || die('method must be either webfont or svg');
 
-    // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
-    add_filter( 'style_loader_tag', function($html, $handle){
-      if ( in_array($handle, ['font-awesome-official']) ) {
-        return preg_replace('/\/>$/', 'integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous" />', $html, 1);
-      } else {
-        return $html;
-      }
-    }, 10, 2 );
+    $faUrl = "https://";
+    $faUrl .= $license == 'pro' ? 'pro.' : 'use.';
+    $faUrl .= 'fontawesome.com/releases/v' . $loadSpec['version'] . '/';
+
+    $integrityKey = self::$integrityKeys[$license][$method]['all']; // hardcode 'all' for now
+
+    if( $method == 'webfont' ){
+      $faUrl .=  'css/all.css';
+      wp_enqueue_style('font-awesome-official', $faUrl, null, null);
+
+      // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
+      add_filter( 'style_loader_tag', function($html, $handle) use($integrityKey){
+        if ( in_array($handle, ['font-awesome-official']) ) {
+          return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $html, 1);
+        } else {
+          return $html;
+        }
+      }, 10, 2 );
+    } else {
+      $faUrl .= 'js/all.js';
+
+      wp_enqueue_script('font-awesome-official', $faUrl, null, null, false);
+
+      // Filter the <script> tag to add the integrity and crossorigin attributes for completeness.
+      add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
+        if ( in_array($handle, ['font-awesome-official']) ) {
+          return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $tag, 1);
+        } else {
+          return $tag;
+        }
+      }, 10, 2 );
+    }
 
     do_action('font_awesome_enqueued', $loadSpec);
   }
