@@ -1,10 +1,7 @@
 <?php
-    require_once('vendor/autoload.php');
-    use Composer\Semver\Semver;
-// Cases TODO:
-// - client with name only, accepting all defaults
-// - webfont method + pseudo-elements should be compatible
-// - webfont method and forbid pseudo-elements should warn but not die, cause you can't disable that
+require_once('vendor/autoload.php');
+use Composer\Semver\Semver;
+
 class RequirementsTest extends WP_UnitTestCase {
 
   /**
@@ -553,5 +550,97 @@ class RequirementsTest extends WP_UnitTestCase {
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
     $this->assertFalse(wp_script_is('font-awesome-official-v4shim', 'enqueued'));
+  }
+
+  /**
+   * It should be considered at most redundant, but not an error, if one client requires
+   * the webfont method and another explicitly requires pseudo-element support.
+   * Webfont with CSS always implies pseudo-element support.
+   */
+  function test_webfont_with_pseudo_elements(){
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'Client A',
+        'method' => 'webfont'
+      ));
+      FontAwesome()->register(array(
+        'name' => 'Client B',
+        'pseudo-elements' => 'require'
+      ));
+    });
+
+    $enqueued = false;
+    $enqueued_callback = function($loadSpec) use(&$enqueued){
+      $enqueued = true;
+      $this->assertEquals('webfont', $loadSpec['method']);
+      $this->assertTrue($loadSpec['pseudo-elements']);
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    FontAwesome()->load();
+    $this->assertTrue($enqueued);
+    $this->assertFalse($failed);
+  }
+
+  /**
+   * It should be considered at most a warning, but not an error, if one client requires
+   * the webfont method and another forbids pseudo-element support.
+   * Webfont with CSS always implies pseudo-element support.
+   */
+  function test_webfont_and_forbid_pseudo_elements(){
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'Client A',
+        'method' => 'webfont'
+      ));
+      FontAwesome()->register(array(
+        'name' => 'Client B',
+        'pseudo-elements' => 'forbid'
+      ));
+    });
+
+    $enqueued = false;
+    $enqueued_callback = function($loadSpec) use(&$enqueued){
+      $enqueued = true;
+      $this->assertEquals('webfont', $loadSpec['method']);
+      $this->assertTrue($loadSpec['pseudo-elements']);
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    $this->begin_error_log_capture();
+    FontAwesome()->load();
+    $err = $this->end_error_log_capture();
+
+    $this->assertTrue($enqueued);
+    $this->assertFalse($failed);
+    $this->assertRegExp('/WARNING: a client of Font Awesome has forbidden pseudo-elements/', $err);
+  }
+
+  function begin_error_log_capture(){
+    if( property_exists($this, 'error_log_file') ) return;
+
+    $this->error_log_file = uniqid('fa_error_log') . ".log";
+    $this->error_log_original = ini_get('error_log');
+    ini_set('error_log', $this->error_log_file);
+  }
+
+  function end_error_log_capture(){
+    if(! property_exists($this, 'error_log_file') ) return null;
+
+    $error_log_contents = file_get_contents($this->error_log_file);
+    unlink($this->error_log_file);
+    return $error_log_contents;
   }
 }

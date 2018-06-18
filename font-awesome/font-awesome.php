@@ -229,10 +229,15 @@ class FontAwesome {
     // TODO: should this be set up in the initial loadSpec before, or must it be set at the end of the process here?
     $method = $this->specified_requirement_or_default($loadSpec['method'], 'webfont');
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
+    $pseudo_elements = $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require';
+    if( $method == 'webfont' && ! $pseudo_elements ) {
+      error_log('WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.');
+      $pseudo_elements = true;
+    }
     return array(
       'method' => $method,
       'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], 'require') == 'require',
-      'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
+      'pseudo-elements' => $pseudo_elements,
       'version' => Semver::rsort($loadSpec['version']['value'])[0],
       'pro' => $this->is_pro_available()
     );
