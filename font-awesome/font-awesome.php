@@ -282,6 +282,7 @@ class FontAwesome {
     $faUrl = "https://";
     $faUrl .= $license == 'pro' ? 'pro.' : 'use.';
     $faUrl .= 'fontawesome.com/releases/v' . $loadSpec['version'] . '/';
+    $faShimUrl = $faUrl;
 
     $integrityKey = self::$integrityKeys[$license][$method]['all']; // hardcode 'all' for now
 
@@ -297,6 +298,22 @@ class FontAwesome {
           return $html;
         }
       }, 10, 2 );
+
+
+      if( $loadSpec['v4shim'] ){
+        $faShimUrl .= 'css/v4-shims.css';
+        wp_enqueue_style('font-awesome-official-v4shim', $faShimUrl, null, null);
+
+        // TODO: add new integrity key specific to v4-shims, if necessary.
+        // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
+        add_filter( 'style_loader_tag', function($html, $handle) use($integrityKey){
+          if ( in_array($handle, ['font-awesome-official-v4shim']) ) {
+            return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $html, 1);
+          } else {
+            return $html;
+          }
+        }, 10, 2 );
+      }
     } else {
       $faUrl .= 'js/all.js';
 
@@ -310,6 +327,20 @@ class FontAwesome {
           return $tag;
         }
       }, 10, 2 );
+
+      if( $loadSpec['v4shim'] ){
+        $faShimUrl .= 'js/v4-shims.js';
+        wp_enqueue_script('font-awesome-official-v4shim', $faShimUrl, null, null, false);
+
+        // TODO: add new integrity key specific to v4-shims, if necessary.
+        add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
+          if ( in_array($handle, ['font-awesome-official-v4shim']) ) {
+            return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $tag, 1);
+          } else {
+            return $tag;
+          }
+        }, 10, 2 );
+      }
     }
 
     do_action('font_awesome_enqueued', $loadSpec);

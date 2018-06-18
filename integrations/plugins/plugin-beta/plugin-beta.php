@@ -20,7 +20,8 @@ add_action('font_awesome_requirements', function(){
       array(
         "name" => BETA_PLUGIN_LOG_PREFIX,
         'version' => '5.0.13',
-        'method' => 'svg'
+        'method' => 'svg',
+        'v4shim' => 'require'
       )
     );
   }
@@ -36,6 +37,7 @@ add_filter('the_content', function($content){
   $pre_content = <<<EOT
 <div class="plugin-beta-pre-content">
   <p>Expected by plugin-beta: "fab fa-font-awesome": <i class="fab fa-font-awesome"></i></p>
+  <p>Shim icon: "fa fa-arrows": <i class="fa fa-arrows"></i></p>
 </div>
 EOT;
   return $pre_content . $content;

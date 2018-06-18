@@ -12,6 +12,10 @@ class RequirementsTest extends WP_UnitTestCase {
    */
   function reset(){
     FontAwesome()->reset();
+    wp_script_is('font-awesome-official', 'enqueued') && wp_dequeue_script('font-awesome-official');
+    wp_script_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_script('font-awesome-official-v4shim');
+    wp_style_is('font-awesome-official', 'enqueued') && wp_dequeue_style('font-awesome-official');
+    wp_style_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_style('font-awesome-official-v4shim');
   }
 
   function test_register_without_name(){
@@ -389,5 +393,80 @@ class RequirementsTest extends WP_UnitTestCase {
     });
 
     FontAwesome()->load();
+  }
+
+  /**
+   * @group shim
+   */
+  function test_shim_svg(){
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'test',
+        'method' => 'svg',
+        'v4shim' => 'require'
+      ));
+    });
+
+    FontAwesome()->load();
+    $this->assertTrue(wp_script_is('font-awesome-official-v4shim', 'enqueued'));
+  }
+
+  /**
+   * One client requires v4shim. The other does not forbid, but also does not require it.
+   * Expected: Client A's requirement should be honored, since Client B does not forbid.
+   * @group shim
+   */
+  function test_shim_webfont(){
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'Client A',
+        'method' => 'webfont',
+        'v4shim' => 'require'
+      ));
+      FontAwesome()->register(array(
+        'name' => 'Client B',
+        'method' => 'webfont'
+      ));
+    });
+
+    FontAwesome()->load();
+    $this->assertTrue(wp_style_is('font-awesome-official-v4shim', 'enqueued'));
+  }
+
+  /**
+   * @group shim
+   */
+  function test_shim_conflict() {
+    add_action('font_awesome_requirements', function(){
+      FontAwesome()->register(array(
+        'name' => 'Client A',
+        'method' => 'webfont',
+        'v4shim' => 'require'
+      ));
+      FontAwesome()->register(array(
+        'name' => 'Client B',
+        'method' => 'webfont',
+        'v4shim' => 'forbid'
+      ));
+    });
+
+    $enqueued = false;
+    $enqueued_callback = function() use(&$enqueued){
+      $enqueued = true;
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+      $this->assertEquals('v4shim', $data['req']);
+      $this->assertTrue($this->client_requirement_exists('Client B', $data['client-reqs']));
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    $this->assertNull(FontAwesome()->load());
+    $this->assertTrue($failed);
+    $this->assertFalse($enqueued);
+    $this->assertFalse(wp_script_is('font-awesome-official-v4shim', 'enqueued'));
   }
 }
