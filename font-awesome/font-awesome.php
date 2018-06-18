@@ -231,7 +231,7 @@ class FontAwesome {
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
     return array(
       'method' => $method,
-      'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], null) == 'require',
+      'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], 'require') == 'require',
       'pseudo-elements' => $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require',
       'version' => Semver::rsort($loadSpec['version']['value'])[0],
       'pro' => $this->is_pro_available()

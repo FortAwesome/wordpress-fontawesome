@@ -18,6 +18,68 @@ class RequirementsTest extends WP_UnitTestCase {
     wp_style_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_style('font-awesome-official-v4shim');
   }
 
+  function assert_defaults($loadSpec){
+      $this->assertEquals('webfont', $loadSpec['method']);
+      $this->assertTrue($loadSpec['v4shim']);
+      $this->assertTrue($loadSpec['pseudo-elements']);
+  }
+
+  function test_all_default_with_single_client(){
+    FontAwesome()->register(array(
+      'name' => 'test'
+    ));
+
+    $enqueued = false;
+    $enqueued_callback = function($loadSpec) use(&$enqueued){
+      $enqueued = true;
+      $this->assert_defaults($loadSpec);
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    FontAwesome()->load();
+
+    $this->assertFalse($failed);
+    $this->assertTrue($enqueued);
+    $this->assertTrue(wp_style_is('font-awesome-official', 'enqueued'));
+    $this->assertTrue(wp_style_is('font-awesome-official-v4shim', 'enqueued'));
+  }
+
+  function test_all_default_with_multiple_clients(){
+    FontAwesome()->register(array(
+      'name' => 'Client A'
+    ));
+
+    FontAwesome()->register(array(
+      'name' => 'Client B'
+    ));
+
+    $enqueued = false;
+    $enqueued_callback = function($loadSpec) use(&$enqueued){
+      $enqueued = true;
+      $this->assert_defaults($loadSpec);
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    FontAwesome()->load();
+
+    $this->assertFalse($failed);
+    $this->assertTrue($enqueued);
+    $this->assertTrue(wp_style_is('font-awesome-official', 'enqueued'));
+    $this->assertTrue(wp_style_is('font-awesome-official-v4shim', 'enqueued'));
+  }
+
   function test_register_without_name(){
     $this->expectException(InvalidArgumentException::class);
 
@@ -25,6 +87,25 @@ class RequirementsTest extends WP_UnitTestCase {
       'method' => 'svg',
       'v4shim' => 'require'
     ));
+
+    $enqueued = false;
+    $enqueued_callback = function($loadSpec) use(&$enqueued){
+      $enqueued = true;
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
+
+    $failed = false;
+    $failed_callback = function($data) use(&$failed){
+      $failed = true;
+    };
+    add_action('font_awesome_failed', $failed_callback);
+
+    FontAwesome()->load();
+
+    // We don't expect either callback to be invoked because throwing the
+    // InvalidArgumentException preempts further processing.
+    $this->assertFalse($failed);
+    $this->assertFalse($enqueued);
   }
 
   function test_single_client_gets_what_it_wants() {
@@ -36,12 +117,16 @@ class RequirementsTest extends WP_UnitTestCase {
       ));
     });
 
-    add_action('font_awesome_enqueued', function($loadSpec){
+    $enqueued = false;
+    $enqueued_callback = function($loadSpec) use(&$enqueued){
+      $enqueued = true;
       $this->assertEquals('svg', $loadSpec['method']);
       $this->assertTrue($loadSpec['v4shim']);
-    });
+    };
+    add_action('font_awesome_enqueued', $enqueued_callback);
 
     FontAwesome()->load();
+    $this->assertTrue($enqueued);
   }
 
   function test_two_compatible_clients() {
