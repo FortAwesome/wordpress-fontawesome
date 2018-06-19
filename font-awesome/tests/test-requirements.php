@@ -1,6 +1,5 @@
 <?php
-require_once('vendor/autoload.php');
-use Composer\Semver\Semver;
+require_once( dirname(__FILE__) . '/../includes/class-font-awesome-activator.php');
 
 class RequirementsTest extends WP_UnitTestCase {
 
@@ -13,6 +12,7 @@ class RequirementsTest extends WP_UnitTestCase {
     wp_script_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_script('font-awesome-official-v4shim');
     wp_style_is('font-awesome-official', 'enqueued') && wp_dequeue_style('font-awesome-official');
     wp_style_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_style('font-awesome-official-v4shim');
+    FontAwesome_Activator::activate();
   }
 
   function assert_defaults($loadSpec){
@@ -39,8 +39,9 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    FontAwesome()->load();
+    $load_spec = FontAwesome()->load();
 
+    $this->assertEquals($load_spec, FontAwesome()->load_spec());
     $this->assertFalse($failed);
     $this->assertTrue($enqueued);
     $this->assertTrue(wp_style_is('font-awesome-official', 'enqueued'));
@@ -69,8 +70,9 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    FontAwesome()->load();
+    $load_spec = FontAwesome()->load();
 
+    $this->assertEquals($load_spec, FontAwesome()->load_spec());
     $this->assertFalse($failed);
     $this->assertTrue($enqueued);
     $this->assertTrue(wp_style_is('font-awesome-official', 'enqueued'));
@@ -97,8 +99,9 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    FontAwesome()->load();
+    $load_spec = FontAwesome()->load();
 
+    $this->assertNull($load_spec);
     // We don't expect either callback to be invoked because throwing the
     // InvalidArgumentException preempts further processing.
     $this->assertFalse($failed);
@@ -178,9 +181,14 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
+    $this->begin_error_log_capture();
+
     $this->assertNull(FontAwesome()->load());
+    $this->assertNull(FontAwesome()->load_spec());
+    $this->end_error_log_capture();
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
+    $this->assertNotNull(FontAwesome()->conflicts());
   }
 
   function test_pseudo_element_default_false_when_svg(){
@@ -194,6 +202,7 @@ class RequirementsTest extends WP_UnitTestCase {
     add_action('font_awesome_enqueued', function($loadSpec){
       $this->assertEquals('svg', $loadSpec['method']);
       $this->assertFalse($loadSpec['pseudo-elements']);
+      $this->assertFalse(FontAwesome()->using_pseudo_elements());
     });
 
     FontAwesome()->load();
@@ -210,6 +219,7 @@ class RequirementsTest extends WP_UnitTestCase {
     add_action('font_awesome_enqueued', function($loadSpec){
       $this->assertEquals('webfont', $loadSpec['method']);
       $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue(FontAwesome()->using_pseudo_elements());
     });
 
     FontAwesome()->load();
@@ -246,7 +256,9 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
+    $this->begin_error_log_capture();
     $this->assertNull(FontAwesome()->load());
+    $this->end_error_log_capture();
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
   }
@@ -260,30 +272,6 @@ class RequirementsTest extends WP_UnitTestCase {
       }
     }
     return $found;
-  }
-
-  // This is here mainly to provide development notes about what kind of
-  // results to expect from the Semver library. It does not test our plugin.
-  // If anything, it tests the Semver library for regressions in a handful of cases.
-  /**
-   * @group version
-   */
-  function test_explore_semver(){
-    $this->assertTrue(Semver::satisfies('5.0.13', '5.0.13'));
-    $this->assertFalse(Semver::satisfies('5.0.13', '5.0.12'));
-    $this->assertTrue(Semver::satisfies('5.0.13', '>5.0.10'));
-    $this->assertTrue(Semver::satisfies('5.0.13', '^5.0'));
-    $this->assertTrue(Semver::satisfies('5.0.11', '~5.0.10'));
-    $this->assertFalse(Semver::satisfies('5.1.0', '~5.0.10'));
-    $this->assertTrue(Semver::satisfies('5.1.0', '^5.0.0'));
-    $this->assertFalse(Semver::satisfies('5.0.13', '^5.1.0'));
-
-
-    /**
-     * probably we need to provide only stable versions, not development ones,
-     * because this doesn't behave as might be expected.
-     */
-    //$this->assertFalse(Semver::satisfies('5.1.0.11-dev', '^5.0.0-stable'));
   }
 
   /**
@@ -438,8 +426,8 @@ class RequirementsTest extends WP_UnitTestCase {
   /**
    * @group pro
    */
-  function test_pro_is_available(){
-    $mock = $this->mock_singleton_method('is_pro_available', function($method){
+  function test_pro_is_configured(){
+    $mock = $this->mock_singleton_method('is_pro_configured', function($method){
       $method->willReturn(true);
     });
 
@@ -451,6 +439,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
     add_action('font_awesome_enqueued', function($loadSpec){
       $this->assertTrue($loadSpec['pro']);
+      $this->assertTrue(FontAwesome()->using_pro());
     });
 
     FontAwesome()->load();
@@ -459,8 +448,8 @@ class RequirementsTest extends WP_UnitTestCase {
   /**
    * @group pro
    */
-  function test_pro_not_available(){
-    $mock = $this->mock_singleton_method('is_pro_available', function($method){
+  function test_pro_not_configured(){
+    $mock = $this->mock_singleton_method('is_pro_configured', function($method){
       $method->willReturn(false);
     });
 
@@ -472,6 +461,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
     add_action('font_awesome_enqueued', function($loadSpec){
       $this->assertFalse($loadSpec['pro']);
+      $this->assertFalse(FontAwesome()->using_pro());
     });
 
     FontAwesome()->load();
@@ -546,7 +536,9 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
+    $this->begin_error_log_capture();
     $this->assertNull(FontAwesome()->load());
+    $this->end_error_log_capture();
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
     $this->assertFalse(wp_script_is('font-awesome-official-v4shim', 'enqueued'));
@@ -574,6 +566,7 @@ class RequirementsTest extends WP_UnitTestCase {
       $enqueued = true;
       $this->assertEquals('webfont', $loadSpec['method']);
       $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue(FontAwesome()->using_pseudo_elements());
     };
     add_action('font_awesome_enqueued', $enqueued_callback);
 
@@ -610,6 +603,7 @@ class RequirementsTest extends WP_UnitTestCase {
       $enqueued = true;
       $this->assertEquals('webfont', $loadSpec['method']);
       $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue(FontAwesome()->using_pseudo_elements());
     };
     add_action('font_awesome_enqueued', $enqueued_callback);
 
@@ -641,6 +635,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
     $error_log_contents = file_get_contents($this->error_log_file);
     unlink($this->error_log_file);
+    ini_set('error_log', $this->error_log_original);
     return $error_log_contents;
   }
 }

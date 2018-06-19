@@ -12,3 +12,4 @@
  Text Domain:  twenty-seventeen-child
 */
 
+.beer:after { display: none; font-family: "Font Awesome 5 Solid"; content: "\f0fc"; }

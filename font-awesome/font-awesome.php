@@ -43,12 +43,46 @@ class FontAwesome {
     )
   );
 
-  /**
-   * FontAwesome version.
-   *
-   * @var string
-   */
-  public $version = '0.0.1';
+  protected $_constants = [
+    'version' => '0.0.1',
+    'plugin_name' => 'font-awesome',
+    'options_key' => 'font-awesome',
+    'options_page' => 'font-awesome',
+    'user_settings_section' => 'font-awesome-user-settings-section',
+    'user_settings_field_id_method' => 'font-awesome-user-settings-field-method',
+    'user_settings_field_id_pro' => 'font-awesome-user-settings-field-pro',
+    'user_settings_field_id_v4shim' => 'font-awesome-user-settings-field-v4shim',
+    'user_settings_field_id_version' => 'font-awesome-user-settings-field-version',
+    'user_settings_field_id_pseudo_elements' => 'font-awesome-user-settings-field-pseudo-elements',
+    'default_user_options' => array(
+      'load_spec' => array(
+        'name' => 'user'
+      ),
+      'pro' => 0
+    )
+  ];
+
+  // TODO: eventually change these hard-coded maps to be populated by
+  // based on something returned from some web API endpoint we'll create.
+  // However, they will only change as often as we increment the minor version number,
+  // it's only as urgent as our next minor release.
+  protected static $_map_human_version_to_semver = [
+    'latest' => '~5.1.0',
+    'previous' => '~5.0.0'
+  ];
+
+  protected static $_map_semver_to_human_version = [
+    '~5.1.0' => 'latest',
+    '~5.0.0' => 'previous'
+  ];
+
+  public function __get($name){
+    if (isset($this->_constants[$name])) {
+      return $this->_constants[$name];
+    } else {
+      throw new TypeError('Objects of type ' . self::class . ' have no ' . $name . ' property');
+    }
+  }
 
   /**
    * The single instance of the class.
@@ -61,6 +95,17 @@ class FontAwesome {
    *
    */
   protected $reqs = array();
+
+  /**
+   * The list of client requirement conflicts.
+   *
+   */
+  protected $conflicts = null;
+
+  /**
+   * The resulting load specification after settling all client requirements.
+   */
+  protected $load_spec = null;
 
   /**
    * Main FontAwesome Instance.
@@ -76,10 +121,285 @@ class FontAwesome {
 
   public function __construct() {
     add_action( 'init', array( $this, 'load' ));
+    if( is_admin() ){
+      $this->initialize_admin();
+    }
+  }
+
+  private function settings_page_url() {
+    return admin_url( "options-general.php?page=" . $this->options_page );
+  }
+
+  private function initialize_admin(){
+    add_action('admin_enqueue_scripts', function(){
+      wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/css/font-awesome-admin.css', array(), $this->version, 'all' );
+      wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/js/font-awesome-admin.js', array('jquery'), $this->version );
+    });
+
+    add_action('admin_menu', function(){
+      add_options_page(
+        'Font Awesome Settings',
+        'Font Awesome',
+        'manage_options',
+        $this->options_page,
+        array( $this, 'create_admin_page' )
+      );
+    });
+    add_action('admin_init', array($this, 'admin_page_init'));
+
+    add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), function($links){
+      $mylinks = array(
+      '<a href="' . $this->settings_page_url() . '">Settings</a>',
+      );
+      return array_merge( $links, $mylinks );
+    });
+  }
+
+  public function admin_page_init(){
+    register_setting( $this->plugin_name, $this->options_key, [
+      'type' => 'string',
+      'default' => $this->default_user_options,
+      'sanitize_callback' => array($this, 'sanitize_user_settings_input')
+    ]);
+    add_settings_section( $this->user_settings_section, 'Settings', array($this, 'user_settings_section_view'), $this->plugin_name );
+    add_settings_field(
+      $this->user_settings_field_id_method,
+      'Method',
+      array($this, 'user_settings_field_method_view'),
+      $this->plugin_name,
+      $this->user_settings_section
+    );
+    add_settings_field(
+      $this->user_settings_field_id_pro,
+      'Pro',
+      array($this, 'user_settings_field_pro_view'),
+      $this->plugin_name,
+      $this->user_settings_section
+    );
+    add_settings_field(
+      $this->user_settings_field_id_v4shim,
+      'Version 4 Compatibility',
+      array($this, 'user_settings_field_v4shim_view'),
+      $this->plugin_name,
+      $this->user_settings_section
+    );
+    add_settings_field(
+      $this->user_settings_field_id_pseudo_elements,
+      'Pseudo-elements Support',
+      array($this, 'user_settings_field_pseudo_elements_view'),
+      $this->plugin_name,
+      $this->user_settings_section
+    );
+    add_settings_field(
+      $this->user_settings_field_id_version,
+      'Version',
+      array($this, 'user_settings_field_version_view'),
+      $this->plugin_name,
+      $this->user_settings_section
+    );
+  }
+
+  public function user_settings_section_view(){
+  ?>
+    <p class="user-settings-section-description">
+      Configure your preferences for Font Awesome's installation here.
+      Your preferences will be merged with any requirements registered by
+      other themes or plugins, summarized in the table below.
+      If you choose preferences that conflict with those required by other
+      registered themes or plugins, you'll see an error here on this
+      admin page.
+    </p>
+  <?php
+  }
+
+  public function user_settings_field_pro_view(){
+    $options = get_option($this->options_key);
+    $checked = (isset($options['pro']) && $options['pro']) ? 'checked' : '';
+    $field_name = $this->options_key . '[pro]';
+  ?>
+    <input id="<?= $this->user_settings_field_id_pro ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
+  <?php
+  }
+
+  public function user_settings_field_method_view(){
+    $options = get_option($this->options_key);
+    isset($options['load_spec'])
+      || wp_die('Options data for the ' . FontAwesome()->plugin_name . ' plugin are corrupt. You should probably deactivate, reactivate and reconfigure.');
+
+    $svg_selected = '';
+    $webfont_selected = '';
+    $nothing_selected = '';
+
+    if(isset($options['load_spec']['method'])){
+      $svg_selected = $options['load_spec']['method'] == 'svg' ? 'selected' : '';
+      $webfont_selected = $options['load_spec']['method'] == 'webfont' ? 'selected' : '';
+    } else {
+      $nothing_selected = 'selected';
+    }
+
+    $field_name = $this->options_key . '[load_spec][method]';
+    ?>
+    <select id="<?= $this->user_settings_field_id_method ?>" name="<?= $field_name ?>">
+      <option value="svg" <?= $svg_selected ?>>svg</option>
+      <option value="webfont" <?= $webfont_selected ?>>webfont</option>
+      <option value="_" <?= $nothing_selected ?>>_</option>
+    </select>
+    <?php
+  }
+
+  public function user_settings_field_version_view(){
+    $options = get_option($this->options_key);
+    isset($options['load_spec'])
+      || wp_die('Options data for the ' . FontAwesome()->plugin_name . ' plugin are corrupt. You should probably deactivate, reactivate and reconfigure.');
+
+    $latest_selected = '';
+    $previous_selected = '';
+    $nothing_selected = '';
+
+    if(isset($options['load_spec']['version'])){
+      $latest_selected = $this->get_human_version_from_semver($options['load_spec']['version']) == 'latest' ? 'selected' : '';
+      $previous_selected = $this->get_human_version_from_semver($options['load_spec']['version']) == 'previous' ? 'selected' : '';
+    } else {
+      $nothing_selected = 'selected';
+    }
+
+    $field_name = $this->options_key . '[load_spec][version]';
+    ?>
+    <select id="<?= $this->user_settings_field_id_version ?>" name="<?= $field_name ?>">
+      <option value="<?= $this->get_semver_from_human_version('latest') ?>" <?= $latest_selected ?>>latest release</option>
+      <option value="<?= $this->get_semver_from_human_version('previous') ?>" <?= $previous_selected ?>>previous release</option>
+      <option value="_" <?= $nothing_selected ?>>_</option>
+    </select>
+    <?php
+  }
+
+  public function user_settings_field_v4shim_view(){
+    $options = get_option($this->options_key);
+    isset($options['load_spec'])
+      || wp_die('Options data for the ' . FontAwesome()->plugin_name . ' plugin are corrupt. You should probably deactivate, reactivate and reconfigure.');
+
+    $require_selected = '';
+    $forbid_selected = '';
+    $nothing_selected = '';
+
+    if(isset($options['load_spec']['v4shim'])){
+      $require_selected = $options['load_spec']['v4shim'] == 'require' ? 'selected' : '';
+      $forbid_selected = $options['load_spec']['v4shim'] == 'forbid' ? 'selected' : '';
+    } else {
+      $nothing_selected = 'selected';
+    }
+
+    $field_name = $this->options_key . '[load_spec][v4shim]';
+    ?>
+    <select id="<?= $this->user_settings_field_id_v4shim ?>" name="<?= $field_name ?>">
+      <option value="require" <?= $require_selected ?>>require</option>
+      <option value="forbid" <?= $forbid_selected ?>>forbid</option>
+      <option value="_" <?= $nothing_selected ?>>_</option>
+    </select>
+    <?php
+  }
+
+  public function user_settings_field_pseudo_elements_view(){
+    $options = get_option($this->options_key);
+    isset($options['load_spec'])
+      || wp_die('Options data for the ' . FontAwesome()->plugin_name . ' plugin are corrupt. You should probably deactivate, reactivate and reconfigure.');
+
+    $require_selected = '';
+    $forbid_selected = '';
+    $nothing_selected = '';
+
+    if(isset($options['load_spec']['pseudo-elements'])){
+      $require_selected = $options['load_spec']['pseudo-elements'] == 'require' ? 'selected' : '';
+      $forbid_selected = $options['load_spec']['pseudo-elements'] == 'forbid' ? 'selected' : '';
+    } else {
+      $nothing_selected = 'selected';
+    }
+
+    $field_name = $this->options_key . '[load_spec][pseudo-elements]';
+    ?>
+    <select id="<?= $this->user_settings_field_id_pseudo_elements ?>" name="<?= $field_name ?>">
+      <option value="require" <?= $require_selected ?>>require</option>
+      <option value="forbid" <?= $forbid_selected ?>>forbid</option>
+      <option value="_" <?= $nothing_selected ?>>_</option>
+    </select>
+    <?php
+  }
+
+  public function sanitize_user_settings_input($input){
+    $new_input = $this->default_user_options;
+    if( isset( $input['load_spec'] ) ){
+      if( isset( $input['load_spec']['method'] ) && $input['load_spec']['method'] != '_')
+        $new_input['load_spec']['method'] = sanitize_text_field( $input['load_spec']['method'] );
+
+      if( isset( $input['load_spec']['v4shim'] ) ){
+        switch( $input['load_spec']['v4shim'] ){
+          case 'require':
+            $new_input['load_spec']['v4shim'] = 'require';
+            break;
+          case 'forbid':
+            $new_input['load_spec']['v4shim'] = 'forbid';
+            break;
+        }
+      }
+
+      if( isset( $input['load_spec']['pseudo-elements'] ) ){
+        switch( $input['load_spec']['pseudo-elements'] ){
+          case 'require':
+            $new_input['load_spec']['pseudo-elements'] = 'require';
+            break;
+          case 'forbid':
+            $new_input['load_spec']['pseudo-elements'] = 'forbid';
+            break;
+        }
+      }
+
+      if( isset( $input['load_spec']['version'] ) ){
+        $previous_semver = $this->get_semver_from_human_version('previous');
+        $latest_semver = $this->get_semver_from_human_version('latest');
+
+        switch( $input['load_spec']['version'] ){
+          case $latest_semver:
+            $new_input['load_spec']['version'] = $latest_semver;
+            break;
+          case $previous_semver:
+            $new_input['load_spec']['version'] = $previous_semver;
+            break;
+        }
+      }
+    }
+
+    if( isset( $input['pro'] ) )
+      $new_input['pro'] = wp_validate_boolean( $input['pro'] );
+
+    return $new_input;
+  }
+
+  public function get_human_version_from_semver($semver){
+    if( isset( self::$_map_semver_to_human_version[$semver] ) ){
+      return self::$_map_semver_to_human_version[$semver];
+    } else {
+      error_log('WARNING: attemping to lookup a human version for semver "' . $semver . '", but it does not exist in the lookup map.');
+      return null;
+    }
+  }
+
+  public function get_semver_from_human_version($human_version){
+    if( isset( self::$_map_human_version_to_semver[$human_version] ) ){
+      return self::$_map_human_version_to_semver[$human_version];
+    } else {
+      error_log('WARNING: attemping to lookup a semver for human version "' . $human_version . '", but it does not exist in the lookup map.');
+      return null;
+    }
+  }
+
+  public function create_admin_page(){
+    include_once( 'admin/views/main.php' );
   }
 
   public function reset(){
     $this->reqs = array();
+    $this->conficts = null;
+    $this->load_spec = null;
   }
 
     // TODO:
@@ -94,28 +414,78 @@ class FontAwesome {
 
   /**
    * Main entry point for the loading process.
-   * Returns the enqueued loadSpec if successful.
+   * Returns the enqueued load_spec if successful.
    * Otherwise, returns null.
    */
   public function load() {
     $this->reset(); // start from a clean slate on each load
+    // Register the web site user/ower as a client.
+    $options = get_option(FontAwesome()->options_key);
+    if( ! $options ) {
+      error_log('The option "' . FontAwesome()->options_key . '" was not found in the WordPress database. Have you activated the plugin?');
+      return null;
+    } elseif( ! array_key_exists('load_spec', $options) ){
+      error_log('The option "'
+        . FontAwesome()->options_key
+        . '" was found in the WordPress database, but the "load_spec" key is missing. You probably should re-initialize the plugin.'
+      );
+      return null;
+    }
+    $this->register($options['load_spec']);
+    // Now, ask any other listening clients to register.
     do_action('font_awesome_requirements');
     // TODO: add some WP persistent cache here so we don't needlessly retrieve latest versions and re-process
     // all requirements each time. We'd only need to do that when something changes.
     // So what are those conditions for refreshing the cache?
-    $loadSpec = $this->build_load_spec(function($data){
+    $load_spec = $this->build_load_spec(function($data){
+      $this->conflicts = $data;
       // TODO: figure out the best way to present diagnostic information.
       // Probably in the error_log, but if we're on the admin screen, there's
       // probably a more helpful way to do it.
-      // error_log('build_load_spec: Invalid load spec -- '. print_r($data, true));
+      $client_name_list = [];
+      foreach($data['client-reqs'] as $client){
+        array_push($client_name_list, $client['name']);
+      }
+      $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: " . implode($client_name_list, ', ') . '.';
+      error_log($error_msg . ' Dumping conflicting requirements: ' .  print_r($data, true));
       do_action('font_awesome_failed', $data);
+      add_action('admin_notices', function() use($error_msg){
+        ?>
+        <div class="error notice">
+        <p><?= $error_msg ?></p>
+        </div>
+        <?php
+      });
     });
-    if( isset($loadSpec) ) {
-      $this->enqueue($loadSpec);
-      return $loadSpec;
+    if( isset($load_spec) ) {
+      $this->load_spec = $load_spec;
+      $this->enqueue($load_spec);
+      return $load_spec;
     } else {
       return null;
     }
+  }
+
+  /**
+   * Return current requirements conflicts.
+   */
+  public function conflicts(){
+    return $this->conflicts;
+  }
+
+  /**
+   * Return current client requirements.
+   */
+  public function requirements(){
+    return $this->reqs;
+  }
+
+  /**
+   * Return current load specification, which may be null if has been settled.
+   * If it is still null and $this->coflicts() is not null, that means the load failed.
+   */
+  public function load_spec(){
+    return $this->load_spec;
   }
 
   /**
@@ -128,7 +498,7 @@ class FontAwesome {
     // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
     // 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
 
-    $loadSpec = array(
+    $load_spec = array(
       'method' => array(
         // returns new value if compatible, else null
         'resolve' => function($prevReqVal, $curReqVal){ return $prevReqVal == $curReqVal ? $prevReqVal : null; }
@@ -175,7 +545,7 @@ class FontAwesome {
       )
     );
 
-    $validKeys = array_keys($loadSpec);
+    $validKeys = array_keys($load_spec);
 
     $bailEarlyReq = null;
 
@@ -187,29 +557,31 @@ class FontAwesome {
       // For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ]
       foreach( $req as $key => $payload ){
         if ( in_array($key, ['client-call', 'name']) ) continue; // these are meta keys that we won't process here.
-        // TODO: die is not graceful. What would be a more graceful way to handle this error?
-        if ( ! in_array($key, $validKeys) ) die($key . " is an invalid requirement key. Only these are allowed: " . join(', ', $validKeys));
-        if( array_key_exists('value', $loadSpec[$key])) {
+        if ( ! in_array($key, $validKeys) ) {
+          error_log("Ignoring invalid requirement key: " . $key . ". Only these are allowed: " . join(', ', $validKeys));
+          continue;
+        }
+        if( array_key_exists('value', $load_spec[$key])) {
           // Check compatibility with existing requirement value.
           // First, record that this client has made this new requirement.
-          if(array_key_exists('client-reqs', $loadSpec[$key])){
-            array_unshift($loadSpec[$key]['client-reqs'], $req);
+          if(array_key_exists('client-reqs', $load_spec[$key])){
+            array_unshift($load_spec[$key]['client-reqs'], $req);
           } else {
-            $loadSpec[$key]['client-reqs'] = array( $req );
+            $load_spec[$key]['client-reqs'] = array( $req );
           }
-          $resolved_req = $loadSpec[$key]['resolve']($loadSpec[$key]['value'], $req[$key]);
+          $resolved_req = $load_spec[$key]['resolve']($load_spec[$key]['value'], $req[$key]);
           if (is_null($resolved_req)) {
             // the compatibility test failed
             $bailEarlyReq = $key;
             break 2;
           } else {
             // The previous and current requirements are compatible, so update the value
-            $loadSpec[$key]['value'] = $resolved_req;
+            $load_spec[$key]['value'] = $resolved_req;
           }
         } else {
           // Add this as the first client to make this requirement.
-          $loadSpec[$key]['value'] = $req[$key];
-          $loadSpec[$key]['client-reqs'] = [ $req ];
+          $load_spec[$key]['value'] = $req[$key];
+          $load_spec[$key]['client-reqs'] = [ $req ];
         }
       }
     }
@@ -218,7 +590,7 @@ class FontAwesome {
       // call the error_callback, indicating which clients registered incompatible requirements
       is_callable($error_callback) && $error_callback(array(
         'req' => $bailEarlyReq,
-        'client-reqs' => $loadSpec[$bailEarlyReq]['client-reqs']
+        'client-reqs' => $load_spec[$bailEarlyReq]['client-reqs']
       ));
       return null;
     }
@@ -226,27 +598,44 @@ class FontAwesome {
     // This is a good place to set defaults
     // pseudo-elements: when webfonts, true
     // when svg, false
-    // TODO: should this be set up in the initial loadSpec before, or must it be set at the end of the process here?
-    $method = $this->specified_requirement_or_default($loadSpec['method'], 'webfont');
+    // TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
+    $method = $this->specified_requirement_or_default($load_spec['method'], 'webfont');
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
-    $pseudo_elements = $this->specified_requirement_or_default($loadSpec['pseudo-elements'], $pseudo_elements_default) == 'require';
+    $pseudo_elements = $this->specified_requirement_or_default($load_spec['pseudo-elements'], $pseudo_elements_default) == 'require';
     if( $method == 'webfont' && ! $pseudo_elements ) {
       error_log('WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.');
       $pseudo_elements = true;
     }
     return array(
       'method' => $method,
-      'v4shim' => $this->specified_requirement_or_default($loadSpec['v4shim'], 'require') == 'require',
+      'v4shim' => $this->specified_requirement_or_default($load_spec['v4shim'], 'require') == 'require',
       'pseudo-elements' => $pseudo_elements,
-      'version' => Semver::rsort($loadSpec['version']['value'])[0],
-      'pro' => $this->is_pro_available()
+      'version' => Semver::rsort($load_spec['version']['value'])[0],
+      'pro' => $this->is_pro_configured()
     );
   }
 
-  // TODO: replace this hard-coded implementation with a real one, based on what that web site owner configures
-  // in the admin interface and stores in the db.
-  function is_pro_available(){
-    return false;
+  protected function is_pro_configured(){
+    $options = get_option($this->options_key);
+    return( isset($options['pro']) && wp_validate_boolean($options['pro']) );
+  }
+
+  /**
+   * Convenience method. Returns boolean value indicating whether the current load specification
+   * includes Pro. Should only be used after loading is complete.
+   */
+  public function using_pro(){
+    $load_spec = $this->load_spec();
+    return isset($load_spec['pro']) && $load_spec['pro'];
+  }
+
+  /**
+   * Convenience method. Returns boolean value indicating whether the current load specification
+   * includes support for pseudo-elements. Should only be used after loading is complete.
+   */
+  public function using_pseudo_elements(){
+    $load_spec = $this->load_spec();
+    return isset($load_spec['pseudo-elements']) && $load_spec['pseudo-elements'];
   }
 
   protected function specified_requirement_or_default($req, $default){
@@ -279,14 +668,14 @@ class FontAwesome {
    * Given a loading specification, enqueues Font Awesome to load accordingly.
    * Returns nothing.
    */
-  protected function enqueue($loadSpec) {
-    $method = $loadSpec['method'];
-    $license = $loadSpec['pro'] ? 'pro' : 'free';
+  protected function enqueue($load_spec) {
+    $method = $load_spec['method'];
+    $license = $load_spec['pro'] ? 'pro' : 'free';
     ($method == 'webfont' || $method == 'svg') || die('method must be either webfont or svg');
 
     $faUrl = "https://";
     $faUrl .= $license == 'pro' ? 'pro.' : 'use.';
-    $faUrl .= 'fontawesome.com/releases/v' . $loadSpec['version'] . '/';
+    $faUrl .= 'fontawesome.com/releases/v' . $load_spec['version'] . '/';
     $faShimUrl = $faUrl;
 
     $integrityKey = self::$integrityKeys[$license][$method]['all']; // hardcode 'all' for now
@@ -305,7 +694,7 @@ class FontAwesome {
       }, 10, 2 );
 
 
-      if( $loadSpec['v4shim'] ){
+      if( $load_spec['v4shim'] ){
         $faShimUrl .= 'css/v4-shims.css';
         wp_enqueue_style('font-awesome-official-v4shim', $faShimUrl, null, null);
 
@@ -324,6 +713,10 @@ class FontAwesome {
 
       wp_enqueue_script('font-awesome-official', $faUrl, null, null, false);
 
+      if( $load_spec['pseudo-elements'] ){
+        wp_add_inline_script( 'font-awesome-official', 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
+      }
+
       // Filter the <script> tag to add the integrity and crossorigin attributes for completeness.
       add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
         if ( in_array($handle, ['font-awesome-official']) ) {
@@ -333,7 +726,7 @@ class FontAwesome {
         }
       }, 10, 2 );
 
-      if( $loadSpec['v4shim'] ){
+      if( $load_spec['v4shim'] ){
         $faShimUrl .= 'js/v4-shims.js';
         wp_enqueue_script('font-awesome-official-v4shim', $faShimUrl, null, null, false);
 
@@ -348,7 +741,7 @@ class FontAwesome {
       }
     }
 
-    do_action('font_awesome_enqueued', $loadSpec);
+    do_action('font_awesome_enqueued', $load_spec);
   }
 
   public function register($req) {
@@ -375,6 +768,16 @@ class FontAwesome {
 
 endif; // ! class_exists
 
+register_activation_hook( __FILE__, function(){
+  require_once plugin_dir_path( __FILE__ ) . 'includes/class-font-awesome-activator.php';
+  FontAwesome_Activator::activate();
+});
+
+register_deactivation_hook( __FILE__, function(){
+  require_once plugin_dir_path( __FILE__ ) . 'includes/class-font-awesome-deactivator.php';
+  FontAwesome_Deactivator::deactivate();
+});
+
 /**
  * Main instance of FontAwesome.
  *
@@ -386,3 +789,4 @@ function FontAwesome() {
 }
 
 FontAwesome();
+

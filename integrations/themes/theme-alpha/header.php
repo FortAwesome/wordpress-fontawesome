@@ -51,4 +51,6 @@
 
           <div class="explanation">
             <p>Expected by theme-alpha: "fas fa-coffee": <i class="fas fa-coffee"></i></p>
+            <p>Pseudo-elements? <?= FontAwesome()->using_pseudo_elements() ? '<span class="beer">pseudo-beer</span>' : 'nope'?></p>
+            <p>Pro? <?= FontAwesome()->using_pro() ? '<i class="fas fa-badge"></i>' : 'nope'?></p>
           </div>
