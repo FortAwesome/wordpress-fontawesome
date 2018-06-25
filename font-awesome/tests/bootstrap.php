@@ -23,7 +23,10 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/font-awesome.php';
+  require dirname( dirname( __FILE__ ) ) . '/font-awesome.php';
+  require_once( dirname(__FILE__) . '/../includes/class-font-awesome-activator.php');
+  // initial activation
+  FontAwesome_Activator::activate();
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
