@@ -28,9 +28,17 @@ rc=`curl \
 
 if [ "$rc" == "200" ]; then
   echo "SUCCESS initializing WordPress"
-  echo "Adding debug configuration..."
-  $DOCKER exec -it -w /var/www/html $WP_CONTAINER_ID sed -ri "2idefine(\'WP_DEBUG\', true);\ndefine(\'WP_DEBUG_LOG\', true);\ndefine(\'WP_DEBUG_DISPLAY\', true);" wp-config.php
 else
   echo "FAIL with HTTP $rc"
+  exit 1
+fi
+
+echo "Adding debug configuration...\c"
+$DOCKER exec -it -w /var/www/html $WP_CONTAINER_ID sed -ri "2idefine(\'WP_DEBUG\', true);\ndefine(\'WP_DEBUG_LOG\', true);\ndefine(\'WP_DEBUG_DISPLAY\', true);" wp-config.php
+
+if [ "$?" == "0" ]; then
+  echo "ok."
+else
+  echo "FAIL"
   exit 1
 fi

@@ -21,7 +21,7 @@ RUN curl -LsS https://codeception.com/codecept.phar -o /usr/local/bin/codecept &
 
 COPY ./font-awesome/bin/install-wp-tests.sh /tmp
 
-RUN /tmp/install-wp-tests.sh wordpress_test root somewordpress db:3306 latest true
+RUN /tmp/install-wp-tests.sh latest
 
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000

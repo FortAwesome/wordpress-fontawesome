@@ -1,5 +1,6 @@
 <?php
 require_once( dirname(__FILE__) . '/../includes/class-font-awesome-activator.php');
+require_once( dirname(__FILE__) . '/_support/font_awesome_phpunit_util.php');
 
 class RequirementsTest extends WP_UnitTestCase {
 
@@ -412,24 +413,17 @@ class RequirementsTest extends WP_UnitTestCase {
     $this->assertTrue($enqueued);
   }
 
-  function mock_singleton_method($method, callable $init){
-    $mockBuilder = $this->getMockBuilder(FontAwesome::class);
-    $mockBuilder->setMethods([$method]); // let all methods work as defined in the original
-    $mock = $mockBuilder->getMock();
-    $ref = new \ReflectionProperty('FontAwesome', '_instance');
-    $ref->setAccessible(true);
-    $ref->setValue(null, $mock);
-    $init($mock->method($method));
-    return $mock;
-  }
-
   /**
    * @group pro
    */
   function test_pro_is_configured(){
-    $mock = $this->mock_singleton_method('is_pro_configured', function($method){
-      $method->willReturn(true);
-    });
+    $mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
+      $this->getMockBuilder(FontAwesome::class),
+      'is_pro_configured',
+      function($method){
+        $method->willReturn(true);
+      }
+    );
 
     add_action('font_awesome_requirements', function(){
       FontAwesome()->register(array(
@@ -449,9 +443,13 @@ class RequirementsTest extends WP_UnitTestCase {
    * @group pro
    */
   function test_pro_not_configured(){
-    $mock = $this->mock_singleton_method('is_pro_configured', function($method){
-      $method->willReturn(false);
-    });
+    $mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
+      $this->getMockBuilder(FontAwesome::class),
+      'is_pro_configured',
+      function($method){
+        $method->willReturn(false);
+      }
+    );
 
     add_action('font_awesome_requirements', function(){
       FontAwesome()->register(array(

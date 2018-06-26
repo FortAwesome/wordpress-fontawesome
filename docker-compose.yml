@@ -13,6 +13,7 @@ services:
        MYSQL_DATABASE: wordpress
        MYSQL_USER: wordpress
        MYSQL_PASSWORD: wordpress
+     container_name: "com.fontawesome.wpdb"
 
    wordpress:
      depends_on:
