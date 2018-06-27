@@ -1,8 +1,0 @@
-#!/bin/bash
-
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $DIR/.common.bash
-get_wp_container_id
-
-docker exec -it $WP_CONTAINER_ID /bin/sh -c 'apt-get update && apt-get -y install subversion mysql-client && /var/www/html/wp-content/plugins/font-awesome/bin/install-wp-tests.sh wordpress_test root somewordpress db:3306 latest false && curl -LsS https://codeception.com/codecept.phar -o /usr/local/bin/codecept && chmod +x /usr/local/bin/codecept'
-

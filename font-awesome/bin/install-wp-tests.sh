@@ -147,11 +147,6 @@ install_db() {
 	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
 }
 
-install_phpunit() {
-  download https://phar.phpunit.de/phpunit-6.phar /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
-}
-
 install_wp
 install_test_suite
 install_db
-install_phpunit

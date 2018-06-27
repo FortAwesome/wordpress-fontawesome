@@ -32,3 +32,5 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
 require $_tests_dir . '/includes/bootstrap.php';
+
+set_include_path(get_include_path() . PATH_SEPARATOR . dirname(dirname(__FILE__ ) . '../'));

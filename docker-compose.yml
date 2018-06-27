@@ -13,13 +13,11 @@ services:
        MYSQL_DATABASE: wordpress
        MYSQL_USER: wordpress
        MYSQL_PASSWORD: wordpress
-     labels:
-       - "com.fontawesome.wpdb"
 
    wordpress:
      depends_on:
        - db
-     image: wordpress:latest
+     image: wordpress-fontawesome-dev:latest
      ports:
        - "8000:80"
      restart: always
@@ -31,7 +29,6 @@ services:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
-     labels:
-       - "com.fontawesome.wp"
+     container_name: "com.fontawesome.wp"
 volumes:
     db_data:

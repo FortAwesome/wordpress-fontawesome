@@ -1,6 +1,9 @@
 #!/bin/sh
 
 . .env
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/.common.bash
+get_wp_container_id
 
 if [ ! -f .env.email ]; then
   echo "Missing email config file: .env.email"
@@ -24,8 +27,9 @@ rc=`curl \
   --data-urlencode "pw_weak=1"`
 
 if [ "$rc" == "200" ]; then
-  echo "SUCCESS"
-  exit 0
+  echo "SUCCESS initializing WordPress"
+  echo "Adding debug configuration..."
+  $DOCKER exec -it -w /var/www/html $WP_CONTAINER_ID sed -ri "2idefine(\'WP_DEBUG\', true);\ndefine(\'WP_DEBUG_LOG\', true);\ndefine(\'WP_DEBUG_DISPLAY\', true);" wp-config.php
 else
   echo "FAIL with HTTP $rc"
   exit 1
