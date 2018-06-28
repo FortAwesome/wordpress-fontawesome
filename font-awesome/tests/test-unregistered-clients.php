@@ -15,7 +15,7 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
     'scripts' => [
       array(
         'handle' => 'fa-5.0.13-js',
-        'src' => 'https://pro.fontawesome.com/releases/v5.0.13/js/all.js'
+        'src' => 'https://use.fontawesome.com/releases/v5.0.13/js/all.js'
       )
     ]
   );
