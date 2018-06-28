@@ -1,6 +1,6 @@
 <?php
 
-require_once( dirname(__FILE__ ) . '/../vendor/autoload.php');
+require_once( dirname(plugin_dir_path(__FILE__)) . '/vendor/autoload.php');
 use Composer\Semver\Semver;
 
 if (! class_exists('FontAwesome') ) :
@@ -143,7 +143,9 @@ class FontAwesome {
     });
     add_action('admin_init', array($this, 'admin_page_init'));
 
-    add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), function($links){
+    $pn = FontAwesome()->plugin_name;
+    add_filter( 'plugin_action_links_' . trailingslashit($pn) . $pn . '.php',
+      function($links){
       $mylinks = array(
       '<a href="' . $this->settings_page_url() . '">Settings</a>',
       );
@@ -391,7 +393,7 @@ class FontAwesome {
   }
 
   public function create_admin_page(){
-    include_once( 'admin/views/main.php' );
+    include_once( dirname(plugin_dir_path(__FILE__)) . '/admin/views/main.php' );
   }
 
   public function reset(){
