@@ -19,7 +19,14 @@ define( 'DELTA_PLUGIN_LOG_PREFIX', 'delta-plugin' );
 add_action('init', function(){
   wp_enqueue_script(
     'DELTA_PLUGIN_LOG_PREFIX',
-    'https://use.fontawesome.com/releases/v5.0.4/js/all.js',
+    'https://use.fontawesome.com/releases/v5.0.11/js/all.js',
+    array(),
+    null,
+    false
+  );
+  wp_enqueue_style(
+    'plugin-delta-style',
+    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
     array(),
     null,
     'all'
@@ -32,3 +39,12 @@ add_action('font_awesome_enqueued', function($loadSpec){
   }
 }, 10, 3);
 
+add_filter('the_content', function($content){
+  $pre_content = <<<EOT
+<div class="plugin-delta-pre-content">
+  <h2>Plugin Delta</h2>
+  <p>Expected by plugin-delta (introduced v5.0.11): "fas fa-cloud-download": <i class="fas fa-cloud-download"></i></p>
+</div>
+EOT;
+  return $pre_content . $content;
+}, 10, 1);

@@ -19,12 +19,21 @@ add_action('font_awesome_requirements', function(){
     FontAwesome()->register(
       array(
         "name" => BETA_PLUGIN_LOG_PREFIX,
-        'version' => '5.0.13',
-        'method' => 'svg',
+        'version' => '5.1.0',
         'v4shim' => 'require'
       )
     );
   }
+});
+
+add_action('init', function(){
+  wp_enqueue_style(
+    'plugin-beta-style',
+    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
+    array(),
+    null,
+    'all'
+  );
 });
 
 add_action('font_awesome_enqueued', function($loadSpec){
@@ -36,8 +45,10 @@ add_action('font_awesome_enqueued', function($loadSpec){
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
 <div class="plugin-beta-pre-content">
+  <h2>Plugin Beta</h2>
   <p>Expected by plugin-beta: "fab fa-font-awesome": <i class="fab fa-font-awesome"></i></p>
-  <p>Shim icon: "fa fa-arrows": <i class="fa fa-arrows"></i></p>
+  <p>Shim icon (using the v4): "fa fa-arrows": <i class="fa fa-arrows"></i></p>
+  <p>Icon introduced in 5.1.0: "fas fa-angry": <i class="fas fa-angry"></i></p>
 </div>
 EOT;
   return $pre_content . $content;

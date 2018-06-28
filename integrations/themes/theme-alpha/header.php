@@ -49,8 +49,9 @@
 
 	<div id="content" class="site-content">
 
-          <div class="explanation">
+          <div class="theme-alpha-explanation">
+            <h2>Theme Alpha</h2>
             <p>Expected by theme-alpha: "fas fa-coffee": <i class="fas fa-coffee"></i></p>
-            <p>Pseudo-elements? <?= FontAwesome()->using_pseudo_elements() ? '<span class="beer">pseudo-beer</span>' : 'nope'?></p>
+            <p>Pseudo-elements? <?= FontAwesome()->using_pseudo_elements() ? '<span class="beer ' . theme_alpha_fa_classes() . '">pseudo-beer</span>' : 'nope'?></p>
             <p>Pro? <?= FontAwesome()->using_pro() ? '<i class="fas fa-badge"></i>' : 'nope'?></p>
           </div>

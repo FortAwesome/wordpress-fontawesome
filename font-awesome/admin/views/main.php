@@ -66,7 +66,7 @@ $fa_status_label = $fa_has_conflict ? 'conflict' : 'good';
 </form>
   <div class="<?= FontAwesome()->plugin_name ?>-report">
     <h1>Current Requirements</h1>
-    <table class="font-awesome-clients">
+    <table class="<?= FontAwesome()->plugin_name ?>-clients">
       <colgroup>
         <?php
         foreach($fa_requirements_column_keys_and_labels as $key) {
@@ -101,6 +101,27 @@ $fa_status_label = $fa_has_conflict ? 'conflict' : 'good';
       <?php endif; ?>
       <p>_ indicates that this requirement was not specified by this client, so it can accept a default or the requirement of some other client.</p>
     </div>
+  </div>
+  <div class="<?= FontAwesome()->plugin_name ?>-unregistered-clients">
+    <h1>Unregistered Clients</h1>
+    <table class="<?= FontAwesome()->plugin_name ?>-unregistered-clients-table">
+      <thead>
+        <tr class="header">
+          <th>name</th>
+          <th>type</th>
+          <th>source</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php foreach( FontAwesome()->unregistered_clients() as $client ){ ?>
+        <tr>
+          <td><?= $client['handle'] ?></td>
+          <td><?= $client['type'] ?></td>
+          <td><?= $client['src'] ?></td>
+        </tr>
+      <?php } # end foreach client ?>
+      </tbody>
+    </table>
   </div>
 </div>
 

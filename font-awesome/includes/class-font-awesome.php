@@ -10,18 +10,22 @@ class FontAwesome {
   protected static $integrityKeys = array(
     'free' => array(
       'webfont' => array(
-        'all' => 'sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp'
+        // Key is for all.css v5.1.0
+        'all' => 'sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt'
       ),
       'svg' => array(
-        'all' => 'sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe'
+        // Key is for all.js v5.1.0
+        'all' => 'sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9'
       )
     ),
     'pro' => array(
       'webfont' => array(
-        'all' => 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG'
+        // Key is for all.css v5.1.0
+        'all' => 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs'
       ),
       'svg' => array(
-        'all' => 'sha384-d84LGg2pm9KhR4mCAs3N29GQ4OYNy+K+FBHX8WhimHpPm86c839++MDABegrZ3gn'
+        // Key is for all.js v5.1.0
+        'all' => 'sha384-E5SpgaZcbSJx0Iabb3Jr2AfTRiFnrdOw1mhO19DzzrT9L+wCpDyHUG2q07aQdO6E'
       )
     )
   );
@@ -36,6 +40,7 @@ class FontAwesome {
     'user_settings_section' => 'font-awesome-user-settings-section',
     'user_settings_field_id_method' => 'font-awesome-user-settings-field-method',
     'user_settings_field_id_pro' => 'font-awesome-user-settings-field-pro',
+    'user_settings_field_id_remove_others' => 'font-awesome-user-settings-field-remove-others',
     'user_settings_field_id_v4shim' => 'font-awesome-user-settings-field-v4shim',
     'user_settings_field_id_version' => 'font-awesome-user-settings-field-version',
     'user_settings_field_id_pseudo_elements' => 'font-awesome-user-settings-field-pseudo-elements',
@@ -128,6 +133,7 @@ class FontAwesome {
 
   private function initialize_admin(){
     add_action('admin_enqueue_scripts', function(){
+      $this->detect_unregistered_clients();
       wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/css/font-awesome-admin.css', array(), $this->version, 'all' );
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/js/font-awesome-admin.js', array('jquery'), $this->version );
     });
@@ -195,6 +201,13 @@ class FontAwesome {
       $this->plugin_name,
       $this->user_settings_section
     );
+    add_settings_field(
+      $this->user_settings_field_id_remove_others,
+      'Remove Unregistered Clients',
+      array($this, 'user_settings_field_remove_others_view'),
+      $this->plugin_name,
+      $this->user_settings_section
+    );
   }
 
   public function user_settings_section_view(){
@@ -227,6 +240,15 @@ class FontAwesome {
   ?>
     <input id="<?= $this->user_settings_field_id_pro ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
   <?php
+  }
+
+  public function user_settings_field_remove_others_view(){
+    $options = $this->options();
+    $checked = (isset($options['remove_others']) && $options['remove_others']) ? 'checked' : '';
+    $field_name = $this->options_key . '[remove_others]';
+    ?>
+      <input id="<?= $this->user_settings_field_id_remove_others ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
+    <?php
   }
 
   public function user_settings_field_method_view(){
@@ -370,6 +392,9 @@ class FontAwesome {
 
     if( isset( $input['pro'] ) )
       $new_input['pro'] = wp_validate_boolean( $input['pro'] );
+
+    if( isset( $input['remove_others'] ) )
+      $new_input['remove_others'] = wp_validate_boolean( $input['remove_others'] );
 
     return $new_input;
   }
@@ -683,6 +708,8 @@ class FontAwesome {
       wp_enqueue_style($this->handle, $faUrl, null, null);
 
       // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
+      // TODO: add back the integrity keys when we have a full list of correct ones.
+      /*
       add_filter( 'style_loader_tag', function($html, $handle) use($integrityKey){
         if ( in_array($handle, [$this->handle]) ) {
           return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $html, 1);
@@ -690,6 +717,7 @@ class FontAwesome {
           return $html;
         }
       }, 10, 2 );
+      */
 
 
       if( $load_spec['v4shim'] ){
@@ -698,6 +726,7 @@ class FontAwesome {
 
         // TODO: add new integrity key specific to v4-shims, if necessary.
         // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
+        /*
         add_filter( 'style_loader_tag', function($html, $handle) use($integrityKey){
           if ( in_array($handle, [$this->v4shim_handle]) ) {
             return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $html, 1);
@@ -705,6 +734,7 @@ class FontAwesome {
             return $html;
           }
         }, 10, 2 );
+        */
       }
     } else {
       $faUrl .= 'js/all.js';
@@ -716,6 +746,8 @@ class FontAwesome {
       }
 
       // Filter the <script> tag to add the integrity and crossorigin attributes for completeness.
+      // TODO: add back the integrity keys when we have a full list of correct ones.
+      /*
       add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
         if ( in_array($handle, [$this->handle]) ) {
           return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $tag, 1);
@@ -723,12 +755,15 @@ class FontAwesome {
           return $tag;
         }
       }, 10, 2 );
+      */
 
       if( $load_spec['v4shim'] ){
         $faShimUrl .= 'js/v4-shims.js';
         wp_enqueue_script($this->v4shim_handle, $faShimUrl, null, null, false);
 
         // TODO: add new integrity key specific to v4-shims, if necessary.
+        // TODO: add back the integrity keys when we have a full list of correct ones.
+        /*
         add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
           if ( in_array($handle, [$this->v4shim_handle]) ) {
             return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $tag, 1);
@@ -736,6 +771,7 @@ class FontAwesome {
             return $tag;
           }
         }, 10, 2 );
+        */
       }
     }
 
@@ -775,7 +811,8 @@ class FontAwesome {
             if (strpos($details->src, 'fontawesome') || strpos($details->src, 'font-awesome')) {
               array_push($this->unregistered_clients, array(
                 'handle' => $handle,
-                'type' => $key
+                'type' => $key,
+                'src' => $details->src
               ));
             }
         }

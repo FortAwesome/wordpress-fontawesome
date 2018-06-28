@@ -24,6 +24,13 @@ add_action('init', function(){
     null,
     'all'
   );
+  wp_enqueue_style(
+    'plugin-gamma-style',
+    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
+    array(),
+    null,
+    'all'
+  );
 });
 
 add_action('font_awesome_enqueued', function($loadSpec){
@@ -32,3 +39,12 @@ add_action('font_awesome_enqueued', function($loadSpec){
   }
 }, 10, 3);
 
+add_filter('the_content', function($content){
+  $pre_content = <<<EOT
+<div class="plugin-gamma-pre-content">
+  <h2>Plugin Gamma</h2>
+  <p>Expected by plugin-gamma (v4.7.0 icon name): "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
+</div>
+EOT;
+  return $pre_content . $content;
+}, 10, 1);
