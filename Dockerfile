@@ -2,7 +2,13 @@ FROM wordpress:latest
 
 # Install packages
 RUN apt-get update && \
-    apt-get -y install vim subversion mysql-client
+    apt-get -y install vim subversion mysql-client less
+
+# Install wp-cli
+RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /usr/local/bin/wp && chmod +x /usr/local/bin/wp
+
+# Add non-privileged user, best for using wp-cli
+RUN groupadd -r user && useradd --no-log-init -r -g user user
 
 # Install xdebug
 RUN pecl install xdebug && echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20170718/xdebug.so" > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
