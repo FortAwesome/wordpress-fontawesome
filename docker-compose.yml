@@ -26,6 +26,8 @@ services:
        - ./font-awesome:/var/www/html/wp-content/plugins/font-awesome
        - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
        - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+       - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+       - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
      environment:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress
