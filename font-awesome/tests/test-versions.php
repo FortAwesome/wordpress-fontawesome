@@ -14,6 +14,7 @@ class VersionsTest extends WP_UnitTestCase {
     $this->assertFalse(Semver::satisfies('5.0.13', '5.0.12'));
     $this->assertTrue(Semver::satisfies('5.0.13', '>5.0.10'));
     $this->assertTrue(Semver::satisfies('5.0.13', '^5.0'));
+    $this->assertFalse(Semver::satisfies('5.1.1', '~5.0.0'));
     $this->assertTrue(Semver::satisfies('5.0.11', '~5.0.10'));
     $this->assertFalse(Semver::satisfies('5.1.0', '~5.0.10'));
     $this->assertTrue(Semver::satisfies('5.1.0', '^5.0.0'));
@@ -30,13 +31,5 @@ class VersionsTest extends WP_UnitTestCase {
      * because this doesn't behave as might be expected.
      */
     //$this->assertFalse(Semver::satisfies('5.1.0.11-dev', '^5.0.0-stable'));
-  }
-
-  function test_map_between_human_version_and_semver(){
-    $fa = FontAwesome();
-    $latest_semver = $fa->get_semver_from_human_version('latest');
-    $previous_semver = $fa->get_semver_from_human_version('previous');
-    $this->assertEquals('latest', $fa->get_human_version_from_semver($latest_semver));
-    $this->assertEquals('previous', $fa->get_human_version_from_semver($previous_semver));
   }
 }

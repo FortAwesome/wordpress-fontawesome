@@ -1,5 +1,6 @@
 {
     "require": {
-        "composer/semver": "^1.4"
+        "composer/semver": "^1.4",
+        "mustangostang/spyc": "^0.6.2"
     }
 }

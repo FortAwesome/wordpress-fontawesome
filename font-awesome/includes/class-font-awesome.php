@@ -1,34 +1,13 @@
 <?php
 
 require_once( dirname(plugin_dir_path(__FILE__)) . '/vendor/autoload.php');
+require_once( dirname(plugin_dir_path(__FILE__)) . '/includes/class-font-awesome-release-provider.php');
+require_once( dirname(plugin_dir_path(__FILE__)) . '/includes/class-font-awesome-resource.php');
 use Composer\Semver\Semver;
 
 if (! class_exists('FontAwesome') ) :
 
 class FontAwesome {
-
-  protected static $integrityKeys = array(
-    'free' => array(
-      'webfont' => array(
-        // Key is for all.css v5.1.0
-        'all' => 'sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt'
-      ),
-      'svg' => array(
-        // Key is for all.js v5.1.0
-        'all' => 'sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9'
-      )
-    ),
-    'pro' => array(
-      'webfont' => array(
-        // Key is for all.css v5.1.0
-        'all' => 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs'
-      ),
-      'svg' => array(
-        // Key is for all.js v5.1.0
-        'all' => 'sha384-E5SpgaZcbSJx0Iabb3Jr2AfTRiFnrdOw1mhO19DzzrT9L+wCpDyHUG2q07aQdO6E'
-      )
-    )
-  );
 
   protected $_constants = [
     'version' => '0.0.1',
@@ -51,20 +30,6 @@ class FontAwesome {
       'pro' => 0,
       'remove_others' => false
     )
-  ];
-
-  // TODO: eventually change these hard-coded maps to be populated by
-  // based on something returned from some web API endpoint we'll create.
-  // However, they will only change as often as we increment the minor version number,
-  // it's only as urgent as our next minor release.
-  protected static $_map_human_version_to_semver = [
-    'latest' => '~5.1.0',
-    'previous' => '~5.0.0'
-  ];
-
-  protected static $_map_semver_to_human_version = [
-    '~5.1.0' => 'latest',
-    '~5.0.0' => 'previous'
   ];
 
   public function __get($name){
@@ -118,13 +83,33 @@ class FontAwesome {
     return self::$_instance;
   }
 
-  public function __construct() { /* noop */ }
+  private function __construct() { /* noop */ }
 
   public function run(){
     add_action( 'init', array( $this, 'load' ));
     if( is_admin() ){
         $this->initialize_admin();
     }
+  }
+
+  public function get_latest_version(){
+    return FontAwesomeReleaseProvider()->latest_minor_release();
+  }
+
+  public function get_latest_semver(){
+    return( '~' . $this->get_latest_version() );
+  }
+
+  public function get_previous_version(){
+    return FontAwesomeReleaseProvider()->previous_minor_release();
+  }
+
+  public function get_previous_semver(){
+    return ( '~' . $this->get_previous_version() );
+  }
+
+  public function get_available_versions(){
+    return FontAwesomeReleaseProvider()->versions();
   }
 
   private function settings_page_url() {
@@ -280,11 +265,26 @@ class FontAwesome {
 
     $latest_selected = '';
     $previous_selected = '';
+    $older_selected = '';
     $nothing_selected = '';
 
+    // TODO: add integration test for scenario:
+    // where options['load_spec']['version'] = 5.0.13 (or some thing older than "previous")
+    // previous: 5.1.3
+    // latest: 5.2.1
+    //
+    // Expected, 5.0.13 should appear, selected, in the drop down, labeled "older release",
+    // and the latest and previous options should also be present.
+    // A manual test of this scenario already passes. But we need an automated one.
     if(isset($options['load_spec']['version'])){
-      $latest_selected = $this->get_human_version_from_semver($options['load_spec']['version']) == 'latest' ? 'selected' : '';
-      $previous_selected = $this->get_human_version_from_semver($options['load_spec']['version']) == 'previous' ? 'selected' : '';
+      $semver = $options['load_spec']['version'];
+      if(Semver::satisfies($this->get_latest_version(), $semver)){
+        $latest_selected = 'selected';
+      } elseif (Semver::satisfies($this->get_previous_version(), $semver)){
+        $previous_selected = 'selected';
+      } else {
+        $older_selected = 'selected';
+      }
     } else {
       $nothing_selected = 'selected';
     }
@@ -292,8 +292,11 @@ class FontAwesome {
     $field_name = $this->options_key . '[load_spec][version]';
     ?>
     <select id="<?= $this->user_settings_field_id_version ?>" name="<?= $field_name ?>">
-      <option value="<?= $this->get_semver_from_human_version('latest') ?>" <?= $latest_selected ?>>latest release</option>
-      <option value="<?= $this->get_semver_from_human_version('previous') ?>" <?= $previous_selected ?>>previous release</option>
+      <option value="<?= $this->get_latest_semver() ?>" <?= $latest_selected ?>>latest release</option>
+      <option value="<?= $this->get_previous_semver() ?>" <?= $previous_selected ?>>previous release</option>
+      <?php if(boolval($older_selected)){ ?>
+      <option value="<?= $options['load_spec']['version'] ?>" <?= $older_selected ?>>older release</option>
+      <?php } ?>
       <option value="_" <?= $nothing_selected ?>>_</option>
     </select>
     <?php
@@ -376,8 +379,8 @@ class FontAwesome {
       }
 
       if( isset( $input['load_spec']['version'] ) ){
-        $previous_semver = $this->get_semver_from_human_version('previous');
-        $latest_semver = $this->get_semver_from_human_version('latest');
+        $previous_semver = $this->get_latest_semver();
+        $latest_semver = $this->get_previous_semver();
 
         switch( $input['load_spec']['version'] ){
           case $latest_semver:
@@ -399,29 +402,14 @@ class FontAwesome {
     return $new_input;
   }
 
-  public function get_human_version_from_semver($semver){
-    if( isset( self::$_map_semver_to_human_version[$semver] ) ){
-      return self::$_map_semver_to_human_version[$semver];
-    } else {
-      error_log('WARNING: attemping to lookup a human version for semver "' . $semver . '", but it does not exist in the lookup map.');
-      return null;
-    }
-  }
-
-  public function get_semver_from_human_version($human_version){
-    if( isset( self::$_map_human_version_to_semver[$human_version] ) ){
-      return self::$_map_human_version_to_semver[$human_version];
-    } else {
-      error_log('WARNING: attemping to lookup a semver for human version "' . $human_version . '", but it does not exist in the lookup map.');
-      return null;
-    }
-  }
-
   public function create_admin_page(){
     include_once( dirname(plugin_dir_path(__FILE__)) . '/admin/views/main.php' );
   }
 
-  public function reset(){
+  /**
+   * Resets the singleton instance referenced by this class.
+   */
+  public static function reset(){
     self::$_instance = null;
     FontAwesome();
   }
@@ -453,6 +441,7 @@ class FontAwesome {
     // all requirements each time. We'd only need to do that when something changes.
     // So what are those conditions for refreshing the cache?
     $load_spec = $this->build_load_spec(function($data){
+      // This is the error callback function. It only runs when build_load_spec() needs to report an error.
       $this->conflicts = $data;
       // TODO: figure out the best way to present diagnostic information.
       // Probably in the error_log, but if we're on the admin screen, there's
@@ -620,8 +609,18 @@ class FontAwesome {
     // This is a good place to set defaults
     // pseudo-elements: when webfonts, true
     // when svg, false
+
     // TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
     $method = $this->specified_requirement_or_default($load_spec['method'], 'webfont');
+    $version = Semver::rsort($load_spec['version']['value'])[0];
+    // Use v4shims by default, unless method == 'webfont' and version < 5.1.0
+    // If we end up in an invalid state where v4shims are required for webfont v5.0.x, it should be because of an
+    // invalid client requirement, and in that case, it will be acceptible to throw an exception. But we don't want
+    // to *introduce* such an exception by our own defaults here.
+    $v4shim_default = 'require';
+    if('webfont' == $method && !Semver::satisfies($version, '>= 5.1.0')){
+      $v4shim_default = 'forbid';
+    }
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
     $pseudo_elements = $this->specified_requirement_or_default($load_spec['pseudo-elements'], $pseudo_elements_default) == 'require';
     if( $method == 'webfont' && ! $pseudo_elements ) {
@@ -630,9 +629,9 @@ class FontAwesome {
     }
     return array(
       'method' => $method,
-      'v4shim' => $this->specified_requirement_or_default($load_spec['v4shim'], 'require') == 'require',
+      'v4shim' => $this->specified_requirement_or_default($load_spec['v4shim'], $v4shim_default) == 'require',
       'pseudo-elements' => $pseudo_elements,
-      'version' => Semver::rsort($load_spec['version']['value'])[0],
+      'version' => $version,
       'pro' => $this->is_pro_configured()
     );
   }
@@ -665,113 +664,97 @@ class FontAwesome {
   }
 
   /**
-   * Returns a full version string of the latest stable version, or null
-   * if there are no available versions.
-   */
-  public function get_latest_version(){
-    $versions = $this->get_available_versions();
-    return count($versions) > 0 ? Semver::rsort($versions)[0] : null;
-  }
-
-  // TODO: implement this for real, probably against some REST endpoint
-  public function get_available_versions(){
-    return array(
-      '5.1.0',
-      '5.0.13',
-      '5.0.12',
-      '5.0.11',
-      '5.0.10',
-      '5.0.9',
-      '5.0.0'
-    );
-  }
-
-  /**
    * Given a loading specification, enqueues Font Awesome to load accordingly.
    * Returns nothing.
    * remove_others (boolean): whether to attempt to dequeue unregistered clients.
    */
   protected function enqueue($load_spec, $remove_others = false) {
+    $release_provider = FontAwesomeReleaseProvider();
+
     $method = $load_spec['method'];
-    $license = $load_spec['pro'] ? 'pro' : 'free';
-    ($method == 'webfont' || $method == 'svg') || wp_die('method must be either webfont or svg');
+    $use_svg = false;
+    if('svg' == $method){
+        $use_svg = true;
+    } elseif ('webfont' != $method){
+      error_log("WARNING: ignoring invalid method \"$method\". Expected either \"webfont\" or \"svg\". " .
+        "Will use the default of \"webfont\"");
+    }
 
-    $faUrl = "https://";
-    $faUrl .= $license == 'pro' ? 'pro.' : 'use.';
-    $faUrl .= 'fontawesome.com/releases/v' . $load_spec['version'] . '/';
-    $faShimUrl = $faUrl;
-
-    $integrityKey = self::$integrityKeys[$license][$method]['all']; // hardcode 'all' for now
+    // For now, we're hardcoding the style_opt as 'all'. Eventually, we can open up the rest of the
+    // feature for specifying a subset of styles.
+    $resource_collection = $release_provider->get_resource_collection(
+      $load_spec['version'], // version
+      'all', // style_opt
+      [
+        'use_pro' => $load_spec['pro'],
+        'use_svg' => $use_svg,
+        'use_shim' => $load_spec['v4shim']
+      ]
+    );
 
     if( $method == 'webfont' ){
-      $faUrl .=  'css/all.css';
-      wp_enqueue_style($this->handle, $faUrl, null, null);
+      wp_enqueue_style($this->handle, $resource_collection[0]->source(), null, null);
 
       // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
-      // TODO: add back the integrity keys when we have a full list of correct ones.
-      /*
-      add_filter( 'style_loader_tag', function($html, $handle) use($integrityKey){
+      add_filter( 'style_loader_tag', function($html, $handle) use($resource_collection){
         if ( in_array($handle, [$this->handle]) ) {
-          return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $html, 1);
+          return preg_replace('/\/>$/', 'integrity="' . $resource_collection[0]->integrity_key() .
+            '" crossorigin="anonymous" />', $html, 1);
         } else {
           return $html;
         }
       }, 10, 2 );
-      */
 
 
       if( $load_spec['v4shim'] ){
-        $faShimUrl .= 'css/v4-shims.css';
-        wp_enqueue_style($this->v4shim_handle, $faShimUrl, null, null);
+        wp_enqueue_style($this->v4shim_handle, $resource_collection[1]->source(), null, null);
 
-        // TODO: add new integrity key specific to v4-shims, if necessary.
         // Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
-        /*
-        add_filter( 'style_loader_tag', function($html, $handle) use($integrityKey){
-          if ( in_array($handle, [$this->v4shim_handle]) ) {
-            return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $html, 1);
-          } else {
-            return $html;
-          }
-        }, 10, 2 );
-        */
+        // Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
+        // that don't.
+        if(! is_null($resource_collection[1]->integrity_key()) ) {
+          add_filter('style_loader_tag', function ($html, $handle) use ($resource_collection) {
+            if (in_array($handle, [$this->v4shim_handle])) {
+              return preg_replace('/\/>$/', 'integrity="' . $resource_collection[1]->integrity_key() .
+                '" crossorigin="anonymous" />', $html, 1);
+            } else {
+              return $html;
+            }
+          }, 10, 2);
+        }
       }
     } else {
-      $faUrl .= 'js/all.js';
-
-      wp_enqueue_script($this->handle, $faUrl, null, null, false);
+      wp_enqueue_script($this->handle, $resource_collection[0]->source(), null, null, false);
 
       if( $load_spec['pseudo-elements'] ){
         wp_add_inline_script( $this->handle, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
       }
 
       // Filter the <script> tag to add the integrity and crossorigin attributes for completeness.
-      // TODO: add back the integrity keys when we have a full list of correct ones.
-      /*
-      add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
-        if ( in_array($handle, [$this->handle]) ) {
-          return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $tag, 1);
-        } else {
-          return $tag;
-        }
-      }, 10, 2 );
-      */
-
-      if( $load_spec['v4shim'] ){
-        $faShimUrl .= 'js/v4-shims.js';
-        wp_enqueue_script($this->v4shim_handle, $faShimUrl, null, null, false);
-
-        // TODO: add new integrity key specific to v4-shims, if necessary.
-        // TODO: add back the integrity keys when we have a full list of correct ones.
-        /*
-        add_filter( 'script_loader_tag', function($tag, $handle) use($integrityKey){
-          if ( in_array($handle, [$this->v4shim_handle]) ) {
-            return preg_replace('/\/>$/', 'integrity="' . $integrityKey . '" crossorigin="anonymous" />', $tag, 1);
+      if(! is_null($resource_collection[0]->integrity_key()) ) {
+        add_filter('script_loader_tag', function ($tag, $handle) use ($resource_collection) {
+          if (in_array($handle, [$this->handle])) {
+            return preg_replace('/\/>$/', 'integrity="' . $resource_collection[0]->integrity_key() .
+              '" crossorigin="anonymous" />', $tag, 1);
           } else {
             return $tag;
           }
-        }, 10, 2 );
-        */
+        }, 10, 2);
+      }
+
+      if( $load_spec['v4shim'] ){
+        wp_enqueue_script($this->v4shim_handle, $resource_collection[1]->source(), null, null, false);
+
+        if(! is_null($resource_collection[1]->integrity_key()) ) {
+          add_filter('script_loader_tag', function ($tag, $handle) use ($resource_collection) {
+            if (in_array($handle, [$this->v4shim_handle])) {
+              return preg_replace('/\/>$/', 'integrity="' . $resource_collection[1]->integrity_key() .
+                '" crossorigin="anonymous" />', $tag, 1);
+            } else {
+              return $tag;
+            }
+          }, 10, 2);
+        }
       }
     }
 
@@ -862,3 +845,4 @@ endif; // ! class_exists
 function FontAwesome() {
     return FontAwesome::instance();
 }
+

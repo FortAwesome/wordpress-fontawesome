@@ -51,7 +51,8 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 
   function test_unregistered_conflict_cleaned(){
     $fa = \FontAwesomePhpUnitUtil\mock_singleton_method(
-      $this->getMockBuilder(FontAwesome::class),
+      $this,
+      FontAwesome::class,
       'options',
       function($method) {
         $opts = wp_parse_args(array('remove_others' => true), FontAwesome()->default_user_options);

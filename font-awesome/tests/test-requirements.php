@@ -8,7 +8,8 @@ class RequirementsTest extends WP_UnitTestCase {
    * @before
    */
   function reset(){
-    FontAwesome()->reset();
+    FontAwesome::reset();
+    FontAwesomeReleaseProvider::reset();
     wp_script_is('font-awesome-official', 'enqueued') && wp_dequeue_script('font-awesome-official');
     wp_script_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_script('font-awesome-official-v4shim');
     wp_style_is('font-awesome-official', 'enqueued') && wp_dequeue_style('font-awesome-official');
@@ -182,11 +183,12 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    $this->begin_error_log_capture();
+    $state = array();
+    \FontAwesomePhpUnitUtil\begin_error_log_capture($state);
 
     $this->assertNull(FontAwesome()->load());
     $this->assertNull(FontAwesome()->load_spec());
-    $this->end_error_log_capture();
+    \FontAwesomePhpUnitUtil\end_error_log_capture($state);
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
     $this->assertNotNull(FontAwesome()->conflicts());
@@ -257,9 +259,10 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    $this->begin_error_log_capture();
+    $state = array();
+    \FontAwesomePhpUnitUtil\begin_error_log_capture($state);
     $this->assertNull(FontAwesome()->load());
-    $this->end_error_log_capture();
+    \FontAwesomePhpUnitUtil\end_error_log_capture($state);
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
   }
@@ -418,7 +421,8 @@ class RequirementsTest extends WP_UnitTestCase {
    */
   function test_pro_is_configured(){
     $mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
-      $this->getMockBuilder(FontAwesome::class),
+      $this,
+      FontAwesome::class,
       'is_pro_configured',
       function($method){
         $method->willReturn(true);
@@ -444,7 +448,8 @@ class RequirementsTest extends WP_UnitTestCase {
    */
   function test_pro_not_configured(){
     $mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
-      $this->getMockBuilder(FontAwesome::class),
+      $this,
+      FontAwesome::class,
       'is_pro_configured',
       function($method){
         $method->willReturn(false);
@@ -534,9 +539,10 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    $this->begin_error_log_capture();
+    $state = array();
+    \FontAwesomePhpUnitUtil\begin_error_log_capture($state);
     $this->assertNull(FontAwesome()->load());
-    $this->end_error_log_capture();
+    \FontAwesomePhpUnitUtil\end_error_log_capture($state);
     $this->assertTrue($failed);
     $this->assertFalse($enqueued);
     $this->assertFalse(wp_script_is('font-awesome-official-v4shim', 'enqueued'));
@@ -611,29 +617,15 @@ class RequirementsTest extends WP_UnitTestCase {
     };
     add_action('font_awesome_failed', $failed_callback);
 
-    $this->begin_error_log_capture();
+    $state = array();
+    \FontAwesomePhpUnitUtil\begin_error_log_capture($state);
     FontAwesome()->load();
-    $err = $this->end_error_log_capture();
+    $err = \FontAwesomePhpUnitUtil\end_error_log_capture($state);
 
     $this->assertTrue($enqueued);
     $this->assertFalse($failed);
     $this->assertRegExp('/WARNING: a client of Font Awesome has forbidden pseudo-elements/', $err);
   }
 
-  function begin_error_log_capture(){
-    if( property_exists($this, 'error_log_file') ) return;
-
-    $this->error_log_file = uniqid('fa_error_log') . ".log";
-    $this->error_log_original = ini_get('error_log');
-    ini_set('error_log', $this->error_log_file);
-  }
-
-  function end_error_log_capture(){
-    if(! property_exists($this, 'error_log_file') ) return null;
-
-    $error_log_contents = file_get_contents($this->error_log_file);
-    unlink($this->error_log_file);
-    ini_set('error_log', $this->error_log_original);
-    return $error_log_contents;
-  }
+  // TODO: test where the ReleaseProvider would return a null integrity key, both for webfont and svg
 }
