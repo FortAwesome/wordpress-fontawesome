@@ -7,7 +7,7 @@
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
- * License:           GPLv3
+ * License:           GPLv2 (or later)
  */
 
 defined( 'WPINC' ) || die;
