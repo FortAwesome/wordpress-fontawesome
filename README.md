@@ -121,7 +121,7 @@ For running and debugging tests:
 
 This is where you can configure which tests run when you invoke this test runner. You could create more than one test configuration
 for conveniently running different test groups. In this pictured configuration, we're just using the test configuration file that
-  we previosly configured for use by the Test Framework.
+  we previously configured for use by the Test Framework.
 
 To run that run configuration, you can select it here (red arrow) and then either run it normally or run it under debugging (green arrows):
 
