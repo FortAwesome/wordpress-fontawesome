@@ -108,7 +108,7 @@ Our test framework is PHPUnit, and it will run "remotely", because it's in a Doc
   to guide you in setting up path mappings. For example, your host directory `/Users/you/repos/wordpress-fontawesome/font-awesome` should map to container
   directory `/var/www/html/wp-content/plugins/font-awesome`.
 * Path to phpunit.phar: this should be the full path _inside_ the container.
-* Default configuration file and Default bootstrap file: these are also full paths _inside_the container.
+* Default configuration file and Default bootstrap file: these are also full paths _inside_ the container.
 
 
 4. Create Run and Test Configurations
