@@ -108,7 +108,7 @@ Our test framework is PHPUnit, and it will run "remotely", because it's in a Doc
   to guide you in setting up path mappings. For example, your host directory `/Users/you/repos/wordpress-fontawesome/font-awesome` should map to container
   directory `/var/www/html/wp-content/plugins/font-awesome`.
 * Path to phpunit.phar: this should be the full path _inside_ the container.
-* Default configuration file and Default bootstrap file: these are also full paths _inside_the container.
+* Default configuration file and Default bootstrap file: these are also full paths _inside_ the container.
 
 
 4. Create Run and Test Configurations
@@ -121,7 +121,7 @@ For running and debugging tests:
 
 This is where you can configure which tests run when you invoke this test runner. You could create more than one test configuration
 for conveniently running different test groups. In this pictured configuration, we're just using the test configuration file that
-  we previosly configured for use by the Test Framework.
+  we previously configured for use by the Test Framework.
 
 To run that run configuration, you can select it here (red arrow) and then either run it normally or run it under debugging (green arrows):
 
