@@ -1,4 +1,21 @@
-# Official Font Awesome WordPress Plugin
+# wordpress-fontawesome
+
+Official Font Awesome WordPress Plugin
+
+> Font Awesome 5 Official WordPress Plugin (status: private beta)
+
+<!-- toc -->
+
+- [Description](#description)
+- [Installation](#installation)
+- [Usage: Simple End-user Scenarios](#usage-simple-end-user-scenarios)
+  * [Zero-configuration](#zero-configuration)
+  * [SVG](#SVG)
+  * [Font Awesome Pro](#font-awesome-pro)
+
+<!-- tocstop -->
+
+# Description
 
 Loads Font Awesome 5 Free or Pro on your WordPress site. Provides features for developers of themes and other plugins
 to register their Font Awesome requirements with this plugin to ensure that a single, working version of Font Awesome
@@ -13,12 +30,12 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
 
-1. Upload the plugin files to the `/wp-content/plugins/font-awesome` directory,
-   or install the plugin zip file through the WordPress plugins screen directly (upload).
+1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome.zip`
+1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome.zip`
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
 
-## Usage (Simple)
+## Usage: Simple End-user Scenarios
 
 Suppose you have no themes or plugins activated that use this Font Awesome plugin. It's just you, looking to
 add icons to your WordPress site.
@@ -95,7 +112,7 @@ web site owner prefer to use SVG, just make that selection and save those change
 will satisfy Radiance, Shuffle, and your own preference. Anywhere that you or those components place
 icons, they'll be rendered as SVG.
 
-# CAVEAT: Plugin Name Conflict
+# CAVEAT: Temporary Plugin Name Conflict
 
 This plugin currently uses the same namespace as [this obsolete plugin](https://wordpress.org/plugins/font-awesome/)
 in the WordPress Plugins Directory. This plugin has not yet been published in the plugins directory, but must
@@ -119,5 +136,5 @@ be giving it a new name.
 ## Does the plugin support shortcodes?
 
 Not yet. But [basic usage](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use)
-with <i> tags is pretty straightforward.
+with `<i>` tags is pretty straightforward.
 
