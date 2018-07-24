@@ -22,7 +22,7 @@ Official Font Awesome WordPress Plugin
   * [What is Actually Loaded](#what-is-actually-loaded)
   * [Determining Available Versions](#determining-available-versions)
   * [How to Ship Your Theme or Plugin To Work with Font Awesome](#how-to-ship-your-theme-or-plugin-to-work-with-font-awesome)
-  * [How to Make Pro Icons Available in Your Theme or Plugin(#how-to-make-pro-icons-available-in-your-theme-or-plugin)
+  * [How to Make Pro Icons Available in Your Theme or Plugin](#how-to-make-pro-icons-available-in-your-theme-or-plugin)
   * [Examples](#examples)
 
 <!-- tocstop -->
