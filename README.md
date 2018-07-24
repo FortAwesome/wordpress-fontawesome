@@ -157,9 +157,9 @@ loading their own versions. But we can try, and most of the time, we expect it t
 
 | Action | Description |
 | ----------- | ----------- |
-| `font_awesome_requirements` | Called when the Font Awesome plugin expects clients to register their requirements. Normally, the culmination of the action hook is to call `FontAwesome()->register($requirements_array)` |
+| `font_awesome_requirements` | Called when the Font Awesome plugin expects clients to register their requirements. Normally, the culmination of the action hook is to call <span style="white-space:nowrap;">`FontAwesome()->register($requirements_array)`</span> |
 | `font_awesome_enqueued` | Called when version resolution succeeds, with up to one argument, an associative array indicating the final load specification: version, method (webfont vs. svg), version 4 compatibility, license (pro vs. free), pseudo-element support. This is how a theme or plugin can be notified whether Pro is enabled, for example. |
-| `font_awesome_failed` | Called when version resolution fails, with up to one argument, an associate array indicating which conflicting requirement between which clients caused resolution to fail. |
+| `font_awesome_failed` | Called when version resolution fails, with up to one argument, an associative array indicating which conflicting requirement between which clients caused resolution to fail. |
 
 ## API Reference
 
@@ -261,8 +261,8 @@ There are example clients in this GitHub repo that demonstrate how your code can
 
 | Component | Description |
 | --------- | ----------- |
-| [`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha) | Theme accepts default requirements, but also reacts to the presence of Pro by using Pro icons in a template. |
-| [`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta) | Plugin requires v4shim and a specific version. Uses some version 4 icon names. |
+| <span style="white-space:nowrap;">[`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha)</span> | Theme accepts default requirements, but also reacts to the presence of Pro by using Pro icons in a template. |
+| <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires v4shim and a specific version. Uses some version 4 icon names. |
 
 See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can run a dockerized WordPress environment and experiment
 with these examples.
