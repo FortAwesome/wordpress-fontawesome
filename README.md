@@ -15,7 +15,7 @@ Official Font Awesome WordPress Plugin
     ** [Font Awesome Pro](#font-awesome-pro)
   * [Usage: With Plugins or Themes](#usage-with-plugins-or-themes)
     ** [Dealing with Themes or Plugins That Try to Load Their Own Versions of Font Awesome](dealing-with-themes-or-plugins-that-try-to-load-their-own-versions-of-font-awesome)
-- [For Developers](#for-developers) 
+- [For Developers](#for-developers)
 
 <!-- tocstop -->
 
@@ -144,6 +144,39 @@ there's no guarantee that our approach will work for discovering and stopping un
 loading their own versions. But we can try, and most of the time, we expect it to succeed.
 
 # For Developers
+
+## Action Reference
+
+| Action | Description |
+| ----------- | ----------- |
+| `font_awesome_requirements` | Called when the Font Awesome plugin expects clients to register their requirements.
+Normally, the culmination of the action hook is to call `FontAwesome()->register($requirements_array)` |
+| `font_awesome_enqueued` | Called when version resolution succeeds, with up to one argument, an associative array
+indicating the final load specification: version, method (webfont vs. svg), version 4 compatibility,
+license (pro vs. free), pseudo-element support. This is how a theme or plugin can be notified whether Pro
+is enabled, for example. |
+| `font_awesome_failed` | Called when version resolution fails, with up to one argument, an associate array
+indicating which conflicting requirement between which clients caused resolution to fail. |
+
+## API Reference
+
+| Method | Description |
+| ------ | ----------- |
+| `FontAwesome()` | returns the singleton instance for the plugin. All other function calls are methods invoked on this instance. |
+| `register($requirments_array)` | call this from a client (plugin or theme) to register requirements using an array structured like this:
+
+```php
+array(
+  "name"           => "plugin-name", // This is the only required attribute.
+                                     // Ideally, it's the same as the theme or plugin slug.
+  "version"        => "^5.0.0",      // A semver string. Uses composer/semver
+  "method"         => "webfont",     // webfont | svg
+  "v4shim"         => "require",     // require | forbid
+  "pseudo-elements => "require"      // require | forbid
+); |
+| `using_pro()` | returns `boolean` indicating whether Pro is enabled |
+| `using_pseudo_elements()` | returns `boolean` indicating whether pseudo-element support is enabled |
+```
 
 # Temporary Plugin Name Conflict
 
