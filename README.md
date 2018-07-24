@@ -8,13 +8,14 @@ Official Font Awesome WordPress Plugin
 
 - [Description](#description)
 - [Installation](#installation)
-- [Usage: Standalone](#usage-simple-end-user-scenarios)
-  * [Zero-configuration](#zero-configuration)
-  * [SVG](#svg)
-  * [Font Awesome Pro](#font-awesome-pro)
-- [Usage: With Plugins or Themes](#usage-simple-end-user-scenarios)
-
-https://github.com/FortAwesome/wordpress-fontawesome/blob/doc/README.md#usage-with-plugins-or-themes
+- [For End Users](#for-end-users)
+  * [Usage: Standalone](#usage-simple-end-user-scenarios)
+    ** [Zero-configuration](#zero-configuration)
+    ** [SVG](#svg)
+    ** [Font Awesome Pro](#font-awesome-pro)
+  * [Usage: With Plugins or Themes](#usage-with-plugins-or-themes)
+    ** [Dealing with Themes or Plugins That Try to Load Their Own Versions of Font Awesome](dealing-with-themes-or-plugins-that-try-to-load-their-own-versions-of-font-awesome)
+- [For Developers](#for-developers) 
 
 <!-- tocstop -->
 
@@ -37,6 +38,8 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome.zip`
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
+
+# For End Users
 
 ## Usage: Standalone
 
@@ -86,7 +89,7 @@ Suppose you've purchased Font Awesome Pro. To enable those Pro icons on your web
 
 That's it! Add Pro icons anywhere on your site.
 
-## Usage (With Plugins or Themes)
+## Usage: With Plugins or Themes
 
 Suppose you've installed a theme called "Radiance" and a plugin called "Shuffle" and that each of them depend
 on this plugin for their icons.
@@ -139,6 +142,8 @@ stop those other themes or plugins from trying to load their own versions of Fon
 while still allowing them to display their icons as expected. Since there are lots of ways to load Font Awesome,
 there's no guarantee that our approach will work for discovering and stopping unregistered clients from
 loading their own versions. But we can try, and most of the time, we expect it to succeed.
+
+# For Developers
 
 # Temporary Plugin Name Conflict
 
