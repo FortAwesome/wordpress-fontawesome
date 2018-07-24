@@ -161,20 +161,34 @@ loading their own versions. But we can try, and most of the time, we expect it t
 | `register($requirments_array)` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
 | `using_pro()` | returns `boolean` indicating whether Pro is enabled |
 | `using_pseudo_elements()` | returns `boolean` indicating whether pseudo-element support is enabled |
-```
 
 ## Requirements Array
 
 The requirements array supplied to `register()` looks like this:
 ```php
 array(
-  "name"           => "plugin-name", // This is the only required attribute.
-                                     // Ideally, it's the same as the theme or plugin slug.
-  "version"        => "^5.0.0",      // A semver string. Uses composer/semver
-  "method"         => "webfont",     // webfont | svg
-  "v4shim"         => "require",     // require | forbid
+  "name"            => "plugin-name", // This is the only required attribute.
+                                      // Ideally, it's the same as the theme or plugin slug.
+  "version"         => "^5.0.0",      // A semver string. Uses composer/semver
+  "method"          => "webfont",     // webfont | svg
+  "v4shim"          => "require",     // require | forbid
   "pseudo-elements" => "require"      // require | forbid
 );
+```
+
+### Notes on Requirement Attributes
+
+- `v4shim`: There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
+  It's best to upgrade name references to the version 5 names, but to ease the upgrade path, we also provide
+  v4 shims which accept the v4 names and translate them into the equivalent v5 names. Shims for SVG with JavaScript
+  have been available since `5.0.0` and shims for Web Font with CSS have been available since `5.1.0`.
+  Specifiying `require` for this attribute will cause the loading of Font Awesome to fail unless loading the v4 shims
+  would satisfy the requirements of all registered clients. Specify `forbid` to insist that the v4 shim should _not_
+  be loaded by any client--normally you should mind your own business, though.
+  
+- `pseudo-elements`: Pseudo-elements are always intrinsically available when using the Web Font with CSS method.
+  However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
+  approach, because the performance can be poor. _Really_ poor, in some cases. However, sometimes, it's necessary.
 
 # Temporary Plugin Name Conflict
 
@@ -194,4 +208,3 @@ be giving it a new name.
 
 Not yet. But [basic usage](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use)
 with `<i>` tags is pretty straightforward.
-
