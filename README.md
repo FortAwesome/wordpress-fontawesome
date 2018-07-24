@@ -1,7 +1,5 @@
 # wordpress-fontawesome
 
-Official Font Awesome WordPress Plugin
-
 > Font Awesome 5 Official WordPress Plugin (status: private beta)
 
 <!-- toc -->
