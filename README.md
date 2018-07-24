@@ -10,11 +10,11 @@ Official Font Awesome WordPress Plugin
 - [Installation](#installation)
 - [For End Users](#for-end-users)
   * [Usage: Standalone](#usage-simple-end-user-scenarios)
-    ** [Zero-configuration](#zero-configuration)
-    ** [SVG](#svg)
-    ** [Font Awesome Pro](#font-awesome-pro)
+    * [Zero-configuration](#zero-configuration)
+    * [SVG](#svg)
+    * [Font Awesome Pro](#font-awesome-pro)
   * [Usage: With Plugins or Themes](#usage-with-plugins-or-themes)
-    ** [Dealing with Themes or Plugins That Try to Load Their Own Versions of Font Awesome](dealing-with-themes-or-plugins-that-try-to-load-their-own-versions-of-font-awesome)
+    * [Dealing with Themes or Plugins That Try to Load Their Own Versions of Font Awesome](dealing-with-themes-or-plugins-that-try-to-load-their-own-versions-of-font-awesome)
 - [For Developers](#for-developers)
 
 <!-- tocstop -->
@@ -158,7 +158,7 @@ loading their own versions. But we can try, and most of the time, we expect it t
 | Method | Description |
 | ------ | ----------- |
 | `FontAwesome()` | returns the singleton instance for the plugin. All other function calls are methods invoked on this instance. |
-| `register($requirments_array)` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
+| `register($requirements_array)` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
 | `using_pro()` | returns `boolean` indicating whether Pro is enabled |
 | `using_pseudo_elements()` | returns `boolean` indicating whether pseudo-element support is enabled |
 
