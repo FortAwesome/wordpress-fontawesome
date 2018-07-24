@@ -24,6 +24,8 @@ Official Font Awesome WordPress Plugin
   * [How to Ship Your Theme or Plugin To Work with Font Awesome](#how-to-ship-your-theme-or-plugin-to-work-with-font-awesome)
   * [How to Make Pro Icons Available in Your Theme or Plugin](#how-to-make-pro-icons-available-in-your-theme-or-plugin)
   * [Examples](#examples)
+- [Temporary Plugin Name Conflict](#temporary-plugin-name-conflict)
+- [About Shortcodes](#about-shortcodes)
 
 <!-- tocstop -->
 
@@ -279,9 +281,12 @@ name in the directory and suggesting that it is a new version. Just ignore that 
 notification. Before we do a final release and publish this plugin to the plugins directory, we'll
 be giving it a new name.
 
-# Frequently Asked Questions
+# About Shortcodes
 
-## Does the plugin support shortcodes?
+While it's common for plugins like this to provide shortcodes for usage, and we might want to add that in the future,
+the plugin does not currently support shortcodes. The focus for this prototype is more about the loading and version resolution.
 
-Not yet. But [basic usage](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use)
-with `<i>` tags is pretty straightforward.
+[Basic usage](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use)
+with `<i>` tags is pretty straightforward and, in many cases, seems almost equivalent to what a shortcode syntax might be.
+
+We welcome your feedback about how important shortcodes would be to you so we can prioritize future development appropriately.
