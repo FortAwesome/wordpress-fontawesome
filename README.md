@@ -8,10 +8,13 @@ Official Font Awesome WordPress Plugin
 
 - [Description](#description)
 - [Installation](#installation)
-- [Usage: Simple End-user Scenarios](#usage-simple-end-user-scenarios)
+- [Usage: Standalone](#usage-simple-end-user-scenarios)
   * [Zero-configuration](#zero-configuration)
-  * [SVG](#SVG)
+  * [SVG](#svg)
   * [Font Awesome Pro](#font-awesome-pro)
+- [Usage: With Plugins or Themes](#usage-simple-end-user-scenarios)
+
+https://github.com/FortAwesome/wordpress-fontawesome/blob/doc/README.md#usage-with-plugins-or-themes
 
 <!-- tocstop -->
 
@@ -35,7 +38,7 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
 
-## Usage: Simple End-user Scenarios
+## Usage: Standalone
 
 Suppose you have no themes or plugins activated that use this Font Awesome plugin. It's just you, looking to
 add icons to your WordPress site.
@@ -88,31 +91,56 @@ That's it! Add Pro icons anywhere on your site.
 Suppose you've installed a theme called "Radiance" and a plugin called "Shuffle" and that each of them depend
 on this plugin for their icons.
 
+You don't do anything to configure them to work together. Rather, they use this plugin's API to register
+their own requirements.
+
 On the plugin's settings page, you can see in the "Current Requirements" section what Font Awesome
 requirements Radiance and Shuffle have. If they have conflicting requirements, you'll see a simple
 error message to help you diagnose and resolve the problem.
 
-For example, suppose Radiance says it requires version Font Awesome version 5.1.0 or later, but Shuffle
-says it requires version 5.0.13. Well, we can't satisfy both, and we can load both versions, because that
-would break all of your icons. Instead, you'll see an error message that clearly shows which requirement
+For example, suppose Radiance says it requires Font Awesome version 5.1.0 or later, but Shuffle
+says it requires version 5.0.13. Well, we can't satisfy both, and we can't just load both
+versions--one for each of them--because that would break all of your icons. You can only load one
+version of Font Awesome at a time.
+
+Instead, you'll see an error message that clearly shows which requirement
 is causing a conflict. You might resolve the problem by doing any or all of the following:
 
-1. Deactivating the Shuffle plugin
-1. Choosing a different theme
-1. Contacting the developers of Radiance or Shuffle to suggest that they change their requirements to
+1. Deactivate the Shuffle plugin
+1. Choose a different theme
+1. Contact the developers of Radiance or Shuffle to suggest that they change their requirements to
    reduce conflicts
 
 While that might be a little bit of a hassle, at least it's clear and obvious and you know who to go to
-to resolve the problem. Not like the lawless ancient days when every plugin and theme tried to load its own version
-of Font Awesome and everyone crossed their fingers hoping it just worked, and when it didn't, you had no idea why.
+to resolve the problem. Not like the lawless days when every plugin and theme tried to load its own version
+of Font Awesome and everyone crossed their fingers hoping it just worked, and when it didn't,
+you weren't sure why.
 
-Now suppose that Radiance and Shuffle have compatible requirements, and further suppose that they make no
-requirement about the method---i.e. they're content with either webfont or svg. Well, then, if you as the
-web site owner prefer to use SVG, just make that selection and save those changes. Your SVG requirement
-will satisfy Radiance, Shuffle, and your own preference. Anywhere that you or those components place
-icons, they'll be rendered as SVG.
+Now suppose that Radiance and Shuffle have compatible requirements, and that they make no
+particular requirement about the method---i.e. they're content with either webfont or svg. Well, then,
+if you as the web site owner prefer to use SVG, just make that selection and save those changes.
+Your SVG requirement will satisfy Radiance, Shuffle, and your own preference. Anywhere that you
+or those components place icons, they'll be rendered as SVG.
 
-# CAVEAT: Temporary Plugin Name Conflict
+### Dealing with Themes or Plugins That Try to Load Their Own Versions of Font Awesome
+
+Check the box next to "Remove Unregistered Clients" to try to stop other plugins or themes from loading
+unregistered (and therefore conflicting) versions of Font Awesome.
+
+There are lots of themes and plugins out there that use Font Awesome. Normally, they load their own
+version. This works fine if they are the only component that uses Font Awesome, or if it just happens
+to be the case _their_ version is the same as the version loaded by other plugins you may have
+installed (but even then, your web site could end up loading multiple instances of the same version,
+which is unnecessary, and bad for your web site's performance.)
+
+Perhaps, one day, any plugin you'd want to use that depends on Font Awesome will be compatible with this plugin.
+All your icon version compatibility problems would disappear. In the meantime, we can attempt to
+stop those other themes or plugins from trying to load their own versions of Font Awesome,
+while still allowing them to display their icons as expected. Since there are lots of ways to load Font Awesome,
+there's no guarantee that our approach will work for discovering and stopping unregistered clients from
+loading their own versions. But we can try, and most of the time, we expect it to succeed.
+
+# Temporary Plugin Name Conflict
 
 This plugin currently uses the same namespace as [this obsolete plugin](https://wordpress.org/plugins/font-awesome/)
 in the WordPress Plugins Directory. This plugin has not yet been published in the plugins directory, but must
@@ -125,13 +153,6 @@ notification. Before we do a final release and publish this plugin to the plugin
 be giving it a new name.
 
 # Frequently Asked Questions
-
-## How can I use Font Awesome Pro with this plugin?
-
-1. Log in to your `fontawesome.com` account to add your web domain to your list of
-[Pro CDN Domains](https://fontawesome.com/account/services). NOTE: make sure to include any domains you use for local
- development or staging. Each unique domain must be registered.
-1. On the plugin's settings page, check the box to enable Pro.
 
 ## Does the plugin support shortcodes?
 
