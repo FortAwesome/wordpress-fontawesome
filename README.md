@@ -182,14 +182,16 @@ array(
 ### Notes on Requirement Attributes
 
 - `v4shim`: There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
-  It's best to upgrade name references to the version 5 names, but to ease the upgrade path, we also provide
+  It's best to upgrade name references to the version 5 names, but to [ease the upgrade path](https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4),
+  we also provide
   v4 shims which accept the v4 names and translate them into the equivalent v5 names. Shims for SVG with JavaScript
   have been available since `5.0.0` and shims for Web Font with CSS have been available since `5.1.0`.
   Specifiying `require` for this attribute will cause the loading of Font Awesome to fail unless loading the v4 shims
   would satisfy the requirements of all registered clients. Specify `forbid` to insist that the v4 shim should _not_
   be loaded by any client--normally you should mind your own business, though.
-  
-- `pseudo-elements`: Pseudo-elements are always intrinsically available when using the Web Font with CSS method.
+
+- `pseudo-elements`: [Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements)
+  are always intrinsically available when using the Web Font with CSS method.
   However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
   approach, because the performance can be poor. _Really_ poor, in some cases. However, sometimes, it's necessary.
 
