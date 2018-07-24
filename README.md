@@ -19,6 +19,11 @@ Official Font Awesome WordPress Plugin
   * [Action Reference](#action-reference)
   * [API Reference](#api-reference)
   * [Requirements Array](#requirements-array)
+  * [What is Actually Loaded](#what-is-actually-loaded)
+  * [Determining Available Versions](#determining-available-versions)
+  * [How to Ship Your Theme or Plugin To Work with Font Awesome](#how-to-ship-your-theme-or-plugin-to-work-with-font-awesome)
+  * [How to Make Pro Icons Available in Your Theme or Plugin(#how-to-make-pro-icons-available-in-your-theme-or-plugin)
+  * [Examples](#examples)
 
 <!-- tocstop -->
 
@@ -195,7 +200,7 @@ array(
   However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
   approach, because the performance can be poor. _Really_ poor, in some cases. However, sometimes, it's necessary.
 
-## What is Actually Loaded, and From Where?
+## What is Actually Loaded
 
 In this version, all loading happens via the official Font Awesome Free CDN (`use.fontawesome.com`) or
 Pro CDN (`pro.fontawesome.com`). No icon assets are bundled with this plugin.
@@ -213,7 +218,7 @@ If this direction seems good, it would make sense to at least allow particular s
 Hopefully, you can imagine how straightforward it might be for each client to specify its requirement on a
 particular _style_ set of icons, which would allow us to load only those styles specified.
 
-## How Does the Plugin Know What Versions Are Avaialble?
+## Determining Available Versions
 
 Currently (for this prototype), we store a YAML file for each available release, which contains metdata
 about that release. In order to make a new release available to this plugin, we simply add  the appropriate
@@ -224,7 +229,7 @@ this plugin with a metadata file for a new release.
 In the future, the idea is to create a REST endpoint on `fontawesome.com` which this plugin could query
 to get its metadata.
 
-## How To Ship Your Theme or Plugin To Work with Font Awesome
+## How to Ship Your Theme or Plugin To Work with Font Awesome
 
 Currently, the idea is that your customer would install this plugin as a rerequisite to installing yours.
 Your code would expect this plugin to be installed and active. It would register its requirements, receive
