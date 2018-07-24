@@ -16,6 +16,9 @@ Official Font Awesome WordPress Plugin
   * [Usage: With Plugins or Themes](#usage-with-plugins-or-themes)
     * [Dealing with Themes or Plugins That Try to Load Their Own Versions of Font Awesome](dealing-with-themes-or-plugins-that-try-to-load-their-own-versions-of-font-awesome)
 - [For Developers](#for-developers)
+  * [Action Reference](#action-reference)
+  * [API Reference](#api-reference)
+  * [Requirements Array](#requirements-array)
 
 <!-- tocstop -->
 
