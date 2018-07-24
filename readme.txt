@@ -16,11 +16,88 @@ to register their Font Awesome requirements with this plugin to ensure that a si
 is loaded that works across all WordPress components. Optionally, block some themes or plugins from trying to load
 their own versions of Font Awesome which might create conflicts and keep your icons from working correctly.
 
-Supports both Free and Pro, option use of version 4 compatibility (shims), pseudo-elements, and either the [Webfont
+Supports both Free and Pro, optional use of version 4 compatibility (shims), pseudo-elements, and either the [Webfont
 with CSS](https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css) or
 [SVG with JavaScript](https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=svg-with-js) method.
 
 Loads Font Awesome from the official Font Awesome Free or Pro CDN.
+
+=== End User Usage ===
+
+==== User-only: zero-configuration ====
+
+Suppose you have no themes or plugins activated that use this Font Awesome plugin. It's just you, looking to
+add icons to your WordPress site.
+
+Simply install and activate the plugin.
+It will load sensible defaults for the latest version of Font Awesome 5 Free:
+- Webfont with CSS method
+- Version 4 compatibility (aka "v4shims")
+
+Then just start adding Font Awesome HTML markup to your posts, pages, and templates.
+Refer to our documentation for [basic usage](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use),
+and for more fancy usage like [Stacked Icons](https://fontawesome.com/how-to-use/on-the-web/styling/stacking-icons).
+
+Look up available icons in our searchable [Icon Gallery](https://fontawesome.com/icons)
+or [Cheatsheet](https://fontawesome.com/cheatsheet).
+
+The admin settings page for this plugin won't be very complicated in this scenario, since no other WordPress components
+are using the plugin to provide icons. But that also means you can change the version and features settings to your
+heart's content without creating in any conflicts with other components' requirements.
+
+==== User-only: SVG ====
+
+Again, suppose there are no other components (plugins or theme) that depend upon this plugin to load Font Awesome.
+It's just you, the web site owner, and you want to use SVG icons, and maybe some of the fancier features that come with them.
+
+In the plugin's settings page, on the "Method" dropdown menu, select "svg" instead of "webfont". Save those changes.
+That's it!
+
+Now, your icons will render as SVG. You won't need to change any of the HTML markup (like the <i> tags you might have
+already used under the webfont method).
+
+You now can use some of the fancier features, like [Layering, Text, and Counters](https://fontawesome.com/how-to-use/on-the-web/styling/layering).
+
+==== User-only: Font Awesome Pro ====
+
+Suppose you've purchased Font Awesome Pro. To enable those Pro icons on your web site, it's just two steps:
+
+1. Login to your fontawesome.com account and go to the [Services](https://fontawesome.com/account/services) page.
+   Add any web domains where you'll use the icons. This is a "white list". It tells our server that if the icons
+   are being loaded from any of these web sites, it's OK to load them as long as your account is active.
+
+2. Go to the plugin settings page and click the checkbox next to "Pro". Save that change.
+
+That's it! Add Pro icons anywhere on your site.
+
+==== With Other Font Awesome Client Components ====
+
+Suppose you've installed a theme called "Radiance" and a plugin called "Shuffle" and that each of them depend
+on this plugin for their icons.
+
+On the plugin's settings page, you can see in the "Current Requirements" section what Font Awesome
+requirements Radiance and Shuffle have. If they have conflicting requirements, you'll see a simple
+error message to help you diagnose and resolve the problem.
+
+For example, suppose Radiance says it requires version Font Awesome version 5.1.0 or later, but Shuffle
+says it requires version 5.0.13. Well, we can't satisfy both, and we can load both versions, because that
+would break all of your icons. Instead, you'll see an error message that clearly shows which requirement
+is causing a conflict. You might resolve the problem by doing any or all of the following:
+
+1. Deactivating the Shuffle plugin
+2. Choosing a different theme
+3. Contacting the developers of Radiance or Shuffle to suggest that they change their requirements to
+   reduce conflicts
+
+While that might be a little bit of a hassle, at least it's clear and obvious and you know who to go to
+to resolve the problem. Not like the lawless ancient days when every plugin and theme tried to load its own version
+of Font Awesome and everyone crossed their fingers hoping it just worked, and when it didn't, you had no idea why.
+
+Now suppose that Radiance and Shuffle have compatible requirements, and further suppose that they make no
+requirement about the method---i.e. they're content with either webfont or svg. Well, then, if you as the
+web site owner prefer to use SVG, just make that selection and save those changes. Your SVG requirement
+will satisfy Radiance, Shuffle, and your own preference. Anywhere that you or those components place
+icons, they'll be rendered as SVG.
 
 == CAVEAT ==
 
