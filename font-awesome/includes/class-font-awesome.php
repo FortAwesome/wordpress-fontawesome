@@ -1,8 +1,8 @@
 <?php
 
-require_once( dirname(plugin_dir_path(__FILE__)) . '/vendor/autoload.php');
-require_once( dirname(plugin_dir_path(__FILE__)) . '/includes/class-font-awesome-release-provider.php');
-require_once( dirname(plugin_dir_path(__FILE__)) . '/includes/class-font-awesome-resource.php');
+require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
+require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php');
+require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
 use Composer\Semver\Semver;
 
 if (! class_exists('FontAwesome') ) :
@@ -119,8 +119,8 @@ class FontAwesome {
   private function initialize_admin(){
     add_action('admin_enqueue_scripts', function(){
       $this->detect_unregistered_clients();
-      wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/css/font-awesome-admin.css', array(), $this->version, 'all' );
-      wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/js/font-awesome-admin.js', array('jquery'), $this->version );
+      wp_enqueue_style( $this->plugin_name, FONTAWESOME_DIR_URL . 'admin/css/font-awesome-admin.css', array(), $this->version, 'all' );
+      wp_enqueue_script( $this->plugin_name, FONTAWESOME_DIR_URL . 'admin/js/font-awesome-admin.js', array('jquery'), $this->version );
     });
 
     add_action('admin_menu', function(){
@@ -403,7 +403,7 @@ class FontAwesome {
   }
 
   public function create_admin_page(){
-    include_once( dirname(plugin_dir_path(__FILE__)) . '/admin/views/main.php' );
+    include_once( FONTAWESOME_DIR_PATH . 'admin/views/main.php' );
   }
 
   /**

@@ -13,16 +13,18 @@
 
 defined( 'WPINC' ) || die;
 
+define( 'FONTAWESOME_DIR_PATH', plugin_dir_path( __FILE__ ) );
+define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
 register_activation_hook( __FILE__, function(){
-  require_once plugin_dir_path( __FILE__ ) . 'includes/class-font-awesome-activator.php';
+  require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-activator.php';
   FontAwesome_Activator::activate();
 });
 
 register_deactivation_hook( __FILE__, function(){
-  require_once plugin_dir_path( __FILE__ ) . 'includes/class-font-awesome-deactivator.php';
+  require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-deactivator.php';
   FontAwesome_Deactivator::deactivate();
 });
 
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-font-awesome.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome.php';
 
 FontAwesome()->run();

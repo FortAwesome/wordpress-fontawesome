@@ -1,6 +1,6 @@
 <?php
-require_once( dirname(plugin_dir_path(__FILE__)) . '/vendor/autoload.php');
-require_once( dirname(plugin_dir_path(__FILE__)) . '/includes/class-font-awesome-resource.php');
+require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
+require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
 
 use Composer\Semver\Semver;
 
@@ -28,7 +28,7 @@ if (! class_exists('FontAwesomeReleaseProvider') ) :
     private function __construct() { /* noop */ }
 
     private function load_releases(){
-      $files = glob( trailingslashit(dirname(plugin_dir_path(__FILE__))) . 'releases/release*.yml' );
+      $files = glob( trailingslashit(FONTAWESOME_DIR_PATH) . 'releases/release*.yml' );
       $this->_releases = array();
       foreach($files as $file){
         $basename = basename($file);
