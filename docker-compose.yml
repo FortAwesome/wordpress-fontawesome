@@ -18,7 +18,7 @@ services:
    wordpress:
      depends_on:
        - db
-     image: wordpress-fontawesome-dev:latest
+     build: .
      ports:
        - "8000:80"
      restart: always
