@@ -16,7 +16,9 @@ class ReleaseProviderTest extends WP_UnitTestCase {
     '5.0.10',
     '5.0.12',
     '5.0.13',
-    '5.1.0'
+    '5.1.0',
+    '5.1.1',
+    '5.2.0'
   ];
 
   public function test_can_load_and_instantiate(){

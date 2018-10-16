@@ -12,9 +12,8 @@
  */
 
 defined( 'WPINC' ) || die;
+require_once __DIR__ . '/defines.php';
 
-define( 'FONTAWESOME_DIR_PATH', plugin_dir_path( __FILE__ ) );
-define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
 register_activation_hook( __FILE__, function(){
   require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-activator.php';
   FontAwesome_Activator::activate();

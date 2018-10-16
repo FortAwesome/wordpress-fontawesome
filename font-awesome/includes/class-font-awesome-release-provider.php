@@ -14,15 +14,23 @@ if (! class_exists('FontAwesomeReleaseProvider') ) :
     protected static $_instance = null;
 
     /**
-     * Main FontAwesome Instance.
+     * Main FontAwesomeReleaseProvider Instance.
      *
-     * Ensures only one instance of FontAwesome is loaded or can be loaded.
+     * Ensures only one instance of FontAwesomeReleaseProvider is loaded or can be loaded.
      */
     public static function instance() {
       if ( is_null( self::$_instance ) ) {
         self::$_instance = new self();
       }
       return self::$_instance;
+    }
+
+    /**
+     * Resets the singleton instance referenced by this class.
+     */
+    public static function reset(){
+      self::$_instance = null;
+      self::instance();
     }
 
     private function __construct() { /* noop */ }
