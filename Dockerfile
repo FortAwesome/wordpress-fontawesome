@@ -18,9 +18,6 @@ COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
 # Install phpunit
 RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 
-# Install codecept
-RUN curl -LsS https://codeception.com/codecept.phar -o /usr/local/bin/codecept && chmod +x /usr/local/bin/codecept
-
 COPY ./font-awesome/bin/install-wp-tests.sh /tmp
 
 RUN /tmp/install-wp-tests.sh latest
