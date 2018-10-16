@@ -1,5 +1,5 @@
 <?php
-
+require_once( __DIR__ . '/../defines.php');
 require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
