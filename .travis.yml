@@ -20,19 +20,20 @@ matrix:
   include:
   - php: 7.1
     env: WP_VERSION=latest
-  - php: 7.0
-    env: WP_VERSION=latest
-  - php: 5.6
-    env: WP_VERSION=latest
-  - php: 5.6
-    env: WP_VERSION=trunk
-  - php: 5.6
-    env: WP_TRAVISCI=phpcs
-  - php: 5.3
-    env: WP_VERSION=latest
-    dist: precise
+#  - php: 7.0
+#    env: WP_VERSION=latest
+#  - php: 5.6
+#    env: WP_VERSION=latest
+#  - php: 5.6
+#    env: WP_VERSION=trunk
+#  - php: 5.6
+#    env: WP_TRAVISCI=phpcs
+#  - php: 5.3
+#    env: WP_VERSION=latest
+#    dist: precise
 
 before_script:
+- export WP_VERSION=latest
 - export PATH="$HOME/.composer/vendor/bin:$PATH"
 - |
   if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
