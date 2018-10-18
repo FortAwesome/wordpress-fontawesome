@@ -1,6 +1,6 @@
 <?php
 
-require_once('includes/class-font-awesome-release-provider.php');
+require_once(FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php');
 require_once( dirname(__FILE__) . '/_support/font_awesome_phpunit_util.php');
 use Composer\Semver\Semver;
 
