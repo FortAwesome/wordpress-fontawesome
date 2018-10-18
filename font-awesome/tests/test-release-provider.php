@@ -27,10 +27,12 @@ class ReleaseProviderTest extends WP_UnitTestCase {
   /**
    * @beforeClass
    */
+  /*
   public static function load_vcr() {
     \VCR\VCR::turnOn();
     \VCR\VCR::insertCassette('releases_api');
   }
+  */
 
   public function test_can_load_and_instantiate(){
     $obj = FontAwesomeReleaseProvider();

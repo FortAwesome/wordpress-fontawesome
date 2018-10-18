@@ -3,8 +3,5 @@
         "composer/semver": "^1.4",
         "mustangostang/spyc": "^0.6.2",
         "guzzlehttp/guzzle": "~6.0"
-    },
-    "require-dev": {
-        "php-vcr/php-vcr": "^1.4"
     }
 }
