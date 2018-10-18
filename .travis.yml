@@ -1,6 +1,8 @@
 sudo: false
 dist: trusty
+
 language: php
+
 before_install:
   - cd font-awesome
 
@@ -9,12 +11,11 @@ notifications:
     on_success: never
     on_failure: change
 
+
 cache:
   directories:
+  - vendor
   - $HOME/.composer/cache
-
-services:
-- mysql
 
 matrix:
   include:
@@ -22,6 +23,8 @@ matrix:
     env: WP_VERSION=latest
 #  - php: 7.0
 #    env: WP_VERSION=latest
+#  - php: 5.6
+#    env: WP_VERSION=4.4
 #  - php: 5.6
 #    env: WP_VERSION=latest
 #  - php: 5.6
@@ -33,7 +36,6 @@ matrix:
 #    dist: precise
 
 before_script:
-- export WP_VERSION=latest
 - export PATH="$HOME/.composer/vendor/bin:$PATH"
 - |
   if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
@@ -43,17 +45,15 @@ before_script:
   fi
 - |
   if [[ ! -z "$WP_VERSION" ]] ; then
-    echo "DEBUG: installing tests for WP_VERSION: $WP_VERSION"
-    bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+    bash bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
     composer global require "phpunit/phpunit=4.8.*|5.7.*"
-  else
-    echo "DEBUG: NOT installing tests"
   fi
 - |
   if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
     composer global require wp-coding-standards/wpcs
     phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
   fi
+
 script:
 - |
   if [[ ! -z "$WP_VERSION" ]] ; then
