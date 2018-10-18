@@ -22,11 +22,11 @@ matrix:
     env: WP_VERSION=latest
   - php: 7.1.18
     env: WP_VERSION=latest
-  - php: 7.0
+  - php: 7.0.32
     env: WP_VERSION=latest
-  - php: 5.6
+  - php: 5.6.37
     env: WP_VERSION=4.4
-  - php: 5.6
+  - php: 5.6.37
     env: WP_VERSION=latest
 #  - php: 5.6
 #    env: WP_VERSION=trunk
@@ -51,9 +51,7 @@ before_script:
     composer global require wp-coding-standards/wpcs
     phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
   fi
-- php --ini
 - php --info
-- ls -1 /home/travis/.phpenv/versions
 
 script:
 - composer install
