@@ -19,7 +19,7 @@ cache:
 
 matrix:
   include:
-  - php: 7.1
+  - php: 7.1.18
     env: WP_VERSION=latest
 #  - php: 7.0
 #    env: WP_VERSION=latest
