@@ -4,6 +4,6 @@
 
 #docker exec -it -u user -w /var/www/html $WP_CONTAINER_ID wp $@
 docker run -it --rm -u user -w /var/www/html \
-  --volumes-from com.fontawesome.wp \
-  --network container:com.fontawesome.wp \
+  --volumes-from com.fontawesome.wordpress \
+  --network container:com.fontawesome.wordpress \
   wordpress-fontawesome-dev:latest wp $@
