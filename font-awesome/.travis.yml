@@ -8,10 +8,6 @@ notifications:
     on_success: never
     on_failure: change
 
-branches:
-  only:
-    - master
-
 cache:
   directories:
     - $HOME/.composer/cache
@@ -54,6 +50,7 @@ before_script:
 script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
+      echo "Runnining phpunit for WP_VERSION: $WP_VERSION"
       phpunit
       WP_MULTISITE=1 phpunit
     fi
