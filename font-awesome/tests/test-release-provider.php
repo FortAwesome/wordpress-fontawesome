@@ -5,6 +5,7 @@ require_once( dirname(__FILE__) . '/_support/font_awesome_phpunit_util.php');
 use Composer\Semver\Semver;
 
 class ReleaseProviderTest extends WP_UnitTestCase {
+  # Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018
   protected $known_versions = [
     '5.0.1',
     '5.0.2',
@@ -18,8 +19,18 @@ class ReleaseProviderTest extends WP_UnitTestCase {
     '5.0.13',
     '5.1.0',
     '5.1.1',
-    '5.2.0'
+    '5.2.0',
+    '5.3.1',
+    '5.4.1'
   ];
+
+  /**
+   * @beforeClass
+   */
+  public static function load_vcr() {
+    \VCR\VCR::turnOn();
+    \VCR\VCR::insertCassette('releases_api');
+  }
 
   public function test_can_load_and_instantiate(){
     $obj = FontAwesomeReleaseProvider();
@@ -142,7 +153,6 @@ class ReleaseProviderTest extends WP_UnitTestCase {
     $this->assertEquals('https://use.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection[0]->source());
     $this->assertEquals('sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt', $resource_collection[0]->integrity_key());
     $this->assertEquals('https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection[1]->source());
-    $this->assertTrue(is_null($resource_collection[1]->integrity_key()));
   }
 
   public function test_5_0_all_svg_pro_shim(){
@@ -260,8 +270,6 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
     // The shim last
     $this->assertEquals('https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection[2]->source());
-    // But there was no integrity key for the webfont shim in 5.1.0, so we expect it to be null
-    $this->assertTrue(is_null($resource_collection[2]->integrity_key()));
   }
 
   public function test_5_1_no_style_webfont_free_shim(){
