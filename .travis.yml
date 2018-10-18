@@ -11,7 +11,6 @@ notifications:
     on_success: never
     on_failure: change
 
-
 cache:
   directories:
   - vendor
@@ -19,6 +18,8 @@ cache:
 
 matrix:
   include:
+  - php: 7.2.6
+    env: WP_VERSION=latest
   - php: 7.1.18
     env: WP_VERSION=latest
   - php: 7.0
@@ -27,13 +28,10 @@ matrix:
     env: WP_VERSION=4.4
   - php: 5.6
     env: WP_VERSION=latest
-  - php: 5.6
-    env: WP_VERSION=trunk
-  - php: 5.6
-    env: WP_TRAVISCI=phpcs
-  - php: 5.3
-    env: WP_VERSION=latest
-    dist: precise
+#  - php: 5.6
+#    env: WP_VERSION=trunk
+#  - php: 5.6
+#    env: WP_TRAVISCI=phpcs
 
 before_script:
 - export PATH="$HOME/.composer/vendor/bin:$PATH"
@@ -55,6 +53,7 @@ before_script:
   fi
 - php --ini
 - php --info
+- ls -1 /home/travis/.phpenv/versions
 
 script:
 - composer install
