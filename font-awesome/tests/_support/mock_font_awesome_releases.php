@@ -7,7 +7,7 @@ class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase{
 
   public static function load_releases () {
     $mocked_releases = array();
-    $files = glob( trailingslashit(FONTAWESOME_DIR_PATH) . 'releases/release*.yml' );
+    $files = glob( trailingslashit(FONTAWESOME_DIR_PATH) . 'tests/fixtures/releases/release*.yml' );
     foreach($files as $file){
       $basename = basename($file);
       $matches = [];
