@@ -17,6 +17,16 @@ if (! class_exists('FontAwesomeReleaseProvider') ) :
      */
     protected static $_instance = null;
 
+    protected static $_handler = null;
+
+    /**
+     * Set a handler that will be supplied to the Client.
+     * Use this for mocking API Calls.
+     */
+    public static function set_handler($handler){
+      self::$_handler = $handler;
+    }
+
     /**
      * Main FontAwesomeReleaseProvider Instance.
      *
@@ -38,12 +48,16 @@ if (! class_exists('FontAwesomeReleaseProvider') ) :
     }
 
     private function __construct() {
-      $this->_apiClient = new Client([
-            // Base URI is used with relative requests
-            'base_uri' => FONTAWESOME_API_URL,
-            // You can set any number of default request options.
-            'timeout'  => 2.0,
-        ]);
+      $client_params = array(
+        // Base URI is used with relative requests
+        'base_uri' => FONTAWESOME_API_URL,
+        // You can set any number of default request options.
+        'timeout'  => 2.0
+      );
+      if(self::$_handler) {
+        $client_params['handler'] = self::$_handler;
+      }
+      $this->_apiClient = new Client($client_params);
     }
 
     private function map_api_release($release) {
