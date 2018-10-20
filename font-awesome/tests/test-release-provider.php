@@ -11,6 +11,19 @@ use GuzzleHttp\Psr7\Response;
 
 /**
  * @group api
+ *
+ * The backupStaticAttributes option seems to be necessary in order to make the handler mocking work consistently.
+ * To see what happens without it, disconnect networking (so the client can't get out to the real API URL and MUST
+ * rely on this mock handler), and then run this test case. It will fail some times.
+ * This is probably because we're messing with singletons here.
+ *
+ * TODO: Considering refactoring or re-implementing to avoid this if it becomes a problem. But maybe it's not a problem.
+ *
+ * WARNING: if you disable this attribute and see the tests still passing, it's probably because it's hitting the
+ * real API server instead of using the MockHandler, which we don't want to do. So just make sure you understand
+ * what you're doing before disabling this and make sure that the test suite still passes offline (and thus does
+ * not require hitting the real API server).
+ * @backupStaticAttributes enabled
  */
 class ReleaseProviderTest extends WP_UnitTestCase {
   # Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018
