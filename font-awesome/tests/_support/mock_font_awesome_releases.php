@@ -2,7 +2,7 @@
 
 namespace FontAwesomePhpUnitUtil;
 
-class MockFontAwesomeReleases {
+class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase{
   public static $releases = null;
 
   public static function load_releases () {
@@ -26,5 +26,24 @@ class MockFontAwesomeReleases {
       self::load_releases();
     }
     return self::$releases;
+  }
+
+  public static function mock() {
+    $obj = new self();
+    \FontAwesomePhpUnitUtil\mock_singleton_method(
+      $obj,
+      \FontAwesomeReleaseProvider::class,
+      'releases',
+      function($method) {
+        $method->willReturn(
+          \FontAwesomePhpUnitUtil\MockFontAwesomeReleases::releases()
+        );
+      }
+    );
+  }
+
+
+  function test_mock_releases_loaded() {
+    $this->assertNotNull(self::releases());
   }
 }
