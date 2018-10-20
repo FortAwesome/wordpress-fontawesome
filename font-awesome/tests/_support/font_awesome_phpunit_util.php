@@ -1,5 +1,6 @@
 <?php
 namespace FontAwesomePhpUnitUtil;
+require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock_font_awesome_releases.php';
 /**
  * Shared utilities for testing FontAwesome with PhpUnit and WordPress.
  */
