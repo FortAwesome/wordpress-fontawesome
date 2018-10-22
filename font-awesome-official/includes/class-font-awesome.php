@@ -10,7 +10,7 @@ if (! class_exists('FontAwesome') ) :
 class FontAwesome {
 
   protected $_constants = [
-    'version' => '0.0.1',
+    'version' => '0.1.0',
     'plugin_name' => 'font-awesome-official',
     'options_key' => 'font-awesome-official',
     'options_page' => 'font-awesome-official',

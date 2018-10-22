@@ -1,9 +1,9 @@
 === Font Awesome ===
-Contributors: mlwilkerson, kemitchell
+Contributors: fontawesome, mlwilkerson, kemitchell
 Tags: font, awesome, fontawesome, font-awesome, font-awesome-official, icon, svg, webfont
-Requires at least: 4.9.6
-Tested up to: 4.9.6
-Requires PHP: 7.2.6
+Requires at least: 4.4
+Tested up to: 4.9.8
+Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,11 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 [Find more documentation here.](https://github.com/FortAwesome/wordpress-fontawesome/README.md)
 
 == Changelog ==
+
+= 0.1.0 =
+
+* Re-name identifier slug as font-awesome-official
+* Load Font Awesome release version metadata from fontawesome.com releases API
 
 = 0.0.1 =
 * Initial private beta.
