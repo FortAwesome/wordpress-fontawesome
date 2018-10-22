@@ -29,7 +29,7 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 = 0.1.0 =
 
 * Re-name identifier slug as font-awesome-official
-* Load Font Awesome release version metadata from fontawesome.com releases API
+* Load Font Awesome release version metadata from the fontawesome.com releases API
 
 = 0.0.1 =
 * Initial private beta.
