@@ -18,9 +18,9 @@ COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
 # Install phpunit
 RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 
-COPY ./font-awesome-official/bin/install-wp-tests.sh /tmp
+COPY ./bin/install-wp-tests-docker.sh /tmp
 
-RUN /tmp/install-wp-tests.sh latest
+RUN /tmp/install-wp-tests-docker.sh latest
 
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000
