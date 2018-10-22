@@ -24,6 +24,7 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
    */
   function reset(){
     FontAwesome::instance()->reset();
+    \FontAwesomePhpUnitUtil\MockFontAwesomeReleases::mock();
     wp_script_is('font-awesome-official', 'enqueued') && wp_dequeue_script('font-awesome-official');
     wp_script_is('font-awesome-official-v4shim', 'enqueued') && wp_dequeue_script('font-awesome-official-v4shim');
     wp_style_is('font-awesome-official', 'enqueued') && wp_dequeue_style('font-awesome-official');

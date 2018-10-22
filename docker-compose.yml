@@ -18,9 +18,9 @@ services:
    wordpress:
      depends_on:
        - db
-     build: .
+     image: wordpress-fontawesome-dev:latest
      ports:
-       - "8000:80"
+       - "8080:80"
      restart: always
      volumes:
        - ./font-awesome:/var/www/html/wp-content/plugins/font-awesome
@@ -32,6 +32,6 @@ services:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
-     container_name: "com.fontawesome.wp"
+     container_name: "com.fontawesome.wordpress"
 volumes:
     db_data:

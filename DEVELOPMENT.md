@@ -20,10 +20,10 @@ site. Just doing it from the command line for convenience.
 
 It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
 
-WordPress is now ready and initialized in the docker container and reachable at localhost:8000
+WordPress is now ready and initialized in the docker container and reachable at localhost:8080
 with admin username and password as found in `.env`.
 
-To access the WP Admin dashboard, go to `http://localhost:8000/wp-admin`.
+To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
 
 # Reset WordPress Docker Environment and Remove Data Volume
 
@@ -46,7 +46,7 @@ It can also be managed on the WP Admin Interface on the Plugins page
 # Activate Integration Test Plugin and Theme
 
 There's a `plugin-beta` and a `theme-alpha` that each are clients of this `font-awesome` plugin.
-They are not involved in the unit test suite at all. But when you're playing with the with localhost:8000,
+They are not involved in the unit test suite at all. But when you're playing with the with localhost:8080,
 you'll probably want to activate these to see something happen.
 
 They can be activated from WP Admin Dashboard as any Plugin or Theme would be, or from the command line:

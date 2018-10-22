@@ -1,17 +1,31 @@
 <?php
+require_once( FONTAWESOME_DIR_PATH . 'defines.php');
 require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
 
 use Composer\Semver\Semver;
+use GuzzleHttp\Client;
 
 if (! class_exists('FontAwesomeReleaseProvider') ) :
   class FontAwesomeReleaseProvider {
     protected $_releases = null;
 
+    protected $_apiClient = null;
+
     /**
      * The single instance of the class.
      */
     protected static $_instance = null;
+
+    protected static $_handler = null;
+
+    /**
+     * Set a handler that will be supplied to the Client.
+     * Use this for mocking API Calls.
+     */
+    public static function set_handler($handler){
+      self::$_handler = $handler;
+    }
 
     /**
      * Main FontAwesomeReleaseProvider Instance.
@@ -33,19 +47,50 @@ if (! class_exists('FontAwesomeReleaseProvider') ) :
       self::instance();
     }
 
-    private function __construct() { /* noop */ }
+    private function __construct() {
+      $client_params = array(
+        // Base URI is used with relative requests
+        'base_uri' => FONTAWESOME_API_URL,
+        // You can set any number of default request options.
+        'timeout'  => 2.0
+      );
+      if(self::$_handler) {
+        $client_params['handler'] = self::$_handler;
+      }
+      $this->_apiClient = new Client($client_params);
+    }
+
+    private function map_api_release($release) {
+      $mapped_release = array();
+      $mapped_release['version'] = $release['attributes']['version'];
+      $mapped_release['download'] = $release['attributes']['download'];
+      $mapped_release['date'] = $release['attributes']['date'];
+      $mapped_release['iconCount'] = $release['attributes']['icon-count'];
+      $mapped_release['sri'] = $release['attributes']['sri'];
+
+      return $mapped_release;
+    }
 
     private function load_releases(){
       $files = glob( trailingslashit(FONTAWESOME_DIR_PATH) . 'releases/release*.yml' );
+      $response = $this->_apiClient->get('api/releases');
+      $code = $response->getStatusCode();
+      $body = $response->getBody();
+      $bodyContents = $body->getContents();
+      $bodyJson = json_decode($bodyContents, true);
+      $apiReleases = array_map(array($this, 'map_api_release'), $bodyJson['data']);
       $this->_releases = array();
-      foreach($files as $file){
-        $basename = basename($file);
-        $matches = [];
-        if( preg_match('/release-([0-9]+\.[0-9]+\.[0-9]+)\.yml/', $basename,$matches) ){
-          $release_data = Spyc::YAMLLoad($file);
-          $this->_releases[$matches[1]] = $release_data;
-        }
+      foreach($apiReleases as $release){
+        $this->_releases[$release['version']] = $release;
       }
+      # foreach($files as $file){
+      #   $basename = basename($file);
+      #   $matches = [];
+      #   if( preg_match('/release-([0-9]+\.[0-9]+\.[0-9]+)\.yml/', $basename,$matches) ){
+      #     $release_data = Spyc::YAMLLoad($file);
+      #     $this->_releases[$matches[1]] = $release_data;
+      #   }
+      # }
     }
 
     /**
