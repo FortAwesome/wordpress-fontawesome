@@ -4,7 +4,7 @@
  * Plugin Name:       Font Awesome
  * Plugin URI:        https://fontawesome.com/wp-font-awesome/
  * Description:       Manage version resolution and loading for Font Awesome Free and Pro
- * Version:           0.0.1
+ * Version:           0.1.0
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
  * License:           GPLv2 (or later)

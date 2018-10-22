@@ -10,19 +10,19 @@ if (! class_exists('FontAwesome') ) :
 class FontAwesome {
 
   protected $_constants = [
-    'version' => '0.0.1',
-    'plugin_name' => 'font-awesome',
-    'options_key' => 'font-awesome',
-    'options_page' => 'font-awesome',
+    'version' => '0.1.0',
+    'plugin_name' => 'font-awesome-official',
+    'options_key' => 'font-awesome-official',
+    'options_page' => 'font-awesome-official',
     'handle' => 'font-awesome-official',
     'v4shim_handle' => 'font-awesome-official-v4shim',
-    'user_settings_section' => 'font-awesome-user-settings-section',
-    'user_settings_field_id_method' => 'font-awesome-user-settings-field-method',
-    'user_settings_field_id_pro' => 'font-awesome-user-settings-field-pro',
-    'user_settings_field_id_remove_others' => 'font-awesome-user-settings-field-remove-others',
-    'user_settings_field_id_v4shim' => 'font-awesome-user-settings-field-v4shim',
-    'user_settings_field_id_version' => 'font-awesome-user-settings-field-version',
-    'user_settings_field_id_pseudo_elements' => 'font-awesome-user-settings-field-pseudo-elements',
+    'user_settings_section' => 'font-awesome-official-user-settings-section',
+    'user_settings_field_id_method' => 'font-awesome-official-user-settings-field-method',
+    'user_settings_field_id_pro' => 'font-awesome-official-user-settings-field-pro',
+    'user_settings_field_id_remove_others' => 'font-awesome-official-user-settings-field-remove-others',
+    'user_settings_field_id_v4shim' => 'font-awesome-official-user-settings-field-v4shim',
+    'user_settings_field_id_version' => 'font-awesome-official-user-settings-field-version',
+    'user_settings_field_id_pseudo_elements' => 'font-awesome-official-user-settings-field-pseudo-elements',
     'default_user_options' => array(
       'load_spec' => array(
         'name' => 'user'
