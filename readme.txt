@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: mlwilkerson, kemitchell
-Tags: font, awesome, fontawesome, icon, svg
+Tags: font, awesome, fontawesome, font-awesome, font-awesome-official, icon, svg, webfont
 Requires at least: 4.9.6
 Tested up to: 4.9.6
 Requires PHP: 7.2.6

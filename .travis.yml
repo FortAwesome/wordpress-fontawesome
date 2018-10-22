@@ -4,7 +4,7 @@ dist: trusty
 language: php
 
 before_install:
-  - cd font-awesome
+  - cd font-awesome-official
 
 notifications:
   email:

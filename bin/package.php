@@ -1,7 +1,7 @@
 <?php
 $repo_dir = dirname(__DIR__);
 $dist_dir = $repo_dir . '/dist';
-$plugin_dir = $repo_dir . '/font-awesome';
+$plugin_dir = $repo_dir . '/font-awesome-official';
 
 initialize_dist_dir($dist_dir);
 $rc = null;
@@ -16,14 +16,14 @@ rcp($plugin_dir . '/releases', $dist_dir . '/releases');
 rcp($plugin_dir . '/includes', $dist_dir . '/includes');
 rcp($plugin_dir . '/admin', $dist_dir . '/admin');
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
-copy($plugin_dir . '/font-awesome.php', $dist_dir . '/font-awesome.php');
+copy($plugin_dir . '/font-awesome-official.php', $dist_dir . '/font-awesome-official.php');
 copy($repo_dir . '/readme.txt', $dist_dir . '/readme.txt');
 copy($repo_dir . '/LICENSE', $dist_dir . '/LICENSE');
 copy($plugin_dir . '/composer.json', $dist_dir . '/composer.json');
 copy($plugin_dir . '/composer.lock', $dist_dir . '/composer.lock');
 
 // zip dist
-$zip_filename = $repo_dir . '/font-awesome.zip';
+$zip_filename = $repo_dir . '/font-awesome-official.zip';
 if(file_exists($zip_filename)) {
   printf("WARNING: Zip file $zip_filename already exists, so we won't overwrite it.\n" .
     "It's probably out of sync with the dist dir, though.\n");
@@ -32,7 +32,7 @@ $zip = new ZipArchive();
 if ($zip->open($zip_filename, ZipArchive::CREATE)!==TRUE) {
   exit("cannot open <$zip_filename>\n");
 } else {
-  $options = array('add_path' => 'font-awesome/', 'remove_path' => 'dist');
+  $options = array('add_path' => 'font-awesome-official/', 'remove_path' => 'dist');
   rzip($zip, 'dist', 0, $options);
   $zip->close();
 }

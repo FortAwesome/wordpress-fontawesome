@@ -22,7 +22,6 @@
   * [How to Ship Your Theme or Plugin To Work with Font Awesome](#how-to-ship-your-theme-or-plugin-to-work-with-font-awesome)
   * [How to Make Pro Icons Available in Your Theme or Plugin](#how-to-make-pro-icons-available-in-your-theme-or-plugin)
   * [Examples](#examples)
-- [Temporary Plugin Name Conflict](#temporary-plugin-name-conflict)
 - [About Shortcodes](#about-shortcodes)
 
 <!-- tocstop -->
@@ -42,8 +41,8 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
 
-1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome.zip`
-1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome.zip`
+1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome-official.zip`
+1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome-official.zip`
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
 
@@ -266,18 +265,6 @@ There are example clients in this GitHub repo that demonstrate how your code can
 
 See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can run a dockerized WordPress environment and experiment
 with these examples.
-
-# Temporary Plugin Name Conflict
-
-This plugin currently uses the same namespace as [this obsolete plugin](https://wordpress.org/plugins/font-awesome/)
-in the WordPress Plugins Directory. This plugin has not yet been published in the plugins directory, but must
-be installed manually or by uploading the zip file in this repository. It will not clash with that other plugin
-unless you attempt to install that other plugin. However, after installing this
-plugin--on the plugins page--WordPress may alert you that there is an update available.
-If so, that's only because the update notifier is finding the obsolete plugin by the same
-name in the directory and suggesting that it is a new version. Just ignore that "update available"
-notification. Before we do a final release and publish this plugin to the plugins directory, we'll
-be giving it a new name.
 
 # About Shortcodes
 
