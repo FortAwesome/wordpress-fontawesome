@@ -12,10 +12,10 @@ if( 0 !== $rc ) {
 };
 
 rcp($plugin_dir . '/vendor', $dist_dir . '/vendor');
-rcp($plugin_dir . '/releases', $dist_dir . '/releases');
 rcp($plugin_dir . '/includes', $dist_dir . '/includes');
 rcp($plugin_dir . '/admin', $dist_dir . '/admin');
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
+copy($plugin_dir . '/defines.php', $dist_dir . '/defines.php');
 copy($plugin_dir . '/font-awesome-official.php', $dist_dir . '/font-awesome-official.php');
 copy($repo_dir . '/readme.txt', $dist_dir . '/readme.txt');
 copy($repo_dir . '/LICENSE', $dist_dir . '/LICENSE');
@@ -61,8 +61,9 @@ function rzip($zip, $src, $flags, $options){
         }
       }
     }
+  } else {
+    printf("WARNING: $src is not a directory. Ignoring.\n");
   }
-  printf("WARNING: $src is not a directory. Ignoring.\n");
 }
 
 function rimraf($target){
