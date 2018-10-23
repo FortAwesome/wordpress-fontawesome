@@ -29,5 +29,6 @@ ENV XDEBUG_PORT 9000
 COPY ./proxy-webpack-dev.conf /etc/apache2/conf-available
 RUN a2enmod proxy
 RUN a2enmod proxy_http
+RUN a2enconf proxy-webpack-dev
 
 CMD ["apache2-foreground"]
