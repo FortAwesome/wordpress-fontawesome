@@ -117,11 +117,25 @@ class FontAwesome {
   }
 
   private function get_admin_asset_manifest() {
-    $asset_manifest_file =  FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
-    if( !file_exists($asset_manifest_file) ) return null;
-    $contents = file_get_contents($asset_manifest_file);
-    if( empty($contents) ) return null;
-    return json_decode($contents, true);
+    if(FONTAWESOME_ENV == 'development') {
+      $client = new GuzzleHttp\Client(['base_uri' => 'http://dockerhost:3030']);
+      $response = $client->request('GET', '/asset-manifest.json', []);
+
+      if($response->getStatusCode() != 200) {
+        return null;
+      }
+
+      $body = $response->getBody();
+      $bodyContents = $body->getContents();
+      $bodyJson = json_decode($bodyContents, true);
+      return $bodyJson;
+    } else {
+      $asset_manifest_file =  FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
+      if( !file_exists($asset_manifest_file) ) return null;
+      $contents = file_get_contents($asset_manifest_file);
+      if( empty($contents) ) return null;
+      return json_decode($contents, true);
+    }
   }
 
   private function initialize_admin(){
@@ -129,12 +143,19 @@ class FontAwesome {
       $this->detect_unregistered_clients();
       $admin_asset_manifest = $this->get_admin_asset_manifest();
       $script_number = 0;
+
+      if(FONTAWESOME_ENV == 'development') {
+        $asset_url_base = "http://localhost:3030/";
+      } else {
+        $asset_url_base = FONTAWESOME_DIR_URL . "admin/build";
+      }
+
       foreach($admin_asset_manifest as $key => $value) {
-        if ( preg_match('/^(?!service-worker|precache-manifest).*\.js$/', $key) ) {
-          wp_enqueue_script( $this->plugin_name . "-" . $script_number, FONTAWESOME_DIR_URL . 'admin/build/' . $value, [], null, true);
+        if ( preg_match('/\.js$/', $key) ) {
+          wp_enqueue_script( $this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, true);
         }
         if ( preg_match('/\.css$/', $key) ) {
-          wp_enqueue_style( $this->plugin_name . "-" . $script_number, FONTAWESOME_DIR_URL . 'admin/build/' . $value, [], null, 'all' );
+          wp_enqueue_style( $this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, 'all' );
         }
         $script_number++;
       }
