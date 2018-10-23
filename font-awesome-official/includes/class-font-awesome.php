@@ -116,11 +116,28 @@ class FontAwesome {
     return admin_url( "options-general.php?page=" . $this->options_page );
   }
 
+  private function get_admin_asset_manifest() {
+    $asset_manifest_file =  FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
+    if( !file_exists($asset_manifest_file) ) return null;
+    $contents = file_get_contents($asset_manifest_file);
+    if( empty($contents) ) return null;
+    return json_decode($contents, true);
+  }
+
   private function initialize_admin(){
     add_action('admin_enqueue_scripts', function(){
       $this->detect_unregistered_clients();
-      wp_enqueue_style( $this->plugin_name, FONTAWESOME_DIR_URL . 'admin/css/font-awesome-admin.css', array(), $this->version, 'all' );
-      wp_enqueue_script( $this->plugin_name, FONTAWESOME_DIR_URL . 'admin/js/font-awesome-admin.js', array('jquery'), $this->version );
+      $admin_asset_manifest = $this->get_admin_asset_manifest();
+      $script_number = 0;
+      foreach($admin_asset_manifest as $key => $value) {
+        if ( preg_match('/^(?!service-worker|precache-manifest).*\.js$/', $key) ) {
+          wp_enqueue_script( $this->plugin_name . "-" . $script_number, FONTAWESOME_DIR_URL . 'admin/build/' . $value, [], null, true);
+        }
+        if ( preg_match('/\.css$/', $key) ) {
+          wp_enqueue_style( $this->plugin_name . "-" . $script_number, FONTAWESOME_DIR_URL . 'admin/build/' . $value, [], null, 'all' );
+        }
+        $script_number++;
+      }
     });
 
     add_action('admin_menu', function(){
