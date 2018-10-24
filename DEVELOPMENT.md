@@ -46,7 +46,38 @@ In one terminal window, `cd font-awesome-official/admin`, and then:
       Change that setting before trying to load the plugin admin page in your browser.
       (But don't commit that change, because we want the default environment to remain "development")   
 
-8. run `bin/setup`
+8. Configure a loopback network address so the docker container can talk to your docker host
+
+One way to set that up on your host is (on Mac OS):
+
+`sudo ifconfig lo0 alias 169.254.254.254`
+
+Context:
+
+With our current configuration, the docker container in which the wordpress server runs may need to access
+your host OS for a couple of things:
+
+- PHP debugging port
+- Webpack dev server port for React hot module reloading
+
+The normal paradigm for Docker is not to allow the containers to access the host's network. That's generally
+appropriate, given Docker's goals to create a clean, isolated, and secure environment.
+However, we kinda know what we're doing here, and it's only for development purposes on our local development
+machines, so it's reasonable to set up a loopback address on the host that will allow the containers to
+reach the host network for the purposes listed above. (I know, there are less [hacky ways](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) to do this,
+and we need to clean up this part of the environment setup at some point. But this works on Mac OS where
+some of the simpler methods do not. NOTE: on non-Mac host OSes the command line comparable to
+the `ifconfig` command above may be different. Read your man pages or something.)
+
+The result will be a line is added to the `/etc/hosts` in the container that assigns the hostname `dockerhost`
+to that IP Address, and that's the address used by the Apache config, for example, for proxying some requests
+over to the webpack dev server running on `http://dockerhost:3030`.
+
+If you need to change which loopback IP address is used for some reason, it's configured in `docker-compose.yml`.
+
+(TODO: change configuration to use [`host.docker.internal`](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) for Mac OS and the equivalent for other host OSes) 
+
+9. run `bin/setup`
 
 This does the initial WordPress admin setup that happens first on any freshly installed WordPress
 site. We're just doing it from the command line with the script to be quick and convenient.
