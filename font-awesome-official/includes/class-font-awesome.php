@@ -139,6 +139,9 @@ class FontAwesome {
   }
 
   private function initialize_admin(){
+    // TODO: only enqueue scripts when we're on our own admin page, not on *any* admin page.
+    // Otherwise, the React component will (rightly) complain in the JavaScript console that
+    // there's no DOM element on which to be mounted.
     add_action('admin_enqueue_scripts', function(){
       $this->detect_unregistered_clients();
       $admin_asset_manifest = $this->get_admin_asset_manifest();
