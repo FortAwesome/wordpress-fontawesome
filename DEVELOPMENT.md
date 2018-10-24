@@ -1,22 +1,55 @@
 # First-time Setup for Development
 1. Make sure Docker is installed
-2. docker-compose up
-3. create a .env.email file with an admin email address WordPress can use:
+
+2. `bin/prepare`
+
+This creates a customized docker image tagged `wordpress-fontawesome-dev` locally to be used
+for the wordpress container. It may take a while to build the first time, but once it's built,
+it doesn't need to be rebuilt with this script unless the `Dockerfile` changes.
+
+3. `docker-compose up`
+
+Run this from the top-level directory that contains the `docker-compose.yml` config file.
+
+Leave this running in one terminal window and do the rest of this in some other terminal windows.
+
+This runs the docker compose configuration that brings up the containers running wordpress and mysql.
+It will all be configured automatically for you with the scripts below. 
+
+4. create a .env.email file with an admin email address WordPress can use:
 
 ```
 WP_ADMIN_EMAIL=some_real_address@example.com
 ```
 
-4. install composer (PHP package manager)
+5. install composer (PHP package manager)
 
 On Mac OS X, it can be installed via `brew install composer`
 
-5. update composer dependencies: `composer install`
+6. update composer dependencies: `composer install`
 
-6. run `./bin/setup`
+7. Build our plugin's admin UI React app
 
-This does the initial admin setup that happens first on any freshly installed WordPress
-site. Just doing it from the command line for convenience.
+This is necessary before loading our plugin's admin page in WordPress because the assets for the
+React app are not checked in to this repo—they must be built. There are two options for building:
+
+In one terminal window, `cd font-awesome-official/admin`, and then:
+
+  (a) Development mode: `yarn start` to fire up webpack development server, if you want to run in development mode with
+      hot module reloading and such (which is probably what you should be doing if you're developing).
+      This will start up another web server that serves up the assets for the React app separately from
+      the WordPress site, so leave it running while you develop.
+      
+  (b) Production mode: You can also use `yarn build` to build production optimized assets into the `admin/build`
+      directory. In order to get the WordPress plugin to load these, you also need to temporarily change
+      the `FONTAWESOME_ENV` variable in `.env` to something other than "development", or just remove it.
+      Change that setting before trying to load the plugin admin page in your browser.
+      (But don't commit that change, because we want the default environment to remain "development")   
+
+8. run `bin/setup`
+
+This does the initial WordPress admin setup that happens first on any freshly installed WordPress
+site. We're just doing it from the command line with the script to be quick and convenient.
 
 It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
 
@@ -25,15 +58,26 @@ with admin username and password as found in `.env`.
 
 To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
 
+To access the Font Awesome admin page, go to:
+`http://localhost:8080/wp-admin/options-general.php?page=font-awesome-official`
+
 # Reset WordPress Docker Environment and Remove Data Volume
 
 `./bin/clean`
 
 This will kill and remove docker containers and delete the data volume.
 
+If you do something accidentally to modify the wordpress container and put it into a weird state
+somehow, or even if you just want to re-initialize the whole WordPress environment (i.e. the app and the mysql db),
+this is how you can do it. Run `bin/clean` and then fire up a fresh environment with `docker-compose up`.
+
 # Use wp-cli with the Dockerized WordPress Instance
 
 `./bin/wp`
+
+The WP-CLI is helpful for a variety of WordPress tasks and diagnostics, you can run the WP-CLI
+within a docker container that accesses the containerized wordpress instance using this script,
+passing arguments to it just like you would the normal `wp` command-line. This is just a dockerizing wrapper.
 
 # Activate and Deactivate Plugin from Command Line
 
@@ -59,13 +103,20 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 
 `./bin/phpunit`
 
+This runs `phpunit` in the docker container. It's just a docker wrapper around the normal `phpunit` command,
+so you can pass any normal `phpunit` command line arguments you might like. Given no arguments, the default
+is just to run the whole test suite.
+
 # Set a boolean config in wp-config.php
 
 `./bin/set-wp-config WP_DEBUG true`
 
-(Though this particular config is already set bin `bin/setup`.)
+(Though this particular config is already set automatically in `bin/setup`.)
 
 # Configure PhpStorm 2018.1.5 for debugging in the container
+
+This is pretty advanced, and also not necessary for development—it's just a nice toolset to have available.
+So beware: your mileage may vary.
 
 1. Add a CLI interpreter
 
@@ -142,11 +193,3 @@ There's more than one way to delete that container, but one way is to find the c
 * `docker container stop wordpress-fontawesome_phpstorm_helpers_1`
 * `docker container rm wordpress-fontawesome_phpstorm_helpers_1`
 
-# Development Roadmap
-
-- Test that it works no matter the order in which plugins are loaded.
-
-- Add diagnostic output to Admin settings page that shows what other attempts to load Font Awesome may have
-  happened outside of our control and which probably produce runtime conflicts.
-
-- Populate lists like "versions available" from a REST endpoint yet to be built.
