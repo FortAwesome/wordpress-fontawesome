@@ -144,6 +144,8 @@ class FontAwesome {
       $admin_asset_manifest = $this->get_admin_asset_manifest();
       $script_number = 0;
 
+      print "<!-- FONTAWESOME_ENV: " . FONTAWESOME_ENV . " -->\n";
+
       if(FONTAWESOME_ENV == 'development') {
         $asset_url_base = "http://localhost:3030/";
       } else {
