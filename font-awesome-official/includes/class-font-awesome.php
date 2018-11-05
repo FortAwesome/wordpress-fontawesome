@@ -71,6 +71,8 @@ class FontAwesome {
 
   protected $options = null;
 
+  protected $screen_id = null;
+
   /**
    * Main FontAwesome Instance.
    *
@@ -139,35 +141,34 @@ class FontAwesome {
   }
 
   private function initialize_admin(){
-    // TODO: only enqueue scripts when we're on our own admin page, not on *any* admin page.
-    // Otherwise, the React component will (rightly) complain in the JavaScript console that
-    // there's no DOM element on which to be mounted.
-    add_action('admin_enqueue_scripts', function(){
-      $this->detect_unregistered_clients();
-      $admin_asset_manifest = $this->get_admin_asset_manifest();
-      $script_number = 0;
+    add_action('admin_enqueue_scripts', function($hook){
+      if( $hook == $this->screen_id) {
 
-      print "<!-- FONTAWESOME_ENV: " . FONTAWESOME_ENV . " -->\n";
+        $this->detect_unregistered_clients();
+        $admin_asset_manifest = $this->get_admin_asset_manifest();
+        $script_number = 0;
 
-      if(FONTAWESOME_ENV == 'development') {
-        $asset_url_base = "http://localhost:3030/";
-      } else {
-        $asset_url_base = FONTAWESOME_DIR_URL . "admin/build";
-      }
 
-      foreach($admin_asset_manifest as $key => $value) {
-        if ( preg_match('/\.js$/', $key) ) {
-          wp_enqueue_script( $this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, true);
+        if (FONTAWESOME_ENV == 'development') {
+          $asset_url_base = "http://localhost:3030/";
+        } else {
+          $asset_url_base = FONTAWESOME_DIR_URL . "admin/build";
         }
-        if ( preg_match('/\.css$/', $key) ) {
-          wp_enqueue_style( $this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, 'all' );
+
+        foreach ($admin_asset_manifest as $key => $value) {
+          if (preg_match('/\.js$/', $key)) {
+            wp_enqueue_script($this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, true);
+          }
+          if (preg_match('/\.css$/', $key)) {
+            wp_enqueue_style($this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, 'all');
+          }
+          $script_number++;
         }
-        $script_number++;
       }
     });
 
     add_action('admin_menu', function(){
-      add_options_page(
+      $this->screen_id = add_options_page(
         'Font Awesome Settings',
         'Font Awesome',
         'manage_options',
