@@ -3,6 +3,7 @@ require_once( __DIR__ . '/../defines.php');
 require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
+require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-config-controller.php');
 use Composer\Semver\Semver;
 
 if (! class_exists('FontAwesome') ) :
@@ -11,6 +12,7 @@ class FontAwesome {
 
   protected $_constants = [
     'version' => '0.1.0',
+    'rest_api_version' => '1',
     'plugin_name' => 'font-awesome-official',
     'options_key' => 'font-awesome-official',
     'options_page' => 'font-awesome-official',
@@ -89,9 +91,27 @@ class FontAwesome {
 
   public function run(){
     add_action( 'init', array( $this, 'load' ));
+
+    // TODO: is it possible to get the REST API going only when the admin UI is active?
+    $this->initialize_rest_api();
+
     if( is_admin() ){
         $this->initialize_admin();
     }
+  }
+
+  private function initialize_rest_api() {
+    // Initialize each controller
+
+    add_action( 'rest_api_init', array(
+        new FontAwesomeConfigController($this->plugin_name, $this->rest_api_namespace()),
+        'register_routes'
+     )
+    );
+  }
+
+  public function rest_api_namespace() {
+    return $this->plugin_name . '/v' . $this->rest_api_version;
   }
 
   public function get_latest_version(){
@@ -149,15 +169,31 @@ class FontAwesome {
         $script_number = 0;
 
 
+
         if (FONTAWESOME_ENV == 'development') {
           $asset_url_base = "http://localhost:3030/";
         } else {
           $asset_url_base = FONTAWESOME_DIR_URL . "admin/build";
         }
 
+        $added_wpr_object = false;
         foreach ($admin_asset_manifest as $key => $value) {
           if (preg_match('/\.js$/', $key)) {
-            wp_enqueue_script($this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, true);
+            $script_name = $this->plugin_name . "-" . $script_number;
+            wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true);
+
+            if(!$added_wpr_object) {
+              // We have to give a script handle as the first argument to wp_localize_script.
+              // It doesn't really matter which one it is—we're only using it to inject a global JavaScript object
+              // into a <script> tag. This is just a way to to make that injection on the first script handle
+              // we come across.
+              wp_localize_script( $script_name, 'wpFontAwesomeOfficial', array(
+                  'api_nonce'   => wp_create_nonce( 'wp_rest' ),
+                  'api_url'	  => rest_url( $this->rest_api_namespace() ),
+                )
+              );
+              $added_wpr_object = true;
+            }
           }
           if (preg_match('/\.css$/', $key)) {
             wp_enqueue_style($this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, 'all');
