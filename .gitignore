@@ -8,3 +8,4 @@ dist
 *.log
 node_modules/
 build/
+wordpress/
