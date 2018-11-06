@@ -20,7 +20,7 @@ class FontAwesomeConfigController extends WP_REST_Controller {
       array(
         'methods' => 'GET',
         'callback' => array($this, 'get_item'),
-        'permission_callback' => array( $this, 'get_item_permissions_check' ),
+        'permission_callback' => function() { return current_user_can( 'manage_options' ); },
         'args' => array()
       )
     ));
@@ -50,16 +50,6 @@ class FontAwesomeConfigController extends WP_REST_Controller {
     );
 
     return new WP_REST_Response( $data, 200 );
-  }
-
-  /**
-   * Check if a given request has access to get a specific item
-   *
-   * @param WP_REST_Request $request Full data about the request.
-   * @return WP_Error|bool
-   */
-  public function get_item_permissions_check( $request ) {
-    return current_user_can( 'manage_options' );
   }
 }
 
