@@ -289,11 +289,11 @@ class FontAwesome {
   }
 
   /**
-   * Returns current options.
+   * Returns current options with defaults.
    */
   public function options(){
     if(is_null($this->options)) {
-      $this->options = wp_parse_args(get_option($this->options_key, $this->default_user_options));
+      $this->options = wp_parse_args(get_option($this->options_key), $this->default_user_options);
     }
     return $this->options;
   }
