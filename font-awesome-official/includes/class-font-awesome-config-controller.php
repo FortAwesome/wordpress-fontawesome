@@ -22,6 +22,12 @@ class FontAwesomeConfigController extends WP_REST_Controller {
         'callback' => array($this, 'get_item'),
         'permission_callback' => function() { return current_user_can( 'manage_options' ); },
         'args' => array()
+      ),
+      array(
+        'methods' => 'PUT',
+        'callback' => array($this, 'update_item'),
+        'permission_callback' => function() { return current_user_can( 'manage_options' ); },
+        'args' => array()
       )
     ));
   }
@@ -50,6 +56,34 @@ class FontAwesomeConfigController extends WP_REST_Controller {
     );
 
     return new WP_REST_Response( $data, 200 );
+  }
+
+  /**
+   * Update the singleton resource
+   *
+   * @param WP_REST_Request $request Full data about the request.
+   * @return WP_Error|WP_REST_Request
+   */
+  public function update_item( $request ) {
+    $item = $this->prepare_item_for_database( $request );
+    $fa = FontAwesome();
+
+    if($fa->options() == $item['options'] || update_option($fa->options_key, $item['options'])) {
+      return new WP_REST_Response( $item, 200 );
+    } else {
+      return new WP_Error( 'cant-update', 'Whoops, we couldn\'t update those options.', array( 'status' => 500 ) );
+    }
+  }
+
+  /**
+   * Prepare the item for and update operation
+   *
+   * @param WP_REST_Request $request Request object
+   * @return WP_Error|object $prepared_item
+   */
+  protected function prepare_item_for_database( $request ) {
+    $body = $request->get_json_params();
+    return array_merge(array(), $body);
   }
 }
 
