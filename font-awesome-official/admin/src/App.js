@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import './App.css'
 import axios from 'axios'
 import LoadingView from './LoadingView'
 import FontAwesomeAdminView from './FontAwesomeAdminView'
@@ -77,7 +76,7 @@ class App extends Component {
     if( !this.state.isLoading && !this.state.data ) throw new Error('missing data')
 
     return (
-      <div className="App">
+      <div className="wrap">
         {
           this.state.isLoading
           ? <LoadingView/>
