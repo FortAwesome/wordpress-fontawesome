@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './App.css'
 import axios from 'axios'
+import LoadingView from './LoadingView'
+import FontAwesomeAdminView from './FontAwesomeAdminView'
 
 class App extends Component {
 
@@ -15,13 +17,32 @@ class App extends Component {
     }
 
     this.state = {
-      config: null,
+      data: null,
+      error: null,
+      isLoading: true,
       wpApiSettings
+    }
+
+    this.getData = this.getData.bind(this)
+    this.putData = this.putData.bind(this)
+    this.handleDataResponse = this.handleDataResponse.bind(this)
+    this.handleDataError = this.handleDataError.bind(this)
+  }
+
+  handleDataResponse(response) {
+    const { status, data } = response
+    if(200 === status) {
+      this.setState({ data, isLoading: false })
+    } else {
+      this.setState({ error: new Error("failed to get data"), isLoading: false })
     }
   }
 
-  componentDidMount() {
+  handleDataError(error) {
+    this.setState({ error })
+  }
 
+  getData() {
     axios.get(
       `${this.state.wpApiSettings.api_url}/config`,
       {
@@ -30,20 +51,40 @@ class App extends Component {
         }
       }
     )
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
+    .then( this.handleDataResponse )
+    .catch( this.handleDataError )
+  }
+
+  putData(newData){
+    axios.put(
+      `${this.state.wpApiSettings.api_url}/config`,
+      newData,
+      {
+        headers: {
+          'X-WP-Nonce': this.state.wpApiSettings.api_nonce
+        }
+      }
+    )
+    .then( this.handleDataResponse )
+    .catch( this.handleDataError )
+  }
+
+  componentDidMount() {
+    this.setState({ isLoading: true })
+    this.getData()
   }
 
   render() {
+    if(this.state.error) throw this.state.error
+    if( !this.state.isLoading && !this.state.data ) throw new Error('missing data')
+
     return (
       <div className="App">
-          <p>
-            Nonce: { this.state.wpApiSettings.api_nonce }
-          </p>
+        {
+          this.state.isLoading
+          ? <LoadingView/>
+          : <FontAwesomeAdminView data={ this.state.data } putData={ this.putData }/>
+        }
       </div>
     )
   }
