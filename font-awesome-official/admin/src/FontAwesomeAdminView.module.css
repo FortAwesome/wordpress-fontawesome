@@ -1,0 +1,7 @@
+.status.conflict .status-value {
+  color: red;
+}
+
+.status.good .status-value {
+  color: green;
+}
