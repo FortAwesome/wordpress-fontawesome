@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
+import styles from './OptionsSetter.module.css'
+import classnames from 'classnames'
 
 const UNSPECIFIED = ''
 const METHOD_OPTIONS = ['webfont', 'svg', UNSPECIFIED]
@@ -23,6 +25,7 @@ class OptionsSetter extends React.Component {
       isSubmitting: false,
       hasSubmitted: false,
       submitSuccess: false,
+      submitMessage: null,
       error: null
     }
 
@@ -82,15 +85,17 @@ class OptionsSetter extends React.Component {
 
     const { putData } = this.props
 
-    this.setState({ isSubmitting: true })
+    this.setState({ isSubmitting: true, hasSubmitted: false })
 
     putData({
-      method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
-      v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
-      'pseudo-elements': this.state.pseudoElements,
-      version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
-      pro: this.state.usePro,
-      'remove_others': this.state.removeUnregisteredClients
+      options: {
+        method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
+        v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
+        'pseudo-elements': this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
+        version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
+        pro: this.state.usePro,
+        'remove_others': this.state.removeUnregisteredClients
+      }
     })
     .then(response => {
       const { status } = response
@@ -101,7 +106,21 @@ class OptionsSetter extends React.Component {
       }
     })
     .catch(error => {
-      this.setState({ isSubmitting: false, hasSubmitted: true, error, submitSuccess: false, submitMessage: "Failed horribly" })
+      const { response: { data: { code, message }}} = error
+      let submitMessage = ""
+
+      switch(code) {
+        case 'cant_update':
+          submitMessage = message
+          break
+        case 'rest_no_route':
+        case 'rest_cookie_invalid_nonce':
+          submitMessage = "Sorry, we couldn't reach the server"
+          break
+        default:
+          submitMessage = "Update failed"
+      }
+      this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage })
     })
   }
 
@@ -205,11 +224,25 @@ class OptionsSetter extends React.Component {
         />
         { hasSubmitted &&
           ( submitSuccess
-            ? <FontAwesomeIcon icon={ faCheck } color="green" />
-            : <FontAwesomeIcon icon={ faSkull } />
+            ? <span className={ classnames(styles['submit-status'], styles['success']) }>
+                <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
+                <span className={ styles['explanation'] }>
+                  { this.state.submitMessage }
+                </span>
+              </span>
+            : <span className={ classnames(styles['submit-status'], styles['fail']) }>
+                <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
+                <span className={ styles['explanation'] }>
+                  { this.state.submitMessage }
+                </span>
+              </span>
           )
         }
-        { isSubmitting && <FontAwesomeIcon icon={ faSpinner } spin/> }
+        {isSubmitting &&
+          <span className={ classnames(styles['submit-status'], styles['submitting']) }>
+            <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
+          </span>
+        }
       </p>
     </div>
 

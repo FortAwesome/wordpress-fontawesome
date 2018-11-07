@@ -1,0 +1,11 @@
+.submit-status {
+  padding-left: 1em;
+}
+
+.submit-status .explanation {
+  padding-left: 1em;
+}
+
+.submit-status.success .icon {
+  color: green;
+}
