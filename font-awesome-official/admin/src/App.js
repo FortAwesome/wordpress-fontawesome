@@ -41,7 +41,7 @@ class App extends Component {
   }
 
   getData() {
-    axios.get(
+    return axios.get(
       `${this.state.wpApiSettings.api_url}/config`,
       {
         headers: {
@@ -49,8 +49,6 @@ class App extends Component {
         }
       }
     )
-    .then( this.handleDataResponse )
-    .catch( this.handleDataError )
   }
 
   putData(newData){
@@ -68,6 +66,8 @@ class App extends Component {
   componentDidMount() {
     this.setState({ isLoading: true })
     this.getData()
+      .then( this.handleDataResponse )
+      .catch( this.handleDataError )
   }
 
   render() {
