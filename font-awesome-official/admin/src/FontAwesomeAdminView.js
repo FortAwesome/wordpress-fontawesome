@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import LoadSpecView from './LoadSpecView'
+import OptionsSetter from './OptionsSetter'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -27,6 +28,7 @@ class FontAwesomeAdminView extends React.Component {
           <div className="load-spec-container">
             <p><span className="loaded-label">Loaded: </span></p>
             <LoadSpecView spec={ data.currentLoadSpec } />
+            <OptionsSetter currentOptions={ data.options } putData={ putData }/>
           </div>
         }
       </div>
