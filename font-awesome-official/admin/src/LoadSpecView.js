@@ -16,9 +16,9 @@ const Component = props => {
   const licenseType = pro ? 'Pro' : 'Free'
 
   return <div className="load-spec">
-    <p>{ PRODUCT_BASE_NAME } <span className={ classnames('license', licenseType) }>{ licenseType }</span></p>
     <table>
       <tbody>
+        <tr><td className="label">product: </td><td className="value">{ PRODUCT_BASE_NAME } <span className={ classnames('license', licenseType) }>{ licenseType }</span></td></tr>
         <tr><td className="label">version: </td><td className="value">{ version }</td></tr>
         <tr><td className="label">method: </td><td className="value">{ method }</td></tr>
         <tr><td className="label">version 4 compatibility: </td><td className="value">{ usingV4Shims ? 'true' : 'false' }</td></tr>
