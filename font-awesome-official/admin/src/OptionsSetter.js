@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 
 const UNSPECIFIED = ''
 const METHOD_OPTIONS = ['webfont', 'svg', UNSPECIFIED]
@@ -17,7 +19,11 @@ class OptionsSetter extends React.Component {
       pseudoElements: currentOptions['pseudo-elements'] || UNSPECIFIED,
       version: currentOptions.version || UNSPECIFIED,
       usePro: currentOptions.pro,
-      removeUnregisteredClients: currentOptions['remove_others']
+      removeUnregisteredClients: currentOptions['remove_others'],
+      isSubmitting: false,
+      hasSubmitted: false,
+      submitSuccess: false,
+      error: null
     }
 
     this.handleMethodSelect = this.handleMethodSelect.bind(this)
@@ -27,6 +33,7 @@ class OptionsSetter extends React.Component {
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
     this.buildVersionOptions = this.buildVersionOptions.bind(this)
     this.handleRemoveUnregisteredCheck = this.handleRemoveUnregisteredCheck.bind(this)
+    this.handleSubmitClick = this.handleSubmitClick.bind(this)
 
     this.versionOptions = this.buildVersionOptions()
   }
@@ -70,90 +77,142 @@ class OptionsSetter extends React.Component {
     this.setState({ v4shim: e.target.value === '-' ? UNSPECIFIED : e.target.value })
   }
 
+  handleSubmitClick(e) {
+    e.preventDefault()
+
+    const { putData } = this.props
+
+    this.setState({ isSubmitting: true })
+
+    putData({
+      method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
+      v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
+      'pseudo-elements': this.state.pseudoElements,
+      version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
+      pro: this.state.usePro,
+      'remove_others': this.state.removeUnregisteredClients
+    })
+    .then(response => {
+      const { status } = response
+      if(200 === status) {
+        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: true, submitMessage: "Got it!" })
+      } else {
+        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage: "Failed" })
+      }
+    })
+    .catch(error => {
+      this.setState({ isSubmitting: false, hasSubmitted: true, error, submitSuccess: false, submitMessage: "Failed horribly" })
+    })
+  }
+
   render() {
-    return <table className="form-table">
-      <tbody>
-        <tr>
-          <th scope="row">
-            <label htmlFor="method">Method</label>
-          </th>
-          <td>
-            <select name="method" onChange={ this.handleMethodSelect } value={ this.state.method }>
-              {
-                METHOD_OPTIONS.map((method, index) => {
-                  return <option key={ index } value={ method }>{ method ? method : '-' }</option>
-                })
-              }
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">
-            <label htmlFor="use-pro">Use Pro</label>
-          </th>
-          <td>
-            <input name="use-pro" value={ this.state.usePro } type="checkbox" onChange={ this.handleProCheck }/>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">
-            <label htmlFor="v4shim">Version 4 Compatibility</label>
-          </th>
-          <td>
-            <select name="v4shim" onChange={ this.handleV4Select } value={ this.state.v4shim }>
-              {
-                REQUIRE_FORBID_OPTIONS.map((option, index) => {
-                  return <option key={ index } value={ option }>{ option ? option : '-' }</option>
-                })
-              }
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">
-            <label htmlFor="pseudo-elements">Pseudo-elements Support</label>
-          </th>
-          <td>
-            <select name="pseudo-elements" onChange={ this.handlePseudoElementsSelect } value={ this.state.pseudoElements }>
-              {
-                REQUIRE_FORBID_OPTIONS.map((option, index) => {
-                  return <option key={ index } value={ option }>{ option ? option : '-' }</option>
-                })
-              }
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">
-            <label htmlFor="version">Version</label>
-          </th>
-          <td>
-            <select name="version" onChange={ this.handleVersionSelect } value={ this.state.version }>
-              {
-                Object.keys(this.versionOptions).map((version, index) => {
-                  return <option key={ index } value={ version }>
-                    { version === UNSPECIFIED ? '-' : this.versionOptions[version] }
-                  </option>
-                })
-              }
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">
-            <label htmlFor="remove-unregistered">Remove unregistered clients</label>
-          </th>
-          <td>
-            <input
-              name="remove-unregistered"
-              value={ this.state.removeUnregisteredClients }
-              type="checkbox"
-              onChange={ this.handleRemoveUnregisteredCheck }
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    if(this.state.error) throw this.state.error
+
+    const { hasSubmitted, isSubmitting, submitSuccess } = this.state
+
+    return <div className="options-setter">
+        <table className="form-table">
+        <tbody>
+          <tr>
+            <th scope="row">
+              <label htmlFor="method">Method</label>
+            </th>
+            <td>
+              <select name="method" onChange={ this.handleMethodSelect } value={ this.state.method }>
+                {
+                  METHOD_OPTIONS.map((method, index) => {
+                    return <option key={ index } value={ method }>{ method ? method : '-' }</option>
+                  })
+                }
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <label htmlFor="use-pro">Use Pro</label>
+            </th>
+            <td>
+              <input name="use-pro" value={ this.state.usePro } type="checkbox" onChange={ this.handleProCheck }/>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <label htmlFor="v4shim">Version 4 Compatibility</label>
+            </th>
+            <td>
+              <select name="v4shim" onChange={ this.handleV4Select } value={ this.state.v4shim }>
+                {
+                  REQUIRE_FORBID_OPTIONS.map((option, index) => {
+                    return <option key={ index } value={ option }>{ option ? option : '-' }</option>
+                  })
+                }
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <label htmlFor="pseudo-elements">Pseudo-elements Support</label>
+            </th>
+            <td>
+              <select name="pseudo-elements" onChange={ this.handlePseudoElementsSelect } value={ this.state.pseudoElements }>
+                {
+                  REQUIRE_FORBID_OPTIONS.map((option, index) => {
+                    return <option key={ index } value={ option }>{ option ? option : '-' }</option>
+                  })
+                }
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <label htmlFor="version">Version</label>
+            </th>
+            <td>
+              <select name="version" onChange={ this.handleVersionSelect } value={ this.state.version }>
+                {
+                  Object.keys(this.versionOptions).map((version, index) => {
+                    return <option key={ index } value={ version }>
+                      { version === UNSPECIFIED ? '-' : this.versionOptions[version] }
+                    </option>
+                  })
+                }
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <label htmlFor="remove-unregistered">Remove unregistered clients</label>
+            </th>
+            <td>
+              <input
+                name="remove-unregistered"
+                value={ this.state.removeUnregisteredClients }
+                type="checkbox"
+                onChange={ this.handleRemoveUnregisteredCheck }
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p className="submit">
+        <input
+          type="submit"
+          name="submit"
+          id="submit"
+          className="button button-primary"
+          value="Save Changes"
+          onClick={ this.handleSubmitClick }
+        />
+        { hasSubmitted &&
+          ( submitSuccess
+            ? <FontAwesomeIcon icon={ faCheck } color="green" />
+            : <FontAwesomeIcon icon={ faSkull } />
+          )
+        }
+        { isSubmitting && <FontAwesomeIcon icon={ faSpinner } spin/> }
+      </p>
+    </div>
+
   }
 }
 
