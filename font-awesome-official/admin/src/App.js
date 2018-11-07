@@ -11,8 +11,7 @@ class App extends Component {
     const wpApiSettings = window['wpFontAwesomeOfficial']
 
     if(! wpApiSettings) {
-      // TODO: probably log this to Sentry instead
-      throw Error("missing WP REST API settings object")
+      throw Error("Well, this is embarrassing. The plugin doesn't seem to be installed correctly.")
     }
 
     this.state = {
