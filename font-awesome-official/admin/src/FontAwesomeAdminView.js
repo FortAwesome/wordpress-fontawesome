@@ -4,6 +4,8 @@ import classnames from 'classnames'
 import styles from './FontAwesomeAdminView.module.css'
 import LoadSpecView from './LoadSpecView'
 import OptionsSetter from './OptionsSetter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faThumbsUp, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -18,7 +20,8 @@ class FontAwesomeAdminView extends React.Component {
       <h1>Font Awesome</h1>
       <div>
         <p className={ classnames( styles['status'], styles[statusLabel] ) }>
-          <span className={ styles['status-label'] }>Status: </span><span className={ styles['status-value'] }>{ statusLabel }</span>
+          <span className={ styles['status-label'] }>Status: </span>
+          <FontAwesomeIcon className={ styles['icon'] } icon={ hasConflict ? faExclamationCircle : faThumbsUp }/>
         </p>
         { hasConflict
           ?

@@ -1,11 +1,14 @@
-.status.conflict .status-value {
-  color: red;
+.status .icon {
+  font-size: 24px;
 }
-
-.status.good .status-value {
+.status.good .icon {
   color: green;
 }
 
+.status.conflict .icon {
+  color: red;
+}
+
 .options-disclaimer {
-    max-width: 500px;
+  max-width: 500px;
 }
