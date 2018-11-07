@@ -130,6 +130,15 @@ class OptionsSetter extends React.Component {
     const { hasSubmitted, isSubmitting, submitSuccess } = this.state
 
     return <div className="options-setter">
+        <h2>Options</h2>
+        <p className={ styles['options-disclaimer'] }>
+          You can tune these options according to your preferences, as long as your preferences
+          don't conflict with the specifications required by other plugins and themes that you've installed.
+        </p>
+        <p className={ styles['options-disclaimer'] }>
+          If conflicts are detected, they'll be shown below, and
+          you might be able to resolve them just by choosing different options here.
+        </p>
         <table className="form-table">
         <tbody>
           <tr>

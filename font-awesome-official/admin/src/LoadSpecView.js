@@ -17,6 +17,7 @@ const Component = props => {
   const licenseType = pro ? 'Pro' : 'Free'
 
   return <div className={ styles['load-spec'] }>
+    <h2>Current Load Specification</h2>
     <table className={ classnames('widefat', 'striped') }>
       <tbody>
         <tr><td className={ styles['label'] }>Product</td><td className={ styles['value'] }>{ PRODUCT_BASE_NAME } <span className={ classnames('license', licenseType) }>{ licenseType }</span></td></tr>

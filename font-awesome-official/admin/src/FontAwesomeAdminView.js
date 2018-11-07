@@ -23,25 +23,8 @@ class FontAwesomeAdminView extends React.Component {
           <span className={ styles['status-label'] }>Status: </span>
           <FontAwesomeIcon className={ styles['icon'] } icon={ hasConflict ? faExclamationCircle : faThumbsUp }/>
         </p>
-        { hasConflict
-          ?
-          <div>(not yet implemented)</div>
-          :
-          <div className="load-spec-container">
-            <h2>Current Load Specification</h2>
-            <LoadSpecView spec={ data.currentLoadSpec } />
-            <h2>Options</h2>
-            <p className={ styles['options-disclaimer'] }>
-              You can tune these options according to your preferences, as long as your preferences
-              don't conflict with the specifications required by other plugins and themes that you've installed.
-            </p>
-            <p className={ styles['options-disclaimer'] }>
-              If conflicts are detected, they'll be shown below, and
-              you might be able to resolve them just by choosing different options here.
-            </p>
-            <OptionsSetter releases={ data.releases } currentOptions={ data.options } putData={ putData }/>
-          </div>
-        }
+        <LoadSpecView spec={ data.currentLoadSpec } />
+        <OptionsSetter releases={ data.releases } currentOptions={ data.options } putData={ putData }/>
       </div>
     </div>
   }
