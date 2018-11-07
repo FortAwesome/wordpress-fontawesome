@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 import styles from './OptionsSetter.module.css'
+import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 
 const UNSPECIFIED = ''
@@ -131,11 +132,11 @@ class OptionsSetter extends React.Component {
 
     return <div className="options-setter">
         <h2>Options</h2>
-        <p className={ styles['options-disclaimer'] }>
+        <p className={ sharedStyles['explanation'] }>
           You can tune these options according to your preferences, as long as your preferences
           don't conflict with the specifications required by other plugins and themes that you've installed.
         </p>
-        <p className={ styles['options-disclaimer'] }>
+        <p className={ sharedStyles['explanation'] }>
           If conflicts are detected, they'll be shown below, and
           you might be able to resolve them just by choosing different options here.
         </p>
