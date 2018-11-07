@@ -28,7 +28,7 @@ class FontAwesomeAdminView extends React.Component {
           <div className="load-spec-container">
             <p><span className="loaded-label">Loaded: </span></p>
             <LoadSpecView spec={ data.currentLoadSpec } />
-            <OptionsSetter currentOptions={ data.options } putData={ putData }/>
+            <OptionsSetter releases={ data.releases } currentOptions={ data.options } putData={ putData }/>
           </div>
         }
       </div>
