@@ -100,9 +100,9 @@ class OptionsSetter extends React.Component {
     .then(response => {
       const { status } = response
       if(200 === status) {
-        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: true, submitMessage: "Got it!" })
+        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: true, submitMessage: "Changes saved" })
       } else {
-        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage: "Failed" })
+        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage: "Failed to save changes" })
       }
     })
     .catch(error => {
