@@ -56,7 +56,7 @@ class App extends Component {
   }
 
   putData(newData){
-    axios.put(
+    return axios.put(
       `${this.state.wpApiSettings.api_url}/config`,
       newData,
       {
@@ -65,8 +65,6 @@ class App extends Component {
         }
       }
     )
-    .then( this.handleDataResponse )
-    .catch( this.handleDataError )
   }
 
   componentDidMount() {
