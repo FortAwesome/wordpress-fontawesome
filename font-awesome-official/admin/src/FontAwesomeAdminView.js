@@ -6,6 +6,7 @@ import LoadSpecView from './LoadSpecView'
 import OptionsSetter from './OptionsSetter'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import ClientRequirementsView from './ClientRequirementsView'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -25,6 +26,7 @@ class FontAwesomeAdminView extends React.Component {
         </p>
         <LoadSpecView spec={ data.currentLoadSpec } />
         <OptionsSetter releases={ data.releases } currentOptions={ data.options } putData={ putData }/>
+        <ClientRequirementsView clientRequirements={ data.clientRequirements }/>
       </div>
     </div>
   }

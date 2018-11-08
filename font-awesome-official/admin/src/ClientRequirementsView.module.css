@@ -1,0 +1,7 @@
+.client-requirements table {
+  width: unset;
+}
+
+.client-requirements th {
+  font-weight: bold;
+}
