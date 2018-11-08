@@ -25,7 +25,16 @@ class FontAwesomeAdminView extends React.Component {
           <FontAwesomeIcon className={ styles['icon'] } icon={ hasConflict ? faExclamationCircle : faThumbsUp }/>
         </p>
         <LoadSpecView spec={ data.currentLoadSpec } />
-        <OptionsSetter releases={ data.releases } currentOptions={ data.options } putData={ putData }/>
+        <OptionsSetter
+          releases={ data.releases }
+          currentOptions={ data.options }
+          putData={ putData }
+          isSubmitting={ this.props.isSubmitting }
+          hasSubmitted={ this.props.hasSubmitted }
+          submitSuccess={ this.props.submitSuccess }
+          submitMessage={ this.props.submitMessage }
+          error={ this.props.error }
+        />
         <ClientRequirementsView clientRequirements={ data.clientRequirements }/>
       </div>
     </div>
@@ -37,4 +46,5 @@ export default FontAwesomeAdminView
 FontAwesomeAdminView.propTypes = {
   data: PropTypes.object,
   putData: PropTypes.func.isRequired
+  // TODO: add the other props if we decide to keep them
 }
