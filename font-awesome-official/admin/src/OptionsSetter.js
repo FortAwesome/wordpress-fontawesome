@@ -5,6 +5,7 @@ import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 import styles from './OptionsSetter.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
+import { isEqual } from 'lodash'
 
 const UNSPECIFIED = ''
 const METHOD_OPTIONS = ['webfont', 'svg', UNSPECIFIED]
@@ -14,20 +15,15 @@ class OptionsSetter extends React.Component {
   constructor(props){
     super(props)
 
-    const { currentOptions } = props
-
     this.state = {
-      method: currentOptions.method || UNSPECIFIED,
-      v4shim: currentOptions.v4shim || UNSPECIFIED,
-      pseudoElements: currentOptions['pseudo-elements'] || UNSPECIFIED,
-      version: currentOptions.version || UNSPECIFIED,
-      usePro: currentOptions.pro,
-      removeUnregisteredClients: currentOptions['remove_others'],
-      isSubmitting: false,
-      hasSubmitted: false,
-      submitSuccess: false,
-      submitMessage: null,
-      error: null
+      method: UNSPECIFIED,
+      v4shim: UNSPECIFIED,
+      pseudoElements: UNSPECIFIED,
+      version: UNSPECIFIED,
+      usePro: false,
+      removeUnregisteredClients: false,
+      versionOptions: OptionsSetter.buildVersionOptions(props),
+      lastProps: props
     }
 
     this.handleMethodSelect = this.handleMethodSelect.bind(this)
@@ -35,15 +31,48 @@ class OptionsSetter extends React.Component {
     this.handleV4Select = this.handleV4Select.bind(this)
     this.handlePseudoElementsSelect = this.handlePseudoElementsSelect.bind(this)
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
-    this.buildVersionOptions = this.buildVersionOptions.bind(this)
     this.handleRemoveUnregisteredCheck = this.handleRemoveUnregisteredCheck.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
-
-    this.versionOptions = this.buildVersionOptions()
   }
 
-  buildVersionOptions() {
-    const { releases: { available, latest_version, previous_version } } = this.props
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const newState = {
+      lastProps: nextProps
+    }
+
+    if( nextProps.currentOptions['load_spec']['pseudo-elements'] !== prevState.lastProps.currentOptions['load_spec']['pseudo-elements'] ) {
+      newState.pseudoElements = nextProps.currentOptions['load_spec']['pseudo-elements'] || UNSPECIFIED
+    }
+
+    if( nextProps.currentOptions['load_spec']['version'] !== prevState.lastProps.currentOptions['load_spec']['version'] ) {
+      newState.version = nextProps.currentOptions['load_spec']['version'] || UNSPECIFIED
+    }
+
+    if( nextProps.currentOptions['load_spec']['v4shim'] !== prevState.lastProps.currentOptions['load_spec']['v4shim'] ) {
+      newState.v4shim = nextProps.currentOptions['load_spec']['v4shim'] || UNSPECIFIED
+    }
+
+    if( nextProps.currentOptions['load_spec']['method'] !== prevState.lastProps.currentOptions['load_spec']['method'] ) {
+      newState.method = nextProps.currentOptions['load_spec']['method'] || UNSPECIFIED
+    }
+
+    if( nextProps.currentOptions['pro'] !== prevState.lastProps.currentOptions['pro'] ) {
+      newState.usePro = nextProps.currentOptions['load_spec']['pro']
+    }
+
+    if( nextProps.currentOptions['remove_others'] !== prevState.lastProps.currentOptions['remove_others'] ) {
+      newState.removeUnregisteredClients = nextProps.currentOptions['load_spec']['remove_others']
+    }
+
+    if (! isEqual(nextProps.releases, prevState.lastProps.releases)) {
+      newState.versionOptions = OptionsSetter.buildVersionOptions(nextProps)
+    }
+
+    return newState
+  }
+
+  static buildVersionOptions(props) {
+    const { releases: { available, latest_version, previous_version } } = props
 
     return available.reduce((acc, version) => {
       if( latest_version === version ) {
@@ -86,49 +115,25 @@ class OptionsSetter extends React.Component {
 
     const { putData } = this.props
 
-    this.setState({ isSubmitting: true, hasSubmitted: false })
-
     putData({
       options: {
-        method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
-        v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
-        'pseudo-elements': this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
-        version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
+        load_spec: {
+          name: 'user',
+          method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
+          v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
+          'pseudo-elements': this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
+          version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
+        },
         pro: this.state.usePro,
         'remove_others': this.state.removeUnregisteredClients
       }
-    })
-    .then(response => {
-      const { status } = response
-      if(200 === status) {
-        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: true, submitMessage: "Changes saved" })
-      } else {
-        this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage: "Failed to save changes" })
-      }
-    })
-    .catch(error => {
-      const { response: { data: { code, message }}} = error
-      let submitMessage = ""
-
-      switch(code) {
-        case 'cant_update':
-          submitMessage = message
-          break
-        case 'rest_no_route':
-        case 'rest_cookie_invalid_nonce':
-          submitMessage = "Sorry, we couldn't reach the server"
-          break
-        default:
-          submitMessage = "Update failed"
-      }
-      this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage })
     })
   }
 
   render() {
     if(this.state.error) throw this.state.error
 
-    const { hasSubmitted, isSubmitting, submitSuccess } = this.state
+    const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
     return <div className="options-setter">
         <h2>Options</h2>
@@ -199,9 +204,9 @@ class OptionsSetter extends React.Component {
             <td>
               <select name="version" onChange={ this.handleVersionSelect } value={ this.state.version }>
                 {
-                  Object.keys(this.versionOptions).map((version, index) => {
+                  Object.keys(this.state.versionOptions).map((version, index) => {
                     return <option key={ index } value={ version }>
-                      { version === UNSPECIFIED ? '-' : this.versionOptions[version] }
+                      { version === UNSPECIFIED ? '-' : this.state.versionOptions[version] }
                     </option>
                   })
                 }
@@ -237,13 +242,13 @@ class OptionsSetter extends React.Component {
             ? <span className={ classnames(styles['submit-status'], styles['success']) }>
                 <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
                 <span className={ styles['explanation'] }>
-                  { this.state.submitMessage }
+                  { submitMessage }
                 </span>
               </span>
             : <span className={ classnames(styles['submit-status'], styles['fail']) }>
                 <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
                 <span className={ styles['explanation'] }>
-                  { this.state.submitMessage }
+                  { submitMessage }
                 </span>
               </span>
           )
