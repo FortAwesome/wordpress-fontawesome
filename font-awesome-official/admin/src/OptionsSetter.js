@@ -22,8 +22,8 @@ class OptionsSetter extends React.Component {
       version: UNSPECIFIED,
       usePro: false,
       removeUnregisteredClients: false,
-      versionOptions: OptionsSetter.buildVersionOptions(props),
-      lastProps: props
+      versionOptions: null,
+      lastProps: null
     }
 
     this.handleMethodSelect = this.handleMethodSelect.bind(this)
@@ -40,31 +40,33 @@ class OptionsSetter extends React.Component {
       lastProps: nextProps
     }
 
-    if( nextProps.currentOptions['load_spec']['pseudo-elements'] !== prevState.lastProps.currentOptions['load_spec']['pseudo-elements'] ) {
+    const firstTime = prevState.lastProps === null
+
+    if( firstTime || nextProps.currentOptions['load_spec']['pseudo-elements'] !== prevState.lastProps.currentOptions['load_spec']['pseudo-elements'] ) {
       newState.pseudoElements = nextProps.currentOptions['load_spec']['pseudo-elements'] || UNSPECIFIED
     }
 
-    if( nextProps.currentOptions['load_spec']['version'] !== prevState.lastProps.currentOptions['load_spec']['version'] ) {
+    if( firstTime || nextProps.currentOptions['load_spec']['version'] !== prevState.lastProps.currentOptions['load_spec']['version'] ) {
       newState.version = nextProps.currentOptions['load_spec']['version'] || UNSPECIFIED
     }
 
-    if( nextProps.currentOptions['load_spec']['v4shim'] !== prevState.lastProps.currentOptions['load_spec']['v4shim'] ) {
+    if( firstTime || nextProps.currentOptions['load_spec']['v4shim'] !== prevState.lastProps.currentOptions['load_spec']['v4shim'] ) {
       newState.v4shim = nextProps.currentOptions['load_spec']['v4shim'] || UNSPECIFIED
     }
 
-    if( nextProps.currentOptions['load_spec']['method'] !== prevState.lastProps.currentOptions['load_spec']['method'] ) {
+    if( firstTime || nextProps.currentOptions['load_spec']['method'] !== prevState.lastProps.currentOptions['load_spec']['method'] ) {
       newState.method = nextProps.currentOptions['load_spec']['method'] || UNSPECIFIED
     }
 
-    if( nextProps.currentOptions['pro'] !== prevState.lastProps.currentOptions['pro'] ) {
+    if( firstTime || nextProps.currentOptions['pro'] !== prevState.lastProps.currentOptions['pro'] ) {
       newState.usePro = nextProps.currentOptions['load_spec']['pro']
     }
 
-    if( nextProps.currentOptions['remove_others'] !== prevState.lastProps.currentOptions['remove_others'] ) {
+    if( firstTime || nextProps.currentOptions['remove_others'] !== prevState.lastProps.currentOptions['remove_others'] ) {
       newState.removeUnregisteredClients = nextProps.currentOptions['load_spec']['remove_others']
     }
 
-    if (! isEqual(nextProps.releases, prevState.lastProps.releases)) {
+    if ( firstTime || ! isEqual(nextProps.releases, prevState.lastProps.releases)) {
       newState.versionOptions = OptionsSetter.buildVersionOptions(nextProps)
     }
 
