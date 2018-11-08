@@ -32,16 +32,9 @@ class FontAwesomeConfigController extends WP_REST_Controller {
     ));
   }
 
-  /**
-   * Get the config, a singleton resource
-   *
-   * @param WP_REST_Request $request Full data about the request.
-   * @return WP_Error|WP_REST_Response
-   */
-  public function get_item( $request ) {
-    $fa = FontAwesome();
-    $data = array(
-      "options" => $fa->options(),
+  protected function build_item($fa, $reload_options = false) {
+    return array(
+      "options" => $fa->options($reload_options),
       "clientRequirements" => $fa->requirements(),
       "conflicts" => $fa->conflicts(),
       "currentLoadSpec" => $fa->load_spec(),
@@ -54,6 +47,16 @@ class FontAwesomeConfigController extends WP_REST_Controller {
         "previous_semver" => $fa->get_previous_semver()
       )
     );
+  }
+
+  /**
+   * Get the config, a singleton resource
+   *
+   * @param WP_REST_Request $request Full data about the request.
+   * @return WP_Error|WP_REST_Response
+   */
+  public function get_item( $request ) {
+    $data = $this->build_item(FontAwesome());
 
     return new WP_REST_Response( $data, 200 );
   }
@@ -66,10 +69,12 @@ class FontAwesomeConfigController extends WP_REST_Controller {
    */
   public function update_item( $request ) {
     $item = $this->prepare_item_for_database( $request );
-    $fa = FontAwesome();
 
-    if($fa->options() == $item['options'] || update_option($fa->options_key, $item['options'])) {
-      return new WP_REST_Response( $item, 200 );
+    if(update_option(FontAwesome::OPTIONS_KEY, $item['options'])) {
+      $fa = FontAwesome::reset();
+      $fa->load();
+      $return_data = $this->build_item($fa, true);
+      return new WP_REST_Response( $return_data, 200 );
     } else {
       return new WP_Error( 'cant-update', 'Whoops, we couldn\'t update those options.', array( 'status' => 500 ) );
     }
