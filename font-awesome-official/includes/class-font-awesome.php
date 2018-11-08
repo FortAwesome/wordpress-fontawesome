@@ -16,17 +16,9 @@ class FontAwesome {
     'version' => '0.1.0',
     'rest_api_version' => '1',
     'plugin_name' => 'font-awesome-official',
-    //'options_key' => 'font-awesome-official',
     'options_page' => 'font-awesome-official',
     'handle' => 'font-awesome-official',
     'v4shim_handle' => 'font-awesome-official-v4shim',
-    'user_settings_section' => 'font-awesome-official-user-settings-section',
-    'user_settings_field_id_method' => 'font-awesome-official-user-settings-field-method',
-    'user_settings_field_id_pro' => 'font-awesome-official-user-settings-field-pro',
-    'user_settings_field_id_remove_others' => 'font-awesome-official-user-settings-field-remove-others',
-    'user_settings_field_id_v4shim' => 'font-awesome-official-user-settings-field-v4shim',
-    'user_settings_field_id_version' => 'font-awesome-official-user-settings-field-version',
-    'user_settings_field_id_pseudo_elements' => 'font-awesome-official-user-settings-field-pseudo-elements',
     'default_user_options' => array(
       'load_spec' => array(
         'name' => 'user'
@@ -170,8 +162,6 @@ class FontAwesome {
         $admin_asset_manifest = $this->get_admin_asset_manifest();
         $script_number = 0;
 
-
-
         if (FONTAWESOME_ENV == 'development') {
           $asset_url_base = "http://localhost:3030/";
         } else {
@@ -214,7 +204,6 @@ class FontAwesome {
         array( $this, 'create_admin_page' )
       );
     });
-    add_action('admin_init', array($this, 'admin_page_init'));
 
     $pn = FontAwesome()->plugin_name;
     add_filter( 'plugin_action_links_' . trailingslashit($pn) . $pn . '.php',
@@ -226,70 +215,6 @@ class FontAwesome {
     });
   }
 
-  public function admin_page_init(){
-    register_setting( $this->plugin_name, self::OPTIONS_KEY, [
-      'type' => 'string',
-      'default' => $this->default_user_options,
-      'sanitize_callback' => array($this, 'sanitize_user_settings_input')
-    ]);
-    add_settings_section( $this->user_settings_section, 'Settings', array($this, 'user_settings_section_view'), $this->plugin_name );
-    add_settings_field(
-      $this->user_settings_field_id_method,
-      'Method',
-      array($this, 'user_settings_field_method_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_pro,
-      'Pro',
-      array($this, 'user_settings_field_pro_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_v4shim,
-      'Version 4 Compatibility',
-      array($this, 'user_settings_field_v4shim_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_pseudo_elements,
-      'Pseudo-elements Support',
-      array($this, 'user_settings_field_pseudo_elements_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_version,
-      'Version',
-      array($this, 'user_settings_field_version_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_remove_others,
-      'Remove Unregistered Clients',
-      array($this, 'user_settings_field_remove_others_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-  }
-
-  public function user_settings_section_view(){
-  ?>
-    <p class="user-settings-section-description">
-      Configure your preferences for Font Awesome's installation here.
-      Your preferences will be merged with any requirements registered by
-      other themes or plugins, summarized in the table below.
-      If you choose preferences that conflict with those required by other
-      registered themes or plugins, you'll see an error here on this
-      admin page.
-    </p>
-  <?php
-  }
-
   /**
    * Returns current options with defaults.
    */
@@ -298,190 +223,6 @@ class FontAwesome {
       $this->options = wp_parse_args(get_option(self::OPTIONS_KEY), $this->default_user_options);
     }
     return $this->options;
-  }
-
-  public function user_settings_field_pro_view(){
-    $options = $this->options();
-    $checked = (isset($options['pro']) && $options['pro']) ? 'checked' : '';
-    $field_name = self::OPTIONS_KEY . '[pro]';
-  ?>
-    <input id="<?= $this->user_settings_field_id_pro ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
-  <?php
-  }
-
-  public function user_settings_field_remove_others_view(){
-    $options = $this->options();
-    $checked = (isset($options['remove_others']) && $options['remove_others']) ? 'checked' : '';
-    $field_name = self::OPTIONS_KEY . '[remove_others]';
-    ?>
-      <input id="<?= $this->user_settings_field_id_remove_others ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
-    <?php
-  }
-
-  public function user_settings_field_method_view(){
-    $options = $this->options();
-
-    $svg_selected = '';
-    $webfont_selected = '';
-    $nothing_selected = '';
-
-    if(isset($options['load_spec']['method'])){
-      $svg_selected = $options['load_spec']['method'] == 'svg' ? 'selected' : '';
-      $webfont_selected = $options['load_spec']['method'] == 'webfont' ? 'selected' : '';
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = self::OPTIONS_KEY . '[load_spec][method]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_method ?>" name="<?= $field_name ?>">
-      <option value="svg" <?= $svg_selected ?>>svg</option>
-      <option value="webfont" <?= $webfont_selected ?>>webfont</option>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function user_settings_field_version_view(){
-    $options = $this->options();
-
-    $latest_selected = '';
-    $previous_selected = '';
-    $older_selected = '';
-    $nothing_selected = '';
-
-    // TODO: add integration test for scenario:
-    // where options['load_spec']['version'] = 5.0.13 (or some thing older than "previous")
-    // previous: 5.1.3
-    // latest: 5.2.1
-    //
-    // Expected, 5.0.13 should appear, selected, in the drop down, labeled "older release",
-    // and the latest and previous options should also be present.
-    // A manual test of this scenario already passes. But we need an automated one.
-    if(isset($options['load_spec']['version'])){
-      $semver = $options['load_spec']['version'];
-      if(Semver::satisfies($this->get_latest_version(), $semver)){
-        $latest_selected = 'selected';
-      } elseif (Semver::satisfies($this->get_previous_version(), $semver)){
-        $previous_selected = 'selected';
-      } else {
-        $older_selected = 'selected';
-      }
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = self::OPTIONS_KEY . '[load_spec][version]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_version ?>" name="<?= $field_name ?>">
-      <option value="<?= $this->get_latest_semver() ?>" <?= $latest_selected ?>>latest release</option>
-      <option value="<?= $this->get_previous_semver() ?>" <?= $previous_selected ?>>previous release</option>
-      <?php if(boolval($older_selected)){ ?>
-      <option value="<?= $options['load_spec']['version'] ?>" <?= $older_selected ?>>older release</option>
-      <?php } ?>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function user_settings_field_v4shim_view(){
-    $options = $this->options();
-
-    $require_selected = '';
-    $forbid_selected = '';
-    $nothing_selected = '';
-
-    if(isset($options['load_spec']['v4shim'])){
-      $require_selected = $options['load_spec']['v4shim'] == 'require' ? 'selected' : '';
-      $forbid_selected = $options['load_spec']['v4shim'] == 'forbid' ? 'selected' : '';
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = self::OPTIONS_KEY . '[load_spec][v4shim]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_v4shim ?>" name="<?= $field_name ?>">
-      <option value="require" <?= $require_selected ?>>require</option>
-      <option value="forbid" <?= $forbid_selected ?>>forbid</option>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function user_settings_field_pseudo_elements_view(){
-    $options = $this->options();
-
-    $require_selected = '';
-    $forbid_selected = '';
-    $nothing_selected = '';
-
-    if(isset($options['load_spec']['pseudo-elements'])){
-      $require_selected = $options['load_spec']['pseudo-elements'] == 'require' ? 'selected' : '';
-      $forbid_selected = $options['load_spec']['pseudo-elements'] == 'forbid' ? 'selected' : '';
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = self::OPTIONS_KEY . '[load_spec][pseudo-elements]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_pseudo_elements ?>" name="<?= $field_name ?>">
-      <option value="require" <?= $require_selected ?>>require</option>
-      <option value="forbid" <?= $forbid_selected ?>>forbid</option>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function sanitize_user_settings_input($input){
-    $new_input = $this->default_user_options;
-    if( isset( $input['load_spec'] ) ){
-      if( isset( $input['load_spec']['method'] ) && $input['load_spec']['method'] != '_')
-        $new_input['load_spec']['method'] = sanitize_text_field( $input['load_spec']['method'] );
-
-      if( isset( $input['load_spec']['v4shim'] ) ){
-        switch( $input['load_spec']['v4shim'] ){
-          case 'require':
-            $new_input['load_spec']['v4shim'] = 'require';
-            break;
-          case 'forbid':
-            $new_input['load_spec']['v4shim'] = 'forbid';
-            break;
-        }
-      }
-
-      if( isset( $input['load_spec']['pseudo-elements'] ) ){
-        switch( $input['load_spec']['pseudo-elements'] ){
-          case 'require':
-            $new_input['load_spec']['pseudo-elements'] = 'require';
-            break;
-          case 'forbid':
-            $new_input['load_spec']['pseudo-elements'] = 'forbid';
-            break;
-        }
-      }
-
-      if( isset( $input['load_spec']['version'] ) ){
-        $previous_semver = $this->get_latest_semver();
-        $latest_semver = $this->get_previous_semver();
-
-        switch( $input['load_spec']['version'] ){
-          case $latest_semver:
-            $new_input['load_spec']['version'] = $latest_semver;
-            break;
-          case $previous_semver:
-            $new_input['load_spec']['version'] = $previous_semver;
-            break;
-        }
-      }
-    }
-
-    if( isset( $input['pro'] ) )
-      $new_input['pro'] = wp_validate_boolean( $input['pro'] );
-
-    if( isset( $input['remove_others'] ) )
-      $new_input['remove_others'] = wp_validate_boolean( $input['remove_others'] );
-
-    return $new_input;
   }
 
   public function create_admin_page(){
