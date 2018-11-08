@@ -10,11 +10,13 @@ if (! class_exists('FontAwesome') ) :
 
 class FontAwesome {
 
+  const OPTIONS_KEY = 'font-awesome-official';
+
   protected $_constants = [
     'version' => '0.1.0',
     'rest_api_version' => '1',
     'plugin_name' => 'font-awesome-official',
-    'options_key' => 'font-awesome-official',
+    //'options_key' => 'font-awesome-official',
     'options_page' => 'font-awesome-official',
     'handle' => 'font-awesome-official',
     'v4shim_handle' => 'font-awesome-official-v4shim',
@@ -225,7 +227,7 @@ class FontAwesome {
   }
 
   public function admin_page_init(){
-    register_setting( $this->plugin_name, $this->options_key, [
+    register_setting( $this->plugin_name, self::OPTIONS_KEY, [
       'type' => 'string',
       'default' => $this->default_user_options,
       'sanitize_callback' => array($this, 'sanitize_user_settings_input')
@@ -291,9 +293,9 @@ class FontAwesome {
   /**
    * Returns current options with defaults.
    */
-  public function options(){
-    if(is_null($this->options)) {
-      $this->options = wp_parse_args(get_option($this->options_key), $this->default_user_options);
+  public function options($reload = false){
+    if(is_null($this->options) || $reload) {
+      $this->options = wp_parse_args(get_option(self::OPTIONS_KEY), $this->default_user_options);
     }
     return $this->options;
   }
@@ -301,7 +303,7 @@ class FontAwesome {
   public function user_settings_field_pro_view(){
     $options = $this->options();
     $checked = (isset($options['pro']) && $options['pro']) ? 'checked' : '';
-    $field_name = $this->options_key . '[pro]';
+    $field_name = self::OPTIONS_KEY . '[pro]';
   ?>
     <input id="<?= $this->user_settings_field_id_pro ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
   <?php
@@ -310,7 +312,7 @@ class FontAwesome {
   public function user_settings_field_remove_others_view(){
     $options = $this->options();
     $checked = (isset($options['remove_others']) && $options['remove_others']) ? 'checked' : '';
-    $field_name = $this->options_key . '[remove_others]';
+    $field_name = self::OPTIONS_KEY . '[remove_others]';
     ?>
       <input id="<?= $this->user_settings_field_id_remove_others ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
     <?php
@@ -330,7 +332,7 @@ class FontAwesome {
       $nothing_selected = 'selected';
     }
 
-    $field_name = $this->options_key . '[load_spec][method]';
+    $field_name = self::OPTIONS_KEY . '[load_spec][method]';
     ?>
     <select id="<?= $this->user_settings_field_id_method ?>" name="<?= $field_name ?>">
       <option value="svg" <?= $svg_selected ?>>svg</option>
@@ -369,7 +371,7 @@ class FontAwesome {
       $nothing_selected = 'selected';
     }
 
-    $field_name = $this->options_key . '[load_spec][version]';
+    $field_name = self::OPTIONS_KEY . '[load_spec][version]';
     ?>
     <select id="<?= $this->user_settings_field_id_version ?>" name="<?= $field_name ?>">
       <option value="<?= $this->get_latest_semver() ?>" <?= $latest_selected ?>>latest release</option>
@@ -396,7 +398,7 @@ class FontAwesome {
       $nothing_selected = 'selected';
     }
 
-    $field_name = $this->options_key . '[load_spec][v4shim]';
+    $field_name = self::OPTIONS_KEY . '[load_spec][v4shim]';
     ?>
     <select id="<?= $this->user_settings_field_id_v4shim ?>" name="<?= $field_name ?>">
       <option value="require" <?= $require_selected ?>>require</option>
@@ -420,7 +422,7 @@ class FontAwesome {
       $nothing_selected = 'selected';
     }
 
-    $field_name = $this->options_key . '[load_spec][pseudo-elements]';
+    $field_name = self::OPTIONS_KEY . '[load_spec][pseudo-elements]';
     ?>
     <select id="<?= $this->user_settings_field_id_pseudo_elements ?>" name="<?= $field_name ?>">
       <option value="require" <?= $require_selected ?>>require</option>
@@ -491,7 +493,7 @@ class FontAwesome {
    */
   public static function reset(){
     self::$_instance = null;
-    FontAwesome();
+    return FontAwesome();
   }
 
     // TODO:
@@ -511,6 +513,9 @@ class FontAwesome {
    */
   public function load() {
     $options = $this->options();
+
+    // TODO: reconsider whether this needs to run every time admin-ajax.php pings for the auth check
+    // Probably not. How can we optimize?
 
     // Register the web site user/ower as a client.
     $this->register($options['load_spec']);
