@@ -18,16 +18,22 @@ class App extends Component {
       data: null,
       error: null,
       isLoading: true,
+      isSubmitting: false,
+      hasSubmitted: false,
+      submitSuccess: false,
+      submitMessage: null,
       wpApiSettings
     }
 
     this.getData = this.getData.bind(this)
     this.putData = this.putData.bind(this)
-    this.handleDataResponse = this.handleDataResponse.bind(this)
-    this.handleDataError = this.handleDataError.bind(this)
+    this.handlePutResponse = this.handlePutResponse.bind(this)
+    this.handlePutError = this.handlePutError.bind(this)
+    this.handleGetResponse = this.handleGetResponse.bind(this)
+    this.handleGetError = this.handleGetError.bind(this)
   }
 
-  handleDataResponse(response) {
+  handleGetResponse(response) {
     const { status, data } = response
     if(200 === status) {
       this.setState({ data, isLoading: false })
@@ -36,12 +42,52 @@ class App extends Component {
     }
   }
 
-  handleDataError(error) {
+  handlePutResponse(response) {
+    const { status, data } = response
+    if (200 === status) {
+      this.setState({
+        data,
+        isSubmitting: false,
+        hasSubmitted: true,
+        error: null,
+        submitSuccess: true,
+        submitMessage: "Changes saved"
+      })
+    } else {
+      this.setState({
+        isSubmitting: false,
+        hasSubmitted: true,
+        error: null,
+        submitSuccess: false,
+        submitMessage: "Failed to save changes"
+      })
+    }
+  }
+
+  handlePutError(error) {
+    const { response: { data: { code, message }}} = error
+    let submitMessage = ""
+
+    switch(code) {
+      case 'cant_update':
+        submitMessage = message
+        break
+      case 'rest_no_route':
+      case 'rest_cookie_invalid_nonce':
+        submitMessage = "Sorry, we couldn't reach the server"
+        break
+      default:
+        submitMessage = "Update failed"
+    }
+    this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage })
+  }
+
+  handleGetError(error) {
     this.setState({ error })
   }
 
   getData() {
-    return axios.get(
+    axios.get(
       `${this.state.wpApiSettings.api_url}/config`,
       {
         headers: {
@@ -49,10 +95,14 @@ class App extends Component {
         }
       }
     )
+    .then( this.handleGetResponse )
+    .catch( this.handleGetError )
   }
 
   putData(newData){
-    return axios.put(
+    this.setState({ isSubmitting: true, hasSubmitted: false })
+
+    axios.put(
       `${this.state.wpApiSettings.api_url}/config`,
       newData,
       {
@@ -61,13 +111,13 @@ class App extends Component {
         }
       }
     )
+    .then( this.handlePutResponse )
+    .catch( this.handlePutError )
   }
 
   componentDidMount() {
     this.setState({ isLoading: true })
     this.getData()
-      .then( this.handleDataResponse )
-      .catch( this.handleDataError )
   }
 
   render() {
@@ -79,7 +129,15 @@ class App extends Component {
         {
           this.state.isLoading
           ? <LoadingView/>
-          : <FontAwesomeAdminView data={ this.state.data } putData={ this.putData }/>
+          : <FontAwesomeAdminView
+              data={ this.state.data }
+              putData={ this.putData }
+              isSubmitting={ this.state.isSubmitting }
+              hasSubmitted={ this.state.hasSubmitted }
+              submitSuccess={ this.state.submitSuccess }
+              submitMessage={ this.state.submitMessage }
+              error={ this.state.error }
+            />
         }
       </div>
     )
