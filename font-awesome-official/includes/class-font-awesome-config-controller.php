@@ -32,9 +32,9 @@ class FontAwesomeConfigController extends WP_REST_Controller {
     ));
   }
 
-  protected function build_item($fa, $reload_options = false) {
+  protected function build_item($fa) {
     return array(
-      "options" => $fa->options($reload_options),
+      "options" => $fa->options(),
       "clientRequirements" => $fa->requirements(),
       "conflicts" => $fa->conflicts(),
       "currentLoadSpec" => $fa->load_spec(),
@@ -71,9 +71,13 @@ class FontAwesomeConfigController extends WP_REST_Controller {
     $item = $this->prepare_item_for_database( $request );
 
     if(update_option(FontAwesome::OPTIONS_KEY, $item['options'])) {
+      // Because FontAwesome is a singleton, we need to reset it now that the
+      // user options have changed. And running load() is what must happen
+      // in order to fully populate the object with all of its data that will
+      // be pulled together into a response object by build_item().
       $fa = FontAwesome::reset();
       $fa->load();
-      $return_data = $this->build_item($fa, true);
+      $return_data = $this->build_item($fa);
       return new WP_REST_Response( $return_data, 200 );
     } else {
       return new WP_Error( 'cant-update', 'Whoops, we couldn\'t update those options.', array( 'status' => 500 ) );
