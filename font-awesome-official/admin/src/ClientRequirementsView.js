@@ -54,7 +54,7 @@ class ClientRequirementsView extends React.Component {
               {
                 this.props.clientRequirements.map((client, index)  => {
                   return <tr key={ index }>
-                    <td>{ client.name }</td>
+                    <td>{ client.name === ADMIN_USER_CLIENT_NAME ? 'You' : client.name }</td>
                     <td className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>{ client.version ? client.version : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
