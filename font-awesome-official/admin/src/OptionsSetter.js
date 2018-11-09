@@ -20,8 +20,8 @@ class OptionsSetter extends React.Component {
       v4shim: UNSPECIFIED,
       pseudoElements: UNSPECIFIED,
       version: UNSPECIFIED,
-      usePro: props.currentOptions.pro,
-      removeUnregisteredClients: props.currentOptions['remove_others'],
+      usePro: false,
+      removeUnregisteredClients: false,
       versionOptions: null,
       lastProps: null
     }
@@ -36,6 +36,10 @@ class OptionsSetter extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
+    if( isEqual(prevState.lastProps, nextProps) ) {
+      return null
+    }
+
     const newState = {
       lastProps: nextProps
     }
@@ -59,11 +63,11 @@ class OptionsSetter extends React.Component {
     }
 
     if( firstTime || nextProps.currentOptions['pro'] !== prevState.lastProps.currentOptions['pro'] ) {
-      newState.usePro = nextProps.currentOptions['pro']
+      newState.usePro = !!nextProps.currentOptions['pro']
     }
 
     if( firstTime || nextProps.currentOptions['remove_others'] !== prevState.lastProps.currentOptions['remove_others'] ) {
-      newState.removeUnregisteredClients = nextProps.currentOptions['load_spec']['remove_others']
+      newState.removeUnregisteredClients = !!nextProps.currentOptions['remove_others']
     }
 
     if ( firstTime || ! isEqual(nextProps.releases, prevState.lastProps.releases)) {
@@ -101,6 +105,7 @@ class OptionsSetter extends React.Component {
   }
 
   handleProCheck(){
+    console.log("flipping usePro")
     this.setState({ usePro: !this.state.usePro })
   }
 
@@ -168,7 +173,7 @@ class OptionsSetter extends React.Component {
               <label htmlFor="use-pro">Use Pro</label>
             </th>
             <td>
-              <input name="use-pro" value={ this.state.usePro } type="checkbox" onChange={ this.handleProCheck }/>
+              <input name="use-pro" checked={ this.state.usePro } value={ this.state.usePro } type="checkbox" onChange={ this.handleProCheck }/>
             </td>
           </tr>
           <tr>
@@ -222,6 +227,7 @@ class OptionsSetter extends React.Component {
             <td>
               <input
                 name="remove-unregistered"
+                checked={ this.state.removeUnregisteredClients }
                 value={ this.state.removeUnregisteredClients }
                 type="checkbox"
                 onChange={ this.handleRemoveUnregisteredCheck }
