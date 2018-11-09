@@ -70,7 +70,9 @@ class FontAwesomeConfigController extends WP_REST_Controller {
   public function update_item( $request ) {
     $item = $this->prepare_item_for_database( $request );
 
-    if(update_option(FontAwesome::OPTIONS_KEY, $item['options'])) {
+    $current_options = get_option(FontAwesome::OPTIONS_KEY);
+
+    if($item['options'] == $current_options || update_option(FontAwesome::OPTIONS_KEY, $item['options'])) {
       // Because FontAwesome is a singleton, we need to reset it now that the
       // user options have changed. And running load() is what must happen
       // in order to fully populate the object with all of its data that will
