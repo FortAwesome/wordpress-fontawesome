@@ -20,8 +20,8 @@ class OptionsSetter extends React.Component {
       v4shim: UNSPECIFIED,
       pseudoElements: UNSPECIFIED,
       version: UNSPECIFIED,
-      usePro: false,
-      removeUnregisteredClients: false,
+      usePro: props.currentOptions.pro,
+      removeUnregisteredClients: props.currentOptions['remove_others'],
       versionOptions: null,
       lastProps: null
     }
@@ -59,7 +59,7 @@ class OptionsSetter extends React.Component {
     }
 
     if( firstTime || nextProps.currentOptions['pro'] !== prevState.lastProps.currentOptions['pro'] ) {
-      newState.usePro = nextProps.currentOptions['load_spec']['pro']
+      newState.usePro = nextProps.currentOptions['pro']
     }
 
     if( firstTime || nextProps.currentOptions['remove_others'] !== prevState.lastProps.currentOptions['remove_others'] ) {
