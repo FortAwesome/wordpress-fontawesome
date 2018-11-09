@@ -10,7 +10,17 @@ if (! class_exists('FontAwesome') ) :
 
 class FontAwesome {
 
+  // TODO: probably change the rest of these constants to be class constants so we don't have to
+  // instantiate in order to access them.
   const OPTIONS_KEY = 'font-awesome-official';
+
+  const DEFAULT_USER_OPTIONS = array(
+    'load_spec' => array(
+      'name' => 'user'
+    ),
+    'pro' => 0,
+    'remove_others' => false
+  );
 
   protected $_constants = [
     'version' => '0.1.0',
@@ -18,14 +28,7 @@ class FontAwesome {
     'plugin_name' => 'font-awesome-official',
     'options_page' => 'font-awesome-official',
     'handle' => 'font-awesome-official',
-    'v4shim_handle' => 'font-awesome-official-v4shim',
-    'default_user_options' => array(
-      'load_spec' => array(
-        'name' => 'user'
-      ),
-      'pro' => 0,
-      'remove_others' => false
-    )
+    'v4shim_handle' => 'font-awesome-official-v4shim'
   ];
 
   public function __get($name){
@@ -216,7 +219,7 @@ class FontAwesome {
    * Returns current options with defaults.
    */
   public function options(){
-    return wp_parse_args(get_option(self::OPTIONS_KEY), $this->default_user_options);
+    return wp_parse_args(get_option(self::OPTIONS_KEY), self::DEFAULT_USER_OPTIONS);
   }
 
   public function create_admin_page(){
