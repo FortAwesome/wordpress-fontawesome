@@ -16,30 +16,49 @@ class ClientRequirementsView extends React.Component {
   }
 
   render() {
+    const { conflict } = this.props
+
+    const hasConflict = !!conflict
+
     return <div className={ styles['client-requirements'] }>
-      <h2>Client Requirements</h2>
+      {
+        hasConflict
+        ? <h2>Conflicting Requirements</h2>
+        : <h2>Client Requirements</h2>
+      }
       {
         this.hasAdditionalClients()
         ?
           <div>
-            <p className={ sharedStyles['explanation'] }>
-              Here are some other clients of the Font Awesome plugin, such as plugins or themes,
-              along with their Font Awesome requirements shown side-by-side with your preferences.
-              If you're trying to resolve a conflict, you might find the culprit at a glance here.
-            </p>
+            { hasConflict
+              ? <p className={sharedStyles['explanation']}>
+                We found conflicting requirements between two or more plugins or themes.
+              </p>
+              : <p className={sharedStyles['explanation']}>
+                Here are some other clients of the Font Awesome plugin, such as plugins or themes,
+                along with their Font Awesome requirements shown side-by-side with your preferences.
+                If you're trying to resolve a conflict, you might find the culprit at a glance here.
+              </p>
+            }
             <table className={ classnames( 'widefat', 'striped' ) }>
+              <thead>
+                <tr className={ sharedStyles['table-header'] }>
+                  <th>Name</th>
+                  <th className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>Method</th>
+                  <th className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>Version</th>
+                  <th className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>V4 Compat</th>
+                  <th className={ classnames({ [styles.conflicted]: 'pseudo-elements' === conflict }) }>Pseudo-elements</th>
+                </tr>
+              </thead>
               <tbody>
-              <tr className={ sharedStyles['table-header'] }>
-                <th>Name</th><th>Method</th><th>Version</th><th>V4 Compat</th><th>Pseudo-elements</th>
-              </tr>
               {
                 this.props.clientRequirements.map((client, index)  => {
                   return <tr key={ index }>
                     <td>{ client.name }</td>
-                    <td>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
-                    <td>{ client.version ? client.version : UNSPECIFIED_INDICATOR }</td>
-                    <td>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
-                    <td>{ client['pseudo-elements'] ? client['pseudo-elements'] : UNSPECIFIED_INDICATOR }</td>
+                    <td className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
+                    <td className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>{ client.version ? client.version : UNSPECIFIED_INDICATOR }</td>
+                    <td className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
+                    <td className={ classnames({ [styles.conflicted]: 'pseudo-elements' === conflict }) }>{ client['pseudo-elements'] ? client['pseudo-elements'] : UNSPECIFIED_INDICATOR }</td>
                   </tr>
                 })
               }
@@ -59,5 +78,6 @@ class ClientRequirementsView extends React.Component {
 export default ClientRequirementsView
 
 ClientRequirementsView.propTypes = {
-  clientRequirements: PropTypes.array.isRequired
+  clientRequirements: PropTypes.array.isRequired,
+  conflict: PropTypes.string
 }

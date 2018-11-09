@@ -25,7 +25,10 @@ class FontAwesomeAdminView extends React.Component {
           <span className={ styles['status-label'] }>Status: </span>
           <FontAwesomeIcon className={ styles['icon'] } icon={ hasConflict ? faExclamationCircle : faThumbsUp }/>
         </p>
-        <LoadSpecView spec={ data.currentLoadSpec } />
+        { hasConflict
+          ? <ClientRequirementsView clientRequirements={ data.conflicts['client-reqs'] } conflict={ data.conflicts.req } />
+          : <LoadSpecView spec={ data.currentLoadSpec } />
+        }
         <OptionsSetter
           releases={ data.releases }
           currentOptions={ data.options }
@@ -36,7 +39,7 @@ class FontAwesomeAdminView extends React.Component {
           submitMessage={ this.props.submitMessage }
           error={ this.props.error }
         />
-        <ClientRequirementsView clientRequirements={ data.clientRequirements }/>
+        { !hasConflict && <ClientRequirementsView clientRequirements={ data.clientRequirements }/> }
         <UnregisteredClientsView clients={ data.unregisteredClients }/>
       </div>
     </div>
