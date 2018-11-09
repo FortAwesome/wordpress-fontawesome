@@ -36,25 +36,19 @@ fi
 DOCKER_HOST_IP=`ifconfig lo0 | grep 'inet\s169\.' | awk '{print $2}'`
 if [[ -z "$DOCKER_HOST_IP" ]]; then
   echo "WARNING: if you want to do remote PHP debugging on web pages,"
+  echo "     or development on the React app using the webpack dev server,"
   echo "     you must first set a loopback alias IP address on your host."
   echo "On Mac, run the following and then try again:"
   echo "     sudo ifconfig lo0 alias 169.254.254.254"
-  echo "Any valid 169.* address will do."
   echo "A hostname called 'dockerhost' will be set up inside the container that resolves to this address."
   echo "You could also configure your host to add this alias every time it reboots."
   echo "     see: http://mattgreensmith.net/2016/12/09/docker-for-mac-how-to-access-host-services-from-containers/"
-else
-  echo "Adding dockerhost host entry...\c"
-  $DOCKER exec -it -w /var/www/html $WP_CONTAINER_ID /bin/bash -c "echo \"$DOCKER_HOST_IP dockerhost\" >> /etc/hosts"
-  if [ "$?" == "0" ]; then
-    echo "ok."
-  else
-    echo "FAIL"
-  fi
 fi
 
 echo "Adding WordPress debug configuration...\c"
-$DOCKER exec -it -w /var/www/html $WP_CONTAINER_ID sed -ri "2idefine(\'WP_DEBUG\', true);\ndefine(\'WP_DEBUG_LOG\', true);\ndefine(\'WP_DEBUG_DISPLAY\', true);" wp-config.php
+$DIR/set-wp-config WP_DEBUG true
+$DIR/set-wp-config WP_DEBUG_LOG true
+$DIR/set-wp-config WP_DEBUG_DISPLAY true
 
 if [ "$?" == "0" ]; then
   echo "ok."

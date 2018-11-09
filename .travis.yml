@@ -24,7 +24,10 @@ matrix:
   - php: 7.0.32
     env: WP_VERSION=latest
   - php: 5.6.37
-    env: WP_VERSION=4.4
+    # env: WP_VERSION=4.4
+    # The REST API is included in 4.7 and later. If we want to target >= 4.4 < 4.7, we may need to do it by
+    # installing the REST API plugin for those older versions and require that customers do the same.
+    env: WP_VERSION=4.7
   - php: 5.6.37
     env: WP_VERSION=latest
   - php: 5.6.37

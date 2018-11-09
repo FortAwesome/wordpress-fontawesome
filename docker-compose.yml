@@ -28,6 +28,10 @@ services:
        - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
        - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
        - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+     extra_hosts:
+       - "dockerhost:169.254.254.254"
+     env_file:
+       - .env
      environment:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress

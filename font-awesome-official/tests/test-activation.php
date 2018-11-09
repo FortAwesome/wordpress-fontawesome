@@ -9,17 +9,17 @@ class ActivationTest extends WP_UnitTestCase {
    * @before
    */
   function reset(){
-    delete_option(FontAwesome()->options_key);
+    delete_option(FontAwesome::OPTIONS_KEY);
   }
 
   function test_before_activation(){
-    $options = get_option(FontAwesome()->options_key);
+    $options = get_option(FontAwesome::OPTIONS_KEY);
     $this->assertFalse($options);
   }
 
   function test_activation_creates_default_config(){
     FontAwesome_Activator::activate();
-    $options = get_option(FontAwesome()->options_key);
-    $this->assertEquals(FontAwesome()->default_user_options['load_spec']['name'], $options['load_spec']['name']);
+    $options = get_option(FontAwesome::OPTIONS_KEY);
+    $this->assertEquals(FontAwesome::DEFAULT_USER_OPTIONS['load_spec']['name'], $options['load_spec']['name']);
   }
 }

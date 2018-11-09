@@ -11,8 +11,7 @@
 class FontAwesome_Activator {
 
   public static function activate() {
-    $fa = FontAwesome();
-    update_option($fa->options_key, $fa->default_user_options);
+    update_option(FontAwesome::OPTIONS_KEY, FontAwesome::DEFAULT_USER_OPTIONS);
   }
 
 }

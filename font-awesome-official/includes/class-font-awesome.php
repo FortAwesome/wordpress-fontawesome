@@ -3,33 +3,35 @@ require_once( __DIR__ . '/../defines.php');
 require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
+require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-config-controller.php');
+require_once( ABSPATH . 'wp-admin/includes/screen.php' );
 use Composer\Semver\Semver;
 
 if (! class_exists('FontAwesome') ) :
 
 class FontAwesome {
 
+  // TODO: probably change the rest of these constants to be class constants so we don't have to
+  // instantiate in order to access them.
+  const OPTIONS_KEY = 'font-awesome-official';
+  const ADMIN_USER_CLIENT_NAME_INTERNAL = 'user';
+  const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
+
+  const DEFAULT_USER_OPTIONS = array(
+    'load_spec' => array(
+      'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL
+    ),
+    'pro' => 0,
+    'remove_others' => false
+  );
+
   protected $_constants = [
     'version' => '0.1.0',
+    'rest_api_version' => '1',
     'plugin_name' => 'font-awesome-official',
-    'options_key' => 'font-awesome-official',
     'options_page' => 'font-awesome-official',
     'handle' => 'font-awesome-official',
-    'v4shim_handle' => 'font-awesome-official-v4shim',
-    'user_settings_section' => 'font-awesome-official-user-settings-section',
-    'user_settings_field_id_method' => 'font-awesome-official-user-settings-field-method',
-    'user_settings_field_id_pro' => 'font-awesome-official-user-settings-field-pro',
-    'user_settings_field_id_remove_others' => 'font-awesome-official-user-settings-field-remove-others',
-    'user_settings_field_id_v4shim' => 'font-awesome-official-user-settings-field-v4shim',
-    'user_settings_field_id_version' => 'font-awesome-official-user-settings-field-version',
-    'user_settings_field_id_pseudo_elements' => 'font-awesome-official-user-settings-field-pseudo-elements',
-    'default_user_options' => array(
-      'load_spec' => array(
-        'name' => 'user'
-      ),
-      'pro' => 0,
-      'remove_others' => false
-    )
+    'v4shim_handle' => 'font-awesome-official-v4shim'
   ];
 
   public function __get($name){
@@ -69,7 +71,7 @@ class FontAwesome {
    */
   protected $unregistered_clients = array();
 
-  protected $options = null;
+  protected $screen_id = null;
 
   /**
    * Main FontAwesome Instance.
@@ -87,9 +89,27 @@ class FontAwesome {
 
   public function run(){
     add_action( 'init', array( $this, 'load' ));
+
+    // TODO: is it possible to get the REST API going only when the admin UI is active?
+    $this->initialize_rest_api();
+
     if( is_admin() ){
         $this->initialize_admin();
     }
+  }
+
+  private function initialize_rest_api() {
+    // Initialize each controller
+
+    add_action( 'rest_api_init', array(
+        new FontAwesomeConfigController($this->plugin_name, $this->rest_api_namespace()),
+        'register_routes'
+     )
+    );
+  }
+
+  public function rest_api_namespace() {
+    return $this->plugin_name . '/v' . $this->rest_api_version;
   }
 
   public function get_latest_version(){
@@ -116,15 +136,70 @@ class FontAwesome {
     return admin_url( "options-general.php?page=" . $this->options_page );
   }
 
+  private function get_admin_asset_manifest() {
+    if(FONTAWESOME_ENV == 'development') {
+      $client = new GuzzleHttp\Client(['base_uri' => 'http://dockerhost:3030']);
+      $response = $client->request('GET', '/asset-manifest.json', []);
+
+      if($response->getStatusCode() != 200) {
+        return null;
+      }
+
+      $body = $response->getBody();
+      $bodyContents = $body->getContents();
+      $bodyJson = json_decode($bodyContents, true);
+      return $bodyJson;
+    } else {
+      $asset_manifest_file =  FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
+      if( !file_exists($asset_manifest_file) ) return null;
+      $contents = file_get_contents($asset_manifest_file);
+      if( empty($contents) ) return null;
+      return json_decode($contents, true);
+    }
+  }
+
   private function initialize_admin(){
-    add_action('admin_enqueue_scripts', function(){
-      $this->detect_unregistered_clients();
-      wp_enqueue_style( $this->plugin_name, FONTAWESOME_DIR_URL . 'admin/css/font-awesome-admin.css', array(), $this->version, 'all' );
-      wp_enqueue_script( $this->plugin_name, FONTAWESOME_DIR_URL . 'admin/js/font-awesome-admin.js', array('jquery'), $this->version );
+    add_action('admin_enqueue_scripts', function($hook){
+      if( $hook == $this->screen_id) {
+
+        $admin_asset_manifest = $this->get_admin_asset_manifest();
+        $script_number = 0;
+
+        if (FONTAWESOME_ENV == 'development') {
+          $asset_url_base = "http://localhost:3030/";
+        } else {
+          $asset_url_base = FONTAWESOME_DIR_URL . "admin/build";
+        }
+
+        $added_wpr_object = false;
+        foreach ($admin_asset_manifest as $key => $value) {
+          if (preg_match('/\.js$/', $key)) {
+            $script_name = $this->plugin_name . "-" . $script_number;
+            wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true);
+
+            if(!$added_wpr_object) {
+              // We have to give a script handle as the first argument to wp_localize_script.
+              // It doesn't really matter which one it is—we're only using it to inject a global JavaScript object
+              // into a <script> tag. This is just a way to to make that injection on the first script handle
+              // we come across.
+              wp_localize_script( $script_name, 'wpFontAwesomeOfficial', array(
+                  'api_nonce'   => wp_create_nonce( 'wp_rest' ),
+                  'api_url'	  => rest_url( $this->rest_api_namespace() ),
+                )
+              );
+              $added_wpr_object = true;
+            }
+          }
+          if (preg_match('/\.css$/', $key)) {
+            wp_enqueue_style($this->plugin_name . "-" . $script_number, $asset_url_base . $value, [], null, 'all');
+          }
+          $script_number++;
+        }
+      }
     });
 
     add_action('admin_menu', function(){
-      add_options_page(
+      $this->screen_id = add_options_page(
         'Font Awesome Settings',
         'Font Awesome',
         'manage_options',
@@ -132,7 +207,6 @@ class FontAwesome {
         array( $this, 'create_admin_page' )
       );
     });
-    add_action('admin_init', array($this, 'admin_page_init'));
 
     $pn = FontAwesome()->plugin_name;
     add_filter( 'plugin_action_links_' . trailingslashit($pn) . $pn . '.php',
@@ -144,262 +218,11 @@ class FontAwesome {
     });
   }
 
-  public function admin_page_init(){
-    register_setting( $this->plugin_name, $this->options_key, [
-      'type' => 'string',
-      'default' => $this->default_user_options,
-      'sanitize_callback' => array($this, 'sanitize_user_settings_input')
-    ]);
-    add_settings_section( $this->user_settings_section, 'Settings', array($this, 'user_settings_section_view'), $this->plugin_name );
-    add_settings_field(
-      $this->user_settings_field_id_method,
-      'Method',
-      array($this, 'user_settings_field_method_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_pro,
-      'Pro',
-      array($this, 'user_settings_field_pro_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_v4shim,
-      'Version 4 Compatibility',
-      array($this, 'user_settings_field_v4shim_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_pseudo_elements,
-      'Pseudo-elements Support',
-      array($this, 'user_settings_field_pseudo_elements_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_version,
-      'Version',
-      array($this, 'user_settings_field_version_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-    add_settings_field(
-      $this->user_settings_field_id_remove_others,
-      'Remove Unregistered Clients',
-      array($this, 'user_settings_field_remove_others_view'),
-      $this->plugin_name,
-      $this->user_settings_section
-    );
-  }
-
-  public function user_settings_section_view(){
-  ?>
-    <p class="user-settings-section-description">
-      Configure your preferences for Font Awesome's installation here.
-      Your preferences will be merged with any requirements registered by
-      other themes or plugins, summarized in the table below.
-      If you choose preferences that conflict with those required by other
-      registered themes or plugins, you'll see an error here on this
-      admin page.
-    </p>
-  <?php
-  }
-
   /**
-   * Returns current options.
+   * Returns current options with defaults.
    */
   public function options(){
-    if(is_null($this->options)) {
-      $this->options = wp_parse_args(get_option($this->options_key, $this->default_user_options));
-    }
-    return $this->options;
-  }
-
-  public function user_settings_field_pro_view(){
-    $options = $this->options();
-    $checked = (isset($options['pro']) && $options['pro']) ? 'checked' : '';
-    $field_name = $this->options_key . '[pro]';
-  ?>
-    <input id="<?= $this->user_settings_field_id_pro ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
-  <?php
-  }
-
-  public function user_settings_field_remove_others_view(){
-    $options = $this->options();
-    $checked = (isset($options['remove_others']) && $options['remove_others']) ? 'checked' : '';
-    $field_name = $this->options_key . '[remove_others]';
-    ?>
-      <input id="<?= $this->user_settings_field_id_remove_others ?>" type="checkbox" <?= $checked ?> name="<?= $field_name ?>" value="true">
-    <?php
-  }
-
-  public function user_settings_field_method_view(){
-    $options = $this->options();
-
-    $svg_selected = '';
-    $webfont_selected = '';
-    $nothing_selected = '';
-
-    if(isset($options['load_spec']['method'])){
-      $svg_selected = $options['load_spec']['method'] == 'svg' ? 'selected' : '';
-      $webfont_selected = $options['load_spec']['method'] == 'webfont' ? 'selected' : '';
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = $this->options_key . '[load_spec][method]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_method ?>" name="<?= $field_name ?>">
-      <option value="svg" <?= $svg_selected ?>>svg</option>
-      <option value="webfont" <?= $webfont_selected ?>>webfont</option>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function user_settings_field_version_view(){
-    $options = $this->options();
-
-    $latest_selected = '';
-    $previous_selected = '';
-    $older_selected = '';
-    $nothing_selected = '';
-
-    // TODO: add integration test for scenario:
-    // where options['load_spec']['version'] = 5.0.13 (or some thing older than "previous")
-    // previous: 5.1.3
-    // latest: 5.2.1
-    //
-    // Expected, 5.0.13 should appear, selected, in the drop down, labeled "older release",
-    // and the latest and previous options should also be present.
-    // A manual test of this scenario already passes. But we need an automated one.
-    if(isset($options['load_spec']['version'])){
-      $semver = $options['load_spec']['version'];
-      if(Semver::satisfies($this->get_latest_version(), $semver)){
-        $latest_selected = 'selected';
-      } elseif (Semver::satisfies($this->get_previous_version(), $semver)){
-        $previous_selected = 'selected';
-      } else {
-        $older_selected = 'selected';
-      }
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = $this->options_key . '[load_spec][version]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_version ?>" name="<?= $field_name ?>">
-      <option value="<?= $this->get_latest_semver() ?>" <?= $latest_selected ?>>latest release</option>
-      <option value="<?= $this->get_previous_semver() ?>" <?= $previous_selected ?>>previous release</option>
-      <?php if(boolval($older_selected)){ ?>
-      <option value="<?= $options['load_spec']['version'] ?>" <?= $older_selected ?>>older release</option>
-      <?php } ?>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function user_settings_field_v4shim_view(){
-    $options = $this->options();
-
-    $require_selected = '';
-    $forbid_selected = '';
-    $nothing_selected = '';
-
-    if(isset($options['load_spec']['v4shim'])){
-      $require_selected = $options['load_spec']['v4shim'] == 'require' ? 'selected' : '';
-      $forbid_selected = $options['load_spec']['v4shim'] == 'forbid' ? 'selected' : '';
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = $this->options_key . '[load_spec][v4shim]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_v4shim ?>" name="<?= $field_name ?>">
-      <option value="require" <?= $require_selected ?>>require</option>
-      <option value="forbid" <?= $forbid_selected ?>>forbid</option>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function user_settings_field_pseudo_elements_view(){
-    $options = $this->options();
-
-    $require_selected = '';
-    $forbid_selected = '';
-    $nothing_selected = '';
-
-    if(isset($options['load_spec']['pseudo-elements'])){
-      $require_selected = $options['load_spec']['pseudo-elements'] == 'require' ? 'selected' : '';
-      $forbid_selected = $options['load_spec']['pseudo-elements'] == 'forbid' ? 'selected' : '';
-    } else {
-      $nothing_selected = 'selected';
-    }
-
-    $field_name = $this->options_key . '[load_spec][pseudo-elements]';
-    ?>
-    <select id="<?= $this->user_settings_field_id_pseudo_elements ?>" name="<?= $field_name ?>">
-      <option value="require" <?= $require_selected ?>>require</option>
-      <option value="forbid" <?= $forbid_selected ?>>forbid</option>
-      <option value="_" <?= $nothing_selected ?>>_</option>
-    </select>
-    <?php
-  }
-
-  public function sanitize_user_settings_input($input){
-    $new_input = $this->default_user_options;
-    if( isset( $input['load_spec'] ) ){
-      if( isset( $input['load_spec']['method'] ) && $input['load_spec']['method'] != '_')
-        $new_input['load_spec']['method'] = sanitize_text_field( $input['load_spec']['method'] );
-
-      if( isset( $input['load_spec']['v4shim'] ) ){
-        switch( $input['load_spec']['v4shim'] ){
-          case 'require':
-            $new_input['load_spec']['v4shim'] = 'require';
-            break;
-          case 'forbid':
-            $new_input['load_spec']['v4shim'] = 'forbid';
-            break;
-        }
-      }
-
-      if( isset( $input['load_spec']['pseudo-elements'] ) ){
-        switch( $input['load_spec']['pseudo-elements'] ){
-          case 'require':
-            $new_input['load_spec']['pseudo-elements'] = 'require';
-            break;
-          case 'forbid':
-            $new_input['load_spec']['pseudo-elements'] = 'forbid';
-            break;
-        }
-      }
-
-      if( isset( $input['load_spec']['version'] ) ){
-        $previous_semver = $this->get_latest_semver();
-        $latest_semver = $this->get_previous_semver();
-
-        switch( $input['load_spec']['version'] ){
-          case $latest_semver:
-            $new_input['load_spec']['version'] = $latest_semver;
-            break;
-          case $previous_semver:
-            $new_input['load_spec']['version'] = $previous_semver;
-            break;
-        }
-      }
-    }
-
-    if( isset( $input['pro'] ) )
-      $new_input['pro'] = wp_validate_boolean( $input['pro'] );
-
-    if( isset( $input['remove_others'] ) )
-      $new_input['remove_others'] = wp_validate_boolean( $input['remove_others'] );
-
-    return $new_input;
+    return wp_parse_args(get_option(self::OPTIONS_KEY), self::DEFAULT_USER_OPTIONS);
   }
 
   public function create_admin_page(){
@@ -411,7 +234,7 @@ class FontAwesome {
    */
   public static function reset(){
     self::$_instance = null;
-    FontAwesome();
+    return FontAwesome();
   }
 
     // TODO:
@@ -432,6 +255,9 @@ class FontAwesome {
   public function load() {
     $options = $this->options();
 
+    // TODO: reconsider whether this needs to run every time admin-ajax.php pings for the auth check
+    // Probably not. How can we optimize?
+
     // Register the web site user/ower as a client.
     $this->register($options['load_spec']);
 
@@ -448,17 +274,27 @@ class FontAwesome {
       // probably a more helpful way to do it.
       $client_name_list = [];
       foreach($data['client-reqs'] as $client){
-        array_push($client_name_list, $client['name']);
+        array_push($client_name_list,
+          $client['name'] == self::ADMIN_USER_CLIENT_NAME_INTERNAL
+          ? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
+          : $client['name']
+        );
       }
-      $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: " . implode($client_name_list, ', ') . '.';
+      $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: "
+        . implode($client_name_list, ', ') . '.  '
+        . 'To resolve these conflicts, <a href="' . $this->settings_page_url() . '">Go to Font Awesome Settings</a>.';
+
       error_log($error_msg . ' Dumping conflicting requirements: ' .  print_r($data, true));
       do_action('font_awesome_failed', $data);
       add_action('admin_notices', function() use($error_msg){
-        ?>
-        <div class="error notice">
-        <p><?= $error_msg ?></p>
-        </div>
-        <?php
+        $current_screen = get_current_screen();
+        if($current_screen && $current_screen->id != $this->screen_id) {
+          ?>
+            <div class="error notice">
+                <p><?= $error_msg ?></p>
+            </div>
+          <?php
+        }
       });
     });
     if( isset($load_spec) ) {
@@ -488,6 +324,7 @@ class FontAwesome {
    * Return list of found unregistered clients.
    */
   public function unregistered_clients(){
+    $this->detect_unregistered_clients();
     return $this->unregistered_clients;
   }
 
@@ -771,7 +608,7 @@ class FontAwesome {
   }
 
   /**
-   * Populates $this->unregistered_clients() after searching through $wp_styles and $wp_scripts
+   * Cleans and re-populates $this->unregistered_clients() after searching through $wp_styles and $wp_scripts
    * Returns nothing
    */
   protected function detect_unregistered_clients(){
@@ -782,6 +619,8 @@ class FontAwesome {
       'style' => $wp_styles,
       'script' => $wp_scripts
     );
+
+    $this->unregistered_clients = array(); // re-initialize
 
     foreach( $collections as $key => $collection ) {
       foreach ($collection->registered as $handle => $details) {

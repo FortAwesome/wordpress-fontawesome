@@ -6,3 +6,6 @@ vendor
 dist
 *.zip
 *.log
+node_modules/
+build/
+wordpress/
