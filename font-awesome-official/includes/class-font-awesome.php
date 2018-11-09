@@ -65,8 +65,6 @@ class FontAwesome {
    */
   protected $unregistered_clients = array();
 
-  protected $options = null;
-
   protected $screen_id = null;
 
   /**
@@ -158,7 +156,6 @@ class FontAwesome {
     add_action('admin_enqueue_scripts', function($hook){
       if( $hook == $this->screen_id) {
 
-        $this->detect_unregistered_clients();
         $admin_asset_manifest = $this->get_admin_asset_manifest();
         $script_number = 0;
 
@@ -218,11 +215,8 @@ class FontAwesome {
   /**
    * Returns current options with defaults.
    */
-  public function options($reload = false){
-    if(is_null($this->options) || $reload) {
-      $this->options = wp_parse_args(get_option(self::OPTIONS_KEY), $this->default_user_options);
-    }
-    return $this->options;
+  public function options(){
+    return wp_parse_args(get_option(self::OPTIONS_KEY), $this->default_user_options);
   }
 
   public function create_admin_page(){
@@ -314,6 +308,7 @@ class FontAwesome {
    * Return list of found unregistered clients.
    */
   public function unregistered_clients(){
+    $this->detect_unregistered_clients();
     return $this->unregistered_clients;
   }
 
@@ -597,7 +592,7 @@ class FontAwesome {
   }
 
   /**
-   * Populates $this->unregistered_clients() after searching through $wp_styles and $wp_scripts
+   * Cleans and re-populates $this->unregistered_clients() after searching through $wp_styles and $wp_scripts
    * Returns nothing
    */
   protected function detect_unregistered_clients(){
@@ -608,6 +603,8 @@ class FontAwesome {
       'style' => $wp_styles,
       'script' => $wp_scripts
     );
+
+    $this->unregistered_clients = array(); // re-initialize
 
     foreach( $collections as $key => $collection ) {
       foreach ($collection->registered as $handle => $details) {
