@@ -29,7 +29,7 @@ class ClientRequirementsView extends React.Component {
             </p>
             <table className={ classnames( 'widefat', 'striped' ) }>
               <tbody>
-              <tr>
+              <tr className={ sharedStyles['table-header'] }>
                 <th>Name</th><th>Method</th><th>Version</th><th>V4 Compat</th><th>Pseudo-elements</th>
               </tr>
               {

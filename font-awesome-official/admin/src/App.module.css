@@ -1,3 +1,7 @@
 .explanation {
   max-width: 500px;
 }
+
+.table-header th {
+  font-weight: bold;
+}

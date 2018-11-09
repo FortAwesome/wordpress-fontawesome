@@ -7,6 +7,7 @@ import OptionsSetter from './OptionsSetter'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import ClientRequirementsView from './ClientRequirementsView'
+import UnregisteredClientsView from './UnregisteredClientsView'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -36,6 +37,7 @@ class FontAwesomeAdminView extends React.Component {
           error={ this.props.error }
         />
         <ClientRequirementsView clientRequirements={ data.clientRequirements }/>
+        <UnregisteredClientsView clients={ data.unregisteredClients }/>
       </div>
     </div>
   }
