@@ -26,7 +26,12 @@ class FontAwesomeAdminView extends React.Component {
           <FontAwesomeIcon className={ styles['icon'] } icon={ hasConflict ? faExclamationCircle : faThumbsUp }/>
         </p>
         { hasConflict
-          ? <ClientRequirementsView clientRequirements={ data.conflicts['client-reqs'] } conflict={ data.conflicts.req } />
+          ? <ClientRequirementsView
+              clientRequirements={ data.conflicts['client-reqs'] }
+              conflict={ data.conflicts.req }
+              adminClientInternal={ data.adminClientInternal }
+              adminClientExternal={ data.adminClientExternal }
+            />
           : <LoadSpecView spec={ data.currentLoadSpec } />
         }
         <OptionsSetter
@@ -39,7 +44,13 @@ class FontAwesomeAdminView extends React.Component {
           submitMessage={ this.props.submitMessage }
           error={ this.props.error }
         />
-        { !hasConflict && <ClientRequirementsView clientRequirements={ data.clientRequirements }/> }
+        { !hasConflict &&
+          <ClientRequirementsView
+            clientRequirements={ data.clientRequirements }
+            adminClientInternal={ data.adminClientInternal }
+            adminClientExternal={ data.adminClientExternal }
+          />
+        }
         <UnregisteredClientsView clients={ data.unregisteredClients }/>
       </div>
     </div>

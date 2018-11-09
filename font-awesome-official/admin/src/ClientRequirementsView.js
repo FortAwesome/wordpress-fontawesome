@@ -5,14 +5,13 @@ import { find } from 'lodash'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
-const ADMIN_USER_CLIENT_NAME = 'user'
 // TODO: refactor this with the one in OptionsSetter
 const UNSPECIFIED_INDICATOR = '-'
 
 class ClientRequirementsView extends React.Component {
 
   hasAdditionalClients() {
-    return !!find(this.props.clientRequirements, client => client.name !== ADMIN_USER_CLIENT_NAME )
+    return !!find(this.props.clientRequirements, client => client.name !== this.props.adminClientInternal )
   }
 
   render() {
@@ -54,7 +53,7 @@ class ClientRequirementsView extends React.Component {
               {
                 this.props.clientRequirements.map((client, index)  => {
                   return <tr key={ index }>
-                    <td>{ client.name === ADMIN_USER_CLIENT_NAME ? 'You' : client.name }</td>
+                    <td>{ client.name === this.props.adminClientInternal ? this.props.adminClientExternal : client.name }</td>
                     <td className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>{ client.version ? client.version : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
@@ -79,5 +78,7 @@ export default ClientRequirementsView
 
 ClientRequirementsView.propTypes = {
   clientRequirements: PropTypes.array.isRequired,
-  conflict: PropTypes.string
+  conflict: PropTypes.string,
+  adminClientInternal: PropTypes.string.isRequired,
+  adminClientExternal: PropTypes.string.isRequired
 }

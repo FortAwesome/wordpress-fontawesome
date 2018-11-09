@@ -4,6 +4,7 @@ require_once( FONTAWESOME_DIR_PATH . 'vendor/autoload.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php');
 require_once( FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-config-controller.php');
+require_once( ABSPATH . 'wp-admin/includes/screen.php' );
 use Composer\Semver\Semver;
 
 if (! class_exists('FontAwesome') ) :
@@ -13,10 +14,12 @@ class FontAwesome {
   // TODO: probably change the rest of these constants to be class constants so we don't have to
   // instantiate in order to access them.
   const OPTIONS_KEY = 'font-awesome-official';
+  const ADMIN_USER_CLIENT_NAME_INTERNAL = 'user';
+  const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
 
   const DEFAULT_USER_OPTIONS = array(
     'load_spec' => array(
-      'name' => 'user'
+      'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL
     ),
     'pro' => 0,
     'remove_others' => false
@@ -271,17 +274,27 @@ class FontAwesome {
       // probably a more helpful way to do it.
       $client_name_list = [];
       foreach($data['client-reqs'] as $client){
-        array_push($client_name_list, $client['name']);
+        array_push($client_name_list,
+          $client['name'] == self::ADMIN_USER_CLIENT_NAME_INTERNAL
+          ? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
+          : $client['name']
+        );
       }
-      $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: " . implode($client_name_list, ', ') . '.';
+      $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: "
+        . implode($client_name_list, ', ') . '.  '
+        . 'To resolve these conflicts, <a href="' . $this->settings_page_url() . '">Go to Font Awesome Settings</a>.';
+
       error_log($error_msg . ' Dumping conflicting requirements: ' .  print_r($data, true));
       do_action('font_awesome_failed', $data);
       add_action('admin_notices', function() use($error_msg){
-        ?>
-        <div class="error notice">
-        <p><?= $error_msg ?></p>
-        </div>
-        <?php
+        $current_screen = get_current_screen();
+        if($current_screen && $current_screen->id != $this->screen_id) {
+          ?>
+            <div class="error notice">
+                <p><?= $error_msg ?></p>
+            </div>
+          <?php
+        }
       });
     });
     if( isset($load_spec) ) {

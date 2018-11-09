@@ -34,6 +34,8 @@ class FontAwesomeConfigController extends WP_REST_Controller {
 
   protected function build_item($fa) {
     return array(
+      "adminClientInternal" => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
+      "adminClientExternal" => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
       "options" => $fa->options(),
       "clientRequirements" => $fa->requirements(),
       "conflicts" => $fa->conflicts(),
