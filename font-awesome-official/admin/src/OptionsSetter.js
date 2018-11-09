@@ -82,7 +82,6 @@ class OptionsSetter extends React.Component {
   }
 
   handleProCheck(){
-    console.log("flipping usePro")
     this.setState({ usePro: !this.state.usePro })
   }
 
