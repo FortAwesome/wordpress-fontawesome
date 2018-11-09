@@ -39,8 +39,7 @@ const UnregisteredClientsView = props => {
           </p>
           <ol className={ sharedStyles['explanation'] }>
             <li>
-              Disable it if you don't need it. If it's a plugin you don't need, deactivate and remove it.
-              If it's a theme you can replace with another one that doesn't create a conflict, replace it.
+              Deactivate or replace it, if possible.
             </li>
             <li>
               Contact the developer for the unregistered client and ask them to consider updating their
