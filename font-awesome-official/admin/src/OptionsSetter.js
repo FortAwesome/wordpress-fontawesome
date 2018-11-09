@@ -36,42 +36,19 @@ class OptionsSetter extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if( isEqual(prevState.lastProps, nextProps) ) {
+    if( nextProps.isSubmitting || isEqual(prevState.lastProps, nextProps) ) {
       return null
     }
 
     const newState = {
-      lastProps: nextProps
-    }
-
-    const firstTime = prevState.lastProps === null
-
-    if( firstTime || nextProps.currentOptions['load_spec']['pseudo-elements'] !== prevState.lastProps.currentOptions['load_spec']['pseudo-elements'] ) {
-      newState.pseudoElements = nextProps.currentOptions['load_spec']['pseudo-elements'] || UNSPECIFIED
-    }
-
-    if( firstTime || nextProps.currentOptions['load_spec']['version'] !== prevState.lastProps.currentOptions['load_spec']['version'] ) {
-      newState.version = nextProps.currentOptions['load_spec']['version'] || UNSPECIFIED
-    }
-
-    if( firstTime || nextProps.currentOptions['load_spec']['v4shim'] !== prevState.lastProps.currentOptions['load_spec']['v4shim'] ) {
-      newState.v4shim = nextProps.currentOptions['load_spec']['v4shim'] || UNSPECIFIED
-    }
-
-    if( firstTime || nextProps.currentOptions['load_spec']['method'] !== prevState.lastProps.currentOptions['load_spec']['method'] ) {
-      newState.method = nextProps.currentOptions['load_spec']['method'] || UNSPECIFIED
-    }
-
-    if( firstTime || nextProps.currentOptions['pro'] !== prevState.lastProps.currentOptions['pro'] ) {
-      newState.usePro = !!nextProps.currentOptions['pro']
-    }
-
-    if( firstTime || nextProps.currentOptions['remove_others'] !== prevState.lastProps.currentOptions['remove_others'] ) {
-      newState.removeUnregisteredClients = !!nextProps.currentOptions['remove_others']
-    }
-
-    if ( firstTime || ! isEqual(nextProps.releases, prevState.lastProps.releases)) {
-      newState.versionOptions = OptionsSetter.buildVersionOptions(nextProps)
+      lastProps: nextProps,
+      pseudoElements: nextProps.currentOptions['load_spec']['pseudo-elements'] || UNSPECIFIED,
+      version: nextProps.currentOptions['load_spec']['version'] || UNSPECIFIED,
+      v4shim: nextProps.currentOptions['load_spec']['v4shim'] || UNSPECIFIED,
+      method: nextProps.currentOptions['load_spec']['method'] || UNSPECIFIED,
+      usePro: !!nextProps.currentOptions['pro'],
+      removeUnregisteredClients: !!nextProps.currentOptions['remove_others'],
+      versionOptions: OptionsSetter.buildVersionOptions(nextProps)
     }
 
     return newState
