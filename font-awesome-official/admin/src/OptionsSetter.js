@@ -42,11 +42,11 @@ class OptionsSetter extends React.Component {
 
     const newState = {
       lastProps: nextProps,
-      pseudoElements: nextProps.currentOptions['load_spec']['pseudo-elements'] || UNSPECIFIED,
-      version: nextProps.currentOptions['load_spec']['version'] || UNSPECIFIED,
-      v4shim: nextProps.currentOptions['load_spec']['v4shim'] || UNSPECIFIED,
-      method: nextProps.currentOptions['load_spec']['method'] || UNSPECIFIED,
-      usePro: !!nextProps.currentOptions['pro'],
+      pseudoElements: nextProps.currentOptions.adminClientLoadSpec['pseudo-elements'] || UNSPECIFIED,
+      version: nextProps.currentOptions.adminClientLoadSpec.version || UNSPECIFIED,
+      v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
+      method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
+      usePro: !!nextProps.currentOptions.pro,
       removeUnregisteredClients: !!nextProps.currentOptions['remove_others'],
       versionOptions: OptionsSetter.buildVersionOptions(nextProps)
     }
@@ -100,7 +100,7 @@ class OptionsSetter extends React.Component {
 
     putData({
       options: {
-        load_spec: {
+        adminClientLoadSpec: {
           name: 'user',
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
           v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
