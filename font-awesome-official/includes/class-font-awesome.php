@@ -76,7 +76,9 @@ class FontAwesome {
   /**
    * Main FontAwesome Instance.
    *
-   * Ensures only one instance of FontAwesome is loaded or can be loaded.
+   * Ensures only one instance of FontAwesome is loaded.
+   *
+   * @return FontAwesome|null
    */
   public static function instance() {
     if ( is_null( self::$_instance ) ) {
