@@ -47,7 +47,7 @@ class OptionsSetter extends React.Component {
       v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
       method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
       usePro: !!nextProps.currentOptions.pro,
-      removeUnregisteredClients: !!nextProps.currentOptions['remove_others'],
+      removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
       versionOptions: OptionsSetter.buildVersionOptions(nextProps)
     }
 
@@ -108,7 +108,7 @@ class OptionsSetter extends React.Component {
           version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         },
         pro: this.state.usePro,
-        'remove_others': this.state.removeUnregisteredClients
+        removeUnregisteredClients: this.state.removeUnregisteredClients
       }
     })
   }

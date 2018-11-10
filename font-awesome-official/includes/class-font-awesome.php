@@ -22,7 +22,7 @@ class FontAwesome {
       'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL
     ),
     'pro' => 0,
-    'remove_others' => false
+    'removeUnregisteredClients' => false
   );
 
   protected $_constants = [
@@ -303,7 +303,7 @@ class FontAwesome {
       // We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
       // Now enqueue it.
       $this->load_spec = $load_spec;
-      $this->enqueue($load_spec, $options['remove_others']);
+      $this->enqueue($load_spec, $options['removeUnregisteredClients']);
       return $load_spec;
     } else {
       return null;
@@ -552,9 +552,9 @@ class FontAwesome {
   /**
    * Given a loading specification, enqueues Font Awesome to load accordingly.
    * Returns nothing.
-   * remove_others (boolean): whether to attempt to dequeue unregistered clients.
+   * removeUnregisteredClients (boolean): whether to attempt to dequeue unregistered clients.
    */
-  protected function enqueue($load_spec, $remove_others = false) {
+  protected function enqueue($load_spec, $removeUnregisteredClients = false) {
     $release_provider = FontAwesomeReleaseProvider();
 
     $method = $load_spec['method'];
@@ -646,9 +646,9 @@ class FontAwesome {
 
     $obj = $this;
     // Look for unregistered clients
-    add_action('wp_enqueue_scripts', function() use($obj, $remove_others){
+    add_action('wp_enqueue_scripts', function() use($obj, $removeUnregisteredClients){
       $obj->detect_unregistered_clients();
-      if($remove_others){
+      if($removeUnregisteredClients){
         $obj->remove_unregistered_clients();
       }
     }, 15);
