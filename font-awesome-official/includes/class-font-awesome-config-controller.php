@@ -58,7 +58,13 @@ class FontAwesomeConfigController extends WP_REST_Controller {
    * @return WP_Error|WP_REST_Response
    */
   public function get_item( $request ) {
-    $data = $this->build_item(FontAwesome());
+    // If we don't add a reset() here, then the subsequent load() with rebuild
+    // will end up adding the clients a second time.
+    // We need to run load() with rebuild to make sure that all data is populated
+    // for build_item().
+    $fa = FontAwesome::reset();
+    $fa->load(['rebuild' => true, 'save' => false]);
+    $data = $this->build_item($fa);
 
     return new WP_REST_Response( $data, 200 );
   }
@@ -79,10 +85,15 @@ class FontAwesomeConfigController extends WP_REST_Controller {
       // user options have changed. And running load() is what must happen
       // in order to fully populate the object with all of its data that will
       // be pulled together into a response object by build_item().
-      $fa = FontAwesome::reset();
-      $fa->load();
-      $return_data = $this->build_item($fa);
-      return new WP_REST_Response( $return_data, 200 );
+      try {
+        $fa = FontAwesome::reset();
+        $fa->load(['rebuild' => true, 'save' => true]);
+        $return_data = $this->build_item($fa);
+        return new WP_REST_Response( $return_data, 200 );
+      } catch(Exception $e) {
+        error_log($e);
+        return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+      }
     } else {
       return new WP_Error( 'cant-update', 'Whoops, we couldn\'t update those options.', array( 'status' => 500 ) );
     }

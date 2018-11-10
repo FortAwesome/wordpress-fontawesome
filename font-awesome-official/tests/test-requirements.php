@@ -20,7 +20,7 @@ class RequirementsTest extends WP_UnitTestCase {
   function assert_defaults($loadSpec){
       $this->assertEquals('webfont', $loadSpec['method']);
       $this->assertTrue($loadSpec['v4shim']);
-      $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue($loadSpec['pseudoElements']);
   }
 
   function test_all_default_with_single_client(){
@@ -204,7 +204,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
     add_action('font_awesome_enqueued', function($loadSpec){
       $this->assertEquals('svg', $loadSpec['method']);
-      $this->assertFalse($loadSpec['pseudo-elements']);
+      $this->assertFalse($loadSpec['pseudoElements']);
       $this->assertFalse(FontAwesome()->using_pseudo_elements());
     });
 
@@ -221,7 +221,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
     add_action('font_awesome_enqueued', function($loadSpec){
       $this->assertEquals('webfont', $loadSpec['method']);
-      $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue($loadSpec['pseudoElements']);
       $this->assertTrue(FontAwesome()->using_pseudo_elements());
     });
 
@@ -436,7 +436,7 @@ class RequirementsTest extends WP_UnitTestCase {
     });
 
     add_action('font_awesome_enqueued', function($loadSpec){
-      $this->assertTrue($loadSpec['pro']);
+      $this->assertTrue($loadSpec['usePro']);
       $this->assertTrue(FontAwesome()->using_pro());
     });
 
@@ -463,7 +463,7 @@ class RequirementsTest extends WP_UnitTestCase {
     });
 
     add_action('font_awesome_enqueued', function($loadSpec){
-      $this->assertFalse($loadSpec['pro']);
+      $this->assertFalse($loadSpec['usePro']);
       $this->assertFalse(FontAwesome()->using_pro());
     });
 
@@ -561,7 +561,7 @@ class RequirementsTest extends WP_UnitTestCase {
       ));
       FontAwesome()->register(array(
         'name' => 'Client B',
-        'pseudo-elements' => 'require'
+        'pseudoElements' => 'require'
       ));
     });
 
@@ -569,7 +569,7 @@ class RequirementsTest extends WP_UnitTestCase {
     $enqueued_callback = function($loadSpec) use(&$enqueued){
       $enqueued = true;
       $this->assertEquals('webfont', $loadSpec['method']);
-      $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue($loadSpec['pseudoElements']);
       $this->assertTrue(FontAwesome()->using_pseudo_elements());
     };
     add_action('font_awesome_enqueued', $enqueued_callback);
@@ -598,7 +598,7 @@ class RequirementsTest extends WP_UnitTestCase {
       ));
       FontAwesome()->register(array(
         'name' => 'Client B',
-        'pseudo-elements' => 'forbid'
+        'pseudoElements' => 'forbid'
       ));
     });
 
@@ -606,7 +606,7 @@ class RequirementsTest extends WP_UnitTestCase {
     $enqueued_callback = function($loadSpec) use(&$enqueued){
       $enqueued = true;
       $this->assertEquals('webfont', $loadSpec['method']);
-      $this->assertTrue($loadSpec['pseudo-elements']);
+      $this->assertTrue($loadSpec['pseudoElements']);
       $this->assertTrue(FontAwesome()->using_pseudo_elements());
     };
     add_action('font_awesome_enqueued', $enqueued_callback);

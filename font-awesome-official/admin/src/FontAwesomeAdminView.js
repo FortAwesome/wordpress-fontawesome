@@ -43,6 +43,7 @@ class FontAwesomeAdminView extends React.Component {
           submitSuccess={ this.props.submitSuccess }
           submitMessage={ this.props.submitMessage }
           error={ this.props.error }
+          adminClientInternal={ data.adminClientInternal }
         />
         { !hasConflict &&
           <ClientRequirementsView

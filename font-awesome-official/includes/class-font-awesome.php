@@ -18,11 +18,11 @@ class FontAwesome {
   const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
 
   const DEFAULT_USER_OPTIONS = array(
-    'load_spec' => array(
+    'adminClientLoadSpec' => array(
       'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL
     ),
-    'pro' => 0,
-    'remove_others' => false
+    'usePro' => false,
+    'removeUnregisteredClients' => false
   );
 
   protected $_constants = [
@@ -76,7 +76,9 @@ class FontAwesome {
   /**
    * Main FontAwesome Instance.
    *
-   * Ensures only one instance of FontAwesome is loaded or can be loaded.
+   * Ensures only one instance of FontAwesome is loaded.
+   *
+   * @return FontAwesome|null
    */
   public static function instance() {
     if ( is_null( self::$_instance ) ) {
@@ -85,16 +87,25 @@ class FontAwesome {
     return self::$_instance;
   }
 
+  /**
+   * Make constructor private so clients cannot instantiate this directly.
+   * Must use FontAwesome() or FontAwesome::instance()
+   */
   private function __construct() { /* noop */ }
 
+  /**
+   * Main entry point for running the plugin.
+   */
   public function run(){
-    add_action( 'init', array( $this, 'load' ));
+    // Explicitly indicate that 0 args should be passed in when invoking the function,
+    // so that the default parameter will be used. Otherwise, the callback seems to be
+    // called with a single empty string parameter, which confuses load().
+    add_action( 'init', array( $this, 'load' ), 10, 0);
 
-    // TODO: is it possible to get the REST API going only when the admin UI is active?
     $this->initialize_rest_api();
 
     if( is_admin() ){
-        $this->initialize_admin();
+      $this->initialize_admin();
     }
   }
 
@@ -136,6 +147,13 @@ class FontAwesome {
     return admin_url( "options-general.php?page=" . $this->options_page );
   }
 
+  /**
+   * Retrieves the assets required to load the admin ui React app, based on
+   * whether we're running in development or production.
+   *
+   * @return array|mixed|null|object
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
   private function get_admin_asset_manifest() {
     if(FONTAWESOME_ENV == 'development') {
       $client = new GuzzleHttp\Client(['base_uri' => 'http://dockerhost:3030']);
@@ -251,22 +269,58 @@ class FontAwesome {
    * Main entry point for the loading process.
    * Returns the enqueued load_spec if successful.
    * Otherwise, returns null.
+   * If we already have a previously built load spec saved in options enqueue that without recomputing.
+   * Or pass in ['rebuild' => true] for $params to trigger a rebuild.
+   * If ['save' => true] and the rebuild is successful, then the rebuilt load spec will be
+   * saved as options in the db for use on the next load.
    */
-  public function load() {
+  public function load($params = ['rebuild' => false, 'save' => false]) {
     $options = $this->options();
 
-    // TODO: reconsider whether this needs to run every time admin-ajax.php pings for the auth check
-    // Probably not. How can we optimize?
+    $load_spec = null;
 
-    // Register the web site user/ower as a client.
-    $this->register($options['load_spec']);
+    if(isset($options['lockedLoadSpec']) && !$params['rebuild']) {
+      $load_spec = $options['lockedLoadSpec'];
+    } else {
+      $load_spec = $this->build($options);
+
+      if( isset($load_spec) ) {
+        if( true && $params['save'] /* build a test that should only be true if the new load spec is different and should be saved */ ) {
+          wp_cache_delete ( 'alloptions', 'options' );
+          $options['lockedLoadSpec'] = $load_spec;
+          if (! update_option(FontAwesome::OPTIONS_KEY, $options)) {
+            // TODO: figure out what this error condition would mean
+            // We've managed to build a new load spec, and verified that it's
+            // different, but when trying to update it, we got a falsey response,
+            // and the docs say that means that the update either the update failed
+            // or no update was made.
+          }
+        }
+      }
+    }
+
+    if( isset($load_spec) ) {
+      // We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
+      // Now enqueue it.
+      $this->load_spec = $load_spec;
+      $this->enqueue($load_spec, $options['removeUnregisteredClients']);
+      return $load_spec;
+    } else {
+      return null;
+    }
+  }
+
+  // TODO: consider refactor and/or better distinguishing between this function and compute_load_spec
+  protected function build($options) {
+    // Register the web site user/admin as a client.
+    $this->register($options['adminClientLoadSpec']);
 
     // Now, ask any other listening clients to register.
     do_action('font_awesome_requirements');
     // TODO: add some WP persistent cache here so we don't needlessly retrieve latest versions and re-process
     // all requirements each time. We'd only need to do that when something changes.
     // So what are those conditions for refreshing the cache?
-    $load_spec = $this->build_load_spec(function($data){
+    $load_spec = $this->compute_load_spec(function($data){
       // This is the error callback function. It only runs when build_load_spec() needs to report an error.
       $this->conflicts = $data;
       // TODO: figure out the best way to present diagnostic information.
@@ -276,8 +330,8 @@ class FontAwesome {
       foreach($data['client-reqs'] as $client){
         array_push($client_name_list,
           $client['name'] == self::ADMIN_USER_CLIENT_NAME_INTERNAL
-          ? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
-          : $client['name']
+            ? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
+            : $client['name']
         );
       }
       $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: "
@@ -297,13 +351,8 @@ class FontAwesome {
         }
       });
     });
-    if( isset($load_spec) ) {
-      $this->load_spec = $load_spec;
-      $this->enqueue($load_spec, $options['remove_others']);
-      return $load_spec;
-    } else {
-      return null;
-    }
+
+    return $load_spec;
   }
 
   /**
@@ -341,7 +390,7 @@ class FontAwesome {
    * Returns the load spec if a valid one can be computed, else it returns null
    *   after invoking the error_callback function.
    */
-  public function build_load_spec(callable $error_callback) {
+  protected function compute_load_spec(callable $error_callback) {
     // 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
     // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
     // 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
@@ -369,7 +418,7 @@ class FontAwesome {
           } else { return null; }
         }
       ),
-      'pseudo-elements' => array(
+      'pseudoElements' => array(
         'resolve' => function($prevReqVal, $curReqVal){
           if( 'require' == $prevReqVal ){
             if ( 'require' == $curReqVal ){ return $curReqVal; }
@@ -444,7 +493,7 @@ class FontAwesome {
     }
 
     // This is a good place to set defaults
-    // pseudo-elements: when webfonts, true
+    // pseudoElements: when webfonts, true
     // when svg, false
 
     // TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
@@ -459,7 +508,7 @@ class FontAwesome {
       $v4shim_default = 'forbid';
     }
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
-    $pseudo_elements = $this->specified_requirement_or_default($load_spec['pseudo-elements'], $pseudo_elements_default) == 'require';
+    $pseudo_elements = $this->specified_requirement_or_default($load_spec['pseudoElements'], $pseudo_elements_default) == 'require';
     if( $method == 'webfont' && ! $pseudo_elements ) {
       error_log('WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.');
       $pseudo_elements = true;
@@ -467,15 +516,15 @@ class FontAwesome {
     return array(
       'method' => $method,
       'v4shim' => $this->specified_requirement_or_default($load_spec['v4shim'], $v4shim_default) == 'require',
-      'pseudo-elements' => $pseudo_elements,
+      'pseudoElements' => $pseudo_elements,
       'version' => $version,
-      'pro' => $this->is_pro_configured()
+      'usePro' => $this->is_pro_configured()
     );
   }
 
   protected function is_pro_configured(){
     $options = $this->options();
-    return( wp_validate_boolean($options['pro']) );
+    return( wp_validate_boolean($options['usePro']) );
   }
 
   /**
@@ -484,16 +533,16 @@ class FontAwesome {
    */
   public function using_pro(){
     $load_spec = $this->load_spec();
-    return isset($load_spec['pro']) && $load_spec['pro'];
+    return isset($load_spec['usePro']) && $load_spec['usePro'];
   }
 
   /**
    * Convenience method. Returns boolean value indicating whether the current load specification
-   * includes support for pseudo-elements. Should only be used after loading is complete.
+   * includes support for pseudoElements. Should only be used after loading is complete.
    */
   public function using_pseudo_elements(){
     $load_spec = $this->load_spec();
-    return isset($load_spec['pseudo-elements']) && $load_spec['pseudo-elements'];
+    return isset($load_spec['pseudoElements']) && $load_spec['pseudoElements'];
   }
 
   protected function specified_requirement_or_default($req, $default){
@@ -503,9 +552,9 @@ class FontAwesome {
   /**
    * Given a loading specification, enqueues Font Awesome to load accordingly.
    * Returns nothing.
-   * remove_others (boolean): whether to attempt to dequeue unregistered clients.
+   * removeUnregisteredClients (boolean): whether to attempt to dequeue unregistered clients.
    */
-  protected function enqueue($load_spec, $remove_others = false) {
+  protected function enqueue($load_spec, $removeUnregisteredClients = false) {
     $release_provider = FontAwesomeReleaseProvider();
 
     $method = $load_spec['method'];
@@ -523,7 +572,7 @@ class FontAwesome {
       $load_spec['version'], // version
       'all', // style_opt
       [
-        'use_pro' => $load_spec['pro'],
+        'use_pro' => $load_spec['usePro'],
         'use_svg' => $use_svg,
         'use_shim' => $load_spec['v4shim']
       ]
@@ -563,7 +612,7 @@ class FontAwesome {
     } else {
       wp_enqueue_script($this->handle, $resource_collection[0]->source(), null, null, false);
 
-      if( $load_spec['pseudo-elements'] ){
+      if( $load_spec['pseudoElements'] ){
         wp_add_inline_script( $this->handle, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
       }
 
@@ -597,9 +646,9 @@ class FontAwesome {
 
     $obj = $this;
     // Look for unregistered clients
-    add_action('wp_enqueue_scripts', function() use($obj, $remove_others){
+    add_action('wp_enqueue_scripts', function() use($obj, $removeUnregisteredClients){
       $obj->detect_unregistered_clients();
-      if($remove_others){
+      if($removeUnregisteredClients){
         $obj->remove_unregistered_clients();
       }
     }, 15);
@@ -667,7 +716,7 @@ class FontAwesome {
     //  'method' => 'webfont',
     //  'v4shim' => 'require' | 'forbid',
     //  'pro' => 'require' | 'forbid',
-    //  'pseudo-elements' => 'require',
+    //  'pseudoElements' => 'require',
     //  'version' => '5.0.13',
     //  'name' => 'clientA'
     // )

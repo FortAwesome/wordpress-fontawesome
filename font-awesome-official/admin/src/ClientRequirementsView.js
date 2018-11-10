@@ -46,7 +46,7 @@ class ClientRequirementsView extends React.Component {
                   <th className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>Method</th>
                   <th className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>Version</th>
                   <th className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>V4 Compat</th>
-                  <th className={ classnames({ [styles.conflicted]: 'pseudo-elements' === conflict }) }>Pseudo-elements</th>
+                  <th className={ classnames({ [styles.conflicted]: 'pseudoElements' === conflict }) }>Pseudo-elements</th>
                 </tr>
               </thead>
               <tbody>
@@ -57,7 +57,7 @@ class ClientRequirementsView extends React.Component {
                     <td className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>{ client.version ? client.version : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
-                    <td className={ classnames({ [styles.conflicted]: 'pseudo-elements' === conflict }) }>{ client['pseudo-elements'] ? client['pseudo-elements'] : UNSPECIFIED_INDICATOR }</td>
+                    <td className={ classnames({ [styles.conflicted]: 'pseudoElements' === conflict }) }>{ client.pseudoElements ? client.pseudoElements : UNSPECIFIED_INDICATOR }</td>
                   </tr>
                 })
               }

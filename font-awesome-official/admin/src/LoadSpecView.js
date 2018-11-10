@@ -8,13 +8,13 @@ const PRODUCT_BASE_NAME = 'Font Awesome'
 const LoadSpecView = props => {
   const { spec: {
     method,
-    v4shim: usingV4Shims,
-    'pseudo-elements': usingPseudoElements,
+    v4shim,
+    pseudoElements,
     version,
-    pro
+    usePro
   }} = props
 
-  const licenseType = pro ? 'Pro' : 'Free'
+  const licenseType = usePro ? 'Pro' : 'Free'
 
   return <div className={styles['load-spec']}>
     <h2>Current Load Specification</h2>
@@ -35,11 +35,11 @@ const LoadSpecView = props => {
       </tr>
       <tr>
         <td className={styles['label']}>Version 4 compatibility</td>
-        <td className={styles['value']}>{usingV4Shims ? 'true' : 'false'}</td>
+        <td className={styles['value']}>{v4shim ? 'true' : 'false'}</td>
       </tr>
       <tr>
         <td className={styles['label']}>Pseudo-elements support</td>
-        <td className={styles['value']}>{usingPseudoElements ? 'true' : 'false'}</td>
+        <td className={styles['value']}>{pseudoElements ? 'true' : 'false'}</td>
       </tr>
       </tbody>
     </table>

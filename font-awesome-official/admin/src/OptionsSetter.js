@@ -42,12 +42,12 @@ class OptionsSetter extends React.Component {
 
     const newState = {
       lastProps: nextProps,
-      pseudoElements: nextProps.currentOptions['load_spec']['pseudo-elements'] || UNSPECIFIED,
-      version: nextProps.currentOptions['load_spec']['version'] || UNSPECIFIED,
-      v4shim: nextProps.currentOptions['load_spec']['v4shim'] || UNSPECIFIED,
-      method: nextProps.currentOptions['load_spec']['method'] || UNSPECIFIED,
-      usePro: !!nextProps.currentOptions['pro'],
-      removeUnregisteredClients: !!nextProps.currentOptions['remove_others'],
+      pseudoElements: nextProps.currentOptions.adminClientLoadSpec.pseudoElements || UNSPECIFIED,
+      version: nextProps.currentOptions.adminClientLoadSpec.version || UNSPECIFIED,
+      v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
+      method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
+      usePro: !!nextProps.currentOptions.usePro,
+      removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
       versionOptions: OptionsSetter.buildVersionOptions(nextProps)
     }
 
@@ -96,19 +96,19 @@ class OptionsSetter extends React.Component {
   handleSubmitClick(e) {
     e.preventDefault()
 
-    const { putData } = this.props
+    const { putData, adminClientInternal } = this.props
 
     putData({
       options: {
-        load_spec: {
-          name: 'user',
+        adminClientLoadSpec: {
+          name: adminClientInternal,
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
           v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
-          'pseudo-elements': this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
+          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
           version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         },
-        pro: this.state.usePro,
-        'remove_others': this.state.removeUnregisteredClients
+        usePro: this.state.usePro,
+        removeUnregisteredClients: this.state.removeUnregisteredClients
       }
     })
   }
@@ -253,5 +253,6 @@ export default OptionsSetter
 OptionsSetter.propTypes = {
   putData: PropTypes.func.isRequired,
   currentOptions: PropTypes.object.isRequired,
-  releases: PropTypes.object.isRequired
+  releases: PropTypes.object.isRequired,
+  adminClientInternal: PropTypes.string.isRequired
 }
