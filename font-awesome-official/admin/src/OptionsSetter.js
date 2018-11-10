@@ -42,7 +42,7 @@ class OptionsSetter extends React.Component {
 
     const newState = {
       lastProps: nextProps,
-      pseudoElements: nextProps.currentOptions.adminClientLoadSpec['pseudo-elements'] || UNSPECIFIED,
+      pseudoElements: nextProps.currentOptions.adminClientLoadSpec.pseudoElements || UNSPECIFIED,
       version: nextProps.currentOptions.adminClientLoadSpec.version || UNSPECIFIED,
       v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
       method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
@@ -104,7 +104,7 @@ class OptionsSetter extends React.Component {
           name: 'user',
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
           v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
-          'pseudo-elements': this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
+          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
           version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         },
         pro: this.state.usePro,

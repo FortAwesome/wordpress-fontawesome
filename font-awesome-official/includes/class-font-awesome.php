@@ -418,7 +418,7 @@ class FontAwesome {
           } else { return null; }
         }
       ),
-      'pseudo-elements' => array(
+      'pseudoElements' => array(
         'resolve' => function($prevReqVal, $curReqVal){
           if( 'require' == $prevReqVal ){
             if ( 'require' == $curReqVal ){ return $curReqVal; }
@@ -493,7 +493,7 @@ class FontAwesome {
     }
 
     // This is a good place to set defaults
-    // pseudo-elements: when webfonts, true
+    // pseudoElements: when webfonts, true
     // when svg, false
 
     // TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
@@ -508,7 +508,7 @@ class FontAwesome {
       $v4shim_default = 'forbid';
     }
     $pseudo_elements_default = $method == 'webfont' ? 'require' : null;
-    $pseudo_elements = $this->specified_requirement_or_default($load_spec['pseudo-elements'], $pseudo_elements_default) == 'require';
+    $pseudo_elements = $this->specified_requirement_or_default($load_spec['pseudoElements'], $pseudo_elements_default) == 'require';
     if( $method == 'webfont' && ! $pseudo_elements ) {
       error_log('WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.');
       $pseudo_elements = true;
@@ -516,7 +516,7 @@ class FontAwesome {
     return array(
       'method' => $method,
       'v4shim' => $this->specified_requirement_or_default($load_spec['v4shim'], $v4shim_default) == 'require',
-      'pseudo-elements' => $pseudo_elements,
+      'pseudoElements' => $pseudo_elements,
       'version' => $version,
       'pro' => $this->is_pro_configured()
     );
@@ -538,11 +538,11 @@ class FontAwesome {
 
   /**
    * Convenience method. Returns boolean value indicating whether the current load specification
-   * includes support for pseudo-elements. Should only be used after loading is complete.
+   * includes support for pseudoElements. Should only be used after loading is complete.
    */
   public function using_pseudo_elements(){
     $load_spec = $this->load_spec();
-    return isset($load_spec['pseudo-elements']) && $load_spec['pseudo-elements'];
+    return isset($load_spec['pseudoElements']) && $load_spec['pseudoElements'];
   }
 
   protected function specified_requirement_or_default($req, $default){
@@ -612,7 +612,7 @@ class FontAwesome {
     } else {
       wp_enqueue_script($this->handle, $resource_collection[0]->source(), null, null, false);
 
-      if( $load_spec['pseudo-elements'] ){
+      if( $load_spec['pseudoElements'] ){
         wp_add_inline_script( $this->handle, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
       }
 
@@ -716,7 +716,7 @@ class FontAwesome {
     //  'method' => 'webfont',
     //  'v4shim' => 'require' | 'forbid',
     //  'pro' => 'require' | 'forbid',
-    //  'pseudo-elements' => 'require',
+    //  'pseudoElements' => 'require',
     //  'version' => '5.0.13',
     //  'name' => 'clientA'
     // )
