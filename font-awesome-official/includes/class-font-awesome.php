@@ -136,6 +136,13 @@ class FontAwesome {
     return admin_url( "options-general.php?page=" . $this->options_page );
   }
 
+  /**
+   * Retrieves the assets required to load the admin ui React app, based on
+   * whether we're running in development or production.
+   *
+   * @return array|mixed|null|object
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
   private function get_admin_asset_manifest() {
     if(FONTAWESOME_ENV == 'development') {
       $client = new GuzzleHttp\Client(['base_uri' => 'http://dockerhost:3030']);
