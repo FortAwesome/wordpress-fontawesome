@@ -97,7 +97,10 @@ class FontAwesome {
    * Main entry point for running the plugin.
    */
   public function run(){
-    add_action( 'init', array( $this, 'load' ));
+    // Explicitly indicate that 0 args should be passed in when invoking the function,
+    // so that the default parameter will be used. Otherwise, the callback seems to be
+    // called with a single empty string parameter, which confuses load().
+    add_action( 'init', array( $this, 'load' ), 10, 0);
 
     $this->initialize_rest_api();
 
