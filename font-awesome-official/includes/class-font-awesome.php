@@ -90,11 +90,10 @@ class FontAwesome {
   public function run(){
     add_action( 'init', array( $this, 'load' ));
 
-    // TODO: is it possible to get the REST API going only when the admin UI is active?
     $this->initialize_rest_api();
 
     if( is_admin() ){
-        $this->initialize_admin();
+      $this->initialize_admin();
     }
   }
 
