@@ -11,10 +11,10 @@ const LoadSpecView = props => {
     v4shim,
     pseudoElements,
     version,
-    pro
+    usePro
   }} = props
 
-  const licenseType = pro ? 'Pro' : 'Free'
+  const licenseType = usePro ? 'Pro' : 'Free'
 
   return <div className={styles['load-spec']}>
     <h2>Current Load Specification</h2>

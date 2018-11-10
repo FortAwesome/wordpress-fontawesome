@@ -46,7 +46,7 @@ class OptionsSetter extends React.Component {
       version: nextProps.currentOptions.adminClientLoadSpec.version || UNSPECIFIED,
       v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
       method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
-      usePro: !!nextProps.currentOptions.pro,
+      usePro: !!nextProps.currentOptions.usePro,
       removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
       versionOptions: OptionsSetter.buildVersionOptions(nextProps)
     }
@@ -107,7 +107,7 @@ class OptionsSetter extends React.Component {
           pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
           version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         },
-        pro: this.state.usePro,
+        usePro: this.state.usePro,
         removeUnregisteredClients: this.state.removeUnregisteredClients
       }
     })

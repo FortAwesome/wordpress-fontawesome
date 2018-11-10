@@ -436,7 +436,7 @@ class RequirementsTest extends WP_UnitTestCase {
     });
 
     add_action('font_awesome_enqueued', function($loadSpec){
-      $this->assertTrue($loadSpec['pro']);
+      $this->assertTrue($loadSpec['usePro']);
       $this->assertTrue(FontAwesome()->using_pro());
     });
 
@@ -463,7 +463,7 @@ class RequirementsTest extends WP_UnitTestCase {
     });
 
     add_action('font_awesome_enqueued', function($loadSpec){
-      $this->assertFalse($loadSpec['pro']);
+      $this->assertFalse($loadSpec['usePro']);
       $this->assertFalse(FontAwesome()->using_pro());
     });
 

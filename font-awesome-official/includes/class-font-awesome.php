@@ -21,7 +21,7 @@ class FontAwesome {
     'adminClientLoadSpec' => array(
       'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL
     ),
-    'pro' => 0,
+    'usePro' => false,
     'removeUnregisteredClients' => false
   );
 
@@ -518,13 +518,13 @@ class FontAwesome {
       'v4shim' => $this->specified_requirement_or_default($load_spec['v4shim'], $v4shim_default) == 'require',
       'pseudoElements' => $pseudo_elements,
       'version' => $version,
-      'pro' => $this->is_pro_configured()
+      'usePro' => $this->is_pro_configured()
     );
   }
 
   protected function is_pro_configured(){
     $options = $this->options();
-    return( wp_validate_boolean($options['pro']) );
+    return( wp_validate_boolean($options['usePro']) );
   }
 
   /**
@@ -533,7 +533,7 @@ class FontAwesome {
    */
   public function using_pro(){
     $load_spec = $this->load_spec();
-    return isset($load_spec['pro']) && $load_spec['pro'];
+    return isset($load_spec['usePro']) && $load_spec['usePro'];
   }
 
   /**
@@ -572,7 +572,7 @@ class FontAwesome {
       $load_spec['version'], // version
       'all', // style_opt
       [
-        'use_pro' => $load_spec['pro'],
+        'use_pro' => $load_spec['usePro'],
         'use_svg' => $use_svg,
         'use_shim' => $load_spec['v4shim']
       ]
