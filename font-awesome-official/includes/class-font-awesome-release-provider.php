@@ -72,25 +72,21 @@ if (! class_exists('FontAwesomeReleaseProvider') ) :
     }
 
     private function load_releases(){
-      $files = glob( trailingslashit(FONTAWESOME_DIR_PATH) . 'releases/release*.yml' );
-      $response = $this->_apiClient->get('api/releases');
-      $code = $response->getStatusCode();
-      $body = $response->getBody();
-      $bodyContents = $body->getContents();
-      $bodyJson = json_decode($bodyContents, true);
-      $apiReleases = array_map(array($this, 'map_api_release'), $bodyJson['data']);
-      $this->_releases = array();
-      foreach($apiReleases as $release){
-        $this->_releases[$release['version']] = $release;
+      try {
+        $response = $this->_apiClient->get('api/releases');
+        $code = $response->getStatusCode();
+        // TODO: add more handle of response code and error condition here.
+        $body = $response->getBody();
+        $bodyContents = $body->getContents();
+        $bodyJson = json_decode($bodyContents, true);
+        $apiReleases = array_map(array($this, 'map_api_release'), $bodyJson['data']);
+        $this->_releases = array();
+        foreach($apiReleases as $release){
+          $this->_releases[$release['version']] = $release;
+        }
+      } catch (GuzzleHttp\Exception\ConnectException $e) {
+        error_log($e);
       }
-      # foreach($files as $file){
-      #   $basename = basename($file);
-      #   $matches = [];
-      #   if( preg_match('/release-([0-9]+\.[0-9]+\.[0-9]+)\.yml/', $basename,$matches) ){
-      #     $release_data = Spyc::YAMLLoad($file);
-      #     $this->_releases[$matches[1]] = $release_data;
-      #   }
-      # }
     }
 
     /**
