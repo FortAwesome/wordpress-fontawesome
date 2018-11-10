@@ -96,12 +96,12 @@ class OptionsSetter extends React.Component {
   handleSubmitClick(e) {
     e.preventDefault()
 
-    const { putData } = this.props
+    const { putData, adminClientInternal } = this.props
 
     putData({
       options: {
         adminClientLoadSpec: {
-          name: 'user',
+          name: adminClientInternal,
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
           v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
           pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
@@ -253,5 +253,6 @@ export default OptionsSetter
 OptionsSetter.propTypes = {
   putData: PropTypes.func.isRequired,
   currentOptions: PropTypes.object.isRequired,
-  releases: PropTypes.object.isRequired
+  releases: PropTypes.object.isRequired,
+  adminClientInternal: PropTypes.string.isRequired
 }
