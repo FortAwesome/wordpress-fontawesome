@@ -270,10 +270,11 @@ class FontAwesome {
    * Returns the enqueued load_spec if successful.
    * Otherwise, returns null.
    * If we already have a previously built load spec saved in options enqueue that without recomputing.
-   * Or pass in ['rebuild' => true] for $params to trigger a rebuild. If a load spec is successfully rebuilt,
-   * it will be saved as options in the db for use on the next load.
+   * Or pass in ['rebuild' => true] for $params to trigger a rebuild.
+   * If ['save' => true] and the rebuild is successful, then the rebuilt load spec will be
+   * saved as options in the db for use on the next load.
    */
-  public function load($params = ['rebuild' => false]) {
+  public function load($params = ['rebuild' => false, 'save' => false]) {
     $options = $this->options();
 
     $load_spec = null;
@@ -284,7 +285,7 @@ class FontAwesome {
       $load_spec = $this->build($options);
 
       if( isset($load_spec) ) {
-        if( true /* build a test that should only be true if the new load spec is different and should be saved */ ) {
+        if( true && $params['save'] /* build a test that should only be true if the new load spec is different and should be saved */ ) {
           wp_cache_delete ( 'alloptions', 'options' );
           $options['lockedLoadSpec'] = $load_spec;
           if (! update_option(FontAwesome::OPTIONS_KEY, $options)) {
