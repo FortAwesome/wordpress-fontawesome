@@ -18,7 +18,7 @@ class FontAwesome {
   const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
 
   const DEFAULT_USER_OPTIONS = array(
-    'load_spec' => array(
+    'adminClientLoadSpec' => array(
       'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL
     ),
     'pro' => 0,
@@ -87,8 +87,15 @@ class FontAwesome {
     return self::$_instance;
   }
 
+  /**
+   * Make constructor private so clients cannot instantiate this directly.
+   * Must use FontAwesome() or FontAwesome::instance()
+   */
   private function __construct() { /* noop */ }
 
+  /**
+   * Main entry point for running the plugin.
+   */
   public function run(){
     add_action( 'init', array( $this, 'load' ));
 
@@ -259,22 +266,57 @@ class FontAwesome {
    * Main entry point for the loading process.
    * Returns the enqueued load_spec if successful.
    * Otherwise, returns null.
+   * If we already have a previously built load spec saved in options enqueue that without recomputing.
+   * Or pass in ['rebuild' => true] for $params to trigger a rebuild. If a load spec is successfully rebuilt,
+   * it will be saved as options in the db for use on the next load.
    */
-  public function load() {
+  public function load($params = ['rebuild' => false]) {
     $options = $this->options();
 
-    // TODO: reconsider whether this needs to run every time admin-ajax.php pings for the auth check
-    // Probably not. How can we optimize?
+    $load_spec = null;
 
-    // Register the web site user/ower as a client.
-    $this->register($options['load_spec']);
+    if(isset($options['lockedLoadSpec']) && !$params['rebuild']) {
+      $load_spec = $options['lockedLoadSpec'];
+    } else {
+      $load_spec = $this->build($options);
+
+      if( isset($load_spec) ) {
+        if( true /* build a test that should only be true if the new load spec is different and should be saved */ ) {
+          wp_cache_delete ( 'alloptions', 'options' );
+          $options['lockedLoadSpec'] = $load_spec;
+          if (! update_option(FontAwesome::OPTIONS_KEY, $options)) {
+            // TODO: figure out what this error condition would mean
+            // We've managed to build a new load spec, and verified that it's
+            // different, but when trying to update it, we got a falsey response,
+            // and the docs say that means that the update either the update failed
+            // or no update was made.
+          }
+        }
+      }
+    }
+
+    if( isset($load_spec) ) {
+      // We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
+      // Now enqueue it.
+      $this->load_spec = $load_spec;
+      $this->enqueue($load_spec, $options['remove_others']);
+      return $load_spec;
+    } else {
+      return null;
+    }
+  }
+
+  // TODO: consider refactor and/or better distinguishing between this function and compute_load_spec
+  protected function build($options) {
+    // Register the web site user/admin as a client.
+    $this->register($options['adminClientLoadSpec']);
 
     // Now, ask any other listening clients to register.
     do_action('font_awesome_requirements');
     // TODO: add some WP persistent cache here so we don't needlessly retrieve latest versions and re-process
     // all requirements each time. We'd only need to do that when something changes.
     // So what are those conditions for refreshing the cache?
-    $load_spec = $this->build_load_spec(function($data){
+    $load_spec = $this->compute_load_spec(function($data){
       // This is the error callback function. It only runs when build_load_spec() needs to report an error.
       $this->conflicts = $data;
       // TODO: figure out the best way to present diagnostic information.
@@ -284,8 +326,8 @@ class FontAwesome {
       foreach($data['client-reqs'] as $client){
         array_push($client_name_list,
           $client['name'] == self::ADMIN_USER_CLIENT_NAME_INTERNAL
-          ? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
-          : $client['name']
+            ? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
+            : $client['name']
         );
       }
       $error_msg = "Font Awesome Error! These themes or plugins have conflicting requirements: "
@@ -305,13 +347,8 @@ class FontAwesome {
         }
       });
     });
-    if( isset($load_spec) ) {
-      $this->load_spec = $load_spec;
-      $this->enqueue($load_spec, $options['remove_others']);
-      return $load_spec;
-    } else {
-      return null;
-    }
+
+    return $load_spec;
   }
 
   /**
@@ -349,7 +386,7 @@ class FontAwesome {
    * Returns the load spec if a valid one can be computed, else it returns null
    *   after invoking the error_callback function.
    */
-  public function build_load_spec(callable $error_callback) {
+  protected function compute_load_spec(callable $error_callback) {
     // 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
     // 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
     // 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
