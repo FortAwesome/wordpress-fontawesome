@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIncludeInspection */
+
 namespace FontAwesomePhpUnitUtil;
 
 require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock_font_awesome_releases.php';
@@ -16,6 +17,7 @@ require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock_font_awesome_releases.p
  * @param string name of the class, an instance of which will be mocked.
  * @param string $method name of method to be mocked
  * @param callable $init a function to invoke, passing the method mock as the sole param.
+ * @return null
  */
 function mock_singleton_method( $obj, $type, $method, callable $init ) {
 	$mock_builder = $obj->getMockBuilder( $type )

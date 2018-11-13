@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpIncludeInspection */
 require_once 'vendor/autoload.php';
 use Composer\Semver\Semver;
 

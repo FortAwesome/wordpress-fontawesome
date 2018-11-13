@@ -115,12 +115,12 @@ if ( ! class_exists( 'FontAwesomeConfigController' ) ) :
 			}
 		}
 
-		/**
-		 * Prepare the item for and update operation
-		 *
-		 * @param WP_REST_Request $request Request object
-		 * @return WP_Error|object $prepared_item
-		 */
+    /**
+     * Prepare the item for and update operation
+     *
+     * @param WP_REST_Request $request Request object
+     * @return array $prepared_item
+     */
 		protected function prepare_item_for_database( $request ) {
 			$body = $request->get_json_params();
 			return array_merge( array(), $body );

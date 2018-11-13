@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpCSValidationInspection */
 /**
  * PHPUnit bootstrap file
  *
@@ -12,11 +12,12 @@ if ( ! $_tests_dir ) {
 }
 
 if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-	echo "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL;
+	error_log( "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL );
 	exit( 1 );
 }
 
 // Give access to tests_add_filter() function.
+/** @noinspection PhpIncludeInspection */
 require_once $_tests_dir . '/includes/functions.php';
 
 /**
@@ -29,5 +30,6 @@ set_include_path( get_include_path() . PATH_SEPARATOR . dirname( dirname( __FILE
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 // Start up the WP testing environment.
+/** @noinspection PhpIncludeInspection */
 require_once $_tests_dir . '/includes/bootstrap.php';
 

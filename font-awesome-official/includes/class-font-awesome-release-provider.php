@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIncludeInspection */
 require_once FONTAWESOME_DIR_PATH . 'defines.php';
 require_once FONTAWESOME_DIR_PATH . 'vendor/autoload.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php';
@@ -19,10 +19,11 @@ if ( ! class_exists( 'FontAwesomeReleaseProvider' ) ) :
 
 		protected static $_handler = null;
 
-		/**
-		 * Set a handler that will be supplied to the Client.
-		 * Use this for mocking API Calls.
-		 */
+    /**
+     * Set a handler that will be supplied to the Client.
+     * Use this for mocking API Calls.
+     * @param $handler
+     */
 		public static function set_handler( $handler ) {
 			self::$_handler = $handler;
 		}

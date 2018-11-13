@@ -10,6 +10,9 @@
  */
 class FontAwesome_Activator {
 
+  /**
+   * Sets default user options upon plugin activation.
+   */
 	public static function activate() {
 		update_option( FontAwesome::OPTIONS_KEY, FontAwesome::DEFAULT_USER_OPTIONS );
 	}

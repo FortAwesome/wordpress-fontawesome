@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIncludeInspection */
 
 /**
  * Plugin Name:       Font Awesome

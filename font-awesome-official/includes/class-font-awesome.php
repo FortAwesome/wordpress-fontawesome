@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpIncludeInspection */
 require_once __DIR__ . '/../defines.php';
 require_once FONTAWESOME_DIR_PATH . 'vendor/autoload.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php';
@@ -279,15 +280,17 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		// - [ ] resolve license: Free or Pro (future)
 		// - [ ] Finally, enqueue either a style or a script
 
-		/**
-		 * Main entry point for the loading process.
-		 * Returns the enqueued load_spec if successful.
-		 * Otherwise, returns null.
-		 * If we already have a previously built load spec saved in options enqueue that without recomputing.
-		 * Or pass in ['rebuild' => true] for $params to trigger a rebuild.
-		 * If ['save' => true] and the rebuild is successful, then the rebuilt load spec will be
-		 * saved as options in the db for use on the next load.
-		 */
+      /**
+       * Main entry point for the loading process.
+       * Returns the enqueued load_spec if successful.
+       * Otherwise, returns null.
+       * If we already have a previously built load spec saved in options enqueue that without recomputing.
+       * Or pass in ['rebuild' => true] for $params to trigger a rebuild.
+       * If ['save' => true] and the rebuild is successful, then the rebuilt load spec will be
+       * saved as options in the db for use on the next load.
+       * @param array $params
+       * @return array|null
+       */
 		public function load( $params = [
 			'rebuild' => false,
 			'save'    => false,
@@ -408,11 +411,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return $this->load_spec;
 		}
 
-		/**
-		 * Builds the loading specification based on all registered requirements.
-		 * Returns the load spec if a valid one can be computed, else it returns null
-		 *   after invoking the error_callback function.
-		 */
+      /**
+       * Builds the loading specification based on all registered requirements.
+       * Returns the load spec if a valid one can be computed, else it returns null
+       *   after invoking the error_callback function.
+       * @param callable $error_callback
+       * @return array|null
+       */
 		protected function compute_load_spec( callable $error_callback ) {
 			// 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
 			// 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
@@ -583,11 +588,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return array_key_exists( 'value', $req ) ? $req['value'] : $default;
 		}
 
-		/**
-		 * Given a loading specification, enqueues Font Awesome to load accordingly.
-		 * Returns nothing.
-		 * removeUnregisteredClients (boolean): whether to attempt to dequeue unregistered clients.
-		 */
+      /**
+       * Given a loading specification, enqueues Font Awesome to load accordingly.
+       * Returns nothing.
+       * removeUnregisteredClients (boolean): whether to attempt to dequeue unregistered clients.
+       * @param $load_spec
+       * @param bool $removeUnregisteredClients
+       */
 		protected function enqueue( $load_spec, $removeUnregisteredClients = false ) {
 			$release_provider = FontAwesomeReleaseProvider();
 
