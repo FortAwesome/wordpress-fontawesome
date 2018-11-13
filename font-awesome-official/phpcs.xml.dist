@@ -2,8 +2,7 @@
 <ruleset name="WordPress Coding Standards for Plugins">
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
-	<rule ref="WordPress-Core" />
-	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress" />
 
 	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>
