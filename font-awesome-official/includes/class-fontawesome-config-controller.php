@@ -1,8 +1,11 @@
 <?php
 
-if ( ! class_exists( 'FontAwesomeConfigController' ) ) :
+if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 
-	class FontAwesomeConfigController extends WP_REST_Controller {
+	/**
+	 * Controller class for REST endpoint
+	 */
+	class FontAwesome_Config_Controller extends WP_REST_Controller {
 
 		private $plugin_slug = null;
 
@@ -91,7 +94,7 @@ if ( ! class_exists( 'FontAwesomeConfigController' ) ) :
 
 			$current_options = get_option( FontAwesome::OPTIONS_KEY );
 
-			if ( $item['options'] == $current_options || update_option( FontAwesome::OPTIONS_KEY, $item['options'] ) ) {
+			if ( $item['options'] === $current_options || update_option( FontAwesome::OPTIONS_KEY, $item['options'] ) ) {
 				// Because FontAwesome is a singleton, we need to reset it now that the
 				// user options have changed. And running load() is what must happen
 				// in order to fully populate the object with all of its data that will
@@ -107,7 +110,6 @@ if ( ! class_exists( 'FontAwesomeConfigController' ) ) :
 					$return_data = $this->build_item( $fa );
 					return new WP_REST_Response( $return_data, 200 );
 				} catch ( Exception $e ) {
-					error_log( $e );
 					return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
 				}
 			} else {
@@ -127,4 +129,4 @@ if ( ! class_exists( 'FontAwesomeConfigController' ) ) :
 		}
 	}
 
-endif; // end class_exists
+endif; // end class_exists.

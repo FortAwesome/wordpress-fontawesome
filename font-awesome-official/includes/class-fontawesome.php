@@ -113,7 +113,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'rest_api_init',
 				array(
-					new FontAwesomeConfigController( $this->plugin_name, $this->rest_api_namespace() ),
+					new FontAwesome_Config_Controller( $this->plugin_name, $this->rest_api_namespace() ),
 					'register_routes',
 				)
 			);
