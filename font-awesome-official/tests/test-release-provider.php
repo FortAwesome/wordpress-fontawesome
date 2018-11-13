@@ -73,16 +73,20 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp            = FontAwesomeReleaseProvider();
-		$klass           = new \ReflectionClass( 'FontAwesomeReleaseProvider' );
-		$releases_method = $klass->getMethod( 'releases' );
-		$releases_method->setAccessible( true );
-		$releases = $releases_method->invoke( $farp );
-		$this->assertFalse( is_null( $releases ) );
-		$this->assertCount( count( $this->known_versions ), $releases );
-		foreach ( $this->known_versions as $version ) {
-			$this->assertArrayHasKey( $version, $releases );
-		}
+		$farp = FontAwesomeReleaseProvider();
+		try {
+      $klass = new \ReflectionClass( 'FontAwesomeReleaseProvider' );
+      $releases_method = $klass->getMethod( 'releases' );
+      $releases_method->setAccessible( true );
+      $releases = $releases_method->invoke( $farp );
+      $this->assertFalse( is_null( $releases ) );
+      $this->assertCount( count( $this->known_versions ), $releases );
+      foreach ( $this->known_versions as $version ) {
+        $this->assertArrayHasKey( $version, $releases );
+      }
+    } catch(\ReflectionException $e) {
+      $this->assertTrue(false, 'Exception: ' . $e);
+    }
 	}
 
 	public function test_versions() {

@@ -14,21 +14,24 @@ require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock_font_awesome_releases.p
  * @param object a PHPUnit_Framework_TestCase instance (of which WP_UnitTestCase is a subclass) that can be used
  *        to invoke getMockBuilder(...);
  * @param string name of the class, an instance of which will be mocked.
- * @param string                                                                                                 $method name of method to be mocked
- * @param callable                                                                                               $init a function to invoke, passing the method mock as the sole param.
- *                                                                                                               Used to declare how the mock method will behave.
- *                                                                                                               Ex: $mock_method->willReturn(false)
+ * @param string $method name of method to be mocked
+ * @param callable $init a function to invoke, passing the method mock as the sole param.
  */
 function mock_singleton_method( $obj, $type, $method, callable $init ) {
 	$mock_builder = $obj->getMockBuilder( $type )
 	->setMethods( [ $method ] )
 	->disableOriginalConstructor();
-	$mock         = $mock_builder->getMock();
-	$ref          = new \ReflectionProperty( $type, '_instance' );
-	$ref->setAccessible( true );
-	$ref->setValue( null, $mock );
-	$init( $mock->method( $method ) );
-	return $mock;
+	$mock = $mock_builder->getMock();
+	try {
+    $ref = new \ReflectionProperty( $type, '_instance' );
+    $ref->setAccessible( true );
+    $ref->setValue( null, $mock );
+    $init( $mock->method( $method ) );
+    return $mock;
+  } catch (\ReflectionException $e) {
+    error_log("Reflection error: " . $e);
+    return null;
+  }
 }
 
 /**

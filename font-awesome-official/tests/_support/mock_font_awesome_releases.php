@@ -36,7 +36,7 @@ class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase {
 			'releases',
 			function( $method ) {
 				$method->willReturn(
-					\FontAwesomePhpUnitUtil\MockFontAwesomeReleases::releases()
+					MockFontAwesomeReleases::releases()
 				);
 			}
 		);
