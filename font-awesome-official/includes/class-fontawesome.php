@@ -2,9 +2,9 @@
 /** @noinspection PhpIncludeInspection */
 require_once __DIR__ . '/../defines.php';
 require_once FONTAWESOME_DIR_PATH . 'vendor/autoload.php';
-require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-release-provider.php';
-require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-resource.php';
-require_once FONTAWESOME_DIR_PATH . 'includes/class-font-awesome-config-controller.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-resource.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-config-controller.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 use Composer\Semver\Semver;
 

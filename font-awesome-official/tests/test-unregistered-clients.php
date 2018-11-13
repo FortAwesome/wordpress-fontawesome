@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname( __FILE__ ) . '/../includes/class-font-awesome-activator.php';
+require_once dirname(__FILE__) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font_awesome_phpunit_util.php';
 
 class UnregisteredClientsTest extends WP_UnitTestCase {

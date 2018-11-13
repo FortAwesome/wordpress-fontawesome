@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname( __FILE__ ) . '/../includes/class-font-awesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-font-awesome-deactivator.php';
+require_once dirname(__FILE__) . '/../includes/class-fontawesome-activator.php';
+require_once dirname(__FILE__) . '/../includes/class-fontawesome-deactivator.php';
 
 class ActivationTest extends WP_UnitTestCase {
 
