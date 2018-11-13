@@ -10,9 +10,9 @@
  */
 class FontAwesome_Activator {
 
-  public static function activate() {
-    update_option(FontAwesome::OPTIONS_KEY, FontAwesome::DEFAULT_USER_OPTIONS);
-  }
+	public static function activate() {
+		update_option( FontAwesome::OPTIONS_KEY, FontAwesome::DEFAULT_USER_OPTIONS );
+	}
 
 }
 
