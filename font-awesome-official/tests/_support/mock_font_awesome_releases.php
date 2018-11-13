@@ -32,7 +32,7 @@ class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase {
 		$obj = new self();
 		\FontAwesomePhpUnitUtil\mock_singleton_method(
 			$obj,
-			\FontAwesomeReleaseProvider::class,
+			\FontAwesome_Release_Provider::class,
 			'releases',
 			function( $method ) {
 				$method->willReturn(

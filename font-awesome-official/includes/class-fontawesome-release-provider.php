@@ -6,8 +6,14 @@ require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-resource.php';
 use Composer\Semver\Semver;
 use GuzzleHttp\Client;
 
-if ( ! class_exists( 'FontAwesomeReleaseProvider' ) ) :
-	class FontAwesomeReleaseProvider {
+if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
+	/**
+	 * Provides releases data.
+	 *
+	 * @package    FontAwesome
+	 * @subpackage FontAwesome/includes
+	 */
+	class FontAwesome_Release_Provider {
 		protected $_releases = null;
 
 		protected $_apiClient = null;
@@ -30,9 +36,9 @@ if ( ! class_exists( 'FontAwesomeReleaseProvider' ) ) :
 		}
 
 		/**
-		 * Main FontAwesomeReleaseProvider Instance.
+		 * Main FontAwesome_Release_Provider Instance.
 		 *
-		 * Ensures only one instance of FontAwesomeReleaseProvider is loaded or can be loaded.
+		 * Ensures only one instance of FontAwesome_Release_Provider is loaded or can be loaded.
 		 */
 		public static function instance() {
 			if ( is_null( self::$_instance ) ) {
@@ -256,7 +262,7 @@ if ( ! class_exists( 'FontAwesomeReleaseProvider' ) ) :
 	}
 
 	function FontAwesomeReleaseProvider() {
-		return FontAwesomeReleaseProvider::instance();
+		return FontAwesome_Release_Provider::instance();
 	}
 
 endif; // ! class_exists

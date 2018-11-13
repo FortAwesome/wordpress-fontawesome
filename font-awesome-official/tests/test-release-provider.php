@@ -55,7 +55,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$handler = HandlerStack::create( $mock );
 
-		FontAwesomeReleaseProvider::set_handler( $handler );
+		FontAwesome_Release_Provider::set_handler( $handler );
 	}
 
 	protected static function build_success_response() {
@@ -75,7 +75,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$farp = FontAwesomeReleaseProvider();
 		try {
-			$klass           = new \ReflectionClass( 'FontAwesomeReleaseProvider' );
+			$klass           = new \ReflectionClass('FontAwesome_Release_Provider');
 			$releases_method = $klass->getMethod( 'releases' );
 			$releases_method->setAccessible( true );
 			$releases = $releases_method->invoke( $farp );
@@ -510,7 +510,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 	function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
 		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
-			FontAwesomeReleaseProvider::class,
+			FontAwesome_Release_Provider::class,
 			'versions',
 			function( $method ) use ( $mocked_available_versions ) {
 				$method->willReturn(
