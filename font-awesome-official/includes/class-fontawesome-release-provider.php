@@ -19,11 +19,12 @@ if ( ! class_exists( 'FontAwesomeReleaseProvider' ) ) :
 
 		protected static $_handler = null;
 
-    /**
-     * Set a handler that will be supplied to the Client.
-     * Use this for mocking API Calls.
-     * @param $handler
-     */
+		/**
+		 * Set a handler that will be supplied to the Client.
+		 * Use this for mocking API Calls.
+		 *
+		 * @param $handler
+		 */
 		public static function set_handler( $handler ) {
 			self::$_handler = $handler;
 		}
