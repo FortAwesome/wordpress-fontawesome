@@ -488,10 +488,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 			$clients = array();
 
-			// Iterate through each set of requirements registered by a client
+			// Iterate through each set of requirements registered by a client.
 			foreach ( $this->reqs as $req ) {
 				$clients[ $req['name'] ] = $req['client-call'];
-				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ]
+				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ].
 				foreach ( $req as $key => $payload ) {
 					if ( in_array( $key, [ 'client-call', 'name' ], true ) ) {
 						continue; // these are meta keys that we won't process here.
@@ -537,7 +537,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 
 			/*
-			 This is a good place to set defaults
+			 * This is a good place to set defaults
 			 * pseudoElements: when webfonts, true
 			 * when svg, false
 			 */
@@ -545,7 +545,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			$method  = $this->specified_requirement_or_default( $load_spec['method'], 'webfont' );
 			$version = Semver::rsort( $load_spec['version']['value'] )[0];
 			/*
-			 Use v4shims by default, unless method === 'webfont' and version < 5.1.0
+			 * Use v4shims by default, unless method === 'webfont' and version < 5.1.0
 			 * If we end up in an invalid state where v4shims are required for webfont v5.0.x, it should be because of an
 			 * invalid client requirement, and in that case, it will be acceptible to throw an exception. But we don't want
 			 * to introduce such an exception by our own defaults here.
@@ -603,9 +603,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * removeUnregisteredClients (boolean): whether to attempt to dequeue unregistered clients.
 		 *
 		 * @param $load_spec
-		 * @param bool      $removeUnregisteredClients
+		 * @param bool      $remove_unregistered_clients
 		 */
-		protected function enqueue( $load_spec, $removeUnregisteredClients = false ) {
+		protected function enqueue( $load_spec, $remove_unregistered_clients = false ) {
 			$release_provider = FontAwesomeReleaseProvider();
 
 			$method  = $load_spec['method'];
@@ -682,7 +682,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					}
 				}
 			} else {
-				wp_enqueue_script( $this->handle, $resource_collection[0]->source(), null, null, false );
+				wp_enqueue_script( $this->handle, $resource_collection[0]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 				if ( $load_spec['pseudoElements'] ) {
 					wp_add_inline_script( $this->handle, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
@@ -711,7 +711,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				}
 
 				if ( $load_spec['v4shim'] ) {
-					wp_enqueue_script( $this->v4shim_handle, $resource_collection[1]->source(), null, null, false );
+					wp_enqueue_script( $this->v4shim_handle, $resource_collection[1]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 					if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
 						add_filter(
@@ -737,12 +737,12 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 
 			$obj = $this;
-			// Look for unregistered clients
+			// Look for unregistered clients.
 			add_action(
 				'wp_enqueue_scripts',
-				function() use ( $obj, $removeUnregisteredClients ) {
+				function() use ( $obj, $remove_unregistered_clients ) {
 					$obj->detect_unregistered_clients();
-					if ( $removeUnregisteredClients ) {
+					if ( $remove_unregistered_clients ) {
 						$obj->remove_unregistered_clients();
 					}
 				},
@@ -804,25 +804,35 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
-		public function register( $req ) {
+        /**
+         * Registers client requirements.
+         *
+         * Keys for the $client_requirements array:
+		 *  method: 'webfont' or 'svg'
+         *  v4shim: 'require' or 'forbid'
+		 *	pro: 'require' or 'forbid'
+		 *	pseudoElements: 'require' or 'forbid'
+		 *	version: a semver string such as '5.0.13' for a precise version, or '~5.1'
+		 *	name: 'clientA' (required)
+         *
+         * We use camelCase instead of snake_case for these keys, because they end up being passed via json
+         * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
+         *
+         * @param $client_requirements
+         * @throws InvalidArgumentException
+         */
+        // TODO: add more comprehensive PhpDoc for this function and the options.
+		public function register( $client_requirements ) {
 			$bt     = debug_backtrace( 1 );
 			$caller = array_shift( $bt );
-			if ( ! array_key_exists( 'name', $req ) ) {
+			if ( ! array_key_exists( 'name', $client_requirements ) ) {
 				throw new InvalidArgumentException( 'missing required key: name' );
 			}
-			// array (
-			// 'method' => 'webfont',
-			// 'v4shim' => 'require' | 'forbid',
-			// 'pro' => 'require' | 'forbid',
-			// 'pseudoElements' => 'require',
-			// 'version' => '5.0.13',
-			// 'name' => 'clientA'
-			// )
-			$req['client-call'] = array(
+			$client_requirements['client-call'] = array(
 				'file' => $caller['file'],
 				'line' => $caller['line'],
 			);
-			array_unshift( $this->reqs, $req );
+			array_unshift( $this->reqs, $client_requirements );
 		}
 	}
 
