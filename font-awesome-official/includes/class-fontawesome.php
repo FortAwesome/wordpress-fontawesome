@@ -791,24 +791,24 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
-        /**
-         * Registers client requirements.
-         *
-         * Keys for the $client_requirements array:
-		 *  method: 'webfont' or 'svg'
-         *  v4shim: 'require' or 'forbid'
-		 *	pro: 'require' or 'forbid'
-		 *	pseudoElements: 'require' or 'forbid'
-		 *	version: a semver string such as '5.0.13' for a precise version, or '~5.1'
-		 *	name: 'clientA' (required)
-         *
-         * We use camelCase instead of snake_case for these keys, because they end up being passed via json
-         * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
-         *
-         * @param $client_requirements
-         * @throws InvalidArgumentException
-         */
-        // TODO: add more comprehensive PhpDoc for this function and the options.
+		/**
+		 * Registers client requirements.
+		 *
+		 * Keys for the $client_requirements array:
+		 *   method: 'webfont' or 'svg'
+		 *   v4shim: 'require' or 'forbid'
+		 *   pro: 'require' or 'forbid'
+		 *   pseudoElements: 'require' or 'forbid'
+		 *   version: a semver string such as '5.0.13' for a precise version, or '~5.1'
+		 *   name: 'clientA' (required)
+		 *
+		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
+		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
+		 *
+		 * @param $client_requirements
+		 * @throws InvalidArgumentException
+		 */
+		// TODO: add more comprehensive PhpDoc for this function and the options.
 		public function register( $client_requirements ) {
 			$bt     = debug_backtrace( 1 );
 			$caller = array_shift( $bt );
