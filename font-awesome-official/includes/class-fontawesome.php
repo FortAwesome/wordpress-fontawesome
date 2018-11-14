@@ -155,7 +155,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @throws \GuzzleHttp\Exception\GuzzleException
 		 */
 		private function get_admin_asset_manifest() {
-			if ( FONTAWESOME_ENV == 'development' ) {
+			if ( FONTAWESOME_ENV === 'development' ) {
 				$client   = new GuzzleHttp\Client( [ 'base_uri' => 'http://dockerhost:3030' ] );
 				$response = $client->request( 'GET', '/asset-manifest.json', [] );
 
@@ -163,10 +163,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					return null;
 				}
 
-				$body         = $response->getBody();
-				$bodyContents = $body->getContents();
-				$bodyJson     = json_decode( $bodyContents, true );
-				return $bodyJson;
+				return json_decode( $response->getbody()->getContents(), true );
 			} else {
 				$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
 				if ( ! file_exists( $asset_manifest_file ) ) {
@@ -184,12 +181,12 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'admin_enqueue_scripts',
 				function( $hook ) {
-					if ( $hook == $this->screen_id ) {
+					if ( $hook === $this->screen_id ) {
 
 						$admin_asset_manifest = $this->get_admin_asset_manifest();
 						$script_number        = 0;
 
-						if ( FONTAWESOME_ENV == 'development' ) {
+						if ( FONTAWESOME_ENV === 'development' ) {
 							$asset_url_base = 'http://localhost:3030/';
 						} else {
 							$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
@@ -331,7 +328,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
-		// TODO: consider refactor and/or better distinguishing between this function and compute_load_spec
+		// TODO: consider refactor and/or better distinguishing between this function and compute_load_spec.
 		protected function build( $options ) {
 			// Register the web site user/admin as a client.
 			$this->register( $options['adminClientLoadSpec'] );
@@ -352,7 +349,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					foreach ( $data['client-reqs'] as $client ) {
 						array_push(
 							$client_name_list,
-							$client['name'] == self::ADMIN_USER_CLIENT_NAME_INTERNAL
+							self::ADMIN_USER_CLIENT_NAME_INTERNAL === $client['name']
 							? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
 							: $client['name']
 						);
@@ -426,26 +423,28 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
 			$load_spec = array(
 				'method'         => array(
-					// returns new value if compatible, else null
-					'resolve' => function( $prevReqVal, $curReqVal ) {
-						return $prevReqVal == $curReqVal ? $prevReqVal : null; },
+					// returns new value if compatible, else null.
+					'resolve' => function( $prev_req_val, $cur_req_val ) {
+						return $prev_req_val === $cur_req_val ? $prev_req_val : null; },
 				),
 				'v4shim'         => array(
-					'resolve' => function( $prevReqVal, $curReqVal ) {
-						// Cases:
-						// require, require => true
-						// require, forbid => false
-						// forbid, require => false
-						// forbid, forbid => true
-						if ( 'require' == $prevReqVal ) {
-							if ( 'require' == $curReqVal ) {
-								return $curReqVal; } elseif ( 'forbid' == $curReqVal ) {
+					'resolve' => function( $prev_req_val, $cur_req_val ) {
+						/*
+						 Cases:
+						 * require, require => true
+						 * require, forbid => false
+						 * forbid, require => false
+						 * forbid, forbid => true
+						 */
+						if ( 'require' === $prev_req_val ) {
+							if ( 'require' === $cur_req_val ) {
+								return $cur_req_val; } elseif ( 'forbid' === $cur_req_val ) {
 								return null; } else {
 										return null; }
-						} elseif ( 'forbid' == $prevReqVal ) {
-							if ( 'forbid' == $curReqVal ) {
-								return $curReqVal;
-							} elseif ( 'require' == $curReqVal ) {
+						} elseif ( 'forbid' === $prev_req_val ) {
+							if ( 'forbid' === $cur_req_val ) {
+								return $cur_req_val;
+							} elseif ( 'require' === $cur_req_val ) {
 								return null; } else {
 								return null; }
 						} else {
@@ -453,16 +452,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					},
 				),
 				'pseudoElements' => array(
-					'resolve' => function( $prevReqVal, $curReqVal ) {
-						if ( 'require' == $prevReqVal ) {
-							if ( 'require' == $curReqVal ) {
-								return $curReqVal; } elseif ( 'forbid' == $curReqVal ) {
+					'resolve' => function( $prev_req_val, $cur_req_val ) {
+						if ( 'require' === $prev_req_val ) {
+							if ( 'require' === $cur_req_val ) {
+								return $cur_req_val; } elseif ( 'forbid' === $cur_req_val ) {
 								return null; } else {
 										return null; }
-						} elseif ( 'forbid' == $prevReqVal ) {
-							if ( 'forbid' == $curReqVal ) {
-								return $curReqVal;
-							} elseif ( 'require' == $curReqVal ) {
+						} elseif ( 'forbid' === $prev_req_val ) {
+							if ( 'forbid' === $cur_req_val ) {
+								return $cur_req_val;
+							} elseif ( 'require' === $cur_req_val ) {
 								return null; } else {
 								return null; }
 						} else {
@@ -473,16 +472,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				// Hopefully, we end up with a non-zero list, in which case, we'll sort the list and take the most recent satisfying version.
 				'version'        => array(
 					'value'   => $this->get_available_versions(),
-					'resolve' => function( $prevReqVal, $curReqVal ) {
-						$satisfyingVersions = Semver::satisfiedBy( $prevReqVal, $curReqVal );
-						return count( $satisfyingVersions ) > 0 ? $satisfyingVersions : null;
+					'resolve' => function( $prev_req_val, $cur_req_val ) {
+						$satisfying_versions = Semver::satisfiedBy( $prev_req_val, $cur_req_val );
+						return count( $satisfying_versions ) > 0 ? $satisfying_versions : null;
 					},
 				),
 			);
 
-			$validKeys = array_keys( $load_spec );
+			$valid_keys = array_keys( $load_spec );
 
-			$bailEarlyReq = null;
+			$bail_early_req = null;
 
 			$clients = array();
 
@@ -491,11 +490,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				$clients[ $req['name'] ] = $req['client-call'];
 				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ]
 				foreach ( $req as $key => $payload ) {
-					if ( in_array( $key, [ 'client-call', 'name' ] ) ) {
+					if ( in_array( $key, [ 'client-call', 'name' ], true ) ) {
 						continue; // these are meta keys that we won't process here.
 					}
-					if ( ! in_array( $key, $validKeys ) ) {
-						error_log( 'Ignoring invalid requirement key: ' . $key . '. Only these are allowed: ' . join( ', ', $validKeys ) );
+					if ( ! in_array( $key, $valid_keys, true ) ) {
+						error_log( 'Ignoring invalid requirement key: ' . $key . '. Only these are allowed: ' . join( ', ', $valid_keys ) );
 						continue;
 					}
 					if ( array_key_exists( 'value', $load_spec[ $key ] ) ) {
@@ -508,11 +507,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						}
 						$resolved_req = $load_spec[ $key ]['resolve']($load_spec[ $key ]['value'], $req[ $key ]);
 						if ( is_null( $resolved_req ) ) {
-							// the compatibility test failed
-							$bailEarlyReq = $key;
+							// the compatibility test failed.
+							$bail_early_req = $key;
 							break 2;
 						} else {
-							// The previous and current requirements are compatible, so update the value
+							// The previous and current requirements are compatible, so update the value.
 							$load_spec[ $key ]['value'] = $resolved_req;
 						}
 					} else {
@@ -523,40 +522,45 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				}
 			}
 
-			if ( $bailEarlyReq ) {
-				// call the error_callback, indicating which clients registered incompatible requirements
+			if ( $bail_early_req ) {
+				// call the error_callback, indicating which clients registered incompatible requirements.
 				is_callable( $error_callback ) && $error_callback(
 					array(
-						'req'         => $bailEarlyReq,
-						'client-reqs' => $load_spec[ $bailEarlyReq ]['client-reqs'],
+						'req'         => $bail_early_req,
+						'client-reqs' => $load_spec[ $bail_early_req ]['client-reqs'],
 					)
 				);
 				return null;
 			}
 
-			// This is a good place to set defaults
-			// pseudoElements: when webfonts, true
-			// when svg, false
+			/*
+			 This is a good place to set defaults
+			 * pseudoElements: when webfonts, true
+			 * when svg, false
+			 */
 			// TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
 			$method  = $this->specified_requirement_or_default( $load_spec['method'], 'webfont' );
 			$version = Semver::rsort( $load_spec['version']['value'] )[0];
-			// Use v4shims by default, unless method == 'webfont' and version < 5.1.0
-			// If we end up in an invalid state where v4shims are required for webfont v5.0.x, it should be because of an
-			// invalid client requirement, and in that case, it will be acceptible to throw an exception. But we don't want
-			// to *introduce* such an exception by our own defaults here.
+			/*
+			 Use v4shims by default, unless method === 'webfont' and version < 5.1.0
+			 * If we end up in an invalid state where v4shims are required for webfont v5.0.x, it should be because of an
+			 * invalid client requirement, and in that case, it will be acceptible to throw an exception. But we don't want
+			 * to introduce such an exception by our own defaults here.
+			 */
 			$v4shim_default = 'require';
-			if ( 'webfont' == $method && ! Semver::satisfies( $version, '>= 5.1.0' ) ) {
+			if ( 'webfont' === $method && ! Semver::satisfies( $version, '>= 5.1.0' ) ) {
 				$v4shim_default = 'forbid';
 			}
-			$pseudo_elements_default = $method == 'webfont' ? 'require' : null;
-			$pseudo_elements         = $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default ) == 'require';
-			if ( $method == 'webfont' && ! $pseudo_elements ) {
+			$pseudo_elements_default = $method === 'webfont' ? 'require' : null;
+			$pseudo_elements         = $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default ) === 'require';
+			if ( $method === 'webfont' && ! $pseudo_elements ) {
+				// TODO: we probably need a mechanism for passing such warnings up to the admin UI.
 				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
 				$pseudo_elements = true;
 			}
 			return array(
 				'method'         => $method,
-				'v4shim'         => $this->specified_requirement_or_default( $load_spec['v4shim'], $v4shim_default ) == 'require',
+				'v4shim'         => $this->specified_requirement_or_default( $load_spec['v4shim'], $v4shim_default ) === 'require',
 				'pseudoElements' => $pseudo_elements,
 				'version'        => $version,
 				'usePro'         => $this->is_pro_configured(),
@@ -603,7 +607,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 			$method  = $load_spec['method'];
 			$use_svg = false;
-			if ( 'svg' == $method ) {
+			if ( 'svg' === $method ) {
 				$use_svg = true;
 			} elseif ( 'webfont' != $method ) {
 				error_log(
@@ -624,7 +628,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				]
 			);
 
-			if ( $method == 'webfont' ) {
+			if ( 'webfont' === $method ) {
 				wp_enqueue_style( $this->handle, $resource_collection[0]->source(), null, null );
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
@@ -758,15 +762,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				'script' => $wp_scripts,
 			);
 
-			$this->unregistered_clients = array(); // re-initialize
+			$this->unregistered_clients = array(); // re-initialize.
 
 			foreach ( $collections as $key => $collection ) {
 				foreach ( $collection->registered as $handle => $details ) {
 					switch ( $handle ) {
 						case $this->handle:
 						case $this->v4shim_handle:
-							continue;
-						break;
+							break;
 						default:
 							if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
 								array_push(

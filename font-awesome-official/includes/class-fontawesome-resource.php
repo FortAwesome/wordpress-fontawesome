@@ -1,6 +1,6 @@
 <?php
 
-if ( ! class_exists('FontAwesome_Release_Provider') ) :
+if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 	class FontAwesomeResource {
 		protected $_source;
 		protected $_integrity_key;

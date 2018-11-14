@@ -75,7 +75,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$farp = FontAwesomeReleaseProvider();
 		try {
-			$klass           = new \ReflectionClass('FontAwesome_Release_Provider');
+			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
 			$releases_method = $klass->getMethod( 'releases' );
 			$releases_method->setAccessible( true );
 			$releases = $releases_method->invoke( $farp );
