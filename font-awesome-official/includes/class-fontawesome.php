@@ -11,11 +11,16 @@ use Composer\Semver\Semver;
 if ( ! class_exists( 'FontAwesome' ) ) :
 	class FontAwesome {
 
-		// TODO: probably change the rest of these constants to be class constants so we don't have to
-		// instantiate in order to access them.
 		const OPTIONS_KEY                     = 'font-awesome-official';
 		const ADMIN_USER_CLIENT_NAME_INTERNAL = 'user';
 		const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
+		const PLUGIN_NAME                     = 'font-awesome-official';
+		const PLUGIN_VERSION                  = '0.1.0';
+		const REST_API_VERSION                = '1';
+		const REST_API_NAMESPACE              = self::PLUGIN_NAME . '/v' . self::REST_API_VERSION;
+		const OPTIONS_PAGE                    = 'font-awesome-official';
+		const RESOURCE_HANDLE                 = 'font-awesome-official';
+		const RESOURCE_HANDLE_V4SHIM          = 'font-awesome-official-v4shim';
 
 		const DEFAULT_USER_OPTIONS = array(
 			'adminClientLoadSpec'       => array(
@@ -24,23 +29,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			'usePro'                    => false,
 			'removeUnregisteredClients' => false,
 		);
-
-		protected $_constants = [
-			'version'          => '0.1.0',
-			'rest_api_version' => '1',
-			'plugin_name'      => 'font-awesome-official',
-			'options_page'     => 'font-awesome-official',
-			'handle'           => 'font-awesome-official',
-			'v4shim_handle'    => 'font-awesome-official-v4shim',
-		];
-
-		public function __get( $name ) {
-			if ( isset( $this->_constants[ $name ] ) ) {
-				return $this->_constants[ $name ];
-			} else {
-				throw new TypeError( 'Objects of type ' . self::class . ' have no ' . $name . ' property' );
-			}
-		}
 
 		/**
 		 * The single instance of the class.
@@ -114,14 +102,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'rest_api_init',
 				array(
-					new FontAwesome_Config_Controller( $this->plugin_name, $this->rest_api_namespace() ),
+					new FontAwesome_Config_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
 					'register_routes',
 				)
 			);
-		}
-
-		public function rest_api_namespace() {
-			return $this->plugin_name . '/v' . $this->rest_api_version;
 		}
 
 		public function get_latest_version() {
@@ -145,7 +129,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		private function settings_page_url() {
-			return admin_url( 'options-general.php?page=' . $this->options_page );
+			return admin_url( 'options-general.php?page=' . self::OPTIONS_PAGE );
 		}
 
 		/**
@@ -196,7 +180,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						$added_wpr_object = false;
 						foreach ( $admin_asset_manifest as $key => $value ) {
 							if ( preg_match( '/\.js$/', $key ) ) {
-								$script_name = $this->plugin_name . '-' . $script_number;
+								$script_name = self::PLUGIN_NAME . '-' . $script_number;
 								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 								if ( ! $added_wpr_object ) {
@@ -209,14 +193,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 										'wpFontAwesomeOfficial',
 										array(
 											'api_nonce' => wp_create_nonce( 'wp_rest' ),
-											'api_url'   => rest_url( $this->rest_api_namespace() ),
+											'api_url'   => rest_url( self::REST_API_NAMESPACE ),
 										)
 									);
 									$added_wpr_object = true;
 								}
 							}
 							if ( preg_match( '/\.css$/', $key ) ) {
-								wp_enqueue_style( $this->plugin_name . '-' . $script_number, $asset_url_base . $value, [], null, 'all' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								wp_enqueue_style( self::PLUGIN_NAME . '-' . $script_number, $asset_url_base . $value, [], null, 'all' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							}
 							$script_number++;
 						}
@@ -231,15 +215,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						'Font Awesome Settings',
 						'Font Awesome',
 						'manage_options',
-						$this->options_page,
+						self::OPTIONS_PAGE,
 						array( $this, 'create_admin_page' )
 					);
 				}
 			);
 
-			$pn = FontAwesome()->plugin_name;
 			add_filter(
-				'plugin_action_links_' . trailingslashit( $pn ) . $pn . '.php',
+				'plugin_action_links_' . trailingslashit( self::PLUGIN_NAME ) . self::PLUGIN_NAME . '.php',
 				function( $links ) {
 					$mylinks = array(
 						'<a href="' . $this->settings_page_url() . '">Settings</a>',
@@ -636,13 +619,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 
 			if ( 'webfont' === $method ) {
-				wp_enqueue_style( $this->handle, $resource_collection[0]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
 					'style_loader_tag',
 					function( $html, $handle ) use ( $resource_collection ) {
-						if ( in_array( $handle, [ $this->handle ], true ) ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
 										'integrity="' . $resource_collection[0]->integrity_key() .
@@ -659,7 +642,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					wp_enqueue_style( $this->v4shim_handle, $resource_collection[1]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 					// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
@@ -668,7 +651,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						add_filter(
 							'style_loader_tag',
 							function ( $html, $handle ) use ( $resource_collection ) {
-								if ( in_array( $handle, [ $this->v4shim_handle ], true ) ) {
+								if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
 										'integrity="' . $resource_collection[1]->integrity_key() .
@@ -686,10 +669,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					}
 				}
 			} else {
-				wp_enqueue_script( $this->handle, $resource_collection[0]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 				if ( $load_spec['pseudoElements'] ) {
-					wp_add_inline_script( $this->handle, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
+					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 				}
 
 				// Filter the <script> tag to add the integrity and crossorigin attributes for completeness.
@@ -697,7 +680,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					add_filter(
 						'script_loader_tag',
 						function ( $tag, $handle ) use ( $resource_collection ) {
-							if ( in_array( $handle, [ $this->handle ], true ) ) {
+							if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $resource_collection[0]->integrity_key() .
@@ -715,13 +698,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				}
 
 				if ( $load_spec['v4shim'] ) {
-					wp_enqueue_script( $this->v4shim_handle, $resource_collection[1]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 					if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
 						add_filter(
 							'script_loader_tag',
 							function ( $tag, $handle ) use ( $resource_collection ) {
-								if ( in_array( $handle, [ $this->v4shim_handle ], true ) ) {
+								if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
 										'integrity="' . $resource_collection[1]->integrity_key() .
@@ -774,8 +757,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			foreach ( $collections as $key => $collection ) {
 				foreach ( $collection->registered as $handle => $details ) {
 					switch ( $handle ) {
-						case $this->handle:
-						case $this->v4shim_handle:
+						case self::RESOURCE_HANDLE:
+						case self::RESOURCE_HANDLE_V4SHIM:
 							break;
 						default:
 							if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {

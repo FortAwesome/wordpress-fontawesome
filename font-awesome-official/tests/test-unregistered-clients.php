@@ -94,7 +94,7 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 					break;
 			}
 		}
-		$this->assertTrue( wp_style_is( $fa->handle, 'enqueued' ) ); // and our plugin's style *is* there
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there
 	}
 
 	function test_unregistered_conflict_unresolved_by_default() {
