@@ -16,7 +16,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 	class FontAwesome_Release_Provider {
 		protected $_releases = null;
 
-		protected $_apiClient = null;
+		protected $_api_client = null;
 
 		/**
 		 * The single instance of the class.
@@ -57,7 +57,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 
 		private function __construct() {
 			$client_params = array(
-				// Base URI is used with relative requests
+				// Base URI is used with relative requests.
 				'base_uri' => FONTAWESOME_API_URL,
 				// You can set any number of default request options.
 				'timeout'  => 2.0,
@@ -65,7 +65,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 			if ( self::$_handler ) {
 				$client_params['handler'] = self::$_handler;
 			}
-			$this->_apiClient = new Client( $client_params );
+			$this->_api_client = new Client( $client_params );
 		}
 
 		private function map_api_release( $release ) {
@@ -81,15 +81,15 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 
 		private function load_releases() {
 			try {
-				$response = $this->_apiClient->get( 'api/releases' );
+				$response = $this->_api_client->get( 'api/releases' );
 				$code     = $response->getStatusCode();
-				// TODO: add more handle of response code and error condition here.
+				// TODO: add more handling of response code and error condition here.
 				$body            = $response->getBody();
-				$bodyContents    = $body->getContents();
-				$bodyJson        = json_decode( $bodyContents, true );
-				$apiReleases     = array_map( array( $this, 'map_api_release' ), $bodyJson['data'] );
+				$body_contents   = $body->getContents();
+				$body_json       = json_decode( $body_contents, true );
+				$api_releases    = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
 				$this->_releases = array();
-				foreach ( $apiReleases as $release ) {
+				foreach ( $api_releases as $release ) {
 					$this->_releases[ $release['version'] ] = $release;
 				}
 			} catch ( GuzzleHttp\Exception\ConnectException $e ) {
@@ -98,6 +98,8 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		}
 
 		/**
+		 * Builds a resource.
+		 *
 		 * @param string $version
 		 * @param string $file_basename
 		 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false)
@@ -111,7 +113,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 			$full_url .= boolval( $flags['use_pro'] ) ? 'pro.' : 'use.';
 			$full_url .= 'fontawesome.com/releases/v' . $version . '/';
 
-			// use the style to build the relative url lookup the relative url
+			// use the style to build the relative url lookup the relative url.
 			$relative_url  = $flags['use_svg'] ? 'js/' : 'css/';
 			$relative_url .= $file_basename . '.';
 			$relative_url .= $flags['use_svg'] ? 'js' : 'css';
@@ -120,7 +122,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 
 			$license = $flags['use_pro'] ? 'pro' : 'free';
 
-			// if we can't resolve an integrity_key in this deeply nested lookup, it will remain null
+			// if we can't resolve an integrity_key in this deeply nested lookup, it will remain null.
 			$integrity_key = null;
 			if ( isset( $this->releases()[ $version ]['sri'][ $license ][ $relative_url ] ) ) {
 				$integrity_key = $this->releases()[ $version ]['sri'][ $license ][ $relative_url ];
@@ -137,13 +139,18 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		}
 
 		/**
-		 * @return array simple array of versions as strings, sorted in descending semantic version order
+		 * Returns a simple array of versions as strings, sorted in descending semantic version order.
+		 *
+		 * @return array
 		 */
 		public function versions() {
 			return Semver::rsort( array_keys( $this->releases() ) );
 		}
 
 		/**
+		 * Gets an array containing version, shim, source URLs and integrity keys for given params.
+		 * They should be loaded in the order they appear in this collection.
+		 *
 		 * @param string $version
 		 * @param mixed  $style_opt either the string 'all' or an array containing any of the following:
 		 *         ['solid', 'regular', 'light', 'brands']
@@ -151,8 +158,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		 * @throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
 		 *         shims were not introduced for webfonts until 5.1.0. Throws when called with an array for $style_opt
 		 *         that contains no known style specifiers.
-		 * @return array containing version, shim, source URLs and integrity keys.
-		 *         They should be loaded in the order they appear in this collection.
+		 * @return array
 		 */
 		public function get_resource_collection( $version, $style_opt, $flags = array(
 			'use_pro'  => false,
@@ -172,7 +178,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 				throw new InvalidArgumentException( "Font Awesome version \"$version\" is not one of the available versions." );
 			}
 
-			if ( gettype( $style_opt ) == 'string' && 'all' == $style_opt ) {
+			if ( gettype( $style_opt ) === 'string' && 'all' === $style_opt ) {
 				array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
 				if ( $flags['use_shim'] ) {
 					array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
@@ -194,17 +200,17 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 					}
 				}
 				$styles = array_keys( $load_styles );
-				if ( count( $styles ) == 0 ) {
+				if ( count( $styles ) === 0 ) {
 					throw new InvalidArgumentException(
 						'No icon styles were specified to Font Awesome, so none would be loaded.' .
 						"If that's what you intend, then you should probably just disable the Font Awesome plugin."
 					);
 				}
 
-				// Add the main library first
+				// Add the main library first.
 				array_push( $resources, $this->build_resource( $version, 'fontawesome', $flags ) );
 
-				// create a new FontAwesomeResource for each style, in any order
+				// create a new FontAwesomeResource for each style, in any order.
 				foreach ( $styles as $style ) {
 					array_push( $resources, $this->build_resource( $version, $style, $flags ) );
 				}
@@ -223,6 +229,8 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		}
 
 		/**
+		 * Returns a version number corresponding to the most recent minor release.
+		 *
 		 * @return string|null most recent major.minor.patch version (not a semver). Returns null if no versions available.
 		 */
 		public function latest_minor_release() {
@@ -231,33 +239,35 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		}
 
 		/**
+		 * Returns a version number corresponding to the minor release immediately prior to the most recent minor release.
+		 *
 		 * @return string|null latest patch level for the previous minor version. major.minor.patch version (not a semver).
 		 *         Returns null if there is no latest (and therefore no previous).
 		 *         Returns null if there's no previous, because the latest represents the only minor version in the set
 		 *           of available versions.
 		 */
 		public function previous_minor_release() {
-			// Find the latest
+			// Find the latest.
 			$latest = $this->latest_minor_release();
 
 			if ( is_null( $latest ) ) {
 				return null;
 			}
 
-			// Build a previous minor version semver
+			// Build a previous minor version semver.
 			$version_parts    = explode( '.', $latest );
 			$new_minor_number = intval( $version_parts[1] ) - 1;
-			// make sure we don't try to use a negative number
+			// make sure we don't try to use a negative number.
 			$new_minor_number                         = $new_minor_number >= 0 ? $new_minor_number : 0;
 			$version_parts[1]                         = $new_minor_number;
-			$version_parts[2]                         = 0; // set patch level of the semver to zero
+			$version_parts[2]                         = 0; // set patch level of the semver to zero.
 			$previous_minor_release_semver_constraint = '~' . implode( '.', $version_parts );
 
 			$satisfying_versions = Semver::rsort(
 				Semver::satisfiedBy( $this->versions(), $previous_minor_release_semver_constraint )
 			);
 			$result              = count( $satisfying_versions ) > 0 ? $satisfying_versions[0] : null;
-			return $result == $latest ? null : $result;
+			return $result === $latest ? null : $result;
 		}
 	}
 
