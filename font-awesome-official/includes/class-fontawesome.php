@@ -9,7 +9,6 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
 use Composer\Semver\Semver;
 
 if ( ! class_exists( 'FontAwesome' ) ) :
-
 	class FontAwesome {
 
 		// TODO: probably change the rest of these constants to be class constants so we don't have to
@@ -90,15 +89,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Must use FontAwesome() or FontAwesome::instance()
 		 */
 		private function __construct() {
-			/* noop */ }
+			/* noop */
+		}
 
 		/**
 		 * Main entry point for running the plugin.
 		 */
 		public function run() {
-			// Explicitly indicate that 0 args should be passed in when invoking the function,
-			// so that the default parameter will be used. Otherwise, the callback seems to be
-			// called with a single empty string parameter, which confuses load().
+			/*
+			 * Explicitly indicate that 0 args should be passed in when invoking the function,
+			 * so that the default parameter will be used. Otherwise, the callback seems to be
+			 * called with a single empty string parameter, which confuses load().
+			 */
 			add_action( 'init', array( $this, 'load' ), 10, 0 );
 
 			$this->initialize_rest_api();
@@ -109,7 +111,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		private function initialize_rest_api() {
-			// Initialize each controller
 			add_action(
 				'rest_api_init',
 				array(
@@ -159,7 +160,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				$client   = new GuzzleHttp\Client( [ 'base_uri' => 'http://dockerhost:3030' ] );
 				$response = $client->request( 'GET', '/asset-manifest.json', [] );
 
-				if ( $response->getStatusCode() != 200 ) {
+				if ( $response->getStatusCode() !== 200 ) {
 					return null;
 				}
 
@@ -169,7 +170,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				if ( ! file_exists( $asset_manifest_file ) ) {
 					return null;
 				}
-				$contents = file_get_contents( $asset_manifest_file );
+				$contents = get_contents( $asset_manifest_file );
 				if ( empty( $contents ) ) {
 					return null;
 				}
@@ -196,7 +197,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						foreach ( $admin_asset_manifest as $key => $value ) {
 							if ( preg_match( '/\.js$/', $key ) ) {
 								$script_name = $this->plugin_name . '-' . $script_number;
-								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true );
+								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 								if ( ! $added_wpr_object ) {
 									// We have to give a script handle as the first argument to wp_localize_script.
@@ -215,7 +216,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 								}
 							}
 							if ( preg_match( '/\.css$/', $key ) ) {
-								wp_enqueue_style( $this->plugin_name . '-' . $script_number, $asset_url_base . $value, [], null, 'all' );
+								wp_enqueue_style( $this->plugin_name . '-' . $script_number, $asset_url_base . $value, [], null, 'all' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							}
 							$script_number++;
 						}
@@ -267,16 +268,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return FontAwesome();
 		}
 
-		// TODO:
-		// - [ ] resolve method: SVG with JavaScript or Webfonts with CSS
-		// - [ ] resolve version: (only 5? or what about v4 with shims?)
-		// - [ ] resolve asset URL host location: CDN or self-hosted?
-		// - [ ] resolve any config: such as searchPseudoElements (which might only be relevant for SVG/JS)
-		// - [ ] determine whether any shim is needed
-		// - [ ] determine whether a subset of icons might suffice for loading
-		// - [ ] resolve license: Free or Pro (future)
-		// - [ ] Finally, enqueue either a style or a script
-
 		/**
 		 * Main entry point for the loading process.
 		 * Returns the enqueued load_spec if successful.
@@ -306,13 +297,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					if ( true && $params['save'] /* build a test that should only be true if the new load spec is different and should be saved */ ) {
 						wp_cache_delete( 'alloptions', 'options' );
 						$options['lockedLoadSpec'] = $load_spec;
-						if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
-								  // TODO: figure out what this error condition would mean
-								  // We've managed to build a new load spec, and verified that it's
-								  // different, but when trying to update it, we got a falsey response,
-								  // and the docs say that means that the update either the update failed
-								  // or no update was made.
-						}
+                        if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
+                            return null;
+                            /*
+                             * TODO: consider alternative ways to handle this condition.
+                             * We've managed to build a new load spec, and verified that it's
+                             * different, but when trying to update it, we got a falsey response,
+                             * and the docs say that means that the update either the update failed
+                             * or no update was made.
+                             * If we add a warning or error mechanism for passing non-fatal warnings up to admin UI client
+                             * for display, it would probably make sense to pass such a message up for this one.
+                             */
+                        }
 					}
 				}
 			}
@@ -328,6 +324,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+        /**
+         * Gathers all client requirements, invokes the core requirements resolution logic and emits admin UI
+         * notices about any conflicts.
+         *
+         * @param $options
+         * @return array|null
+         */
 		// TODO: consider refactor and/or better distinguishing between this function and compute_load_spec.
 		protected function build( $options ) {
 			// Register the web site user/admin as a client.
