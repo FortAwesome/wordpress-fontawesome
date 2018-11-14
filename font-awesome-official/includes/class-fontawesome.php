@@ -299,6 +299,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						$options['lockedLoadSpec'] = $load_spec;
 						if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
 							return null;
+
 							/*
 							 * TODO: consider alternative ways to handle this condition.
 							 * We've managed to build a new load spec, and verified that it's
@@ -367,10 +368,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						'admin_notices',
 						function() use ( $error_msg ) {
 							$current_screen = get_current_screen();
-							if ( $current_screen && $current_screen->id != $this->screen_id ) {
+							if ( $current_screen && $current_screen->id !== $this->screen_id ) {
 								?>
 			<div class="error notice">
-				<p><?php echo $error_msg; ?></p>
+				<p><?php esc_html( $error_msg ); ?></p>
 			</div>
 								<?php
 							}
@@ -433,7 +434,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				'v4shim'         => array(
 					'resolve' => function( $prev_req_val, $cur_req_val ) {
 						/*
-						 Cases:
+						 * Cases:
 						 * require, require => true
 						 * require, forbid => false
 						 * forbid, require => false
@@ -544,6 +545,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
 			$method  = $this->specified_requirement_or_default( $load_spec['method'], 'webfont' );
 			$version = Semver::rsort( $load_spec['version']['value'] )[0];
+
 			/*
 			 * Use v4shims by default, unless method === 'webfont' and version < 5.1.0
 			 * If we end up in an invalid state where v4shims are required for webfont v5.0.x, it should be because of an
@@ -554,9 +556,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			if ( 'webfont' === $method && ! Semver::satisfies( $version, '>= 5.1.0' ) ) {
 				$v4shim_default = 'forbid';
 			}
-			$pseudo_elements_default = $method === 'webfont' ? 'require' : null;
-			$pseudo_elements         = $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default ) === 'require';
-			if ( $method === 'webfont' && ! $pseudo_elements ) {
+			$pseudo_elements_default = 'webfont' === $method ? 'require' : null;
+			$pseudo_elements         = 'require' === $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default );
+			if ( 'webfont' === $method && ! $pseudo_elements ) {
 				// TODO: we probably need a mechanism for passing such warnings up to the admin UI.
 				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
 				$pseudo_elements = true;
@@ -612,18 +614,20 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			$use_svg = false;
 			if ( 'svg' === $method ) {
 				$use_svg = true;
-			} elseif ( 'webfont' != $method ) {
+			} elseif ( 'webfont' !== $method ) {
 				error_log(
 					"WARNING: ignoring invalid method \"$method\". Expected either \"webfont\" or \"svg\". " .
 					'Will use the default of "webfont"'
 				);
 			}
 
-			// For now, we're hardcoding the style_opt as 'all'. Eventually, we can open up the rest of the
-			// feature for specifying a subset of styles.
+			/*
+			 * For now, we're hardcoding the style_opt as 'all'. Eventually, we can open up the rest of the
+			 * feature for specifying a subset of styles.
+			 */
 			$resource_collection = $release_provider->get_resource_collection(
-				$load_spec['version'], // version
-				'all', // style_opt
+				$load_spec['version'],
+				'all',
 				[
 					'use_pro'  => $load_spec['usePro'],
 					'use_svg'  => $use_svg,
@@ -632,13 +636,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 
 			if ( 'webfont' === $method ) {
-				wp_enqueue_style( $this->handle, $resource_collection[0]->source(), null, null );
+				wp_enqueue_style( $this->handle, $resource_collection[0]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
 					'style_loader_tag',
 					function( $html, $handle ) use ( $resource_collection ) {
-						if ( in_array( $handle, [ $this->handle ] ) ) {
+						if ( in_array( $handle, [ $this->handle ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
 										'integrity="' . $resource_collection[0]->integrity_key() .
@@ -655,7 +659,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					wp_enqueue_style( $this->v4shim_handle, $resource_collection[1]->source(), null, null );
+					wp_enqueue_style( $this->v4shim_handle, $resource_collection[1]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 					// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
@@ -664,7 +668,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						add_filter(
 							'style_loader_tag',
 							function ( $html, $handle ) use ( $resource_collection ) {
-								if ( in_array( $handle, [ $this->v4shim_handle ] ) ) {
+								if ( in_array( $handle, [ $this->v4shim_handle ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
 										'integrity="' . $resource_collection[1]->integrity_key() .
@@ -693,7 +697,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					add_filter(
 						'script_loader_tag',
 						function ( $tag, $handle ) use ( $resource_collection ) {
-							if ( in_array( $handle, [ $this->handle ] ) ) {
+							if ( in_array( $handle, [ $this->handle ], true ) ) {
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $resource_collection[0]->integrity_key() .
@@ -717,7 +721,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						add_filter(
 							'script_loader_tag',
 							function ( $tag, $handle ) use ( $resource_collection ) {
-								if ( in_array( $handle, [ $this->v4shim_handle ] ) ) {
+								if ( in_array( $handle, [ $this->v4shim_handle ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
 										'integrity="' . $resource_collection[1]->integrity_key() .
