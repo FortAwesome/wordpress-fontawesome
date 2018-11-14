@@ -297,18 +297,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					if ( true && $params['save'] /* build a test that should only be true if the new load spec is different and should be saved */ ) {
 						wp_cache_delete( 'alloptions', 'options' );
 						$options['lockedLoadSpec'] = $load_spec;
-                        if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
-                            return null;
-                            /*
-                             * TODO: consider alternative ways to handle this condition.
-                             * We've managed to build a new load spec, and verified that it's
-                             * different, but when trying to update it, we got a falsey response,
-                             * and the docs say that means that the update either the update failed
-                             * or no update was made.
-                             * If we add a warning or error mechanism for passing non-fatal warnings up to admin UI client
-                             * for display, it would probably make sense to pass such a message up for this one.
-                             */
-                        }
+						if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
+							return null;
+							/*
+							 * TODO: consider alternative ways to handle this condition.
+							 * We've managed to build a new load spec, and verified that it's
+							 * different, but when trying to update it, we got a falsey response,
+							 * and the docs say that means that the update either the update failed
+							 * or no update was made.
+							 * If we add a warning or error mechanism for passing non-fatal warnings up to admin UI client
+							 * for display, it would probably make sense to pass such a message up for this one.
+							 */
+						}
 					}
 				}
 			}
@@ -324,13 +324,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
-        /**
-         * Gathers all client requirements, invokes the core requirements resolution logic and emits admin UI
-         * notices about any conflicts.
-         *
-         * @param $options
-         * @return array|null
-         */
+		/**
+		 * Gathers all client requirements, invokes the core requirements resolution logic and emits admin UI
+		 * notices about any conflicts.
+		 *
+		 * @param $options
+		 * @return array|null
+		 */
 		// TODO: consider refactor and/or better distinguishing between this function and compute_load_spec.
 		protected function build( $options ) {
 			// Register the web site user/admin as a client.
