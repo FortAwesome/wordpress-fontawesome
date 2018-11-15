@@ -18,7 +18,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 */
 	protected function reset() {
 		FontAwesome::reset();
-		\FontAwesomePhpUnitUtil\MockFontAwesomeReleases::mock();
+		\FontAwesomePhpUnitUtil\Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome-official', 'enqueued' ) && wp_dequeue_script( 'font-awesome-official' );
 		wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-official-v4shim' );
 		wp_style_is( 'font-awesome-official', 'enqueued' ) && wp_dequeue_style( 'font-awesome-official' );
