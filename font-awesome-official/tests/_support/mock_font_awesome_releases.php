@@ -22,7 +22,7 @@ class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase {
 	}
 
 	public static function releases() {
-		if ( self::$releases == null ) {
+		if ( null === self::$releases ) {
 			self::load_releases();
 		}
 		return self::$releases;
@@ -43,7 +43,7 @@ class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase {
 	}
 
 
-	function test_mock_releases_loaded() {
+	public function test_mock_releases_loaded() {
 		$this->assertNotNull( self::releases() );
 	}
 }

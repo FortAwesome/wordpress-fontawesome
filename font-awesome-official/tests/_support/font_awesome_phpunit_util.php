@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shared utilities for testing FontAwesome with PhpUnit and WordPress.
  *
@@ -33,28 +34,36 @@ function mock_singleton_method( $obj, $type, $method, callable $init ) {
 		$init( $mock->method( $method ) );
 		return $mock;
 	} catch ( \ReflectionException $e ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 		error_log( 'Reflection error: ' . $e );
 		return null;
 	}
 }
 
 /**
+ * Starts error log capture.
+ *
  * @param array &$state an array in which this function will state some state, which should be passed back in
  *              to end_error_log_capture.
  */
 function begin_error_log_capture( &$state ) {
 	$state['error_log_file']     = uniqid( 'fa_error_log' ) . '.log';
 	$state['error_log_original'] = ini_get( 'error_log' );
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	ini_set( 'error_log', $state['error_log_file'] );
 }
 
 /**
+ * Ends error log capture.
+ *
  * @param array &$state pass in the same state that was passed by reference to begin_error_log_capture
  * @return bool|string contents of error log file
  */
 function end_error_log_capture( &$state ) {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions
 	$error_log_contents = file_get_contents( $state['error_log_file'] );
 	unlink( $state['error_log_file'] );
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	ini_set( 'error_log', $state['error_log_original'] );
 	return $error_log_contents;
 }

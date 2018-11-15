@@ -98,6 +98,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 					$this->_releases[ $release['version'] ] = $release;
 				}
 			} catch ( GuzzleHttp\Exception\ConnectException $e ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 				error_log( $e );
 			}
 		}
@@ -203,6 +204,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 							$load_styles[ $style ] = true;
 							break;
 						default:
+							// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 							error_log( 'WARNING: ignorning an unrecognized style specifier: ' . $style );
 					}
 				}

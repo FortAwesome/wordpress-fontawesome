@@ -161,7 +161,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				if ( ! file_exists( $asset_manifest_file ) ) {
 					return null;
 				}
-				$contents = get_contents( $asset_manifest_file );
+				// phpcs:ignore WordPress.WP.AlternativeFunctions
+				$contents = file_get_contents( $asset_manifest_file );
 				if ( empty( $contents ) ) {
 					return null;
 				}
@@ -354,6 +355,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					. implode( $client_name_list, ', ' ) . '.  '
 					. 'To resolve these conflicts, <a href="' . $this->settings_page_url() . '">Go to Font Awesome Settings</a>.';
 
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 					error_log( $error_msg . ' Dumping conflicting requirements: ' . print_r( $data, true ) );
 					do_action( 'font_awesome_failed', $data );
 					add_action(
@@ -490,6 +492,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						continue; // these are meta keys that we won't process here.
 					}
 					if ( ! in_array( $key, $valid_keys, true ) ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 						error_log( 'Ignoring invalid requirement key: ' . $key . '. Only these are allowed: ' . join( ', ', $valid_keys ) );
 						continue;
 					}
@@ -552,6 +555,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			$pseudo_elements         = 'require' === $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default );
 			if ( 'webfont' === $method && ! $pseudo_elements ) {
 				// TODO: we probably need a mechanism for passing such warnings up to the admin UI.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
 				$pseudo_elements = true;
 			}
@@ -607,6 +611,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			if ( 'svg' === $method ) {
 				$use_svg = true;
 			} elseif ( 'webfont' !== $method ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 				error_log(
 					"WARNING: ignoring invalid method \"$method\". Expected either \"webfont\" or \"svg\". " .
 					'Will use the default of "webfont"'
@@ -799,6 +804,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						wp_dequeue_script( $client['handle'] );
 						break;
 					default:
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 						error_log( 'WARNING: unexpected client type: ' . $client['type'] );
 				}
 			}
@@ -823,6 +829,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		// TODO: add more comprehensive PhpDoc for this function and the options.
 		public function register( $client_requirements ) {
+			/*
+			 * TODO: consider using some other means of tracking the calling module, since phpcs complains
+			 * that debug_backtrace is "debug" code.
+			 */
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			$bt     = debug_backtrace( 1 );
 			$caller = array_shift( $bt );
 			if ( ! array_key_exists( 'name', $client_requirements ) ) {
