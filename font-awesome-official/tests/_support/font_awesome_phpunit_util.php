@@ -8,7 +8,7 @@
 
 namespace FontAwesomePhpUnitUtil;
 
-require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock_font_awesome_releases.php';
+require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock-font-awesome-releases.php';
 
 /**
  * Replaces the singleton static property _instance on the given $class with a mock object,
