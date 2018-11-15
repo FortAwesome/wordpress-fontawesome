@@ -1,8 +1,13 @@
 <?php
-
+/**
+ * Module for UnregisteredClientsTest
+ */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname(__FILE__) . '/_support/font_awesome_phpunit_util.php';
+require_once dirname( __FILE__ ) . '/_support/font_awesome_phpunit_util.php';
 
+/**
+ * Class UnregisteredClientsTest
+ */
 class UnregisteredClientsTest extends WP_UnitTestCase {
 
 	protected $fake_unregistered_clients = array(
@@ -19,10 +24,13 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 			),
 		],
 	);
+
 	/**
+	 * Resets test data.
+	 *
 	 * @before
 	 */
-	function reset() {
+	protected function reset() {
 		FontAwesome::instance()->reset();
 		\FontAwesomePhpUnitUtil\MockFontAwesomeReleases::mock();
 		wp_script_is( 'font-awesome-official', 'enqueued' ) && wp_dequeue_script( 'font-awesome-official' );
@@ -39,18 +47,20 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 		}
 	}
 
-	function enqueue_fakes() {
-		// Add some unregistered clients, both styles and scripts
+	public function enqueue_fakes() {
+		// Add some unregistered clients, both styles and scripts.
 		foreach ( $this->fake_unregistered_clients['styles'] as $style ) {
+			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 			wp_enqueue_style( $style['handle'], $style['src'], array(), null, 'all' );
 		}
 
 		foreach ( $this->fake_unregistered_clients['scripts'] as $script ) {
+			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 			wp_enqueue_script( $script['handle'], $script['src'], array(), null, 'all' );
 		}
 	}
 
-	function test_unregistered_conflict_cleaned() {
+	public function test_unregistered_conflict_cleaned() {
 		$fa = \FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
 			FontAwesome::class,
@@ -73,10 +83,10 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 		$fa->load();
 
 		ob_start();
-		wp_head(); // required to trigger the 'wp_enqueue_scripts' action
+		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
 		ob_end_clean();
 
-		// make sure that the fake unregistered clients are no longer enqueued and that our plugin succeeded otherwise
+		// make sure that the fake unregistered clients are no longer enqueued and that our plugin succeeded otherwise.
 		$unregistered_clients = $fa->unregistered_clients();
 		$this->assertCount(
 			count( $this->fake_unregistered_clients['styles'] ) + count( $this->fake_unregistered_clients['scripts'] ),
@@ -85,19 +95,19 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 		foreach ( $unregistered_clients as $client ) {
 			switch ( $client['type'] ) {
 				case 'style':
-					$this->assertTrue( wp_style_is( $client['handle'], 'registered' ) ); // is *was* there
-					$this->assertFalse( wp_style_is( $client['handle'], 'enqueued' ) ); // now it's gone
+					$this->assertTrue( wp_style_is( $client['handle'], 'registered' ) ); // is *was* there.
+					$this->assertFalse( wp_style_is( $client['handle'], 'enqueued' ) ); // now it's gone.
 					break;
 				case 'script':
-					$this->assertTrue( wp_script_is( $client['handle'], 'registered' ) ); // is *was* there
-					$this->assertFalse( wp_script_is( $client['handle'], 'enqueued' ) ); // now it's gone
+					$this->assertTrue( wp_script_is( $client['handle'], 'registered' ) ); // is *was* there.
+					$this->assertFalse( wp_script_is( $client['handle'], 'enqueued' ) ); // now it's gone.
 					break;
 			}
 		}
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there.
 	}
 
-	function test_unregistered_conflict_unresolved_by_default() {
+	public function test_unregistered_conflict_unresolved_by_default() {
 		$fa = FontAwesome();
 
 		$this->enqueue_fakes();
@@ -112,10 +122,10 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 		$fa->load();
 
 		ob_start();
-		wp_head(); // required to trigger the 'wp_enqueue_scripts' action
+		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
 		ob_end_clean();
 
-		// make sure that the fake unregistered clients remain enqueued
+		// make sure that the fake unregistered clients remain enqueued.
 		$unregistered_clients = $fa->unregistered_clients();
 		$this->assertCount(
 			count( $this->fake_unregistered_clients['styles'] ) + count( $this->fake_unregistered_clients['scripts'] ),

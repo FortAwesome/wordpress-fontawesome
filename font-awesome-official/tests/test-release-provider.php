@@ -1,15 +1,21 @@
-<?php /** @noinspection PhpIncludeInspection */
+<?php
+/**
+ * Tests the release provider.
+ *
+ * @noinspection PhpIncludeInspection
+ */
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
-require_once dirname(__FILE__) . '/_support/font_awesome_phpunit_util.php';
+require_once dirname( __FILE__ ) . '/_support/font_awesome_phpunit_util.php';
 use Composer\Semver\Semver;
-
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
 /**
+ * Class ReleaseProviderTest
+ *
  * @group api
  *
  * The backupStaticAttributes option seems to be necessary in order to make the handler mocking work consistently.
@@ -26,7 +32,7 @@ use GuzzleHttp\Psr7\Response;
  * @backupStaticAttributes enabled
  */
 class ReleaseProviderTest extends WP_UnitTestCase {
-	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018
+	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
 	protected $known_versions = [
 		'5.0.1',
 		'5.0.2',
@@ -113,8 +119,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version
-			'all', // style_opt
+			'5.0.13', // version.
+			'all', // style_opt.
 			[
 				'use_pro'  => false,
 				'use_svg'  => false,
@@ -138,8 +144,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version
-			'all', // style_opt
+			'5.0.13', // version.
+			'all', // style_opt.
 			[
 				'use_pro'  => true,
 				'use_svg'  => false,
@@ -168,8 +174,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->expectException( InvalidArgumentException::class );
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version
-			'all', // style_opt
+			'5.0.13', // version.
+			'all', // style_opt.
 			[
 				'use_pro'  => true,
 				'use_svg'  => false,
@@ -188,8 +194,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version
-			'all', // style_opt
+			'5.1.0', // version.
+			'all', // style_opt.
 			[
 				'use_pro'  => true,
 				'use_svg'  => false,
@@ -203,7 +209,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->assertEquals( 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs', $resource_collection[0]->integrity_key() );
 	}
 
-	// TODO: when 5.1.1 is released, add a test to make sure there is a v4-shims.css integrity key
+	// TODO: when 5.1.1 is released, add a test to make sure there is a v4-shims.css integrity key.
 	public function test_5_1_0_missing_webfont_free_shim_integrity() {
 		$this->prepare_mock_handler(
 			[
@@ -214,8 +220,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version
-			'all', // style_opt
+			'5.1.0', // version.
+			'all', // style_opt.
 			[
 				'use_pro'  => false,
 				'use_svg'  => false,
@@ -240,8 +246,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version
-			'all', // style_opt
+			'5.0.13', // version.
+			'all', // style_opt.
 			[
 				'use_pro'  => true,
 				'use_svg'  => true,
@@ -267,8 +273,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version
-			[ 'solid', 'brands' ], // style_opt
+			'5.0.13', // version.
+			[ 'solid', 'brands' ], // style_opt.
 			[
 				'use_pro'  => false,
 				'use_svg'  => true,
@@ -290,11 +296,11 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'solid', $resources );
 		$this->assertArrayHasKey( 'v4-shims', $resources );
 
-		// The fontawesome main library will appear first in order
+		// The fontawesome main library will appear first in order.
 		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js', $resource_collection[0]->source() );
 		$this->assertEquals( 'sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY', $resource_collection[0]->integrity_key() );
 
-		// The style resources will appear in the middle, in any order
+		// The style resources will appear in the middle, in any order.
 		foreach ( [ 1, 2 ] as $resource_index ) {
 			switch ( $resource_collection[ $resource_index ] ) {
 				case $resources['brands']:
@@ -322,7 +328,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			}
 		}
 
-		// The shim will appear last in order
+		// The shim will appear last in order.
 		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.0.13/js/v4-shims.js', $resource_collection[3]->source() );
 		$this->assertEquals( 'sha384-qqI1UsWtMEdkxgOhFCatSq+JwGYOQW+RSazfcjlyZFNGjfwT/T1iJ26+mp70qvXx', $resource_collection[3]->integrity_key() );
 	}
@@ -337,12 +343,12 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = FontAwesomeReleaseProvider();
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version
-			[ 'solid' ], // style_opt, only a single style
+			'5.1.0', // version.
+			[ 'solid' ], // style_opt, only a single style.
 			[
 				'use_pro'  => false,
 				'use_svg'  => false,
-				'use_shim' => true, // expect a warning but no error since webfont had no shim in 5.0.x
+				'use_shim' => true, // expect a warning but no error since webfont had no shim in 5.0.x.
 			]
 		);
 
@@ -359,11 +365,11 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'solid', $resources );
 		$this->assertArrayHasKey( 'v4-shims', $resources );
 
-		// The fontawesome main library will appear first in order
+		// The fontawesome main library will appear first in order.
 		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css', $resource_collection[0]->source() );
 		$this->assertEquals( 'sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG', $resource_collection[0]->integrity_key() );
 
-		// The solid style in the middle
+		// The solid style in the middle.
 		$this->assertEquals(
 			'https://use.fontawesome.com/releases/v5.1.0/css/solid.css',
 			$resource_collection[1]->source()
@@ -373,7 +379,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			$resource_collection[1]->integrity_key()
 		);
 
-		// The shim last
+		// The shim last.
 		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection[2]->source() );
 	}
 
@@ -389,8 +395,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->expectException( InvalidArgumentException::class );
 
 		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version
-			[], // style_opt, empty
+			'5.1.0', // version.
+			[], // style_opt, empty.
 			[
 				'use_pro'  => false,
 				'use_svg'  => false,
@@ -413,8 +419,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$state = array();
 		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
 		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version
-			[ 'foo', 'bar' ], // style_opt, only bad styles
+			'5.1.0', // version.
+			[ 'foo', 'bar' ], // style_opt, only bad styles.
 			[
 				'use_pro'  => false,
 				'use_svg'  => false,
@@ -441,8 +447,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$state = array();
 		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
 		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version
-			[ 'solid', 'foo' ], // style_opt
+			'5.1.0', // version.
+			[ 'solid', 'foo' ], // style_opt.
 			[
 				'use_pro'  => false,
 				'use_svg'  => false,
@@ -463,11 +469,11 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'fontawesome', $resources );
 		$this->assertArrayHasKey( 'solid', $resources );
 
-		// The fontawesome main library will appear first in order
+		// The fontawesome main library will appear first in order.
 		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css', $resource_collection[0]->source() );
 		$this->assertEquals( 'sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG', $resource_collection[0]->integrity_key() );
 
-		// The solid style next
+		// The solid style next.
 		$this->assertEquals(
 			'https://use.fontawesome.com/releases/v5.1.0/css/solid.css',
 			$resource_collection[1]->source()
@@ -492,8 +498,8 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->expectException( InvalidArgumentException::class );
 
 		$resource_collection = $farp->get_resource_collection(
-			'4.0.13', // invalid version
-			'all', // style_opt
+			'4.0.13', // invalid version.
+			'all', // style_opt.
 			[
 				'use_pro'  => true,
 				'use_svg'  => false,
@@ -507,7 +513,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->assertEquals( 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG', $resource_collection[0]->integrity_key() );
 	}
 
-	function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
+	public function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
 		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
 			FontAwesome_Release_Provider::class,
@@ -522,7 +528,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->assertEquals( $expected_previous, $mock->previous_minor_release() );
 	}
 
-	function test_latest_and_previous_scenarios() {
+	public function test_latest_and_previous_scenarios() {
 		$this->assert_latest_and_previous_releases(
 			[
 				'5.1.1',
@@ -559,7 +565,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			'5.1.1'
 		);
 
-		// empty set
+		// empty set.
 		$this->assert_latest_and_previous_releases(
 			[],
 			null,
