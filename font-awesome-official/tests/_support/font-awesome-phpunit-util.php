@@ -1,11 +1,13 @@
-<?php /** @noinspection PhpIncludeInspection */
+<?php
+/**
+ * Shared utilities for testing FontAwesome with PhpUnit and WordPress.
+ *
+ * @noinspection PhpIncludeInspection
+ */
 
 namespace FontAwesomePhpUnitUtil;
 
 require_once FONTAWESOME_DIR_PATH . 'tests/_support/mock_font_awesome_releases.php';
-/**
- * Shared utilities for testing FontAwesome with PhpUnit and WordPress.
- */
 
 /**
  * Replaces the singleton static property _instance on the given $class with a mock object,
