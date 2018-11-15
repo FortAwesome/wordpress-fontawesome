@@ -52,7 +52,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 	];
 
 	public function test_can_load_and_instantiate() {
-		$obj = FontAwesomeReleaseProvider();
+		$obj = fa_release_provider();
 		$this->assertFalse( is_null( $obj ) );
 	}
 
@@ -79,7 +79,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 		try {
 			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
 			$releases_method = $klass->getMethod( 'releases' );
@@ -102,7 +102,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp           = FontAwesomeReleaseProvider();
+		$farp           = fa_release_provider();
 		$versions       = $farp->versions();
 		$known_versions = $this->known_versions;
 		$this->assertCount( count( $this->known_versions ), $versions );
@@ -116,7 +116,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -141,7 +141,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -169,7 +169,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$this->expectException( InvalidArgumentException::class );
 
@@ -191,7 +191,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -217,7 +217,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -243,7 +243,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -270,7 +270,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -340,7 +340,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -390,7 +390,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$this->expectException( InvalidArgumentException::class );
 
@@ -412,7 +412,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$this->expectException( InvalidArgumentException::class );
 
@@ -442,7 +442,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$state = array();
 		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
@@ -493,7 +493,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		$farp = FontAwesomeReleaseProvider();
+		$farp = fa_release_provider();
 
 		$this->expectException( InvalidArgumentException::class );
 

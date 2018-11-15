@@ -116,7 +116,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		public function get_latest_version() {
-			return FontAwesomeReleaseProvider()->latest_minor_release();
+			return fa_release_provider()->latest_minor_release();
 		}
 
 		public function get_latest_semver() {
@@ -124,7 +124,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		public function get_previous_version() {
-			return FontAwesomeReleaseProvider()->previous_minor_release();
+			return fa_release_provider()->previous_minor_release();
 		}
 
 		public function get_previous_semver() {
@@ -132,7 +132,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		public function get_available_versions() {
-			return FontAwesomeReleaseProvider()->versions();
+			return fa_release_provider()->versions();
 		}
 
 		private function settings_page_url() {
@@ -604,7 +604,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @param bool      $remove_unregistered_clients
 		 */
 		protected function enqueue( $load_spec, $remove_unregistered_clients = false ) {
-			$release_provider = FontAwesomeReleaseProvider();
+			$release_provider = fa_release_provider();
 
 			$method  = $load_spec['method'];
 			$use_svg = false;
@@ -859,13 +859,3 @@ endif; // ! class_exists
 function fa() {
 	return FontAwesome::instance();
 }
-
-/*
-if ( ! function_exists( 'render_block_core_shortcode' ) ) {
-	require dirname( __FILE__ ) . '/../packages/block-library/src/shortcode/index.php';
-}
-*/
-
-/*
- * if ( is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
- */

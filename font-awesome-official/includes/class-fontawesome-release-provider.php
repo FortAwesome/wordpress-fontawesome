@@ -280,7 +280,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		}
 	}
 
-	function FontAwesomeReleaseProvider() {
+	function fa_release_provider() {
 		return FontAwesome_Release_Provider::instance();
 	}
 
