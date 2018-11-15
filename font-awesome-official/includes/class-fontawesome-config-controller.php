@@ -67,20 +67,40 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 * @return WP_Error|WP_REST_Response
 		 */
 		public function get_item( $request ) {
+			/*
+			 * TODO: consider alteratives to using ini_set to ensure that display_errors is disabled.
+			 * Without this, when a client plugin of Font Awesome throws an error (like our plugin-epsilon
+			 * in this repo), instead of this REST controller returning an HTTP status of 500, indicating
+			 * the server error, it sends back a status of 200, setting the data property in the response
+			 * object equal to an HTML document that describes the error. This confuses the client.
+			 * Ideally, we'd be able to detect which plugin results in such an error by catching it and then
+			 * reporting to the client which plugin caused the error. But at a minimum, we need to make sure
+			 * that we return 500 instead of 200 in these cases.
+			 */
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_ini_set
+			ini_set( 'display_errors', 0 );
 			// If we don't add a reset() here, then the subsequent load() with rebuild
 			// will end up adding the clients a second time.
 			// We need to run load() with rebuild to make sure that all data is populated
 			// for build_item().
-			$fa = FontAwesome::reset();
-			$fa->load(
-				[
-					'rebuild' => true,
-					'save'    => false,
-				]
-			);
-			$data = $this->build_item( $fa );
+			try {
+				$fa = FontAwesome::reset();
+				$fa->load(
+					[
+						'rebuild' => true,
+						'save'    => false,
+					]
+				);
+				$data = $this->build_item( $fa );
 
-			return new WP_REST_Response( $data, 200 );
+				return new WP_REST_Response( $data, 200 );
+			} catch ( Exception $e ) {
+				/*
+				 * TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in
+				 * client plugins.
+				 */
+				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error trying to load Font Awesome.', array( 'status' => 500 ) );
+			}
 		}
 
 		/**
@@ -90,6 +110,9 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 * @return WP_Error|WP_REST_Request
 		 */
 		public function update_item( $request ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_ini_set
+			ini_set( 'display_errors', 0 );
+
 			$item = $this->prepare_item_for_database( $request );
 
 			$current_options = get_option( FontAwesome::OPTIONS_KEY );
