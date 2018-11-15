@@ -2,6 +2,11 @@
 
 namespace FontAwesomePhpUnitUtil;
 
+/**
+ * Class MockFontAwesomeReleases
+ *
+ * @package FontAwesomePhpUnitUtil
+ */
 class MockFontAwesomeReleases extends \PHPUnit\Framework\TestCase {
 	public static $releases = null;
 
