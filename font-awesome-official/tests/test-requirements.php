@@ -1,7 +1,7 @@
 <?php
 /** @noinspection PhpCSValidationInspection */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname(__FILE__) . '/_support/font_awesome_phpunit_util.php';
+require_once dirname(__FILE__) . '/_support/font-awesome-phpunit-util.php';
 
 class RequirementsTest extends WP_UnitTestCase {
 
