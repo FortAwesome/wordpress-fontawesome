@@ -181,7 +181,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						foreach ( $admin_asset_manifest as $key => $value ) {
 							if ( preg_match( '/\.js$/', $key ) ) {
 								$script_name = self::PLUGIN_NAME . '-' . $script_number;
-								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true );
 
 								if ( ! $added_wpr_object ) {
 									// We have to give a script handle as the first argument to wp_localize_script.
@@ -200,7 +201,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 								}
 							}
 							if ( preg_match( '/\.css$/', $key ) ) {
-								wp_enqueue_style( self::PLUGIN_NAME . '-' . $script_number, $asset_url_base . $value, [], null, 'all' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								wp_enqueue_style( self::PLUGIN_NAME . '-' . $script_number, $asset_url_base . $value, [], null, 'all' );
 							}
 							$script_number++;
 						}
@@ -619,7 +621,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 
 			if ( 'webfont' === $method ) {
-				wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
@@ -642,7 +645,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
 
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 					// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
@@ -669,7 +673,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					}
 				}
 			} else {
-				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
 				if ( $load_spec['pseudoElements'] ) {
 					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
@@ -698,7 +703,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				}
 
 				if ( $load_spec['v4shim'] ) {
-					wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
 
 					if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
 						add_filter(

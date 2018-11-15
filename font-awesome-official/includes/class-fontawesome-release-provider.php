@@ -1,4 +1,9 @@
-<?php /** @noinspection PhpIncludeInspection */
+<?php
+/**
+ * Provides releases data.
+ *
+ * @noinspection PhpIncludeInspection
+ */
 require_once FONTAWESOME_DIR_PATH . 'defines.php';
 require_once FONTAWESOME_DIR_PATH . 'vendor/autoload.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-resource.php';
