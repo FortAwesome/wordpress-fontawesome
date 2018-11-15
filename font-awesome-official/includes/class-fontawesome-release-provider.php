@@ -105,10 +105,12 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		/**
 		 * Builds a resource.
 		 *
+		 * If no integrity_key is available it will be null.
+		 *
 		 * @param string $version
 		 * @param string $file_basename
 		 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false)
-		 * @return FontAwesomeResource integrity_key will be null if none is available
+		 * @return FontAwesome_Resource
 		 */
 		private function build_resource( $version, $file_basename, $flags = array(
 			'use_svg' => false,
@@ -133,7 +135,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 				$integrity_key = $this->releases()[ $version ]['sri'][ $license ][ $relative_url ];
 			}
 
-			return( new FontAwesomeResource( $full_url, $integrity_key ) );
+			return( new FontAwesome_Resource( $full_url, $integrity_key ) );
 		}
 
 		protected function releases() {
@@ -215,7 +217,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 				// Add the main library first.
 				array_push( $resources, $this->build_resource( $version, 'fontawesome', $flags ) );
 
-				// create a new FontAwesomeResource for each style, in any order.
+				// create a new FontAwesome_Resource for each style, in any order.
 				foreach ( $styles as $style ) {
 					array_push( $resources, $this->build_resource( $version, $style, $flags ) );
 				}

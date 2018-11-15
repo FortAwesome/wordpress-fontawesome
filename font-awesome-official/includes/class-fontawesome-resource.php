@@ -1,7 +1,11 @@
 <?php
 
 if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
-	class FontAwesomeResource {
+	/**
+	 * Class to provide structure and wrapping around the source URI and integrity key
+	 * to be used when enqueuing a script or style resource.
+	 */
+	class FontAwesome_Resource {
 		protected $_source;
 		protected $_integrity_key;
 
