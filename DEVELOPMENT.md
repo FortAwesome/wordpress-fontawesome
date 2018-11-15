@@ -16,7 +16,7 @@ Leave this running in one terminal window and do the rest of this in some other 
 This runs the docker compose configuration that brings up the containers running wordpress and mysql.
 It will all be configured automatically for you with the scripts below. 
 
-4. create a .env.email file with an admin email address WordPress can use:
+4. create a .env.email file in the root of the repository with an admin email address WordPress can use:
 
 ```
 WP_ADMIN_EMAIL=some_real_address@example.com
@@ -26,7 +26,12 @@ WP_ADMIN_EMAIL=some_real_address@example.com
 
 On Mac OS X, it can be installed via `brew install composer`
 
-6. update composer dependencies: `composer install`
+6. update composer dependencies from the `font-awesome-official` directory
+
+```
+cd font-awesome-official
+composer install
+```
 
 7. Build our plugin's admin UI React app
 
@@ -35,12 +40,14 @@ React app are not checked in to this repo—they must be built. There are two op
 
 In one terminal window, `cd font-awesome-official/admin`, and then:
 
-  (a) Development mode: `yarn start` to fire up webpack development server, if you want to run in development mode with
+  (a) `yarn`
+
+  (b) Development mode: `yarn start` to fire up webpack development server, if you want to run in development mode with
       hot module reloading and such (which is probably what you should be doing if you're developing).
       This will start up another web server that serves up the assets for the React app separately from
       the WordPress site, so leave it running while you develop.
       
-  (b) Production mode: You can also use `yarn build` to build production optimized assets into the `admin/build`
+  (c) Production mode: You can also use `yarn build` to build production optimized assets into the `admin/build`
       directory. In order to get the WordPress plugin to load these, you also need to temporarily change
       the `FONTAWESOME_ENV` variable in `.env` to something other than "development", or just remove it.
       Change that setting before trying to load the plugin admin page in your browser.
@@ -87,10 +94,14 @@ It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBU
 WordPress is now ready and initialized in the docker container and reachable at localhost:8080
 with admin username and password as found in `.env`.
 
+10. Login to the WordPress admin dashboard and activate the Font Awesome plugin 
+
 To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
 
-To access the Font Awesome admin page, go to:
+After activating the plugin you can access the Font Awesome admin page here:
 `http://localhost:8080/wp-admin/options-general.php?page=font-awesome-official`
+
+Or you'll find it linked on the left sidebar under Settings.
 
 # Reset WordPress Docker Environment and Remove Data Volume
 

@@ -156,7 +156,7 @@ loading their own versions. But we can try, and most of the time, we expect it t
 
 | Action | Description |
 | ----------- | ----------- |
-| `font_awesome_requirements` | Called when the Font Awesome plugin expects clients to register their requirements. Normally, the culmination of the action hook is to call <span style="white-space:nowrap;">`FontAwesome()->register($requirements_array)`</span> |
+| `font_awesome_requirements` | Called when the Font Awesome plugin expects clients to register their requirements. Normally, the culmination of the action hook is to call <span style="white-space:nowrap;">`fa()->register( $requirements_array )`</span> |
 | `font_awesome_enqueued` | Called when version resolution succeeds, with up to one argument, an associative array indicating the final load specification: version, method (webfont vs. svg), version 4 compatibility, license (pro vs. free), pseudo-element support. This is how a theme or plugin can be notified whether Pro is enabled, for example. |
 | `font_awesome_failed` | Called when version resolution fails, with up to one argument, an associative array indicating which conflicting requirement between which clients caused resolution to fail. |
 
@@ -164,8 +164,8 @@ loading their own versions. But we can try, and most of the time, we expect it t
 
 | Method | Description |
 | ------ | ----------- |
-| `FontAwesome()` | returns the singleton instance for the plugin. All other function calls are methods invoked on this instance. |
-| `register($requirements_array)` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
+| `fa()` | returns the singleton instance for the plugin. All other function calls are methods invoked on this instance. |
+| `register( $requirements_array )` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
 | `using_pro()` | returns `boolean` indicating whether Pro is enabled |
 | `using_pseudo_elements()` | returns `boolean` indicating whether pseudo-element support is enabled |
 
@@ -179,7 +179,7 @@ array(
   "version"         => "^5.0.0",      // A semver string. Uses composer/semver
   "method"          => "webfont",     // webfont | svg
   "v4shim"          => "require",     // require | forbid
-  "pseudo-elements" => "require"      // require | forbid
+  "pseudoElements" => "require"       // require | forbid
 );
 ```
 
@@ -194,7 +194,7 @@ array(
   would satisfy the requirements of all registered clients. Specify `forbid` to insist that the v4 shim should _not_
   be loaded by any client--normally you should mind your own business, though.
 
-- `pseudo-elements`: [Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements)
+- `pseudoElements`: [Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements)
   are always intrinsically available when using the Web Font with CSS method.
   However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
   approach, because the performance can be poor. _Really_ poor, in some cases. However, sometimes, it's necessary.

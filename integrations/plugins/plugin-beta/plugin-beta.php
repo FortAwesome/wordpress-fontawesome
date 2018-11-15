@@ -14,36 +14,51 @@ defined( 'WPINC' ) || die;
 define( 'BETA_PLUGIN_VERSION', '0.0.1' );
 define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 
-add_action('font_awesome_requirements', function(){
-  if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register(
-      array(
-        "name" => BETA_PLUGIN_LOG_PREFIX,
-        'version' => '5.1.0',
-        'v4shim' => 'require'
-      )
-    );
-  }
-});
+add_action(
+	'font_awesome_requirements',
+	function() {
+		if ( class_exists( 'FontAwesome' ) ) {
+			fa()->register(
+				array(
+					'name'    => BETA_PLUGIN_LOG_PREFIX,
+					'version' => '5.1.0',
+					'v4shim'  => 'require',
+				)
+			);
+		}
+	}
+);
 
-add_action('init', function(){
-  wp_enqueue_style(
-    'plugin-beta-style',
-    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
-    array(),
-    null,
-    'all'
-  );
-});
+add_action(
+	'init',
+	function() {
+		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+		wp_enqueue_style(
+			'plugin-beta-style',
+			trailingslashit( plugins_url() ) . trailingslashit( plugin_basename( __DIR__ ) ) . 'style.css',
+			array(),
+			null,
+			'all'
+		);
+	}
+);
 
-add_action('font_awesome_enqueued', function($loadSpec){
-  if ( class_exists('FontAwesome') ) {
-    error_log( BETA_PLUGIN_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . $loadSpec['version']);
-  }
-}, 10, 3);
+add_action(
+	'font_awesome_enqueued',
+	function( $load_spec ) {
+		if ( class_exists( 'FontAwesome' ) ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			error_log( BETA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . $load_spec['version'] );
+		}
+	},
+	10,
+	3
+);
 
-add_filter('the_content', function($content){
-  $pre_content = <<<EOT
+add_filter(
+	'the_content',
+	function( $content ) {
+		$pre_content = <<<EOT
 <div class="plugin-beta-pre-content">
   <h2>Plugin Beta</h2>
   <p>Expected by plugin-beta: "fab fa-font-awesome": <i class="fab fa-font-awesome"></i></p>
@@ -51,5 +66,8 @@ add_filter('the_content', function($content){
   <p>Icon introduced in 5.1.0: "fas fa-angry": <i class="fas fa-angry"></i></p>
 </div>
 EOT;
-  return $pre_content . $content;
-}, 10, 1);
+		return $pre_content . $content;
+	},
+	10,
+	1
+);
