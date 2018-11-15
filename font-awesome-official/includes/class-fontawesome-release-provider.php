@@ -87,7 +87,7 @@ if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
 		private function load_releases() {
 			try {
 				$response = $this->_api_client->get( 'api/releases' );
-				$code     = $response->getStatusCode();
+				$response->getStatusCode();
 				// TODO: add more handling of response code and error condition here.
 				$body            = $response->getBody();
 				$body_contents   = $body->getContents();

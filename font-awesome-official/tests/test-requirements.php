@@ -47,7 +47,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -82,7 +82,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -107,13 +107,13 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -376,13 +376,13 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $data ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -437,13 +437,13 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $data ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -491,13 +491,13 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $data ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -546,7 +546,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @group pro
 	 */
 	public function test_pro_not_configured() {
-		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		\FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'is_pro_configured',
@@ -709,7 +709,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
@@ -753,7 +753,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
+		$failed_callback = function() use ( &$failed ) {
 			$failed = true;
 		};
 		add_action( 'font_awesome_failed', $failed_callback );

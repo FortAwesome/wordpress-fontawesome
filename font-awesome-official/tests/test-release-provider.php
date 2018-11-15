@@ -173,7 +173,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$this->expectException( InvalidArgumentException::class );
 
-		$resource_collection = $farp->get_resource_collection(
+		$farp->get_resource_collection(
 			'5.0.13', // version.
 			'all', // style_opt.
 			[
@@ -394,7 +394,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$this->expectException( InvalidArgumentException::class );
 
-		$resource_collection = $farp->get_resource_collection(
+		$farp->get_resource_collection(
 			'5.1.0', // version.
 			[], // style_opt, empty.
 			[
@@ -418,7 +418,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$state = array();
 		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
-		$resource_collection = $farp->get_resource_collection(
+		$farp->get_resource_collection(
 			'5.1.0', // version.
 			[ 'foo', 'bar' ], // style_opt, only bad styles.
 			[
@@ -427,7 +427,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 				'use_shim' => true,
 			]
 		);
-		$error_log           = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
+		$error_log = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
 		$this->assertRegExp( '/WARNING.+?unrecognized.+?foo/', $error_log );
 	}
 
