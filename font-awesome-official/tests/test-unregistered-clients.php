@@ -3,7 +3,7 @@
  * Module for UnregisteredClientsTest
  */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname(__FILE__) . '/_support/font-awesome-phpunit-util.php';
+require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**
  * Class UnregisteredClientsTest
