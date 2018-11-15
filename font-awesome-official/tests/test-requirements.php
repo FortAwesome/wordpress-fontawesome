@@ -1,7 +1,13 @@
 <?php
-/** @noinspection PhpCSValidationInspection */
+/**
+ * Class RequirementsTest
+ *
+ * @noinspection PhpCSValidationInspection
+ */
+// phpcs:ignoreFile Squiz.Commenting.ClassComment.Missing
+// phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname(__FILE__) . '/_support/font-awesome-phpunit-util.php';
+require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 class RequirementsTest extends WP_UnitTestCase {
 
@@ -527,8 +533,8 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $loadSpec ) {
-				$this->assertTrue( $loadSpec['usePro'] );
+			function( $load_spec ) {
+				$this->assertTrue( $load_spec['usePro'] );
 				$this->assertTrue( fa()->using_pro() );
 			}
 		);
@@ -562,8 +568,8 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $loadSpec ) {
-				$this->assertFalse( $loadSpec['usePro'] );
+			function( $load_spec ) {
+				$this->assertFalse( $load_spec['usePro'] );
 				$this->assertFalse( fa()->using_pro() );
 			}
 		);
@@ -694,10 +700,10 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $loadSpec ) use ( &$enqueued ) {
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assertEquals( 'webfont', $loadSpec['method'] );
-			$this->assertTrue( $loadSpec['pseudoElements'] );
+			$this->assertEquals( 'webfont', $load_spec['method'] );
+			$this->assertTrue( $load_spec['pseudoElements'] );
 			$this->assertTrue( fa()->using_pseudo_elements() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
@@ -738,10 +744,10 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $loadSpec ) use ( &$enqueued ) {
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assertEquals( 'webfont', $loadSpec['method'] );
-			$this->assertTrue( $loadSpec['pseudoElements'] );
+			$this->assertEquals( 'webfont', $load_spec['method'] );
+			$this->assertTrue( $load_spec['pseudoElements'] );
 			$this->assertTrue( fa()->using_pseudo_elements() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );

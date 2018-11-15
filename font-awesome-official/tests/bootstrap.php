@@ -1,10 +1,13 @@
-<?php /** @noinspection PhpCSValidationInspection */
+<?php
 /**
  * PHPUnit bootstrap file
  *
  * @package Font_Awesome
+ * @noinspection PhpCSValidationInspection
  */
 
+// phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
+// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( ! $_tests_dir ) {
