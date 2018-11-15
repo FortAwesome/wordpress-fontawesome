@@ -1,13 +1,16 @@
 <?php
+/** @noinspection PhpCSValidationInspection */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font_awesome_phpunit_util.php';
 
 class RequirementsTest extends WP_UnitTestCase {
 
 	/**
+	 * Reset test state.
+	 *
 	 * @before
 	 */
-	function reset() {
+	protected function reset() {
 		FontAwesome::reset();
 		\FontAwesomePhpUnitUtil\MockFontAwesomeReleases::mock();
 		wp_script_is( 'font-awesome-official', 'enqueued' ) && wp_dequeue_script( 'font-awesome-official' );
@@ -17,13 +20,13 @@ class RequirementsTest extends WP_UnitTestCase {
 		FontAwesome_Activator::activate();
 	}
 
-	function assert_defaults( $loadSpec ) {
-		$this->assertEquals( 'webfont', $loadSpec['method'] );
-		$this->assertTrue( $loadSpec['v4shim'] );
-		$this->assertTrue( $loadSpec['pseudoElements'] );
+	protected function assert_defaults( $load_spec ) {
+		$this->assertEquals( 'webfont', $load_spec['method'] );
+		$this->assertTrue( $load_spec['v4shim'] );
+		$this->assertTrue( $load_spec['pseudoElements'] );
 	}
 
-	function test_all_default_with_single_client() {
+	protected function test_all_default_with_single_client() {
 		FontAwesome()->register(
 			array(
 				'name' => 'test',
@@ -31,9 +34,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $loadSpec ) use ( &$enqueued ) {
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assert_defaults( $loadSpec );
+			$this->assert_defaults( $load_spec );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -52,7 +55,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) );
 	}
 
-	function test_all_default_with_multiple_clients() {
+	protected function test_all_default_with_multiple_clients() {
 		FontAwesome()->register(
 			array(
 				'name' => 'Client A',
@@ -66,9 +69,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $loadSpec ) use ( &$enqueued ) {
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assert_defaults( $loadSpec );
+			$this->assert_defaults( $load_spec );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -87,7 +90,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) );
 	}
 
-	function test_register_without_name() {
+	protected function test_register_without_name() {
 		$this->expectException( InvalidArgumentException::class );
 
 		FontAwesome()->register(
@@ -98,7 +101,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $loadSpec ) use ( &$enqueued ) {
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
 			$enqueued = true;
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
@@ -118,7 +121,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertFalse( $enqueued );
 	}
 
-	function test_single_client_gets_what_it_wants() {
+	protected function test_single_client_gets_what_it_wants() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -133,10 +136,10 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $loadSpec ) use ( &$enqueued ) {
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assertEquals( 'svg', $loadSpec['method'] );
-			$this->assertTrue( $loadSpec['v4shim'] );
+			$this->assertEquals( 'svg', $load_spec['method'] );
+			$this->assertTrue( $load_spec['v4shim'] );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -144,7 +147,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertTrue( $enqueued );
 	}
 
-	function test_two_compatible_clients() {
+	protected function test_two_compatible_clients() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -161,7 +164,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'clientB',
 						'method' => 'svg',
-					// leaves v4shim alone
+					// leaves v4shim alone.
 					)
 				);
 			}
@@ -169,16 +172,16 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $loadSpec ) {
-				$this->assertEquals( 'svg', $loadSpec['method'] );
-				$this->assertTrue( $loadSpec['v4shim'] );
+			function( $load_spec ) {
+				$this->assertEquals( 'svg', $load_spec['method'] );
+				$this->assertTrue( $load_spec['v4shim'] );
 			}
 		);
 
 		FontAwesome()->load();
 	}
 
-	function test_incompatible_method() {
+	protected function test_incompatible_method() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -193,7 +196,7 @@ class RequirementsTest extends WP_UnitTestCase {
 				FontAwesome()->register(
 					array(
 						'name'   => 'clientB',
-						'method' => 'webfont', // not compatible with svg
+						'method' => 'webfont', // not compatible with svg.
 					)
 				);
 			}
@@ -224,7 +227,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertNotNull( FontAwesome()->conflicts() );
 	}
 
-	function test_pseudo_element_default_false_when_svg() {
+	protected function test_pseudo_element_default_false_when_svg() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -239,9 +242,9 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $loadSpec ) {
-				$this->assertEquals( 'svg', $loadSpec['method'] );
-				$this->assertFalse( $loadSpec['pseudoElements'] );
+			function( $load_spec ) {
+				$this->assertEquals( 'svg', $load_spec['method'] );
+				$this->assertFalse( $load_spec['pseudoElements'] );
 				$this->assertFalse( FontAwesome()->using_pseudo_elements() );
 			}
 		);
@@ -249,7 +252,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		FontAwesome()->load();
 	}
 
-	function test_pseudo_element_default_true_when_webfont() {
+	protected function test_pseudo_element_default_true_when_webfont() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -264,9 +267,9 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $loadSpec ) {
-				$this->assertEquals( 'webfont', $loadSpec['method'] );
-				$this->assertTrue( $loadSpec['pseudoElements'] );
+			function( $load_spec ) {
+				$this->assertEquals( 'webfont', $load_spec['method'] );
+				$this->assertTrue( $load_spec['pseudoElements'] );
 				$this->assertTrue( FontAwesome()->using_pseudo_elements() );
 			}
 		);
@@ -277,7 +280,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group version
 	 */
-	function test_incompatible_version() {
+	protected function test_incompatible_version() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -320,10 +323,10 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertFalse( $enqueued );
 	}
 
-	function client_requirement_exists( $name, $reqs ) {
+	protected function client_requirement_exists( $name, $reqs ) {
 		$found = false;
 		foreach ( $reqs as $req ) {
-			if ( $name == $req['name'] ) {
+			if ( $name === $req['name'] ) {
 				$found = true;
 				break;
 			}
@@ -334,7 +337,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group version
 	 */
-	function test_compatible_with_latest_version() {
+	protected function test_compatible_with_latest_version() {
 		$stub = $this->createMock( FontAwesome::class );
 		$stub->method( 'get_latest_version' )
 		->willReturn( '5.0.13' );
@@ -386,7 +389,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group version
 	 */
-	function test_compatible_with_earlier_patch_level() {
+	protected function test_compatible_with_earlier_patch_level() {
 		$stub = $this->createMock( FontAwesome::class );
 		$stub->method( 'get_available_versions' )
 		->willReturn(
@@ -447,7 +450,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group version
 	 */
-	function test_compatible_with_earlier_minor_version() {
+	protected function test_compatible_with_earlier_minor_version() {
 		$stub = $this->createMock( FontAwesome::class );
 		$stub->method( 'get_available_versions' )
 		->willReturn(
@@ -501,8 +504,8 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group pro
 	 */
-	function test_pro_is_configured() {
-		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
+	protected function test_pro_is_configured() {
+		\FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'is_pro_configured',
@@ -536,7 +539,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group pro
 	 */
-	function test_pro_not_configured() {
+	protected function test_pro_not_configured() {
 		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
 			FontAwesome::class,
@@ -571,7 +574,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group shim
 	 */
-	function test_shim_svg() {
+	protected function test_shim_svg() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -595,7 +598,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 *
 	 * @group shim
 	 */
-	function test_shim_webfont() {
+	protected function test_shim_webfont() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -622,7 +625,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	/**
 	 * @group shim
 	 */
-	function test_shim_conflict() {
+	protected function test_shim_conflict() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -671,7 +674,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * the webfont method and another explicitly requires pseudo-element support.
 	 * Webfont with CSS always implies pseudo-element support.
 	 */
-	function test_webfont_with_pseudo_elements() {
+	protected function test_webfont_with_pseudo_elements() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -715,7 +718,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * the webfont method and another forbids pseudo-element support.
 	 * Webfont with CSS always implies pseudo-element support.
 	 */
-	function test_webfont_and_forbid_pseudo_elements() {
+	protected function test_webfont_and_forbid_pseudo_elements() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
@@ -759,5 +762,5 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertRegExp( '/WARNING: a client of Font Awesome has forbidden pseudo-elements/', $err );
 	}
 
-	// TODO: test where the ReleaseProvider would return a null integrity key, both for webfont and svg
+	// TODO: test where the ReleaseProvider would return a null integrity key, both for webfont and svg.
 }
