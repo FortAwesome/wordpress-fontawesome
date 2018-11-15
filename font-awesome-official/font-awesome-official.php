@@ -33,4 +33,4 @@ register_deactivation_hook(
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
 
-FontAwesome()->run();
+fa()->run();

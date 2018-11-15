@@ -108,7 +108,7 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 	}
 
 	public function test_unregistered_conflict_unresolved_by_default() {
-		$fa = FontAwesome();
+		$fa = fa();
 
 		$this->enqueue_fakes();
 

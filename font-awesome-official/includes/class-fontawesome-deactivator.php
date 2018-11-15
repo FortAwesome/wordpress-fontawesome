@@ -11,7 +11,7 @@
 class FontAwesome_Deactivator {
 
 	public static function deactivate() {
-		delete_option( FontAwesome()->options_key );
+		delete_option( fa()->options_key );
 	}
 
 }

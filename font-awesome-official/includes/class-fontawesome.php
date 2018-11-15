@@ -81,7 +81,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Make constructor private so clients cannot instantiate this directly.
-		 * Must use FontAwesome() or FontAwesome::instance()
+		 * Must use fa() or FontAwesome::instance()
 		 */
 		private function __construct() {
 			/* noop */
@@ -258,7 +258,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		public static function reset() {
 			self::$_instance = null;
-			return FontAwesome();
+			return fa();
 		}
 
 		/**
@@ -849,7 +849,23 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 endif; // ! class_exists
 
-function FontAwesome() {
+/**
+ * Main instance of Font Awesome.
+ *
+ * Returns the main instance of Font Awesome.
+ *
+ * @returns FontAwesome
+ */
+function fa() {
 	return FontAwesome::instance();
 }
 
+/*
+if ( ! function_exists( 'render_block_core_shortcode' ) ) {
+	require dirname( __FILE__ ) . '/../packages/block-library/src/shortcode/index.php';
+}
+*/
+
+/*
+ * if ( is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
+ */
