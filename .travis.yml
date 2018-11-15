@@ -48,6 +48,10 @@ before_script:
     bash ../bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
     composer global require "phpunit/phpunit=4.8.*|5.7.*"
   fi
+- |
+  if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+    composer global require "squizlabs/php_codesniffer=*"
+  fi
 
 script:
 - composer install
@@ -58,5 +62,5 @@ script:
   fi
 - |
   if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-    ./vendor/bin/phpcs
+    phpcs
   fi
