@@ -107,7 +107,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 * Update the singleton resource
 		 *
 		 * @param WP_REST_Request $request Full data about the request.
-		 * @return WP_Error|WP_REST_Request
+		 * @return WP_Error|WP_REST_Response
 		 */
 		public function update_item( $request ) {
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_ini_set
