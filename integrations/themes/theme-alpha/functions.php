@@ -19,7 +19,7 @@ add_action('after_switch_theme', function(){
 
 add_action('font_awesome_requirements', function(){
   if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register(array(
+    fa()->register(array(
       "name" => THEME_ALPHA_LOG_PREFIX,
 //      "method" => 'webfont'
     ));
@@ -33,11 +33,11 @@ add_action('font_awesome_enqueued', function($loadSpec){
 }, 10, 3);
 
 function theme_alpha_fa_classes(){
-  $fa = FontAwesome();
+  $fa = fa();
   $load_spec = $fa->load_spec();
   $theme_alpha_class_list = [];
 
-  $load_spec['pro']
+  $fa->using_pro()
     ? array_push($theme_alpha_class_list, 'theme-alpha-fa-license-pro')
     : array_push($theme_alpha_class_list, 'theme-alpha-fa-license-free');
 
