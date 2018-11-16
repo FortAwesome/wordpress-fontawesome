@@ -29,6 +29,8 @@ services:
        - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
        - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
        - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+       - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+       - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
      extra_hosts:
        - "dockerhost:169.254.254.254"
      env_file:

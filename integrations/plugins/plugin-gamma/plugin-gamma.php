@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Plugin Name:       Plugin Gamma Webfont
- * Plugin URI:        https://fontawesome.com/plugin-gamma/
- * Description:       Test Client Plugin that tries to enqueue its own webfont
- *                    version of Font Awesome which conflicts with the FontAwesome
- *                    plugin.
+ * Plugin Name:       Plugin Gamma
+ * Plugin URI:        https://fontawesome.com/
+ * Description:       Unregistered Client: tries to enqueue its own v4.7.0 webfont version from cdn.jsdelivr.net. It prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath".
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -24,13 +22,6 @@ add_action('init', function(){
     null,
     'all'
   );
-  wp_enqueue_style(
-    'plugin-gamma-style',
-    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
-    array(),
-    null,
-    'all'
-  );
 });
 
 add_action('font_awesome_enqueued', function($loadSpec){
@@ -41,7 +32,7 @@ add_action('font_awesome_enqueued', function($loadSpec){
 
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
-<div class="plugin-gamma-pre-content">
+<div class="plugin-gamma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Gamma</h2>
   <p>Expected by plugin-gamma (v4.7.0 icon name): "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
 </div>

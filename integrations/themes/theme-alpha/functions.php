@@ -19,9 +19,8 @@ add_action('after_switch_theme', function(){
 
 add_action('font_awesome_requirements', function(){
   if ( class_exists('FontAwesome') ) {
-    FontAwesome()->register(array(
-      "name" => THEME_ALPHA_LOG_PREFIX,
-//      "method" => 'webfont'
+    fa()->register(array(
+      "name" => THEME_ALPHA_LOG_PREFIX
     ));
   }
 });
@@ -33,21 +32,21 @@ add_action('font_awesome_enqueued', function($loadSpec){
 }, 10, 3);
 
 function theme_alpha_fa_classes(){
-  $fa = FontAwesome();
+  $fa = fa();
   $load_spec = $fa->load_spec();
-  $theme_alpha_class_list = [];
+  $class_list = [ 'theme-alpha' ];
 
-  $load_spec['pro']
-    ? array_push($theme_alpha_class_list, 'theme-alpha-fa-license-pro')
-    : array_push($theme_alpha_class_list, 'theme-alpha-fa-license-free');
+  $fa->using_pro()
+    ? array_push($class_list, 'fa-license-pro')
+    : array_push($class_list, 'fa-license-free');
 
-  strpos($load_spec['version'], '5.0.')
-    ? array_push($theme_alpha_class_list, 'theme-alpha-fa-version-5-0')
-    : array_push($theme_alpha_class_list, 'theme-alpha-fa-version-5-1');
+  strpos($load_spec['version'], '5.0.') === 0
+    ? array_push($class_list, 'fa-version-5-0')
+    : array_push($class_list, 'fa-version-5-1');
 
   ($load_spec['method'] == 'svg')
-    ? array_push($theme_alpha_class_list, 'theme-alpha-fa-method-svg')
-    : array_push($theme_alpha_class_list, 'theme-alpha-fa-method-webfont');
+    ? array_push($class_list, 'fa-method-svg')
+    : array_push($class_list, 'fa-method-webfont');
 
-  return implode(' ', $theme_alpha_class_list);
+  return implode(' ', $class_list);
 }

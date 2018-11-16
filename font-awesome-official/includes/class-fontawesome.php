@@ -688,23 +688,56 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-				if ( $load_spec['pseudoElements'] ) {
+				if ( fa()->using_pseudo_elements() ) {
 					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 				}
 
-				// Filter the <script> tag to add the integrity and crossorigin attributes for completeness.
-				if ( ! is_null( $resource_collection[0]->integrity_key() ) ) {
+				// Filter the <script> tag to add additional attributes for integrity, crossorigin, defer.
+				add_filter(
+					'script_loader_tag',
+					function ( $tag, $handle ) use ( $resource_collection ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
+							$extra_tag_attributes = 'defer crossorigin="anonymous"';
+
+							if ( ! is_null( $resource_collection[0]->integrity_key() ) ) {
+								$extra_tag_attributes .= ' integrity="' . $resource_collection[0]->integrity_key() . '"';
+							}
+							$modified_script_tag = preg_replace(
+								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+								'/<script\s*(.*?src=.*?)>/',
+								"<script $extra_tag_attributes " . '\1>',
+								$tag,
+								1
+							);
+							return $modified_script_tag;
+						} else {
+							return $tag;
+						}
+					},
+					10,
+					2
+				);
+
+				if ( $load_spec['v4shim'] ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
+
 					add_filter(
 						'script_loader_tag',
 						function ( $tag, $handle ) use ( $resource_collection ) {
-							if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
-								return preg_replace(
-									'/\/>$/',
-									'integrity="' . $resource_collection[0]->integrity_key() .
-									'" crossorigin="anonymous" />',
+							if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
+								$extra_tag_attributes = 'defer crossorigin="anonymous"';
+								if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
+									$extra_tag_attributes .= ' integrity="' . $resource_collection[1]->integrity_key() . '"';
+								}
+								$modified_script_tag = preg_replace(
+									// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+									'/<script\s*(.*?src=.*?)>/',
+									"<script $extra_tag_attributes " . '\1>',
 									$tag,
 									1
 								);
+								return $modified_script_tag;
 							} else {
 								return $tag;
 							}
@@ -712,32 +745,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						10,
 						2
 					);
-				}
-
-				if ( $load_spec['v4shim'] ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-					wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
-
-					if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
-						add_filter(
-							'script_loader_tag',
-							function ( $tag, $handle ) use ( $resource_collection ) {
-								if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
-									return preg_replace(
-										'/\/>$/',
-										'integrity="' . $resource_collection[1]->integrity_key() .
-										'" crossorigin="anonymous" />',
-										$tag,
-										1
-									);
-								} else {
-									return $tag;
-								}
-							},
-							10,
-							2
-						);
-					}
 				}
 			}
 

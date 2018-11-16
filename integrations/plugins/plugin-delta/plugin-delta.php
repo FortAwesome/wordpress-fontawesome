@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Plugin Name:       Plugin Delta SVG with JavaScript
- * Plugin URI:        https://fontawesome.com/plugin-delta/
- * Description:       Test Client Plugin that tries to enqueue its own SVG with JavaScript
- *                    version of Font Awesome which conflicts with the FontAwesome
- *                    plugin.
+ * Plugin Name:       Plugin Delta
+ * Plugin URI:        https://fontawesome.com/
+ * Description:       Unregistered Client: tries to enqueue its own v5.0.11 SVG/JS from use.fontawesome.com. For display, prepends a block before every blog post that displays an icon with classes "fas fa-cloud-download". This icon appeared in v5.0.11 and is only available in Pro.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -24,13 +22,6 @@ add_action('init', function(){
     null,
     false
   );
-  wp_enqueue_style(
-    'plugin-delta-style',
-    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
-    array(),
-    null,
-    'all'
-  );
 });
 
 add_action('font_awesome_enqueued', function($loadSpec){
@@ -41,7 +32,7 @@ add_action('font_awesome_enqueued', function($loadSpec){
 
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
-<div class="plugin-delta-pre-content">
+<div class="plugin-delta-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Delta</h2>
   <p>Expected by plugin-delta (introduced v5.0.11): "fas fa-cloud-download": <i class="fas fa-cloud-download"></i></p>
 </div>

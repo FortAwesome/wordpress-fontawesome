@@ -1,0 +1,52 @@
+.bed:before {
+    content: "\f236";
+}
+
+/**
+ * These CSS classes are added by our own template code in this plugin. They are not standard Font Awesome classes.
+ * We're doing this to demonstrate how we might tune a plugin to be resilient and adaptable to what Font Awesome
+ * version and method is loaded.
+ */
+
+/**
+ * For svg pseudo-elements, you need display: hide;
+ */
+.plugin-eta.fa-method-svg .bed:before {
+    display: none;
+}
+
+/**
+ * For svg 5.0.x the font-family specifies the style and doesn't reference the license (Free/Pro).
+ */
+.plugin-eta.fa-method-svg.fa-license-free.fa-version-5-0 .bed:before {
+    font-family: "Font Awesome 5 Solid";
+}
+.plugin-eta.fa-method-svg.fa-license-pro.fa-version-5-0 .bed:before {
+    font-family: "Font Awesome 5 Light";
+}
+
+/**
+ * For svg 5.1.x the font-family works the same as for webfonts: does not specify the style, only the license.
+ */
+.plugin-eta.fa-method-svg.fa-version-5-1.fa-license-free .bed:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+.plugin-eta.fa-method-svg.fa-version-5-1.fa-license-pro .bed:before {
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 300;
+}
+
+/* For webfonts > 5.0.0, the font-family is specified by Free/Pro and the style
+ * is based on the font-weight.
+ */
+.plugin-eta.fa-method-webfont.fa-license-free .bed:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+.plugin-eta.fa-method-webfont.fa-license-pro .bed:before {
+    font-family: "Font Awesome 5 Pro";
+    font-weight: 300; /* light style */
+}
