@@ -59,7 +59,7 @@ add_filter(
 	'the_content',
 	function( $content ) {
 		$pre_content = <<<EOT
-<div class="plugin-beta-pre-content">
+<div class="plugin-beta-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Beta</h2>
   <p>Expected by plugin-beta: "fab fa-font-awesome": <i class="fab fa-font-awesome"></i></p>
   <p>Shim icon (using the v4 class name): "fa fa-arrows": <i class="fa fa-arrows"></i></p>

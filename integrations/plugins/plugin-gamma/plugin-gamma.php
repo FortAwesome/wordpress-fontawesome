@@ -39,7 +39,7 @@ add_action('font_awesome_enqueued', function($loadSpec){
 
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
-<div class="plugin-gamma-pre-content">
+<div class="plugin-gamma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Gamma</h2>
   <p>Expected by plugin-gamma (v4.7.0 icon name): "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
 </div>

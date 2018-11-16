@@ -39,7 +39,7 @@ add_action('font_awesome_enqueued', function($loadSpec){
 
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
-<div class="plugin-delta-pre-content">
+<div class="plugin-delta-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Delta</h2>
   <p>Expected by plugin-delta (introduced v5.0.11): "fas fa-cloud-download": <i class="fas fa-cloud-download"></i></p>
 </div>
