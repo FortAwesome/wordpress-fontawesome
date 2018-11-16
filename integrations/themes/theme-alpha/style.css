@@ -51,6 +51,11 @@
   font-weight: 900;
 }
 
+.theme-alpha-fa-method-svg.theme-alpha-fa-version-5-1.theme-alpha-fa-license-pro:after {
+  font-family: "Font Awesome 5 Pro";
+  font-weight: 900;
+}
+
 /* For webfonts > 5.0.0, the font-family is specified by Free/Pro and the style
  * is based on the font-weight.
  */
