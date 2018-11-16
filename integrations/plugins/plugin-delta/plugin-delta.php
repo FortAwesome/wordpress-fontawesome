@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:       Plugin Delta
- * Plugin URI:        https://fontawesome.com/plugin-delta/
+ * Plugin URI:        https://fontawesome.com/
  * Description:       Unregistered Client: tries to enqueue its own v5.0.11 SVG/JS from use.fontawesome.com. For display, prepends a block before every blog post that displays an icon with classes "fas fa-cloud-download". This icon appeared in v5.0.11 and is only available in Pro.
  * Version:           0.0.1
  * Author:            Font Awesome

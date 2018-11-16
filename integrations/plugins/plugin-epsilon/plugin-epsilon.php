@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:       Plugin Epsilon
- * Plugin URI:        https://fontawesome.com/plugin-epsilon/
+ * Plugin URI:        https://fontawesome.com/
  * Description:       Registered Client: Throws an exception when processing requirements.
  * Version:           0.0.1
  * Author:            Font Awesome
