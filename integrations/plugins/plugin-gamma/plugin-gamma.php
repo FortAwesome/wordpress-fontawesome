@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Plugin Name:       Plugin Gamma Webfont
+ * Plugin Name:       Plugin Gamma
  * Plugin URI:        https://fontawesome.com/plugin-gamma/
- * Description:       Test Client Plugin that tries to enqueue its own webfont
- *                    version of Font Awesome which conflicts with the FontAwesome
- *                    plugin.
+ * Description:       Unregistered Client: tries to enqueue its own v4.7.0 webfont version from cdn.jsdelivr.net.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/

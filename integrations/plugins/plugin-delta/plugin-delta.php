@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Plugin Name:       Plugin Delta SVG with JavaScript
+ * Plugin Name:       Plugin Delta
  * Plugin URI:        https://fontawesome.com/plugin-delta/
- * Description:       Test Client Plugin that tries to enqueue its own SVG with JavaScript
- *                    version of Font Awesome which conflicts with the FontAwesome
- *                    plugin.
+ * Description:       Unregistered Client: tries to enqueue its own v5.0.11 SVG/JS from use.fontawesome.com. For display, prepends a block before every blog post that displays an icon with classes "fas fa-cloud-download". This icon appeared in v5.0.11 and is only available in Pro.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/

@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Beta
  * Plugin URI:        https://fontawesome.com/plugin-beta/
- * Description:       Test Client Plugin: Registers requirements for version: 5.1.0, v4shim: require
+ * Description:       Registered Client with version: 5.1.0, v4shim: require
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
