@@ -29,29 +29,29 @@
 /**
  * For svg pseudo-elements, you need display: hide;
  */
-.theme-alpha-fa-method-svg.beer:after {
+.theme-alpha.fa-method-svg.beer:after {
   display: none;
 }
 
 /**
  * For svg 5.0.x the font-family specifies the style and doesn't reference the license (Free/Pro).
  */
-.theme-alpha-fa-method-svg.theme-alpha-fa-license-free.theme-alpha-fa-version-5-0:after {
+.theme-alpha.fa-method-svg.fa-license-free.fa-version-5-0:after {
     font-family: "Font Awesome 5 Solid";
 }
-.theme-alpha-fa-method-svg.theme-alpha-fa-license-pro.theme-alpha-fa-version-5-0:after {
+.theme-alpha.fa-method-svg.fa-license-pro.fa-version-5-0:after {
   font-family: "Font Awesome 5 Light";
 }
 
 /**
  * For svg 5.1.x the font-family works the same as for webfonts: does not specify the style, only the license.
  */
-.theme-alpha-fa-method-svg.theme-alpha-fa-version-5-1.theme-alpha-fa-license-free:after {
+.theme-alpha.fa-method-svg.fa-version-5-1.fa-license-free:after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
 }
 
-.theme-alpha-fa-method-svg.theme-alpha-fa-version-5-1.theme-alpha-fa-license-pro:after {
+.theme-alpha.fa-method-svg.fa-version-5-1.fa-license-pro:after {
   font-family: "Font Awesome 5 Pro";
   font-weight: 300;
 }
@@ -59,12 +59,12 @@
 /* For webfonts > 5.0.0, the font-family is specified by Free/Pro and the style
  * is based on the font-weight.
  */
-.theme-alpha-fa-method-webfont.theme-alpha-fa-license-free:after {
+.theme-alpha.fa-method-webfont.fa-license-free:after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
 }
 
-.theme-alpha-fa-method-webfont.theme-alpha-fa-license-pro:after {
+.theme-alpha.fa-method-webfont.fa-license-pro:after {
   font-family: "Font Awesome 5 Pro";
   font-weight: 300; /* light style */
 }
