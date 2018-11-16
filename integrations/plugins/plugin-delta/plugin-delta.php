@@ -22,13 +22,6 @@ add_action('init', function(){
     null,
     false
   );
-  wp_enqueue_style(
-    'plugin-delta-style',
-    trailingslashit(plugins_url()) . trailingslashit(plugin_basename(__DIR__)) . 'style.css',
-    array(),
-    null,
-    'all'
-  );
 });
 
 add_action('font_awesome_enqueued', function($loadSpec){
