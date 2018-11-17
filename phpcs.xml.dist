@@ -10,7 +10,16 @@
 
 	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>
-	<file>.</file>
+	<file>includes</file>
+	<file>tests</file>
+	<!-- TODO: cleanup the integrations and include them in code sniffing. -->
+	<!--
+	<file>integrations</file>
+	-->
+	<file>font-awesome-official.php</file>
+	<file>index.php</file>
+	<file>admin/index.php</file>
+	<file>admin/views/main.php</file>
 
 	<!-- Show progress and sniff codes in all reports -->
 	<arg value="ps"/>
