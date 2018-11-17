@@ -1,4 +1,26 @@
 {
+    "name": "fortawesome/wordpress-fontawesome",
+    "description": "Official Font Awesome WordPress plugin composer package.",
+    "keywords": [ "font awesome", "font-awesome", "icon", "icons", "webfont", "svg" ],
+    "homepage": "https://fontawesome.com",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Mike Wilkerson",
+            "email": "mwlkerson@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "hello@fontawesome.com"
+    },
+    "archive": {
+        "exclude": [
+            "images",
+            "integrations",
+            "tests"
+        ]
+    },
     "require": {
         "composer/semver": "^1.4",
         "mustangostang/spyc": "^0.6.2",
