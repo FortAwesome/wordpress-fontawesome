@@ -21,9 +21,6 @@
             "/tests"
         ]
     },
-    "dist": {
-        "url": "https://github.com/FortAwesome/wordpress-fontawesome/composer-dist"
-    },
     "require": {
         "composer/semver": "^1.4",
         "mustangostang/spyc": "^0.6.2",
