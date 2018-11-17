@@ -16,9 +16,9 @@
     },
     "archive": {
         "exclude": [
-            "images",
-            "integrations",
-            "tests"
+            "/images",
+            "/integrations",
+            "/tests"
         ]
     },
     "require": {
