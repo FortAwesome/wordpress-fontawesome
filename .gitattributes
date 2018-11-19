@@ -8,3 +8,13 @@ phpunit.xml.dist export-ignore
 phpcs.xml.dist   export-ignore
 /tests            export-ignore
 /.git						  export-ignore
+proxy-webpack-dev.conf export-ignore
+readme.txt				export-ignore
+docker-php-ext-xdebug.ini export-ignore
+docker-compose.yml export-ignore
+/bin							export-ignore
+/admin/config			export-ignore
+/admin/src				export-ignore
+/admin/scripts				export-ignore
+/Dockerfile				export-ignore
+.env							export-ignore
