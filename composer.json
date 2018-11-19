@@ -37,7 +37,7 @@
             "admin/scripts",
             "Dockerfile",
             ".env",
-            "DEVELOPMENT.md",
+            "DEVELOPMENT.md"
         ]
     },
     "require": {
