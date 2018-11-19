@@ -18,7 +18,26 @@
         "exclude": [
             "/images",
             "/integrations",
-            "/tests"
+            "/tests",
+            ".gitattributes",
+            ".github",
+            ".gitignore",
+            ".travis.yml",
+            "/images",
+            "phpunit.xml.dist",
+            "phpcs.xml.dist",
+            "/.git",
+            "proxy-webpack-dev.conf",
+            "readme.txt",
+            "docker-php-ext-xdebug.ini",
+            "docker-compose.yml",
+            "/bin",
+            "admin/config",
+            "admin/src",
+            "admin/scripts",
+            "Dockerfile",
+            ".env",
+            "DEVELOPMENT.md",
         ]
     },
     "require": {
