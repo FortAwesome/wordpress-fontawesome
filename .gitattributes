@@ -18,3 +18,4 @@ docker-compose.yml export-ignore
 /admin/scripts				export-ignore
 /Dockerfile				export-ignore
 .env							export-ignore
+DEVELOPMENT.md		export-ignore
