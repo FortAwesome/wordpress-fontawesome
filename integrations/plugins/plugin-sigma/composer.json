@@ -18,7 +18,6 @@
     }
   ],
   "require": {
-    "fortawesome/wordpress-fontawesome": "dev-library",
-    "fortawesome/font-awesome": "^4.7"
+    "fortawesome/wordpress-fontawesome": "dev-library"
   }
 }
