@@ -129,7 +129,7 @@ passing arguments to it just like you would the normal `wp` command-line. This i
 
 It can also be managed on the WP Admin Interface on the Plugins page
 
-# Activate Integration Test Plugin and Theme
+# Activate Integration Test Plugins and Theme
 
 There's a `plugin-beta` and a `theme-alpha` that each are clients of this `font-awesome` plugin.
 They are not involved in the unit test suite at all. But when you're playing with the with localhost:8080,
@@ -140,6 +140,14 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 `./bin/wp plugin activate plugin-beta`
 
 `./bin/wp theme activate theme-alpha`
+
+## Special Notes on plugin-sigma
+
+`plugin-sigma` demonstrates how a third-party plugin developer could include this Font Awesome plugin as a composer
+dependency. In this scenario, the WordPress site admin does not need to separately install the Font Awesome plugin.
+
+In order to activate it you must first run `composer install --prefer-dist` from the 
+`integrations/plugins/plugin-sigma` directory.
 
 # Run phpunit
 
