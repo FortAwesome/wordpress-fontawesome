@@ -61,9 +61,7 @@ add_filter(
 		$pre_content = <<<EOT
 <div class="plugin-sigma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Sigma</h2>
-  <p>Expected by plugin-sigma: "fab fa-font-awesome": <i class="fab fa-font-awesome"></i></p>
-  <p>Shim icon (using the v4 class name): "fa fa-arrows": <i class="fa fa-arrows"></i></p>
-  <p>Icon introduced in 5.1.0: "fas fa-angry": <i class="fas fa-angry"></i></p>
+  <p>Expected by plugin-sigma: "fab fa-fort-awesome": <i class="fab fa-fort-awesome"></i></p>
 </div>
 EOT;
 		return $pre_content . $content;
