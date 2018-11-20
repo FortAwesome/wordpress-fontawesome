@@ -1,0 +1,24 @@
+{
+  "name": "fortawesome/wordpress-plugin-sigma",
+  "description": "Example integration of a WordPress plugin embedding the Font Awesome WordPress plugin.",
+  "keywords": [ "font awesome", "font-awesome", "icon", "icons", "webfont", "svg" ],
+  "homepage": "https://fontawesome.com",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Mike Wilkerson",
+      "email": "mwlkerson@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/FortAwesome/wordpress-fontawesome"
+    }
+  ],
+  "require": {
+    "fortawesome/wordpress-fontawesome": "dev-library",
+    "fortawesome/font-awesome": "^4.7"
+  }
+}

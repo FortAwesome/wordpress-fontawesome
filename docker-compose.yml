@@ -31,6 +31,7 @@ services:
        - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
        - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
        - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+       - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
      extra_hosts:
        - "dockerhost:169.254.254.254"
      env_file:
