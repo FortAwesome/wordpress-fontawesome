@@ -4,9 +4,7 @@
  *
  * @noinspection PhpIncludeInspection
  */
-require_once FONTAWESOME_DIR_PATH . 'defines.php';
-require_once FONTAWESOME_DIR_PATH . 'vendor/autoload.php';
-require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-resource.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 
 use Composer\Semver\Semver;
 use GuzzleHttp\Client;
