@@ -106,6 +106,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+		/**
+		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.
+		 *
+		 * @param $constraints expressed as a constraint that can be understood by Composer\Semver\Semver
+		 * @return bool
+		 */
+		public function satisfies($constraints) {
+			return Semver::satisfies( self::PLUGIN_VERSION, $constraints );
+		}
+
 		private function initialize_rest_api() {
 			add_action(
 				'rest_api_init',
@@ -854,6 +864,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			array_unshift( $this->reqs, $client_requirements );
 		}
 	}
+
 
 endif; // ! class_exists
 
