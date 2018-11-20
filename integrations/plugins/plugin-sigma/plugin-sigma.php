@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Sigma
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client embedding the Font Awesome composer library
+ * Description:       Registered Client embedding Font Awesome as a composer dependency. When this plugin is activated, Font Awesome is implicitly activated, whether or not the Font Awesome plugin is directly installed or activated.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
