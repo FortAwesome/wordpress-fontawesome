@@ -41,10 +41,14 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
 
+To install directly as a WordPress plugin:
+
 1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome-official.zip`
 1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome-official.zip`
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
+
+(For instructions on adding this as a composer package to install with your theme or plugin, see [Developers](#for-developers))
 
 # For End Users
 
