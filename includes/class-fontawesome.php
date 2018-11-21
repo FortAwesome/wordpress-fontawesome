@@ -54,6 +54,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		protected $conflicts = null;
 
 		/**
+		 * The list of plugin version warnings.
+		 */
+		protected $plugin_version_warnings = null;
+
+		/**
 		 * The resulting load specification after settling all client requirements.
 		 */
 		protected $load_spec = null;
@@ -114,6 +119,41 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		public function satisfies($constraints) {
 			return Semver::satisfies( self::PLUGIN_VERSION, $constraints );
+		}
+
+		/**
+		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
+         * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
+		 *
+		 * @param $constraint expressed as a constraint that can be understood by Composer\Semver\Semver
+         * @param $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
+         *        given constraints.
+		 * @return bool
+		 */
+		public function satisfies_or_warn($constraint, $name) {
+		    if ( Semver::satisfies( self::PLUGIN_VERSION, $constraint ) ) {
+		        return true;
+            } else {
+		        $error_msg = "Font Awesome plugin version conflict: A plugin or theme requires plugin version $constraint " .
+                    'but the currently loaded version is ' . self::PLUGIN_VERSION . ". Plugin or theme name: $name.";
+
+		        $this->add_plugin_version_warning( array( 'name' => $name, 'constraint' => $constraint ) );
+
+				add_action(
+					'admin_notices',
+					function() use ( $error_msg ) {
+						$current_screen = get_current_screen();
+						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
+						?>
+							<div class="notice notice-warning is-dismissible">
+								<p><?= esc_html( $error_msg ) ?></p>
+							</div>
+						<?php
+						}
+					}
+				);
+		        return false;
+            }
 		}
 
 		private function initialize_rest_api() {
@@ -363,7 +403,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						);
 					}
 					$error_msg = 'Font Awesome Error! These themes or plugins have conflicting requirements: '
-					. implode( $client_name_list, ', ' ) . '.  '
+					. esc_html( implode( $client_name_list, ', ' ) ) . '.  '
 					. 'To resolve these conflicts, <a href="' . $this->settings_page_url() . '">Go to Font Awesome Settings</a>.';
 
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions
@@ -375,9 +415,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 							$current_screen = get_current_screen();
 							if ( $current_screen && $current_screen->id !== $this->screen_id ) {
 								?>
-			<div class="error notice">
-				<p><?php esc_html( $error_msg ); ?></p>
-			</div>
+									<div class="notice notice-warning is-dismissible">
+									<p><?php _e( $error_msg ); ?></p>
+									</div>
 								<?php
 							}
 						}
@@ -389,10 +429,33 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return current requirements conflicts.
+		 * Returns current requirements conflicts.
+         *
+         * @return array | null
 		 */
 		public function conflicts() {
 			return $this->conflicts;
+		}
+
+		/**
+		 * Returns plugin version warnings.
+         *
+         * @return array | null
+		 */
+		public function get_plugin_version_warnings() {
+		    return $this->plugin_version_warnings;
+        }
+
+		/**
+         * Adds a plugin version warning.
+         *
+		 * @param array $warning
+		 */
+		private function add_plugin_version_warning($warning) {
+		    if( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
+		        $this->plugin_version_warnings = [];
+            }
+            array_push( $this->plugin_version_warnings, $warning );
 		}
 
 		/**

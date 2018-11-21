@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import ClientRequirementsView from './ClientRequirementsView'
 import UnregisteredClientsView from './UnregisteredClientsView'
+import PluginVersionWarningsView from './PluginVersionWarningsView'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -53,6 +54,10 @@ class FontAwesomeAdminView extends React.Component {
           />
         }
         <UnregisteredClientsView clients={ data.unregisteredClients }/>
+        {
+          data.pluginVersionWarnings &&
+          <PluginVersionWarningsView warnings={ data.pluginVersionWarnings } pluginVersion={ data.pluginVersion }/>
+        }
       </div>
     </div>
   }

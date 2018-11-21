@@ -43,19 +43,21 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 
 		protected function build_item( $fa ) {
 			return array(
-				'adminClientInternal' => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
-				'adminClientExternal' => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
-				'options'             => $fa->options(),
-				'clientRequirements'  => $fa->requirements(),
-				'conflicts'           => $fa->conflicts(),
-				'currentLoadSpec'     => $fa->load_spec(),
-				'unregisteredClients' => $fa->unregistered_clients(),
-				'releases'            => array(
-					'available'        => $fa->get_available_versions(),
-					'latest_version'   => $fa->get_latest_version(),
-					'latest_semver'    => $fa->get_latest_semver(),
-					'previous_version' => $fa->get_previous_version(),
-					'previous_semver'  => $fa->get_previous_semver(),
+				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
+				'adminClientExternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
+				'options'               => $fa->options(),
+				'clientRequirements'    => $fa->requirements(),
+				'conflicts'             => $fa->conflicts(),
+				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
+				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
+				'currentLoadSpec'       => $fa->load_spec(),
+				'unregisteredClients'   => $fa->unregistered_clients(),
+				'releases'              => array(
+					'available'           => $fa->get_available_versions(),
+					'latest_version'      => $fa->get_latest_version(),
+					'latest_semver'       => $fa->get_latest_semver(),
+					'previous_version'    => $fa->get_previous_version(),
+					'previous_semver'     => $fa->get_previous_semver(),
 				),
 			);
 		}
