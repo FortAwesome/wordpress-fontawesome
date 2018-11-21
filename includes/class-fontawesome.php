@@ -114,47 +114,54 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.
 		 *
-		 * @param $constraints expressed as a constraint that can be understood by Composer\Semver\Semver
+		 * @param string $constraints expressed as a constraint that can be understood by Composer\Semver\Semver
 		 * @return bool
 		 */
-		public function satisfies($constraints) {
+		public function satisfies( $constraints ) {
 			return Semver::satisfies( self::PLUGIN_VERSION, $constraints );
 		}
 
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
-         * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
+		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
 		 *
-		 * @param $constraint expressed as a constraint that can be understood by Composer\Semver\Semver
-         * @param $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
-         *        given constraints.
+		 * @param string $constraint expressed as a constraint that can be understood by Composer\Semver\Semver
+		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
+		 *        given constraints.
 		 * @return bool
 		 */
-		public function satisfies_or_warn($constraint, $name) {
-		    if ( Semver::satisfies( self::PLUGIN_VERSION, $constraint ) ) {
-		        return true;
-            } else {
-		        $error_msg = "Font Awesome plugin version conflict with a plugin or theme named: <b>$name</b>. <br/>" .
-                    "It requires plugin version $constraint " .
-                    'but the currently loaded version of the Font Awesome plugin is ' . self::PLUGIN_VERSION . '.';
-
-		        $this->add_plugin_version_warning( array( 'name' => $name, 'constraint' => $constraint ) );
+		public function satisfies_or_warn( $constraint, $name ) {
+			if ( Semver::satisfies( self::PLUGIN_VERSION, $constraint ) ) {
+				return true;
+			} else {
+				$this->add_plugin_version_warning(
+					array(
+						'name'       => $name,
+						'constraint' => $constraint,
+					)
+				);
 
 				add_action(
 					'admin_notices',
-					function() use ( $error_msg ) {
+					function() use ( $constraint, $name ) {
 						$current_screen = get_current_screen();
 						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-						?>
+							?>
 							<div class="notice notice-warning is-dismissible">
-								<p><?= _e( $error_msg ) ?></p>
+								<p>
+									Font Awesome plugin version conflict with a plugin or theme named:
+									<b><?php esc_html( $name ); ?> </b><br/>
+									It requires plugin version <?php esc_html( $constraint ); ?>
+									but the currently loaded version of the Font Awesome plugin is
+									<?php esc_html( self::PLUGIN_VERSION ); ?>.
+								</p>
 							</div>
-						<?php
+							<?php
 						}
 					}
 				);
-		        return false;
-            }
+				return false;
+			}
 		}
 
 		private function initialize_rest_api() {
@@ -403,21 +410,20 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 							: $client['name']
 						);
 					}
-					$error_msg = 'Font Awesome Error! These themes or plugins have conflicting requirements: '
-					. esc_html( implode( $client_name_list, ', ' ) ) . '.  '
-					. 'To resolve these conflicts, <a href="' . $this->settings_page_url() . '">Go to Font Awesome Settings</a>.';
 
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-					error_log( $error_msg . ' Dumping conflicting requirements: ' . print_r( $data, true ) );
 					do_action( 'font_awesome_failed', $data );
 					add_action(
 						'admin_notices',
-						function() use ( $error_msg ) {
+						function() use ( $client_name_list ) {
 							$current_screen = get_current_screen();
 							if ( $current_screen && $current_screen->id !== $this->screen_id ) {
 								?>
 									<div class="notice notice-warning is-dismissible">
-									<p><?php _e( $error_msg ); ?></p>
+									<p>
+										Font Awesome Error! These themes or plugins have conflicting requirements:
+										<?php esc_html( implode( $client_name_list, ', ' ) ); ?>.
+										To resolve these conflicts, <a href="<?php esc_html( $this->settings_page_url() ); ?>"> Go to Font Awesome Settings</a>.
+									</p>
 									</div>
 								<?php
 							}
@@ -431,8 +437,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Returns current requirements conflicts.
-         *
-         * @return array | null
+		 *
+		 * @return array | null
 		 */
 		public function conflicts() {
 			return $this->conflicts;
@@ -440,23 +446,23 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Returns plugin version warnings.
-         *
-         * @return array | null
+		 *
+		 * @return array | null
 		 */
 		public function get_plugin_version_warnings() {
-		    return $this->plugin_version_warnings;
-        }
+			return $this->plugin_version_warnings;
+		}
 
 		/**
-         * Adds a plugin version warning.
-         *
+		 * Adds a plugin version warning.
+		 *
 		 * @param array $warning
 		 */
-		private function add_plugin_version_warning($warning) {
-		    if( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
-		        $this->plugin_version_warnings = [];
-            }
-            array_push( $this->plugin_version_warnings, $warning );
+		private function add_plugin_version_warning( $warning ) {
+			if ( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
+				$this->plugin_version_warnings = [];
+			}
+			array_push( $this->plugin_version_warnings, $warning );
 		}
 
 		/**

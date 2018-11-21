@@ -6,9 +6,9 @@ defined( 'FONTAWESOME_API_URL' ) || define( 'FONTAWESOME_API_URL', 'https://font
 defined( 'FONTAWESOME_ENV' ) || define( 'FONTAWESOME_ENV', getenv( 'FONTAWESOME_ENV' ) );
 
 // Find the vendor dir.
-if( ! defined('FONTAWESOME_VENDOR_DIR') ) {
+if ( ! defined( 'FONTAWESOME_VENDOR_DIR' ) ) {
 	$matches = [];
-	if( 1 === preg_match('/^(.*)\/vendor\/.*?(?!vendor)$/', __DIR__ , $matches ) ) {
+	if ( 1 === preg_match( '/^(.*)\/vendor\/.*?(?!vendor)$/', __DIR__, $matches ) ) {
 		define( 'FONTAWESOME_VENDOR_DIR', trailingslashit( $matches[1] ) . 'vendor' );
 	} else {
 		/*
@@ -18,6 +18,6 @@ if( ! defined('FONTAWESOME_VENDOR_DIR') ) {
 		 * This fallback really is just another way of defining the vendor directory as if we were in scenario (a).
 		 * TODO: come back later and consider some better error handling
 		 */
-	  define( 'FONTAWESOME_VENDOR_DIR', trailingslashit( __DIR__ ) . '/vendor' );
+		define( 'FONTAWESOME_VENDOR_DIR', trailingslashit( __DIR__ ) . '/vendor' );
 	}
 }

@@ -53,11 +53,11 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				'currentLoadSpec'       => $fa->load_spec(),
 				'unregisteredClients'   => $fa->unregistered_clients(),
 				'releases'              => array(
-					'available'           => $fa->get_available_versions(),
-					'latest_version'      => $fa->get_latest_version(),
-					'latest_semver'       => $fa->get_latest_semver(),
-					'previous_version'    => $fa->get_previous_version(),
-					'previous_semver'     => $fa->get_previous_semver(),
+					'available'        => $fa->get_available_versions(),
+					'latest_version'   => $fa->get_latest_version(),
+					'latest_semver'    => $fa->get_latest_semver(),
+					'previous_version' => $fa->get_previous_version(),
+					'previous_semver'  => $fa->get_previous_semver(),
 				),
 			);
 		}

@@ -14,7 +14,7 @@
 
 defined( 'WPINC' ) || die;
 
-if(! defined('FONT_AWESOME_OFFICIAL_LOADED')) {
+if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
 	require_once __DIR__ . '/defines.php';
 
 	register_activation_hook(
@@ -35,6 +35,6 @@ if(! defined('FONT_AWESOME_OFFICIAL_LOADED')) {
 
 	require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
 
-	define('FONT_AWESOME_OFFICIAL_LOADED', 1);
+	define( 'FONT_AWESOME_OFFICIAL_LOADED', 1 );
 	fa()->run();
 }
