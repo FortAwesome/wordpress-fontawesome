@@ -7,7 +7,7 @@ $plugin_dir = $repo_dir;
 
 initialize_dist_dir($dist_dir);
 $rc = null;
-system("composer install -d " . $plugin_dir, $rc);
+system("composer install --prefer-dist --no-dev -d " . $plugin_dir, $rc);
 
 if( 0 !== $rc ) {
   printf("ERROR: could not run composer. Do you have it installed and on the PATH?\n");
