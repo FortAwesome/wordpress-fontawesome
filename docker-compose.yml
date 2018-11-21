@@ -32,6 +32,7 @@ services:
        - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
        - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
        - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+       - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
      extra_hosts:
        - "dockerhost:169.254.254.254"
      env_file:
