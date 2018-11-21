@@ -222,12 +222,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
-
 		$this->assertNull( fa()->load() );
 		$this->assertNull( fa()->load_spec() );
-		\FontAwesomePhpUnitUtil\end_error_log_capture( $state );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertNotNull( fa()->conflicts() );
@@ -321,10 +317,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
 		$this->assertNull( fa()->load() );
-		\FontAwesomePhpUnitUtil\end_error_log_capture( $state );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 	}
@@ -666,10 +659,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
 		$this->assertNull( fa()->load() );
-		\FontAwesomePhpUnitUtil\end_error_log_capture( $state );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertFalse( wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) );
