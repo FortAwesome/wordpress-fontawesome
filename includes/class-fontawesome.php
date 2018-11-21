@@ -150,10 +150,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 							<div class="notice notice-warning is-dismissible">
 								<p>
 									Font Awesome plugin version conflict with a plugin or theme named:
-									<b><?php esc_html( $name ); ?> </b><br/>
-									It requires plugin version <?php esc_html( $constraint ); ?>
+									<b><?php echo esc_html( $name ); ?> </b><br/>
+									It requires plugin version <?php echo esc_html( $constraint ); ?>
 									but the currently loaded version of the Font Awesome plugin is
-									<?php esc_html( self::PLUGIN_VERSION ); ?>.
+									<?php echo esc_html( self::PLUGIN_VERSION ); ?>.
 								</p>
 							</div>
 							<?php
@@ -421,8 +421,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 									<div class="notice notice-warning is-dismissible">
 									<p>
 										Font Awesome Error! These themes or plugins have conflicting requirements:
-										<?php esc_html( implode( $client_name_list, ', ' ) ); ?>.
-										To resolve these conflicts, <a href="<?php esc_html( $this->settings_page_url() ); ?>"> Go to Font Awesome Settings</a>.
+										<?php echo esc_html( implode( $client_name_list, ', ' ) ); ?>.
+										To resolve these conflicts, <a href="<?php echo esc_html( $this->settings_page_url() ); ?>"> Go to Font Awesome Settings</a>.
 									</p>
 									</div>
 								<?php
