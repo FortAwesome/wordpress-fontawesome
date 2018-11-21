@@ -134,8 +134,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		    if ( Semver::satisfies( self::PLUGIN_VERSION, $constraint ) ) {
 		        return true;
             } else {
-		        $error_msg = "Font Awesome plugin version conflict: A plugin or theme requires plugin version $constraint " .
-                    'but the currently loaded version is ' . self::PLUGIN_VERSION . ". Plugin or theme name: $name.";
+		        $error_msg = "Font Awesome plugin version conflict with a plugin or theme named: <b>$name</b>. <br/>" .
+                    "It requires plugin version $constraint " .
+                    'but the currently loaded version of the Font Awesome plugin is ' . self::PLUGIN_VERSION . '.';
 
 		        $this->add_plugin_version_warning( array( 'name' => $name, 'constraint' => $constraint ) );
 
@@ -146,7 +147,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
 						?>
 							<div class="notice notice-warning is-dismissible">
-								<p><?= esc_html( $error_msg ) ?></p>
+								<p><?= _e( $error_msg ) ?></p>
 							</div>
 						<?php
 						}
