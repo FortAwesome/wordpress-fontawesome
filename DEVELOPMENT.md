@@ -141,6 +141,41 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 
 `./bin/wp theme activate theme-alpha`
 
+# To Cut a Release
+
+## Build the Admin UI
+
+1. In the `admin/` directory, run:
+
+```bash
+yarn build
+```
+
+Commit the assets built into `build/`.
+
+2. In the repo root, run: 
+
+`composer dist`
+
+This will delete the `vendor` directory, and previous build assets, and will re-install
+the composer bundle in production mode (`--no-dev --prefer-dist`) and produce the following:
+
+`wp-dist/`: the contents of this directory should be move into the svn repo for the WordPress plugin
+that will be published through the WordPress plugins directory.
+
+`font-awesome-official.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
+This zip file can be distributed as a download for the WordPress plugin and used for installing
+the plugin by "upload" in the WordPress admin dashboard.
+
+`admin/build`: production build of the admin UI React app. This need to be committed so that it
+can be included in the composer package (which is really just a pull of this repo)  
+
+3. Commit `admin/build`
+
+4. (TODO: add instructions for pushing, tagging, and updating changelog)  
+
+(TODO: add directions for moving those into a WordPress SVN repo.) 
+
 ## Special Notes on plugin-sigma
 
 `plugin-sigma` demonstrates how a third-party plugin developer could include this Font Awesome plugin as a composer
