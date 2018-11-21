@@ -53,6 +53,9 @@
     "scripts": {
         "phpcs": "phpcs --standard=phpcs.xml.dist",
         "phpcbf": "phpcbf --standard=phpcs.xml.dist",
-        "test": "bin/phpunit"
+        "test": "bin/phpunit",
+        "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome-official.zip",
+        "build.admin": "cd admin; yarn build",
+        "dist": "composer clean && composer build.admin && bin/make-wp-dist"
     }
 }
