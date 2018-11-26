@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "640b0873534ec252066087509e05c807",
+    "content-hash": "2f438f09405e79768fba619fbd3cb105",
     "packages": [
         {
             "name": "composer/semver",
@@ -70,16 +70,16 @@
         },
         {
             "name": "fortawesome/wordpress-fontawesome",
-            "version": "dev-library",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "3f98478ad8ae106ee0c89064893d3cc266aa0cc3"
+                "reference": "9c3ab1788f37c4189dd509cec921c160b1f2a770"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/3f98478ad8ae106ee0c89064893d3cc266aa0cc3",
-                "reference": "3f98478ad8ae106ee0c89064893d3cc266aa0cc3",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/9c3ab1788f37c4189dd509cec921c160b1f2a770",
+                "reference": "9c3ab1788f37c4189dd509cec921c160b1f2a770",
                 "shasum": ""
             },
             "archive": {
@@ -128,6 +128,15 @@
                 ],
                 "test": [
                     "bin/phpunit"
+                ],
+                "clean": [
+                    "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome-official.zip"
+                ],
+                "build.admin": [
+                    "cd admin; yarn build"
+                ],
+                "dist": [
+                    "composer clean && composer build.admin && bin/make-wp-dist"
                 ]
             },
             "license": [
@@ -152,10 +161,10 @@
             ],
             "support": {
                 "email": "hello@fontawesome.com",
-                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/library",
+                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/master",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2018-11-20T21:52:35+00:00"
+            "time": "2018-11-26T17:24:00+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
