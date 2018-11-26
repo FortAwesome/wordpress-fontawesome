@@ -261,7 +261,7 @@ Your code would expect this plugin to be installed and active. It would register
 the action hook indicating successful load and confirmation of the final load specification. To place icons
 in your templates, use `<i>` tags [like normal](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use).
 
-1. Composer Dependency
+2. Composer Dependency
 
 In your composer project directory:
 
