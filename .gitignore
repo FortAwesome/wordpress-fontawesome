@@ -8,3 +8,5 @@ wp-dist
 *.log
 node_modules/
 wordpress/
+phpdoc-data/
+ast.dump
