@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards for Plugins">
+	<description>Generally-applicable sniffs for WordPress plugins</description>
+
+	<rule ref="WordPress">
+	  <exclude name="Squiz.Commenting.FileComment" />
+	  <exclude name="Squiz.Commenting.VariableComment" />
+	  <exclude name="Squiz.Commenting.FunctionComment" />
+	</rule>
+
+	<!-- Check all PHP files in directory tree by default. -->
+	<arg name="extensions" value="php"/>
+	<file>includes</file>
+	<file>tests</file>
+	<!-- TODO: cleanup the integrations and include them in code sniffing. -->
+	<!--
+	<file>integrations</file>
+	-->
+	<file>font-awesome-official.php</file>
+	<file>index.php</file>
+	<file>defines.php</file>
+	<file>admin/index.php</file>
+	<file>admin/views/main.php</file>
+
+	<!-- Show progress and sniff codes in all reports -->
+	<arg value="ps"/>
+
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+</ruleset>

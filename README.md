@@ -41,10 +41,15 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
 
+To install directly as a WordPress plugin:
+
 1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome-official.zip`
 1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome-official.zip`
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
+
+For instructions on adding this as a composer package to install with your theme or plugin,
+see [Install as Composer Dependency](#install-as-composer-dependency))
 
 # For End Users
 
@@ -152,6 +157,31 @@ loading their own versions. But we can try, and most of the time, we expect it t
 
 # For Developers
 
+## Install as Composer Dependency
+
+Developers and ship this plugin as a dependency of their own plugins or themes. The advantage of doing so is to simplify
+the installation of your component for your users. Those users do not need to separately install the Font Awesome plugin.
+
+The plugin uses the Singleton pattern to ensure that only one instance is loaded at any given time. So multiple
+themes and plugins that each ship the Font Awesome plugin as their own composer dependency can be activated together
+and still only one instance of the Font Awesome plugin will be loaded. They'll all use that one.
+
+An advantage of this approach is that you can be sure that the Font Awesome plugin will be there when your code needs
+it, without creating conflicts with other plugins and themes, and you can avoid asking your users to install
+the Font Awesome plugin separately.
+
+One caveat with this approach is that it's possible that the version of the Font Awesome plugin that is active when
+your code runs may not be the version you included in your composer bundle. It may be the version included in some
+_other_ plugin's bundle, which happens to load before yours and takes the Singleton slot.
+
+One way to handle this is to use `FontAwesome::PLUGIN_VERSION`, `satisfies()` and `satisfies_or_warn()` methods to react appropriately to unmet
+plugin version requirements.
+
+Unfortunately, there's no way to guarantee exactly what will be loaded at runtime: such is the nature of WordPress's
+pluggable nature. The best we can do is to try and provide an API that gives both developers and site owners more
+control and transparency into what's going on so that diagnosis and fixing of conflicts can be handled more
+straightforwardly. And hopefully, this plugin helps those conflicts to occur far less often in the first place.
+
 ## Action Reference
 
 | Action | Description |
@@ -168,6 +198,8 @@ loading their own versions. But we can try, and most of the time, we expect it t
 | `register( $requirements_array )` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
 | `using_pro()` | returns `boolean` indicating whether Pro is enabled |
 | `using_pseudo_elements()` | returns `boolean` indicating whether pseudo-element support is enabled |
+| `satisfies($constraint)` | returns `boolean` indicating whether the currently loaded version of this Font Awesome _plugin_ satisies the given `$constraints` expressed as a `Semver`.
+| `satisfies_or_warn($constraint, $name)` | returns `boolean` equivalent to calling `satisfies()`, but also displays warnings in the WordPress admin dashboard when `false`| 
 
 ## Requirements Array
 
@@ -220,12 +252,56 @@ We have made a REST API endpoint available on `fontawesome.com` which this plugi
 
 ## How to Ship Your Theme or Plugin To Work with Font Awesome
 
-Currently, the idea is that your customer would install this plugin as a rerequisite to installing yours.
-Your code would expect this plugin to be installed and active. It would register its requirements, receive
-the action hook indicating successful load and confirmation of the final load specification, and the rest
-is just making use of the icons using `<i>` tags like normal.
+You have two options:
 
-So, you would not ship any Font Awesome assets.
+1. Peer Dependency
+
+You would instruct your users to install this Font Awesome plugin separately when they install yours.
+Your code would expect this plugin to be installed and active. It would register its requirements, receive
+the action hook indicating successful load and confirmation of the final load specification. To place icons
+in your templates, use `<i>` tags [like normal](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use).
+
+1. Composer Dependency
+
+In your composer project directory:
+
+`composer require fortawesome/wordpress-fontawesome`
+
+In your plugin code, just require the plugin's entrypoint module, such as this:
+
+```php
+require_once trailingslashit(__DIR__) . 'vendor/fortawesome/wordpress-fontawesome/font-awesome-official.php';
+```
+
+Then you can access the `FontAwesome` class for class constants like `FontAwesome::PLUGIN_VERSION`, or
+get an instance of the plugin with `fa()`.
+
+### Don't Ship Font Awesome Assets
+
+In any case, you would not ship any Font Awesome assets (no web font, CSS, JavaScript, or SVG files).
+Rather, you'd rely on this plugin to load the correct assets from the appropriate CDN with the appropriate
+configuration.
+
+In the case of Font Awesome Pro, it would be a violation of the license terms to ship Pro assets, so that's
+a no-go no  matter what. In the case of Font Awesome Free, while the license would support redistribution
+of those assets in your plugin or theme, doing so would defeat one of the chief goals of this plugin:
+to create a conflict-free experience of loading Font Awesome, both for developers and site owners.
+If you ship and load your own Font Awesome assets, you might just end up being the bad citizen whose code
+breaks other components.
+
+### Detect and Warn When the Font Awesome Plugin Version Doesn't Match Your Requirements  
+
+Remember there are two different versions that you care about:
+
+1. The version of Font Awesome itself: the assets that this plugin is trying to load correctly into WordPress pages.
+
+1. The version of this plugin.
+
+When the API of the _plugin_ changes and your code expects a different version of this plugin than is active
+at the time your code tries to use it, it could cause your code to break. So rather than assuming that the plugin
+version active at runtime is the same as the version you were expecting, you can detect the version and react
+appropriately. If your code needs to work in some alternate way, including maybe refusing to activate, you can
+use `satisfies_or_warn()` to alert the site owner in the admin dashboard.
 
 ## How to Make Pro Icons Available in Your Theme or Plugin
 

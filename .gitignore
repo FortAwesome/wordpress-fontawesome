@@ -3,9 +3,8 @@
 .idea
 .env.email
 vendor
-dist
+wp-dist
 *.zip
 *.log
 node_modules/
-build/
 wordpress/

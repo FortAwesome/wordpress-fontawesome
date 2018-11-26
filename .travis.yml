@@ -2,9 +2,6 @@ sudo: false
 
 language: php
 
-before_install:
-  - cd font-awesome-official
-
 notifications:
   email:
     on_success: never
@@ -45,7 +42,7 @@ before_script:
   fi
 - |
   if [[ ! -z "$WP_VERSION" ]] ; then
-    bash ../bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
+    bash bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
     composer global require "phpunit/phpunit=4.8.*|5.7.*"
   fi
 - |

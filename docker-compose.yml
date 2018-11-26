@@ -23,7 +23,7 @@ services:
        - "8080:80"
      restart: always
      volumes:
-       - ./font-awesome-official:/var/www/html/wp-content/plugins/font-awesome-official
+       - .:/var/www/html/wp-content/plugins/font-awesome-official
        - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
        - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
        - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
@@ -31,6 +31,8 @@ services:
        - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
        - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
        - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+       - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+       - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
      extra_hosts:
        - "dockerhost:169.254.254.254"
      env_file:
