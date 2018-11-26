@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <parser>
+        <target>phpdoc-data/output</target>
+    </parser>
+    <transformer>
+        <target>docs</target>
+    </transformer>
+    <files>
+        <file>font-awesome-official.php</file>
+        <directory>includes</directory>
+        <ignore>admin/*</ignore>
+        <ignore>tests/*</ignore>
+        <ignore>bin/*</ignore>
+        <ignore>doc/*</ignore>
+        <ignore>images/*</ignore>
+        <ignore>wordpress/*</ignore>
+        <ignore>vendor/*</ignore>
+        <ignore>integrations/*</ignore>
+        <ignore>wp-dist/*</ignore>
+        <ignore>phpdoc-output/*</ignore>
+        <ignore>docs/*</ignore>
+    </files>
+</phpdoc>
