@@ -1,6 +1,6 @@
 <?php
 
-if ( ! class_exists( 'FontAwesome_Release_Provider' ) ) :
+if ( ! class_exists( 'FontAwesome_Resource' ) ) :
 	/**
 	 * Class to provide structure and wrapping around the source URI and integrity key
 	 * to be used when enqueuing a script or style resource.
