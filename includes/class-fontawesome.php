@@ -115,7 +115,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Main entry point for running the plugin.
+		 * Main entry point for running the plugin. Called automatically when the plugin is loaded. Clients should
+		 * not invoke it directly.
 		 */
 		public function run() {
 			/*
@@ -135,7 +136,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.
 		 *
-		 * @param string $constraints expressed as a constraint that can be understood by Composer\Semver\Semver
+		 * @param string $constraints expressed as a constraint that can be understood by `Composer\Semver\Semver`
+		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return bool
 		 */
 		public function satisfies( $constraints ) {
@@ -146,9 +148,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
 		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
 		 *
-		 * @param string $constraint expressed as a constraint that can be understood by Composer\Semver\Semver
+		 * @param string $constraints expressed as a constraint that can be understood by `Composer\Semver\Semver`
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
 		 *        given constraints.
+		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return bool
 		 */
 		public function satisfies_or_warn( $constraint, $name ) {
@@ -214,6 +217,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * Example: if the latest version is "5.5.0", this function returns "~5.5.0"
 		 *
+		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return null|string
 		 */
 		public function get_latest_semver() {
@@ -238,6 +242,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
 		 * this function returns "~5.4.1".
 		 *
+		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return null|string
 		 */
 		public function get_previous_semver() {
@@ -372,6 +377,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Returns current options with defaults.
 		 *
+		 * Clients should normally not be access this.
+		 *
 		 * @see FontAwesome::OPTIONS_KEY
 		 * @see FontAwesome::DEFAULT_USER_OPTIONS
 		 * @return array
@@ -408,8 +415,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Pass <code>['save' => true]</code> to save a rebuilt load specification to the options table in the db to be used
 		 *   subsequent loads.
 		 *
-		 * @param array[string]boolean $params
-		 * @return array[string]string|null
+		 * @param array $params
+		 * @return array|null
 		 */
 		public function load( $params = [
 			'rebuild' => false,
@@ -540,6 +547,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * uses the WordPress admin dashboard) is considered a registered client. So that owner's requirements
 		 * will be represented here.
 		 *
+		 * Each element of the array has the same shape as the requirements given to {@see FontAwesome::register()}.
+		 *
+		 * @see FontAwesome::register()
 		 * @return array
 		 */
 		public function requirements() {
@@ -548,6 +558,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Return list of found unregistered clients.
+		 *
+		 * Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
+		 * URI that appears to load Font Awesome, but which has not called {@see FontAwesome::register()} to register
+		 * its requirements with this plugin.
 		 *
 		 * @return array
 		 */
@@ -558,7 +572,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Return current load specification, which may be null if has not yet been computed.
-		 * If it is still `null` and `fa()->coflicts()` returns _not_ `null`, that means the load failed:
+		 * If it is still `null` and {@see FontAwesome::conflicts()} returns _not_ `null`, that means the load failed:
 		 * there is no settled load specification because none could be found that satisfies all client requirements.
 		 * For example, one client may have required `'method' => 'svg'` while another required `'method' => 'webfont'`.
 		 *
@@ -747,7 +761,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Convenience method that returns boolean indicating whether, given the currently settled `load_spec`,
 		 * we are loading Font Awesome Pro.
 		 *
-		 * Since it returns false when `fa()->load_spec()` is `null`, it's best to call this only after loading
+		 * Since it returns false when {@see FontAwesome::load_spec()} is `null`, it's best to call this only after loading
 		 * is complete and successful.
 		 *
 		 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
@@ -763,7 +777,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Convenience method that returns boolean indicating whether the currently settled `load_spec`
 		 * includes support for pseudoElements.
 		 *
-		 * Since it returns false when `fa()->load_spec()` is `null`, it's best to call this only after loading
+		 * Since it returns false when {@see FontAwesome::load_spec()} is `null`, it's best to call this only after loading
 		 * is complete and successful.
 		 *
 		 * It's a handy way to toggle the use of pseudo elements icons in a client theme or plugin template code,
@@ -1014,7 +1028,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * *Note on using Pro:* registered clients cannot _require_ the use Font Awesome Pro. That is a feature that
 		 * must be enabled by the web site owner. However, if the web site owner does enable it, then the resulting
-		 * `load_spec` will cause Pro to be loaded, and this will be indicated by the return value of `fa()->using_pro()`.
+		 * `load_spec` will cause Pro to be loaded, and this will be indicated by the return value of {@see FontAwesome::using_pro()}.
 		 * If you are shipping at theme or plugin for which you insist on being able to use Font Awesome Pro, your only
 		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
 		 * websites.
