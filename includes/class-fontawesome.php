@@ -1,8 +1,13 @@
 <?php
 /**
- * Main plugin module.
+ * Main plugin class module.
  *
  * @noinspection PhpIncludeInspection
+ */
+
+// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+/**
+ * @ignore
  */
 require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( FONTAWESOME_VENDOR_DIR ) . 'autoload.php';
@@ -16,9 +21,17 @@ use Composer\Semver\Semver;
 if ( ! class_exists( 'FontAwesome' ) ) :
 	/**
 	 * Main plugin class, a singleton.
+	 *
+	 * @package    FontAwesome
+	 * @subpackage FontAwesome/includes
 	 */
 	class FontAwesome {
 
+		/**
+		 * Key where this plugin's saved data are stored in the WordPress options table.
+		 *
+		 * @since 0.2.0
+		 */
 		const OPTIONS_KEY                     = 'font-awesome-official';
 		const ADMIN_USER_CLIENT_NAME_INTERNAL = 'user';
 		const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
@@ -38,45 +51,53 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			'removeUnregisteredClients' => false,
 		);
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * The single instance of the class.
+		 * @ignore
 		 */
 		protected static $_instance = null;
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * The list of client requirements.
+		 * @ignore
 		 */
 		protected $reqs = array();
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * The list of client requirement conflicts.
+		 * @ignore
 		 */
 		protected $conflicts = null;
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * The list of plugin version warnings.
+		 * @ignore
 		 */
 		protected $plugin_version_warnings = null;
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * The resulting load specification after settling all client requirements.
+		 * @ignore
 		 */
 		protected $load_spec = null;
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * The list of unregistered clients we've discovered.
-		 * Empty by default.
+		 * @ignore
 		 */
 		protected $unregistered_clients = array();
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		protected $screen_id = null;
 
 		/**
-		 * Main FontAwesome Instance.
+		 * Returns the singleton instance of the FontAwesome plugin.
 		 *
-		 * Ensures only one instance of FontAwesome is loaded.
-		 *
-		 * @return FontAwesome|null
+		 * @see fa()
+		 * @return FontAwesome
 		 */
 		public static function instance() {
 			if ( is_null( self::$_instance ) ) {
@@ -85,9 +106,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return self::$_instance;
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Make constructor private so clients cannot instantiate this directly.
-		 * Must use fa() or FontAwesome::instance()
+		 * @ignore
 		 */
 		private function __construct() {
 			/* noop */
@@ -164,6 +185,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private function initialize_rest_api() {
 			add_action(
 				'rest_api_init',
@@ -174,36 +199,75 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 		}
 
+		/**
+		 * Returns the latest available version of Font Awesome as a string.
+		 *
+		 * @return null|string
+		 */
 		public function get_latest_version() {
 			return fa_release_provider()->latest_minor_release();
 		}
 
+		/**
+		 * Returns the latest available version of Font Awesome as a string, formatted
+		 * as a semver.
+		 *
+		 * Example: if the latest version is "5.5.0", this function returns "~5.5.0"
+		 *
+		 * @return null|string
+		 */
 		public function get_latest_semver() {
 			return( '~' . $this->get_latest_version() );
 		}
 
+		/**
+		 * Returns the previous minor version of Font Awesome as a string.
+		 *
+		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
+		 * this function returns "5.4.1".
+		 *
+		 * @return null|string
+		 */
 		public function get_previous_version() {
 			return fa_release_provider()->previous_minor_release();
 		}
 
+		/**
+		 * Returns the previous minor version of Font Awesome as a string, formatted as a semver.
+		 *
+		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
+		 * this function returns "~5.4.1".
+		 *
+		 * @return null|string
+		 */
 		public function get_previous_semver() {
 			return ( '~' . $this->get_previous_version() );
 		}
 
+		/**
+		 * Returns all available versions of Font Awesome as an array of strings.
+		 *
+		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
+		 * this function returns "~5.4.1".
+		 *
+		 * @see FontAwesome_Release_Provider::versions()
+		 * @return null|string
+		 */
 		public function get_available_versions() {
 			return fa_release_provider()->versions();
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private function settings_page_url() {
 			return admin_url( 'options-general.php?page=' . self::OPTIONS_PAGE );
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Retrieves the assets required to load the admin ui React app, based on
-		 * whether we're running in development or production.
-		 *
-		 * @return array|mixed|null|object
-		 * @throws \GuzzleHttp\Exception\GuzzleException
+		 * @ignore
 		 */
 		private function get_admin_asset_manifest() {
 			if ( FONTAWESOME_ENV === 'development' ) {
@@ -229,6 +293,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private function initialize_admin() {
 			add_action(
 				'admin_enqueue_scripts',
@@ -303,17 +371,28 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Returns current options with defaults.
+		 *
+		 * @see FontAwesome::OPTIONS_KEY
+		 * @see FontAwesome::DEFAULT_USER_OPTIONS
+		 * @return array
 		 */
 		public function options() {
 			return wp_parse_args( get_option( self::OPTIONS_KEY ), self::DEFAULT_USER_OPTIONS );
 		}
 
+		/**
+		 * Callback function for creating the plugin's admin page.
+		 */
 		public function create_admin_page() {
 			include_once FONTAWESOME_DIR_PATH . 'admin/views/main.php';
 		}
 
 		/**
 		 * Resets the singleton instance referenced by this class.
+		 *
+		 * All releases metadata and computed load specification are abandoned.
+		 *
+		 * @return FontAwesome
 		 */
 		public static function reset() {
 			self::$_instance = null;
@@ -321,16 +400,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Main entry point for the loading process.
-		 * Returns the enqueued load_spec if successful.
-		 * Otherwise, returns null.
-		 * If we already have a previously built load spec saved in options enqueue that without recomputing.
-		 * Or pass in ['rebuild' => true] for $params to trigger a rebuild.
-		 * If ['save' => true] and the rebuild is successful, then the rebuilt load spec will be
-		 * saved as options in the db for use on the next load.
+		 * Main entry point for the loading process. Returns the enqueued load specification if successful, otherwise null.
+		 * If we already have a previously built load specification saved under our options key in the WordPress
+		 * database, then, by default, this function enqueues that load specification without recomputing a new one.
 		 *
-		 * @param array $params
-		 * @return array|null
+		 * Pass <code>['rebuild' => true]</code> for $params to trigger a rebuild if even a previous one exists in options.
+		 * Pass <code>['save' => true]</code> to save a rebuilt load specification to the options table in the db to be used
+		 *   subsequent loads.
+		 *
+		 * @param array[string]boolean $params
+		 * @return array[string]string|null
 		 */
 		public function load( $params = [
 			'rebuild' => false,
@@ -377,30 +456,20 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Gathers all client requirements, invokes the core requirements resolution logic and emits admin UI
-		 * notices about any conflicts.
-		 *
-		 * @param $options
-		 * @return array|null
+		 * @ignore
 		 */
-		// TODO: consider refactor and/or better distinguishing between this function and compute_load_spec.
-		protected function build( $options ) {
+		private function build( $options ) {
 			// Register the web site user/admin as a client.
 			$this->register( $options['adminClientLoadSpec'] );
 
 			// Now, ask any other listening clients to register.
 			do_action( 'font_awesome_requirements' );
-			// TODO: add some WP persistent cache here so we don't needlessly retrieve latest versions and re-process
-			// all requirements each time. We'd only need to do that when something changes.
-			// So what are those conditions for refreshing the cache?
 			$load_spec = $this->compute_load_spec(
 				function( $data ) {
 					// This is the error callback function. It only runs when build_load_spec() needs to report an error.
-					$this->conflicts = $data;
-					// TODO: figure out the best way to present diagnostic information.
-					// Probably in the error_log, but if we're on the admin screen, there's
-					// probably a more helpful way to do it.
+					$this->conflicts  = $data;
 					$client_name_list = [];
 					foreach ( $data['client-reqs'] as $client ) {
 						array_push(
@@ -438,6 +507,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Returns current requirements conflicts.
 		 *
+		 * Intended for use by the admin UI.
+		 *
 		 * @return array | null
 		 */
 		public function conflicts() {
@@ -453,10 +524,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return $this->plugin_version_warnings;
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Adds a plugin version warning.
-		 *
-		 * @param array $warning
+		 * @ignore
 		 */
 		private function add_plugin_version_warning( $warning ) {
 			if ( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
@@ -466,7 +536,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return current client requirements.
+		 * Return current client requirements for all registered clients. The website owner (i.e. the one who
+		 * uses the WordPress admin dashboard) is considered a registered client. So that owner's requirements
+		 * will be represented here.
+		 *
+		 * @return array
 		 */
 		public function requirements() {
 			return $this->reqs;
@@ -474,6 +548,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Return list of found unregistered clients.
+		 *
+		 * @return array
 		 */
 		public function unregistered_clients() {
 			$this->detect_unregistered_clients();
@@ -481,20 +557,35 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return current load specification, which may be null if has been settled.
-		 * If it is still null and $this->coflicts() is not null, that means the load failed.
+		 * Return current load specification, which may be null if has not yet been computed.
+		 * If it is still `null` and `fa()->coflicts()` returns _not_ `null`, that means the load failed:
+		 * there is no settled load specification because none could be found that satisfies all client requirements.
+		 * For example, one client may have required `'method' => 'svg'` while another required `'method' => 'webfont'`.
+		 *
+		 * A `load_spec` or _load specification_ contains the metadata necessary to enqueue the appropriate
+		 * `<script>` (for SVG with JavaScript) or `<link>` (for Web Fonts with CSS) in the `<head>` of the WordPress
+		 * template. It is guaranteed to satisfy all requirements specified by all registered clients of this plugin.
+		 *
+		 * Its shape looks like this:
+		 * ```php
+		 *   array(
+		 *     'method'         => 'svg', // "svg" or "webfont"
+		 *     'v4shim'         => 'require', // "require" or "forbid"
+		 *     'pseudoElements' => 'require', // "require" or "forbid"
+		 *     'version'        => '5.5.0',
+		 *     'usePro'         => true, // boolean indicating whether to use Font Awesome Pro or Free
+		 *  )
+		 * ```
+		 *
+		 * @return array
 		 */
 		public function load_spec() {
 			return $this->load_spec;
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Builds the loading specification based on all registered requirements.
-		 * Returns the load spec if a valid one can be computed, else it returns null
-		 *   after invoking the error_callback function.
-		 *
-		 * @param callable $error_callback
-		 * @return array|null
+		 * @ignore
 		 */
 		protected function compute_load_spec( callable $error_callback ) {
 			// 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
@@ -613,12 +704,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				return null;
 			}
 
-			/*
-			 * This is a good place to set defaults
-			 * pseudoElements: when webfonts, true
-			 * when svg, false
-			 */
-			// TODO: should this be set up in the initial load_spec before, or must it be set at the end of the process here?
 			$method  = $this->specified_requirement_or_default( $load_spec['method'], 'webfont' );
 			$version = Semver::rsort( $load_spec['version']['value'] )[0];
 
@@ -649,14 +734,25 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		protected function is_pro_configured() {
 			$options = $this->options();
 			return( wp_validate_boolean( $options['usePro'] ) );
 		}
 
 		/**
-		 * Convenience method. Returns boolean value indicating whether the current load specification
-		 * includes Pro. Should only be used after loading is complete.
+		 * Convenience method that returns boolean indicating whether, given the currently settled `load_spec`,
+		 * we are loading Font Awesome Pro.
+		 *
+		 * Since it returns false when `fa()->load_spec()` is `null`, it's best to call this only after loading
+		 * is complete and successful.
+		 *
+		 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
+		 *
+		 * @return boolean
 		 */
 		public function using_pro() {
 			$load_spec = $this->load_spec();
@@ -664,25 +760,35 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Convenience method. Returns boolean value indicating whether the current load specification
-		 * includes support for pseudoElements. Should only be used after loading is complete.
+		 * Convenience method that returns boolean indicating whether the currently settled `load_spec`
+		 * includes support for pseudoElements.
+		 *
+		 * Since it returns false when `fa()->load_spec()` is `null`, it's best to call this only after loading
+		 * is complete and successful.
+		 *
+		 * It's a handy way to toggle the use of pseudo elements icons in a client theme or plugin template code,
+		 * or to present a warning in an admin notice in the event that your client code uses pseudo elements, and
+		 * the `svg` method is loaded. (There may be a performance penalty with that combination, particularly in earlier
+		 * versions of Font Awesome 5.x.)
+		 *
+		 * @return boolean
 		 */
 		public function using_pseudo_elements() {
 			$load_spec = $this->load_spec();
 			return isset( $load_spec['pseudoElements'] ) && $load_spec['pseudoElements'];
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		protected function specified_requirement_or_default( $req, $default ) {
 			return array_key_exists( 'value', $req ) ? $req['value'] : $default;
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Given a loading specification, enqueues Font Awesome to load accordingly.
-		 * Returns nothing.
-		 * removeUnregisteredClients (boolean): whether to attempt to dequeue unregistered clients.
-		 *
-		 * @param $load_spec
-		 * @param bool      $remove_unregistered_clients
+		 * @ignore
 		 */
 		protected function enqueue( $load_spec, $remove_unregistered_clients = false ) {
 			$release_provider = fa_release_provider();
@@ -845,9 +951,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			do_action( 'font_awesome_enqueued', $load_spec );
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Cleans and re-populates $this->unregistered_clients() after searching through $wp_styles and $wp_scripts
-		 * Returns nothing
+		 * @ignore
 		 */
 		protected function detect_unregistered_clients() {
 			global $wp_styles;
@@ -882,6 +988,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		protected function remove_unregistered_clients() {
 			foreach ( $this->unregistered_clients as $client ) {
 				switch ( $client['type'] ) {
@@ -899,23 +1009,38 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Registers client requirements.
+		 * Registers client requirements. This is the "front door" for registered clients—themes and plugins—that depend
+		 * upon this Font Awesome plugin to load a compatible, properly configured version of Font Awesome.
 		 *
-		 * Keys for the $client_requirements array:
-		 *   method: 'webfont' or 'svg'
-		 *   v4shim: 'require' or 'forbid'
-		 *   pro: 'require' or 'forbid'
-		 *   pseudoElements: 'require' or 'forbid'
-		 *   version: a semver string such as '5.0.13' for a precise version, or '~5.1'
-		 *   name: 'clientA' (required)
+		 * *Note on using Pro:* registered clients cannot _require_ the use Font Awesome Pro. That is a feature that
+		 * must be enabled by the web site owner. However, if the web site owner does enable it, then the resulting
+		 * `load_spec` will cause Pro to be loaded, and this will be indicated by the return value of `fa()->using_pro()`.
+		 * If you are shipping at theme or plugin for which you insist on being able to use Font Awesome Pro, your only
+		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
+		 * websites.
+		 *
+		 * The shape of the `$client_requirements` array parameter looks like this:
+		 * ```php
+		 *   array(
+		 *     'method'         => 'svg', // "svg" or "webfont"
+		 *     'v4shim'         => 'require', // "require" or "forbid"
+		 *     'pseudoElements' => 'require', // "require" or "forbid"
+		 *     'version'        => '~5.5.0', // semver in the form of \Composer\Semver\Semver
+		 *     'name'           => 'Foo Plugin' // (required)
+		 *   )
+		 * ```
+		 *
+		 * All requirement specifications are optional, except `name`. Any that are not specified will allow defaults,
+		 * or the requirements of other registered clients to take precedence. The fewer requirements your client specifies,
+		 * the easier it will be to settle a load specification without conflict.
 		 *
 		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
 		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
 		 *
-		 * @param $client_requirements
+		 * @see FontAwesome::using_pro()
+		 * @param array $client_requirements
 		 * @throws InvalidArgumentException
 		 */
-		// TODO: add more comprehensive PhpDoc for this function and the options.
 		public function register( $client_requirements ) {
 			/*
 			 * TODO: consider using some other means of tracking the calling module, since phpcs complains
@@ -935,14 +1060,12 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 	}
 
-
 endif; // ! class_exists
 
 /**
- * Main instance of Font Awesome.
+ * Convenience global function to get a singleton instance of the Font Awesome plugin.
  *
- * Returns the main instance of Font Awesome.
- *
+ * @see FontAwesome::instance()
  * @returns FontAwesome
  */
 function fa() {
