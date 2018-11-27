@@ -117,8 +117,7 @@ class FontAwesome_Release_Provider {
 	private function load_releases() {
 		try {
 			$response = $this->_api_client->get( 'api/releases' );
-			$response->getStatusCode();
-			// TODO: add more handling of response code and error condition here.
+			// TODO: handle error response codes from GET.
 			$body            = $response->getBody();
 			$body_contents   = $body->getContents();
 			$body_json       = json_decode( $body_contents, true );
@@ -128,6 +127,7 @@ class FontAwesome_Release_Provider {
 				$this->_releases[ $release['version'] ] = $release;
 			}
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
+			// TODO: propagate this error up to the admin UI.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			error_log( $e );
 		}
