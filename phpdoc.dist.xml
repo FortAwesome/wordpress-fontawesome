@@ -9,6 +9,9 @@
     <files>
         <file>font-awesome-official.php</file>
         <directory>includes</directory>
+        <ignore>includes/class-fontawesome-resource.php</ignore>
+        <ignore>includes/class-fontawesome-activator.php</ignore>
+        <ignore>includes/class-fontawesome-deactivator.php</ignore>
         <ignore>admin/*</ignore>
         <ignore>tests/*</ignore>
         <ignore>bin/*</ignore>
