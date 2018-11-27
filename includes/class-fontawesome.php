@@ -22,6 +22,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	/**
 	 * Main plugin class, a singleton.
 	 *
+	 * @since 0.1.0
+	 *
 	 * @package    FontAwesome
 	 * @subpackage FontAwesome/includes
 	 */
@@ -29,6 +31,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Key where this plugin's saved data are stored in the WordPress options table.
+		 *
+		 * @since 0.1.0
 		 */
 		const OPTIONS_KEY = 'font-awesome-official';
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -43,6 +47,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
 		/**
 		 * The unique WordPress plugin slug for this plugin.
+		 *
+		 * @since 0.1.0
 		 */
 		const PLUGIN_NAME = 'font-awesome-official';
 		/**
@@ -51,23 +57,33 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		const PLUGIN_VERSION = '0.2.0';
 		/**
 		 * The version of this plugin's REST API.
+		 *
+		 * @since 0.2.0
 		 */
 		const REST_API_VERSION = '1';
 		/**
 		 * The namespace for this plugin's REST API.
+		 *
+		 * @since 0.2.0
 		 */
 		const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v' . self::REST_API_VERSION;
 		/**
 		 * The name of this plugin's options page, or WordPress admin dashboard page.
+		 *
+		 * @since 0.1.0
 		 */
 		const OPTIONS_PAGE = 'font-awesome-official';
 		/**
 		 * The handle used when enqueuing this plugin's resulting resource, whether `<script>` or `<link>`,
 		 * via `wp_enqueue_script` or `wp_enqueue_style`.
+		 *
+		 * @since 0.1.0
 		 */
 		const RESOURCE_HANDLE = 'font-awesome-official';
 		/**
 		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
+		 *
+		 * @since 0.1.0
 		 *
 		 * @see FontAwesome::load_spec()
 		 */
@@ -130,6 +146,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Returns the singleton instance of the FontAwesome plugin.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @see fa()
 		 * @return FontAwesome
 		 */
@@ -151,6 +169,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Main entry point for running the plugin. Called automatically when the plugin is loaded. Clients should
 		 * not invoke it directly.
+		 *
+		 * @since 0.1.0
 		 */
 		public function run() {
 			/*
@@ -170,6 +190,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.
 		 *
+		 * @since 0.2.0
+		 *
 		 * @param string $constraint expressed as a constraint that can be understood by `Composer\Semver\Semver`
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return bool
@@ -181,6 +203,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
 		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
+		 *
+		 * @since 0.2.0
 		 *
 		 * @param string $constraint expressed as a constraint that can be understood by `Composer\Semver\Semver`
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
@@ -239,6 +263,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Returns the latest available version of Font Awesome as a string.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @return null|string
 		 */
 		public function get_latest_version() {
@@ -250,6 +276,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * as a semver.
 		 *
 		 * Example: if the latest version is "5.5.0", this function returns "~5.5.0"
+		 *
+		 * @since 0.1.0
 		 *
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return null|string
@@ -264,6 +292,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
 		 * this function returns "5.4.1".
 		 *
+		 * @since 0.1.0
+		 *
 		 * @return null|string
 		 */
 		public function get_previous_version() {
@@ -275,6 +305,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
 		 * this function returns "~5.4.1".
+		 *
+		 * @since 0.1.0
 		 *
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return null|string
@@ -288,6 +320,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
 		 * this function returns "~5.4.1".
+		 *
+		 * @since 0.1.0
 		 *
 		 * @see FontAwesome_Release_Provider::versions()
 		 * @return null|string
@@ -413,6 +447,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * Clients should normally not be access this.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @see FontAwesome::OPTIONS_KEY
 		 * @see FontAwesome::DEFAULT_USER_OPTIONS
 		 * @return array
@@ -423,6 +459,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Callback function for creating the plugin's admin page.
+		 *
+		 * @since 0.1.0
 		 */
 		public function create_admin_page() {
 			include_once FONTAWESOME_DIR_PATH . 'admin/views/main.php';
@@ -432,6 +470,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Resets the singleton instance referenced by this class.
 		 *
 		 * All releases metadata and computed load specification are abandoned.
+		 *
+		 * @since 0.1.0
 		 *
 		 * @return FontAwesome
 		 */
@@ -448,6 +488,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Pass <code>['rebuild' => true]</code> for $params to trigger a rebuild if even a previous one exists in options.
 		 * Pass <code>['save' => true]</code> to save a rebuilt load specification to the options table in the db to be used
 		 *   subsequent loads.
+		 *
+		 * @since 0.1.0
 		 *
 		 * @param array $params
 		 * @return array|null
@@ -550,6 +592,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * Intended for use by the admin UI.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @return array | null
 		 */
 		public function conflicts() {
@@ -558,6 +602,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Returns plugin version warnings.
+		 *
+		 * @since 0.2.0
 		 *
 		 * @return array | null
 		 */
@@ -583,6 +629,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * Each element of the array has the same shape as the requirements given to {@see FontAwesome::register()}.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @see FontAwesome::register()
 		 * @return array
 		 */
@@ -596,6 +644,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
 		 * URI that appears to load Font Awesome, but which has not called {@see FontAwesome::register()} to register
 		 * its requirements with this plugin.
+		 *
+		 * @since 0.1.0
 		 *
 		 * @return array
 		 */
@@ -624,6 +674,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *     'usePro'         => true, // boolean indicating whether to use Font Awesome Pro or Free
 		 *  )
 		 * ```
+		 *
+		 * @since 0.1.0
 		 *
 		 * @return array
 		 */
@@ -800,6 +852,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @return boolean
 		 */
 		public function using_pro() {
@@ -818,6 +872,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * or to present a warning in an admin notice in the event that your client code uses pseudo elements, and
 		 * the `svg` method is loaded. (There may be a performance penalty with that combination, particularly in earlier
 		 * versions of Font Awesome 5.x.)
+		 *
+		 * @since 0.1.0
 		 *
 		 * @return boolean
 		 */
@@ -1085,6 +1141,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
 		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
 		 *
+		 * @since 0.1.0
+		 *
 		 * @see FontAwesome::using_pro()
 		 * @param array $client_requirements
 		 * @throws InvalidArgumentException
@@ -1112,6 +1170,8 @@ endif; // ! class_exists
 
 /**
  * Convenience global function to get a singleton instance of the Font Awesome plugin.
+ *
+ * @since 0.2.0
  *
  * @see FontAwesome::instance()
  * @returns FontAwesome
