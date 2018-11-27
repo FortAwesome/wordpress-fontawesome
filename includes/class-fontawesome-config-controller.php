@@ -1,4 +1,14 @@
 <?php
+/**
+ * Module for this plugin's REST API controller
+ *
+ * @noinspection PhpIncludeInspection
+ */
+
+// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+/**
+ * @ignore
+ */
 
 if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 
@@ -7,15 +17,32 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 	 */
 	class FontAwesome_Config_Controller extends WP_REST_Controller {
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private $plugin_slug = null;
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		protected $namespace = null;
 
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		public function __construct( $plugin_slug, $namespace ) {
 			$this->plugin_slug = $plugin_slug;
 			$this->namespace   = $namespace;
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		public function register_routes() {
 			$route_base = 'config';
 
@@ -41,6 +68,10 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			);
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		protected function build_item( $fa ) {
 			return array(
 				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
@@ -63,7 +94,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		}
 
 		/**
-		 * Get the config, a singleton resource
+		 * Get the config, a singleton resource.
 		 *
 		 * @param WP_REST_Request $request Full data about the request.
 		 * @return WP_Error|WP_REST_Response
@@ -106,7 +137,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		}
 
 		/**
-		 * Update the singleton resource
+		 * Update the singleton resource.
 		 *
 		 * @param WP_REST_Request $request Full data about the request.
 		 * @return WP_Error|WP_REST_Response
@@ -142,11 +173,9 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			}
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Prepare the item for and update operation
-		 *
-		 * @param WP_REST_Request $request Request object
-		 * @return array $prepared_item
+		 * @ignore
 		 */
 		protected function prepare_item_for_database( $request ) {
 			$body = $request->get_json_params();
