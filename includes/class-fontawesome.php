@@ -768,7 +768,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			$pseudo_elements_default = 'webfont' === $method ? 'require' : null;
 			$pseudo_elements         = 'require' === $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default );
 			if ( 'webfont' === $method && ! $pseudo_elements ) {
-				// TODO: we probably need a mechanism for passing such warnings up to the admin UI.
+				// TODO: propagate this warning up to the admin UI instead of error_log.
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
 				$pseudo_elements = true;
