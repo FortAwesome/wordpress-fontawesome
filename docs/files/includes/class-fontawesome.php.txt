@@ -1119,3 +1119,4 @@ endif; // ! class_exists
 function fa() {
 	return FontAwesome::instance();
 }
+

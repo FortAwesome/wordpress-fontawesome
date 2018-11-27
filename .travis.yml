@@ -53,7 +53,7 @@ before_script:
   fi
 
 script:
-- composer install
+- composer install --no-dev --prefer-dist
 - |
   if [[ ! -z "$WP_VERSION" ]] ; then
     phpunit

@@ -172,7 +172,23 @@ can be included in the composer package (which is really just a pull of this rep
 
 3. Commit `admin/build`
 
-4. (TODO: add instructions for pushing, tagging, and updating changelog)  
+4. Build the API docs
+
+- make sure you have graphviz installed (on mac OS, you can do this with `brew install graphviz`)
+- run `composer cleandocs` if you want to make sure that you're building from scratch
+- run `composer install --dev` to install the dev-only phpDocumentor package 
+- run `composer docs` to build the docs into the `docs/` directory
+
+(If you want to preview the built docs with a web server, you can run `composer docsrv` and then
+point a web browser at `http://localhost:3000`.)
+
+- `git add docs` to stage them for commit (and eventually commit them) 
+
+5. Update the Changelog
+
+6. commit, push, tag, and make release on GitHub
+
+(TODO: Elaborate on that last step.)
 
 (TODO: add directions for moving those into a WordPress SVN repo.) 
 

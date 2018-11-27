@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1599862177"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-1599862177" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/FontAwesome.html">FontAwesome</a></li>
+                                                    <li class="class"><a href="../classes/FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></li>
+                                                    <li class="class"><a href="../classes/FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/default.html">\</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\</small>FontAwesome</h1>
+                    <p><em>Main plugin class, a singleton.</em></p>
+                    
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/FontAwesome.html#method_instance" class="">instance()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_run" class="">run()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_satisfies" class="">satisfies()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_satisfies_or_warn" class="">satisfies_or_warn()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_get_latest_version" class="">get_latest_version()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_get_latest_semver" class="">get_latest_semver()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_get_previous_version" class="">get_previous_version()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_get_previous_semver" class="">get_previous_semver()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_get_available_versions" class="">get_available_versions()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_options" class="">options()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_create_admin_page" class="">create_admin_page()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_reset" class="">reset()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_load" class="">load()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_conflicts" class="">conflicts()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_get_plugin_version_warnings" class="">get_plugin_version_warnings()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_requirements" class="">requirements()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_unregistered_clients" class="">unregistered_clients()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_load_spec" class="">load_spec()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_using_pro" class="">using_pro()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_using_pseudo_elements" class="">using_pseudo_elements()</a><br />
+                                                                    <a href="../classes/FontAwesome.html#method_register" class="">register()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/FontAwesome.html#constant_OPTIONS_KEY" class="">OPTIONS_KEY</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_PLUGIN_NAME" class="">PLUGIN_NAME</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_PLUGIN_VERSION" class="">PLUGIN_VERSION</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_REST_API_VERSION" class="">REST_API_VERSION</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_REST_API_NAMESPACE" class="">REST_API_NAMESPACE</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_OPTIONS_PAGE" class="">OPTIONS_PAGE</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_RESOURCE_HANDLE" class="">RESOURCE_HANDLE</a><br />
+                                                                    <a href="../classes/FontAwesome.html#constant_RESOURCE_HANDLE_V4SHIM" class="">RESOURCE_HANDLE_V4SHIM</a><br />
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <em>No protected methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No protected properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No private properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/includes.class-fontawesome.html"><div class="path-wrapper">includes/class-fontawesome.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">FontAwesome\FontAwesome/includes</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                    <div class="namespace-wrapper">\FontAwesome</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr><td colspan="2"><em>None found</em></td></tr>
+                                        </table>
+                </aside>
+            </div>
+
+                                    <a id="constants" name="constants"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Constants</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_OPTIONS_KEY" name="constant_OPTIONS_KEY" class="anchor"></a>
+            <article id="constant_OPTIONS_KEY" class="constant">
+                <h3 class="">OPTIONS_KEY</h3>
+                <pre class="signature">OPTIONS_KEY</pre>
+                <p><em>Key where this plugin&#039;s saved data are stored in the WordPress options table.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_PLUGIN_NAME" name="constant_PLUGIN_NAME" class="anchor"></a>
+            <article id="constant_PLUGIN_NAME" class="constant">
+                <h3 class="">PLUGIN_NAME</h3>
+                <pre class="signature">PLUGIN_NAME</pre>
+                <p><em>The unique WordPress plugin slug for this plugin.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_PLUGIN_VERSION" name="constant_PLUGIN_VERSION" class="anchor"></a>
+            <article id="constant_PLUGIN_VERSION" class="constant">
+                <h3 class="">PLUGIN_VERSION</h3>
+                <pre class="signature">PLUGIN_VERSION</pre>
+                <p><em>The version of this WordPress plugin.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_REST_API_VERSION" name="constant_REST_API_VERSION" class="anchor"></a>
+            <article id="constant_REST_API_VERSION" class="constant">
+                <h3 class="">REST_API_VERSION</h3>
+                <pre class="signature">REST_API_VERSION</pre>
+                <p><em>The version of this plugin&#039;s REST API.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_REST_API_NAMESPACE" name="constant_REST_API_NAMESPACE" class="anchor"></a>
+            <article id="constant_REST_API_NAMESPACE" class="constant">
+                <h3 class="">REST_API_NAMESPACE</h3>
+                <pre class="signature">REST_API_NAMESPACE</pre>
+                <p><em>The namespace for this plugin&#039;s REST API.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_OPTIONS_PAGE" name="constant_OPTIONS_PAGE" class="anchor"></a>
+            <article id="constant_OPTIONS_PAGE" class="constant">
+                <h3 class="">OPTIONS_PAGE</h3>
+                <pre class="signature">OPTIONS_PAGE</pre>
+                <p><em>The name of this plugin&#039;s options page, or WordPress admin dashboard page.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_RESOURCE_HANDLE" name="constant_RESOURCE_HANDLE" class="anchor"></a>
+            <article id="constant_RESOURCE_HANDLE" class="constant">
+                <h3 class="">RESOURCE_HANDLE</h3>
+                <pre class="signature">RESOURCE_HANDLE</pre>
+                <p><em>The handle used when enqueuing this plugin&#039;s resulting resource, whether `&lt;script&gt;` or `&lt;link&gt;`,
+via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_RESOURCE_HANDLE_V4SHIM" name="constant_RESOURCE_HANDLE_V4SHIM" class="anchor"></a>
+            <article id="constant_RESOURCE_HANDLE_V4SHIM" class="constant">
+                <h3 class="">RESOURCE_HANDLE_V4SHIM</h3>
+                <pre class="signature">RESOURCE_HANDLE_V4SHIM</pre>
+                <p><em>The handle used when enqueuing the v4shim, when it is included in the load specification.</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome.html#method_load_spec"><span class="namespace-wrapper">\FontAwesome::load_spec()</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                        
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_instance" name="method_instance" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">instance()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">instance() : \FontAwesome</pre>
+                <p><em>Returns the singleton instance of the FontAwesome plugin.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/FontAwesome.html">\FontAwesome</a>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../namespaces/default.html#function_fa"><span class="namespace-wrapper">\fa()</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_run" name="method_run" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">run()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">run() </pre>
+                <p><em>Main entry point for running the plugin. Called automatically when the plugin is loaded. Clients should
+not invoke it directly.</em></p>
+                
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_satisfies" name="method_satisfies" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">satisfies()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">satisfies(string  <span class="argument">$constraint</span>) : boolean</pre>
+                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$constraint </td>
+                                <td><p>expressed as a constraint that can be understood by <code>Composer\Semver\Semver</code></p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_satisfies_or_warn" name="method_satisfies_or_warn" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">satisfies_or_warn()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">satisfies_or_warn(string  <span class="argument">$constraint</span>, string  <span class="argument">$name</span>) : boolean</pre>
+                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
+and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$constraint </td>
+                                <td><p>expressed as a constraint that can be understood by <code>Composer\Semver\Semver</code></p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$name </td>
+                                <td><p>name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
+given constraint.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_latest_version" name="method_get_latest_version" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_latest_version()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_latest_version() : null|string</pre>
+                <p><em>Returns the latest available version of Font Awesome as a string.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    null|string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_latest_semver" name="method_get_latest_semver" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_latest_semver()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_latest_semver() : null|string</pre>
+                <p><em>Returns the latest available version of Font Awesome as a string, formatted
+as a semver.</em></p>
+                <p>Example: if the latest version is &quot;5.5.0&quot;, this function returns &quot;~5.5.0&quot;</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    null|string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_previous_version" name="method_get_previous_version" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_previous_version()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_previous_version() : null|string</pre>
+                <p><em>Returns the previous minor version of Font Awesome as a string.</em></p>
+                <p>Example: if the most recent available versions of Font Awesome were &quot;5.3.0&quot;, &quot;5.4.0&quot;, &quot;5.4.1&quot; and &quot;5.5.1&quot;,
+this function returns &quot;5.4.1&quot;.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    null|string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_previous_semver" name="method_get_previous_semver" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_previous_semver()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_previous_semver() : null|string</pre>
+                <p><em>Returns the previous minor version of Font Awesome as a string, formatted as a semver.</em></p>
+                <p>Example: if the most recent available versions of Font Awesome were &quot;5.3.0&quot;, &quot;5.4.0&quot;, &quot;5.4.1&quot; and &quot;5.5.1&quot;,
+this function returns &quot;~5.4.1&quot;.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    null|string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_available_versions" name="method_get_available_versions" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_available_versions()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_available_versions() : null|string</pre>
+                <p><em>Returns all available versions of Font Awesome as an array of strings.</em></p>
+                <p>Example: if the most recent available versions of Font Awesome were &quot;5.3.0&quot;, &quot;5.4.0&quot;, &quot;5.4.1&quot; and &quot;5.5.1&quot;,
+this function returns &quot;~5.4.1&quot;.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    null|string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome_Release_Provider.html#method_versions"><span class="namespace-wrapper">\FontAwesome_Release_Provider::versions()</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_options" name="method_options" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">options()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">options() : array</pre>
+                <p><em>Returns current options with defaults.</em></p>
+                <p>Clients should normally not be access this.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome.html#constant_OPTIONS_KEY"><span class="namespace-wrapper">\FontAwesome::OPTIONS_KEY</span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper">\FontAwesome::DEFAULT_USER_OPTIONS</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_create_admin_page" name="method_create_admin_page" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">create_admin_page()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">create_admin_page() </pre>
+                <p><em>Callback function for creating the plugin&#039;s admin page.</em></p>
+                
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_reset" name="method_reset" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">reset()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">reset() : \FontAwesome</pre>
+                <p><em>Resets the singleton instance referenced by this class.</em></p>
+                <p>All releases metadata and computed load specification are abandoned.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/FontAwesome.html">\FontAwesome</a>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_load" name="method_load" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">load()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">load(array  <span class="argument">$params = array(&#039;rebuild&#039; =&gt; false, &#039;save&#039; =&gt; false)</span>) : array|null</pre>
+                <p><em>Main entry point for the loading process. Returns the enqueued load specification if successful, otherwise null.</em></p>
+                <p>If we already have a previously built load specification saved under our options key in the WordPress
+database, then, by default, this function enqueues that load specification without recomputing a new one.</p>
+<p>Pass <code>['rebuild' =&gt; true]</code> for $params to trigger a rebuild if even a previous one exists in options.
+Pass <code>['save' =&gt; true]</code> to save a rebuilt load specification to the options table in the db to be used
+subsequent loads.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$params </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_conflicts" name="method_conflicts" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">conflicts()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">conflicts() : array</pre>
+                <p><em>Returns current requirements conflicts.</em></p>
+                <p>Intended for use by the admin UI.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>| null</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_plugin_version_warnings" name="method_get_plugin_version_warnings" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_plugin_version_warnings()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_plugin_version_warnings() : array</pre>
+                <p><em>Returns plugin version warnings.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>| null</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_requirements" name="method_requirements" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">requirements()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">requirements() : array</pre>
+                <p><em>Return current client requirements for all registered clients. The website owner (i.e. the one who
+uses the WordPress admin dashboard) is considered a registered client. So that owner&#039;s requirements
+will be represented here.</em></p>
+                <p>Each element of the array has the same shape as the requirements given to <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a>.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome.html#method_register"><span class="namespace-wrapper">\FontAwesome::register()</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_unregistered_clients" name="method_unregistered_clients" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">unregistered_clients()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">unregistered_clients() : array</pre>
+                <p><em>Return list of found unregistered clients.</em></p>
+                <p>Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
+URI that appears to load Font Awesome, but which has not called <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a> to register
+its requirements with this plugin.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_load_spec" name="method_load_spec" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">load_spec()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">load_spec() : array</pre>
+                <p><em>Return current load specification, which may be null if has not yet been computed.</em></p>
+                <p>If it is still <code>null</code> and <a href="../classes/FontAwesome.html#method_conflicts">\FontAwesome::conflicts()</a> returns <em>not</em> <code>null</code>, that means the load failed:
+there is no settled load specification because none could be found that satisfies all client requirements.
+For example, one client may have required <code>'method' =&gt; 'svg'</code> while another required <code>'method' =&gt; 'webfont'</code>.</p>
+<p>A <code>load_spec</code> or <em>load specification</em> contains the metadata necessary to enqueue the appropriate
+<code>&lt;script&gt;</code> (for SVG with JavaScript) or <code>&lt;link&gt;</code> (for Web Fonts with CSS) in the <code>&lt;head&gt;</code> of the WordPress
+template. It is guaranteed to satisfy all requirements specified by all registered clients of this plugin.</p>
+<p>Its shape looks like this:</p>
+<pre><code class="language-php">  array(
+    'method'         =&gt; 'svg', // "svg" or "webfont"
+    'v4shim'         =&gt; 'require', // "require" or "forbid"
+    'pseudoElements' =&gt; 'require', // "require" or "forbid"
+    'version'        =&gt; '5.5.0',
+    'usePro'         =&gt; true, // boolean indicating whether to use Font Awesome Pro or Free
+ )</code></pre>
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_using_pro" name="method_using_pro" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">using_pro()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">using_pro() : boolean</pre>
+                <p><em>Convenience method that returns boolean indicating whether, given the currently settled `load_spec`,
+we are loading Font Awesome Pro.</em></p>
+                <p>Since it returns false when <a href="../classes/FontAwesome.html#method_load_spec">\FontAwesome::load_spec()</a> is <code>null</code>, it's best to call this only after loading
+is complete and successful.</p>
+<p>It's a handy way to toggle the use of Pro icons in client theme or plugin template code.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_using_pseudo_elements" name="method_using_pseudo_elements" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">using_pseudo_elements()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">using_pseudo_elements() : boolean</pre>
+                <p><em>Convenience method that returns boolean indicating whether the currently settled `load_spec`
+includes support for pseudoElements.</em></p>
+                <p>Since it returns false when <a href="../classes/FontAwesome.html#method_load_spec">\FontAwesome::load_spec()</a> is <code>null</code>, it's best to call this only after loading
+is complete and successful.</p>
+<p>It's a handy way to toggle the use of pseudo elements icons in a client theme or plugin template code,
+or to present a warning in an admin notice in the event that your client code uses pseudo elements, and
+the <code>svg</code> method is loaded. (There may be a performance penalty with that combination, particularly in earlier
+versions of Font Awesome 5.x.)</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_register" name="method_register" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">register()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">register(array  <span class="argument">$client_requirements</span>) </pre>
+                <p><em>Registers client requirements. This is the &quot;front door&quot; for registered clients—themes and plugins—that depend
+upon this Font Awesome plugin to load a compatible, properly configured version of Font Awesome.</em></p>
+                <p><em>Note on using Pro:</em> registered clients cannot <em>require</em> the use Font Awesome Pro. That is a feature that
+must be enabled by the web site owner. However, if the web site owner does enable it, then the resulting
+<code>load_spec</code> will cause Pro to be loaded, and this will be indicated by the return value of <a href="../classes/FontAwesome.html#method_using_pro">\FontAwesome::using_pro()</a>.
+If you are shipping at theme or plugin for which you insist on being able to use Font Awesome Pro, your only
+option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
+websites.</p>
+<p>The shape of the <code>$client_requirements</code> array parameter looks like this:</p>
+<pre><code class="language-php">  array(
+    'method'         =&gt; 'svg', // "svg" or "webfont"
+    'v4shim'         =&gt; 'require', // "require" or "forbid"
+    'pseudoElements' =&gt; 'require', // "require" or "forbid"
+    'version'        =&gt; '~5.5.0', // semver in the form of \Composer\Semver\Semver
+    'name'           =&gt; 'Foo Plugin' // (required)
+  )</code></pre>
+<p>All requirement specifications are optional, except <code>name</code>. Any that are not specified will allow defaults,
+or the requirements of other registered clients to take precedence. The fewer requirements your client specifies,
+the easier it will be to settle a load specification without conflict.</p>
+<p>We use camelCase instead of snake_case for these keys, because they end up being passed via json
+to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$client_requirements </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome.html#method_using_pro"><span class="namespace-wrapper">\FontAwesome::using_pro()</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">class-fontawesome.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/includes/class-fontawesome.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on November 27th, 2018 at 03:30.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

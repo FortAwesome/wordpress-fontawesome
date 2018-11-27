@@ -318,3 +318,4 @@ class FontAwesome_Release_Provider {
 function fa_release_provider() {
 	return FontAwesome_Release_Provider::instance();
 }
+

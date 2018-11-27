@@ -184,3 +184,4 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 	}
 
 endif; // end class_exists.
+
