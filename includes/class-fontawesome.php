@@ -170,21 +170,21 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.
 		 *
-		 * @param string $constraints expressed as a constraint that can be understood by `Composer\Semver\Semver`
+		 * @param string $constraint expressed as a constraint that can be understood by `Composer\Semver\Semver`
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return bool
 		 */
-		public function satisfies( $constraints ) {
-			return Semver::satisfies( self::PLUGIN_VERSION, $constraints );
+		public function satisfies( $constraint ) {
+			return Semver::satisfies( self::PLUGIN_VERSION, $constraint );
 		}
 
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
 		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
 		 *
-		 * @param string $constraints expressed as a constraint that can be understood by `Composer\Semver\Semver`
+		 * @param string $constraint expressed as a constraint that can be understood by `Composer\Semver\Semver`
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
-		 *        given constraints.
+		 *        given constraint.
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return bool
 		 */
