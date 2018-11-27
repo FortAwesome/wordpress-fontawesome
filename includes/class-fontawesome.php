@@ -29,20 +29,54 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Key where this plugin's saved data are stored in the WordPress options table.
-		 *
-		 * @since 0.2.0
 		 */
-		const OPTIONS_KEY                     = 'font-awesome-official';
+		const OPTIONS_KEY = 'font-awesome-official';
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		const ADMIN_USER_CLIENT_NAME_INTERNAL = 'user';
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		const ADMIN_USER_CLIENT_NAME_EXTERNAL = 'You';
-		const PLUGIN_NAME                     = 'font-awesome-official';
-		const PLUGIN_VERSION                  = '0.1.0';
-		const REST_API_VERSION                = '1';
-		const REST_API_NAMESPACE              = self::PLUGIN_NAME . '/v' . self::REST_API_VERSION;
-		const OPTIONS_PAGE                    = 'font-awesome-official';
-		const RESOURCE_HANDLE                 = 'font-awesome-official';
-		const RESOURCE_HANDLE_V4SHIM          = 'font-awesome-official-v4shim';
+		/**
+		 * The unique WordPress plugin slug for this plugin.
+		 */
+		const PLUGIN_NAME = 'font-awesome-official';
+		/**
+		 * The version of this WordPress plugin.
+		 */
+		const PLUGIN_VERSION = '0.2.0';
+		/**
+		 * The version of this plugin's REST API.
+		 */
+		const REST_API_VERSION = '1';
+		/**
+		 * The namespace for this plugin's REST API.
+		 */
+		const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v' . self::REST_API_VERSION;
+		/**
+		 * The name of this plugin's options page, or WordPress admin dashboard page.
+		 */
+		const OPTIONS_PAGE = 'font-awesome-official';
+		/**
+		 * The handle used when enqueuing this plugin's resulting resource, whether `<script>` or `<link>`,
+		 * via `wp_enqueue_script` or `wp_enqueue_style`.
+		 */
+		const RESOURCE_HANDLE = 'font-awesome-official';
+		/**
+		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
+		 *
+		 * @see FontAwesome::load_spec()
+		 */
+		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		const DEFAULT_USER_OPTIONS = array(
 			'adminClientLoadSpec'       => array(
 				'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
