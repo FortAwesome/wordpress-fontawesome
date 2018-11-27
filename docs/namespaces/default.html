@@ -58,12 +58,12 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">48</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">7</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
                                 </a>
                             </li>
                             <li>
@@ -88,20 +88,17 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1092187210"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-945239811"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1092187210" class="accordion-body collapse in">
+            <div id="namespace-945239811" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
                     <ul>
                                                                                                     <li class="class"><a href="../classes/FontAwesome.html">FontAwesome</a></li>
-                                                    <li class="class"><a href="../classes/FontAwesome_Activator.html">FontAwesome_Activator</a></li>
                                                     <li class="class"><a href="../classes/FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></li>
-                                                    <li class="class"><a href="../classes/FontAwesome_Deactivator.html">FontAwesome_Deactivator</a></li>
                                                     <li class="class"><a href="../classes/FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></li>
-                                                    <li class="class"><a href="../classes/FontAwesome_Resource.html">FontAwesome_Resource</a></li>
                                             </ul>
                 </div>
             </div>
@@ -129,25 +126,12 @@
                             <td><em>Main plugin class, a singleton.</em></td>
                         </tr>
                                             <tr>
-                            <td><a href="../classes/FontAwesome_Activator.html">FontAwesome_Activator</a></td>
-                            <td><em>Fired during plugin activation.</em></td>
-                        </tr>
-                                            <tr>
                             <td><a href="../classes/FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></td>
                             <td><em>Controller class for REST endpoint</em></td>
                         </tr>
                                             <tr>
-                            <td><a href="../classes/FontAwesome_Deactivator.html">FontAwesome_Deactivator</a></td>
-                            <td><em>Fired during plugin deactivation.</em></td>
-                        </tr>
-                                            <tr>
                             <td><a href="../classes/FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></td>
-                            <td><em>Provides releases data.</em></td>
-                        </tr>
-                                            <tr>
-                            <td><a href="../classes/FontAwesome_Resource.html">FontAwesome_Resource</a></td>
-                            <td><em>Class to provide structure and wrapping around the source URI and integrity key
-to be used when enqueuing a script or style resource.</em></td>
+                            <td><em>Provides metadata about Font Awesome releases by querying fontawesome.com.</em></td>
                         </tr>
                                         </table>
                                     </div>
@@ -214,8 +198,8 @@ to be used when enqueuing a script or style resource.</em></td>
                 <h3 class=" ">fa()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">fa() </pre>
-                <p><em>Main instance of Font Awesome.</em></p>
-                <p>Returns the main instance of Font Awesome.</p>
+                <p><em>Convenience global function to get a singleton instance of the Font Awesome plugin.</em></p>
+                
 
                 
                 
@@ -227,7 +211,9 @@ to be used when enqueuing a script or style resource.</em></td>
                                                             <dl>
                                     <dt>File</dt>
                     <dd><a href=""><div class="path-wrapper"></div></a></dd>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome.html#method_instance"><span class="namespace-wrapper">\FontAwesome::instance()</span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -256,13 +242,15 @@ to be used when enqueuing a script or style resource.</em></td>
             <article class="method">
                 <h3 class=" ">fa_release_provider()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">fa_release_provider() </pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">fa_release_provider() : \FontAwesome_Release_Provider</pre>
+                <p><em>Convenience global function to get a singleton instance of the Release Provider.</em></p>
+                <p>Normally, plugins and themes should not need to access this directly.</p>
 
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    <a href="../classes/FontAwesome_Release_Provider.html">\FontAwesome_Release_Provider</a>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -270,7 +258,9 @@ to be used when enqueuing a script or style resource.</em></td>
                                                             <dl>
                                     <dt>File</dt>
                     <dd><a href=""><div class="path-wrapper"></div></a></dd>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome_Release_Provider.html#method_instance"><span class="namespace-wrapper">\FontAwesome_Release_Provider::instance()</span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -325,7 +315,7 @@ to be used when enqueuing a script or style resource.</em></td>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on November 26th, 2018 at 22:32.
+                    on November 27th, 2018 at 03:30.
                 </section>
             </section>
         </section>
