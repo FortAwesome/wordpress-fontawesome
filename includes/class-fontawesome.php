@@ -563,6 +563,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private function build( $options ) {
 			// Register the web site user/admin as a client.
 			$this->register( $options['adminClientLoadSpec'] );
