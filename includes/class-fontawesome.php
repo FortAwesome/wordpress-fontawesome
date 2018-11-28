@@ -47,32 +47,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	 *
 	 *   Called when the plugin fails to compute a load specification because of client requirements that cannot be satisfied.
 	 *
-	 *   One parameter, an `array` with a shape like this:
-	 *   ```php
-	 *     array(
-	 *       // the requirement in conflict, as supplied in the params to FontAwesome::register()
-	 *       "requirement" => "version",
-	 *       // one entry per client that registered a constraint on the conflicting requirement
-	 *       "conflictingClientRequirements" => array(
-	 *         [0] => array(
-	 *            'name' => 'my-plugin',
-	 *            'version' => '5.5.3', // this client's conflicting constraint on this requirement
-	 *              'clientCallSite' => array(
-	 *                'file' => '/var/www/html/wp-content/plugins/my-plugin/includes/my-plugin.php',
-	 *                'line' => 552
-	 *              )
-	 *         ),
-	 *        // ...
-	 *       )
-	 *     )
-	 * ```
-	 * This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
-	 * triggered on the first failure. If there are subsequent requirements in conflict, they will not be
-	 * reported until this first one is resolved.
+	 *   One parameter, an `array` with a shape like that returned by {@see FontAwesome::conflicts()}
 	 *
 	 * @since 0.1.0
 	 *
-	 * @see FontAwesome::register() For details on the possible values for `requirement`
 	 * @package    FontAwesome
 	 * @subpackage FontAwesome/includes
 	 */
@@ -654,36 +632,27 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * admin UI.
 		 *
 		 * The shape of the conflicts array looks like this:
-		 *
 		 * ```php
-		 * array(
-		 *   'requirement' => "version", // "version", "method", or some other client requirement key
-		 *   'clientRequirements
-		 * )
+		 *   array(
+		 *     // the requirement in conflict, as supplied in the params to FontAwesome::register()
+		 *     "requirement" => "version",
+		 *     // one entry per client that registered a constraint on the conflicting requirement
+		 *     "conflictingClientRequirements" => array(
+		 *       [0] => array(
+		 *          'name' => 'my-plugin',
+		 *          'version' => '5.5.3', // this client's conflicting constraint on this requirement
+		 *            'clientCallSite' => array(
+		 *              'file' => '/var/www/html/wp-content/plugins/my-plugin/includes/my-plugin.php',
+		 *              'line' => 552
+		 *            )
+		 *       ),
+		 *      // ...
+		 *     )
+		 *   )
 		 * ```
-		 *
-		 *  "conflicts": {
-		"requirement": "version",
-		"clientRequirements": [
-		{
-		"name": "user",
-		"version": "5.4.2",
-		"clientCallSite": {
-		"file": "/var/www/html/wp-content/plugins/font-awesome-official.prev/includes/class-fontawesome.php",
-		"line": 390
-		}
-		},
-		{
-		"name": "beta-plugin",
-		"version": "5.1.0",
-		"v4shim": "require",
-		"clientCallSite": {
-		"file": "/var/www/html/wp-content/plugins/plugin-beta/plugin-beta.php",
-		"line": 25
-		}
-		}
-		]
-		},
+		 * This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
+		 * triggered on the first failure. If there are subsequent requirements in conflict, they will not be
+		 * reported until this first one is resolved.
 		 *
 		 * @since 0.1.0
 		 *
