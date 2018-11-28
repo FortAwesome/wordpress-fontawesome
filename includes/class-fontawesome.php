@@ -541,15 +541,12 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
 							return null;
 
-							/*
-							 * TODO: consider alternative ways to handle this condition.
-							 * We've managed to build a new load spec, and verified that it's
-							 * different, but when trying to update it, we got a falsey response,
-							 * and the docs say that means that the update either the update failed
-							 * or no update was made.
-							 * If we add a warning or error mechanism for passing non-fatal warnings up to admin UI client
-							 * for display, it would probably make sense to pass such a message up for this one.
-							 */
+							// TODO: report options update error to admin UI.
+							// We've managed to build a new load spec, and verified that it's
+							// different, but when trying to update it, we got a falsy response,
+							// and the docs say that means that either the update failed or no update was made.
+							// If we add a mechanism for passing non-fatal warnings up to admin UI client
+							// for display, it would probably make sense to pass such a message up for this one.
 						}
 					}
 				}
@@ -1240,10 +1237,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @throws InvalidArgumentException
 		 */
 		public function register( $client_requirements ) {
-			/*
-			 * TODO: consider using some other means of tracking the calling module, since phpcs complains
-			 * that debug_backtrace is "debug" code.
-			 */
+			// TODO: consider using a mechanism other than debug_backtrace() to track the calling module, since phpcs complains.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			$bt     = debug_backtrace( 1 );
 			$caller = array_shift( $bt );
