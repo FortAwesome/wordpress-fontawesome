@@ -33,13 +33,18 @@ to register their Font Awesome requirements with this plugin to ensure that a si
 is loaded that works across all WordPress components. Optionally, block some themes or plugins from trying to load
 their own versions of Font Awesome which might create conflicts and keep your icons from working correctly.
 
-Supports both Free and Pro, optional use of version 4 compatibility (shims), pseudo-elements, and either the [Webfont
-with CSS](https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=web-fonts-with-css) or
-[SVG with JavaScript](https://fontawesome.com/how-to-use/on-the-web/setup/getting-started?using=svg-with-js) method.
+May be installed by WordPress site owners as a normal WordPress plugin, or shipped by developers as a composer
+dependency in their vendor bundles.
+
+Supports both Free and Pro, optional use of version 4 compatibility (shims), pseudo-elements, and either the Webfont
+with CSS or SVG with Javascript method. The [Start page on fontawesome.com](https://fontawesome.com/start) describes
+the differences.
 
 Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
+
+(NOTE: once publicly released, this plugin will also be available in WordPress plugins directory.)
 
 To install directly as a WordPress plugin:
 
@@ -72,16 +77,21 @@ and for more fancy usage like [Stacked Icons](https://fontawesome.com/how-to-use
 Look up available icons in our searchable [Icon Gallery](https://fontawesome.com/icons)
 or [Cheatsheet](https://fontawesome.com/cheatsheet).
 
-The admin settings page for this plugin won't be very complicated in this scenario, since no other WordPress components
-are using the plugin to provide icons. But that also means you can change the version and features settings to your
-heart's content without creating in any conflicts with other components' requirements.
+You can get to the plugin's options page in WordPress admin by clicking "Font Awesome" under the "Settings" menu,
+or clicking "Settings" on the plugin's entry in the list of plugins.
+
+This options page won't be very complicated in this scenario, since no other WordPress components
+are using the plugin. Therefore, you could change the version and features settings on the options page to your
+heart's content without creating any conflicts with other components' requirements.
+
+Consider a few configuration scenarios...
 
 ### SVG
 
 Again, suppose there are no other components (plugins or theme) that depend upon this plugin to load Font Awesome.
 It's just you, the web site owner, and you want to use SVG icons, and maybe some of the fancier features that come with them.
 
-In the plugin's settings page, on the "Method" dropdown menu, select "svg" instead of "webfont". Save those changes.
+In the plugin's options page, on the "Method" dropdown menu, select "svg" instead of "webfont". Save those changes.
 That's it!
 
 Now, your icons will render as SVG. You won't need to change any of the HTML markup (like the `<i>` tags you might have
@@ -101,22 +111,23 @@ Suppose you've purchased Font Awesome Pro. To enable those Pro icons on your web
 
 That's it! Add Pro icons anywhere on your site.
 
-## Usage: With Plugins or Themes
+## Usage: When Other Plugins or Themes also use this Font Awesome Plugin
 
 Suppose you've installed a theme called "Radiance" and a plugin called "Shuffle" and that each of them depend
 on this plugin for their icons.
 
-You don't do anything to configure them to work together. Rather, they use this plugin's API to register
-their own requirements.
+You don't need to do anything to configure them to work together. Rather, they use this plugin's API behind the scenes
+to register their own requirements, like whether they require a specific version of Font Awesome, or particular
+feature, like [pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements).
 
-On the plugin's settings page, you can see in the "Current Requirements" section what Font Awesome
+On the plugin's options page, you can see in the "Client Requirements" section what Font Awesome
 requirements Radiance and Shuffle have. If they have conflicting requirements, you'll see a simple
 error message to help you diagnose and resolve the problem.
 
 For example, suppose Radiance says it requires Font Awesome version 5.1.0 or later, but Shuffle
 says it requires version 5.0.13. Well, we can't satisfy both, and we can't just load both
-versions--one for each of them--because that would break all of your icons. You can only load one
-version of Font Awesome at a time.
+versions--one for each of them--because that could cause strange behavior, like breaking some or all of your icons.
+You can only load one version of Font Awesome at a time.
 
 Instead, you'll see an error message that clearly shows which requirement
 is causing a conflict. You might resolve the problem by doing any or all of the following:
@@ -129,10 +140,10 @@ is causing a conflict. You might resolve the problem by doing any or all of the 
 While that might be a little bit of a hassle, at least it's clear and obvious and you know who to go to
 to resolve the problem. Not like the lawless days when every plugin and theme tried to load its own version
 of Font Awesome and everyone crossed their fingers hoping it just worked, and when it didn't,
-you weren't sure why.
+weren't sure why.
 
 Now suppose that Radiance and Shuffle have compatible requirements, and that they make no
-particular requirement about the method---i.e. they're content with either webfont or svg. Well, then,
+particular requirement about the method---that is, they're content with either webfont or svg. Well, then,
 if you as the web site owner prefer to use SVG, just make that selection and save those changes.
 Your SVG requirement will satisfy Radiance, Shuffle, and your own preference. Anywhere that you
 or those components place icons, they'll be rendered as SVG.
@@ -182,54 +193,9 @@ pluggable nature. The best we can do is to try and provide an API that gives bot
 control and transparency into what's going on so that diagnosis and fixing of conflicts can be handled more
 straightforwardly. And hopefully, this plugin helps those conflicts to occur far less often in the first place.
 
-## Action Reference
-
-| Action | Description |
-| ----------- | ----------- |
-| `font_awesome_requirements` | Called when the Font Awesome plugin expects clients to register their requirements. Normally, the culmination of the action hook is to call <span style="white-space:nowrap;">`fa()->register( $requirements_array )`</span> |
-| `font_awesome_enqueued` | Called when version resolution succeeds, with up to one argument, an associative array indicating the final load specification: version, method (webfont vs. svg), version 4 compatibility, license (pro vs. free), pseudo-element support. This is how a theme or plugin can be notified whether Pro is enabled, for example. |
-| `font_awesome_failed` | Called when version resolution fails, with up to one argument, an associative array indicating which conflicting requirement between which clients caused resolution to fail. |
-
 ## API Reference
 
-| Method | Description |
-| ------ | ----------- |
-| `fa()` | returns the singleton instance for the plugin. All other function calls are methods invoked on this instance. |
-| `register( $requirements_array )` | call this from a client (plugin or theme) to register [requirements](#requirements-array).|
-| `using_pro()` | returns `boolean` indicating whether Pro is enabled |
-| `using_pseudo_elements()` | returns `boolean` indicating whether pseudo-element support is enabled |
-| `satisfies($constraint)` | returns `boolean` indicating whether the currently loaded version of this Font Awesome _plugin_ satisies the given `$constraints` expressed as a `Semver`.
-| `satisfies_or_warn($constraint, $name)` | returns `boolean` equivalent to calling `satisfies()`, but also displays warnings in the WordPress admin dashboard when `false`| 
-
-## Requirements Array
-
-The requirements array supplied to `register()` looks like this:
-```php
-array(
-  "name"            => "plugin-name", // This is the only required attribute.
-                                      // Ideally, it's the same as the theme or plugin slug.
-  "version"         => "^5.0.0",      // A semver string. Uses composer/semver
-  "method"          => "webfont",     // webfont | svg
-  "v4shim"          => "require",     // require | forbid
-  "pseudoElements" => "require"       // require | forbid
-);
-```
-
-### Notes on Requirement Attributes
-
-- `v4shim`: There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
-  It's best to upgrade name references to the version 5 names, but to [ease the upgrade path](https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4),
-  we also provide
-  v4 shims which accept the v4 names and translate them into the equivalent v5 names. Shims for SVG with JavaScript
-  have been available since `5.0.0` and shims for Web Font with CSS have been available since `5.1.0`.
-  Specifiying `require` for this attribute will cause the loading of Font Awesome to fail unless loading the v4 shims
-  would satisfy the requirements of all registered clients. Specify `forbid` to insist that the v4 shim should _not_
-  be loaded by any client--normally you should mind your own business, though.
-
-- `pseudoElements`: [Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements)
-  are always intrinsically available when using the Web Font with CSS method.
-  However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
-  approach, because the performance can be poor. _Really_ poor, in some cases. However, sometimes, it's necessary.
+[See API docs](https://fortawesome.github.io/wordpress-fontawesome/index.html)
 
 ## What is Actually Loaded
 
@@ -249,6 +215,20 @@ If this direction seems good, it would make sense to at least allow particular s
 ## Determining Available Versions
 
 We have made a REST API endpoint available on `fontawesome.com` which this plugin uses to retrieve up-to-date metadata about available releases.
+
+## Caching the Load Specification
+
+This plugin computes a [_load specification_](https://fortawesome.github.io/wordpress-fontawesome/classes/FontAwesome.html#method_load_spec), 
+which is the set of version and configuration options that satisfy the requirements of all registered components.
+
+To compute that requires retrieving the latest metadata about Font Awesome releases from a REST API on fontawesome.com
+and reducing all of the requirements registered by all clients of this Font Awesome plugin.
+
+We don't need to do all of that work on every page load. Once a load specification is computed, it will not change until
+the web site owner changes options on the options page. When this plugin computes a successful load specification,
+it stores it under an [options key](https://fortawesome.github.io/wordpress-fontawesome/classes/FontAwesome.html#constant_OPTIONS_KEY)
+in the WordPress database and then re-uses that load specification for each page load. In that case, it will not fetch
+metadata from fontawesome.com nor process the requirements from registered clients.
 
 ## How to Ship Your Theme or Plugin To Work with Font Awesome
 
@@ -322,12 +302,13 @@ instead of designing for both alternatives, Free and Pro?
 
 ## Examples
 
-There are example clients in this GitHub repo that demonstrate how your code can use this plugin:
+There are several clients in this GitHub repo that demonstrate how your code can use this plugin:
 
 | Component | Description |
 | --------- | ----------- |
 | <span style="white-space:nowrap;">[`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha)</span> | Theme accepts default requirements, but also reacts to the presence of Pro by using Pro icons in a template. |
 | <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires v4shim and a specific version. Uses some version 4 icon names. |
+| <span style="white-space:nowrap;">[`integrations/plugins/plugin-sigma`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-sigma)</span> | Registered Client embedding Font Awesome as a composer dependency. When this plugin is activated, Font Awesome is implicitly activated, whether or not the Font Awesome plugin is directly installed or activated. |
 
 See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can run a dockerized WordPress environment and experiment
 with these examples.
