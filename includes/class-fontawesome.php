@@ -597,6 +597,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						);
 					}
 
+					/**
+					 * Fired when the plugin reaches the first conflicting requirement.
+					 *
+					 * @since 0.1.0
+					 *
+					 * @see FontAwesome
+					 */
 					do_action( 'font_awesome_failed', $data );
 					add_action(
 						'admin_notices',
@@ -1116,6 +1123,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				15
 			);
 
+			/**
+			 * Fired when the plugin has successfully built a load specification that satisfies all clients.
+			 *
+			 * @since 0.1.0
+			 */
 			do_action( 'font_awesome_enqueued', $load_spec );
 		}
 
