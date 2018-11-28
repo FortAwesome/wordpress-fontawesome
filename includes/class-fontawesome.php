@@ -22,6 +22,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	/**
 	 * Main plugin class, a singleton.
 	 *
+	 * <h3>Action Hooks</h3>
+	 *
 	 * Fires the following WordPress action hooks:
 	 *
 	 * - `font_awesome_requirements`
