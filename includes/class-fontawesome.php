@@ -22,6 +22,34 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	/**
 	 * Main plugin class, a singleton.
 	 *
+	 * Fires the following WordPress action hooks:
+	 *
+	 * - `font_awesome_requirements`
+	 *
+	 *   Fired when the plugin is ready for clients to register their requirements.
+	 *
+	 *   Client plugins and themes should normally use this action hook to call {@see FontAwesome::register()}
+	 *   with their requirements.
+	 *
+	 *   No parameters.
+	 *
+	 * - `font_awesome_enqueued`
+	 *
+	 *   Called when a {@see FontAwesome::load_spec() load specification} has been successfully computed.
+	 *
+	 *   One parameter `array`: the load specification.
+	 *
+	 *   Clients could inspect that array to detect whether, say, Pro or pseudo-elements are enabled. Or
+	 *   clients may just use the timing of the action's trigger to call the convenience methods like {@see FontAwesome::using_pro()}
+	 *   or {@see FontAwesome::using_pseudo_elements()} to detect the same values.
+	 *
+	 * - `font_awesome_failed`
+	 *
+	 *   Called when the plugin fails to compute a load specification because of clients requirements that cannot be satisfied.
+	 *
+	 *   One parameter, an `array` of conflicts where each element
+	 *   resolution fails, with up to one argument, an associative array indicating which conflicting requirement between which clients caused resolution to fail. |
+	 *
 	 * @since 0.1.0
 	 *
 	 * @package    FontAwesome
@@ -111,7 +139,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected $reqs = array();
+		protected $client_requirements = array();
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -539,22 +567,28 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
 		private function build( $options ) {
 			// Register the web site user/admin as a client.
 			$this->register( $options['adminClientLoadSpec'] );
 
 			// Now, ask any other listening clients to register.
+			/**
+			 * Fired when the plugin is ready for clients to register their requirements.
+			 *
+			 * Client plugins and themes should normally have their call to {@see FontAwesome::register()} invoked
+			 * from a callback registered on this action.
+			 *
+			 * @since 0.1.0
+			 *
+			 * @see FontAwesome::register()
+			 */
 			do_action( 'font_awesome_requirements' );
 			$load_spec = $this->compute_load_spec(
 				function( $data ) {
 					// This is the error callback function. It only runs when build_load_spec() needs to report an error.
 					$this->conflicts  = $data;
 					$client_name_list = [];
-					foreach ( $data['client-reqs'] as $client ) {
+					foreach ( $data['conflictingClientRequirements'] as $client ) {
 						array_push(
 							$client_name_list,
 							self::ADMIN_USER_CLIENT_NAME_INTERNAL === $client['name']
@@ -590,10 +624,49 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Returns current requirements conflicts.
 		 *
-		 * Intended for use by the admin UI.
+		 * Should normally only be called after the `font_awesome_failed` action has triggered, indicating that there
+		 * are some conflicts.
+		 *
+		 * The returned array indicates just the _first_ requirement that failed to be settled among the various
+		 * client requirements, along with all of those client's requirements. This allows code to detect or log
+		 * which clients are responsible for the conflict. This is the same information that is displayed in the
+		 * admin UI.
+		 *
+		 * The shape of the conflicts array looks like this:
+		 *
+		 * ```php
+		 * array(
+		 *   'requirement' => "version", // "version", "method", or some other client requirement key
+		 *   'clientRequirements
+		 * )
+		 * ```
+		 *
+		 *  "conflicts": {
+		"requirement": "version",
+		"clientRequirements": [
+		{
+		"name": "user",
+		"version": "5.4.2",
+		"clientCallSite": {
+		"file": "/var/www/html/wp-content/plugins/font-awesome-official.prev/includes/class-fontawesome.php",
+		"line": 390
+		}
+		},
+		{
+		"name": "beta-plugin",
+		"version": "5.1.0",
+		"v4shim": "require",
+		"clientCallSite": {
+		"file": "/var/www/html/wp-content/plugins/plugin-beta/plugin-beta.php",
+		"line": 25
+		}
+		}
+		]
+		},
 		 *
 		 * @since 0.1.0
 		 *
+		 * @see FontAwesome::register() For a full list of possible client requirement keys
 		 * @return array | null
 		 */
 		public function conflicts() {
@@ -635,7 +708,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return array
 		 */
 		public function requirements() {
-			return $this->reqs;
+			return $this->client_requirements;
 		}
 
 		/**
@@ -756,11 +829,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			$clients = array();
 
 			// Iterate through each set of requirements registered by a client.
-			foreach ( $this->reqs as $req ) {
-				$clients[ $req['name'] ] = $req['client-call'];
+			foreach ( $this->client_requirements as $requirement ) {
+				$clients[ $requirement['name'] ] = $requirement['clientCallSite'];
 				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ].
-				foreach ( $req as $key => $payload ) {
-					if ( in_array( $key, [ 'client-call', 'name' ], true ) ) {
+				foreach ( $requirement as $key => $payload ) {
+					if ( in_array( $key, [ 'clientCallSite', 'name' ], true ) ) {
 						continue; // these are meta keys that we won't process here.
 					}
 					if ( ! in_array( $key, $valid_keys, true ) ) {
@@ -771,12 +844,12 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					if ( array_key_exists( 'value', $load_spec[ $key ] ) ) {
 						// Check compatibility with existing requirement value.
 						// First, record that this client has made this new requirement.
-						if ( array_key_exists( 'client-reqs', $load_spec[ $key ] ) ) {
-							array_unshift( $load_spec[ $key ]['client-reqs'], $req );
+						if ( array_key_exists( 'clientRequirements', $load_spec[ $key ] ) ) {
+							array_unshift( $load_spec[ $key ]['clientRequirements'], $requirement );
 						} else {
-							$load_spec[ $key ]['client-reqs'] = array( $req );
+							$load_spec[ $key ]['clientRequirements'] = array( $requirement );
 						}
-						$resolved_req = $load_spec[ $key ]['resolve']($load_spec[ $key ]['value'], $req[ $key ]);
+						$resolved_req = $load_spec[ $key ]['resolve']($load_spec[ $key ]['value'], $requirement[ $key ]);
 						if ( is_null( $resolved_req ) ) {
 							// the compatibility test failed.
 							$bail_early_req = $key;
@@ -787,8 +860,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						}
 					} else {
 						// Add this as the first client to make this requirement.
-						$load_spec[ $key ]['value']       = $req[ $key ];
-						$load_spec[ $key ]['client-reqs'] = [ $req ];
+						$load_spec[ $key ]['value']       = $requirement[ $key ];
+						$load_spec[ $key ]['clientRequirements'] = [ $requirement ];
 					}
 				}
 			}
@@ -797,8 +870,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				// call the error_callback, indicating which clients registered incompatible requirements.
 				is_callable( $error_callback ) && $error_callback(
 					array(
-						'req'         => $bail_early_req,
-						'client-reqs' => $load_spec[ $bail_early_req ]['client-reqs'],
+						'requirement'         => $bail_early_req,
+						'conflictingClientRequirements' => $load_spec[ $bail_early_req ]['clientRequirements'],
 					)
 				);
 				return null;
@@ -886,8 +959,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected function specified_requirement_or_default( $req, $default ) {
-			return array_key_exists( 'value', $req ) ? $req['value'] : $default;
+		protected function specified_requirement_or_default( $requirement, $default ) {
+			return array_key_exists( 'value', $requirement ) ? $requirement['value'] : $default;
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -1060,8 +1133,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @ignore
 		 */
 		protected function detect_unregistered_clients() {
-			global $wp_styles;
-			global $wp_scripts;
+			$wp_styles  = wp_styles();
+			$wp_scripts = wp_scripts();
 
 			$collections = array(
 				'style'  => $wp_styles,
@@ -1158,11 +1231,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			if ( ! array_key_exists( 'name', $client_requirements ) ) {
 				throw new InvalidArgumentException( 'missing required key: name' );
 			}
-			$client_requirements['client-call'] = array(
+			$client_requirements['clientCallSite'] = array(
 				'file' => $caller['file'],
 				'line' => $caller['line'],
 			);
-			array_unshift( $this->reqs, $client_requirements );
+			array_unshift( $this->client_requirements, $client_requirements );
 		}
 	}
 

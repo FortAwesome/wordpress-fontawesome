@@ -217,8 +217,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		$failed          = false;
 		$failed_callback = function( $data ) use ( &$failed ) {
 			$failed = true;
-			$this->assertEquals( 'method', $data['req'] );
-			$this->assertTrue( $this->client_requirement_exists( 'clientB', $data['client-reqs'] ) );
+			$this->assertEquals( 'method', $data['requirement'] );
+			$this->assertTrue( $this->client_requirement_exists( 'clientB', $data['conflictingClientRequirements'] ) );
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
@@ -312,8 +312,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		$failed          = false;
 		$failed_callback = function( $data ) use ( &$failed ) {
 			$failed = true;
-			$this->assertEquals( 'version', $data['req'] );
-			$this->assertTrue( $this->client_requirement_exists( 'clientB', $data['client-reqs'] ) );
+			$this->assertEquals( 'version', $data['requirement'] );
+			$this->assertTrue( $this->client_requirement_exists( 'clientB', $data['conflictingClientRequirements'] ) );
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
@@ -654,8 +654,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		$failed          = false;
 		$failed_callback = function( $data ) use ( &$failed ) {
 			$failed = true;
-			$this->assertEquals( 'v4shim', $data['req'] );
-			$this->assertTrue( $this->client_requirement_exists( 'Client B', $data['client-reqs'] ) );
+			$this->assertEquals( 'v4shim', $data['requirement'] );
+			$this->assertTrue( $this->client_requirement_exists( 'Client B', $data['conflictingClientRequirements'] ) );
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
