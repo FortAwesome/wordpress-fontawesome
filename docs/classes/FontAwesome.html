@@ -111,7 +111,7 @@
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">7</span>
                                 </a>
                             </li>
                             <li>
@@ -136,10 +136,10 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1599862177"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-908340488"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1599862177" class="accordion-body collapse in">
+            <div id="namespace-908340488" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
@@ -166,7 +166,29 @@
 
                     <h1><small>\</small>FontAwesome</h1>
                     <p><em>Main plugin class, a singleton.</em></p>
-                    
+                    <p>Fires the following WordPress action hooks:</p>
+<ul>
+<li>
+<p><code>font_awesome_requirements</code></p>
+<p>Fired when the plugin is ready for clients to register their requirements.</p>
+<p>Client plugins and themes should normally use this action hook to call <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a>
+with their requirements.</p>
+<p>No parameters.</p>
+</li>
+<li>
+<p><code>font_awesome_enqueued</code></p>
+<p>Called when a <a href="../classes/FontAwesome.html#method_load_spec">load specification</a> has been successfully computed.</p>
+<p>One parameter <code>array</code>: the load specification.</p>
+<p>Clients could inspect that array to detect whether, say, Pro or pseudo-elements are enabled. Or
+clients may just use the timing of the action's trigger to call the convenience methods like <a href="../classes/FontAwesome.html#method_using_pro">\FontAwesome::using_pro()</a>
+or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAwesome::using_pseudo_elements()</a> to detect the same values.</p>
+</li>
+<li>
+<p><code>font_awesome_failed</code></p>
+<p>Called when the plugin fails to compute a load specification because of client requirements that cannot be satisfied.</p>
+<p>One parameter, an <code>array</code> with a shape like that returned by <a href="../classes/FontAwesome.html#method_conflicts">\FontAwesome::conflicts()</a></p>
+</li>
+</ul>
                     
                                         
                     <section id="summary">
@@ -264,7 +286,14 @@
                                                                         </dl>
                     <h2>Tags</h2>
                     <table class="table table-condensed">
-                                            <tr><td colspan="2"><em>None found</em></td></tr>
+                                            <tr>
+                            <th>
+                                since
+                            </th>
+                            <td>
+                                                                    
+                                                            </td>
+                        </tr>
                                         </table>
                 </aside>
             </div>
@@ -293,7 +322,14 @@
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -314,7 +350,14 @@
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -356,7 +399,14 @@
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -377,7 +427,14 @@
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -398,7 +455,14 @@
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -420,7 +484,14 @@ via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -443,7 +514,14 @@ via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -482,7 +560,14 @@ via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -509,7 +594,14 @@ not invoke it directly.</em></p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -547,7 +639,14 @@ not invoke it directly.</em></p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.2.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -592,7 +691,14 @@ given constraint.</p></td>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.2.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -620,7 +726,14 @@ given constraint.</p></td>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -651,7 +764,14 @@ as a semver.</em></p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -680,7 +800,14 @@ this function returns &quot;5.4.1&quot;.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -711,7 +838,14 @@ this function returns &quot;~5.4.1&quot;.</p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -742,7 +876,14 @@ this function returns &quot;~5.4.1&quot;.</p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -773,7 +914,14 @@ this function returns &quot;~5.4.1&quot;.</p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -799,7 +947,14 @@ this function returns &quot;~5.4.1&quot;.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -828,7 +983,14 @@ this function returns &quot;~5.4.1&quot;.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -868,7 +1030,14 @@ subsequent loads.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -879,25 +1048,58 @@ subsequent loads.</p>
             <article class="method">
                 <h3 class="public ">conflicts()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">conflicts() : array</pre>
+                <pre class="signature" style="margin-right: 54px;">conflicts() : array|null</pre>
                 <p><em>Returns current requirements conflicts.</em></p>
-                <p>Intended for use by the admin UI.</p>
+                <p>Should normally only be called after the <code>font_awesome_failed</code> action has triggered, indicating that there
+are some conflicts.</p>
+<p>The returned array indicates just the <em>first</em> requirement that failed to be settled among the various
+client requirements, along with all of those client's requirements. This allows code to detect or log
+which clients are responsible for the conflict. This is the same information that is displayed in the
+admin UI.</p>
+<p>The shape of the conflicts array looks like this:</p>
+<pre><code class="language-php">  array(
+    // the requirement in conflict, as supplied in the params to FontAwesome::register()
+    "requirement" =&gt; "version",
+    // one entry per client that registered a constraint on the conflicting requirement
+    "conflictingClientRequirements" =&gt; array(
+      [0] =&gt; array(
+         'name' =&gt; 'my-plugin',
+         'version' =&gt; '5.5.3', // this client's conflicting constraint on this requirement
+           'clientCallSite' =&gt; array(
+             'file' =&gt; '/var/www/html/wp-content/plugins/my-plugin/includes/my-plugin.php',
+             'line' =&gt; 552
+           )
+      ),
+     // ...
+    )
+  )</code></pre>
+<p>This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
+triggered on the first failure. If there are subsequent requirements in conflict, they will not be
+reported until this first one is resolved.</p>
 
                 
                 
                                     <h4>Returns</h4>
-                    array
-                                            &mdash; <p>| null</p>
+                    array|null
                                     				
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/FontAwesome.html#method_register"><span class="namespace-wrapper">For a full list of possible client requirement keys</span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -908,15 +1110,14 @@ subsequent loads.</p>
             <article class="method">
                 <h3 class="public ">get_plugin_version_warnings()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">get_plugin_version_warnings() : array</pre>
+                <pre class="signature" style="margin-right: 54px;">get_plugin_version_warnings() : array|null</pre>
                 <p><em>Returns plugin version warnings.</em></p>
                 
 
                 
                 
                                     <h4>Returns</h4>
-                    array
-                                            &mdash; <p>| null</p>
+                    array|null
                                     				
                             </article>
         </div>
@@ -926,7 +1127,14 @@ subsequent loads.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.2.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -958,7 +1166,14 @@ will be represented here.</em></p>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -988,7 +1203,14 @@ its requirements with this plugin.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -1029,7 +1251,14 @@ template. It is guaranteed to satisfy all requirements specified by all register
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -1060,7 +1289,14 @@ is complete and successful.</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -1094,7 +1330,14 @@ versions of Font Awesome 5.x.)</p>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -1127,6 +1370,32 @@ or the requirements of other registered clients to take precedence. The fewer re
 the easier it will be to settle a load specification without conflict.</p>
 <p>We use camelCase instead of snake_case for these keys, because they end up being passed via json
 to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.</p>
+<h3>Notes on "require" and "forbid"</h3>
+<p>Specifying <code>require</code> for a requirement like <code>pseudoElements</code> or <code>v4shim</code> will cause the loading of
+Font Awesome to fail unless all clients are satisfied with this requirement.</p>
+<p>Specifying <code>forbid</code> for a requirement will cause loading to fail if any other client specifies <code>require</code>
+that requirement. For example, because enabling pseudo-elements with SVG with JavaScript may have a negative
+impact on performance, a client that requires svg might forbid pseudo-elements.</p>
+<p>Clients should normally not overly constrain the requirements.</p>
+<h3>Additional Notes on Specific Requirements</h3>
+<ul>
+<li>
+<p><code>v4shim</code></p>
+<p>There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
+It's best to upgrade name references to the version 5 names,
+but to <a href="https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">ease the upgrade path</a>,
+the &quot;v4 shims&quot; accept the v4 icon names and translate them into the equivalent v5 icon names.
+Shims for SVG with JavaScript have been available since <code>5.0.0</code> and shims for Web Font with CSS have been
+available since <code>5.1.0</code>.</p>
+</li>
+<li>
+<p><code>pseudoElements</code></p>
+<p><a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">Pseudo-elements</a>
+are always intrinsically available when using the Web Font with CSS method.
+However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
+approach, because the performance can be poor. <em>Really</em> poor, in some cases. However, sometimes, it's necessary.</p>
+</li>
+</ul>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1154,7 +1423,14 @@ to the JavaScript admin UI client and camelCase is preferred for object properti
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.1.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -1208,7 +1484,7 @@ to the JavaScript admin UI client and camelCase is preferred for object properti
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on November 27th, 2018 at 03:30.
+                    on November 28th, 2018 at 22:00.
                 </section>
             </section>
         </section>

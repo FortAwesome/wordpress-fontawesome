@@ -28,8 +28,8 @@ class FontAwesomeAdminView extends React.Component {
         </p>
         { hasConflict
           ? <ClientRequirementsView
-              clientRequirements={ data.conflicts['client-reqs'] }
-              conflict={ data.conflicts.req }
+              clientRequirements={ data.conflicts.conflictingClientRequirements }
+              conflict={ data.conflicts.requirement }
               adminClientInternal={ data.adminClientInternal }
               adminClientExternal={ data.adminClientExternal }
             />
