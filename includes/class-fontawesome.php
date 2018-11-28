@@ -45,13 +45,34 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	 *
 	 * - `font_awesome_failed`
 	 *
-	 *   Called when the plugin fails to compute a load specification because of clients requirements that cannot be satisfied.
+	 *   Called when the plugin fails to compute a load specification because of client requirements that cannot be satisfied.
 	 *
-	 *   One parameter, an `array` of conflicts where each element
-	 *   resolution fails, with up to one argument, an associative array indicating which conflicting requirement between which clients caused resolution to fail. |
+	 *   One parameter, an `array` with a shape like this:
+	 *   ```php
+	 *     array(
+	 *       // the requirement in conflict, as supplied in the params to FontAwesome::register()
+	 *       "requirement" => "version",
+	 *       // one entry per client that registered a constraint on the conflicting requirement
+	 *       "conflictingClientRequirements" => array(
+	 *         [0] => array(
+	 *            'name' => 'my-plugin',
+	 *            'version' => '5.5.3', // this client's conflicting constraint on this requirement
+	 *              'clientCallSite' => array(
+	 *                'file' => '/var/www/html/wp-content/plugins/my-plugin/includes/my-plugin.php',
+	 *                'line' => 552
+	 *              )
+	 *         ),
+	 *        // ...
+	 *       )
+	 *     )
+	 * ```
+	 * This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
+	 * triggered on the first failure. If there are subsequent requirements in conflict, they will not be
+	 * reported until this first one is resolved.
 	 *
 	 * @since 0.1.0
 	 *
+	 * @see FontAwesome::register() For details on the possible values for `requirement`
 	 * @package    FontAwesome
 	 * @subpackage FontAwesome/includes
 	 */
