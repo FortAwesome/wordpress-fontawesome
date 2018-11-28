@@ -858,7 +858,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						}
 					} else {
 						// Add this as the first client to make this requirement.
-						$load_spec[ $key ]['value']       = $requirement[ $key ];
+						$load_spec[ $key ]['value']              = $requirement[ $key ];
 						$load_spec[ $key ]['clientRequirements'] = [ $requirement ];
 					}
 				}
@@ -868,7 +868,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				// call the error_callback, indicating which clients registered incompatible requirements.
 				is_callable( $error_callback ) && $error_callback(
 					array(
-						'requirement'         => $bail_early_req,
+						'requirement'                   => $bail_early_req,
 						'conflictingClientRequirements' => $load_spec[ $bail_early_req ]['clientRequirements'],
 					)
 				);
