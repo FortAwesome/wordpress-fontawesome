@@ -101,7 +101,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 */
 		public function get_item( $request ) {
 			/*
-			 * TODO: consider alteratives to using ini_set to ensure that display_errors is disabled.
+			 * TODO: consider alternatives to using ini_set to ensure that display_errors is disabled.
 			 * Without this, when a client plugin of Font Awesome throws an error (like our plugin-epsilon
 			 * in this repo), instead of this REST controller returning an HTTP status of 500, indicating
 			 * the server error, it sends back a status of 200, setting the data property in the response
