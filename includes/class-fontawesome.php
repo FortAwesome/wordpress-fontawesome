@@ -657,7 +657,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @since 0.1.0
 		 *
 		 * @see FontAwesome::register() For a full list of possible client requirement keys
-		 * @return array | null
+		 * @return array|null
 		 */
 		public function conflicts() {
 			return $this->conflicts;
@@ -668,7 +668,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 0.2.0
 		 *
-		 * @return array | null
+		 * @return array|null
 		 */
 		public function get_plugin_version_warnings() {
 			return $this->plugin_version_warnings;
