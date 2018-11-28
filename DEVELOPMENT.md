@@ -14,7 +14,7 @@ Run this from the top-level directory that contains the `docker-compose.yml` con
 Leave this running in one terminal window and do the rest of this in some other terminal windows.
 
 This runs the docker compose configuration that brings up the containers running wordpress and mysql.
-It will all be configured automatically for you with the scripts below. 
+It will all be configured automatically for you with the scripts below.
 
 4. create a .env.email file in the root of the repository with an admin email address WordPress can use:
 
@@ -29,7 +29,6 @@ On Mac OS X, it can be installed via `brew install composer`
 6. update composer dependencies from the `font-awesome-official` directory
 
 ```
-cd font-awesome-official
 composer install
 ```
 
@@ -38,7 +37,7 @@ composer install
 This is necessary before loading our plugin's admin page in WordPress because the assets for the
 React app are not checked in to this repo—they must be built. There are two options for building:
 
-In one terminal window, `cd font-awesome-official/admin`, and then:
+In one terminal window, `cd admin`, and then:
 
   (a) `yarn`
 
@@ -46,12 +45,12 @@ In one terminal window, `cd font-awesome-official/admin`, and then:
       hot module reloading and such (which is probably what you should be doing if you're developing).
       This will start up another web server that serves up the assets for the React app separately from
       the WordPress site, so leave it running while you develop.
-      
+
   (c) Production mode: You can also use `yarn build` to build production optimized assets into the `admin/build`
       directory. In order to get the WordPress plugin to load these, you also need to temporarily change
       the `FONTAWESOME_ENV` variable in `.env` to something other than "development", or just remove it.
       Change that setting before trying to load the plugin admin page in your browser.
-      (But don't commit that change, because we want the default environment to remain "development")   
+      (But don't commit that change, because we want the default environment to remain "development")
 
 8. Configure a loopback network address so the docker container can talk to your docker host
 
@@ -82,7 +81,7 @@ over to the webpack dev server running on `http://dockerhost:3030`.
 
 If you need to change which loopback IP address is used for some reason, it's configured in `docker-compose.yml`.
 
-(TODO: change configuration to use [`host.docker.internal`](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) for Mac OS and the equivalent for other host OSes) 
+(TODO: change configuration to use [`host.docker.internal`](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) for Mac OS and the equivalent for other host OSes)
 
 9. run `bin/setup`
 
@@ -94,7 +93,7 @@ It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBU
 WordPress is now ready and initialized in the docker container and reachable at localhost:8080
 with admin username and password as found in `.env`.
 
-10. Login to the WordPress admin dashboard and activate the Font Awesome plugin 
+10. Login to the WordPress admin dashboard and activate the Font Awesome plugin
 
 To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
 
@@ -153,7 +152,7 @@ yarn build
 
 Commit the assets built into `build/`.
 
-2. In the repo root, run: 
+2. In the repo root, run:
 
 `composer dist`
 
@@ -179,8 +178,10 @@ can be included in the composer package (which is really just a pull of this rep
 - run `composer install --dev` to install the dev-only phpDocumentor package 
 - run `composer docs` to build the docs into the `docs/` directory
 
-(If you want to preview the built docs with a web server, you can run `composer docsrv` and then
-point a web browser at `http://localhost:3000`.)
+  This command will incrementally rebuild docs with any updates you make to the phpDoc
+  in the source code files.
+ 
+  See also: [Run a Local Docs Server](#run-a-local-docs-server)
 
 - `git add docs` to stage them for commit (and eventually commit them) 
 
@@ -191,6 +192,23 @@ point a web browser at `http://localhost:3000`.)
 (TODO: Elaborate on that last step.)
 
 (TODO: add directions for moving those into a WordPress SVN repo.) 
+
+## Run a Local Docs Server
+
+If you want to preview the built docs with a web server, you can run `composer docsrv` and then
+point a web browser at `http://localhost:3000`. Composer has a default `process-timeout` of 300
+seconds, so if you leave `docsrv` running for a while, composer will kill it and orphan
+the node process. On macOS, you can find that process id with the shell command:
+ ```
+ lsof -t -i :3000
+ ```
+You'll probably just need to `kill` that `pid` and re-launch it.
+Or to avoid the timeout hassle, just do:
+```bash
+cd docsrv
+yarn
+node index.js
+```
 
 ## Special Notes on plugin-sigma
 
