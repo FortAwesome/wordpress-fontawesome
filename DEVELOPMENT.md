@@ -179,8 +179,10 @@ can be included in the composer package (which is really just a pull of this rep
 - run `composer install --dev` to install the dev-only phpDocumentor package 
 - run `composer docs` to build the docs into the `docs/` directory
 
-(If you want to preview the built docs with a web server, you can run `composer docsrv` and then
-point a web browser at `http://localhost:3000`.)
+  This command will incrementally rebuild docs with any updates you make to the phpDoc
+  in the source code files.
+ 
+  See also: [Run a Local Docs Server](#run-a-local-docs-server)
 
 - `git add docs` to stage them for commit (and eventually commit them) 
 
@@ -191,6 +193,23 @@ point a web browser at `http://localhost:3000`.)
 (TODO: Elaborate on that last step.)
 
 (TODO: add directions for moving those into a WordPress SVN repo.) 
+
+## Run a Local Docs Server
+
+If you want to preview the built docs with a web server, you can run `composer docsrv` and then
+point a web browser at `http://localhost:3000`. Composer has a default `process-timeout` of 300
+seconds, so if you leave `docsrv` running for a while, composer will kill it and orphan
+the node process. On macOS, you can find that process id with the shell command:
+ ```
+ lsof -t -i :3000
+ ```
+You'll probably just need to `kill` that `pid` and re-launch it.
+Or to avoid the timeout hassle, just do:
+```bash
+cd docsrv
+yarn
+node index.js
+```
 
 ## Special Notes on plugin-sigma
 
