@@ -118,14 +118,15 @@ class FontAwesome_Release_Provider {
 		try {
 			$response = $this->_api_client->get( 'api/releases' );
 			// TODO: handle error response codes from GET.
-			$body            = $response->getBody();
-			$body_contents   = $body->getContents();
-			$body_json       = json_decode( $body_contents, true );
-			$api_releases    = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
-			$this->_releases = array();
+			$body          = $response->getBody();
+			$body_contents = $body->getContents();
+			$body_json     = json_decode( $body_contents, true );
+			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
+			$releases      = array();
 			foreach ( $api_releases as $release ) {
-				$this->_releases[ $release['version'] ] = $release;
+				$releases[ $release['version'] ] = $release;
 			}
+			$this->_releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
 			// TODO: propagate this error up to the admin UI.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
