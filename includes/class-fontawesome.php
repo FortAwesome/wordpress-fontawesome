@@ -230,8 +230,29 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
+		 * Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints,
 		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
+		 *
+		 * Issues warnings in two ways:
+		 *
+		 * 1. An admin notice Using the `admin_notices` WordPress hook. This appears in admin pages _other_ than
+		 *    this plugin's options page.
+		 *
+		 * 2. A section on this plugin's options page.
+		 *
+		 * In order for the second warning to appear, the warning must be registered (with this function) during or after
+		 * {@see FontAwesome::load()}. Therefore, the recommended time to call this function is from the client's
+		 * callback on the `font_awesome_enqueued` action hook.
+		 *
+		 * For example:
+		 * ```php
+		 * add_action(
+		 *   'font_awesome_enqueued',
+		 *   function() {
+		 *     fa()->satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
+		 *   }
+		 * );
+		 * ```
 		 *
 		 * @since 0.2.0
 		 *
@@ -239,6 +260,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
 		 *        given constraint.
 		 * @link https://getcomposer.org/doc/articles/versions.md
+		 * @see FontAwesome For reference on the `font_awesome_enqueued` action hook
 		 * @return bool
 		 */
 		public function satisfies_or_warn( $constraint, $name ) {
