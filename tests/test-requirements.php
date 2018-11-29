@@ -53,7 +53,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$fa_load->invoke( fa() );
+		$load_spec = $fa_load->invoke( fa() );
 
 		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
@@ -326,8 +326,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$fa_load->invoke( fa() );
-		$this->assertNull(  );
+
+		$this->assertNull( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 	}
