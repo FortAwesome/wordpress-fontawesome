@@ -33,11 +33,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	 *   Client plugins and themes should normally use this action hook to call {@see FontAwesome::register()}
 	 *   with their requirements.
 	 *
+	 *   This hook is _not_ fired when a previously built ("locked") load specification is found.
+	 *
 	 *   No parameters.
 	 *
 	 * - `font_awesome_enqueued`
 	 *
-	 *   Called when a {@see FontAwesome::load_spec() load specification} has been successfully computed.
+	 *   Called when a {@see FontAwesome::load_spec() load specification} has been successfully prepared for enqueuing,
+	 *   whether by building a new one or using a locked one from a previous load.
 	 *
 	 *   One parameter `array`: the load specification.
 	 *
@@ -533,21 +536,30 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Main entry point for the loading process. Returns the enqueued load specification if successful, otherwise null.
-		 * If we already have a previously built load specification saved under our options key in the WordPress
+		 *
+		 * If we already have a previously built ("locked") load specification saved under our options key in the WordPress
 		 * database, then, by default, this function enqueues that load specification without recomputing a new one.
+		 * In that case, the `font_awesome_requirements` hook with _not_ be triggered.
+		 *
+		 * The `font_awesome_enqueued` hook is always triggered when there is a successful load specification to be
+		 * enqueued, whether that specification was locked from a previous build, or built anew.
 		 *
 		 * Pass <code>['rebuild' => true]</code> for $params to trigger a rebuild if even a previous one exists in options.
-		 * Pass <code>['save' => true]</code> to save a rebuilt load specification to the options table in the db to be used
-		 *   subsequent loads.
+		 * Pass <code>['save' => false]</code> to disable saving a rebuilt load specification to the options table.
+		 *
+		 * Clients normally should _not_ invoke this function directly, and especially not with non-default params,
+		 * since doing so could cause unexpected side effects for all clients.
+		 * Normally, this is only invoked internally when the plugin loads in WordPress, and by the REST controller when
+		 * updating options from the admin UI.
 		 *
 		 * @since 0.1.0
 		 *
-		 * @param array $params
+		 * @param array $params Default: [ 'rebuild' => false, 'save' => true ]
 		 * @return array|null
 		 */
 		public function load( $params = [
 			'rebuild' => false,
-			'save'    => false,
+			'save'    => true,
 		] ) {
 			$options = $this->options();
 
