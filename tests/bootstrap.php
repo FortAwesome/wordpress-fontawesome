@@ -36,3 +36,6 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 /** @noinspection PhpIncludeInspection */
 require_once $_tests_dir . '/includes/bootstrap.php';
 
+// Add a global reference to FontAwesome::load() that has been made accessible for tests to use.
+$fa_load  = new ReflectionMethod( 'FontAwesome', 'load' );
+$fa_load->setAccessible( true );

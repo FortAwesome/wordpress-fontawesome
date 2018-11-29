@@ -210,7 +210,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			 * so that the default parameter will be used. Otherwise, the callback seems to be
 			 * called with a single empty string parameter, which confuses load().
 			 */
-			add_action( 'init', array( $this, 'load' ), 10, 0 );
+			$fa = $this;
+			add_action(
+				'init',
+				function() use ( $fa ) {
+					$fa->load();
+				},
+				10,
+				0
+			);
 
 			$this->initialize_rest_api();
 
@@ -243,8 +251,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * 2. A section on this plugin's options page.
 		 *
-		 * In order for the second warning to appear, the warning must be registered (with this function) during or after
-		 * {@see FontAwesome::load()}. Therefore, the recommended time to call this function is from the client's
+		 * In order for the second warning to appear, the warning should be registered (with this function) during
+		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
 		 * callback on the `font_awesome_enqueued` action hook.
 		 *
 		 * For example:
@@ -552,12 +560,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * Normally, this is only invoked internally when the plugin loads in WordPress, and by the REST controller when
 		 * updating options from the admin UI.
 		 *
-		 * @since 0.1.0
-		 *
 		 * @param array $params Default: [ 'rebuild' => false, 'save' => true ]
 		 * @return array|null
 		 */
-		public function load( $params = [
+		private function load( $params = [
 			'rebuild' => false,
 			'save'    => true,
 		] ) {

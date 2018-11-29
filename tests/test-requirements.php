@@ -52,7 +52,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$load_spec = fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 
 		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
@@ -87,7 +88,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$load_spec = fa()->load();
+		global $fa_load;
+		$load_spec = $fa_load->invoke( fa() );
 
 		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
@@ -118,7 +120,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$load_spec = fa()->load();
+		global $fa_load;
+		$load_spec = $fa_load->invoke( fa() );
 
 		$this->assertNull( $load_spec );
 		// We don't expect either callback to be invoked because throwing the
@@ -149,7 +152,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertTrue( $enqueued );
 	}
 
@@ -183,8 +187,8 @@ class RequirementsTest extends WP_UnitTestCase {
 				$this->assertTrue( $load_spec['v4shim'] );
 			}
 		);
-
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 	}
 
 	public function test_incompatible_method() {
@@ -222,7 +226,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$this->assertNull( fa()->load() );
+		global $fa_load;
+
+		$this->assertNull( $fa_load->invoke( fa() ) );
 		$this->assertNull( fa()->load_spec() );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
@@ -251,7 +257,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			}
 		);
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 	}
 
 	public function test_pseudo_element_default_true_when_webfont() {
@@ -276,7 +283,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			}
 		);
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 	}
 
 	/**
@@ -317,7 +325,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$this->assertNull( fa()->load() );
+		global $fa_load;
+		$fa_load->invoke( fa() );
+		$this->assertNull(  );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 	}
@@ -380,7 +390,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 	}
@@ -441,7 +452,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 	}
@@ -495,7 +507,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 	}
@@ -532,7 +545,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			}
 		);
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 	}
 
 	/**
@@ -567,7 +581,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			}
 		);
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 	}
 
 	/**
@@ -587,7 +602,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			}
 		);
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertTrue( wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) );
 	}
 
@@ -617,7 +633,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			}
 		);
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertTrue( wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) );
 	}
 
@@ -659,7 +676,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		$this->assertNull( fa()->load() );
+		global $fa_load;
+
+		$this->assertNull( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertFalse( wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) );
@@ -704,7 +723,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$this->assertTrue( $enqueued );
 		$this->assertFalse( $failed );
 	}
@@ -750,7 +770,8 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		$state = array();
 		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
-		fa()->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 		$err = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
 
 		$this->assertTrue( $enqueued );

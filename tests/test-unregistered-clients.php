@@ -80,7 +80,8 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 			}
 		);
 
-		$fa->load();
+		global $fa_load;
+		$fa_load->invoke( $fa );
 
 		ob_start();
 		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
@@ -119,7 +120,8 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 			}
 		);
 
-		$fa->load();
+		global $fa_load;
+		$fa_load->invoke( fa() );
 
 		ob_start();
 		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
