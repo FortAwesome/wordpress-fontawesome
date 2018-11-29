@@ -190,6 +190,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return self::$_instance;
 		}
 
+		/**
+		 * A backdoor for the REST controller to be able to create an instance for preview and diagnostics
+		 * of potential new configurations, without side effects to the active singleton instance or its config.
+		 *
+		 * @ignore
+		 */
+		private static function preview_instance() {
+			return new self();
+		}
+
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
@@ -616,15 +626,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// Now, ask any other listening clients to register.
 			/**
 			 * Fired when the plugin is ready for clients to register their requirements.
+			 * Passes a single parameter: the callback the client should invoke to register
+			 * its requirements.
 			 *
-			 * Client plugins and themes should normally have their call to {@see FontAwesome::register()} invoked
-			 * from a callback registered on this action.
-			 *
+			 * @since 0.2.0 Added the $register callback param.
 			 * @since 0.1.0
 			 *
-			 * @see FontAwesome::register()
+			 * @param callable $register Function for client to call with $client_requirements
+			 * @see FontAwesome for details on the $register callback
 			 */
-			do_action( 'font_awesome_requirements' );
+			do_action( 'font_awesome_requirements', [ $this, 'register' ] );
 			$load_spec = $this->compute_load_spec(
 				function( $data ) {
 					// This is the error callback function. It only runs when build_load_spec() needs to report an error.
@@ -1092,7 +1103,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-				if ( fa()->using_pseudo_elements() ) {
+				if ( $this->using_pseudo_elements() ) {
 					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 				}
 
