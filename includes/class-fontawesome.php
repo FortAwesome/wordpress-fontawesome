@@ -33,11 +33,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	 *   Client plugins and themes should normally use this action hook to call {@see FontAwesome::register()}
 	 *   with their requirements.
 	 *
+	 *   This hook is _not_ fired when a previously built ("locked") load specification is found.
+	 *
 	 *   No parameters.
 	 *
 	 * - `font_awesome_enqueued`
 	 *
-	 *   Called when a {@see FontAwesome::load_spec() load specification} has been successfully computed.
+	 *   Called when a {@see FontAwesome::load_spec() load specification} has been successfully prepared for enqueuing,
+	 *   whether by building a new one or using a locked one from a previous load.
 	 *
 	 *   One parameter `array`: the load specification.
 	 *
@@ -207,7 +210,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			 * so that the default parameter will be used. Otherwise, the callback seems to be
 			 * called with a single empty string parameter, which confuses load().
 			 */
-			add_action( 'init', array( $this, 'load' ), 10, 0 );
+			$fa = $this;
+			add_action(
+				'init',
+				function() use ( $fa ) {
+					$fa->load();
+				},
+				10,
+				0
+			);
 
 			$this->initialize_rest_api();
 
@@ -230,8 +241,29 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		/**
-		 * Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
+		 * Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints,
 		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
+		 *
+		 * Issues warnings in two ways:
+		 *
+		 * 1. An admin notice Using the `admin_notices` WordPress hook. This appears in admin pages _other_ than
+		 *    this plugin's options page.
+		 *
+		 * 2. A section on this plugin's options page.
+		 *
+		 * In order for the second warning to appear, the warning should be registered (with this function) during
+		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
+		 * callback on the `font_awesome_enqueued` action hook.
+		 *
+		 * For example:
+		 * ```php
+		 * add_action(
+		 *   'font_awesome_enqueued',
+		 *   function() {
+		 *     fa()->satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
+		 *   }
+		 * );
+		 * ```
 		 *
 		 * @since 0.2.0
 		 *
@@ -239,6 +271,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
 		 *        given constraint.
 		 * @link https://getcomposer.org/doc/articles/versions.md
+		 * @see FontAwesome For reference on the `font_awesome_enqueued` action hook
 		 * @return bool
 		 */
 		public function satisfies_or_warn( $constraint, $name ) {
@@ -511,21 +544,28 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Main entry point for the loading process. Returns the enqueued load specification if successful, otherwise null.
-		 * If we already have a previously built load specification saved under our options key in the WordPress
+		 *
+		 * If we already have a previously built ("locked") load specification saved under our options key in the WordPress
 		 * database, then, by default, this function enqueues that load specification without recomputing a new one.
+		 * In that case, the `font_awesome_requirements` hook with _not_ be triggered.
+		 *
+		 * The `font_awesome_enqueued` hook is always triggered when there is a successful load specification to be
+		 * enqueued, whether that specification was locked from a previous build, or built anew.
 		 *
 		 * Pass <code>['rebuild' => true]</code> for $params to trigger a rebuild if even a previous one exists in options.
-		 * Pass <code>['save' => true]</code> to save a rebuilt load specification to the options table in the db to be used
-		 *   subsequent loads.
+		 * Pass <code>['save' => false]</code> to disable saving a rebuilt load specification to the options table.
 		 *
-		 * @since 0.1.0
+		 * Clients normally should _not_ invoke this function directly, and especially not with non-default params,
+		 * since doing so could cause unexpected side effects for all clients.
+		 * Normally, this is only invoked internally when the plugin loads in WordPress, and by the REST controller when
+		 * updating options from the admin UI.
 		 *
-		 * @param array $params
+		 * @param array $params Default: [ 'rebuild' => false, 'save' => true ]
 		 * @return array|null
 		 */
-		public function load( $params = [
+		private function load( $params = [
 			'rebuild' => false,
-			'save'    => false,
+			'save'    => true,
 		] ) {
 			$options = $this->options();
 

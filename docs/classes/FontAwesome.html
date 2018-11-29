@@ -136,10 +136,10 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1605607738"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1974157236"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1605607738" class="accordion-body collapse in">
+            <div id="namespace-1974157236" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
@@ -174,11 +174,13 @@
 <p>Fired when the plugin is ready for clients to register their requirements.</p>
 <p>Client plugins and themes should normally use this action hook to call <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a>
 with their requirements.</p>
+<p>This hook is <em>not</em> fired when a previously built (&quot;locked&quot;) load specification is found.</p>
 <p>No parameters.</p>
 </li>
 <li>
 <p><code>font_awesome_enqueued</code></p>
-<p>Called when a <a href="../classes/FontAwesome.html#method_load_spec">load specification</a> has been successfully computed.</p>
+<p>Called when a <a href="../classes/FontAwesome.html#method_load_spec">load specification</a> has been successfully prepared for enqueuing,
+whether by building a new one or using a locked one from a previous load.</p>
 <p>One parameter <code>array</code>: the load specification.</p>
 <p>Clients could inspect that array to detect whether, say, Pro or pseudo-elements are enabled. Or
 clients may just use the timing of the action's trigger to call the convenience methods like <a href="../classes/FontAwesome.html#method_using_pro">\FontAwesome::using_pro()</a>
@@ -219,7 +221,6 @@ or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAweso
                                                                     <a href="../classes/FontAwesome.html#method_options" class="">options()</a><br />
                                                                     <a href="../classes/FontAwesome.html#method_create_admin_page" class="">create_admin_page()</a><br />
                                                                     <a href="../classes/FontAwesome.html#method_reset" class="">reset()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_load" class="">load()</a><br />
                                                                     <a href="../classes/FontAwesome.html#method_conflicts" class="">conflicts()</a><br />
                                                                     <a href="../classes/FontAwesome.html#method_get_plugin_version_warnings" class="">get_plugin_version_warnings()</a><br />
                                                                     <a href="../classes/FontAwesome.html#method_requirements" class="">requirements()</a><br />
@@ -256,7 +257,7 @@ or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAweso
                         </section>
                         <section class="row-fluid private">
                             <section class="span4">
-                                                                    <em>No private methods found</em>
+                                                                    <a href="../classes/FontAwesome.html#method_load" class="">load()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <em>No private properties found</em>
@@ -659,9 +660,28 @@ not invoke it directly.</em></p>
                 <h3 class="public ">satisfies_or_warn()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">satisfies_or_warn(string  <span class="argument">$constraint</span>, string  <span class="argument">$name</span>) : boolean</pre>
-                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints,
+                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints,
 and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.</em></p>
-                
+                <p>Issues warnings in two ways:</p>
+<ol>
+<li>
+<p>An admin notice Using the <code>admin_notices</code> WordPress hook. This appears in admin pages <em>other</em> than
+this plugin's options page.</p>
+</li>
+<li>
+<p>A section on this plugin's options page.</p>
+</li>
+</ol>
+<p>In order for the second warning to appear, the warning should be registered (with this function) during
+this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
+callback on the <code>font_awesome_enqueued</code> action hook.</p>
+<p>For example:</p>
+<pre><code class="language-php">add_action(
+  'font_awesome_enqueued',
+  function() {
+    fa()-&gt;satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
+  }
+);</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -689,6 +709,7 @@ given constraint.</p></td>
                                                             <dl>
                                                                                             <dt>See also</dt>
                                                                 <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
+                                                                                                    <dd><a href="../classes/FontAwesome.html"><span class="namespace-wrapper">For reference on the `font_awesome_enqueued` action hook</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -980,53 +1001,6 @@ this function returns &quot;~5.4.1&quot;.</p>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                             <span class="label label-info">static</span>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            since
-                        </th>
-                        <td>
-                                                            0.1.0                                
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_load" name="method_load" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">load()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">load(array  <span class="argument">$params = array(&#039;rebuild&#039; =&gt; false, &#039;save&#039; =&gt; false)</span>) : array|null</pre>
-                <p><em>Main entry point for the loading process. Returns the enqueued load specification if successful, otherwise null.</em></p>
-                <p>If we already have a previously built load specification saved under our options key in the WordPress
-database, then, by default, this function enqueues that load specification without recomputing a new one.</p>
-<p>Pass <code>['rebuild' =&gt; true]</code> for $params to trigger a rebuild if even a previous one exists in options.
-Pass <code>['save' =&gt; true]</code> to save a rebuilt load specification to the options table in the db to be used
-subsequent loads.</p>
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>array</td>
-                                <td>$params </td>
-                                <td></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    array|null
-                                    				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                             </dl>
             <h2>Tags</h2>
@@ -1436,7 +1410,53 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
         </aside>
     </div>
 
-                                                                    </div>
+                                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_load" name="method_load" class="anchor"></a>
+            <article class="method">
+                <h3 class="private ">load()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">load(array  <span class="argument">$params = array(&#039;rebuild&#039; =&gt; false, &#039;save&#039; =&gt; true)</span>) : array|null</pre>
+                <p><em>Main entry point for the loading process. Returns the enqueued load specification if successful, otherwise null.</em></p>
+                <p>If we already have a previously built (&quot;locked&quot;) load specification saved under our options key in the WordPress
+database, then, by default, this function enqueues that load specification without recomputing a new one.
+In that case, the <code>font_awesome_requirements</code> hook with <em>not</em> be triggered.</p>
+<p>The <code>font_awesome_enqueued</code> hook is always triggered when there is a successful load specification to be
+enqueued, whether that specification was locked from a previous build, or built anew.</p>
+<p>Pass <code>['rebuild' =&gt; true]</code> for $params to trigger a rebuild if even a previous one exists in options.
+Pass <code>['save' =&gt; false]</code> to disable saving a rebuilt load specification to the options table.</p>
+<p>Clients normally should <em>not</em> invoke this function directly, and especially not with non-default params,
+since doing so could cause unexpected side effects for all clients.
+Normally, this is only invoked internally when the plugin loads in WordPress, and by the REST controller when
+updating options from the admin UI.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$params </td>
+                                <td><p>Default: [ 'rebuild' =&gt; false, 'save' =&gt; true ]</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    </div>
     </section>
 
     <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
@@ -1485,7 +1505,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on November 28th, 2018 at 23:30.
+                    on November 29th, 2018 at 14:23.
                 </section>
             </section>
         </section>

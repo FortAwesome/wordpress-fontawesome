@@ -116,7 +116,10 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			// for build_item().
 			try {
 				$fa = FontAwesome::reset();
-				$fa->load(
+				$r  = new ReflectionMethod( 'FontAwesome', 'load' );
+				$r->setAccessible( true );
+				$r->invoke(
+					$fa,
 					[
 						'rebuild' => true,
 						'save'    => false,
@@ -152,7 +155,10 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				// be pulled together into a response object by build_item().
 				try {
 					$fa = FontAwesome::reset();
-					$fa->load(
+					$r  = new ReflectionMethod( 'FontAwesome', 'load' );
+					$r->setAccessible( true );
+					$r->invoke(
+						$fa,
 						[
 							'rebuild' => true,
 							'save'    => true,

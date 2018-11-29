@@ -16,9 +16,9 @@ define( 'THETA_PLUGIN_LOG_PREFIX', 'theta-plugin' );
 define( 'THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN', '9.0.42' );
 
 add_action(
-	'init',
+	'font_awesome_enqueued',
 	function() {
-		fa()->satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta');
+		fa()->satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
 	}
 );
 
@@ -28,7 +28,7 @@ add_action(
 		if ( class_exists( 'FontAwesome' ) ) {
 			fa()->register(
 				array(
-					'name'    => THETA_PLUGIN_LOG_PREFIX
+					'name' => THETA_PLUGIN_LOG_PREFIX,
 				)
 			);
 		}
