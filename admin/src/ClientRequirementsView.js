@@ -15,7 +15,7 @@ class ClientRequirementsView extends React.Component {
   }
 
   render() {
-    const { conflict } = this.props
+    const { conflict, hasLockedLoadSpec } = this.props
 
     const hasConflict = !!conflict
 
@@ -30,9 +30,22 @@ class ClientRequirementsView extends React.Component {
         ?
           <div>
             { hasConflict
-              ? <p className={sharedStyles['explanation']}>
-                We found conflicting requirements between two or more plugins or themes.
-              </p>
+              ? <div>
+                  <p className={sharedStyles['explanation']}>
+                  We found conflicting requirements between two or more plugins or themes, shown below.
+                  </p>
+                { hasLockedLoadSpec
+                  ? <p className={sharedStyles['explanation']}>
+                    We'll continue to load the last good load specification you've locked in, so things will
+                    keep working the way they've been working. However, until you resolve the conflict, whatever
+                    clients have introduced these new conflicting requirements may not work as expected.
+                    </p>
+                  : <p className={sharedStyles['explanation']}>
+                    Since you haven't yet locked in a working configuration, we can't load Font Awesome at all.
+                    So, until you resolve these conflicts, Font Awesome won't work!
+                    </p>
+                }
+                </div>
               : <p className={sharedStyles['explanation']}>
                 Here are some other clients of the Font Awesome plugin, such as plugins or themes,
                 along with their Font Awesome requirements shown side-by-side with your preferences.
@@ -78,6 +91,7 @@ export default ClientRequirementsView
 
 ClientRequirementsView.propTypes = {
   clientRequirements: PropTypes.array.isRequired,
+  hasLockedLoadSpec: PropTypes.boolean,
   conflict: PropTypes.string,
   adminClientInternal: PropTypes.string.isRequired,
   adminClientExternal: PropTypes.string.isRequired

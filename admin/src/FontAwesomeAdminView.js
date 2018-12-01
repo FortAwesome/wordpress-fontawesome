@@ -54,6 +54,7 @@ class FontAwesomeAdminView extends React.Component {
           <ClientRequirementsView
             clientRequirements={data.conflicts.conflictingClientRequirements}
             conflict={data.conflicts.requirement}
+            hasLockedLoadSpec={ !!data.options.lockedLoadSpec }
             adminClientInternal={data.adminClientInternal}
             adminClientExternal={data.adminClientExternal}
           />

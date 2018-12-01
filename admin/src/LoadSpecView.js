@@ -48,7 +48,7 @@ const LoadSpecView = props => {
 export default LoadSpecView
 
 LoadSpecView.propTypes = {
-  spec: PropTypes.object,
+  spec: PropTypes.object.isRequired,
   usePro: PropTypes.boolean
 }
 
