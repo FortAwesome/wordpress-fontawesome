@@ -132,6 +132,8 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				 * So we'll use the ReflectionMethod backdoor approach to instantiate a Font Awesome that we can
 				 * use as a preview.
 				 */
+				// TODO: we might be able to get rid of the preview instance if we're only ever locking load specs
+				// that have no conflicts. In that case, it's ok for a new load spec to be locked from this load.
 				$fa_preview_instance = new ReflectionMethod( 'FontAwesome', 'preview_instance' );
 				$fa_preview_instance->setAccessible( true );
 				$preview_fa = $fa_preview_instance->invoke( null );
@@ -143,13 +145,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 
 				$fa_load = new ReflectionMethod( 'FontAwesome', 'load' );
 				$fa_load->setAccessible( true );
-				$fa_load->invoke(
-					$preview_fa,
-					[
-						'rebuild' => true,
-						'save'    => false, // make sure we don't save this experimental load spec to the db!
-					]
-				);
+				$fa_load->invoke( $preview_fa );
 
 				$data = $this->build_item( $preview_fa );
 
@@ -172,35 +168,27 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_ini_set
 			ini_set( 'display_errors', 0 );
 
-			$item = $this->prepare_item_for_database( $request );
+			try {
+				$item = $this->prepare_item_for_database( $request );
+				// $new_options = array_replace_recursive( fa()->options(), $item['options'] );
+				$item['options']['adminClientLoadSpec']['clientVersion'] = time();
 
-			$current_options = get_option( FontAwesome::OPTIONS_KEY );
+				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
+				// normal load process. If it satisfies all constraints, the new adminClientLoadSpec spec will be
+				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
+				// the error condition to the admin UI.
+				// We reset to avoid duplication client registrations.
+				$fa      = FontAwesome::reset();
+				$load_fa = new ReflectionMethod( 'FontAwesome', 'load' );
+				$load_fa->setAccessible( true );
+				$load_fa->invoke( $fa, $item['options'] );
+				$return_data = $this->build_item( $fa );
 
-			if ( $item['options'] === $current_options || update_option( FontAwesome::OPTIONS_KEY, $item['options'] ) ) {
-				// Because FontAwesome is a singleton, we need to reset it now that the
-				// user options have changed. And running load() is what must happen
-				// in order to fully populate the object with all of its data that will
-				// be pulled together into a response object by build_item().
-				try {
-					$fa      = FontAwesome::reset();
-					$load_fa = new ReflectionMethod( 'FontAwesome', 'load' );
-					$load_fa->setAccessible( true );
-					$load_fa->invoke(
-						$fa,
-						[
-							'rebuild' => true,
-							'save'    => true,
-						]
-					);
-					$return_data = $this->build_item( $fa );
-					return new WP_REST_Response( $return_data, 200 );
-				} catch ( Exception $e ) {
-					return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
-				} catch ( Error $error ) {
-					return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
-				}
-			} else {
-				return new WP_Error( 'cant-update', 'Whoops, we couldn\'t update those options.', array( 'status' => 500 ) );
+				return new WP_REST_Response( $return_data, 200 );
+			} catch ( Exception $e ) {
+				return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+			} catch ( Error $error ) {
+				return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
 			}
 		}
 

@@ -127,7 +127,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		const DEFAULT_USER_OPTIONS = array(
 			'adminClientLoadSpec'       => array(
-				'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
+				'name'          => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
+				'clientVersion' => 0,
 			),
 			'usePro'                    => false,
 			'removeUnregisteredClients' => false,
@@ -562,68 +563,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * The `font_awesome_enqueued` hook is always triggered when there is a successful load specification to be
 		 * enqueued, whether that specification was locked from a previous build, or built anew.
 		 *
-		 * Pass <code>['rebuild' => true]</code> for $params to trigger a rebuild if even a previous one exists in options.
-		 * Pass <code>['save' => false]</code> to disable saving a rebuilt load specification to the options table.
-		 *
-		 * Clients normally should _not_ invoke this function directly, and especially not with non-default params,
-		 * since doing so could cause unexpected side effects for all clients.
-		 * Normally, this is only invoked internally when the plugin loads in WordPress, and by the REST controller when
-		 * updating options from the admin UI.
-		 *
-		 * @param array $params Default: [ 'rebuild' => false, 'save' => true ]
+		 * @param array $options optional, overrides any options in the db, using array_replace_recursive()
+		 *        Default: null, no override.
 		 * @return array|null
-		 */
-		private function load( $params = [
-			'rebuild' => false,
-			'save'    => true,
-		] ) {
-			$options = $this->options();
-
-			$load_spec = null;
-
-			if ( isset( $options['lockedLoadSpec'] ) && ! $params['rebuild'] ) {
-				$load_spec = $options['lockedLoadSpec'];
-			} else {
-				$load_spec = $this->build( $options );
-
-				if ( isset( $load_spec ) ) {
-					if ( true && $params['save'] /* build a test that should only be true if the new load spec is different and should be saved */ ) {
-						wp_cache_delete( 'alloptions', 'options' );
-						$options['lockedLoadSpec'] = $load_spec;
-						if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
-							return null;
-
-							// TODO: report options update error to admin UI.
-							// We've managed to build a new load spec, and verified that it's
-							// different, but when trying to update it, we got a falsy response,
-							// and the docs say that means that either the update failed or no update was made.
-							// If we add a mechanism for passing non-fatal warnings up to admin UI client
-							// for display, it would probably make sense to pass such a message up for this one.
-						}
-					}
-				}
-			}
-
-			if ( isset( $load_spec ) ) {
-				// We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
-				// Now enqueue it.
-				$this->load_spec = $load_spec;
-				$this->enqueue( $load_spec, $options['removeUnregisteredClients'] );
-				return $load_spec;
-			} else {
-				return null;
-			}
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
 		 * @ignore
 		 */
-		private function build( $options ) {
-			// Register the web site user/admin as a client.
-			$this->register( $options['adminClientLoadSpec'] );
+		// TODO: change the recommendation for calling the satisfies_or_warn function from the font_awesome_requirements hook.
+		private function load( $options = null ) {
+			$load_spec = null;
 
-			// Now, ask any other listening clients to register.
 			/**
 			 * Fired when the plugin is ready for clients to register their requirements.
 			 * Passes a single parameter: the callback the client should invoke to register
@@ -635,7 +583,98 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			 * @param callable $register Function for client to call with $client_requirements
 			 * @see FontAwesome for details on the $register callback
 			 */
-			do_action( 'font_awesome_requirements', [ $this, 'register' ] );
+			do_action(
+				'font_awesome_requirements',
+				function( $client_requirements ) {
+					$this->register( $client_requirements );
+				}
+			);
+
+			$current_options = is_null( $options )
+				? $this->options()
+				: $options;
+
+			// Register the web site admin as a client.
+			$this->register( $current_options['adminClientLoadSpec'] );
+
+			if ( $this->should_rebuild() ) {
+				$load_spec = $this->build();
+
+				if ( isset( $load_spec ) ) {
+					// Save the new conflict-free load spec as our new lockedLoadSpec.
+					wp_cache_delete( 'alloptions', 'options' );
+					$current_options['lockedLoadSpec'] = $load_spec;
+					if ( ! update_option( self::OPTIONS_KEY, $current_options ) ) {
+						// TODO: report options update error to admin UI.
+						// We've managed to build a new load spec, and verified that it's
+						// different, but when trying to update it, we got a falsy response,
+						// and the docs say that means that either the update failed or no update was made.
+						// If we add a mechanism for passing non-fatal warnings up to admin UI client
+						// for display, it would probably make sense to pass such a message up for this one.
+						// Regardless, for now, since we didn't lock a new load spec, we return null.
+						return null;
+					}
+				}
+			} else {
+				$load_spec = $this->options()['lockedLoadSpec'];
+			}
+
+			if ( isset( $load_spec ) ) {
+				// We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
+				// Now enqueue it.
+				$this->load_spec = $load_spec;
+				$this->enqueue(
+					$load_spec,
+					[
+						'removeUnregisteredClients' => $this->options()['removeUnregisteredClients'],
+						'usePro'                    => $current_options['usePro'],
+					]
+				);
+				return $load_spec;
+			} else {
+				return null;
+			}
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		private function should_rebuild() {
+			$options = $this->options();
+			if ( ! isset( $options['lockedLoadSpec'] ) ) {
+				return true;
+			}
+
+			$locked_clients = $options['lockedLoadSpec']['clients'];
+
+			$processed_clients = array();
+
+			foreach ( $this->client_requirements as $client_requirement ) {
+				if ( ! isset( $locked_clients[ $client_requirement['name'] ] ) || $locked_clients[ $client_requirement['name'] ] !== $client_requirement['clientVersion'] ) {
+					return true;
+				} else {
+					array_push( $processed_clients, $client_requirement['name'] );
+				}
+			}
+
+			// Get all client names in $locked_clients that we didn't just process in $this->client_requirements.
+			$remaining_clients = array_diff( array_keys( $locked_clients ), $processed_clients );
+
+			foreach ( $remaining_clients as $client_requirement ) {
+				if ( $locked_clients['name'] !== $client_requirement['clientVersion'] ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		private function build() {
 			$load_spec = $this->compute_load_spec(
 				function( $data ) {
 					// This is the error callback function. It only runs when build_load_spec() needs to report an error.
@@ -873,18 +912,19 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				),
 			);
 
-			$valid_keys = array_keys( $load_spec );
-
-			$bail_early_req = null;
-
-			$clients = array();
+			$valid_keys      = array_keys( $load_spec );
+			$bail_early_req  = null;
+			$clients         = array();
+			$client_versions = array();
 
 			// Iterate through each set of requirements registered by a client.
 			foreach ( $this->client_requirements as $requirement ) {
-				$clients[ $requirement['name'] ] = $requirement['clientCallSite'];
+				$clients[ $requirement['name'] ]         = $requirement['clientCallSite'];
+				$client_versions[ $requirement['name'] ] = $requirement['clientVersion'];
+
 				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ].
 				foreach ( $requirement as $key => $payload ) {
-					if ( in_array( $key, [ 'clientCallSite', 'name' ], true ) ) {
+					if ( in_array( $key, [ 'clientCallSite', 'name', 'clientVersion' ], true ) ) {
 						continue; // these are meta keys that we won't process here.
 					}
 					if ( ! in_array( $key, $valid_keys, true ) ) {
@@ -949,12 +989,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
 				$pseudo_elements = true;
 			}
+
 			return array(
 				'method'         => $method,
 				'v4shim'         => $this->specified_requirement_or_default( $load_spec['v4shim'], $v4shim_default ) === 'require',
 				'pseudoElements' => $pseudo_elements,
 				'version'        => $version,
-				'usePro'         => $this->is_pro_configured(),
+				'clients'        => $client_versions,
 			);
 		}
 
@@ -1018,7 +1059,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected function enqueue( $load_spec, $remove_unregistered_clients = false ) {
+		protected function enqueue( $load_spec, $params = [
+			'removeUnregisteredClients' => false,
+			'usePro'                    => false,
+		] ) {
 			$release_provider = fa_release_provider();
 
 			$method  = $load_spec['method'];
@@ -1041,7 +1085,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				$load_spec['version'],
 				'all',
 				[
-					'use_pro'  => $load_spec['usePro'],
+					'use_pro'  => $params['usePro'],
 					'use_svg'  => $use_svg,
 					'use_shim' => $load_spec['v4shim'],
 				]
@@ -1167,9 +1211,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// Look for unregistered clients.
 			add_action(
 				'wp_enqueue_scripts',
-				function() use ( $obj, $remove_unregistered_clients ) {
+				function() use ( $obj, $params ) {
 					$obj->detect_unregistered_clients();
-					if ( $remove_unregistered_clients ) {
+					if ( $params['removeUnregisteredClients'] ) {
 						$obj->remove_unregistered_clients();
 					}
 				},
@@ -1305,13 +1349,17 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @param array $client_requirements
 		 * @throws InvalidArgumentException
 		 */
-		public function register( $client_requirements ) {
+		// TODO: document clientVersion.
+		private function register( $client_requirements ) {
 			// TODO: consider using a mechanism other than debug_backtrace() to track the calling module, since phpcs complains.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			$bt     = debug_backtrace( 1 );
 			$caller = array_shift( $bt );
 			if ( ! array_key_exists( 'name', $client_requirements ) ) {
 				throw new InvalidArgumentException( 'missing required key: name' );
+			}
+			if ( ! array_key_exists( 'clientVersion', $client_requirements ) ) {
+				throw new InvalidArgumentException( 'missing required key: clientVersion' );
 			}
 			$client_requirements['clientCallSite'] = array(
 				'file' => $caller['file'],
