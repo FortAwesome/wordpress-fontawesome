@@ -16,12 +16,13 @@ define( 'ZETA_PLUGIN_LOG_PREFIX', 'zeta-plugin' );
 
 add_action(
 	'font_awesome_requirements',
-	function() {
+	function( $register ) {
 		if ( class_exists( 'FontAwesome' ) ) {
-			fa()->register(
+			$register(
 				array(
 					'name'    => ZETA_PLUGIN_LOG_PREFIX,
-					'method' => 'svg'
+					'clientVersion' => ZETA_PLUGIN_VERSION,
+					'method' => 'svg',
 				)
 			);
 		}
