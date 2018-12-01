@@ -49,6 +49,6 @@ export default LoadSpecView
 
 LoadSpecView.propTypes = {
   spec: PropTypes.object.isRequired,
-  usePro: PropTypes.boolean
+  usePro: PropTypes.bool
 }
 

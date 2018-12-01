@@ -91,7 +91,7 @@ export default ClientRequirementsView
 
 ClientRequirementsView.propTypes = {
   clientRequirements: PropTypes.array.isRequired,
-  hasLockedLoadSpec: PropTypes.boolean,
+  hasLockedLoadSpec: PropTypes.bool,
   conflict: PropTypes.string,
   adminClientInternal: PropTypes.string.isRequired,
   adminClientExternal: PropTypes.string.isRequired
