@@ -1352,6 +1352,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				'file' => $caller['file'],
 				'line' => $caller['line'],
 			);
+
 			$this->client_requirements[ $client_requirements['name'] ] = $client_requirements;
 		}
 	}
