@@ -44,10 +44,10 @@ const PluginVersionWarningsView = props => (
             </thead>
             <tbody>
             {
-              props.warnings.map( (warning, index) => (
+              Object.keys(props.warnings).map( (warningKey, index) => (
                 <tr key={ index }>
-                  <td className={styles['name']}>{ warning.name }</td>
-                  <td className={styles['name']}>{ warning.constraint }</td>
+                  <td className={styles['name']}>{ props.warnings[warningKey].name }</td>
+                  <td className={styles['name']}>{ props.warnings[warningKey].constraint }</td>
                 </tr>
               ))
             }

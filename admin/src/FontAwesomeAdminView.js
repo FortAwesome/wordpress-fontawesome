@@ -9,6 +9,7 @@ import { faThumbsUp, faExclamationCircle, faExclamationTriangle } from '@fortawe
 import ClientRequirementsView from './ClientRequirementsView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
+import { values } from 'lodash'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -72,7 +73,7 @@ class FontAwesomeAdminView extends React.Component {
         />
         { !hasConflict &&
           <ClientRequirementsView
-            clientRequirements={ data.clientRequirements }
+            clientRequirements={ values( data.clientRequirements ) }
             adminClientInternal={ data.adminClientInternal }
             adminClientExternal={ data.adminClientExternal }
           />
