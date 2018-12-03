@@ -36,6 +36,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name' => 'test',
+				'clientVersion' => '1',
 			)
 		);
 
@@ -66,12 +67,14 @@ class RequirementsTest extends WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name' => 'Client A',
+				'clientVersion' => '1',
 			)
 		);
 
 		fa()->register(
 			array(
 				'name' => 'Client B',
+				'clientVersion' => '1',
 			)
 		);
 
@@ -105,6 +108,7 @@ class RequirementsTest extends WP_UnitTestCase {
 			array(
 				'method' => 'svg',
 				'v4shim' => 'require',
+				'clientVersion' => '1',
 			)
 		);
 
@@ -139,6 +143,7 @@ class RequirementsTest extends WP_UnitTestCase {
 						'name'   => 'test',
 						'method' => 'svg',
 						'v4shim' => 'require',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -157,6 +162,44 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertTrue( $enqueued );
 	}
 
+	public function test_duplicate_client_registry() {
+		add_action(
+			'font_awesome_requirements',
+			function() {
+				fa()->register(
+					array(
+						'name'   => 'test',
+						'method' => 'svg',
+						'v4shim' => 'require',
+						'clientVersion' => '1',
+					)
+				);
+				fa()->register(
+					array(
+						'name'   => 'test',
+						'method' => 'svg',
+						'v4shim' => 'require',
+						'clientVersion' => '1',
+					)
+				);
+			}
+		);
+
+		$enqueued          = false;
+		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+			$enqueued = true;
+			$this->assertEquals( 'svg', $load_spec['method'] );
+			$this->assertTrue( $load_spec['v4shim'] );
+		};
+		add_action( 'font_awesome_enqueued', $enqueued_callback );
+
+		global $fa_load;
+		$fa_load->invoke( fa() );
+		$this->assertTrue( $enqueued );
+		$registered_test_clients = array_filter(fa()->requirements(), function( $client ) { return 'test' === $client['name']; });
+		$this->assertEquals( 1, count( $registered_test_clients ) );
+	}
+
 	public function test_two_compatible_clients() {
 		add_action(
 			'font_awesome_requirements',
@@ -167,6 +210,7 @@ class RequirementsTest extends WP_UnitTestCase {
 						'name'   => 'clientA',
 						'method' => 'svg',
 						'v4shim' => 'require',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -174,6 +218,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'clientB',
 						'method' => 'svg',
+						'clientVersion' => '1',
 					// leaves v4shim alone.
 					)
 				);
@@ -200,6 +245,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'clientA',
 						'method' => 'svg',
+						'clientVersion' => '1'
 					)
 				);
 
@@ -207,6 +253,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'clientB',
 						'method' => 'webfont', // not compatible with svg.
+						'clientVersion' => '1'
 					)
 				);
 			}
@@ -243,6 +290,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'test',
 						'method' => 'svg',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -269,6 +317,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'test',
 						'method' => 'webfont',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -299,6 +348,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientA',
 						'version' => '5.0.13',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -306,6 +356,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientB',
 						'version' => '5.0.12',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -359,6 +410,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientA',
 						'version' => '~5.0.0',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -366,6 +418,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientB',
 						'version' => '>=5.0.12',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -373,6 +426,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientC',
 						'version' => '^5',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -421,6 +475,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientA',
 						'version' => '~5.0.0',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -428,6 +483,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientB',
 						'version' => '>=5.0.12',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -435,6 +491,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientC',
 						'version' => '^5',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -483,6 +540,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientA',
 						'version' => '<=5.1',
+						'clientVersion' => '1',
 					)
 				);
 
@@ -490,6 +548,7 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'    => 'clientB',
 						'version' => '>=5.0.10',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -532,6 +591,7 @@ class RequirementsTest extends WP_UnitTestCase {
 				fa()->register(
 					array(
 						'name' => 'test',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -539,8 +599,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
-				$this->assertTrue( $load_spec['usePro'] );
+			function() {
 				$this->assertTrue( fa()->using_pro() );
 			}
 		);
@@ -568,6 +627,7 @@ class RequirementsTest extends WP_UnitTestCase {
 				fa()->register(
 					array(
 						'name' => 'test',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -575,8 +635,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
-				$this->assertFalse( $load_spec['usePro'] );
+			function() {
 				$this->assertFalse( fa()->using_pro() );
 			}
 		);
@@ -597,6 +656,7 @@ class RequirementsTest extends WP_UnitTestCase {
 						'name'   => 'test',
 						'method' => 'svg',
 						'v4shim' => 'require',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -622,12 +682,14 @@ class RequirementsTest extends WP_UnitTestCase {
 						'name'   => 'Client A',
 						'method' => 'webfont',
 						'v4shim' => 'require',
+						'clientVersion' => '1',
 					)
 				);
 				fa()->register(
 					array(
 						'name'   => 'Client B',
 						'method' => 'webfont',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -650,6 +712,7 @@ class RequirementsTest extends WP_UnitTestCase {
 						'name'   => 'Client A',
 						'method' => 'webfont',
 						'v4shim' => 'require',
+						'clientVersion' => '1',
 					)
 				);
 				fa()->register(
@@ -657,6 +720,7 @@ class RequirementsTest extends WP_UnitTestCase {
 						'name'   => 'Client B',
 						'method' => 'webfont',
 						'v4shim' => 'forbid',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -697,12 +761,14 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'Client A',
 						'method' => 'webfont',
+						'clientVersion' => '1',
 					)
 				);
 				fa()->register(
 					array(
 						'name'           => 'Client B',
 						'pseudoElements' => 'require',
+						'clientVersion' => '1',
 					)
 				);
 			}
@@ -742,12 +808,14 @@ class RequirementsTest extends WP_UnitTestCase {
 					array(
 						'name'   => 'Client A',
 						'method' => 'webfont',
+						'clientVersion' => '1',
 					)
 				);
 				fa()->register(
 					array(
 						'name'           => 'Client B',
 						'pseudoElements' => 'forbid',
+						'clientVersion' => '1',
 					)
 				);
 			}

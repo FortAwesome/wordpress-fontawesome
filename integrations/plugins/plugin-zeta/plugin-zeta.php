@@ -21,7 +21,8 @@ add_action(
 			fa()->register(
 				array(
 					'name'    => ZETA_PLUGIN_LOG_PREFIX,
-					'method' => 'svg'
+					'clientVersion' => ZETA_PLUGIN_VERSION,
+					'method' => 'svg',
 				)
 			);
 		}

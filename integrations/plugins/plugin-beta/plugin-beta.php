@@ -20,9 +20,10 @@ add_action(
 		if ( class_exists( 'FontAwesome' ) ) {
 			fa()->register(
 				array(
-					'name'    => BETA_PLUGIN_LOG_PREFIX,
-					'version' => '5.1.0',
-					'v4shim'  => 'require',
+					'name'          => BETA_PLUGIN_LOG_PREFIX,
+					'clientVersion' => BETA_PLUGIN_VERSION,
+					'version'       => '5.1.0',
+					'v4shim'        => 'require',
 				)
 			);
 		}

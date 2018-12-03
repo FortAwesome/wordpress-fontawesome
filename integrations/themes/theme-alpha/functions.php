@@ -1,5 +1,6 @@
 <?php
 define('THEME_ALPHA_LOG_PREFIX', 'theme-alpha');
+define('THEME_ALPHA_VERSION', '0.0.1');
 
 add_action( 'wp_enqueue_scripts', function (){
   $parent_style = 'twentyseventeen';
@@ -17,13 +18,19 @@ add_action('after_switch_theme', function(){
   error_log(THEME_ALPHA_LOG_PREFIX . ': switching theme to theme-alpha');
 });
 
-add_action('font_awesome_requirements', function(){
-  if ( class_exists('FontAwesome') ) {
-    fa()->register(array(
-      "name" => THEME_ALPHA_LOG_PREFIX
-    ));
-  }
-});
+add_action(
+	'font_awesome_requirements',
+	function() {
+		if ( class_exists( 'FontAwesome' ) ) {
+			fa()->register(
+				array(
+					'name'          => THEME_ALPHA_LOG_PREFIX,
+					'clientVersion' => THEME_ALPHA_VERSION,
+				)
+			);
+		}
+	}
+);
 
 add_action('font_awesome_enqueued', function($loadSpec){
   if ( class_exists('FontAwesome') ) {

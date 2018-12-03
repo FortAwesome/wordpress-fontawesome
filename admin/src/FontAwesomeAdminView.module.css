@@ -8,3 +8,7 @@
 .status.conflict .icon {
   color: red;
 }
+
+.status.warning .icon {
+    color: #b7b700;
+}

@@ -5,35 +5,60 @@ import styles from './FontAwesomeAdminView.module.css'
 import LoadSpecView from './LoadSpecView'
 import OptionsSetter from './OptionsSetter'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThumbsUp, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import { faThumbsUp, faExclamationCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import ClientRequirementsView from './ClientRequirementsView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
+import { values } from 'lodash'
 
 class FontAwesomeAdminView extends React.Component {
+
+  getStatus(hasConflict, haslockedLoadSpec) {
+    if( hasConflict ) {
+      if ( haslockedLoadSpec ) {
+        return {
+          statusLabel: 'warning',
+          statusIcon: faExclamationTriangle
+        }
+      } else {
+        return {
+          statusLabel: 'conflict',
+          statusIcon: faExclamationCircle
+        }
+      }
+    } else {
+      return {
+        statusLabel: 'good',
+        statusIcon: faThumbsUp
+      }
+    }
+  }
 
   render(){
     const { data, putData } = this.props
 
     const hasConflict = !!data.conflicts
 
-    const statusLabel = hasConflict ? 'conflict' : 'good'
+    const { statusLabel, statusIcon } = this.getStatus( hasConflict, !!data.options.lockedLoadSpec )
 
     return <div className={ styles['font-awesome-admin-view'] }>
       <h1>Font Awesome</h1>
       <div>
         <p className={ classnames( styles['status'], styles[statusLabel] ) }>
           <span className={ styles['status-label'] }>Status: </span>
-          <FontAwesomeIcon className={ styles['icon'] } icon={ hasConflict ? faExclamationCircle : faThumbsUp }/>
+          <FontAwesomeIcon className={ styles['icon'] } icon={ statusIcon }/>
         </p>
-        { hasConflict
-          ? <ClientRequirementsView
-              clientRequirements={ data.conflicts.conflictingClientRequirements }
-              conflict={ data.conflicts.requirement }
-              adminClientInternal={ data.adminClientInternal }
-              adminClientExternal={ data.adminClientExternal }
-            />
-          : <LoadSpecView spec={ data.currentLoadSpec } />
+        { data.options.lockedLoadSpec &&
+          <LoadSpecView spec={ data.options.lockedLoadSpec } usePro={ data.options.usePro } />
+        }
+        { hasConflict &&
+          <ClientRequirementsView
+            clientRequirements={data.conflicts.conflictingClientRequirements}
+            conflict={data.conflicts.requirement}
+            hasLockedLoadSpec={ !!data.options.lockedLoadSpec }
+            adminClientInternal={data.adminClientInternal}
+            adminClientExternal={data.adminClientExternal}
+          />
         }
         <OptionsSetter
           releases={ data.releases }
@@ -48,7 +73,7 @@ class FontAwesomeAdminView extends React.Component {
         />
         { !hasConflict &&
           <ClientRequirementsView
-            clientRequirements={ data.clientRequirements }
+            clientRequirements={ values( data.clientRequirements ) }
             adminClientInternal={ data.adminClientInternal }
             adminClientExternal={ data.adminClientExternal }
           />
