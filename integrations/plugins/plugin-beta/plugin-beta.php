@@ -16,9 +16,9 @@ define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 
 add_action(
 	'font_awesome_requirements',
-	function( $register ) {
+	function() {
 		if ( class_exists( 'FontAwesome' ) ) {
-			$register(
+			fa()->register(
 				array(
 					'name'          => BETA_PLUGIN_LOG_PREFIX,
 					'clientVersion' => BETA_PLUGIN_VERSION,
@@ -27,9 +27,7 @@ add_action(
 				)
 			);
 		}
-	},
-	10,
-	1
+	}
 );
 
 add_action(

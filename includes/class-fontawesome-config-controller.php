@@ -116,27 +116,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			ini_set( 'display_errors', 0 );
 
 			try {
-				/**
-				 * In order to be able to diagnose any conflicts without impacting the currently locked load spec,
-				 * we need let Font Awesome run through its whole load logic and trigger the requirements registration
-				 * of all clients. We don't want to do this active instance of Font Awesome, though, because we don't
-				 * want to break an active, working load spec.
-				 *
-				 * Even if the site admin hasn't changed any configuration options since we locked the load spec,
-				 * it's possible that some other client has been activated or updated in such a way that new client
-				 * requirements will be registered the next time load() does its thing.
-				 *
-				 * That's what we *want* in the admin UI, to preview (and fix if needed) what would happen next.
-				 * We just don't want to regress from a working locked load spec to a conflict.
-				 *
-				 * So we'll use the ReflectionMethod backdoor approach to instantiate a Font Awesome that we can
-				 * use as a preview.
-				 */
-				// TODO: we might be able to get rid of the preview instance if we're only ever locking load specs
-				// that have no conflicts. In that case, it's ok for a new load spec to be locked from this load.
-				$fa_preview_instance = new ReflectionMethod( 'FontAwesome', 'preview_instance' );
-				$fa_preview_instance->setAccessible( true );
-				$preview_fa = $fa_preview_instance->invoke( null );
+				$fa = fa();
 
 				// Make sure our releases metadata is fresh.
 				$load_releases = new ReflectionMethod( 'FontAwesome_Release_Provider', 'load_releases' );
@@ -145,9 +125,9 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 
 				$fa_load = new ReflectionMethod( 'FontAwesome', 'load' );
 				$fa_load->setAccessible( true );
-				$fa_load->invoke( $preview_fa );
+				$fa_load->invoke( $fa );
 
-				$data = $this->build_item( $preview_fa );
+				$data = $this->build_item( $fa );
 
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
@@ -170,7 +150,6 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 
 			try {
 				$item = $this->prepare_item_for_database( $request );
-				// $new_options = array_replace_recursive( fa()->options(), $item['options'] );
 				$item['options']['adminClientLoadSpec']['clientVersion'] = time();
 
 				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
@@ -178,7 +157,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
 				// the error condition to the admin UI.
 				// We reset to avoid duplication client registrations.
-				$fa      = FontAwesome::reset();
+				$fa      = fa();
 				$load_fa = new ReflectionMethod( 'FontAwesome', 'load' );
 				$load_fa->setAccessible( true );
 				$load_fa->invoke( $fa, $item['options'] );

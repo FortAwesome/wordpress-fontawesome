@@ -191,16 +191,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			return self::$_instance;
 		}
 
-		/**
-		 * A backdoor for the REST controller to be able to create an instance for preview and diagnostics
-		 * of potential new configurations, without side effects to the active singleton instance or its config.
-		 *
-		 * @ignore
-		 */
-		private static function preview_instance() {
-			return new self();
-		}
-
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
@@ -264,7 +254,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * In order for the second warning to appear, the warning should be registered (with this function) during
 		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
-		 * callback on the `font_awesome_enqueued` action hook.
+		 * callback on the `font_awesome_requirements` action hook.
 		 *
 		 * For example:
 		 * ```php
@@ -568,27 +558,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return array|null
 		 * @ignore
 		 */
-		// TODO: change the recommendation for calling the satisfies_or_warn function from the font_awesome_requirements hook.
 		private function load( $options = null ) {
 			$load_spec = null;
 
 			/**
 			 * Fired when the plugin is ready for clients to register their requirements.
-			 * Passes a single parameter: the callback the client should invoke to register
-			 * its requirements.
 			 *
-			 * @since 0.2.0 Added the $register callback param.
+			 * Clients should call {@see FontAwesome::register()} and {@see FontAwesome::satisfies_or_warn()}
+			 * from a callback registered on this hook.
+			 *
 			 * @since 0.1.0
-			 *
-			 * @param callable $register Function for client to call with $client_requirements
-			 * @see FontAwesome for details on the $register callback
 			 */
-			do_action(
-				'font_awesome_requirements',
-				function( $client_requirements ) {
-					$this->register( $client_requirements );
-				}
-			);
+			do_action( 'font_awesome_requirements' );
 
 			$current_options = is_null( $options )
 				? $this->options()
@@ -650,21 +631,21 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 			$processed_clients = array();
 
-			foreach ( $this->client_requirements as $client_requirement ) {
-				if ( ! isset( $locked_clients[ $client_requirement['name'] ] ) || $locked_clients[ $client_requirement['name'] ] !== $client_requirement['clientVersion'] ) {
+			foreach ( $this->client_requirements as $client_name => $client_requirement ) {
+				if ( ! isset( $locked_clients[ $client_name ] ) || $locked_clients[ $client_name ] !== $client_requirement['clientVersion'] ) {
 					return true;
 				} else {
-					array_push( $processed_clients, $client_requirement['name'] );
+					array_push( $processed_clients, $client_name );
 				}
 			}
 
 			// Get all client names in $locked_clients that we didn't just process in $this->client_requirements.
+			// This would include clients that have just been deactivated, for example, since they would have
+			// previously been part of the lockedLoadSpec, but would not be part of the current client_requirements.
+			// If there are any at all, regardless of version, it means the lockedLoadSpec needs to be re-built.
 			$remaining_clients = array_diff( array_keys( $locked_clients ), $processed_clients );
-
-			foreach ( $remaining_clients as $client_requirement ) {
-				if ( $locked_clients['name'] !== $client_requirement['clientVersion'] ) {
-					return true;
-				}
+			if ( count( $remaining_clients ) > 0 ) {
+				return true;
 			}
 
 			return false;
@@ -780,9 +761,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		private function add_plugin_version_warning( $warning ) {
 			if ( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
-				$this->plugin_version_warnings = [];
+				$this->plugin_version_warnings = array();
 			}
-			array_push( $this->plugin_version_warnings, $warning );
+			$this->plugin_version_warnings[ $warning['name'] ] = $warning;
 		}
 
 		/**
@@ -1022,8 +1003,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return boolean
 		 */
 		public function using_pro() {
-			$load_spec = $this->load_spec();
-			return isset( $load_spec['usePro'] ) && $load_spec['usePro'];
+			return $this->is_pro_configured();
 		}
 
 		/**
@@ -1303,7 +1283,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *     'v4shim'         => 'require', // "require" or "forbid"
 		 *     'pseudoElements' => 'require', // "require" or "forbid"
 		 *     'version'        => '~5.5.0', // semver in the form of \Composer\Semver\Semver
-		 *     'name'           => 'Foo Plugin' // (required)
+		 *     'name'           => 'Foo Plugin', // (required)
+		 *     'clientVersion'  => '1.0.1', // (required) The version of your plugin or client
 		 *   )
 		 * ```
 		 *
@@ -1313,6 +1294,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
 		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
+		 *
+		 * <h3>clientVersion and the load specification cache</h3>
+		 *
+		 * This plugin is optimized to rebuild the Font Awesome load specification if and only if the inputs change.
+		 * The primary inputs are these client requirements, which are identified by the client `name` and `clientVersion`.
+		 * Therefore, if a client plugin or theme should update its version number, that would trigger a rebuild of
+		 * the load specification.
 		 *
 		 * <h3>Notes on "require" and "forbid"</h3>
 		 *
@@ -1349,8 +1337,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @param array $client_requirements
 		 * @throws InvalidArgumentException
 		 */
-		// TODO: document clientVersion.
-		private function register( $client_requirements ) {
+		public function register( $client_requirements ) {
 			// TODO: consider using a mechanism other than debug_backtrace() to track the calling module, since phpcs complains.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			$bt     = debug_backtrace( 1 );
@@ -1365,7 +1352,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				'file' => $caller['file'],
 				'line' => $caller['line'],
 			);
-			array_unshift( $this->client_requirements, $client_requirements );
+			$this->client_requirements[ $client_requirements['name'] ] = $client_requirements;
 		}
 	}
 

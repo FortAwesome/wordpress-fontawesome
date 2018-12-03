@@ -20,18 +20,16 @@ add_action('after_switch_theme', function(){
 
 add_action(
 	'font_awesome_requirements',
-	function( $register ) {
+	function() {
 		if ( class_exists( 'FontAwesome' ) ) {
-			$register(
+			fa()->register(
 				array(
 					'name'          => THEME_ALPHA_LOG_PREFIX,
 					'clientVersion' => THEME_ALPHA_VERSION,
 				)
 			);
 		}
-	},
-	10,
-	1
+	}
 );
 
 add_action('font_awesome_enqueued', function($loadSpec){

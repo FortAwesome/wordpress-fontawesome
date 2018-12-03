@@ -22,7 +22,8 @@ add_action(
 		if ( class_exists( 'FontAwesome' ) ) {
 			fa()->register(
 				array(
-					'name'    => SIGMA_PLUGIN_LOG_PREFIX
+					'name'          => SIGMA_PLUGIN_LOG_PREFIX,
+					'clientVersion' => SIGMA_PLUGIN_VERSION,
 				)
 			);
 		}

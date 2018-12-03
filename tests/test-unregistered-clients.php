@@ -76,7 +76,12 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 		add_action(
 			'font_awesome_requirements',
 			function() use ( $fa ) {
-				$fa->register( [ 'name' => 'clientA' ] );
+				$fa->register(
+					[
+						'name'          => 'clientA',
+						'clientVersion' => '1',
+					]
+				);
 			}
 		);
 
@@ -116,7 +121,12 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 		add_action(
 			'font_awesome_requirements',
 			function() use ( $fa ) {
-				$fa->register( [ 'name' => 'clientA' ] );
+				$fa->register(
+					[
+						'name'          => 'clientA',
+						'clientVersion' => '1',
+					]
+				);
 			}
 		);
 

@@ -16,9 +16,9 @@ define( 'ZETA_PLUGIN_LOG_PREFIX', 'zeta-plugin' );
 
 add_action(
 	'font_awesome_requirements',
-	function( $register ) {
+	function() {
 		if ( class_exists( 'FontAwesome' ) ) {
-			$register(
+			fa()->register(
 				array(
 					'name'    => ZETA_PLUGIN_LOG_PREFIX,
 					'clientVersion' => ZETA_PLUGIN_VERSION,

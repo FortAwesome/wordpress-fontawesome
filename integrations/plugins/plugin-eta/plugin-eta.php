@@ -20,8 +20,9 @@ add_action(
 		if ( class_exists( 'FontAwesome' ) ) {
 			fa()->register(
 				array(
-					'name'    => ETA_PLUGIN_LOG_PREFIX,
-					'pseudoElements'  => 'require',
+					'name'           => ETA_PLUGIN_LOG_PREFIX,
+					'pseudoElements' => 'require',
+					'clientVersion'  => ETA_PLUGIN_VERSION,
 				)
 			);
 		}
