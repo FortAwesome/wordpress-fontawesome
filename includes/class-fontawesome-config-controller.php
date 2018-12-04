@@ -160,14 +160,23 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				$fa      = fa();
 				$load_fa = new ReflectionMethod( 'FontAwesome', 'load' );
 				$load_fa->setAccessible( true );
-				$load_fa->invoke( $fa, $item['options'] );
+				$new_load_spec = $load_fa->invoke( $fa, $item['options'] );
+
 				$return_data = $this->build_item( $fa );
 
-				return new WP_REST_Response( $return_data, 200 );
+				if ( $new_load_spec ) {
+					return new WP_REST_Response( $return_data, 200 );
+				} else {
+					return new WP_Error(
+						'cant_update',
+						'Whoops, those options would have resulted in a conflict so we did not save them.',
+						array( 'status' => 403 )
+					);
+				}
 			} catch ( Exception $e ) {
-				return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
 			} catch ( Error $error ) {
-				return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
 			}
 		}
 
