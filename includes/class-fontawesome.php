@@ -214,8 +214,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			$fa = $this;
 			add_action(
 				'init',
-				function() use ( $fa ) {
-					$fa->load();
+				function () use ( $fa ) {
+					try {
+						$fa->load();
+					} catch ( Exception $e ) {
+						font_awesome_official_handle_fatal_error( $e->getMessage() );
+					} catch ( Error $e ) {
+						font_awesome_official_handle_fatal_error( $e->getMessage() );
+					}
 				},
 				10,
 				0
