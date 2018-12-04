@@ -95,6 +95,54 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		}
 	}
 
+	public function test_client_failure_500() {
+		$this->prepare_mock_handler(
+			[
+				new Response(
+					500,
+					[],
+					''
+				),
+			]
+		);
+
+		$farp = fa_release_provider();
+		try {
+			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
+			$releases_method = $klass->getMethod( 'releases' );
+			$releases_method->setAccessible( true );
+			$releases = $releases_method->invoke( $farp );
+			$this->assertEquals( 0, count( $releases ) );
+			$this->assertEquals( 500, $farp->get_status()['code'] );
+		} catch ( \ReflectionException $e ) {
+			$this->assertTrue( false, 'Exception: ' . $e );
+		}
+	}
+
+	public function test_client_failure_403() {
+		$this->prepare_mock_handler(
+			[
+				new Response(
+					403,
+					[],
+					''
+				),
+			]
+		);
+
+		$farp = fa_release_provider();
+		try {
+			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
+			$releases_method = $klass->getMethod( 'releases' );
+			$releases_method->setAccessible( true );
+			$releases = $releases_method->invoke( $farp );
+			$this->assertEquals( 0, count( $releases ) );
+			$this->assertEquals( 403, $farp->get_status()['code'] );
+		} catch ( \ReflectionException $e ) {
+			$this->assertTrue( false, 'Exception: ' . $e );
+		}
+	}
+
 	public function test_versions() {
 		$this->prepare_mock_handler(
 			[
