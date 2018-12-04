@@ -484,9 +484,26 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'admin_menu',
 				function() {
+
+					$count_plugin_version_warnings = count(
+						is_null( $this->plugin_version_warnings )
+						? []
+						: $this->plugin_version_warnings
+					);
+
+					$count_conflicts = is_null( $this->conflicts() ) ? 0 : 1;
+
+					$alert_count = $count_plugin_version_warnings + $count_conflicts;
+
+					$menu_label = sprintf(
+						'Font Awesome %s',
+						"<span class='update-plugins count-$alert_count' title='Font Awesome Conflicts'><span class='update-count'>"
+						. number_format_i18n( $alert_count ) . '</span></span>'
+					);
+
 					$this->screen_id = add_options_page(
 						'Font Awesome Settings',
-						'Font Awesome',
+						$menu_label,
 						'manage_options',
 						self::OPTIONS_PAGE,
 						array( $this, 'create_admin_page' )
