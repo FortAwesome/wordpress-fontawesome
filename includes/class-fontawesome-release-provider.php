@@ -32,6 +32,15 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
+	protected $_status = array(
+		'code'    => null,
+		'message' => '',
+	);
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
 	protected $_api_client = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -78,6 +87,25 @@ class FontAwesome_Release_Provider {
 	}
 
 	/**
+	 * Returns an associative array indicating the status of the status of the last network
+	 * request that attempted to retrieve releases metadata.
+	 *
+	 * The shape looks like this:
+	 * ```php
+	 * array(
+	 *   'code' => 403, // 200 if successful, otherwise some HTTP error code as returned by {@see \Guzzle\Client}
+	 *   'message' => 'some message',
+	 * )
+	 * ```
+	 * All previous releases metadata held in the previous instance will be abandoned.
+	 *
+	 * @return FontAwesome_Release_Provider
+	 */
+	public function get_status() {
+		return $this->_status;
+	}
+
+	/**
 	 * Private constructor.
 	 *
 	 * @ignore
@@ -117,7 +145,10 @@ class FontAwesome_Release_Provider {
 	private function load_releases() {
 		try {
 			$response = $this->_api_client->get( 'api/releases' );
-			// TODO: handle error response codes from GET.
+
+			$this->_status['code']    = $response->getStatusCode();
+			$this->_status['message'] = 'ok';
+
 			$body          = $response->getBody();
 			$body_contents = $body->getContents();
 			$body_json     = json_decode( $body_contents, true );
@@ -128,9 +159,23 @@ class FontAwesome_Release_Provider {
 			}
 			$this->_releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
-			// TODO: propagate this error up to the admin UI.
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( $e );
+			$this->_status['code']    = $e->getCode();
+			$this->_status['message'] = 'Whoops, we could not connect to the Font Awesome server to get releases data.  ' .
+										'There seems to be an internet connectivity problem between your WordPress server ' .
+										'and the Font Awesome server.';
+		} catch ( GuzzleHttp\Exception\ServerException $e ) {
+			$this->_status['code']    = $e->getCode();
+			$this->_status['message'] = 'Whoops, there was a problem on the fontawesome.com server when we attempted to get releases data.  ' .
+										'Probably if you reload to try again, it will work.';
+		} catch ( GuzzleHttp\Exception\ClientException $e ) {
+			$this->_status['code']    = $e->getCode();
+			$this->_status['message'] = 'Whoops, we could not update the releases data from the Font Awesome server.';
+		} catch ( Exception $e ) {
+			$this->_status['code']    = 0;
+			$this->_status['message'] = 'Whoops, we failed to update the releases data from the Font Awesome server.';
+		} catch ( Error $e ) {
+			$this->_status['code']    = 0;
+			$this->_status['message'] = 'Whoops, we failed when trying to update the releases data from the Font Awesome server.';
 		}
 	}
 

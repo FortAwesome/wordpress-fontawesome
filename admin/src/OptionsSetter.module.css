@@ -9,3 +9,7 @@
 .submit-status.success .icon {
   color: green;
 }
+
+.release-provider-error {
+  color: red;
+}

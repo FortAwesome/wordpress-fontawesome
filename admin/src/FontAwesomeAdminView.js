@@ -70,6 +70,7 @@ class FontAwesomeAdminView extends React.Component {
           submitMessage={ this.props.submitMessage }
           error={ this.props.error }
           adminClientInternal={ data.adminClientInternal }
+          releaseProviderStatus={ data.releaseProviderStatus }
         />
         { !hasConflict &&
           <ClientRequirementsView
@@ -81,7 +82,7 @@ class FontAwesomeAdminView extends React.Component {
         <UnregisteredClientsView clients={ data.unregisteredClients }/>
         {
           data.pluginVersionWarnings &&
-          <PluginVersionWarningsView warnings={ data.pluginVersionWarnings } pluginVersion={ data.pluginVersion }/>
+          <PluginVersionWarningsView warnings={ values(data.pluginVersionWarnings) } pluginVersion={ data.pluginVersion }/>
         }
       </div>
     </div>
