@@ -87,6 +87,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				'currentLoadSpec'       => $fa->load_spec(),
 				'currentLoadSpecLocked' => $locked_load_spec && $fa->load_spec() === $locked_load_spec,
 				'unregisteredClients'   => $fa->unregistered_clients(),
+				'releaseProviderStatus' => fa_release_provider()->get_status(),
 				'releases'              => array(
 					'available'        => $fa->get_available_versions(),
 					'latest_version'   => $fa->get_latest_version(),
