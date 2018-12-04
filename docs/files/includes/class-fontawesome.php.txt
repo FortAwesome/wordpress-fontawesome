@@ -127,7 +127,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		const DEFAULT_USER_OPTIONS = array(
 			'adminClientLoadSpec'       => array(
-				'name' => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
+				'name'          => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
+				'clientVersion' => 0,
 			),
 			'usePro'                    => false,
 			'removeUnregisteredClients' => false,
@@ -253,7 +254,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * In order for the second warning to appear, the warning should be registered (with this function) during
 		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
-		 * callback on the `font_awesome_enqueued` action hook.
+		 * callback on the `font_awesome_requirements` action hook.
 		 *
 		 * For example:
 		 * ```php
@@ -483,9 +484,26 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'admin_menu',
 				function() {
+
+					$count_plugin_version_warnings = count(
+						is_null( $this->plugin_version_warnings )
+						? []
+						: $this->plugin_version_warnings
+					);
+
+					$count_conflicts = is_null( $this->conflicts() ) ? 0 : 1;
+
+					$alert_count = $count_plugin_version_warnings + $count_conflicts;
+
+					$menu_label = sprintf(
+						'Font Awesome %s',
+						"<span class='update-plugins count-$alert_count' title='Font Awesome Conflicts'><span class='update-count'>"
+						. number_format_i18n( $alert_count ) . '</span></span>'
+					);
+
 					$this->screen_id = add_options_page(
 						'Font Awesome Settings',
-						'Font Awesome',
+						$menu_label,
 						'manage_options',
 						self::OPTIONS_PAGE,
 						array( $this, 'create_admin_page' )
@@ -552,53 +570,64 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * The `font_awesome_enqueued` hook is always triggered when there is a successful load specification to be
 		 * enqueued, whether that specification was locked from a previous build, or built anew.
 		 *
-		 * Pass <code>['rebuild' => true]</code> for $params to trigger a rebuild if even a previous one exists in options.
-		 * Pass <code>['save' => false]</code> to disable saving a rebuilt load specification to the options table.
-		 *
-		 * Clients normally should _not_ invoke this function directly, and especially not with non-default params,
-		 * since doing so could cause unexpected side effects for all clients.
-		 * Normally, this is only invoked internally when the plugin loads in WordPress, and by the REST controller when
-		 * updating options from the admin UI.
-		 *
-		 * @param array $params Default: [ 'rebuild' => false, 'save' => true ]
+		 * @param array $options optional, overrides any options in the db, using array_replace_recursive()
+		 *        Default: null, no override.
 		 * @return array|null
+		 * @ignore
 		 */
-		private function load( $params = [
-			'rebuild' => false,
-			'save'    => true,
-		] ) {
-			$options = $this->options();
-
+		private function load( $options = null ) {
 			$load_spec = null;
 
-			if ( isset( $options['lockedLoadSpec'] ) && ! $params['rebuild'] ) {
-				$load_spec = $options['lockedLoadSpec'];
-			} else {
-				$load_spec = $this->build( $options );
+			/**
+			 * Fired when the plugin is ready for clients to register their requirements.
+			 *
+			 * Clients should call {@see FontAwesome::register()} and {@see FontAwesome::satisfies_or_warn()}
+			 * from a callback registered on this hook.
+			 *
+			 * @since 0.1.0
+			 */
+			do_action( 'font_awesome_requirements' );
+
+			$current_options = is_null( $options )
+				? $this->options()
+				: $options;
+
+			// Register the web site admin as a client.
+			$this->register( $current_options['adminClientLoadSpec'] );
+
+			if ( $this->should_rebuild() ) {
+				$load_spec = $this->build();
 
 				if ( isset( $load_spec ) ) {
-					if ( true && $params['save'] /* build a test that should only be true if the new load spec is different and should be saved */ ) {
-						wp_cache_delete( 'alloptions', 'options' );
-						$options['lockedLoadSpec'] = $load_spec;
-						if ( ! update_option( self::OPTIONS_KEY, $options ) ) {
-							return null;
-
-							// TODO: report options update error to admin UI.
-							// We've managed to build a new load spec, and verified that it's
-							// different, but when trying to update it, we got a falsy response,
-							// and the docs say that means that either the update failed or no update was made.
-							// If we add a mechanism for passing non-fatal warnings up to admin UI client
-							// for display, it would probably make sense to pass such a message up for this one.
-						}
+					// Save the new conflict-free load spec as our new lockedLoadSpec.
+					wp_cache_delete( 'alloptions', 'options' );
+					$current_options['lockedLoadSpec'] = $load_spec;
+					if ( ! update_option( self::OPTIONS_KEY, $current_options ) ) {
+						// TODO: report options update error to admin UI.
+						// We've managed to build a new load spec, and verified that it's
+						// different, but when trying to update it, we got a falsy response,
+						// and the docs say that means that either the update failed or no update was made.
+						// If we add a mechanism for passing non-fatal warnings up to admin UI client
+						// for display, it would probably make sense to pass such a message up for this one.
+						// Regardless, for now, since we didn't lock a new load spec, we return null.
+						return null;
 					}
 				}
+			} else {
+				$load_spec = $this->options()['lockedLoadSpec'];
 			}
 
 			if ( isset( $load_spec ) ) {
 				// We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
 				// Now enqueue it.
 				$this->load_spec = $load_spec;
-				$this->enqueue( $load_spec, $options['removeUnregisteredClients'] );
+				$this->enqueue(
+					$load_spec,
+					[
+						'removeUnregisteredClients' => $this->options()['removeUnregisteredClients'],
+						'usePro'                    => $current_options['usePro'],
+					]
+				);
 				return $load_spec;
 			} else {
 				return null;
@@ -609,22 +638,41 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		private function build( $options ) {
-			// Register the web site user/admin as a client.
-			$this->register( $options['adminClientLoadSpec'] );
+		private function should_rebuild() {
+			$options = $this->options();
+			if ( ! isset( $options['lockedLoadSpec'] ) ) {
+				return true;
+			}
 
-			// Now, ask any other listening clients to register.
-			/**
-			 * Fired when the plugin is ready for clients to register their requirements.
-			 *
-			 * Client plugins and themes should normally have their call to {@see FontAwesome::register()} invoked
-			 * from a callback registered on this action.
-			 *
-			 * @since 0.1.0
-			 *
-			 * @see FontAwesome::register()
-			 */
-			do_action( 'font_awesome_requirements' );
+			$locked_clients = $options['lockedLoadSpec']['clients'];
+
+			$processed_clients = array();
+
+			foreach ( $this->client_requirements as $client_name => $client_requirement ) {
+				if ( ! isset( $locked_clients[ $client_name ] ) || $locked_clients[ $client_name ] !== $client_requirement['clientVersion'] ) {
+					return true;
+				} else {
+					array_push( $processed_clients, $client_name );
+				}
+			}
+
+			// Get all client names in $locked_clients that we didn't just process in $this->client_requirements.
+			// This would include clients that have just been deactivated, for example, since they would have
+			// previously been part of the lockedLoadSpec, but would not be part of the current client_requirements.
+			// If there are any at all, regardless of version, it means the lockedLoadSpec needs to be re-built.
+			$remaining_clients = array_diff( array_keys( $locked_clients ), $processed_clients );
+			if ( count( $remaining_clients ) > 0 ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		private function build() {
 			$load_spec = $this->compute_load_spec(
 				function( $data ) {
 					// This is the error callback function. It only runs when build_load_spec() needs to report an error.
@@ -730,9 +778,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		private function add_plugin_version_warning( $warning ) {
 			if ( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
-				$this->plugin_version_warnings = [];
+				$this->plugin_version_warnings = array();
 			}
-			array_push( $this->plugin_version_warnings, $warning );
+			$this->plugin_version_warnings[ $warning['name'] ] = $warning;
 		}
 
 		/**
@@ -862,18 +910,19 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				),
 			);
 
-			$valid_keys = array_keys( $load_spec );
-
-			$bail_early_req = null;
-
-			$clients = array();
+			$valid_keys      = array_keys( $load_spec );
+			$bail_early_req  = null;
+			$clients         = array();
+			$client_versions = array();
 
 			// Iterate through each set of requirements registered by a client.
 			foreach ( $this->client_requirements as $requirement ) {
-				$clients[ $requirement['name'] ] = $requirement['clientCallSite'];
+				$clients[ $requirement['name'] ]         = $requirement['clientCallSite'];
+				$client_versions[ $requirement['name'] ] = $requirement['clientVersion'];
+
 				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ].
 				foreach ( $requirement as $key => $payload ) {
-					if ( in_array( $key, [ 'clientCallSite', 'name' ], true ) ) {
+					if ( in_array( $key, [ 'clientCallSite', 'name', 'clientVersion' ], true ) ) {
 						continue; // these are meta keys that we won't process here.
 					}
 					if ( ! in_array( $key, $valid_keys, true ) ) {
@@ -938,12 +987,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
 				$pseudo_elements = true;
 			}
+
 			return array(
 				'method'         => $method,
 				'v4shim'         => $this->specified_requirement_or_default( $load_spec['v4shim'], $v4shim_default ) === 'require',
 				'pseudoElements' => $pseudo_elements,
 				'version'        => $version,
-				'usePro'         => $this->is_pro_configured(),
+				'clients'        => $client_versions,
 			);
 		}
 
@@ -970,8 +1020,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return boolean
 		 */
 		public function using_pro() {
-			$load_spec = $this->load_spec();
-			return isset( $load_spec['usePro'] ) && $load_spec['usePro'];
+			return $this->is_pro_configured();
 		}
 
 		/**
@@ -1007,7 +1056,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected function enqueue( $load_spec, $remove_unregistered_clients = false ) {
+		protected function enqueue( $load_spec, $params = [
+			'removeUnregisteredClients' => false,
+			'usePro'                    => false,
+		] ) {
 			$release_provider = fa_release_provider();
 
 			$method  = $load_spec['method'];
@@ -1030,7 +1082,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				$load_spec['version'],
 				'all',
 				[
-					'use_pro'  => $load_spec['usePro'],
+					'use_pro'  => $params['usePro'],
 					'use_svg'  => $use_svg,
 					'use_shim' => $load_spec['v4shim'],
 				]
@@ -1092,7 +1144,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-				if ( fa()->using_pseudo_elements() ) {
+				if ( $this->using_pseudo_elements() ) {
 					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 				}
 
@@ -1156,9 +1208,9 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// Look for unregistered clients.
 			add_action(
 				'wp_enqueue_scripts',
-				function() use ( $obj, $remove_unregistered_clients ) {
+				function() use ( $obj, $params ) {
 					$obj->detect_unregistered_clients();
-					if ( $remove_unregistered_clients ) {
+					if ( $params['removeUnregisteredClients'] ) {
 						$obj->remove_unregistered_clients();
 					}
 				},
@@ -1248,7 +1300,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *     'v4shim'         => 'require', // "require" or "forbid"
 		 *     'pseudoElements' => 'require', // "require" or "forbid"
 		 *     'version'        => '~5.5.0', // semver in the form of \Composer\Semver\Semver
-		 *     'name'           => 'Foo Plugin' // (required)
+		 *     'name'           => 'Foo Plugin', // (required)
+		 *     'clientVersion'  => '1.0.1', // (required) The version of your plugin or client
 		 *   )
 		 * ```
 		 *
@@ -1258,6 +1311,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
 		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
+		 *
+		 * <h3>clientVersion and the load specification cache</h3>
+		 *
+		 * This plugin is optimized to rebuild the Font Awesome load specification if and only if the inputs change.
+		 * The primary inputs are these client requirements, which are identified by the client `name` and `clientVersion`.
+		 * Therefore, if a client plugin or theme should update its version number, that would trigger a rebuild of
+		 * the load specification.
 		 *
 		 * <h3>Notes on "require" and "forbid"</h3>
 		 *
@@ -1302,11 +1362,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			if ( ! array_key_exists( 'name', $client_requirements ) ) {
 				throw new InvalidArgumentException( 'missing required key: name' );
 			}
+			if ( ! array_key_exists( 'clientVersion', $client_requirements ) ) {
+				throw new InvalidArgumentException( 'missing required key: clientVersion' );
+			}
 			$client_requirements['clientCallSite'] = array(
 				'file' => $caller['file'],
 				'line' => $caller['line'],
 			);
-			array_unshift( $this->client_requirements, $client_requirements );
+
+			$this->client_requirements[ $client_requirements['name'] ] = $client_requirements;
 		}
 	}
 

@@ -73,6 +73,9 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 * @ignore
 		 */
 		protected function build_item( $fa ) {
+			$options          = $fa->options();
+			$locked_load_spec = isset( $options['lockedLoadSpec'] ) ? $options['lockedLoadSpec'] : false;
+
 			return array(
 				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
 				'adminClientExternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
@@ -82,6 +85,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
 				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
 				'currentLoadSpec'       => $fa->load_spec(),
+				'currentLoadSpecLocked' => $locked_load_spec && $fa->load_spec() === $locked_load_spec,
 				'unregisteredClients'   => $fa->unregistered_clients(),
 				'releases'              => array(
 					'available'        => $fa->get_available_versions(),
@@ -110,26 +114,26 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			// that we return 500 instead of 200 in these cases.
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_ini_set
 			ini_set( 'display_errors', 0 );
-			// If we don't add a reset() here, then the subsequent load() with rebuild
-			// will end up adding the clients a second time.
-			// We need to run load() with rebuild to make sure that all data is populated
-			// for build_item().
+
 			try {
-				$fa = FontAwesome::reset();
-				$r  = new ReflectionMethod( 'FontAwesome', 'load' );
-				$r->setAccessible( true );
-				$r->invoke(
-					$fa,
-					[
-						'rebuild' => true,
-						'save'    => false,
-					]
-				);
+				$fa = fa();
+
+				// Make sure our releases metadata is fresh.
+				$load_releases = new ReflectionMethod( 'FontAwesome_Release_Provider', 'load_releases' );
+				$load_releases->setAccessible( true );
+				$load_releases->invoke( fa_release_provider() );
+
+				$fa_load = new ReflectionMethod( 'FontAwesome', 'load' );
+				$fa_load->setAccessible( true );
+				$fa_load->invoke( $fa );
+
 				$data = $this->build_item( $fa );
 
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
+				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical exception trying to load Font Awesome.', array( 'status' => 500 ) );
+			} catch ( Error $error ) {
 				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error trying to load Font Awesome.', array( 'status' => 500 ) );
 			}
 		}
@@ -144,33 +148,35 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_ini_set
 			ini_set( 'display_errors', 0 );
 
-			$item = $this->prepare_item_for_database( $request );
+			try {
+				$item = $this->prepare_item_for_database( $request );
+				$item['options']['adminClientLoadSpec']['clientVersion'] = time();
 
-			$current_options = get_option( FontAwesome::OPTIONS_KEY );
+				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
+				// normal load process. If it satisfies all constraints, the new adminClientLoadSpec spec will be
+				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
+				// the error condition to the admin UI.
+				// We reset to avoid duplication client registrations.
+				$fa      = fa();
+				$load_fa = new ReflectionMethod( 'FontAwesome', 'load' );
+				$load_fa->setAccessible( true );
+				$new_load_spec = $load_fa->invoke( $fa, $item['options'] );
 
-			if ( $item['options'] === $current_options || update_option( FontAwesome::OPTIONS_KEY, $item['options'] ) ) {
-				// Because FontAwesome is a singleton, we need to reset it now that the
-				// user options have changed. And running load() is what must happen
-				// in order to fully populate the object with all of its data that will
-				// be pulled together into a response object by build_item().
-				try {
-					$fa = FontAwesome::reset();
-					$r  = new ReflectionMethod( 'FontAwesome', 'load' );
-					$r->setAccessible( true );
-					$r->invoke(
-						$fa,
-						[
-							'rebuild' => true,
-							'save'    => true,
-						]
-					);
-					$return_data = $this->build_item( $fa );
+				$return_data = $this->build_item( $fa );
+
+				if ( $new_load_spec ) {
 					return new WP_REST_Response( $return_data, 200 );
-				} catch ( Exception $e ) {
-					return new WP_Error( 'cant-update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+				} else {
+					return new WP_Error(
+						'cant_update',
+						'Whoops, those options would have resulted in a conflict so we did not save them.',
+						array( 'status' => 403 )
+					);
 				}
-			} else {
-				return new WP_Error( 'cant-update', 'Whoops, we couldn\'t update those options.', array( 'status' => 500 ) );
+			} catch ( Exception $e ) {
+				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+			} catch ( Error $error ) {
+				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
 			}
 		}
 

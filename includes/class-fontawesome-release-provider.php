@@ -172,7 +172,8 @@ class FontAwesome_Release_Provider {
 		if ( is_null( $this->_releases ) ) {
 			$this->load_releases();
 		}
-		return $this->_releases;
+		// TODO: after figuring out how we'll handle releases API failures we may want to change what we return in the null case here.
+		return is_null( $this->_releases ) ? array() : $this->_releases;
 	}
 
 	/**
