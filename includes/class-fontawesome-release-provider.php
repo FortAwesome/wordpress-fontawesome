@@ -160,7 +160,9 @@ class FontAwesome_Release_Provider {
 			$this->_releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
 			$this->_status['code']    = $e->getCode();
-			$this->_status['message'] = 'Whoops, we could not connect to the Font Awesome server to get releases data';
+			$this->_status['message'] = 'Whoops, we could not connect to the Font Awesome server to get releases data.  ' .
+										'There seems to be an internet connectivity problem between your WordPress server ' .
+										'and the Font Awesome server.';
 		} catch ( GuzzleHttp\Exception\ServerException $e ) {
 			$this->_status['code']    = $e->getCode();
 			$this->_status['message'] = 'Whoops, there was a problem on the fontawesome.com server when we attempted to get releases data.  ' .
