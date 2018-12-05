@@ -197,4 +197,36 @@ class ConfigControllerTest extends WP_UnitTestCase {
 	 *      2.2. When the new client has conflict-free requirements
 	 *           EXPECTED: rebuild lockedLoadSpec, report no conflicts
 	 */
+
+	function test_scenario_a1() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+		    'method'        => 'webfont',
+		]);
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'method'        => 'svg',
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+
+		$this->assertNull($data['currentLoadSpec']);
+		$this->assertFalse($data['currentLoadSpecLocked']);
+		$this->assertEquals('method', $data['conflicts']['requirement']);
+
+		$this->assertEquals(2, count($data['conflicts']['conflictingClientRequirements']));
+		$this->assertArrayHasKey( 'name', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'clientVersion', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'method', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'clientCallSite', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'file', $data['conflicts']['conflictingClientRequirements'][0]['clientCallSite'] );
+		$this->assertArrayHasKey( 'line', $data['conflicts']['conflictingClientRequirements'][0]['clientCallSite'] );
+	}
 }
