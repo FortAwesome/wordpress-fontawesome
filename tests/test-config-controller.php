@@ -1,79 +1,39 @@
 <?php
 /**
- * Tests the release provider.
+ * Class RequirementsTest
  *
- * @noinspection PhpIncludeInspection
+ * @noinspection PhpCSValidationInspection
  */
-
-require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
+// phpcs:ignoreFile Squiz.Commenting.ClassComment.Missing
+// phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-use Composer\Semver\Semver;
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-config-controller.php';
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
 /**
- * Class ReleaseProviderTest
- *
- * @group api
- *
- * The backupStaticAttributes option seems to be necessary in order to make the handler mocking work consistently.
- * To see what happens without it, disconnect networking (so the client can't get out to the real API URL and MUST
- * rely on this mock handler), and then run this test case. It will fail some times.
- * This is probably because we're messing with singletons here.
- *
- * TODO: Considering refactoring or re-implementing to avoid this if it becomes a problem. But maybe it's not a problem.
- *
- * WARNING: if you disable this attribute and see the tests still passing, it's probably because it's hitting the
- * real API server instead of using the MockHandler, which we don't want to do. So just make sure you understand
- * what you're doing before disabling this and make sure that the test suite still passes offline (and thus does
- * not require hitting the real API server).
- *
- * UPDATE: December 5, 2018 removed the backupStaticAttributes annotation when adding runTestsInSeparateProcesses
- * and "preserveGlobalState disabled" because we're suddenly having failures in Travis CI (but not in the local
- * development environment). The failures are all from this test case:
- *  "Exception: Serialization of 'Closure' is not allowed"
- *
- * PHP cannot serialize anonymous functions:
- * https://github.com/sebastianbergmann/phpunit/issues/2739
- *
- * And when tests are run with process isolation, apparently serialization of globals between parent and child
- * processes is part of the magic.
- *
- * See also: https://phpunit.de/manual/6.5/en/appendixes.annotations.html#appendixes.annotations.preserveGlobalState
- * (Though this doc is for phpunit 6.5, and we're using 5.x right now).
- *
- * So we must be doing that. Don't know why this only started failing on CI today. But we're going to try and insist
- * on this test case running in separate processes all the time and configure it so that it hopefully runs the same
- * in both local developpment and CI.
- *
- * @preserveGlobalState disabled
- * @runTestsInSeparateProcesses
- */
-class ReleaseProviderTest extends WP_UnitTestCase {
-	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
-	protected $known_versions = [
-		'5.0.1',
-		'5.0.2',
-		'5.0.3',
-		'5.0.4',
-		'5.0.6',
-		'5.0.8',
-		'5.0.9',
-		'5.0.10',
-		'5.0.12',
-		'5.0.13',
-		'5.1.0',
-		'5.1.1',
-		'5.2.0',
-		'5.3.1',
-		'5.4.1',
-	];
+* Class ConfigControllerTest
+* Thanks to Josh Pollock for a helpful guide to testing this controller:
+* https://torquemag.io/2017/01/testing-api-endpoints/
+*/
+class ConfigControllerTest extends WP_UnitTestCase {
+	protected $server;
+	protected $admin_user;
+	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/config';
 
-	public function test_can_load_and_instantiate() {
-		$obj = fa_release_provider();
-		$this->assertFalse( is_null( $obj ) );
+	public function setUp() {
+		global $wp_rest_server;
+
+		$this->server = $wp_rest_server = new \WP_REST_Server;
+		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+
+		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
+
+		$fa = FontAwesome::reset();
+		$fa->run();
+		do_action( 'rest_api_init' );
 	}
 
 	protected function prepare_mock_handler( $responses ) {
@@ -92,552 +52,330 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		);
 	}
 
-	public function test_load_release_data() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-		try {
-			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
-			$releases_method = $klass->getMethod( 'releases' );
-			$releases_method->setAccessible( true );
-			$releases = $releases_method->invoke( $farp );
-			$this->assertFalse( is_null( $releases ) );
-			$this->assertCount( count( $this->known_versions ), $releases );
-			foreach ( $this->known_versions as $version ) {
-				$this->assertArrayHasKey( $version, $releases );
-			}
-		} catch ( \ReflectionException $e ) {
-			$this->assertTrue( false, 'Exception: ' . $e );
-		}
+	public function test_register_route() {
+		$routes = $this->server->get_routes();
+		$this->assertArrayHasKey( $this->namespaced_route, $routes );
 	}
 
-	public function test_client_failure_500() {
-		$this->prepare_mock_handler(
-			[
-				new Response(
-					500,
-					[],
-					''
-				),
-			]
-		);
-
-		$farp = fa_release_provider();
-		try {
-			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
-			$releases_method = $klass->getMethod( 'releases' );
-			$releases_method->setAccessible( true );
-			$releases = $releases_method->invoke( $farp );
-			$this->assertEquals( 0, count( $releases ) );
-			$this->assertEquals( 500, $farp->get_status()['code'] );
-		} catch ( \ReflectionException $e ) {
-			$this->assertTrue( false, 'Exception: ' . $e );
-		}
-	}
-
-	public function test_client_failure_403() {
-		$this->prepare_mock_handler(
-			[
-				new Response(
-					403,
-					[],
-					''
-				),
-			]
-		);
-
-		$farp = fa_release_provider();
-		try {
-			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
-			$releases_method = $klass->getMethod( 'releases' );
-			$releases_method->setAccessible( true );
-			$releases = $releases_method->invoke( $farp );
-			$this->assertEquals( 0, count( $releases ) );
-			$this->assertEquals( 403, $farp->get_status()['code'] );
-		} catch ( \ReflectionException $e ) {
-			$this->assertTrue( false, 'Exception: ' . $e );
-		}
-	}
-
-	public function test_versions() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp           = fa_release_provider();
-		$versions       = $farp->versions();
-		$known_versions = $this->known_versions;
-		$this->assertCount( count( $this->known_versions ), $versions );
-		$this->assertArraySubset( Semver::rsort( $known_versions ), $versions );
-	}
-
-	public function test_5_0_all_free_shimless() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version.
-			'all', // style_opt.
-			[
-				'use_pro'  => false,
-				'use_svg'  => false,
-				'use_shim' => false,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 1, $resource_collection );
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.0.13/css/all.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp', $resource_collection[0]->integrity_key() );
-	}
-
-	public function test_5_0_all_webfont_pro_shimless() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version.
-			'all', // style_opt.
-			[
-				'use_pro'  => true,
-				'use_svg'  => false,
-				'use_shim' => false,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 1, $resource_collection );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/css/all.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG', $resource_collection[0]->integrity_key() );
-	}
-
-	/**
-	 * There was no webfont shim in 5.0.x. So this should throw an exception.
-	 */
-	public function test_5_0_webfont_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$this->expectException( InvalidArgumentException::class );
-
-		$farp->get_resource_collection(
-			'5.0.13', // version.
-			'all', // style_opt.
-			[
-				'use_pro'  => true,
-				'use_svg'  => false,
-				'use_shim' => true,
-			]
-		);
-	}
-
-	public function test_5_1_all_webfont_pro_shimless() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version.
-			'all', // style_opt.
-			[
-				'use_pro'  => true,
-				'use_svg'  => false,
-				'use_shim' => false,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 1, $resource_collection );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs', $resource_collection[0]->integrity_key() );
-	}
-
-	// TODO: when 5.1.1 is released, add a test to make sure there is a v4-shims.css integrity key.
-	public function test_5_1_0_missing_webfont_free_shim_integrity() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version.
-			'all', // style_opt.
-			[
-				'use_pro'  => false,
-				'use_svg'  => false,
-				'use_shim' => true,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 2, $resource_collection );
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt', $resource_collection[0]->integrity_key() );
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection[1]->source() );
-	}
-
-	public function test_5_0_all_svg_pro_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version.
-			'all', // style_opt.
-			[
-				'use_pro'  => true,
-				'use_svg'  => true,
-				'use_shim' => true,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 2, $resource_collection );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/all.js', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-d84LGg2pm9KhR4mCAs3N29GQ4OYNy+K+FBHX8WhimHpPm86c839++MDABegrZ3gn', $resource_collection[0]->integrity_key() );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/v4-shims.js', $resource_collection[1]->source() );
-		$this->assertEquals( 'sha384-LDfu/SrM7ecLU6uUcXDDIg59Va/6VIXvEDzOZEiBJCh148mMGba7k3BUFp1fo79X', $resource_collection[1]->integrity_key() );
-	}
-
-	public function test_5_0_solid_brands_svg_free_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$resource_collection = $farp->get_resource_collection(
-			'5.0.13', // version.
-			[ 'solid', 'brands' ], // style_opt.
-			[
-				'use_pro'  => false,
-				'use_svg'  => true,
-				'use_shim' => true,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 4, $resource_collection );
-		$resources = array();
-		foreach ( $resource_collection as $resource ) {
-			$matches = [];
-			$this->assertTrue( boolval( preg_match( '/\/(brands|solid|fontawesome|v4-shims)\.js/', $resource->source(), $matches ) ) );
-			$resources[ $matches[1] ] = $resource;
-		}
-		$this->assertCount( 4, $resources );
-		$this->assertArrayHasKey( 'fontawesome', $resources );
-		$this->assertArrayHasKey( 'brands', $resources );
-		$this->assertArrayHasKey( 'solid', $resources );
-		$this->assertArrayHasKey( 'v4-shims', $resources );
-
-		// The fontawesome main library will appear first in order.
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY', $resource_collection[0]->integrity_key() );
-
-		// The style resources will appear in the middle, in any order.
-		foreach ( [ 1, 2 ] as $resource_index ) {
-			switch ( $resource_collection[ $resource_index ] ) {
-				case $resources['brands']:
-					$this->assertEquals(
-						'https://use.fontawesome.com/releases/v5.0.13/js/brands.js',
-						$resource_collection[ $resource_index ]->source()
-					);
-					$this->assertEquals(
-						'sha384-G/XjSSGjG98ANkPn82CYar6ZFqo7iCeZwVZIbNWhAmvCF2l+9b5S21K4udM7TGNu',
-						$resource_collection[ $resource_index ]->integrity_key()
-					);
-					break;
-				case $resources['solid']:
-					$this->assertEquals(
-						'https://use.fontawesome.com/releases/v5.0.13/js/solid.js',
-						$resource_collection[ $resource_index ]->source()
-					);
-					$this->assertEquals(
-						'sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ',
-						$resource_collection[ $resource_index ]->integrity_key()
-					);
-					break;
-				default:
-					throw new InvalidArgumentException( 'Unexpected resource in collection' );
+	public function test_endpoints() {
+		$the_route = $this->namespaced_route;
+		$routes = $this->server->get_routes();
+		foreach( $routes as $route => $route_config ) {
+			if( 0 === strpos( $the_route, $route ) ) {
+				$this->assertTrue( is_array( $route_config ) );
+				foreach( $route_config as $i => $endpoint ) {
+					$this->assertArrayHasKey( 'callback', $endpoint );
+					$this->assertArrayHasKey( 0, $endpoint[ 'callback' ], get_class( $this ) );
+					$this->assertArrayHasKey( 1, $endpoint[ 'callback' ], get_class( $this ) );
+					$this->assertTrue( is_callable( array( $endpoint[ 'callback' ][0], $endpoint[ 'callback' ][1] ) ) );
+				}
 			}
 		}
-
-		// The shim will appear last in order.
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.0.13/js/v4-shims.js', $resource_collection[3]->source() );
-		$this->assertEquals( 'sha384-qqI1UsWtMEdkxgOhFCatSq+JwGYOQW+RSazfcjlyZFNGjfwT/T1iJ26+mp70qvXx', $resource_collection[3]->integrity_key() );
 	}
 
-	public function test_5_1_solid_webfont_free_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
+	public function test_default_get() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+
+		$this->assertArrayHasKey( 'adminClientInternal', $data );
+		$this->assertEquals( FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL, $data['adminClientInternal'] );
+
+		$this->assertArrayHasKey( 'adminClientExternal', $data );
+		$this->assertEquals( FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL, $data['adminClientExternal'] );
+
+		$this->assertArrayHasKey( 'pluginVersion', $data );
+		$this->assertEquals( FontAwesome::PLUGIN_VERSION, $data['pluginVersion'] );
+
+		$this->assertArrayHasKey( 'options', $data );
+		$this->assertArrayHasKey( 'adminClientLoadSpec', $data['options'] );
+		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['adminClientLoadSpec'], $data['options']['adminClientLoadSpec'] );
+		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['usePro'], $data['options']['usePro'] );
+		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['removeUnregisteredClients'], $data['options']['removeUnregisteredClients'] );
+
+		$this->assertArrayHasKey( 'clientRequirements', $data );
+		$this->assertArrayHasKey( 'user', $data['clientRequirements'] );
+		// By default, only the admin user client requirements should be present
+		$this->assertEquals( 1, count( $data['clientRequirements'] ) );
+
+		$this->assertArrayHasKey( 'conflicts', $data );
+		// No client conflicts in the default scenario
+		$this->assertNull( $data['conflicts'] );
+
+		$this->assertArrayHasKey( 'pluginVersionWarnings', $data );
+		// None of these warnings in the default scenario
+		$this->assertNull( $data['pluginVersionWarnings'] );
+
+		$this->assertArrayHasKey( 'clientVersion', $data['clientRequirements']['user'] );
+		$this->assertEquals( 0, $data['clientRequirements']['user']['clientVersion'] );
+
+		$this->assertArrayHasKey( 'currentLoadSpec', $data );
+		$expected_load_spec = array(
+			'method' => 'webfont',
+			'v4shim' => true,
+			'pseudoElements' => true,
+			'version' => '5.4.1',
+			'clients' => array(
+				'user' => 0
+			)
 		);
+		$this->assertEquals($expected_load_spec, $data['currentLoadSpec']);
 
-		$farp = fa_release_provider();
+		$this->assertArrayHasKey( 'currentLoadSpecLocked', $data );
+		$this->assertEquals( true, $data['currentLoadSpecLocked'] );
 
-		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version.
-			[ 'solid' ], // style_opt, only a single style.
-			[
-				'use_pro'  => false,
-				'use_svg'  => false,
-				'use_shim' => true, // expect a warning but no error since webfont had no shim in 5.0.x.
-			]
-		);
+		$this->assertArrayHasKey( 'unregisteredClients', $data );
+		// None by default
+		$this->assertEquals( [], $data['unregisteredClients'] );
 
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 3, $resource_collection );
-		$resources = array();
-		foreach ( $resource_collection as $resource ) {
-			$matches = [];
-			$this->assertTrue( boolval( preg_match( '/\/(brands|solid|fontawesome|v4-shims)\.css/', $resource->source(), $matches ) ) );
-			$resources[ $matches[1] ] = $resource;
-		}
-		$this->assertCount( 3, $resources );
-		$this->assertArrayHasKey( 'fontawesome', $resources );
-		$this->assertArrayHasKey( 'solid', $resources );
-		$this->assertArrayHasKey( 'v4-shims', $resources );
+		$this->assertArrayHasKey( 'releaseProviderStatus', $data );
+		$this->assertEquals( [ 'code' => 200, 'message' => 'ok' ], $data['releaseProviderStatus'] );
 
-		// The fontawesome main library will appear first in order.
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG', $resource_collection[0]->integrity_key() );
+		$this->assertArrayHasKey( 'releases', $data );
 
-		// The solid style in the middle.
-		$this->assertEquals(
-			'https://use.fontawesome.com/releases/v5.1.0/css/solid.css',
-			$resource_collection[1]->source()
-		);
-		$this->assertEquals(
-			'sha384-TbilV5Lbhlwdyc4RuIV/JhD8NR+BfMrvz4BL5QFa2we1hQu6wvREr3v6XSRfCTRp',
-			$resource_collection[1]->integrity_key()
-		);
-
-		// The shim last.
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection[2]->source() );
-	}
-
-	public function test_5_1_no_style_webfont_free_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$this->expectException( InvalidArgumentException::class );
-
-		$farp->get_resource_collection(
-			'5.1.0', // version.
-			[], // style_opt, empty.
-			[
-				'use_pro'  => false,
-				'use_svg'  => false,
-				'use_shim' => true,
-			]
-		);
-	}
-
-	public function test_5_1_bad_style_webfont_free_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$this->expectException( InvalidArgumentException::class );
-
-		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
-		$farp->get_resource_collection(
-			'5.1.0', // version.
-			[ 'foo', 'bar' ], // style_opt, only bad styles.
-			[
-				'use_pro'  => false,
-				'use_svg'  => false,
-				'use_shim' => true,
-			]
-		);
-		$error_log = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
-		$this->assertRegExp( '/WARNING.+?unrecognized.+?foo/', $error_log );
-	}
-
-	/**
-	 * Add an invalid style specifier to the $style_opt, why also providing a legitimate one.
-	 * We expect success, but with a non-fatal error_log.
-	 */
-	public function test_5_1_solid_foo_webfont_free_no_shim() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
-		$resource_collection = $farp->get_resource_collection(
-			'5.1.0', // version.
-			[ 'solid', 'foo' ], // style_opt.
-			[
-				'use_pro'  => false,
-				'use_svg'  => false,
-				'use_shim' => false,
-			]
-		);
-		$error_log           = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 2, $resource_collection );
-		$resources = array();
-		foreach ( $resource_collection as $resource ) {
-			$matches = [];
-			$this->assertTrue( boolval( preg_match( '/\/(solid|fontawesome)\.css/', $resource->source(), $matches ) ) );
-			$resources[ $matches[1] ] = $resource;
-		}
-		$this->assertCount( 2, $resources );
-		$this->assertArrayHasKey( 'fontawesome', $resources );
-		$this->assertArrayHasKey( 'solid', $resources );
-
-		// The fontawesome main library will appear first in order.
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG', $resource_collection[0]->integrity_key() );
-
-		// The solid style next.
-		$this->assertEquals(
-			'https://use.fontawesome.com/releases/v5.1.0/css/solid.css',
-			$resource_collection[1]->source()
-		);
-		$this->assertEquals(
-			'sha384-TbilV5Lbhlwdyc4RuIV/JhD8NR+BfMrvz4BL5QFa2we1hQu6wvREr3v6XSRfCTRp',
-			$resource_collection[1]->integrity_key()
-		);
-
-		$this->assertRegExp( '/WARNING.+?unrecognized.+?foo/', $error_log );
-	}
-
-	public function test_invalid_version() {
-		$this->prepare_mock_handler(
-			[
-				self::build_success_response(),
-			]
-		);
-
-		$farp = fa_release_provider();
-
-		$this->expectException( InvalidArgumentException::class );
-
-		$resource_collection = $farp->get_resource_collection(
-			'4.0.13', // invalid version.
-			'all', // style_opt.
-			[
-				'use_pro'  => true,
-				'use_svg'  => false,
-				'use_shim' => false,
-			]
-		);
-
-		$this->assertFalse( is_null( $resource_collection ) );
-		$this->assertCount( 1, $resource_collection );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v4.0.13/css/all.css', $resource_collection[0]->source() );
-		$this->assertEquals( 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG', $resource_collection[0]->integrity_key() );
-	}
-
-	public function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
-		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
-			$this,
-			FontAwesome_Release_Provider::class,
-			'versions',
-			function( $method ) use ( $mocked_available_versions ) {
-				$method->willReturn(
-					$mocked_available_versions
-				);
-			}
-		);
-		$this->assertEquals( $expected_latest, $mock->latest_minor_release() );
-		$this->assertEquals( $expected_previous, $mock->previous_minor_release() );
-	}
-
-	public function test_latest_and_previous_scenarios() {
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.1.1',
-				'5.1.0',
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
-			'5.1.1',
-			'5.0.13'
-		);
-
-		// There *is* no previous in this case because 5.0.0 is the earliest and 5.0.13 is the latest.
-		// So there's no minor release version before the earliest available in this set.
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
+		$expected_available_versions = [
+			'5.0.1',
+			'5.0.2',
+			'5.0.3',
+			'5.0.4',
+			'5.0.6',
+			'5.0.8',
+			'5.0.9',
+			'5.0.10',
+			'5.0.12',
 			'5.0.13',
-			null
-		);
-
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.2.0',
-				'5.1.1',
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
+			'5.1.0',
+			'5.1.1',
 			'5.2.0',
-			'5.1.1'
+			'5.3.1',
+			'5.4.1',
+		];
+		sort($expected_available_versions);
+
+		$expected_releases = array(
+			'available' => $expected_available_versions,
+			'latest_version' => '5.4.1',
+			'latest_semver' => '~5.4.1',
+			'previous_version' => '5.3.1',
+			'previous_semver' => '~5.3.1',
 		);
 
-		// empty set.
-		$this->assert_latest_and_previous_releases(
-			[],
-			null,
-			null
+		sort( $data['releases']['available'] );
+		$this->assertEquals( $expected_releases, $data['releases'] );
+
+		$releases = $data['releases'];
+		$this->assertArrayHasKey( 'available', $releases );
+		$this->assertArrayHasKey( 'latest_version', $releases );
+		$this->assertArrayHasKey( 'latest_semver', $releases );
+		$this->assertArrayHasKey( 'previous_semver', $releases );
+		$this->assertArrayHasKey( 'previous_version', $releases );
+	}
+
+	/**
+	 * Scenarios that must be covered:
+	 *
+	 * A. Load when there is no previously existing lockedLoadSpec
+	 *   1. When registered client requirements have conflicts
+	 *      EXPECTED: null load_spec, conflicts reported
+	 *
+	 *   2. When client requirements are conflict-free
+	 *      EXPECTED: build a new lockedLoadSpec, report no conflicts
+	 *
+	 * B. Load when there is a previously existing locked load spec
+	 *   1. When no client changes have been made since computing the lockedLoadSpec
+	 *      EXPECTED: load lockedLoadSpec
+	 *
+	 *   2. When a new client has been activated since computing the lockedLoadSpec
+	 *      2.1. When new client’s requirements introduce conflict with the locked load spec
+	 *           EXPECTED: load the last known good load spec, the lockedLoadSpec,
+	 *                     also report conflicts introduced by the new client requirements
+	 *
+	 *      2.2. When the new client has conflict-free requirements
+	 *           EXPECTED: rebuild lockedLoadSpec, report no conflicts
+	 */
+
+	function test_scenario_a1() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+		    'method'        => 'webfont',
+		]);
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'method'        => 'svg',
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+
+		$this->assertNull($data['currentLoadSpec']);
+		$this->assertFalse($data['currentLoadSpecLocked']);
+		$this->assertEquals('method', $data['conflicts']['requirement']);
+
+		$this->assertEquals(2, count($data['conflicts']['conflictingClientRequirements']));
+		$this->assertArrayHasKey( 'name', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'clientVersion', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'method', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'clientCallSite', $data['conflicts']['conflictingClientRequirements'][0] );
+		$this->assertArrayHasKey( 'file', $data['conflicts']['conflictingClientRequirements'][0]['clientCallSite'] );
+		$this->assertArrayHasKey( 'line', $data['conflicts']['conflictingClientRequirements'][0]['clientCallSite'] );
+	}
+
+	function test_scenario_a2() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+			'version'       => '~5.4'
+		]);
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'version'        => '5.4.1',
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+
+		$this->assertNull( $data['conflicts'] );
+		$this->assertNotNull($data['currentLoadSpec']);
+		$this->assertTrue($data['currentLoadSpecLocked']);
+
+		$expected_load_spec_subset = array(
+			'version' => '5.4.1'
 		);
+
+		$this->assertArraySubset( $expected_load_spec_subset, $data['currentLoadSpec'] );
+	}
+
+	function test_scenario_b1() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+			'version'       => '~5.4'
+		]);
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'version'        => '5.4.1',
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response1 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response1->get_status() );
+		$data1 = $response1->get_data();
+
+		// So far, this has been the same as scenario: a2
+		// Let's just re-assert that there's a lockedLoadSpec
+		$this->assertNotNull($data1['currentLoadSpec']);
+		$this->assertTrue($data1['currentLoadSpecLocked']);
+
+		// Yes, now just try the same request again
+		$response2 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response2->get_status() );
+		$data2 = $response2->get_data();
+
+		$this->assertNull( $data2['conflicts'] );
+		$this->assertNotNull($data2['currentLoadSpec']);
+		$this->assertTrue($data2['currentLoadSpecLocked']);
+
+		// Now make sure that the load spec from the first and the second are the same
+		$this->assertEquals($data1['currentLoadSpec'], $data2['currentLoadSpec']);
+	}
+
+	function test_scenario_b2_1() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+			'version'       => '5.4.1'
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response1 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response1->get_status() );
+		$data1 = $response1->get_data();
+
+		// So far, this has been the same as scenario: a2
+		// Let's just re-assert that there's a lockedLoadSpec
+		$this->assertNotNull($data1['currentLoadSpec']);
+		$this->assertTrue($data1['currentLoadSpecLocked']);
+
+		// Now we add another client with a conflicting version requirement
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'version'        => '5.3.1',
+		]);
+
+		// Yes, now just try the same request again
+		$response2 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response2->get_status() );
+		$data2 = $response2->get_data();
+
+		// The currentLoadSpec from this call should be the same as the previous one, since it should not have changed.
+		$this->assertEquals($data1['currentLoadSpec'], $data2['currentLoadSpec']);
+
+		// And it should still be locked
+		$this->assertTrue($data2['currentLoadSpecLocked']);
+
+		// But conflicts should also be reported on the version requirement
+		$this->assertEquals('version', $data2['conflicts']['requirement']);
+		$this->assertEquals(2, count($data2['conflicts']['conflictingClientRequirements']));
+	}
+
+	function test_scenario_b2_2() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+			'version'       => '~5.4'
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response1 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response1->get_status() );
+		$data1 = $response1->get_data();
+
+		$this->assertNotNull($data1['currentLoadSpec']);
+		$this->assertTrue($data1['currentLoadSpecLocked']);
+
+		// Adding another client with conflict-free requirements that should *change* the load spec
+		fa()->register([
+			'name'          => 'bar',
+			'method'        => 'svg',
+			'clientVersion' => '1',
+			'version'       => '5.4.1',
+		]);
+
+		// Yes, now just try the same request again
+		$response2 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response2->get_status() );
+		$data2 = $response2->get_data();
+
+		$this->assertNull( $data2['conflicts'] );
+		$this->assertNotNull($data2['currentLoadSpec']);
+		$this->assertTrue($data2['currentLoadSpecLocked']);
+
+		// Now make sure that the load spec has the svg method and pseudoElements disabled by default
+		$this->assertNotEquals($data1['currentLoadSpec'], $data2['currentLoadSpec']);
+		$this->assertEquals('svg', $data2['currentLoadSpec']['method']);
+		$this->assertFalse($data2['currentLoadSpec']['pseudoElements']);
 	}
 }
