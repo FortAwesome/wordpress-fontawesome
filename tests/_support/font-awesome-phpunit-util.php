@@ -20,7 +20,7 @@ require_once FONTAWESOME_DIR_PATH . 'tests/_support/class-mock-fontawesome-relea
  * @param string name of the class, an instance of which will be mocked.
  * @param string name of method to be mocked
  * @param callable a function to invoke, passing the method mock as the sole param.
- * @return null
+ * @return object|null
  */
 function mock_singleton_method( $obj, $type, $method, callable $init ) {
 	$mock_builder = $obj->getMockBuilder( $type )
