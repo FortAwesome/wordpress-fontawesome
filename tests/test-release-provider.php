@@ -29,7 +29,27 @@ use GuzzleHttp\Psr7\Response;
  * real API server instead of using the MockHandler, which we don't want to do. So just make sure you understand
  * what you're doing before disabling this and make sure that the test suite still passes offline (and thus does
  * not require hitting the real API server).
- * @backupStaticAttributes enabled
+ *
+ * UPDATE: December 5, 2018 removed the backupStaticAttributes annotation when adding runTestsInSeparateProcesses
+ * and "preserveGlobalState disabled" because we're suddenly having failures in Travis CI (but not in the local
+ * development environment). The failures are all from this test case:
+ *  "Exception: Serialization of 'Closure' is not allowed"
+ *
+ * PHP cannot serialize anonymous functions:
+ * https://github.com/sebastianbergmann/phpunit/issues/2739
+ *
+ * And when tests are run with process isolation, apparently serialization of globals between parent and child
+ * processes is part of the magic.
+ *
+ * See also: https://phpunit.de/manual/6.5/en/appendixes.annotations.html#appendixes.annotations.preserveGlobalState
+ * (Though this doc is for phpunit 6.5, and we're using 5.x right now).
+ *
+ * So we must be doing that. Don't know why this only started failing on CI today. But we're going to try and insist
+ * on this test case running in separate processes all the time and configure it so that it hopefully runs the same
+ * in both local developpment and CI.
+ *
+ * @preserveGlobalState disabled
+ * @runTestsInSeparateProcesses
  */
 class ReleaseProviderTest extends WP_UnitTestCase {
 	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
