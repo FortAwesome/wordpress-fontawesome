@@ -174,4 +174,27 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'previous_semver', $releases );
 		$this->assertArrayHasKey( 'previous_version', $releases );
 	}
+
+	/**
+	 * Scenarios that must be covered:
+	 *
+	 * A. Load when there is no previously existing lockedLoadSpec
+	 *   1. When registered client requirements have conflicts
+	 *      EXPECTED: null load_spec, conflicts reported
+	 *
+	 *   2. When client requirements are conflict-free
+	 *      EXPECTED: build a new lockedLoadSpec, report no conflicts
+	 *
+	 * B. Load when there is a previously existing locked load spec
+	 *   1. When no client changes have been made since computing the lockedLoadSpec
+	 *      EXPECTED: load lockedLoadSpec
+	 *
+	 *   2. When a new client has been activated since computing the lockedLoadSpec
+	 *      2.1. When new client’s requirements introduce conflict with the locked load spec
+	 *           EXPECTED: load the last known good load spec, the lockedLoadSpec,
+	 *                     also report conflicts introduced by the new client requirements
+	 *
+	 *      2.2. When the new client has conflict-free requirements
+	 *           EXPECTED: rebuild lockedLoadSpec, report no conflicts
+	 */
 }
