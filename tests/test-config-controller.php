@@ -229,4 +229,71 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'file', $data['conflicts']['conflictingClientRequirements'][0]['clientCallSite'] );
 		$this->assertArrayHasKey( 'line', $data['conflicts']['conflictingClientRequirements'][0]['clientCallSite'] );
 	}
+
+	function test_scenario_a2() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+			'version'       => '~5.4'
+		]);
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'version'        => '5.4.1',
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+
+		$this->assertNull( $data['conflicts'] );
+		$this->assertNotNull($data['currentLoadSpec']);
+		$this->assertTrue($data['currentLoadSpecLocked']);
+
+		$expected_load_spec_subset = array(
+			'version' => '5.4.1'
+		);
+
+		$this->assertArraySubset( $expected_load_spec_subset, $data['currentLoadSpec'] );
+	}
+
+	function test_scenario_b1() {
+		self::prepare_mock_handler([
+			self::build_success_response()
+		]);
+		fa()->register([
+			'name'          => 'foo',
+			'clientVersion' => '1',
+			'version'       => '~5.4'
+		]);
+		fa()->register([
+			'name'          => 'bar',
+			'clientVersion' => '1',
+			'version'        => '5.4.1',
+		]);
+		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$response1 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response1->get_status() );
+		$data1 = $response1->get_data();
+
+		// So far, this has been the same as scenario: a2
+		// Let's just re-assert that there's a lockedLoadSpec
+		$this->assertNotNull($data1['currentLoadSpec']);
+		$this->assertTrue($data1['currentLoadSpecLocked']);
+
+		// Yes, now just try the same request again
+		$response2 = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response2->get_status() );
+		$data2 = $response2->get_data();
+
+		$this->assertNull( $data2['conflicts'] );
+		$this->assertNotNull($data2['currentLoadSpec']);
+		$this->assertTrue($data2['currentLoadSpecLocked']);
+
+		// Now make sure that the load spec from the first and the second are the same
+		$this->assertEquals($data1['currentLoadSpec'], $data2['currentLoadSpec']);
+	}
 }
