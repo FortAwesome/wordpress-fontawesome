@@ -15,9 +15,13 @@
 }
 
 .label-hint {
-  margin-left: 1em;
+  margin-left: 0.5em;
   font-weight: normal;
   font-style: italic;
   font-size: 13px;
   color: #666;
+}
+
+.label-hint a {
+  margin-left: 0.5em;
 }
