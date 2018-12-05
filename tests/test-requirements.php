@@ -847,5 +847,86 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertRegExp( '/WARNING: a client of Font Awesome has forbidden pseudo-elements/', $err );
 	}
 
+	public function test_changing_client_version_rebuilds_load_spec() {
+		global $fa_load;
+
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'method' => 'svg',
+				'pseudoElements' => 'require',
+				'clientVersion' => '1',
+			)
+		);
+
+		$load_spec1 = $fa_load->invoke( fa() );
+
+		$this->assertNotNull( $load_spec1 );
+
+		// The first requirements required pseudoElements
+		$this->assertTrue( $load_spec1['pseudoElements'] );
+
+		// For a subsequent load, register the same client name, different version and different requirements
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'method' => 'svg',
+				'v4shim' => 'forbid',
+				'clientVersion' => '2',
+			)
+		);
+
+		$load_spec2 = $fa_load->invoke( fa() );
+
+		$this->assertNotNull( $load_spec2 );
+
+		$this->assertNotEquals( $load_spec1, $load_spec2 );
+
+		// The first requirements forbid pseudoElements
+		$this->assertFalse( $load_spec2['pseudoElements'] );
+	}
+
+	/**
+	 * This is really just a black box (with respect to build(), anyway) way to test that our should_rebuild() logic
+	 * is working as expected, and that we're actually only rebuilding the load spec when appropriate to do so.
+	 * So we will call load() twice, the second time with different requirements that *would* change the load spec,
+	 * but without updating the clientVersion. So we'll know that the load spec caching mechanism did it's job
+	 * right if the second load spec is the same as the first.
+	 */
+	public function test_no_rebuild_without_client_version_update() {
+		global $fa_load;
+
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'method' => 'svg',
+				'pseudoElements' => 'require',
+				'clientVersion' => '1',
+			)
+		);
+
+		$load_spec1 = $fa_load->invoke( fa() );
+
+		$this->assertNotNull( $load_spec1 );
+
+		// The first requirements required pseudoElements
+		$this->assertTrue( $load_spec1['pseudoElements'] );
+
+		// For a subsequent load, register the same client name, different version and different requirements
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'method' => 'svg',
+				'v4shim' => 'forbid',
+				'clientVersion' => '1',
+			)
+		);
+
+		$load_spec2 = $fa_load->invoke( fa() );
+
+		$this->assertNotNull( $load_spec2 );
+
+		$this->assertEquals( $load_spec1, $load_spec2 );
+	}
 	// TODO: test where the ReleaseProvider would return a null integrity key, both for webfont and svg.
 }
