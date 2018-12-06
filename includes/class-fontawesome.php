@@ -62,6 +62,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	class FontAwesome {
 
 		/**
+		 * Name of this plugin's shortcode tag.
+		 *
+		 * @since 0.2.0
+		 */
+		const SHORTCODE_TAG = 'icon';
+		/**
+		 * Default style prefix.
+		 *
+		 * @since 0.2.0
+		 */
+		const DEFAULT_PREFIX = 'fas';
+		/**
 		 * Key where this plugin's saved data are stored in the WordPress options table.
 		 *
 		 * @since 0.1.0
@@ -215,6 +227,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'init',
 				function () use ( $fa ) {
+					add_shortcode(
+						self::SHORTCODE_TAG,
+						function( $params ) use ( $fa ) {
+							return $fa->setup_shortcode( $params );
+						}
+					);
+					// add_filter( 'widget_text', 'do_shortcode' );
 					try {
 						$fa->load();
 					} catch ( Exception $e ) {
@@ -1377,6 +1396,23 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 
 			$this->client_requirements[ $client_requirements['name'] ] = $client_requirements;
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		private function setup_shortcode( $params ) {
+			$atts = shortcode_atts(
+				array(
+					'name'   => '',
+					'prefix' => self::DEFAULT_PREFIX,
+				),
+				$params,
+				self::SHORTCODE_TAG
+			);
+
+			return '<i class="' . $atts['prefix'] . ' fa-' . $atts['name'] . '">&nbsp;</i>';
 		}
 	}
 
