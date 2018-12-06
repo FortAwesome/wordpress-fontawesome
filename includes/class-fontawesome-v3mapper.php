@@ -3,6 +3,8 @@
  * Main plugin class module.
  *
  * @noinspection PhpIncludeInspection
+ * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
+ * @ignore
  */
 
 // phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -14,6 +16,7 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 	/**
 	 * FontAwesome_V3Mapper Class
 	 *
+	 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
 	 * @ignore
 	 */
 	class FontAwesome_V3Mapper {
@@ -35,6 +38,7 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 		 *
 		 * @since 0.2.0
 		 *
+		 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
 		 * @return FontAwesome_V3Mapper
 		 * @ignore
 		 */
@@ -53,6 +57,11 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 			$this->load_map();
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
+		 * @ignore
+		 */
 		private function load_map() {
 			// Don't load again if it's already loaded.
 			if ( is_null( $this->map ) ) {
@@ -65,6 +74,7 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 		/**
 		 * Map a Font Awesome version 3 icon name to the equivalent Font Awesome 5 prefix and name.
 		 *
+		 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
 		 * @ignore
 		 */
 		public function map_v3_to_v5( $v3name ) {
