@@ -14,6 +14,7 @@ require_once trailingslashit( FONTAWESOME_VENDOR_DIR ) . 'autoload.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 use Composer\Semver\Semver;
@@ -1412,7 +1413,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				self::SHORTCODE_TAG
 			);
 
-			return '<i class="' . $atts['prefix'] . ' fa-' . $atts['name'] . '">&nbsp;</i>';
+			// Handle version 3 compatibility separately.
+			if ( preg_match( '/^icon-/', $atts['name'] ) ) {
+				$prefix_and_name_classes = FontAwesome_V3Mapper::instance()->map_v3_to_v5( $atts['name'] );
+			} else {
+				$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
+			}
+
+			return '<i class="' . $prefix_and_name_classes . '">&nbsp;</i>';
 		}
 	}
 
