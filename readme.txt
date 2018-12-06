@@ -49,7 +49,7 @@ plugin's settings page.
 
 = 0.2.0 =
 
-* Re-implement admin settings page to prepare for future functionality
+* Re-implement admin settings page
 * More graceful error handling
 * Lots of back end code changes to support theme and plugin developers
   * Package plugin as a composer dependency
