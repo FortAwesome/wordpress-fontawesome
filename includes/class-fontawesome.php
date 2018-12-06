@@ -228,13 +228,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'init',
 				function () use ( $fa ) {
-					// TODO: consider adding back the filter on 'widget_text' to invoke do_shortcode.
 					add_shortcode(
 						self::SHORTCODE_TAG,
 						function( $params ) use ( $fa ) {
 							return $fa->setup_shortcode( $params );
 						}
 					);
+
+					add_filter( 'widget_text', 'do_shortcode' );
 
 					try {
 						$fa->load();
