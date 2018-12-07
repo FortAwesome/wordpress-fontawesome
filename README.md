@@ -7,6 +7,7 @@
 - [Description](#description)
 - [Installation](#installation)
 - [For End Users](#for-end-users)
+  * [Add Icons with Shortcodes or <i> Tags](#add-icons-with-shortcodes-or-i-tags)
   * [Usage: Standalone](#usage-simple-end-user-scenarios)
     * [Zero-configuration](#zero-configuration)
     * [SVG](#svg)
@@ -24,7 +25,6 @@
     * [Detect and Warn When the Font Awesome Plugin Version Doesn't Match Your Requirements](#detect-and-warn-when-the-font-awesome-plugin-version-doesnt-match-your-requirements)
   * [How to Make Pro Icons Available in Your Theme or Plugin](#how-to-make-pro-icons-available-in-your-theme-or-plugin)
   * [Examples](#examples)
-- [About Shortcodes](#about-shortcodes)
 
 <!-- tocstop -->
 
@@ -59,6 +59,38 @@ For instructions on adding this as a composer package to install with your theme
 see [Install as Composer Dependency](#install-as-composer-dependency))
 
 # For End Users
+
+## Add Icons with Shortcodes or <i> Tags
+
+You can place an icon in a post, page, or widget using a shortcode:
+```
+[icon name="coffee"]
+```
+
+or straight HTML with an `<i>` tag:
+
+```html
+<i class="fas fa-coffee"></i>
+```
+
+Font Awesome 5 icon names and classes should be used.
+
+When using HTML, you can access the full range of capabilities described on [fontawesome.com](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use).
+
+When using shortcodes, the default style prefix is `fas`, Font Awesome _Solid_
+
+You can specify a different style prefix like this:
+ 
+```
+[icon name="bell" prefix="far"]
+```
+
+The `far` prefix is for the Font Awesome _Regular_ style.
+
+Notice that in the shortcode, the `name` is just the Font Awesome 5 _name_ of the icon, but when you use
+the HTML `<i>` tag notation, you specify the icon in terms of its CSS class, which just means prepending the `fa-`.
+
+So the _name_ of the icon is `bell`, but the CSS class is `fa-bell`.  
 
 ## Usage: Standalone
 
@@ -315,12 +347,4 @@ There are several clients in this GitHub repo that demonstrate how your code can
 See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can run a dockerized WordPress environment and experiment
 with these examples.
 
-# About Shortcodes
 
-While it's common for plugins like this to provide shortcodes for usage, and we might want to add that in the future,
-the plugin does not currently support shortcodes. The focus for this prototype is more about the loading and version resolution.
-
-[Basic usage](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use)
-with `<i>` tags is pretty straightforward and, in many cases, seems almost equivalent to what a shortcode syntax might be.
-
-We welcome your feedback about how important shortcodes would be to you so we can prioritize future development appropriately.
