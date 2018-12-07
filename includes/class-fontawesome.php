@@ -138,6 +138,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
+		private const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		private const V3DEPRECATION_EXPIRY = DAY_IN_SECONDS;
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		const DEFAULT_USER_OPTIONS = array(
 			'adminClientLoadSpec'       => array(
 				'name'          => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
@@ -158,6 +170,12 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @ignore
 		 */
 		protected $client_requirements = array();
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		protected $v3deprecation_warning_shown = false;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -461,7 +479,88 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
+		private function emit_v3_warning( $data ) {
+			?>
+			<div class="notice notice-warning is-dismissible">
+				<p>
+					Hey there, from the new and improved Font Awesome plugin!
+				</p>
+				<p>
+					Looks like you're using an <code>[icon]</code> shortcode with an old Font Awesome 3 icon name: <code><?php echo( esc_html( $data['atts']['name'] ) ); ?></code>.
+				</p>
+				<p>
+					We phased out <a href="https://fontawesome.com/v3.2.1/icons/">Font Awesome 3</a>
+					quite some time ago, though we only recently inherited this WordPress plugin,
+					which—until now—didn't support anything after Font Awesome 3.
+				</p>
+				<p>
+					Since we don't support Font Awesome 3 any more, we'd like you go ahead and
+					dive into Font Awesome 5 with us. It's way better any way. And we're gonna make
+					it really easy to upgrade. We've added some temporary magic to translate your version 3 icon
+					names into their version 5 equivalents.
+				</p>
+				<p>
+					<i class="fas fa-magic fa-2x"></i> <em>Bippity Boppity Boo!</em>
+				</p>
+				<p>
+					We just turned your <i class="<?php echo( esc_html( $data['v5prefix'] . ' fa-' . $data['v5name'] ) ); ?> fa-2x"></i> <code>[icon name="<?php echo( esc_html( $data['atts']['name'] ) ); ?>"]</code> into
+					<code>[icon name="<?php echo( esc_html( $data['v5name'] ) ); ?>" prefix="<?php echo( esc_html( $data['v5prefix'] ) ); ?>"]</code>
+				</p>
+				<p>
+					What's that <code>prefix</code>, you ask?
+				</p>
+				<p>
+					Well...in Font Awesome 5, most icons come in three different styles. You use a style <em>prefix</em> to indicate
+					which style you want. The default style prefix is <code>fas</code> for the Solid style.
+					So when you're upgrading your shortcodes from v3 to v5 names, if you just want the Solid style icon,
+					you can leave off that <code>prefix</code>. Most v3 icons map to Solid style icons in v5. But some of
+					the version 3 icon names map to the <code>fab</code> style for Brands, or the <code>far</code> style for Regular.
+				</p>
+				<p>
+					Icons for companies like <i class="fab fa-apple fa-2x"></i> Apple, or products like <i class="fab fa-chrome fa-2x"></i>
+					Chrome will be in the Brands style with the <code>fab</code> prefix.
+				</p>
+				<p>
+					When you subscribe to <a href="https://fontawesome.com/pro">Font Awesome Pro</a>,
+					you get a kajillion icons in All the Styles, including <code>fal</code>,
+					the Light style.
+				</p>
+				<p>
+					Head over to our <a href="https://fontawesome.com/icons?d=gallery">Icon Gallery</a> to
+					check out the vast array.
+				</p>
+				<p>
+					Guess what! In Font Awesome 3.2.1, you had
+					361 icons to choose from. Now, with Font Awesome 5 Free (as of v5.5.0) you've got <b>1,409</b>,
+					and with Pro you get...wait for it...<b>4,566</b>. (Rounds up to a kajillion.)
+				</p>
+				<p>
+					So have a blast upgrading. We're gonna remove this v3-to-v5 magic soon, though,
+					so don't wait forever.
+				</p>
+			</div>
+			<?php
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private function initialize_admin() {
+			$v3deprecation_warning_data = get_transient( self::V3DEPRECATION_TRANSIENT );
+
+			if ( $v3deprecation_warning_data && ! $this->v3deprecation_warning_shown ) {
+				add_action(
+					'admin_notices',
+					function() use ( $v3deprecation_warning_data ) {
+						$current_screen = get_current_screen();
+						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
+							$this->emit_v3_warning( $v3deprecation_warning_data );
+							$this->v3deprecation_warning_shown = true;
+						}
+					}
+				);
+			}
 			add_action(
 				'admin_enqueue_scripts',
 				function( $hook ) {
@@ -1415,9 +1514,25 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				self::SHORTCODE_TAG
 			);
 
-			// Handle version 3 compatibility separately.
+			// Handle version 3 compatibility and setting data for a deprecation warning.
 			if ( preg_match( '/^icon-/', $atts['name'] ) ) {
 				$prefix_and_name_classes = FontAwesome_V3Mapper::instance()->map_v3_to_v5( $atts['name'] );
+				if ( is_null( $this->v3deprecation_warning_atts ) ) {
+					[ $v5prefix, $v5faname ] = explode( ' ', $prefix_and_name_classes );
+
+					$v5name = explode( '-', $v5faname )[1];
+
+					$v3deprecation_data = array(
+						'atts'     => $atts,
+						'v5name'   => $v5name,
+						'v5prefix' => $v5prefix,
+					);
+					set_transient(
+						self::V3DEPRECATION_TRANSIENT,
+						$v3deprecation_data,
+						self::V3DEPRECATION_EXPIRY
+					);
+				}
 			} else {
 				$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 			}
