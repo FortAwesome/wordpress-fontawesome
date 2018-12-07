@@ -14,6 +14,7 @@ require_once trailingslashit( FONTAWESOME_VENDOR_DIR ) . 'autoload.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
@@ -144,7 +145,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		private const V3DEPRECATION_EXPIRY = DAY_IN_SECONDS;
+		private const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -170,12 +171,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @ignore
 		 */
 		protected $client_requirements = array();
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected $v3deprecation_warning_shown = false;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -367,6 +362,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					'register_routes',
 				)
 			);
+			add_action(
+				'rest_api_init',
+				array(
+					new FontAwesome_V3Deprecation_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
+					'register_routes',
+				)
+			);
 		}
 
 		/**
@@ -479,7 +481,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		private function emit_v3_warning( $data ) {
+		private function emit_v3_deprecation_admin_notice( $data ) {
 			?>
 			<div class="notice notice-warning is-dismissible">
 				<p>
@@ -487,56 +489,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				</p>
 				<p>
 					Looks like you're using an <code>[icon]</code> shortcode with an old Font Awesome 3 icon name: <code><?php echo( esc_html( $data['atts']['name'] ) ); ?></code>.
+					We're phasing those out, so it will stop working on your site in the not too distant future.
 				</p>
 				<p>
-					We phased out <a href="https://fontawesome.com/v3.2.1/icons/">Font Awesome 3</a>
-					quite some time ago, though we only recently inherited this WordPress plugin,
-					which—until now—didn't support anything after Font Awesome 3.
-				</p>
-				<p>
-					Since we don't support Font Awesome 3 any more, we'd like you go ahead and
-					dive into Font Awesome 5 with us. It's way better any way. And we're gonna make
-					it really easy to upgrade. We've added some temporary magic to translate your version 3 icon
-					names into their version 5 equivalents.
-				</p>
-				<p>
-					<i class="fas fa-magic fa-2x"></i> <em>Bippity Boppity Boo!</em>
-				</p>
-				<p>
-					We just turned your <i class="<?php echo( esc_html( $data['v5prefix'] . ' fa-' . $data['v5name'] ) ); ?> fa-2x"></i> <code>[icon name="<?php echo( esc_html( $data['atts']['name'] ) ); ?>"]</code> into
-					<code>[icon name="<?php echo( esc_html( $data['v5name'] ) ); ?>" prefix="<?php echo( esc_html( $data['v5prefix'] ) ); ?>"]</code>
-				</p>
-				<p>
-					What's that <code>prefix</code>, you ask?
-				</p>
-				<p>
-					Well...in Font Awesome 5, most icons come in three different styles. You use a style <em>prefix</em> to indicate
-					which style you want. The default style prefix is <code>fas</code> for the Solid style.
-					So when you're upgrading your shortcodes from v3 to v5 names, if you just want the Solid style icon,
-					you can leave off that <code>prefix</code>. Most v3 icons map to Solid style icons in v5. But some of
-					the version 3 icon names map to the <code>fab</code> style for Brands, or the <code>far</code> style for Regular.
-				</p>
-				<p>
-					Icons for companies like <i class="fab fa-apple fa-2x"></i> Apple, or products like <i class="fab fa-chrome fa-2x"></i>
-					Chrome will be in the Brands style with the <code>fab</code> prefix.
-				</p>
-				<p>
-					When you subscribe to <a href="https://fontawesome.com/pro">Font Awesome Pro</a>,
-					you get a kajillion icons in All the Styles, including <code>fal</code>,
-					the Light style.
-				</p>
-				<p>
-					Head over to our <a href="https://fontawesome.com/icons?d=gallery">Icon Gallery</a> to
-					check out the vast array.
-				</p>
-				<p>
-					Guess what! In Font Awesome 3.2.1, you had
-					361 icons to choose from. Now, with Font Awesome 5 Free (as of v5.5.0) you've got <b>1,409</b>,
-					and with Pro you get...wait for it...<b>4,566</b>. (Rounds up to a kajillion.)
-				</p>
-				<p>
-					So have a blast upgrading. We're gonna remove this v3-to-v5 magic soon, though,
-					so don't wait forever.
+					Head over to the <a href="<?php echo esc_html( $this->settings_page_url() ); ?>">Font Awesome Settings</a> page to see how you can fix it up, or
+					snooze this warning for a while.
 				</p>
 			</div>
 			<?php
@@ -547,16 +504,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @ignore
 		 */
 		private function initialize_admin() {
-			$v3deprecation_warning_data = get_transient( self::V3DEPRECATION_TRANSIENT );
+			$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
-			if ( $v3deprecation_warning_data && ! $this->v3deprecation_warning_shown ) {
+			if ( $v3deprecation_warning_data && !( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
 				add_action(
 					'admin_notices',
 					function() use ( $v3deprecation_warning_data ) {
 						$current_screen = get_current_screen();
 						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-							$this->emit_v3_warning( $v3deprecation_warning_data );
-							$this->v3deprecation_warning_shown = true;
+							$this->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
 						}
 					}
 				);
@@ -1517,7 +1473,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// Handle version 3 compatibility and setting data for a deprecation warning.
 			if ( preg_match( '/^icon-/', $atts['name'] ) ) {
 				$prefix_and_name_classes = FontAwesome_V3Mapper::instance()->map_v3_to_v5( $atts['name'] );
-				if ( is_null( $this->v3deprecation_warning_atts ) ) {
+				$v3deprecation_data = $this->get_v3deprecation_warning_data();
+				if ( ! $v3deprecation_data ) {
 					[ $v5prefix, $v5faname ] = explode( ' ', $prefix_and_name_classes );
 
 					$v5name = explode( '-', $v5faname )[1];
@@ -1527,17 +1484,47 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						'v5name'   => $v5name,
 						'v5prefix' => $v5prefix,
 					);
-					set_transient(
-						self::V3DEPRECATION_TRANSIENT,
-						$v3deprecation_data,
-						self::V3DEPRECATION_EXPIRY
-					);
+					$this->set_v3_deprecation_warning_data( $v3deprecation_data );
 				}
 			} else {
 				$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 			}
 
 			return '<i class="' . $prefix_and_name_classes . '">&nbsp;</i>';
+		}
+
+		/**
+		 * Sets a v3 deprecation warning.
+		 *
+		 * @deprecated Only for temporary internal plugin use while deprecating
+		 * @ignore
+		 * @param array $data
+		 * @return void
+		 */
+		public function set_v3_deprecation_warning_data( $data ) {
+			set_transient( self::V3DEPRECATION_TRANSIENT, $data );
+		}
+
+		/**
+		 * Retrieves transient warning data for v3 icon name usage.
+		 *
+		 * @deprecated Only for temporary internal plugin use while deprecating
+		 * @return array
+		 * @ignore
+		 */
+		public function get_v3deprecation_warning_data() {
+			return get_transient( self::V3DEPRECATION_TRANSIENT );
+		}
+
+		/**
+		 * Dismisses the v3 deprecation warning for a while.
+		 *
+		 * @deprecated Only for temporary internal plugin use while deprecating
+		 * @ignore
+		 */
+		public function snooze_v3deprecation_warning() {
+			delete_transient( self::V3DEPRECATION_TRANSIENT );
+			set_transient(self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY);
 		}
 	}
 
