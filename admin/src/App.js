@@ -136,6 +136,7 @@ class App extends Component {
               hasSubmitted={ this.state.hasSubmitted }
               submitSuccess={ this.state.submitSuccess }
               submitMessage={ this.state.submitMessage }
+              wpApiSettings={ this.state.wpApiSettings }
               error={ this.state.error }
             />
         }

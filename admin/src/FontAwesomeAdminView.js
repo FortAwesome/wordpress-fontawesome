@@ -9,6 +9,7 @@ import { faThumbsUp, faExclamationCircle, faExclamationTriangle } from '@fortawe
 import ClientRequirementsView from './ClientRequirementsView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
+import V3DeprecationWarning from './V3DeprecationWarning'
 import { values } from 'lodash'
 
 class FontAwesomeAdminView extends React.Component {
@@ -48,6 +49,7 @@ class FontAwesomeAdminView extends React.Component {
           <span className={ styles['status-label'] }>Status: </span>
           <FontAwesomeIcon className={ styles['icon'] } icon={ statusIcon }/>
         </p>
+        <V3DeprecationWarning wpApiSettings={ this.props.wpApiSettings }/>
         { data.options.lockedLoadSpec &&
           <LoadSpecView spec={ data.options.lockedLoadSpec } usePro={ data.options.usePro } />
         }
@@ -93,6 +95,7 @@ export default FontAwesomeAdminView
 
 FontAwesomeAdminView.propTypes = {
   data: PropTypes.object,
-  putData: PropTypes.func.isRequired
+  putData: PropTypes.func.isRequired,
+  wpApiSettings: PropTypes.object.isRequired
   // TODO: add the other props if we decide to keep them
 }
