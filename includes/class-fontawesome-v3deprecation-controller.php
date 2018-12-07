@@ -74,7 +74,7 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 		 */
 		protected function build_item( $fa ) {
 			return array(
-				'v3DeprecationWarning'  => $fa->get_v3deprecation_warning_data(),
+				'v3DeprecationWarning' => $fa->get_v3deprecation_warning_data(),
 			);
 		}
 
@@ -125,8 +125,8 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 
 				$item = $this->prepare_item_for_database( $request );
 
-				if( isset( $item['snooze'] ) && $item['snooze'] ) {
-				  $fa->snooze_v3deprecation_warning();
+				if ( isset( $item['snooze'] ) && $item['snooze'] ) {
+					$fa->snooze_v3deprecation_warning();
 				}
 
 				$return_data = $this->build_item( $fa );

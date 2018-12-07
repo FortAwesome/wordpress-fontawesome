@@ -506,7 +506,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		private function initialize_admin() {
 			$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
-			if ( $v3deprecation_warning_data && !( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
+			if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
 				add_action(
 					'admin_notices',
 					function() use ( $v3deprecation_warning_data ) {
@@ -1473,6 +1473,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			// Handle version 3 compatibility and setting data for a deprecation warning.
 			if ( preg_match( '/^icon-/', $atts['name'] ) ) {
 				$prefix_and_name_classes = FontAwesome_V3Mapper::instance()->map_v3_to_v5( $atts['name'] );
+
 				$v3deprecation_data = $this->get_v3deprecation_warning_data();
 				if ( ! $v3deprecation_data ) {
 					[ $v5prefix, $v5faname ] = explode( ' ', $prefix_and_name_classes );
@@ -1524,7 +1525,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		public function snooze_v3deprecation_warning() {
 			delete_transient( self::V3DEPRECATION_TRANSIENT );
-			set_transient(self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY);
+			set_transient( self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY );
 		}
 	}
 
