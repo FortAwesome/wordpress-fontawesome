@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import styles from './OptionsSetter.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -150,6 +150,11 @@ class OptionsSetter extends React.Component {
             </th>
             <td>
               <input name="use-pro" checked={ this.state.usePro } value={ this.state.usePro } type="checkbox" onChange={ this.handleProCheck }/>
+              <span className={styles["label-hint"]}>
+                Requires a subscription.
+                <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
+                <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/domains"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+              </span>
             </td>
           </tr>
           <tr>
