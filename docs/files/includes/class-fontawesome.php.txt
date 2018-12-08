@@ -138,14 +138,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
+		 * @deprecated
 		 */
-		private const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
+		const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
+		 * @deprecated
 		 */
-		private const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
+		const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -1481,14 +1483,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 				$v3deprecation_data = $this->get_v3deprecation_warning_data();
 				if ( ! $v3deprecation_data ) {
-					[ $v5prefix, $v5faname ] = explode( ' ', $prefix_and_name_classes );
+					$v5_prefix_name_arr = explode( ' ', $prefix_and_name_classes );
 
-					$v5name = explode( '-', $v5faname )[1];
+					$v5name = explode( '-', $v5_prefix_name_arr[1] )[1];
 
 					$v3deprecation_data = array(
 						'atts'     => $atts,
 						'v5name'   => $v5name,
-						'v5prefix' => $v5prefix,
+						'v5prefix' => $v5_prefix_name_arr[0],
 					);
 					$this->set_v3_deprecation_warning_data( $v3deprecation_data );
 				}

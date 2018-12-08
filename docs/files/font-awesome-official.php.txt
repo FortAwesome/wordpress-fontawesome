@@ -15,6 +15,11 @@
 defined( 'WPINC' ) || die;
 
 if ( ! function_exists( 'font_awesome_official_handle_fatal_error' ) ) {
+	/**
+	 * Handle fatal errors
+	 *
+	 * @ignore
+	 */
 	function font_awesome_official_handle_fatal_error( $message = null ) {
 		add_action(
 			'admin_notices',
