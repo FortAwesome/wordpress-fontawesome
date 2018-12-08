@@ -20,24 +20,26 @@ See also the GitHub [README](https://github.com/FortAwesome/wordpress-fontawesom
 
 1. Supports both Font Awesome Free and Font Awesome Pro.
 
-2. Provides easy configuration to enable the new SVG framework with extra features
+2. Gets new icon updates directly from fontawesome.com.
+
+3. Provides easy configuration to enable the new SVG framework with extra features
 like [Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
 
 Easily spot and fix conflicts when using SVG would conflict with other plugins or themes
 that require the classic Web Fonts & CSS method.
 
-3. Loads icons from the fast Font Awesome Free CDN, or the Font Awesome Pro CDN for [Pro subscribers](https://fontawesome.com/pro).
+4. Loads icons from the fast Font Awesome Free CDN, or the Font Awesome Pro CDN for [Pro subscribers](https://fontawesome.com/pro).
 
-4. Provides a "v4-shim" to [ease the upgrade from Font Awesome 4 to Font Awesome 5](https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4).
+5. Provides a "v4-shim" to [ease the upgrade from Font Awesome 4 to Font Awesome 5](https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4).
 
-5. Developers: supports development of themes and plugins to use Font Awesome without run time conflicts.
+6. Developers: supports development of themes and plugins to use Font Awesome without run time conflicts.
 
 Eliminate the headache of various plugins and themes trying to load multiple or incompatible versions of Font Awesome.
 Using this plugin provides a common framework for managing Font Awesome dependencies. Rest easy that icons for your templates
 will either load like you expect, or else warn the site owner gracefully with clear diagnostics and user-friendly guidance
 to resolve conflicts.
 
-6. Prevents "unregistered" themes or plugins from breaking your icons by loading multiple or incompatible versions.
+7. Prevents "unregistered" themes or plugins from breaking your icons by loading multiple or incompatible versions.
 
 == Installation ==
 
