@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
-Stable tag: 4.0.0
+Stable tag: 3.2.1
 Tags: font, awesome, fontawesome, font-awesome, font-awesome-official, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.0
