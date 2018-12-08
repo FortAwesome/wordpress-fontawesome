@@ -244,7 +244,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					add_shortcode(
 						self::SHORTCODE_TAG,
 						function( $params ) use ( $fa ) {
-							return $fa->setup_shortcode( $params );
+							return $fa->process_shortcode( $params );
 						}
 					);
 
@@ -1460,11 +1460,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		private function setup_shortcode( $params ) {
+		private function process_shortcode( $params ) {
+			/**
+			 * TODO: add extras to shortcode
+			 * class: just add extra classes
+			 */
 			$atts = shortcode_atts(
 				array(
 					'name'   => '',
 					'prefix' => self::DEFAULT_PREFIX,
+					'class'  => '',
 				),
 				$params,
 				self::SHORTCODE_TAG
@@ -1491,7 +1496,8 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 			}
 
-			return '<i class="' . $prefix_and_name_classes . '">&nbsp;</i>';
+			$classes = rtrim( implode( ' ', [ $prefix_and_name_classes, $atts['class'] ] ) );
+			return '<i class="' . $classes . '">&nbsp;</i>';
 		}
 
 		/**

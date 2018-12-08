@@ -8,6 +8,8 @@
 - [Installation](#installation)
 - [For End Users](#for-end-users)
   * [Add Icons with Shortcodes or <i> Tags](#add-icons-with-shortcodes-or-i-tags)
+    * [Additional Features with Additional Classes](#additional-features-with-additional-classes)
+    * [Shortcode Limitations](#shortcode-limitations)
   * [Usage: Standalone](#usage-simple-end-user-scenarios)
     * [Zero-configuration](#zero-configuration)
     * [SVG](#svg)
@@ -91,6 +93,33 @@ Notice that in the shortcode, the `name` is just the Font Awesome 5 _name_ of th
 the HTML `<i>` tag notation, you specify the icon in terms of its CSS class, which just means prepending the `fa-`.
 
 So the _name_ of the icon is `bell`, but the CSS class is `fa-bell`.  
+
+### Additional Features with Additional Classes
+
+Many [Font Awesome features](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) are available simply by additional additional CSS classes:
+* size
+* fixed-width
+* rotation
+* animation
+* border
+* ...and more
+
+You can add any of those classes through the shortcode like this:
+
+```
+[icon name="coffee" class="fa-2x fa-rotate-180"]
+``` 
+
+This makes the coffee icon bigger, and upside down.
+
+### Shortcode Limitations
+
+For now, if you want to do even fancier things like...
+* [masking](https://fontawesome.com/how-to-use/on-the-web/styling/masking)
+* [layering](https://fontawesome.com/how-to-use/on-the-web/styling/layering)
+* [power transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms)
+
+...you'll need to use straight HTML, as shown in the documentation on fontawesome.com.
 
 ## Usage: Standalone
 
