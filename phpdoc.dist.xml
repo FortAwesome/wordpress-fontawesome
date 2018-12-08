@@ -13,6 +13,7 @@
         <ignore>includes/class-fontawesome-activator.php</ignore>
         <ignore>includes/class-fontawesome-deactivator.php</ignore>
         <ignore>includes/class-fontawesome-v3mapper.php</ignore>
+        <ignore>includes/class-fontawesome-v3deprecation-controller.php</ignore>
         <ignore>admin/*</ignore>
         <ignore>tests/*</ignore>
         <ignore>bin/*</ignore>
