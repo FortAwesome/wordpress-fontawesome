@@ -19,10 +19,10 @@ class RequirementsTest extends WP_UnitTestCase {
 	protected function reset() {
 		FontAwesome::reset();
 		\FontAwesomePhpUnitUtil\Mock_FontAwesome_Releases::mock();
-		wp_script_is( 'font-awesome-official', 'enqueued' ) && wp_dequeue_script( 'font-awesome-official' );
-		wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-official-v4shim' );
-		wp_style_is( 'font-awesome-official', 'enqueued' ) && wp_dequeue_style( 'font-awesome-official' );
-		wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-official-v4shim' );
+		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
+		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
+		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
+		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
 		FontAwesome_Activator::activate();
 	}
 
@@ -59,8 +59,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
-		$this->assertTrue( wp_style_is( 'font-awesome-official', 'enqueued' ) );
-		$this->assertTrue( wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'font-awesome', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'font-awesome-v4shim', 'enqueued' ) );
 	}
 
 	public function test_all_default_with_multiple_clients() {
@@ -97,8 +97,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
-		$this->assertTrue( wp_style_is( 'font-awesome-official', 'enqueued' ) );
-		$this->assertTrue( wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'font-awesome', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'font-awesome-v4shim', 'enqueued' ) );
 	}
 
 	public function test_register_without_name() {
@@ -664,7 +664,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertTrue( wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'font-awesome-v4shim', 'enqueued' ) );
 	}
 
 	/**
@@ -697,7 +697,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertTrue( wp_style_is( 'font-awesome-official-v4shim', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'font-awesome-v4shim', 'enqueued' ) );
 	}
 
 	/**
@@ -745,7 +745,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertNull( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
-		$this->assertFalse( wp_script_is( 'font-awesome-official-v4shim', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'font-awesome-v4shim', 'enqueued' ) );
 	}
 
 	/**

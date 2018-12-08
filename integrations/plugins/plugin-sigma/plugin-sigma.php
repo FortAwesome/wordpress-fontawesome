@@ -14,7 +14,7 @@ defined( 'WPINC' ) || die;
 define( 'SIGMA_PLUGIN_VERSION', '0.0.1' );
 define( 'SIGMA_PLUGIN_LOG_PREFIX', 'sigma-plugin' );
 
-require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/font-awesome-official.php';
+require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/font-awesome.php';
 
 add_action(
 	'font_awesome_requirements',

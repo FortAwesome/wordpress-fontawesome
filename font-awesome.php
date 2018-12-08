@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       Font Awesome Official
+ * Plugin Name:       Font Awesome
  * Plugin URI:        https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress
  * Description:       Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Resolves conflicts across many plugins or themes that use Font Awesome.
- * Version:           0.2.0
+ * Version:           4.0.0
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
  * License:           GPLv2 (or later)

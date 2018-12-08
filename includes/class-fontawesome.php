@@ -66,7 +66,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * Name of this plugin's shortcode tag.
 		 *
-		 * @since 0.2.0
+		 * @since 4.0.0
 		 */
 		const SHORTCODE_TAG = 'icon';
 		/**
@@ -80,7 +80,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 0.1.0
 		 */
-		const OPTIONS_KEY = 'font-awesome-official';
+		const OPTIONS_KEY = 'font-awesome';
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
@@ -96,11 +96,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 0.1.0
 		 */
-		const PLUGIN_NAME = 'font-awesome-official';
+		const PLUGIN_NAME = 'font-awesome';
 		/**
 		 * The version of this WordPress plugin.
 		 */
-		const PLUGIN_VERSION = '0.2.0';
+		const PLUGIN_VERSION = '4.0.0';
 		/**
 		 * The version of this plugin's REST API.
 		 *
@@ -118,14 +118,14 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 0.1.0
 		 */
-		const OPTIONS_PAGE = 'font-awesome-official';
+		const OPTIONS_PAGE = 'font-awesome';
 		/**
 		 * The handle used when enqueuing this plugin's resulting resource, whether `<script>` or `<link>`,
 		 * via `wp_enqueue_script` or `wp_enqueue_style`.
 		 *
 		 * @since 0.1.0
 		 */
-		const RESOURCE_HANDLE = 'font-awesome-official';
+		const RESOURCE_HANDLE = 'font-awesome';
 		/**
 		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
 		 *
@@ -133,7 +133,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @see FontAwesome::load_spec()
 		 */
-		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
+		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-v4shim';
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**

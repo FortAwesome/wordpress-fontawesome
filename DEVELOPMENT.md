@@ -26,7 +26,7 @@ WP_ADMIN_EMAIL=some_real_address@example.com
 
 On Mac OS X, it can be installed via `brew install composer`
 
-6. update composer dependencies from the `font-awesome-official` directory
+6. update composer dependencies from the `font-awesome` directory
 
 ```
 composer install
@@ -98,7 +98,7 @@ with admin username and password as found in `.env`.
 To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
 
 After activating the plugin you can access the Font Awesome admin page here:
-`http://localhost:8080/wp-admin/options-general.php?page=font-awesome-official`
+`http://localhost:8080/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
 
@@ -162,7 +162,7 @@ the composer bundle in production mode (`--no-dev --prefer-dist`) and produce th
 `wp-dist/`: the contents of this directory should be move into the svn repo for the WordPress plugin
 that will be published through the WordPress plugins directory.
 
-`font-awesome-official.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
+`font-awesome.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
 This zip file can be distributed as a download for the WordPress plugin and used for installing
 the plugin by "upload" in the WordPress admin dashboard.
 
