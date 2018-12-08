@@ -1,6 +1,6 @@
-=== Font Awesome Official ===
-Contributors: fontawesome, mlwilkerson, kemitchell, robmadole
-Stable tag: 0.2.0
+=== Font Awesome ===
+Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
+Stable tag: 4.0.0
 Tags: font, awesome, fontawesome, font-awesome, font-awesome-official, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.0
@@ -14,7 +14,11 @@ Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Res
 
 Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Resolves conflicts across many plugins or themes that use Font Awesome.
 
-See also the GitHub [README](https://github.com/FortAwesome/wordpress-fontawesome/README.md).
+This plugin has been completely re-written, tested with the latest WordPress and Font Awesome versions,
+and become the official plugin from the Font Awesome team.
+
+We've built in some magic to help users of the old plugin experience a smooth upgrade path. We think you'll love
+Font Awesome 5!
 
 ## Features
 
@@ -40,6 +44,21 @@ will either load like you expect, or else warn the site owner gracefully with cl
 to resolve conflicts.
 
 7. Prevents "unregistered" themes or plugins from breaking your icons by loading multiple or incompatible versions.
+
+## Upgrading
+
+If you've been a user of previous versions of this plugin, you'll eventually need to update your `[icon]` shortcodes
+to use Font Awesome 5 names instead of the out-dated Font Awesome 3 names that this plugin previously loaded.
+
+We've tried to smooth the upgrade path for you by keeping that shortcode compatible with Font Awesome 3 names
+you're used to, while magically transforming them into their Font Awesome 5 equivalents on the fly. You'll still need to
+ go and change them to use the new Font Awesome 5 names. But we've given you some cushion to take a more leisurely pace.
+ We plan to remove version 3 naming support from this plugin in upcoming releases, though, so don't wait too long!
+
+## See also
+
+The [README](https://github.com/FortAwesome/wordpress-fontawesome/README.md) on GitHub has some more details for
+WordPress site owners and developers.
 
 == Installation ==
 
