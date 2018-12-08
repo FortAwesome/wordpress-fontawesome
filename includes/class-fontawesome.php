@@ -138,14 +138,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
+		 * @deprecated
 		 */
-		private const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
+		const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
+		 * @deprecated
 		 */
-		private const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
+		const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
