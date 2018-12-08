@@ -1,6 +1,6 @@
 <?php
 /**
- * Module for this plugin's REST API controller
+ * Module for this plugin's Configuration REST API controller
  *
  * @noinspection PhpIncludeInspection
  */

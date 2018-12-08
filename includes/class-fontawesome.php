@@ -14,6 +14,8 @@ require_once trailingslashit( FONTAWESOME_VENDOR_DIR ) . 'autoload.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 use Composer\Semver\Semver;
@@ -61,6 +63,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 	 */
 	class FontAwesome {
 
+		/**
+		 * Name of this plugin's shortcode tag.
+		 *
+		 * @since 0.2.0
+		 */
+		const SHORTCODE_TAG = 'icon';
+		/**
+		 * Default style prefix.
+		 *
+		 * @since 0.2.0
+		 */
+		const DEFAULT_PREFIX = 'fas';
 		/**
 		 * Key where this plugin's saved data are stored in the WordPress options table.
 		 *
@@ -120,6 +134,20 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @see FontAwesome::load_spec()
 		 */
 		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 * @deprecated
+		 */
+		const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 * @deprecated
+		 */
+		const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -215,6 +243,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			add_action(
 				'init',
 				function () use ( $fa ) {
+					add_shortcode(
+						self::SHORTCODE_TAG,
+						function( $params ) use ( $fa ) {
+							return $fa->process_shortcode( $params );
+						}
+					);
+
+					add_filter( 'widget_text', 'do_shortcode' );
+
 					try {
 						$fa->load();
 					} catch ( Exception $e ) {
@@ -324,6 +361,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				'rest_api_init',
 				array(
 					new FontAwesome_Config_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
+					'register_routes',
+				)
+			);
+			add_action(
+				'rest_api_init',
+				array(
+					new FontAwesome_V3Deprecation_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
 					'register_routes',
 				)
 			);
@@ -439,7 +483,42 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
+		private function emit_v3_deprecation_admin_notice( $data ) {
+			?>
+			<div class="notice notice-warning is-dismissible">
+				<p>
+					Hey there, from the new and improved Font Awesome plugin!
+				</p>
+				<p>
+					Looks like you're using an <code>[icon]</code> shortcode with an old Font Awesome 3 icon name: <code><?php echo( esc_html( $data['atts']['name'] ) ); ?></code>.
+					We're phasing those out, so it will stop working on your site in the not too distant future.
+				</p>
+				<p>
+					Head over to the <a href="<?php echo esc_html( $this->settings_page_url() ); ?>">Font Awesome Settings</a> page to see how you can fix it up, or
+					snooze this warning for a while.
+				</p>
+			</div>
+			<?php
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
 		private function initialize_admin() {
+			$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
+
+			if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
+				add_action(
+					'admin_notices',
+					function() use ( $v3deprecation_warning_data ) {
+						$current_screen = get_current_screen();
+						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
+							$this->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
+						}
+					}
+				);
+			}
 			add_action(
 				'admin_enqueue_scripts',
 				function( $hook ) {
@@ -1377,6 +1456,84 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			);
 
 			$this->client_requirements[ $client_requirements['name'] ] = $client_requirements;
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		private function process_shortcode( $params ) {
+			/**
+			 * TODO: add extras to shortcode
+			 * class: just add extra classes
+			 */
+			$atts = shortcode_atts(
+				array(
+					'name'   => '',
+					'prefix' => self::DEFAULT_PREFIX,
+					'class'  => '',
+				),
+				$params,
+				self::SHORTCODE_TAG
+			);
+
+			// Handle version 3 compatibility and setting data for a deprecation warning.
+			if ( preg_match( '/^icon-/', $atts['name'] ) ) {
+				$prefix_and_name_classes = FontAwesome_V3Mapper::instance()->map_v3_to_v5( $atts['name'] );
+
+				$v3deprecation_data = $this->get_v3deprecation_warning_data();
+				if ( ! $v3deprecation_data ) {
+					$v5_prefix_name_arr = explode( ' ', $prefix_and_name_classes );
+
+					$v5name = explode( '-', $v5_prefix_name_arr[1] )[1];
+
+					$v3deprecation_data = array(
+						'atts'     => $atts,
+						'v5name'   => $v5name,
+						'v5prefix' => $v5_prefix_name_arr[0],
+					);
+					$this->set_v3_deprecation_warning_data( $v3deprecation_data );
+				}
+			} else {
+				$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
+			}
+
+			$classes = rtrim( implode( ' ', [ $prefix_and_name_classes, $atts['class'] ] ) );
+			return '<i class="' . $classes . '">&nbsp;</i>';
+		}
+
+		/**
+		 * Sets a v3 deprecation warning.
+		 *
+		 * @deprecated Only for temporary internal plugin use while deprecating
+		 * @ignore
+		 * @param array $data
+		 * @return void
+		 */
+		public function set_v3_deprecation_warning_data( $data ) {
+			set_transient( self::V3DEPRECATION_TRANSIENT, $data );
+		}
+
+		/**
+		 * Retrieves transient warning data for v3 icon name usage.
+		 *
+		 * @deprecated Only for temporary internal plugin use while deprecating
+		 * @return array
+		 * @ignore
+		 */
+		public function get_v3deprecation_warning_data() {
+			return get_transient( self::V3DEPRECATION_TRANSIENT );
+		}
+
+		/**
+		 * Dismisses the v3 deprecation warning for a while.
+		 *
+		 * @deprecated Only for temporary internal plugin use while deprecating
+		 * @ignore
+		 */
+		public function snooze_v3deprecation_warning() {
+			delete_transient( self::V3DEPRECATION_TRANSIENT );
+			set_transient( self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY );
 		}
 	}
 

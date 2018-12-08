@@ -1,6 +1,6 @@
 <?php
 /**
- * Module for this plugin's Configuration REST API controller
+ * Module for this plugin's V3 Deprecation REST API controller
  *
  * @noinspection PhpIncludeInspection
  */
@@ -10,12 +10,12 @@
  * @ignore
  */
 
-if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
+if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 
 	/**
 	 * Controller class for REST endpoint
 	 */
-	class FontAwesome_Config_Controller extends WP_REST_Controller {
+	class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -44,7 +44,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 * @ignore
 		 */
 		public function register_routes() {
-			$route_base = 'config';
+			$route_base = 'v3deprecation';
 
 			register_rest_route(
 				$this->namespace,
@@ -73,33 +73,13 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		 * @ignore
 		 */
 		protected function build_item( $fa ) {
-			$options          = $fa->options();
-			$locked_load_spec = isset( $options['lockedLoadSpec'] ) ? $options['lockedLoadSpec'] : false;
-
 			return array(
-				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
-				'adminClientExternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
-				'options'               => $fa->options(),
-				'clientRequirements'    => $fa->requirements(),
-				'conflicts'             => $fa->conflicts(),
-				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
-				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
-				'currentLoadSpec'       => $fa->load_spec(),
-				'currentLoadSpecLocked' => $locked_load_spec && $fa->load_spec() === $locked_load_spec,
-				'unregisteredClients'   => $fa->unregistered_clients(),
-				'releaseProviderStatus' => fa_release_provider()->get_status(),
-				'releases'              => array(
-					'available'        => $fa->get_available_versions(),
-					'latest_version'   => $fa->get_latest_version(),
-					'latest_semver'    => $fa->get_latest_semver(),
-					'previous_version' => $fa->get_previous_version(),
-					'previous_semver'  => $fa->get_previous_semver(),
-				),
+				'v3DeprecationWarning' => $fa->get_v3deprecation_warning_data(),
 			);
 		}
 
 		/**
-		 * Get the config, a singleton resource.
+		 * Get the deprecation data, a singleton resource.
 		 *
 		 * @param WP_REST_Request $request Full data about the request.
 		 * @return WP_Error|WP_REST_Response
@@ -119,23 +99,14 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			try {
 				$fa = fa();
 
-				// Make sure our releases metadata is fresh.
-				$load_releases = new ReflectionMethod( 'FontAwesome_Release_Provider', 'load_releases' );
-				$load_releases->setAccessible( true );
-				$load_releases->invoke( fa_release_provider() );
-
-				$fa_load = new ReflectionMethod( 'FontAwesome', 'load' );
-				$fa_load->setAccessible( true );
-				$fa_load->invoke( $fa );
-
 				$data = $this->build_item( $fa );
 
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
-				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical exception trying to load Font Awesome.', array( 'status' => 500 ) );
+				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
 			} catch ( Error $error ) {
-				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error trying to load Font Awesome.', array( 'status' => 500 ) );
+				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
 			}
 		}
 
@@ -150,34 +121,21 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 			ini_set( 'display_errors', 0 );
 
 			try {
-				$item = $this->prepare_item_for_database( $request );
-				$item['options']['adminClientLoadSpec']['clientVersion'] = time();
+				$fa = fa();
 
-				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
-				// normal load process. If it satisfies all constraints, the new adminClientLoadSpec spec will be
-				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
-				// the error condition to the admin UI.
-				// We reset to avoid duplication client registrations.
-				$fa      = fa();
-				$load_fa = new ReflectionMethod( 'FontAwesome', 'load' );
-				$load_fa->setAccessible( true );
-				$new_load_spec = $load_fa->invoke( $fa, $item['options'] );
+				$item = $this->prepare_item_for_database( $request );
+
+				if ( isset( $item['snooze'] ) && $item['snooze'] ) {
+					$fa->snooze_v3deprecation_warning();
+				}
 
 				$return_data = $this->build_item( $fa );
 
-				if ( $new_load_spec ) {
-					return new WP_REST_Response( $return_data, 200 );
-				} else {
-					return new WP_Error(
-						'cant_update',
-						'Whoops, those options would have resulted in a conflict so we did not save them.',
-						array( 'status' => 403 )
-					);
-				}
+				return new WP_REST_Response( $return_data, 200 );
 			} catch ( Exception $e ) {
-				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+				return new WP_Error( 'cant_update', 'Whoops, the attempt to update deprecation settings failed.', array( 'status' => 500 ) );
 			} catch ( Error $error ) {
-				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+				return new WP_Error( 'cant_update', 'Whoops, the attempt to update deprecation settings failed.', array( 'status' => 500 ) );
 			}
 		}
 
