@@ -1,7 +1,7 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
 Stable tag: 3.2.1
-Tags: font, awesome, fontawesome, font-awesome, font-awesome-official, icon, svg, webfont
+Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.0
 Requires PHP: 5.6
@@ -89,5 +89,4 @@ plugin's settings page.
 = 3.2.1 =
 
 * Last stable version of the old plugin
-* Re-name identifier slug as font-awesome-official
 

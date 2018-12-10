@@ -52,8 +52,8 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 To install directly as a WordPress plugin:
 
-1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome-official.zip`
-1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome-official.zip`
+1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome.zip`
+1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome.zip`
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Use the Settings->Font Awesome screen to configure the plugin
 
@@ -313,7 +313,7 @@ In your composer project directory:
 In your plugin code, just require the plugin's entrypoint module, such as this:
 
 ```php
-require_once trailingslashit(__DIR__) . 'vendor/fortawesome/wordpress-fontawesome/font-awesome-official.php';
+require_once trailingslashit(__DIR__) . 'vendor/fortawesome/wordpress-fontawesome/font-awesome.php';
 ```
 
 Then you can access the `FontAwesome` class for class constants like `FontAwesome::PLUGIN_VERSION`, or

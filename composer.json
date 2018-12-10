@@ -55,7 +55,7 @@
         "phpcs": "phpcs --standard=phpcs.xml.dist",
         "phpcbf": "phpcbf --standard=phpcs.xml.dist",
         "test": "bin/phpunit",
-        "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome-official.zip",
+        "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip",
         "build.admin": "cd admin; yarn build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
         "docs": "vendor/bin/phpdoc",

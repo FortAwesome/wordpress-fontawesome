@@ -4,4 +4,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
 get_wp_container_id
 
-docker exec -it -w /var/www/html/wp-content/plugins/font-awesome-official $WP_CONTAINER_ID php $@
+docker exec -it -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER_ID php $@
