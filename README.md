@@ -1,13 +1,13 @@
 # wordpress-fontawesome
 
-> Font Awesome 5 Official WordPress Plugin (status: private beta)
+> Font Awesome 5 Official WordPress Plugin
 
 <!-- toc -->
 
 - [Description](#description)
 - [Installation](#installation)
 - [For End Users](#for-end-users)
-  * [Add Icons with Shortcodes or <i> Tags](#add-icons-with-shortcodes-or-i-tags)
+  * [Add Icons with Shortcodes or `<i>` Tags](#add-icons-with-shortcodes-or-i-tags)
     * [Additional Features with Additional Classes](#additional-features-with-additional-classes)
     * [Shortcode Limitations](#shortcode-limitations)
   * [Usage: Standalone](#usage-simple-end-user-scenarios)
@@ -48,14 +48,9 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
 
-(NOTE: once publicly released, this plugin will also be available in WordPress plugins directory.)
-
 To install directly as a WordPress plugin:
 
-1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome.zip`
-1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome.zip`
-1. Activate the plugin through the 'Plugins' screen in WordPress
-1. Use the Settings->Font Awesome screen to configure the plugin
+Follow [installation instructions in the plugin directory](https://wordpress.org/plugins/font-awesome/#installation).
 
 For instructions on adding this as a composer package to install with your theme or plugin,
 see [Install as Composer Dependency](#install-as-composer-dependency))
