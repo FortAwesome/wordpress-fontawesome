@@ -57,7 +57,7 @@ see [Install as Composer Dependency](#install-as-composer-dependency))
 
 # For End Users
 
-## Add Icons with Shortcodes or <i> Tags
+## Add Icons with Shortcodes or `<i>` Tags
 
 You can place an icon in a post, page, or widget using a shortcode:
 ```
