@@ -142,19 +142,33 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 
 # To Cut a Release
 
-## Build the Admin UI
+1. Update the Changelog at the end of readme.txt
 
-1. In the `admin/` directory, run:
+2. Update the plugin version in the header comments of `font-awesome.php`
+
+3. Update the plugin version const in `includes/class-fontawesome.php`
+
+4. Update "Stable Tag" in readme.txt to set it to the same version, assuming we're going to be making a new tag for release
+
+5. Build the API docs
+
+- make sure you have `graphviz` installed (on mac OS, you can do this with `brew install graphviz`)
+- run `composer cleandocs` if you want to make sure that you're building from scratch
+- run `composer install --dev` to install the dev-only phpDocumentor package 
+- run `composer docs` to build the docs into the `docs/` directory
+
+  This command will incrementally rebuild docs with any updates you make to the phpDoc
+  in the source code files.
+ 
+  See also: [Run a Local Docs Server](#run-a-local-docs-server)
+
+- `git add docs` to stage them for commit (and eventually commit them) 
+
+6. Build production admin app and WordPress distribution layout into `wp-dist` 
 
 ```bash
-yarn build
+$ composer dist
 ```
-
-Commit the assets built into `build/`.
-
-2. In the repo root, run:
-
-`composer dist`
 
 This will delete the `vendor` directory, and previous build assets, and will re-install
 the composer bundle in production mode (`--no-dev --prefer-dist`) and produce the following:
@@ -169,29 +183,57 @@ the plugin by "upload" in the WordPress admin dashboard.
 `admin/build`: production build of the admin UI React app. This need to be committed so that it
 can be included in the composer package (which is really just a pull of this repo)  
 
-3. Commit `admin/build`
+7. `git add` and `git commit` all that would have been changed so far:
 
-4. Build the API docs
+- `docs/`
+- `admin/build`
+- `font-awesome.php`
+- `includes/font-awesome.php`
+- `readme.txt`
 
-- make sure you have graphviz installed (on mac OS, you can do this with `brew install graphviz`)
-- run `composer cleandocs` if you want to make sure that you're building from scratch
-- run `composer install --dev` to install the dev-only phpDocumentor package 
-- run `composer docs` to build the docs into the `docs/` directory
+8. `git push` to GitHub remote
 
-  This command will incrementally rebuild docs with any updates you make to the phpDoc
-  in the source code files.
- 
-  See also: [Run a Local Docs Server](#run-a-local-docs-server)
+Release commits can be pushed directly to `master`, if there are several commits, push to a topic branch and squash/merge
+them into `master`.
 
-- `git add docs` to stage them for commit (and eventually commit them) 
+9. Create a GitHub release that references that new commit
 
-5. Update the Changelog
+10. Check out the plugin svn repo into `wp-svn`
 
-6. commit, push, tag, and make release on GitHub
+From the root of this git repo:
 
-(TODO: Elaborate on that last step.)
+```bash
+svn co https://plugins.svn.wordpress.org/font-awesome wp-svn
+```
 
-(TODO: add directions for moving those into a WordPress SVN repo.) 
+11. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
+
+```bash
+$ composer dist2trunk
+```
+
+12. Create the new svn tag
+
+(Suppose our new version being tagged for release, the version written as the Stable Tag into readme.txt and the
+other various locations above.)
+
+```bash
+$ cd wp-svn
+$ svn add trunk/*
+$ svn cp trunk tags/42.1.2 
+```
+
+13. Add and check in the changes to svn.
+
+The `svn ci` is what publishes the plugin code to the WordPress plugins directory.
+
+```bash
+$ svn ci -m 'Release 42.1.2'
+```
+
+You may need to add username and password options on this command if you're not otherwise authenticated to svn.
+
+[See also tips on using SVN with WordPress Plugins](https://developer.wordpress.org/plugins/wordpress-org/how-to-use-subversion/#editing-existing-files).
 
 ## Run a Local Docs Server
 
