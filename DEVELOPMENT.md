@@ -148,9 +148,11 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 
 3. Update the plugin version const in `includes/class-fontawesome.php`
 
-4. Update "Stable Tag" in readme.txt to set it to the same version, assuming we're going to be making a new tag for release
+4. Update the version in `admin/package.json`
 
-5. Build the API docs
+5. Update "Stable Tag" in readme.txt to set it to the same version, assuming we're going to be making a new tag for release
+
+6. Build the API docs
 
 - make sure you have `graphviz` installed (on mac OS, you can do this with `brew install graphviz`)
 - run `composer cleandocs` if you want to make sure that you're building from scratch
@@ -164,7 +166,7 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 
 - `git add docs` to stage them for commit (and eventually commit them) 
 
-6. Build production admin app and WordPress distribution layout into `wp-dist` 
+7. Build production admin app and WordPress distribution layout into `wp-dist` 
 
 ```bash
 $ composer dist
@@ -183,7 +185,7 @@ the plugin by "upload" in the WordPress admin dashboard.
 `admin/build`: production build of the admin UI React app. This need to be committed so that it
 can be included in the composer package (which is really just a pull of this repo)  
 
-7. `git add` and `git commit` all that would have been changed so far:
+8. `git add` and `git commit` all that would have been changed so far:
 
 - `docs/`
 - `admin/build`
@@ -191,14 +193,14 @@ can be included in the composer package (which is really just a pull of this rep
 - `includes/font-awesome.php`
 - `readme.txt`
 
-8. `git push` to GitHub remote
+9. `git push` to GitHub remote
 
 Release commits can be pushed directly to `master`, if there are several commits, push to a topic branch and squash/merge
 them into `master`.
 
-9. Create a GitHub release that references that new commit
+10. Create a GitHub release that references that new commit
 
-10. Check out the plugin svn repo into `wp-svn`
+11. Check out the plugin svn repo into `wp-svn`
 
 From the root of this git repo:
 
@@ -206,13 +208,13 @@ From the root of this git repo:
 svn co https://plugins.svn.wordpress.org/font-awesome wp-svn
 ```
 
-11. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
+12. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
 
 ```bash
 $ composer dist2trunk
 ```
 
-12. Create the new svn tag
+13. Create the new svn tag
 
 (Suppose our new version being tagged for release, the version written as the Stable Tag into readme.txt and the
 other various locations above.)
@@ -223,7 +225,7 @@ $ svn add trunk/*
 $ svn cp trunk tags/42.1.2 
 ```
 
-13. Add and check in the changes to svn.
+14. Add and check in the changes to svn.
 
 The `svn ci` is what publishes the plugin code to the WordPress plugins directory.
 
