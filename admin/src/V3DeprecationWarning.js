@@ -132,6 +132,10 @@ class V3DeprecationWarning extends React.Component {
     if(this.state.isLoading) {
       return null
     } else if( this.state.data ) {
+      if ( false === this.state.data.v3DeprecationWarning ) {
+        return null
+      }
+
       const { v3DeprecationWarning: { atts, v5name, v5prefix, snooze } } = this.state.data
 
       if( snooze ) return null
