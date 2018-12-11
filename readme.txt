@@ -203,7 +203,7 @@ plugin's settings page.
 
 == Changelog ==
 
-= 4.0.0-alpha1 =
+= 4.0.0-rc1 =
 
 * Add admin settings page
 * Lots of back end code changes to support theme and plugin developers
