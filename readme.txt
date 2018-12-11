@@ -146,7 +146,7 @@ We've tried to smooth the upgrade path for you by keeping that shortcode compati
 
 == See Also ==
 
-The [README](https://github.com/FortAwesome/wordpress-fontawesome/README.md) on GitHub has some more details for WordPress site owners and developers.
+The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub has some more details for WordPress site owners and developers.
 
 The [API docs](https://fortawesome.github.io/wordpress-fontawesome/) for developers.
 
