@@ -27,6 +27,7 @@ copy($repo_dir . '/readme.txt', $dist_dir . '/readme.txt');
 copy($repo_dir . '/LICENSE', $dist_dir . '/LICENSE');
 copy($plugin_dir . '/composer.json', $dist_dir . '/composer.json');
 copy($plugin_dir . '/composer.lock', $dist_dir . '/composer.lock');
+copy($plugin_dir . '/v3shims.yml', $dist_dir . '/v3shims.yml');
 
 // zip dist
 $zip_filename = $repo_dir . '/font-awesome.zip';

@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
-Stable tag: 4.0.0-rc2
+Stable tag: 4.0.0-rc3
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.0
@@ -183,6 +183,10 @@ Find the Font Awesome admin settings page either under the "Settings" menu on th
 [Font Awesome Pro](https://fontawesome.com/pro) subscribers who want to enable Pro icons on their WordPress sites, must first [add their allowed domains](https://fontawesome.com/account/domains) before enabling the "Use Pro" option on the plugin's settings page.
 
 == Changelog ==
+
+= 4.0.0-rc3 =
+
+* Add missing v3 shim file
 
 = 4.0.0-rc2 =
 

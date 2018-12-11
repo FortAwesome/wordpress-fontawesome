@@ -1,6 +1,6 @@
 {
   "name": "font-awesome-admin",
-  "version": "4.0.0-rc2",
+  "version": "4.0.0-rc3",
   "private": true,
   "dependencies": {
     "@babel/core": "7.1.0",
