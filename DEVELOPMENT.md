@@ -192,6 +192,7 @@ can be included in the composer package (which is really just a pull of this rep
 - `font-awesome.php`
 - `includes/font-awesome.php`
 - `readme.txt`
+- `admin/package.json`
 
 9. `git push` to GitHub remote
 
