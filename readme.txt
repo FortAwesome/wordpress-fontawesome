@@ -50,7 +50,136 @@ to resolve conflicts.
 
 7. Prevents "unregistered" themes or plugins from breaking your icons by loading multiple or incompatible versions.
 
-## Upgrading
+## Usage
+
+Find icons for your version of Font Awesome in the [Icon Gallery](https://fontawesome.com/icons), or on the [cheatsheet](https://fontawesome.com/cheatsheet).
+
+### HTML
+
+The stroopwafel icon in the Solid (fas) style:
+
+`<i class="fas fa-stroopwafel"></i>`
+
+[All Font Awesome features](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) are available
+when using HTML, including advanced features only available using the SVG with JavaScript, such as
+[Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
+You can enable SVG in the admin settings page.
+
+Notice that we use the icon's CSS class here, `fa-stroopwafel`, rather than its plain name.
+
+### Shortcode
+
+`[icon name="stroopwafel"]`
+
+Notice we're just using the _name_ of the icon here (`stroopwafel`), as you'd find in the [Icon Gallery](https://fontawesome.com/icons),
+ not its CSS class (`fa-stroopwafel`).
+
+By default, the `fas` style prefix (for the Solid style) will be used. To specify a different prefix, use the `prefix` attribute.
+This shows the same icon in the Light style (`fal`), available in Font Awesome Pro.
+
+`[icon name="stroopwafel" prefix="fal"]`
+
+## Configuring
+
+Here's what you can currently configure on the admin settings page:
+
+- Version
+- Method: svg or webfont
+- Pseudo-elements support
+- Version 4 compatibility (aka "v4shims")
+- Enabling Pro
+- Remove unregistered clients: block them from loading conflicting versions or configurations of Font Awesome
+
+Details on those:
+
+### Version: Updating the Font Awesome Version with New Releases
+
+New releases of Font Awesome may include changes to the framework, or new icons. Framework changes might include fixes
+or enhancements to the JavaScript that runs in the browser to render SVG icons, for example.
+
+Once we release a new version of Font Awesome, a simple re-load of this plugin's admin page will show that new version
+being available in the version dropdown. Select the new version and save your settings.
+
+If for some reason you know you need to lock your Font Awesome version back to some other version that's available in the
+dropdown, just select it and save the settings.
+
+### Method: Webfont or SVG
+
+Font Awesome 5 is available via two different implementation methods: Webfont with CSS, or SVG with JavaScript.
+If you're not sure of the difference, or don't know why you'd need to use SVG, then sticking with the default webfont
+method is probably easiest.
+
+There are some extra features available only in SVG/JS, though, like [Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
+
+### Pseudo-elements ( ::before )
+
+Options: `require` or `forbid`
+
+[CSS Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements) are a way to use CSS
+to add icons to a page when you can't otherwise control the page's content. You define a rule in your CSS with `::before`.
+
+Because pseudo-elements is just a feature of CSS, they work implicitly when you're using Font Awesome via the webfont method.
+
+However, it requires a little extra magic to get pseudo-elements working with SVG/JS. Sometimes, the performance trade-off
+isn't worth it. So when using SVG/JS, pseudo-elements are _not_ enabled by default, but you (or another client) can still
+`require` them. If you (or another client) feel sure that enabling pseudo-elements with SVG would be a disaster, then `forbid` can
+also be chosen to prevent said disaster.
+
+### Version 4 Compatibility (aka "v4shims")
+
+Options: `require` or `forbid`
+
+There are quite a few icon name changes, and some changes in icon style, that occurred between Font Awesome major
+versions 4 and 5. It's best to update them to the version 5 names whenever possible. But to ease the upgrade path, version
+4 shims are available.
+
+These are enabled by default, but can be disabled by selecting `forbid`.
+
+### Enabling Pro
+
+[Font Awesome Pro](https://fontawesome.com/pro) gets you lots more icons, services, and support, and a steady stream of new
+icons when you have an active subscription. One of those Pro services is our Pro CDN. To load Font Awesome from the Pro CDN,
+including all the Pro icons, check "Use Pro" on the admin settings page.
+
+You'll need to first make sure you've configured your [allowed CDN domains in your fontawesome.com account settings](https://fontawesome.com/account/domains).
+
+### Remove Unregistered Clients
+
+"Unregistered clients" include any themes or plugins that attempt to load their own versions of Font Awesome using the normal
+means of loading JavaScripts or stylesheets in WordPress. If this plugin detects them, it will display them on the admin
+ settings page. Checking the box to "Remove unregistered clients" just removes their attempt to load a conflicting version of
+ Font Awesome. Most of the time, the version _you_ want to load will work just fine for them. So selecting this option doesn't
+ necessarily stop those unregistered clients from working as intended—it just stops them from breaking the rest of your icons.
+ But, your mileage may vary. Since those clients haven't registered their requirements with this plugin, we can't be sure what
+ they really require in order to work as intended. But you could enable this option and then view the outputs of those clients.
+ If they seem to look as expected, great. If not, try enabling the v4shims in case the unregistered client expects to be able
+ to use version 4 icon names.
+
+### Understanding Many Clients with Various Requirements
+
+Activating the plugin will use a default configuration that loads the latest available version of Font Awesome using the
+ webfont method from the Font Awesome Free CDN. In the simplest case, no additional configuration is required.
+
+Our hope is that other themes and plugins will use this framework to register their Font Awesome requirements, to ensure
+that icons are working across all of your posts and pages, including content from those themes or plugins.
+
+On the admin settings page, you'll see the list of clients that have registered Font Awesome requirements. Think of yourself,
+the web site owner as one of those clients. You set your Font Awesome requirements using the admin settings page. Any other
+clients—plugins or themes–use our API (under the hood) to register their requirements. You'll see all of them show up
+on the admin settings page, giving you a dashboard overview of what everyone's up to.
+
+This plugin loads a version and configuration of Font Awesome that is conflict-free across all client requirements and
+the latest available, by default. So you can change the configuration options from the admin settings page to your
+heart's content, as long as you don't introduce conflicts with other clients' requirements. If you're the only client, then
+the world is your oyster.
+
+For example, if you install a plugin that requires the svg method, then as long as you have it enabled, you won't
+be able to require the webfont method without introducing a conflict. It's gotta be one or the other. If you try it,
+you'll be presented with a warning and some clear diagnostics in the admin settings page. And, by the way, it won't
+break the icons on your site if you try something and it introduces a conflict. This plugin will only lock and load a
+conflict-free configuration. Any conflicts are reported for you to troubleshoot on the admin settings page.
+
+## Upgrading from the Old Plugin
 
 If you've been a user of previous versions of this plugin, you'll eventually need to update your `[icon]` shortcodes
 to use Font Awesome 5 names instead of the out-dated Font Awesome 3 names that old plugin loaded.
