@@ -143,7 +143,7 @@ class V3DeprecationWarning extends React.Component {
 
           <p className={ sharedStyles['explanation'] }>
             Looks like you're using an <code>[icon]</code> shortcode with an old Font Awesome 3 icon name:
-            <code>{ atts.name }</code>.
+            <code>{ atts.name }</code>
           </p>
           <p className={ sharedStyles['explanation'] }>
             We discontinued support for <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/v3.2.1/icons/">Font Awesome 3</a> quite some time ago,
@@ -166,9 +166,9 @@ class V3DeprecationWarning extends React.Component {
           </p>
           <p className={ sharedStyles['explanation'] }>
             Actually, we just converted it on the fly so it would look right in your web pages,
-            without changing your saved web sited content. So
-            to make that change permanent (and get rid of this warning), you'll need to go change those version 3 icon
-            names for real in your pages, posts, widgets, templates, or wherever they're coming from.
+            without changing your saved web site content. So
+            to make that change permanent (and get rid of this warning), you'll need to go change any version 3 icon
+            names in <code>[icon]</code> shortcodes in your pages, posts, widgets, templates, or wherever they're coming from.
           </p>
           <p className={ sharedStyles['explanation'] }>
             What's that <code>prefix</code>, you ask?

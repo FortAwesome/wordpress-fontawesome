@@ -26,7 +26,7 @@ WP_ADMIN_EMAIL=some_real_address@example.com
 
 On Mac OS X, it can be installed via `brew install composer`
 
-6. update composer dependencies from the `font-awesome-official` directory
+6. update composer dependencies from the `font-awesome` directory
 
 ```
 composer install
@@ -98,7 +98,7 @@ with admin username and password as found in `.env`.
 To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
 
 After activating the plugin you can access the Font Awesome admin page here:
-`http://localhost:8080/wp-admin/options-general.php?page=font-awesome-official`
+`http://localhost:8080/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
 
@@ -142,38 +142,19 @@ They can be activated from WP Admin Dashboard as any Plugin or Theme would be, o
 
 # To Cut a Release
 
-## Build the Admin UI
+1. Update the Changelog at the end of readme.txt
 
-1. In the `admin/` directory, run:
+2. Update the plugin version in the header comments of `font-awesome.php`
 
-```bash
-yarn build
-```
+3. Update the plugin version const in `includes/class-fontawesome.php`
 
-Commit the assets built into `build/`.
+4. Update the version in `admin/package.json`
 
-2. In the repo root, run:
+5. Wait on changing the "Stable Tag" in `readme.txt` until after we've made the changes in the `svn` repo below.
 
-`composer dist`
+6. Build the API docs
 
-This will delete the `vendor` directory, and previous build assets, and will re-install
-the composer bundle in production mode (`--no-dev --prefer-dist`) and produce the following:
-
-`wp-dist/`: the contents of this directory should be move into the svn repo for the WordPress plugin
-that will be published through the WordPress plugins directory.
-
-`font-awesome-official.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
-This zip file can be distributed as a download for the WordPress plugin and used for installing
-the plugin by "upload" in the WordPress admin dashboard.
-
-`admin/build`: production build of the admin UI React app. This need to be committed so that it
-can be included in the composer package (which is really just a pull of this repo)  
-
-3. Commit `admin/build`
-
-4. Build the API docs
-
-- make sure you have graphviz installed (on mac OS, you can do this with `brew install graphviz`)
+- make sure you have `graphviz` installed (on mac OS, you can do this with `brew install graphviz`)
 - run `composer cleandocs` if you want to make sure that you're building from scratch
 - run `composer install --dev` to install the dev-only phpDocumentor package 
 - run `composer docs` to build the docs into the `docs/` directory
@@ -185,13 +166,132 @@ can be included in the composer package (which is really just a pull of this rep
 
 - `git add docs` to stage them for commit (and eventually commit them) 
 
-5. Update the Changelog
+7. Build production admin app and WordPress distribution layout into `wp-dist` 
 
-6. commit, push, tag, and make release on GitHub
+```bash
+$ composer dist
+```
 
-(TODO: Elaborate on that last step.)
+This will delete the `vendor` directory, and previous build assets, and will re-install
+the composer bundle in production mode (`--no-dev --prefer-dist`) and produce the following:
 
-(TODO: add directions for moving those into a WordPress SVN repo.) 
+`wp-dist/`: the contents of this directory should be move into the svn repo for the WordPress plugin
+that will be published through the WordPress plugins directory.
+
+`font-awesome.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
+This zip file can be distributed as a download for the WordPress plugin and used for installing
+the plugin by "upload" in the WordPress admin dashboard.
+
+`admin/build`: production build of the admin UI React app. This need to be committed so that it
+can be included in the composer package (which is really just a pull of this repo)  
+
+8. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
+
+To check it out initially:
+
+```bash
+svn co https://plugins.svn.wordpress.org/font-awesome wp-svn
+```
+
+If you've already checked it out, make sure it's up to date:
+
+```bash
+$ cd wp-svn
+$ svn up
+$ cd ..
+``` 
+
+9. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
+
+```bash
+$ composer dist2trunk
+```
+
+This script will just `rm *` anything under `wp-svn/trunk/*` and `wp-svn/assets/*` to make sure that if the new dist
+layout changes the file list from the previous release, or if there are changes to the list of files in `wp-svn/assets`,
+they will show up as file changes when you do `svn stat`.
+
+10. Make sure the svn trunk makes sense with respect to added or removed files
+
+```bash
+$ cd wp-svn
+$ svn stat
+```
+
+If there are files with `!` status, that indicates they no longer exist and you should do `svn delete` on each of them.
+
+Pay attention to files under either `wp-svn/assets` or `wp-svn/trunk`.
+
+Do an `svn add` on any _new_ files.
+
+If there's an editor dotfile or other directory that should be ignored by `svn`, you can do something like this:
+
+```bash
+$ svn propset svn:ignore .idea .
+``` 
+
+11. Check in the new trunk
+
+Make sure that the `Stable Tag` in `wp-svn/trunk/readme.txt` still reflects the _previous_ release at this point.
+It should point to the previous release that has a subdirectory under `tags/`.
+
+(Suppose `42.1.2` is the new version we're releasing. Change it in the examples to use real release version numbers.)
+
+`svn ci` is what publishes the plugin code to the WordPress plugins directory, making it public.
+
+```bash
+$ svn ci -m 'Update trunk for release 42.1.2' 
+```
+
+If you're not already authenticated to `svn`, add the `--username` option to `svn ci` and it will prompt you for your
+password. After the first `svn ci` caches the credentials, you probably won't need to include `--username`.
+
+[See also tips on using SVN with WordPress Plugins](https://developer.wordpress.org/plugins/wordpress-org/how-to-use-subversion/#editing-existing-files).
+
+12. Create the new svn release tag
+
+First, make sure `svn stat` is clean. We want to make sure that the trunk is all committed and clean before we take a 
+snapshot of it for the release tag.
+
+This will snapshot `trunk` as a new release tag. Replace the example tag name with the real release tag name.
+
+```bash
+$ svn cp trunk tags/42.1.2 
+```
+
+13. Update Stable Tag in `readme.txt`
+
+We've now got three copies of `readme.txt` that should all be updated with the new `Stable Tag`
+
+- `wp-svn/trunk/readme.txt`
+- `wp-svn/tags/4.0.0-rc1/readme.txt`
+- `readme.txt` (in the git repo)
+
+14. Check in the latest changes to svn.
+
+(Again, use the real version number)
+
+From the `wp-svn` dir:
+
+```bash
+$ svn ci -m 'Release 42.1.2'
+```
+
+15. `git add` and `git commit` all that would have been changed so far:
+
+- `docs/`
+- `admin/build`
+- `font-awesome.php`
+- `includes/font-awesome.php`
+- `admin/package.json`
+- `readme.txt`
+
+16. `git push` to GitHub remote
+
+Single release commits can be pushed directly to `master`. If there are several commits, push to a topic branch and squash/merge
+them into `master` as a single commit.
+
+17. Create a GitHub release that tags that new release commit
 
 ## Run a Local Docs Server
 

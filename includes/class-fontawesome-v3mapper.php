@@ -36,7 +36,7 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 		/**
 		 * Returns the singleton instance of this class.
 		 *
-		 * @since 0.2.0
+		 * @since 4.0.0
 		 *
 		 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
 		 * @return FontAwesome_V3Mapper

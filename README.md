@@ -1,13 +1,13 @@
 # wordpress-fontawesome
 
-> Font Awesome 5 Official WordPress Plugin (status: private beta)
+> Font Awesome 5 Official WordPress Plugin
 
 <!-- toc -->
 
 - [Description](#description)
 - [Installation](#installation)
 - [For End Users](#for-end-users)
-  * [Add Icons with Shortcodes or <i> Tags](#add-icons-with-shortcodes-or-i-tags)
+  * [Add Icons with Shortcodes or `<i>` Tags](#add-icons-with-shortcodes-or-i-tags)
     * [Additional Features with Additional Classes](#additional-features-with-additional-classes)
     * [Shortcode Limitations](#shortcode-limitations)
   * [Usage: Standalone](#usage-simple-end-user-scenarios)
@@ -48,21 +48,16 @@ Loads Font Awesome from the official Font Awesome Free or Pro CDN.
 
 ## Installation
 
-(NOTE: once publicly released, this plugin will also be available in WordPress plugins directory.)
-
 To install directly as a WordPress plugin:
 
-1. Download the [latest release](https://github.com/FortAwesome/wordpress-fontawesome/releases/latest) of `font-awesome-official.zip`
-1. In the WordPress admin dashboard "Add Plugins" page, click "Upload Plugin" and upload that `font-awesome-official.zip`
-1. Activate the plugin through the 'Plugins' screen in WordPress
-1. Use the Settings->Font Awesome screen to configure the plugin
+Follow [installation instructions in the plugin directory](https://wordpress.org/plugins/font-awesome/#installation).
 
 For instructions on adding this as a composer package to install with your theme or plugin,
 see [Install as Composer Dependency](#install-as-composer-dependency))
 
 # For End Users
 
-## Add Icons with Shortcodes or <i> Tags
+## Add Icons with Shortcodes or `<i>` Tags
 
 You can place an icon in a post, page, or widget using a shortcode:
 ```
@@ -313,7 +308,7 @@ In your composer project directory:
 In your plugin code, just require the plugin's entrypoint module, such as this:
 
 ```php
-require_once trailingslashit(__DIR__) . 'vendor/fortawesome/wordpress-fontawesome/font-awesome-official.php';
+require_once trailingslashit(__DIR__) . 'vendor/fortawesome/wordpress-fontawesome/font-awesome.php';
 ```
 
 Then you can access the `FontAwesome` class for class constants like `FontAwesome::PLUGIN_VERSION`, or

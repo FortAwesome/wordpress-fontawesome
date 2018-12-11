@@ -7,7 +7,7 @@
         <target>docs</target>
     </transformer>
     <files>
-        <file>font-awesome-official.php</file>
+        <file>font-awesome.php</file>
         <file>includes/class-fontawesome.php</file>
         <file>includes/class-fontawesome-config-controller.php</file>
         <file>includes/class-fontawesome-release-provider.php</file>
