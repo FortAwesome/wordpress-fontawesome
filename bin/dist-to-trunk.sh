@@ -26,4 +26,10 @@ echo "Clearing out target assets..."
 rm -f $ASSETS_TARGET/*
 
 echo "Copying plugin directory assets from git to svn..."
-cp $ASSETS_SRC/* $ASSETS_TARGET/
+cp -R $ASSETS_SRC/* $ASSETS_TARGET/
+
+echo "Clearing out the trunk..."
+rm -fR $SVNDIR/trunk/*
+
+echo "Copying plugin files from wp-dist to svn trunk..."
+cp -R $DISTDIR/* $SVNDIR/trunk/
