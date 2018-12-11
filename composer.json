@@ -60,6 +60,7 @@
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
         "docs": "vendor/bin/phpdoc",
         "docsrv": "cd docsrv && yarn && node index.js",
-        "dist": "composer clean && composer build.admin && bin/make-wp-dist"
+        "dist": "composer clean && composer build.admin && bin/make-wp-dist",
+        "dist2trunk": "bin/dist-to-trunk.sh"
     }
 }
