@@ -220,9 +220,12 @@ $ svn stat
 
 If there are files with `!` status, that indicates they no longer exist and you should do `svn delete` on each of them.
 
+If there are files with `?` status, that indicates they are being added and you should do `svn add` on each of them.
+
 Pay attention to files under either `wp-svn/assets` or `wp-svn/trunk`.
 
-Do an `svn add` on any _new_ files.
+For example, every time the admin client is rebuilt and the bundle content changes, the hashes on the bundle file names
+change. So you'll end up removing the old ones and adding the new ones.
 
 If there's an editor dotfile or other directory that should be ignored by `svn`, you can do something like this:
 
@@ -277,7 +280,11 @@ From the `wp-svn` dir:
 $ svn ci -m 'Release 42.1.2'
 ```
 
-15. `git add` and `git commit` all that would have been changed so far:
+15. Now update the Stable Tag in the `readme.txt` in the git repo
+
+Set it to `42.1.2` the new release tag.
+
+16. `git add` and `git commit` all that would have been changed so far:
 
 - `docs/`
 - `admin/build`
@@ -286,12 +293,12 @@ $ svn ci -m 'Release 42.1.2'
 - `admin/package.json`
 - `readme.txt`
 
-16. `git push` to GitHub remote
+17. `git push` to GitHub remote
 
 Single release commits can be pushed directly to `master`. If there are several commits, push to a topic branch and squash/merge
 them into `master` as a single commit.
 
-17. Create a GitHub release that tags that new release commit
+18. Create a GitHub release that tags that new release commit
 
 ## Run a Local Docs Server
 
