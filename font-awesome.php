@@ -14,18 +14,18 @@
 
 defined( 'WPINC' ) || die;
 
-if ( ! function_exists( 'font_awesome_official_handle_fatal_error' ) ) {
+if ( ! function_exists( 'font_awesome_handle_fatal_error' ) ) {
 	/**
 	 * Handle fatal errors
 	 *
 	 * @ignore
 	 */
-	function font_awesome_official_handle_fatal_error( $message = null ) {
+	function font_awesome_handle_fatal_error( $message = null ) {
 		add_action(
 			'admin_notices',
 			function () use ( $message ) {
 				?>
-				<div class="error"><p>The Font Awesome plugin has experienced some fatal error
+				<div class="error"><p>The Font Awesome plugin has experienced a fatal error
 					<?php
 					if ( ! is_null( $message ) ) {
 						echo esc_html( ": $message" );
@@ -81,8 +81,8 @@ if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
 		define( 'FONT_AWESOME_OFFICIAL_LOADED', 1 );
 		fa()->run();
 	} catch ( Exception $e ) {
-		font_awesome_official_handle_fatal_error( $e->getMessage() );
+		font_awesome_handle_fatal_error( $e->getMessage() );
 	} catch ( Error $e ) {
-		font_awesome_official_handle_fatal_error( $e->getMessage() );
+		font_awesome_handle_fatal_error( $e->getMessage() );
 	}
 }
