@@ -127,16 +127,16 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		);
 
 		$farp = fa_release_provider();
-		try {
-			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
-			$releases_method = $klass->getMethod( 'releases' );
-			$releases_method->setAccessible( true );
-			$releases = $releases_method->invoke( $farp );
-			$this->assertEquals( 0, count( $releases ) );
-			$this->assertEquals( 500, $farp->get_status()['code'] );
-		} catch ( \ReflectionException $e ) {
-			$this->assertTrue( false, 'Exception: ' . $e );
-		}
+		$this->expectException( FontAwesome_NoReleasesException::class );
+
+		$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
+		$releases_method = $klass->getMethod( 'releases' );
+
+		$releases_method->setAccessible( true );
+		$releases = $releases_method->invoke( $farp );
+
+		$this->assertEquals( 0, count( $releases ) );
+		$this->assertEquals( 500, $farp->get_status()['code'] );
 	}
 
 	public function test_client_failure_403() {
@@ -151,16 +151,15 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		);
 
 		$farp = fa_release_provider();
-		try {
-			$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
-			$releases_method = $klass->getMethod( 'releases' );
-			$releases_method->setAccessible( true );
-			$releases = $releases_method->invoke( $farp );
-			$this->assertEquals( 0, count( $releases ) );
-			$this->assertEquals( 403, $farp->get_status()['code'] );
-		} catch ( \ReflectionException $e ) {
-			$this->assertTrue( false, 'Exception: ' . $e );
-		}
+		$this->expectException( FontAwesome_NoReleasesException::class );
+
+		$klass           = new \ReflectionClass( 'FontAwesome_Release_Provider' );
+		$releases_method = $klass->getMethod( 'releases' );
+		$releases_method->setAccessible( true );
+		$releases = $releases_method->invoke( $farp );
+
+		$this->assertEquals( 0, count( $releases ) );
+		$this->assertEquals( 403, $farp->get_status()['code'] );
 	}
 
 	public function test_versions() {

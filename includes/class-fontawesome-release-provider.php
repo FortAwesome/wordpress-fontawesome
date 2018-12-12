@@ -11,6 +11,7 @@
  */
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 
 use Composer\Semver\Semver;
 use GuzzleHttp\Client;
@@ -166,6 +167,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	private function load_releases() {
 		$init_status = array(
 			'code'    => null,

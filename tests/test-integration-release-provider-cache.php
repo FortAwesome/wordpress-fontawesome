@@ -15,6 +15,9 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
+/**
+ * Class ReleaseProviderIntegrationTest
+ */
 class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
 	protected $known_versions = [
@@ -77,9 +80,9 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 			function() {
 				fa()->register(
 					array(
-						'name'   => 'Client A',
+						'name'          => 'Client A',
 						'clientVersion' => '1',
-						'version' => '5.4.1'
+						'version'       => '5.4.1',
 					)
 				);
 			}
