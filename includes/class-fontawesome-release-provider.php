@@ -139,6 +139,12 @@ class FontAwesome_Release_Provider {
 			$client_params['handler'] = self::$_handler;
 		}
 		$this->_api_client = new Client( $client_params );
+
+		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+
+		if ( $cached_releases ) {
+			$this->_releases = $cached_releases;
+		}
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -185,6 +191,13 @@ class FontAwesome_Release_Provider {
 			foreach ( $api_releases as $release ) {
 				$releases[ $release['version'] ] = $release;
 			}
+
+			$ret = set_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
+
+			if ( ! $ret ) {
+				throw new Exception();
+			}
+
 			$this->_releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
 			$this->_status = array_merge(
@@ -218,15 +231,15 @@ class FontAwesome_Release_Provider {
 				$init_status,
 				array(
 					'code'    => 0,
-					'message' => 'Whoops, we failed to update the releases data from the Font Awesome server.',
+					'message' => 'Whoops, we failed to update the releases data.',
 				)
 			);
-		} catch ( Error $e ) {
+		} catch ( \Error $e ) {
 			$this->_status = array_merge(
 				$init_status,
 				array(
 					'code'    => 0,
-					'message' => 'Whoops, we failed when trying to update the releases data from the Font Awesome server.',
+					'message' => 'Whoops, we failed when trying to update the releases data.',
 				)
 			);
 		}
@@ -262,21 +275,49 @@ class FontAwesome_Release_Provider {
 		return( new FontAwesome_Resource( $full_url, $integrity_key ) );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
-	 * @ignore
+	 * Retrieves Font Awesome releases metadata with as few network requests as possible.
+	 *
+	 * Will first attempt to return releases already memoized by this Singleton instance.
+	 * Next, will try to retrieve a cached set of releases from a non-expiring transient.
+	 *
+	 * If there's nothing cached, then it tries to load releases by making a network request to the
+	 * releases API endpoint.
+	 *
+	 * If that fails, it throws an exception.
+	 *
+	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT()
+	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT_EXPIRY()
+	 * @throws FontAwesome_NoReleasesException
+	 * @return array
 	 */
 	protected function releases() {
-		if ( is_null( $this->_releases ) ) {
-			$this->load_releases();
+		if ( $this->_releases ) {
+			return $this->_releases;
+		} else {
+			$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+
+			if ( $cached_releases ) {
+				return $cached_releases;
+			} elseif ( is_null( $this->_releases ) ) {
+				$this->load_releases();
+
+				// TODO: consider adding retry logic for loading Font Awesome releases.
+				if ( is_null( $this->_releases ) ) {
+					throw new FontAwesome_NoReleasesException();
+				} else {
+					return $this->_releases;
+				}
+			} else {
+				return $this->_releases;
+			}
 		}
-		// TODO: after figuring out how we'll handle releases API failures we may want to change what we return in the null case here.
-		return is_null( $this->_releases ) ? array() : $this->_releases;
 	}
 
 	/**
 	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending semantic version order.
 	 *
+	 * @throws FontAwesome_NoReleasesException
 	 * @return array
 	 */
 	public function versions() {
@@ -287,13 +328,18 @@ class FontAwesome_Release_Provider {
 	 * Returns an array containing version, shim, source URLs and integrity keys for given params.
 	 * They should be loaded in the order they appear in this collection.
 	 *
+	 * Throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
+	 * Shims were not introduced for webfonts until 5.1.0.
+	 *
+	 * Throws InvalidArgumentException when called with an array for $style_opt that contains no known style specifiers.
+	 *
+	 * Throws FontAwesome_NoReleasesException when no releases metadata could be loaded.
+	 *
 	 * @param string $version
 	 * @param mixed  $style_opt either the string 'all' or an array containing any of the following:
 	 *         ['solid', 'regular', 'light', 'brands']
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
-	 * @throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
-	 *         Shims were not introduced for webfonts until 5.1.0. Throws when called with an array for $style_opt
-	 *         that contains no known style specifiers.
+	 * @throws InvalidArgumentException | FontAwesome_NoReleasesException
 	 * @return array
 	 */
 	public function get_resource_collection( $version, $style_opt, $flags = array(
@@ -368,6 +414,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * Returns a version number corresponding to the most recent minor release.
 	 *
+	 * @throws FontAwesome_NoReleasesException
 	 * @return string|null most recent major.minor.patch version (not a semver). Returns null if no versions available.
 	 */
 	public function latest_minor_release() {
@@ -378,6 +425,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * Returns a version number corresponding to the minor release immediately prior to the most recent minor release.
 	 *
+	 * @throws FontAwesome_NoReleasesException
 	 * @return string|null latest patch level for the previous minor version. major.minor.patch version (not a semver).
 	 *         Returns null if there is no latest (and therefore no previous).
 	 *         Returns null if there's no previous, because the latest represents the only minor version in the set
@@ -403,7 +451,9 @@ class FontAwesome_Release_Provider {
 		$satisfying_versions = Semver::rsort(
 			Semver::satisfiedBy( $this->versions(), $previous_minor_release_semver_constraint )
 		);
-		$result              = count( $satisfying_versions ) > 0 ? $satisfying_versions[0] : null;
+
+		$result = count( $satisfying_versions ) > 0 ? $satisfying_versions[0] : null;
+
 		return $result === $latest ? null : $result;
 	}
 }
