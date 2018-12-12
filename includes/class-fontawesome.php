@@ -16,6 +16,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 use Composer\Semver\Semver;
@@ -254,10 +255,17 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 					try {
 						$fa->load();
+					} catch ( FontAwesome_NoReleasesException $e ) {
+						font_awesome_handle_fatal_error(
+							'Sorry, your WordPress server was unable to contact the Font Awesome server to retrieve available ' .
+							'releases data. Most likely, just re-loading this page to get it try again should work. But if you\'re running ' .
+							'WordPress offline, from an airplane, or in some other way that blocks your WordPress server from reaching ' .
+							'fontawesome.com, then that will block you from proceeding until you can connect successfully.'
+						);
 					} catch ( Exception $e ) {
-						font_awesome_official_handle_fatal_error( $e->getMessage() );
+						font_awesome_handle_fatal_error( $e->getMessage() );
 					} catch ( Error $e ) {
-						font_awesome_official_handle_fatal_error( $e->getMessage() );
+						font_awesome_handle_fatal_error( $e->getMessage() );
 					}
 				},
 				10,
@@ -378,6 +386,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 *
+		 * @throws FontAwesome_NoReleasesException
 		 * @return null|string
 		 */
 		public function get_latest_version() {
@@ -392,6 +401,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 *
+		 * @throws FontAwesome_NoReleasesException
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return null|string
 		 */
@@ -407,6 +417,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 *
+		 * @throws FontAwesome_NoReleasesException
 		 * @return null|string
 		 */
 		public function get_previous_version() {
@@ -421,6 +432,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 *
+		 * @throws FontAwesome_NoReleasesException
 		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @return null|string
 		 */
@@ -436,6 +448,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 *
+		 * @throws FontAwesome_NoReleasesException
 		 * @see FontAwesome_Release_Provider::versions()
 		 * @return null|string
 		 */
