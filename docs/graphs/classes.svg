@@ -14,35 +14,35 @@
 <path fill="none" stroke="#c0c0c0" d="M261.2859,-8C261.2859,-8 460.7171,-8 460.7171,-8 466.7171,-8 472.7171,-14 472.7171,-20 472.7171,-20 472.7171,-175 472.7171,-175 472.7171,-181 466.7171,-187 460.7171,-187 460.7171,-187 261.2859,-187 261.2859,-187 255.2859,-187 249.2859,-181 249.2859,-175 249.2859,-175 249.2859,-20 249.2859,-20 249.2859,-14 255.2859,-8 261.2859,-8"/>
 <text text-anchor="middle" x="361.0015" y="-174.2" font-family="Times,serif" font-size="11.00" fill="#c0c0c0">Global</text>
 </g>
-<!-- \\FontAwesome -->
+<!-- \\FontAwesome_Release_Provider -->
 <g id="node1" class="node">
+<title>\\FontAwesome_Release_Provider</title>
+<polygon fill="none" stroke="#000000" points="461.3316,-160 260.6713,-160 260.6713,-124 461.3316,-124 461.3316,-160"/>
+<text text-anchor="middle" x="361.0015" y="-138.7" font-family="Courier,monospace" font-size="11.00" fill="#000000">FontAwesome_Release_Provider</text>
+</g>
+<!-- \\FontAwesome -->
+<g id="node2" class="node">
 <title>\\FontAwesome</title>
-<polygon fill="none" stroke="#000000" points="405.1142,-160 316.8888,-160 316.8888,-124 405.1142,-124 405.1142,-160"/>
-<text text-anchor="middle" x="361.0015" y="-138.7" font-family="Courier,monospace" font-size="11.00" fill="#000000">FontAwesome</text>
+<polygon fill="none" stroke="#000000" points="405.1142,-106 316.8888,-106 316.8888,-70 405.1142,-70 405.1142,-106"/>
+<text text-anchor="middle" x="361.0015" y="-84.7" font-family="Courier,monospace" font-size="11.00" fill="#000000">FontAwesome</text>
 </g>
 <!-- \\FontAwesome_Config_Controller -->
-<g id="node2" class="node">
+<g id="node3" class="node">
 <title>\\FontAwesome_Config_Controller</title>
-<polygon fill="none" stroke="#000000" points="464.9331,-106 257.0699,-106 257.0699,-70 464.9331,-70 464.9331,-106"/>
-<text text-anchor="middle" x="361.0015" y="-84.7" font-family="Courier,monospace" font-size="11.00" fill="#000000">FontAwesome_Config_Controller</text>
+<polygon fill="none" stroke="#000000" points="464.9331,-52 257.0699,-52 257.0699,-16 464.9331,-16 464.9331,-52"/>
+<text text-anchor="middle" x="361.0015" y="-30.7" font-family="Courier,monospace" font-size="11.00" fill="#000000">FontAwesome_Config_Controller</text>
 </g>
 <!-- \\WP_REST_Controller -->
 <g id="node4" class="node">
 <title>\\WP_REST_Controller</title>
-<ellipse fill="none" stroke="#000000" cx="92.643" cy="-88" rx="92.7861" ry="18"/>
-<text text-anchor="middle" x="92.643" y="-83.8" font-family="Times,serif" font-size="14.00" fill="#c0c0c0">\WP_REST_Controller</text>
+<ellipse fill="none" stroke="#000000" cx="92.643" cy="-34" rx="92.7861" ry="18"/>
+<text text-anchor="middle" x="92.643" y="-29.8" font-family="Times,serif" font-size="14.00" fill="#c0c0c0">\WP_REST_Controller</text>
 </g>
 <!-- \\FontAwesome_Config_Controller&#45;&gt;\\WP_REST_Controller -->
 <g id="edge1" class="edge">
 <title>\\FontAwesome_Config_Controller&#45;&gt;\\WP_REST_Controller</title>
-<path fill="none" stroke="#000000" d="M257.2471,-88C237.0591,-88 215.9011,-88 195.7346,-88"/>
-<polygon fill="none" stroke="#000000" points="195.6076,-84.5001 185.6075,-88 195.6075,-91.5001 195.6076,-84.5001"/>
-</g>
-<!-- \\FontAwesome_Release_Provider -->
-<g id="node3" class="node">
-<title>\\FontAwesome_Release_Provider</title>
-<polygon fill="none" stroke="#000000" points="461.3316,-52 260.6713,-52 260.6713,-16 461.3316,-16 461.3316,-52"/>
-<text text-anchor="middle" x="361.0015" y="-30.7" font-family="Courier,monospace" font-size="11.00" fill="#000000">FontAwesome_Release_Provider</text>
+<path fill="none" stroke="#000000" d="M257.2471,-34C237.0591,-34 215.9011,-34 195.7346,-34"/>
+<polygon fill="none" stroke="#000000" points="195.6076,-30.5001 185.6075,-34 195.6075,-37.5001 195.6076,-30.5001"/>
 </g>
 </g>
 </svg>

@@ -11,6 +11,7 @@
  */
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 
 use Composer\Semver\Semver;
 use GuzzleHttp\Client;
@@ -22,6 +23,22 @@ use GuzzleHttp\Client;
  * @subpackage FontAwesome/includes
  */
 class FontAwesome_Release_Provider {
+	/**
+	 * Name of the transient that stores the cache of Font Awesome releases so we won't query
+	 * the fontawesome.com releases API except when the admin settings page is re-loaded.
+	 *
+	 * @since 4.0.0-rc4
+	 * @ignore
+	 */
+	const RELEASES_TRANSIENT = 'font-awesome-releases';
+
+	/**
+	 * Expiry time for the releases transient.
+	 *
+	 * @ignore
+	 */
+	const RELEASES_TRANSIENT_EXPIRY = 0;
+
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
@@ -32,10 +49,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $_status = array(
-		'code'    => null,
-		'message' => '',
-	);
+	protected $_status = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -88,16 +102,21 @@ class FontAwesome_Release_Provider {
 
 	/**
 	 * Returns an associative array indicating the status of the status of the last network
-	 * request that attempted to retrieve releases metadata.
+	 * request that attempted to retrieve releases metadata, or null if no network request has
+	 * been issued during the life time of the current Singleton instance.
 	 *
-	 * The shape looks like this:
+	 * The shape of an array return looks like this:
 	 * ```php
 	 * array(
-	 *   'code' => 403, // 200 if successful, otherwise some HTTP error code as returned by {@see \Guzzle\Client}
+	 *   'code' => 403,
 	 *   'message' => 'some message',
 	 * )
 	 * ```
-	 * All previous releases metadata held in the previous instance will be abandoned.
+	 *
+	 * The value of the `code` key is one of:
+	 * - `200` if successful,
+	 * - `0` if there was some code error that prevented the network request from completing
+	 * - otherwise some HTTP error code as returned by {@see \Guzzle\Client}
 	 *
 	 * @return FontAwesome_Release_Provider
 	 */
@@ -121,6 +140,12 @@ class FontAwesome_Release_Provider {
 			$client_params['handler'] = self::$_handler;
 		}
 		$this->_api_client = new Client( $client_params );
+
+		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+
+		if ( $cached_releases ) {
+			$this->_releases = $cached_releases;
+		}
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -142,12 +167,23 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	private function load_releases() {
+		$init_status = array(
+			'code'    => null,
+			'message' => '',
+		);
+
 		try {
 			$response = $this->_api_client->get( 'api/releases' );
 
-			$this->_status['code']    = $response->getStatusCode();
-			$this->_status['message'] = 'ok';
+			$this->_status = array_merge(
+				$init_status,
+				array(
+					'code'    => $response->getStatusCode(),
+					'message' => 'ok',
+				)
+			);
 
 			$body          = $response->getBody();
 			$body_contents = $body->getContents();
@@ -157,25 +193,64 @@ class FontAwesome_Release_Provider {
 			foreach ( $api_releases as $release ) {
 				$releases[ $release['version'] ] = $release;
 			}
+
+			$previous_transient = get_transient( self::RELEASES_TRANSIENT );
+
+			if ( $previous_transient ) {
+				// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
+				delete_transient( self::RELEASES_TRANSIENT );
+			}
+
+			$ret = set_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
+
+			if ( ! $ret ) {
+				throw new Exception();
+			}
+
 			$this->_releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
-			$this->_status['code']    = $e->getCode();
-			$this->_status['message'] = 'Whoops, we could not connect to the Font Awesome server to get releases data.  ' .
-										'There seems to be an internet connectivity problem between your WordPress server ' .
-										'and the Font Awesome server.';
+			$this->_status = array_merge(
+				$init_status,
+				array(
+					'code'    => $e->getCode(),
+					'message' => 'Whoops, we could not connect to the Font Awesome server to get releases data.  ' .
+						'There seems to be an internet connectivity problem between your WordPress server ' .
+						'and the Font Awesome server.',
+				)
+			);
 		} catch ( GuzzleHttp\Exception\ServerException $e ) {
-			$this->_status['code']    = $e->getCode();
-			$this->_status['message'] = 'Whoops, there was a problem on the fontawesome.com server when we attempted to get releases data.  ' .
-										'Probably if you reload to try again, it will work.';
+			$this->_status = array_merge(
+				$init_status,
+				array(
+					'code'    => $e->getCode(),
+					'message' => 'Whoops, there was a problem on the fontawesome.com server when we attempted to get releases data.  ' .
+						'Probably if you reload to try again, it will work.',
+				)
+			);
 		} catch ( GuzzleHttp\Exception\ClientException $e ) {
-			$this->_status['code']    = $e->getCode();
-			$this->_status['message'] = 'Whoops, we could not update the releases data from the Font Awesome server.';
+			$this->_status = array_merge(
+				$init_status,
+				array(
+					'code'    => $e->getCode(),
+					'message' => 'Whoops, we could not update the releases data from the Font Awesome server.',
+				)
+			);
 		} catch ( Exception $e ) {
-			$this->_status['code']    = 0;
-			$this->_status['message'] = 'Whoops, we failed to update the releases data from the Font Awesome server.';
-		} catch ( Error $e ) {
-			$this->_status['code']    = 0;
-			$this->_status['message'] = 'Whoops, we failed when trying to update the releases data from the Font Awesome server.';
+			$this->_status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, we failed to update the releases data.',
+				)
+			);
+		} catch ( \Error $e ) {
+			$this->_status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, we failed when trying to update the releases data.',
+				)
+			);
 		}
 	}
 
@@ -209,21 +284,49 @@ class FontAwesome_Release_Provider {
 		return( new FontAwesome_Resource( $full_url, $integrity_key ) );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
-	 * @ignore
+	 * Retrieves Font Awesome releases metadata with as few network requests as possible.
+	 *
+	 * Will first attempt to return releases already memoized by this Singleton instance.
+	 * Next, will try to retrieve a cached set of releases from a non-expiring transient.
+	 *
+	 * If there's nothing cached, then it tries to load releases by making a network request to the
+	 * releases API endpoint.
+	 *
+	 * If that fails, it throws an exception.
+	 *
+	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT()
+	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT_EXPIRY()
+	 * @throws FontAwesome_NoReleasesException
+	 * @return array
 	 */
 	protected function releases() {
-		if ( is_null( $this->_releases ) ) {
-			$this->load_releases();
+		if ( $this->_releases ) {
+			return $this->_releases;
+		} else {
+			$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+
+			if ( $cached_releases ) {
+				return $cached_releases;
+			} elseif ( is_null( $this->_releases ) ) {
+				$this->load_releases();
+
+				// TODO: consider adding retry logic for loading Font Awesome releases.
+				if ( is_null( $this->_releases ) ) {
+					throw new FontAwesome_NoReleasesException();
+				} else {
+					return $this->_releases;
+				}
+			} else {
+				return $this->_releases;
+			}
 		}
-		// TODO: after figuring out how we'll handle releases API failures we may want to change what we return in the null case here.
-		return is_null( $this->_releases ) ? array() : $this->_releases;
 	}
 
 	/**
 	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending semantic version order.
 	 *
+	 * @throws FontAwesome_NoReleasesException
 	 * @return array
 	 */
 	public function versions() {
@@ -234,13 +337,18 @@ class FontAwesome_Release_Provider {
 	 * Returns an array containing version, shim, source URLs and integrity keys for given params.
 	 * They should be loaded in the order they appear in this collection.
 	 *
+	 * Throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
+	 * Shims were not introduced for webfonts until 5.1.0.
+	 *
+	 * Throws InvalidArgumentException when called with an array for $style_opt that contains no known style specifiers.
+	 *
+	 * Throws FontAwesome_NoReleasesException when no releases metadata could be loaded.
+	 *
 	 * @param string $version
 	 * @param mixed  $style_opt either the string 'all' or an array containing any of the following:
 	 *         ['solid', 'regular', 'light', 'brands']
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
-	 * @throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
-	 *         Shims were not introduced for webfonts until 5.1.0. Throws when called with an array for $style_opt
-	 *         that contains no known style specifiers.
+	 * @throws InvalidArgumentException | FontAwesome_NoReleasesException
 	 * @return array
 	 */
 	public function get_resource_collection( $version, $style_opt, $flags = array(
@@ -315,6 +423,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * Returns a version number corresponding to the most recent minor release.
 	 *
+	 * @throws FontAwesome_NoReleasesException
 	 * @return string|null most recent major.minor.patch version (not a semver). Returns null if no versions available.
 	 */
 	public function latest_minor_release() {
@@ -325,6 +434,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * Returns a version number corresponding to the minor release immediately prior to the most recent minor release.
 	 *
+	 * @throws FontAwesome_NoReleasesException
 	 * @return string|null latest patch level for the previous minor version. major.minor.patch version (not a semver).
 	 *         Returns null if there is no latest (and therefore no previous).
 	 *         Returns null if there's no previous, because the latest represents the only minor version in the set
@@ -350,7 +460,9 @@ class FontAwesome_Release_Provider {
 		$satisfying_versions = Semver::rsort(
 			Semver::satisfiedBy( $this->versions(), $previous_minor_release_semver_constraint )
 		);
-		$result              = count( $satisfying_versions ) > 0 ? $satisfying_versions[0] : null;
+
+		$result = count( $satisfying_versions ) > 0 ? $satisfying_versions[0] : null;
+
 		return $result === $latest ? null : $result;
 	}
 }

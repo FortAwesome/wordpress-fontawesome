@@ -106,7 +106,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">1</span>
                                 </a>
                             </li>
                             <li>
@@ -136,10 +136,10 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-32654619"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-401230549"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-32654619" class="accordion-body collapse in">
+            <div id="namespace-401230549" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
@@ -201,7 +201,7 @@
                         </section>
                         <section class="row-fluid protected">
                             <section class="span4">
-                                                                    <em>No protected methods found</em>
+                                                                    <a href="../classes/FontAwesome_Release_Provider.html#method_releases" class="">releases()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <em>No protected properties found</em>
@@ -212,7 +212,7 @@
                         </section>
                         <section class="row-fluid private">
                             <section class="span4">
-                                                                    <em>No private methods found</em>
+                                                                    <a href="../classes/FontAwesome_Release_Provider.html#method_load_releases" class="">load_releases()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <em>No private properties found</em>
@@ -322,13 +322,19 @@
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">get_status() : \FontAwesome_Release_Provider</pre>
                 <p><em>Returns an associative array indicating the status of the status of the last network
-request that attempted to retrieve releases metadata.</em></p>
-                <p>The shape looks like this:</p>
+request that attempted to retrieve releases metadata, or null if no network request has
+been issued during the life time of the current Singleton instance.</em></p>
+                <p>The shape of an array return looks like this:</p>
 <pre><code class="language-php">array(
-  'code' =&gt; 403, // 200 if successful, otherwise some HTTP error code as returned by \Guzzle\Client
+  'code' =&gt; 403,
   'message' =&gt; 'some message',
 )</code></pre>
-<p>All previous releases metadata held in the previous instance will be abandoned.</p>
+<p>The value of the <code>code</code> key is one of:</p>
+<ul>
+<li><code>200</code> if successful,</li>
+<li><code>0</code> if there was some code error that prevented the network request from completing</li>
+<li>otherwise some HTTP error code as returned by \Guzzle\Client</li>
+</ul>
 
                 
                 
@@ -359,6 +365,11 @@ request that attempted to retrieve releases metadata.</em></p>
                 
 
                 
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                            <dd></dd>
+                                                                    </dl>
                 
                                     <h4>Returns</h4>
                     array
@@ -385,6 +396,10 @@ request that attempted to retrieve releases metadata.</em></p>
                 <pre class="signature" style="margin-right: 54px;">get_resource_collection(string  <span class="argument">$version</span>, mixed  <span class="argument">$style_opt</span>, array  <span class="argument">$flags = array(&#039;use_pro&#039; =&gt; false, &#039;use_svg&#039; =&gt; false, &#039;use_shim&#039; =&gt; true)</span>) : array</pre>
                 <p><em>Returns an array containing version, shim, source URLs and integrity keys for given params.</em></p>
                 <p>They should be loaded in the order they appear in this collection.</p>
+<p>Throws InvalidArgumentException if called with use_svg = true, use_shim = true and version &lt; 5.1.0.
+Shims were not introduced for webfonts until 5.1.0.</p>
+<p>Throws InvalidArgumentException when called with an array for $style_opt that contains no known style specifiers.</p>
+<p>Throws FontAwesome_NoReleasesException when no releases metadata could be loaded.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -409,9 +424,7 @@ request that attempted to retrieve releases metadata.</em></p>
                                     <h4>Throws</h4>
                     <dl>
                                                     <dt>\InvalidArgumentException</dt>
-                            <dd><p>if called with use_svg = true, use_shim = true and version &lt; 5.1.0.
-Shims were not introduced for webfonts until 5.1.0. Throws when called with an array for $style_opt
-that contains no known style specifiers.</p></dd>
+                            <dd><p>| FontAwesome_NoReleasesException</p></dd>
                                                                     </dl>
                 
                                     <h4>Returns</h4>
@@ -441,6 +454,11 @@ that contains no known style specifiers.</p></dd>
                 
 
                 
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                            <dd></dd>
+                                                                    </dl>
                 
                                     <h4>Returns</h4>
                     string|null
@@ -470,6 +488,11 @@ that contains no known style specifiers.</p></dd>
                 
 
                 
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                            <dd></dd>
+                                                                    </dl>
                 
                                     <h4>Returns</h4>
                     string|null
@@ -491,7 +514,73 @@ of available versions.</p>
         </aside>
     </div>
 
-                                                                    </div>
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_releases" name="method_releases" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">releases()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">releases() : array</pre>
+                <p><em>Retrieves Font Awesome releases metadata with as few network requests as possible.</em></p>
+                <p>Will first attempt to return releases already memoized by this Singleton instance.
+Next, will try to retrieve a cached set of releases from a non-expiring transient.</p>
+<p>If there's nothing cached, then it tries to load releases by making a network request to the
+releases API endpoint.</p>
+<p>If that fails, it throws an exception.</p>
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper">\FontAwesome_Release_Provider::RELEASES_TRANSIENT()</span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper">\FontAwesome_Release_Provider::RELEASES_TRANSIENT_EXPIRY()</span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_load_releases" name="method_load_releases" class="anchor"></a>
+            <article class="method">
+                <h3 class="private ">load_releases()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">load_releases() </pre>
+                <p><em></em></p>
+                
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    </div>
     </section>
 
     <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
@@ -540,7 +629,7 @@ of available versions.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on December 11th, 2018 at 15:17.
+                    on December 12th, 2018 at 20:56.
                 </section>
             </section>
         </section>
