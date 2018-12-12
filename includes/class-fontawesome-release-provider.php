@@ -194,6 +194,13 @@ class FontAwesome_Release_Provider {
 				$releases[ $release['version'] ] = $release;
 			}
 
+			$previous_transient = get_transient( self::RELEASES_TRANSIENT );
+
+			if ( $previous_transient ) {
+				// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
+				delete_transient( self::RELEASES_TRANSIENT );
+			}
+
 			$ret = set_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
 
 			if ( ! $ret ) {
