@@ -121,5 +121,10 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 		 * versions as the last time it was successful.
 		 */
 		$this->assertEquals( $versions, fa_release_provider()->versions() );
+
+		/**
+		 * The ReleaseProvider should have a status indicating that it's never issued a network query.
+		 */
+		$this->assertNull( fa_release_provider()->get_status() );
 	}
 }
