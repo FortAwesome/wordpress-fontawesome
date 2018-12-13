@@ -189,7 +189,15 @@ module.exports = {
     },
     // Keep the runtime chunk seperated to enable long term caching
     // https://twitter.com/wSokra/status/969679223278505985
-    runtimeChunk: true,
+    //
+    // Avoid using tilde (~) in the runtime chunk file name because it causes problems with some URL security
+    // rules. -mlwilkerson
+    // See:
+    //  https://wordpress.org/support/topic/settings-page-is-blank-18/
+    //  https://github.com/webpack/webpack/issues/7875#issuecomment-412148400
+    runtimeChunk: {
+      name: entrypoint => `runtime-${entrypoint.name}`
+    }
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
