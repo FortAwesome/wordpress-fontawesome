@@ -101,7 +101,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * The version of this WordPress plugin.
 		 */
-		const PLUGIN_VERSION = '4.0.0-rc4';
+		const PLUGIN_VERSION = '4.0.0-rc5';
 		/**
 		 * The version of this plugin's REST API.
 		 *
