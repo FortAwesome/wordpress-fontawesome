@@ -118,7 +118,7 @@ class FontAwesome_Release_Provider {
 	 * - `0` if there was some code error that prevented the network request from completing
 	 * - otherwise some HTTP error code as returned by {@see \Guzzle\Client}
 	 *
-	 * @return FontAwesome_Release_Provider
+	 * @return array|null
 	 */
 	public function get_status() {
 		return $this->_status;
