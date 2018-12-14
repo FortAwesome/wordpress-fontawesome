@@ -1,10 +1,10 @@
 version: '3.3'
 
 services:
-   db:
+   db-latest:
      image: mysql:5.7
      volumes:
-       - db_data:/var/lib/mysql
+       - db_data-latest:/var/lib/mysql
      restart: always
      ports:
        - "3306:3306"
@@ -13,12 +13,12 @@ services:
        MYSQL_DATABASE: wordpress
        MYSQL_USER: wordpress
        MYSQL_PASSWORD: wordpress
-     container_name: "com.fontawesome.wpdb"
+     container_name: "com.fontawesome.wpdb-latest"
 
-   wordpress:
+   wordpress-latest-dev:
      depends_on:
-       - db
-     image: wordpress-fontawesome-dev:latest
+       - db-latest
+     image: wordpress-fontawesome-dev-latest
      ports:
        - "8080:80"
      restart: always
@@ -35,12 +35,14 @@ services:
        - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
      extra_hosts:
        - "dockerhost:169.254.254.254"
-     env_file:
-       - .env
      environment:
-       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
-     container_name: "com.fontawesome.wordpress"
+       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
+       # static production ones in the admin/build dir.
+       # If this is "development", you get webpack. Otherwise, admin/build.
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-latest-dev"
 volumes:
-    db_data:
+    db_data-latest:

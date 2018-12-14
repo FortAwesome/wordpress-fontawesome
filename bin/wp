@@ -1,9 +1,7 @@
 #!/bin/bash
 
-#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/.common.bash
 
-#docker exec -it -u user -w /var/www/html $WP_CONTAINER_ID wp $@
-docker run -it --rm -u user -w /var/www/html \
-  --volumes-from com.fontawesome.wordpress \
-  --network container:com.fontawesome.wordpress \
-  wordpress-fontawesome-dev:latest wp $@
+$DOCKER exec -it -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user $WP_CONTAINER wp $@
+

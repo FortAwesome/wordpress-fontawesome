@@ -1,25 +1,26 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/.common.bash
+
 # Set any boolean config in wp-config.php in the container.
 
 if [ $# -lt 2 ]; then
-	echo "usage: $0 <setting> <value>"
+	echo "USAGE: $0 -c <container name or ID> <setting> <value>"
+	echo
+	echo "  Adds or updates a WordPress boolean setting in wp-config.php within specified WordPress container."
 	exit 1
 fi
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $DIR/.common.bash
-get_wp_container_id
-
-docker exec -it -w /var/www/html $WP_CONTAINER_ID grep -P "^define\W+$1\W" wp-config.php > /dev/null;
+$DOCKER exec -it -w /var/www/html $WP_CONTAINER grep -P "^define\W+$1\W" wp-config.php > /dev/null;
 
 if [ $? == 0 ]; then
   echo "Found existing setting. Changing..."
-  docker exec -it -w /var/www/html $WP_CONTAINER_ID sed -ri "/^define.*?$1.+?(false|true)\);/ s/(false|true)/$2/" wp-config.php
+  $DOCKER exec -it -w /var/www/html $WP_CONTAINER sed -ri "/^define.*?$1.+?(false|true)\);/ s/(false|true)/$2/" wp-config.php
 else
   echo "Adding new setting..."
-  docker exec -it -w /var/www/html $WP_CONTAINER_ID sed -ri "2idefine(\'$1\', $2);" wp-config.php
+  $DOCKER exec -it -w /var/www/html $WP_CONTAINER sed -ri "2idefine(\'$1\', $2);" wp-config.php
 fi
 
 echo "Resulting value:"
-docker exec -it -w /var/www/html $WP_CONTAINER_ID grep -P "^define\W+$1\W" wp-config.php
+$DOCKER exec -it -w /var/www/html $WP_CONTAINER grep -P "^define\W+$1\W" wp-config.php

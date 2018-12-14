@@ -1,0 +1,64 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DOCKER_DIR="$DIR/../docker"
+
+DOCKER=`which docker`
+
+if [ ! -x "$DOCKER" ]; then
+  echo "ERROR: docker not found. Make sure it's installed and available in your PATH."
+  exit 1
+fi
+
+if [ "x" = "x$*" ]; then
+	echo "USAGE: $0 <tag1> [<tag2>...]"
+	echo "  Pass a set of space-delimited tags that correspond to wordpress docker hub images and \n"
+	echo "  corresponding files named Dockerfile-<tag> in $DOCKER_DIR"
+fi
+
+declare -a DOCKERFILES
+
+count=0
+echo "Checking existence of Dockerfiles..."
+for tag in $*; do
+  FILE=${DOCKER_DIR}/Dockerfile-${tag}
+  printf "Checking ${FILE} ..."
+
+  if [ -f ${FILE} ]; then
+    printf "ok\n"
+    DOCKERFILES[$count]=${FILE}
+    count=$(( $count + 1 ))
+  else
+  	printf "nope\n"
+  	printf "Sorry, that file does not exist.\n"
+  	exit 1
+  fi
+done
+
+echo "Pulling base docker images..."
+
+for tag in $*; do
+  $DOCKER pull wordpress:$tag
+
+  if [ $? -ne 0 ]; then
+  	exit 1
+  fi
+done
+
+echo "Building custom docker images with your Dockerfiles..."
+
+declare -a CUSTOM_IMAGES
+
+count=0
+for tag in $*; do
+  IMAGE_TAG=wordpress-fontawesome-dev-${tag}
+  $DOCKER build -t ${IMAGE_TAG}  -f $DOCKER_DIR/Dockerfile-${tag} $DOCKER_DIR
+
+  if [ $? -ne 0 ]; then
+  	exit 1
+  else
+    CUSTOM_IMAGES[$count]=${IMAGE_TAG}
+  fi
+done
+
+echo "done building custom docker images: ${CUSTOM_IMAGES[*]}"
