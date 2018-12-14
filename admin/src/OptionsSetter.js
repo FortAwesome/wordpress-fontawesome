@@ -200,7 +200,7 @@ class OptionsSetter extends React.Component {
                 }
               </select>
               {
-                this.props.releaseProviderStatus.code !== 200 &&
+                this.props.releaseProviderStatus && this.props.releaseProviderStatus.code !== 200 &&
                 <div className={ styles['release-provider-error'] }>
                   { this.props.releaseProviderStatus.message }
                 </div>
@@ -266,5 +266,5 @@ OptionsSetter.propTypes = {
   currentOptions: PropTypes.object.isRequired,
   releases: PropTypes.object.isRequired,
   adminClientInternal: PropTypes.string.isRequired,
-  releaseProviderStatus: PropTypes.object.isRequired,
+  releaseProviderStatus: PropTypes.object,
 }
