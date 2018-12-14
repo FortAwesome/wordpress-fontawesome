@@ -1,46 +1,122 @@
-version: '3.3'
+version: '3.6'
+
+x-dev_volumes: &dev_volumes
+  volumes:
+    - .:/var/www/html/wp-content/plugins/font-awesome
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+
+x-integration_volumes: &integration_volumes
+  volumes:
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+
+x-wordpress-defaults: &wordpress_defaults
+  ports:
+    - "8080:80"
+  restart: always
+  extra_hosts:
+    - "dockerhost:169.254.254.254"
+  command:
+    - apache2-custom.sh
+
+x-wordpress-dev-defaults: &wordpress_dev_defaults
+  <<: *wordpress_defaults
+
+
+x-mysql-defaults: &mysql_defaults
+  image: mysql:5.7
+  restart: always
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: somewordpress
+    MYSQL_DATABASE: wordpress
+    MYSQL_USER: wordpress
+    MYSQL_PASSWORD: wordpress
 
 services:
-   db:
-     image: mysql:5.7
+   db-latest:
+     <<: *mysql_defaults
      volumes:
-       - db_data:/var/lib/mysql
-     restart: always
-     ports:
-       - "3306:3306"
-     environment:
-       MYSQL_ROOT_PASSWORD: somewordpress
-       MYSQL_DATABASE: wordpress
-       MYSQL_USER: wordpress
-       MYSQL_PASSWORD: wordpress
-     container_name: "com.fontawesome.wpdb"
+       - db_data-latest:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-latest"
 
-   wordpress:
-     depends_on:
-       - db
-     image: wordpress-fontawesome-dev:latest
-     ports:
-       - "8080:80"
-     restart: always
+   db-4.9.8:
+     <<: *mysql_defaults
      volumes:
-       - .:/var/www/html/wp-content/plugins/font-awesome
-       - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
-       - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
-       - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
-       - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
-       - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
-       - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
-       - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
-       - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-       - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
-     extra_hosts:
-       - "dockerhost:169.254.254.254"
-     env_file:
-       - .env
+       - db_data-4.9.8:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-4.9.8"
+
+   wordpress-latest-dev:
+     <<: *wordpress_defaults
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-latest
+     <<: *dev_volumes
      environment:
-       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
-     container_name: "com.fontawesome.wordpress"
+       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
+       # static production ones in the admin/build dir.
+       # If this is "development", you get webpack. Otherwise, admin/build.
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-latest-dev"
+
+   wordpress-latest-integration:
+     <<: *wordpress_defaults
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-latest
+     <<: *integration_volumes
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+     container_name: "com.fontawesome.wordpress-latest-integration"
+
+   wordpress-4.9.8-dev:
+     <<: *wordpress_defaults
+     image: wordpress-fontawesome-dev-4.9.8
+     depends_on:
+       - db-4.9.8
+     <<: *dev_volumes
+     environment:
+       WORDPRESS_DB_HOST: db-4.9.8:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
+       # static production ones in the admin/build dir.
+       # If this is "development", you get webpack. Otherwise, admin/build.
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-4.9.8-dev"
+
+   wordpress-4.9.8-integration:
+     <<: *wordpress_defaults
+     image: wordpress-fontawesome-dev-4.9.8
+     depends_on:
+       - db-4.9.8
+     <<: *integration_volumes
+     environment:
+       WORDPRESS_DB_HOST: db-4.9.8:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+     container_name: "com.fontawesome.wordpress-4.9.8-integration"
 volumes:
-    db_data:
+    db_data-latest:
+    db_data-4.9.8:

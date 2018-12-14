@@ -9,7 +9,7 @@ WP_VERSION=${1-latest}
 DB_NAME=wordpress
 DB_USER=wordpress
 DB_PASS=wordpress
-DB_HOST=db:3306
+DB_HOST=db-${WP_VERSION}:3306
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")
@@ -103,8 +103,19 @@ install_test_suite() {
 	if [ ! -d $WP_TESTS_DIR ]; then
 		# set up testing suite
 		mkdir -p $WP_TESTS_DIR
-		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
-		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
+		svn co --non-interactive --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
+
+		if [ 0 -ne $? ]; then
+		  svn cleanup $WP_TESTS_DIR/includes
+		  svn up $WP_TESTS_DIR/includes
+		fi
+
+		svn co --non-interactive --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
+
+		if [ 0 -ne $? ]; then
+		  svn cleanup $WP_TESTS_DIR/data
+		  svn up $WP_TESTS_DIR/data
+		fi
 	fi
 
 	if [ ! -f wp-tests-config.php ]; then

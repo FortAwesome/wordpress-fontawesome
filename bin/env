@@ -2,6 +2,5 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
-get_wp_container_id
 
-docker exec -it -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER_ID $@
+$DOCKER exec -it -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html $WP_CONTAINER $@
