@@ -31,6 +31,8 @@ x-wordpress-defaults: &wordpress_defaults
   restart: always
   extra_hosts:
     - "dockerhost:169.254.254.254"
+  command:
+    - apache2-custom.sh
 
 x-wordpress-dev-defaults: &wordpress_dev_defaults
   <<: *wordpress_defaults
@@ -54,6 +56,12 @@ services:
        - db_data-latest:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-latest"
 
+   db-4.9.8:
+     <<: *mysql_defaults
+     volumes:
+       - db_data-4.9.8:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-4.9.8"
+
    wordpress-latest-dev:
      <<: *wordpress_defaults
      depends_on:
@@ -69,11 +77,18 @@ services:
        # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-latest-dev"
-   db-4.9.8:
-     <<: *mysql_defaults
-     volumes:
-       - db_data-4.9.8:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-4.9.8"
+
+   wordpress-latest-integration:
+     <<: *wordpress_defaults
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-latest
+     <<: *integration_volumes
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+     container_name: "com.fontawesome.wordpress-latest-integration"
 
    wordpress-4.9.8-dev:
      <<: *wordpress_defaults
@@ -90,6 +105,18 @@ services:
        # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-4.9.8-dev"
+
+   wordpress-4.9.8-integration:
+     <<: *wordpress_defaults
+     image: wordpress-fontawesome-dev-4.9.8
+     depends_on:
+       - db-4.9.8
+     <<: *integration_volumes
+     environment:
+       WORDPRESS_DB_HOST: db-4.9.8:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+     container_name: "com.fontawesome.wordpress-4.9.8-integration"
 volumes:
     db_data-latest:
     db_data-4.9.8:

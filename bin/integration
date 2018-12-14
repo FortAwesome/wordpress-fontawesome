@@ -1,0 +1,20 @@
+#!/bin/bash
+
+DOCKER_COMPOSE=`which docker-compose`
+
+if [ ! -x "$DOCKER_COMPOSE" ]; then
+  echo "ERROR: docker-compose not found. Make sure it's installed and available in your PATH."
+  exit 1
+fi
+
+if [ "x" = "x$1" ]; then
+	echo "USAGE: $0 <tag>"
+	echo "  Run docker-compose with a wordpress service that has a version of <tag>."
+	echo "  The container has the integration plugins but not the font-awesome plugin."
+	echo "  This is so you can install a production-built version of font-awesome, either"
+	echo "  via zip file produced from \"composer dist\", or by installing the plugin"
+	echo "  from the WordPress plugins directory."
+  exit 1
+fi
+
+$DOCKER_COMPOSE up wordpress-${1}-integration
