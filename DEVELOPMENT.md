@@ -19,7 +19,7 @@
 - [Cut a Release](#cut-a-release)
 - [Run a Local Docs Server](#run-a-local-docs-server)
 - [Special Notes on plugin-sigma](#special-notes-on-plugin-sigma)
-- [Configure PhpStorm 2018.1.5 for debugging](#configure-phpstorm-201815-for-debugging-in-the-container)
+- [Configure PhpStorm 2018.1.5 for debugging](#configure-phpstorm-201815-for-debugging)
 
 <!-- tocstop -->
 
