@@ -2,6 +2,5 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
-get_wp_container_id
 
-docker exec -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER_ID phpunit $@
+$DOCKER exec -it -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER phpunit $@
