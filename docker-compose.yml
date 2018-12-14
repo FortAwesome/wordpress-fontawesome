@@ -1,40 +1,65 @@
-version: '3.3'
+version: '3.6'
+
+x-dev_volumes: &dev_volumes
+  volumes:
+    - .:/var/www/html/wp-content/plugins/font-awesome
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+
+x-integration_volumes: &integration_volumes
+  volumes:
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+
+x-wordpress-defaults: &wordpress_defaults
+  ports:
+    - "8080:80"
+  restart: always
+  extra_hosts:
+    - "dockerhost:169.254.254.254"
+
+x-wordpress-dev-defaults: &wordpress_dev_defaults
+  <<: *wordpress_defaults
+
+
+x-mysql-defaults: &mysql_defaults
+  image: mysql:5.7
+  restart: always
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: somewordpress
+    MYSQL_DATABASE: wordpress
+    MYSQL_USER: wordpress
+    MYSQL_PASSWORD: wordpress
 
 services:
    db-latest:
-     image: mysql:5.7
+     <<: *mysql_defaults
      volumes:
        - db_data-latest:/var/lib/mysql
-     restart: always
-     ports:
-       - "3306:3306"
-     environment:
-       MYSQL_ROOT_PASSWORD: somewordpress
-       MYSQL_DATABASE: wordpress
-       MYSQL_USER: wordpress
-       MYSQL_PASSWORD: wordpress
      container_name: "com.fontawesome.wpdb-latest"
 
    wordpress-latest-dev:
+     <<: *wordpress_defaults
      depends_on:
        - db-latest
      image: wordpress-fontawesome-dev-latest
-     ports:
-       - "8080:80"
-     restart: always
-     volumes:
-       - .:/var/www/html/wp-content/plugins/font-awesome
-       - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
-       - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
-       - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
-       - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
-       - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
-       - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
-       - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
-       - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-       - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
-     extra_hosts:
-       - "dockerhost:169.254.254.254"
+     <<: *dev_volumes
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
@@ -45,39 +70,17 @@ services:
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-latest-dev"
    db-4.9.8:
-     image: mysql:5.7
+     <<: *mysql_defaults
      volumes:
        - db_data-4.9.8:/var/lib/mysql
-     restart: always
-     ports:
-       - "3306:3306"
-     environment:
-       MYSQL_ROOT_PASSWORD: somewordpress
-       MYSQL_DATABASE: wordpress
-       MYSQL_USER: wordpress
-       MYSQL_PASSWORD: wordpress
      container_name: "com.fontawesome.wpdb-4.9.8"
 
    wordpress-4.9.8-dev:
+     <<: *wordpress_defaults
+     image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
-     image: wordpress-fontawesome-dev-4.9.8
-     ports:
-       - "8080:80"
-     restart: always
-     volumes:
-       - .:/var/www/html/wp-content/plugins/font-awesome
-       - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
-       - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
-       - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
-       - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
-       - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
-       - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
-       - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
-       - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-       - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
-     extra_hosts:
-       - "dockerhost:169.254.254.254"
+     <<: *dev_volumes
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress
