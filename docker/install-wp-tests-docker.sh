@@ -9,7 +9,7 @@ WP_VERSION=${1-latest}
 DB_NAME=wordpress
 DB_USER=wordpress
 DB_PASS=wordpress
-DB_HOST=db:3306
+DB_HOST=db-${WP_VERSION}:3306
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")
