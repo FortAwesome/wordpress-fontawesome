@@ -1,5 +1,30 @@
 # Development
 
+> Font Awesome 5 Official WordPress Plugin DEVELOPMENT
+
+<!-- toc -->
+
+- [Introduction](#introduction)
+- [Development Setup](#development-setup)
+- [Run phpunit](#run-phpunit)
+- [Use wp-cli within your Docker environment](#use-wp-cli-within-your-docker-environment)
+- [Run anything else within your Docker environment](#run-anything-else-within-your-docker-environment)
+  * [Run a shell insider your Docker environment](#run-a-shell-inside-your-docker-environment)
+- [Set a boolean config in `wp-config.php`](#set-a-boolean-config-in-wp-configphp)
+- [Reset WordPress Docker Environment and Remove Data Volumes](#reset-wordpress-docker-environment-and-remove-data-volumes)
+- [Inspecting and Re-setting Plugin States](#inspecting-and-re-setting-plugin-states)
+  * [Main Options](#main-options)
+  * [Releases Metadata Transient](#releases-metadata-transient)
+  * [V3 Deprecation Warning](#v3-deprecation-warning)
+- [Cut a Release](#cut-a-release)
+- [Run a Local Docs Server](#run-a-local-docs-server)
+- [Special Notes on plugin-sigma](#special-notes-on-plugin-sigma)
+- [Configure PhpStorm 2018.1.5 for debugging](#configure-phpstorm-201815-for-debugging-in-the-container)
+
+<!-- tocstop -->
+
+# Introduction
+
 This repo provides a multi-dimensional Docker-based development environment to help developers work with the `font-awesome`
 plugin under a variety of conditions: WordPress version tags `4.9.8` and `latest`,
 crossed with `development` and `integration`.
@@ -480,7 +505,7 @@ them into `master` as a single commit.
 
 18. Create a GitHub release that tags that new release commit
 
-## Run a Local Docs Server
+# Run a Local Docs Server
 
 If you want to preview the built docs with a web server, you can run `composer docsrv` and then
 point a web browser at `http://localhost:3000`. Composer has a default `process-timeout` of 300
@@ -505,7 +530,10 @@ dependency. In this scenario, the WordPress site admin does not need to separate
 In order to activate it you must first run `composer install --prefer-dist` from the 
 `integrations/plugins/plugin-sigma` directory.
 
-# Configure PhpStorm 2018.1.5 for debugging in the container
+# Configure PhpStorm 2018.1.5 for debugging
+
+(This seems to be a black art and doesn't always work for reasons unknown.
+Your mileage may vary. And if you find a better way, please update this!)
 
 This is pretty advanced, and also not necessary for development—it's just a nice toolset to have available.
 So beware: your mileage may vary.
