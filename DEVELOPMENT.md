@@ -1,20 +1,98 @@
-# First-time Setup for Development
+# Development
+
+This repo provides a multi-dimensional development environment to help developers work with the font-awesome
+plugin under a variety of conditions: WordPress version tags `4.9.8` and `latest`,
+crossed with `development` and `integration`.
+
+The `development` option mounts this plugin code as a read-write volume inside the container, and also
+sets up the environment for the React admin app to do hot module loading through the webpack dev server.
+
+The `integration` option does _not_ mount this plugin code in the container. Instead, it expects you
+to install the plugin. You could do so by uploading a zip file on the Add New Plugin page in
+WordPress admin: build a zip using `composer dist` or by downloading one from the [plugin's WordPress
+plugin directory entry](https://wordpress.org/plugins/font-awesome/). Or you could install directly
+from the WordPress plugin directory by searching for plugins by author "fontawesome".
+
+Both options mount the test integrations found under `integrations/` so those themes or plugins can be
+activated to help with testing and exploring interaction with the plugin at run time.
+
+# Development Setup
+
 1. Make sure Docker is installed
 
-2. `bin/prepare`
+2. Build any number of docker _images_ for the environments you want.
 
-This creates a customized docker image tagged `wordpress-fontawesome-dev` locally to be used
-for the wordpress container. It may take a while to build the first time, but once it's built,
-it doesn't need to be rebuilt with this script unless the `Dockerfile` changes.
+Run `bin/build-docker-images` with one or more version tags corresponding to
+Dockerfiles in `docker/`.
 
-3. `docker-compose up`
+For example, to build two images:
+```bash
+$ bin/build-docker-images 4.9.8 latest
+```
 
-Run this from the top-level directory that contains the `docker-compose.yml` config file.
+Once you build these, you won't need to rebuild them unless something changes in the underlying
+image dependencies. For a historic WordPress release like `4.9.8` that may never occur.
 
-Leave this running in one terminal window and do the rest of this in some other terminal windows.
+For `latest`, this could happen if you see that the [`wordpress:latest` tag on Docker Hub](https://hub.docker.com/_/wordpress)
+is updated. When a new version of WordPress is released, it can take a little while before a new Docker image
+is available for it. So in this development environment, `latest` refers primarily to the the `wordpress:latest`
+image on DockerHub, not always as current as the latest WordPress release.
 
-This runs the docker compose configuration that brings up the containers running wordpress and mysql.
-It will all be configured automatically for you with the scripts below.
+Each image is a pre-requisite for its corresponding container environment.
+So if you want to be able to run `bin/dev latest`, you have to first make sure you've built the underlying
+docker image with `bin/build-docker-images latest`. 
+
+_BEWARE_: there's one place where this difference in "latest" might shoot us in the foot:
+The `docker/install-wp-tests-docker.sh` script runs during the image build process to
+install the core WordPress testing files that are important for our `phpunit` test run to work.
+It takes a _WordPress_ version tag as an argument. So when the WordPress "latest" version (say `5.0.1`)
+and the DockerHub "latest" version are temporarily out of sync, you could be in a state where
+the WordPress `5.0.0` (in our example) is running, but with tests tagged for WordPress `5.0.1` are 
+installed. Probably this won't cause a real problem, but beware.
+
+3. Run an environment (one at a time)
+
+This table shows the matrix for running each container environment:
+
+| version tag  | development | integration |
+| --- | --- | --- |
+| 4.9.8 | `$ bin/dev 4.9.8` | `$ bin/integration 4.9.8` |
+| latest | `$ bin/dev latest` | `$ bin/integration latest` |
+
+Run one of these from the top-level directory that contains the `docker-compose.yml` config file.
+
+Leave it running in one terminal window and do the rest of the workflow in some other terminal windows.
+
+*Setup Required*
+
+At this point, everything is running, but when it's the first time you've run it (or since you
+cleared the docker data volume), WordPress has not yet been setup. There's a script for that below.
+
+*Stopping the Environment*
+ 
+When you're ready to stop this environment, use `CTRL-C` in that terminal window where it's running.
+
+*Restarting*
+
+To bring back up the same environment later, just run the same `bin/dev` or `bin/integration` command.
+
+*Start a Different Environment*
+
+To run a _different_ environment, you'll need to first make sure the containers from one environment
+are stopped, before starting a new environment. This because the port numbers used for web and db are
+the same regardless of environment, so you can only have one running at a time.
+
+*Stop an Environment's Containers*
+
+You can make sure all containers are stopped like this:
+
+```bash
+$ docker-compose down
+```
+
+You could also be a little more ninja-ish and use `docker ps` to find the running containers you know
+you want to stop, find the container ID for each, and then for each one do `docker container stop <container_id>`.
+
 
 4. create a .env.email file in the root of the repository with an admin email address WordPress can use:
 
@@ -90,55 +168,142 @@ site. We're just doing it from the command line with the script to be quick and 
 
 It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
 
+It requires a `-c <container_id>` argument in order to connect to the appropriate container, to make
+sure settings are applied to the right instance of WordPress. If you run `bin/setup` with no args,
+you'll see a set of running containers to make it easy to copy a container ID.
+
+```bash
+$ bin/setup -c 193d46dcb77b
+```
+
 WordPress is now ready and initialized in the docker container and reachable at localhost:8080
 with admin username and password as found in `.env`.
 
-10. Login to the WordPress admin dashboard and activate the Font Awesome plugin
+10. Install and/or Activate the Font Awesome plugin
 
 To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
+
+If you're running the `development` environment, you'll find in the admin dashboard that the
+Font Awesome is already installed, because the source code in this repo is mounted as a volume
+inside the container. You can activate or deactivate the plugin, but you'll find that if you try
+to uninstall it, it seems to wipe out the plugin's code from the working directory of this repo.
+So, probably don't do that.
+
+If you're running the `integration` environment, install via zip archive upload or directly
+from the WordPress plugins directory. [See above](#development) for more details. 
 
 After activating the plugin you can access the Font Awesome admin page here:
 `http://localhost:8080/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
 
-# Reset WordPress Docker Environment and Remove Data Volume
+# Reset WordPress Docker Environment and Remove Data Volumes
 
 `./bin/clean`
 
-This will kill and remove docker containers and delete the data volume.
+This will kill and remove docker containers and delete their data volumes.
+
+It will also try to clean up helper containers created by PhpStorm, if you're using that IDE. 
 
 If you do something accidentally to modify the wordpress container and put it into a weird state
 somehow, or even if you just want to re-initialize the whole WordPress environment (i.e. the app and the mysql db),
-this is how you can do it. Run `bin/clean` and then fire up a fresh environment with `docker-compose up`.
+this is how you can do it.
+ 
+This doesn't remove the docker _images_, just the containers and their data volumes.
+So you won't have to rebuild images after a `clean`. But also, if what you're trying to do is
+remove those images, you'll need to use `docker image rm <image_id>`.
+ 
+After a `bin/clean`, you'll need to run a new environment again, such as `bin/dev latest` and also
+re-run setup, like `bin/setup -c fd9a98510f40`.
 
-# Use wp-cli with the Dockerized WordPress Instance
+# Use wp-cli within your Docker environment
 
-`./bin/wp`
+`bin/wp` is a wrapper that expects `-c <container_id_or_name>` and then passes through any other 
+arguments to `wp` inside the specified container.
 
-The WP-CLI is helpful for a variety of WordPress tasks and diagnostics, you can run the WP-CLI
-within a docker container that accesses the containerized wordpress instance using this script,
-passing arguments to it just like you would the normal `wp` command-line. This is just a dockerizing wrapper.
+For example, to list the plugins and their activation status:
 
-# Activate and Deactivate Plugin from Command Line
+```bash
+$ bin/wp -c 193d46dcb77b plugin list 
+```
 
-`./bin/wp plugin activate font-awesome`
+Everything about the command line is the same as you'd normally use for `wp`, except the first
+option must be `-c <container_id_name>`
 
-`./bin/wp plugin deactivate font-awesome`
+Running `bin/wp` with no `-c` will show you a list of the currently running relevant containers to
+make it easy to find the appropriate container ID or name to copy and paste. 
 
-It can also be managed on the WP Admin Interface on the Plugins page
+# Run anything else within your Docker environment
 
-# Activate Integration Test Plugins and Theme
+```bash
+$ bin/env -c <container_id_or_name> <command_line>
+```
 
-There's a `plugin-beta` and a `theme-alpha` that each are clients of this `font-awesome` plugin.
-They are not involved in the unit test suite at all. But when you're playing with the with localhost:8080,
-you'll probably want to activate these to see something happen.
+This is a wrapper that just executes `<command_line>` inside the specified running container.
 
-They can be activated from WP Admin Dashboard as any Plugin or Theme would be, or from the command line:
+Running `bin/env` with no `-c` will show you a list of the currently running relevant containers to
+make it easy to find the appropriate container ID or name to copy and paste. 
 
-`./bin/wp plugin activate plugin-beta`
+## Run a shell inside your Docker environment
 
-`./bin/wp theme activate theme-alpha`
+```bash
+$ bin/env -c <container_id_or_name> bash
+```
+
+# Inspecting and Re-setting Plugin States
+
+This plugin's behavior depends upon a few different states that are stored in the WordPress database.
+
+## Main Options
+
+The main state is stored under an options key: `font-awesome`.
+
+Inspect it:
+
+```bash
+$ bin/wp -c 193d46dcb77b option get font-awesome
+```
+
+Remove it:
+
+```bash
+$ bin/wp -c 193d46dcb77b option delete font-awesome
+```
+
+## Releases Metadata Transient
+
+When the plugin retrieves releases metadata from `https://fontawesome.com/api/releases` it caches the results
+as a long-lived WordPress transient: `font-awesome-releases`. 
+
+Inspect it:
+
+```bash
+$ bin/wp -c 193d46dcb77b transient get font-awesome-releases
+```
+
+Remove it:
+
+```bash
+$ bin/wp -c 193d46dcb77b transient delete font-awesome-releases
+```
+
+## V3 Deprecation Warning
+
+Temporarily, this plugin supports Font Awesome version 3 icon names, but also warns that their use is
+deprecated. Finally, it allows the site owner to "snooze" the deprecation warning. The state of that
+detection or snoozing is stored in an expiring transient: `font-awesome-v3-deprecation-data`.
+  
+Inspect it:
+
+```bash
+$ bin/wp -c 193d46dcb77b transient get font-awesome-v3-deprecation-data
+```
+
+Remove it:
+
+```bash
+$ bin/wp -c 193d46dcb77b transient delete font-awesome-v3-deprecation-data
+```
 
 # To Cut a Release
 
