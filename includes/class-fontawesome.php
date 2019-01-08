@@ -431,15 +431,33 @@ class FontAwesome {
 	public function try_upgrade() {
 		$options = get_option( self::OPTIONS_KEY );
 
+		$should_upgrade = false;
+
+		$upgraded_options = array();
+
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
 				$this->old_remove_unregistered_clients = true;
 			}
 
-			$upgraded_options = $this->convert_options_from_v1( $options );
+			$upgraded_options = array_merge( $upgraded_options, $this->convert_options_from_v1( $options ) );
 
 			$this->upgrade_for_4_0_0_rc22();
+
+			/**
+			 * If the version is still not set for some reason, set it to a
+			 * default of the latest available version.
+			 */
+			if ( ! isset( $upgraded_options['version'] ) ) {
+				$upgraded_options['version'] = fa()->latest_version();
+			}
+
+			$should_upgrade = true;
+		}
+
+		if( $should_upgrade ) {
+			$this->validate_options( $upgraded_options );
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -453,17 +471,6 @@ class FontAwesome {
 			if ( ! delete_option( self::OPTIONS_KEY ) ) {
 				throw UpgradeException::main_option_delete();
 			}
-
-			/**
-			 * If the version is still not set for some reason, set it to a
-			 * default of the latest available version.
-			 */
-			if ( ! isset( $upgraded_options['version'] ) ) {
-				$upgraded_options['version'] = fa()->latest_version();
-			}
-
-			// Final check: validate it.
-			$this->validate_options( $upgraded_options );
 
 			update_option( self::OPTIONS_KEY, $upgraded_options );
 
@@ -808,6 +815,7 @@ class FontAwesome {
 	 * @internal
 	 */
 	public function initialize_admin() {
+		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'blocks/font-awesome.php';
 		$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {

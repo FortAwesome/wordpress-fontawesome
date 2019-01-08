@@ -1,0 +1,20 @@
+/**
+ * The following styles get applied both on the front of your site and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.font-awesome-icon-chooser ul {
+    list-style-type: none;
+    display: flex;
+}
+
+.editor-styles-wrapper i.fa,
+.editor-styles-wrapper i.fas,
+.editor-styles-wrapper i.far,
+.editor-styles-wrapper i.fal,
+.editor-styles-wrapper i.fad {
+    font-style: unset;
+}
+
+

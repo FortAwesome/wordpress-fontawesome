@@ -1,0 +1,18 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.font-awesome-icon-chooser ul.icons {
+    list-style-type: none;
+}
+
+.font-awesome-icon-chooser ul.icons li {
+    padding: 0.25em;
+    color: #636363;
+}
+
+.font-awesome-icon-chooser ul.icons li.selected {
+    color: rgb(73, 80, 87);
+}

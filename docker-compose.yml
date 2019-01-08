@@ -50,6 +50,7 @@ x-dev_env_volumes: &dev_env_volumes
     # in sync between the host and container.
     #
     # ignores for the local plugin repo and working directory
+    - /var/www/html/wp-content/plugins/font-awesome/blocks/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/config
     - /var/www/html/wp-content/plugins/font-awesome/admin/scripts

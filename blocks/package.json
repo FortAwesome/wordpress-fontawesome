@@ -1,0 +1,22 @@
+{
+  "name": "font-awesome-block",
+  "version": "0.0.1",
+  "license": "GPL-2.0-or-later",
+  "main": "block.js",
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-react-jsx": "^7.9.4",
+    "@babel/preset-env": "^7.9.5",
+    "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "scripts": {
+    "build": "cross-env BABEL_ENV=default NODE_ENV=production webpack --mode production",
+    "dev": "cross-env BABEL_ENV=default webpack --mode development --watch"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}
