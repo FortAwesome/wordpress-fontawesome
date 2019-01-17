@@ -380,7 +380,7 @@ $ composer dist
 This will delete the `vendor` directory, and previous build assets, and will re-install
 the composer bundle in production mode (`--no-dev --prefer-dist`) and produce the following:
 
-`wp-dist/`: the contents of this directory should be move into the svn repo for the WordPress plugin
+`wp-dist/`: the contents of this directory should be moved into the svn repo for the WordPress plugin
 that will be published through the WordPress plugins directory.
 
 `font-awesome.zip`: a zip file of the contents of `wp-dist` with path names fixed up.

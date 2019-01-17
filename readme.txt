@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
-Stable tag: 4.0.0-rc6
+Stable tag: 4.0.0-rc7
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.0
@@ -144,6 +144,8 @@ If you've been a user of previous versions of this plugin, you'll eventually nee
 
 We've tried to smooth the upgrade path for you by keeping that shortcode compatible with Font Awesome 3 names you're used to, while magically transforming them into their Font Awesome 5 equivalents on the fly. You'll still need to change your icon shortcodes in pages, posts, and templates. But our upgrade magic gives you some cushion to take a more leisurely pace. We plan to remove version 3 naming support, and the magic, from this plugin in upcoming releases, though, so don't wait too long!
 
+Note that this automatic translation of version 3 icon names to version 5 icon names will only occur where you've used the `[icon]` shortcode. If you've directly used `<i>` tags to reference version 3 icons, like `<i class="icon-calendar"></i>`, you'll need to manually revise those to use version 5 names.
+
 == See Also ==
 
 The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub has some more details for WordPress site owners and developers.
@@ -183,6 +185,11 @@ Find the Font Awesome admin settings page either under the "Settings" menu on th
 [Font Awesome Pro](https://fontawesome.com/pro) subscribers who want to enable Pro icons on their WordPress sites, must first [add their allowed domains](https://fontawesome.com/account/domains) before enabling the "Use Pro" option on the plugin's settings page.
 
 == Changelog ==
+
+= 4.0.0-rc7 =
+
+* Fix detection and removal of unregistered clients by changing the internal resource name this plugin uses to enqueue its resource.
+  Change it to something unlikely to be used by other themes or plugins.
 
 = 4.0.0-rc6 =
 
