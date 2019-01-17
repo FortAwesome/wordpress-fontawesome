@@ -126,7 +126,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 */
-		const RESOURCE_HANDLE = 'font-awesome';
+		const RESOURCE_HANDLE = 'font-awesome-official';
 		/**
 		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
 		 *
@@ -134,7 +134,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @see FontAwesome::load_spec()
 		 */
-		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-v4shim';
+		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -167,7 +167,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected static $_instance = null;
+		protected static $instance = null;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -214,10 +214,10 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return FontAwesome
 		 */
 		public static function instance() {
-			if ( is_null( self::$_instance ) ) {
-				self::$_instance = new self();
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new self();
 			}
-			return self::$_instance;
+			return self::$instance;
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -654,7 +654,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return FontAwesome
 		 */
 		public static function reset() {
-			self::$_instance = null;
+			self::$instance = null;
 			return fa();
 		}
 

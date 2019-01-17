@@ -43,38 +43,38 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $_releases = null;
+	protected $releases = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
-	protected $_status = null;
+	protected $status = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
-	protected $_api_client = null;
+	protected $api_client = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
-	protected static $_instance = null;
+	protected static $instance = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
-	protected static $_handler = null;
+	protected static $handler = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
 	public static function set_handler( $handler ) {
-		self::$_handler = $handler;
+		self::$handler = $handler;
 	}
 
 	/**
@@ -83,10 +83,10 @@ class FontAwesome_Release_Provider {
 	 * @return FontAwesome_Release_Provider
 	 */
 	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class FontAwesome_Release_Provider {
 	 * @return FontAwesome_Release_Provider
 	 */
 	public static function reset() {
-		self::$_instance = null;
+		self::$instance = null;
 		return self::instance();
 	}
 
@@ -121,7 +121,7 @@ class FontAwesome_Release_Provider {
 	 * @return array|null
 	 */
 	public function get_status() {
-		return $this->_status;
+		return $this->status;
 	}
 
 	/**
@@ -136,15 +136,15 @@ class FontAwesome_Release_Provider {
 			// You can set any number of default request options.
 			'timeout'  => 2.0,
 		);
-		if ( self::$_handler ) {
-			$client_params['handler'] = self::$_handler;
+		if ( self::$handler ) {
+			$client_params['handler'] = self::$handler;
 		}
-		$this->_api_client = new Client( $client_params );
+		$this->api_client = new Client( $client_params );
 
 		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
 
 		if ( $cached_releases ) {
-			$this->_releases = $cached_releases;
+			$this->releases = $cached_releases;
 		}
 	}
 
@@ -175,9 +175,9 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = $this->_api_client->get( 'api/releases' );
+			$response = $this->api_client->get( 'api/releases' );
 
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $response->getStatusCode(),
@@ -207,9 +207,9 @@ class FontAwesome_Release_Provider {
 				throw new Exception();
 			}
 
-			$this->_releases = $releases;
+			$this->releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $e->getCode(),
@@ -219,7 +219,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( GuzzleHttp\Exception\ServerException $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $e->getCode(),
@@ -228,7 +228,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( GuzzleHttp\Exception\ClientException $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $e->getCode(),
@@ -236,7 +236,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( Exception $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => 0,
@@ -244,7 +244,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( \Error $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => 0,
@@ -301,24 +301,24 @@ class FontAwesome_Release_Provider {
 	 * @return array
 	 */
 	protected function releases() {
-		if ( $this->_releases ) {
-			return $this->_releases;
+		if ( $this->releases ) {
+			return $this->releases;
 		} else {
 			$cached_releases = get_transient( self::RELEASES_TRANSIENT );
 
 			if ( $cached_releases ) {
 				return $cached_releases;
-			} elseif ( is_null( $this->_releases ) ) {
+			} elseif ( is_null( $this->releases ) ) {
 				$this->load_releases();
 
 				// TODO: consider adding retry logic for loading Font Awesome releases.
-				if ( is_null( $this->_releases ) ) {
+				if ( is_null( $this->releases ) ) {
 					throw new FontAwesome_NoReleasesException();
 				} else {
-					return $this->_releases;
+					return $this->releases;
 				}
 			} else {
-				return $this->_releases;
+				return $this->releases;
 			}
 		}
 	}

@@ -11,7 +11,7 @@ namespace FontAwesomePhpUnitUtil;
 require_once FONTAWESOME_DIR_PATH . 'tests/_support/class-mock-fontawesome-releases.php';
 
 /**
- * Replaces the singleton static property _instance on the given $class with a mock object,
+ * Replaces the singleton static property instance on the given $class with a mock object,
  * and then sets up mock a method for the given $method name. It passes that mock $method
  * as a param to the given callable $init, which should use something like ->willReturn().
  *
@@ -28,7 +28,7 @@ function mock_singleton_method( $obj, $type, $method, callable $init ) {
 	->disableOriginalConstructor();
 	$mock         = $mock_builder->getMock();
 	try {
-		$ref = new \ReflectionProperty( $type, '_instance' );
+		$ref = new \ReflectionProperty( $type, 'instance' );
 		$ref->setAccessible( true );
 		$ref->setValue( null, $mock );
 		$init( $mock->method( $method ) );

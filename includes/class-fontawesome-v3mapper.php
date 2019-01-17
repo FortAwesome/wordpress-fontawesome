@@ -31,7 +31,7 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 		/**
 		 * @ignore
 		 */
-		private static $_instance = null;
+		private static $instance = null;
 
 		/**
 		 * Returns the singleton instance of this class.
@@ -43,10 +43,10 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 		 * @ignore
 		 */
 		public static function instance() {
-			if ( is_null( self::$_instance ) ) {
-				self::$_instance = new self();
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new self();
 			}
-			return self::$_instance;
+			return self::$instance;
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
