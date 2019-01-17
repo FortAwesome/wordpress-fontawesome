@@ -126,7 +126,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @since 4.0.0
 		 */
-		const RESOURCE_HANDLE = 'font-awesome';
+		const RESOURCE_HANDLE = 'font-awesome-official';
 		/**
 		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
 		 *
@@ -134,7 +134,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @see FontAwesome::load_spec()
 		 */
-		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-v4shim';
+		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
