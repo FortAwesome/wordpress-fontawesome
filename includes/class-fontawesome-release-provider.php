@@ -49,7 +49,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $_status = null;
+	protected $status = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -121,7 +121,7 @@ class FontAwesome_Release_Provider {
 	 * @return array|null
 	 */
 	public function get_status() {
-		return $this->_status;
+		return $this->status;
 	}
 
 	/**
@@ -177,7 +177,7 @@ class FontAwesome_Release_Provider {
 		try {
 			$response = $this->api_client->get( 'api/releases' );
 
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $response->getStatusCode(),
@@ -209,7 +209,7 @@ class FontAwesome_Release_Provider {
 
 			$this->releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $e->getCode(),
@@ -219,7 +219,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( GuzzleHttp\Exception\ServerException $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $e->getCode(),
@@ -228,7 +228,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( GuzzleHttp\Exception\ClientException $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => $e->getCode(),
@@ -236,7 +236,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( Exception $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => 0,
@@ -244,7 +244,7 @@ class FontAwesome_Release_Provider {
 				)
 			);
 		} catch ( \Error $e ) {
-			$this->_status = array_merge(
+			$this->status = array_merge(
 				$init_status,
 				array(
 					'code'    => 0,
