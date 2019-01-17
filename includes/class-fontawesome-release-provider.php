@@ -43,7 +43,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $_releases = null;
+	protected $releases = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -61,7 +61,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected static $_instance = null;
+	protected static $instance = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -83,10 +83,10 @@ class FontAwesome_Release_Provider {
 	 * @return FontAwesome_Release_Provider
 	 */
 	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class FontAwesome_Release_Provider {
 	 * @return FontAwesome_Release_Provider
 	 */
 	public static function reset() {
-		self::$_instance = null;
+		self::$instance = null;
 		return self::instance();
 	}
 
@@ -144,7 +144,7 @@ class FontAwesome_Release_Provider {
 		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
 
 		if ( $cached_releases ) {
-			$this->_releases = $cached_releases;
+			$this->releases = $cached_releases;
 		}
 	}
 
@@ -207,7 +207,7 @@ class FontAwesome_Release_Provider {
 				throw new Exception();
 			}
 
-			$this->_releases = $releases;
+			$this->releases = $releases;
 		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
 			$this->_status = array_merge(
 				$init_status,
@@ -301,24 +301,24 @@ class FontAwesome_Release_Provider {
 	 * @return array
 	 */
 	protected function releases() {
-		if ( $this->_releases ) {
-			return $this->_releases;
+		if ( $this->releases ) {
+			return $this->releases;
 		} else {
 			$cached_releases = get_transient( self::RELEASES_TRANSIENT );
 
 			if ( $cached_releases ) {
 				return $cached_releases;
-			} elseif ( is_null( $this->_releases ) ) {
+			} elseif ( is_null( $this->releases ) ) {
 				$this->load_releases();
 
 				// TODO: consider adding retry logic for loading Font Awesome releases.
-				if ( is_null( $this->_releases ) ) {
+				if ( is_null( $this->releases ) ) {
 					throw new FontAwesome_NoReleasesException();
 				} else {
-					return $this->_releases;
+					return $this->releases;
 				}
 			} else {
-				return $this->_releases;
+				return $this->releases;
 			}
 		}
 	}
