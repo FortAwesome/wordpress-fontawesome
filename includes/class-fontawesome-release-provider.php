@@ -55,7 +55,7 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $_api_client = null;
+	protected $api_client = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -67,14 +67,14 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected static $_handler = null;
+	protected static $handler = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
 	public static function set_handler( $handler ) {
-		self::$_handler = $handler;
+		self::$handler = $handler;
 	}
 
 	/**
@@ -136,10 +136,10 @@ class FontAwesome_Release_Provider {
 			// You can set any number of default request options.
 			'timeout'  => 2.0,
 		);
-		if ( self::$_handler ) {
-			$client_params['handler'] = self::$_handler;
+		if ( self::$handler ) {
+			$client_params['handler'] = self::$handler;
 		}
-		$this->_api_client = new Client( $client_params );
+		$this->api_client = new Client( $client_params );
 
 		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
 
@@ -175,7 +175,7 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = $this->_api_client->get( 'api/releases' );
+			$response = $this->api_client->get( 'api/releases' );
 
 			$this->_status = array_merge(
 				$init_status,
