@@ -65,9 +65,9 @@ if ( ! class_exists( 'FontAwesome_V3Mapper' ) ) :
 		private function load_map() {
 			// Don't load again if it's already loaded.
 			if ( is_null( $this->map ) ) {
-				$v3shims_file = trailingslashit( FONTAWESOME_DIR_PATH ) . 'v3shims.yml';
+				require trailingslashit( FONTAWESOME_DIR_PATH ) . 'v3shims.php';
 
-				$this->map = \Spyc::YAMLLoad( $v3shims_file );
+				$this->map = get_font_awesome_v3shims();
 			}
 		}
 
