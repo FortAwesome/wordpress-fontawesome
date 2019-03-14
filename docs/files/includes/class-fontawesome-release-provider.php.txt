@@ -14,7 +14,6 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 
 use Composer\Semver\Semver;
-use GuzzleHttp\Client;
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -63,20 +62,6 @@ class FontAwesome_Release_Provider {
 	 */
 	protected static $instance = null;
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
-	 * @ignore
-	 */
-	protected static $handler = null;
-
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
-	 * @ignore
-	 */
-	public static function set_handler( $handler ) {
-		self::$handler = $handler;
-	}
-
 	/**
 	 * Returns the FontAwesome_Release_Provider singleton instance.
 	 *
@@ -116,7 +101,7 @@ class FontAwesome_Release_Provider {
 	 * The value of the `code` key is one of:
 	 * - `200` if successful,
 	 * - `0` if there was some code error that prevented the network request from completing
-	 * - otherwise some HTTP error code as returned by {@see \Guzzle\Client}
+	 * - otherwise some HTTP error code as returned by `wp_remote_get()`
 	 *
 	 * @return array|null
 	 */
@@ -130,17 +115,6 @@ class FontAwesome_Release_Provider {
 	 * @ignore
 	 */
 	private function __construct() {
-		$client_params = array(
-			// Base URI is used with relative requests.
-			'base_uri' => FONTAWESOME_API_URL,
-			// You can set any number of default request options.
-			'timeout'  => 2.0,
-		);
-		if ( self::$handler ) {
-			$client_params['handler'] = self::$handler;
-		}
-		$this->api_client = new Client( $client_params );
-
 		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
 
 		if ( $cached_releases ) {
@@ -175,18 +149,21 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = $this->api_client->get( 'api/releases' );
+			$response = wp_remote_get( FONTAWESOME_API_URL . '/api/releases' );
+
+			if($response instanceof WP_Error){
+				throw new Error();
+			}
 
 			$this->status = array_merge(
 				$init_status,
 				array(
-					'code'    => $response->getStatusCode(),
-					'message' => 'ok',
+					'code'    => $response['response']['code'],
+					'message' => $response['response']['message'],
 				)
 			);
 
-			$body          = $response->getBody();
-			$body_contents = $body->getContents();
+			$body_contents = $response['body'];
 			$body_json     = json_decode( $body_contents, true );
 			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
 			$releases      = array();
@@ -208,33 +185,6 @@ class FontAwesome_Release_Provider {
 			}
 
 			$this->releases = $releases;
-		} catch ( GuzzleHttp\Exception\ConnectException $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $e->getCode(),
-					'message' => 'Whoops, we could not connect to the Font Awesome server to get releases data.  ' .
-						'There seems to be an internet connectivity problem between your WordPress server ' .
-						'and the Font Awesome server.',
-				)
-			);
-		} catch ( GuzzleHttp\Exception\ServerException $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $e->getCode(),
-					'message' => 'Whoops, there was a problem on the fontawesome.com server when we attempted to get releases data.  ' .
-						'Probably if you reload to try again, it will work.',
-				)
-			);
-		} catch ( GuzzleHttp\Exception\ClientException $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $e->getCode(),
-					'message' => 'Whoops, we could not update the releases data from the Font Awesome server.',
-				)
-			);
 		} catch ( Exception $e ) {
 			$this->status = array_merge(
 				$init_status,
