@@ -7,6 +7,7 @@
 - [Introduction](#introduction)
 - [Development Setup](#development-setup)
 - [Run phpunit](#run-phpunit)
+  * [Pass arguments to phpunit](#pass-arguments-to-phpunit)
 - [Use wp-cli within your Docker environment](#use-wp-cli-within-your-docker-environment)
 - [Run anything else within your Docker environment](#run-anything-else-within-your-docker-environment)
   * [Run a shell insider your Docker environment](#run-a-shell-inside-your-docker-environment)
@@ -228,6 +229,12 @@ option must be `-c <container_id_or_name>`
 
 Running `bin/phpunit` with no `-c` will show you a list of the currently running relevant containers to
 make it easy to find the appropriate container ID or name to copy and paste.
+
+## Pass arguments to phpunit
+
+`./bin/phpunit -c <container_id_or_name> -- [arguments]`
+
+Everything after `--` gets passed straight through to the `phpunit` command line in the container.
 
 # Use wp-cli within your Docker environment
 
