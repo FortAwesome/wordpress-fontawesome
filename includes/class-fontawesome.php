@@ -390,7 +390,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return null|string
 		 */
 		public function get_latest_version() {
-			return fa_release_provider()->latest_minor_release();
+			return $this->release_provider()->latest_minor_release();
 		}
 
 		/**
@@ -421,7 +421,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return null|string
 		 */
 		public function get_previous_version() {
-			return fa_release_provider()->previous_minor_release();
+			return $this->release_provider()->previous_minor_release();
 		}
 
 		/**
@@ -453,7 +453,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @return null|string
 		 */
 		public function get_available_versions() {
-			return fa_release_provider()->versions();
+			return $this->release_provider()->versions();
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -1158,7 +1158,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			'removeUnregisteredClients' => false,
 			'usePro'                    => false,
 		] ) {
-			$release_provider = fa_release_provider();
+			$release_provider = $this->release_provider();
 
 			$method  = $load_spec['method'];
 			$use_svg = false;
@@ -1547,6 +1547,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		public function snooze_v3deprecation_warning() {
 			delete_transient( self::V3DEPRECATION_TRANSIENT );
 			set_transient( self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY );
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * Allows a test subclass to mock the release provider.
+		 *
+		 * @ignore
+		 */
+		protected function release_provider() {
+			return fa_release_provider();
 		}
 	}
 

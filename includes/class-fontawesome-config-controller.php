@@ -87,7 +87,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				'currentLoadSpec'       => $fa->load_spec(),
 				'currentLoadSpecLocked' => $locked_load_spec && $fa->load_spec() === $locked_load_spec,
 				'unregisteredClients'   => $fa->unregistered_clients(),
-				'releaseProviderStatus' => fa_release_provider()->get_status(),
+				'releaseProviderStatus' => $this->release_provider()->get_status(),
 				'releases'              => array(
 					'available'        => $fa->get_available_versions(),
 					'latest_version'   => $fa->get_latest_version(),
@@ -122,7 +122,7 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 				// Make sure our releases metadata is fresh.
 				$load_releases = new ReflectionMethod( 'FontAwesome_Release_Provider', 'load_releases' );
 				$load_releases->setAccessible( true );
-				$load_releases->invoke( fa_release_provider() );
+				$load_releases->invoke( $this->release_provider() );
 
 				$fa_load = new ReflectionMethod( 'FontAwesome', 'load' );
 				$fa_load->setAccessible( true );
@@ -188,6 +188,16 @@ if ( ! class_exists( 'FontAwesome_Config_Controller' ) ) :
 		protected function prepare_item_for_database( $request ) {
 			$body = $request->get_json_params();
 			return array_merge( array(), $body );
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * Allows a test subclass to mock the release provider.
+		 *
+		 * @ignore
+		 */
+		protected function release_provider() {
+			return fa_release_provider();
 		}
 	}
 
