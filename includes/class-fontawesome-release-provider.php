@@ -149,7 +149,7 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = wp_remote_get( FONTAWESOME_API_URL . '/api/releases' );
+			$response = $this->get( FONTAWESOME_API_URL . '/api/releases' );
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
@@ -162,6 +162,10 @@ class FontAwesome_Release_Provider {
 					'message' => $response['response']['message'],
 				)
 			);
+
+			if ( 200 !== $this->status['code'] ) {
+				return;
+			}
 
 			$body_contents = $response['body'];
 			$body_json     = json_decode( $body_contents, true );
@@ -232,6 +236,14 @@ class FontAwesome_Release_Provider {
 		}
 
 		return( new FontAwesome_Resource( $full_url, $integrity_key ) );
+	}
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected function get( $url, $args = array() ) {
+		return wp_remote_get( $url, $args );
 	}
 
 	/**
