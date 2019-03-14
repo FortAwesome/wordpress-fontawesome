@@ -41,8 +41,7 @@
         ]
     },
     "require": {
-        "composer/semver": "^1.4",
-        "guzzlehttp/guzzle": "~6.0"
+        "composer/semver": "^1.4"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.3",
