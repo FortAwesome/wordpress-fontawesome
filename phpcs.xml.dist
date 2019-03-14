@@ -18,6 +18,7 @@
 	-->
 	<file>font-awesome.php</file>
 	<file>index.php</file>
+	<file>v3shims.php</file>
 	<file>defines.php</file>
 	<file>admin/index.php</file>
 	<file>admin/views/main.php</file>
