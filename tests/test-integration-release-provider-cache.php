@@ -18,20 +18,8 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 	protected $fa;
 	protected $release_provider;
 
-	protected function reset_db() {
-		if ( ! delete_option( FontAwesome::OPTIONS_KEY ) ) {
-			// false could mean either that it doesn't exist, or that the delete wasn't successful.
-			if ( get_option( FontAwesome::OPTIONS_KEY ) ) {
-				throw new Exception( 'Unsuccessful clear the Font Awesome option key in the db.' );
-			}
-		}
-
-		if ( ! delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
-			// false could mean either that it doesn't exist, or that the delete wasn't successful.
-			if ( get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
-				throw new Exception( 'Unsuccessful clearing the Releases transient.' );
-			}
-		}
+	public function setUp() {
+		\FontAwesomePhpUnitUtil\reset_db();
 	}
 
 	// Pass an array of responses, in the shape returned by wp_remote_get().
@@ -91,8 +79,6 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 	 * in order to load correctly.
 	 */
 	public function test_caching() {
-		$this->reset_db();
-
 		$this->prepare(
 			[
 				self::build_success_response(), // An initial successful one.
