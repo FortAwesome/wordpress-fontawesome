@@ -15,27 +15,24 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
  * Class ReleaseProviderIntegrationTest
  */
 class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
-	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
-	protected $known_versions = [
-		'5.0.1',
-		'5.0.2',
-		'5.0.3',
-		'5.0.4',
-		'5.0.6',
-		'5.0.8',
-		'5.0.9',
-		'5.0.10',
-		'5.0.12',
-		'5.0.13',
-		'5.1.0',
-		'5.1.1',
-		'5.2.0',
-		'5.3.1',
-		'5.4.1',
-	];
-
 	protected $fa;
 	protected $release_provider;
+
+	protected function reset_db() {
+		if ( ! delete_option( FontAwesome::OPTIONS_KEY ) ) {
+			// false could mean either that it doesn't exist, or that the delete wasn't successful.
+			if ( get_option( FontAwesome::OPTIONS_KEY ) ) {
+				throw new Exception( 'Unsuccessful clear the Font Awesome option key in the db.' );
+			}
+		}
+
+		if ( ! delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+			// false could mean either that it doesn't exist, or that the delete wasn't successful.
+			if ( get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+				throw new Exception( 'Unsuccessful clearing the Releases transient.' );
+			}
+		}
+	}
 
 	// Pass an array of responses, in the shape returned by wp_remote_get().
 	// A release provider will be mocked to return those responses, in order,
@@ -89,9 +86,13 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 	 * been loaded, it calls resources() and gets back a set (probably empty) that does not include the version
 	 * being enqueued.
 	 *
-	 * So we need to simulate that scenario here.
+	 * So we need to simulate the scenario where we expect that metadata to be cached so that we can be sure that
+	 * a locked load spec, once locked, will not depend on any subsequent network requests to the metadata API
+	 * in order to load correctly.
 	 */
 	public function test_caching() {
+		$this->reset_db();
+
 		$this->prepare(
 			[
 				self::build_success_response(), // An initial successful one.
@@ -107,7 +108,6 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 					array(
 						'name'          => 'Client A',
 						'clientVersion' => '1',
-						'version'       => '5.4.1',
 					)
 				);
 			}
@@ -115,9 +115,9 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 
 		$enqueued_count = 0;
 
-		$enqueued_callback = function( $load_spec ) use ( $fa, &$enqueued_count ) {
+		$enqueued_callback = function() use ( $fa, &$enqueued_count ) {
 			$enqueued_count++;
-			$this->assertEquals( '5.4.1', $fa->version() );
+			$this->assertEquals( $fa->get_latest_version(), $fa->version() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
