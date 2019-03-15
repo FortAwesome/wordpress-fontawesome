@@ -135,6 +135,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['adminClientLoadSpec'], $data['options']['adminClientLoadSpec'] );
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['usePro'], $data['options']['usePro'] );
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['removeUnregisteredClients'], $data['options']['removeUnregisteredClients'] );
+		$this->assertEquals( '5.3.1', $data['options']['version'] );
 
 		$this->assertArrayHasKey( 'clientRequirements', $data );
 		$this->assertArrayHasKey( 'user', $data['clientRequirements'] );
@@ -157,7 +158,6 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'method' => 'webfont',
 			'v4shim' => true,
 			'pseudoElements' => true,
-			'version' => '5.3.1',
 			'clients' => array(
 				'user' => 0
 			)
@@ -297,13 +297,11 @@ class ConfigControllerTest extends WP_UnitTestCase {
 
 		$this->fa->register([
 			'name'          => 'foo',
-			'clientVersion' => '1',
-			'version'       => '~5.4'
+			'clientVersion' => '1'
 		]);
 		$this->fa->register([
 			'name'          => 'bar',
-			'clientVersion' => '1',
-			'version'        => '5.4.1',
+			'clientVersion' => '1'
 		]);
 		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
 		$response = $this->server->dispatch( $request );
@@ -313,12 +311,6 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->assertNull( $data['conflicts'] );
 		$this->assertNotNull($data['currentLoadSpec']);
 		$this->assertTrue($data['currentLoadSpecLocked']);
-
-		$expected_load_spec_subset = array(
-			'version' => '5.4.1'
-		);
-
-		$this->assertArraySubset( $expected_load_spec_subset, $data['currentLoadSpec'] );
 	}
 
 	function test_scenario_b1() {
@@ -367,7 +359,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->fa->register([
 			'name'          => 'foo',
 			'clientVersion' => '1',
-			'version'       => '5.4.1'
+			'method'        => 'webfont'
 		]);
 		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
 		$response1 = $this->server->dispatch( $request );
@@ -379,11 +371,11 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->assertNotNull($data1['currentLoadSpec']);
 		$this->assertTrue($data1['currentLoadSpecLocked']);
 
-		// Now we add another client with a conflicting version requirement
+		// Now we add another client with a conflicting method requirement
 		$this->fa->register([
 			'name'          => 'bar',
 			'clientVersion' => '1',
-			'version'        => '5.3.1',
+			'method'        => 'svg',
 		]);
 
 		// Yes, now just try the same request again
@@ -398,7 +390,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->assertTrue($data2['currentLoadSpecLocked']);
 
 		// But conflicts should also be reported on the version requirement
-		$this->assertEquals('version', $data2['conflicts']['requirement']);
+		$this->assertEquals('method', $data2['conflicts']['requirement']);
 		$this->assertEquals(2, count($data2['conflicts']['conflictingClientRequirements']));
 	}
 
@@ -410,7 +402,6 @@ class ConfigControllerTest extends WP_UnitTestCase {
 		$this->fa->register([
 			'name'          => 'foo',
 			'clientVersion' => '1',
-			'version'       => '~5.4'
 		]);
 		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
 		$response1 = $this->server->dispatch( $request );
@@ -425,7 +416,6 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'name'          => 'bar',
 			'method'        => 'svg',
 			'clientVersion' => '1',
-			'version'       => '5.4.1',
 		]);
 
 		// Yes, now just try the same request again
