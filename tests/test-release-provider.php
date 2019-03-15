@@ -102,7 +102,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		);
 	}
 
-	protected function create_release_provider_with_mocked_response($response) {
+	protected function create_release_provider_with_mocked_response( $response ) {
 		return \FontAwesomePhpUnitUtil\mock_singleton_method(
 			$this,
 			FontAwesome_Release_Provider::class,
@@ -116,8 +116,10 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 	}
 
 	public function test_versions_no_releases_exception() {
-		// When the GET for releases does not return successfully and we have no version metadata available,
-		// we expect an exception to be thrown.
+		/**
+		 * When the GET for releases does not return successfully and we have no version metadata available,
+		 * we expect an exception to be thrown.
+		 */
 
 		$mock_response = self::build_500_response();
 
@@ -134,6 +136,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
+		// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 		try {
 			// We need to run this for its side effects, but we don't want to be hijacked by the exception
 			// it throws, because we need to assert something about the state *after* it's thrown.
@@ -141,6 +144,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		} catch ( Exception $e ) {
 			// noop.
 		}
+		// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 
 		$this->assertEquals( 500, $farp->get_status()['code'] );
 	}
@@ -150,6 +154,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
+		// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 		try {
 			// We need to run this for its side effects, but we don't want to be hijacked by the exception
 			// it throws, because we need to assert something about the state *after* it's thrown.
@@ -157,6 +162,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		} catch ( Exception $e ) {
 			// noop.
 		}
+		// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 
 		$this->assertEquals( 403, $farp->get_status()['code'] );
 	}
@@ -522,7 +528,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			]
 		);
 
-		// END: since we're testing an exception, code won't run after the exception-throwing statement
+		// END: since we're testing an exception, code won't run after the exception-throwing statement.
 	}
 
 	public function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
