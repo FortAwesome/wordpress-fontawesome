@@ -30,6 +30,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertEquals( 'webfont', $load_spec['method'] );
 		$this->assertTrue( $load_spec['v4shim'] );
 		$this->assertTrue( $load_spec['pseudoElements'] );
+		$this->assertEquals( fa()->get_latest_version(), fa()->version() );
 	}
 
 	public function test_all_default_with_single_client() {
@@ -337,25 +338,29 @@ class RequirementsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The Font Awesome version defaults to latest in FontAwesome::DEFAULT_USER_OPTIONS, and can be changed
+	 * through the setting of options by the site owner, but it can longer be constrained by clients.
+	 * So if any clients register a version constraint, ignore it.
+	 *
 	 * @group version
 	 */
-	public function test_incompatible_version() {
+	public function test_incompatible_version_ignored() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
-
 				fa()->register(
 					array(
-						'name'    => 'clientA',
-						'version' => '5.0.13',
+
+						'name'    => "clientB",
+						'version' => '5.0.12',
 						'clientVersion' => '1',
 					)
 				);
 
 				fa()->register(
 					array(
-						'name'    => 'clientB',
-						'version' => '5.0.12',
+						'name'    => 'clientC',
+						'version' => '5.0.11',
 						'clientVersion' => '1',
 					)
 				);
@@ -365,22 +370,22 @@ class RequirementsTest extends WP_UnitTestCase {
 		$enqueued          = false;
 		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
+			// The default version should be the latest version
+			$this->assertEquals( fa()->get_latest_version(), fa()->version() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
 		$failed          = false;
 		$failed_callback = function( $data ) use ( &$failed ) {
 			$failed = true;
-			$this->assertEquals( 'version', $data['requirement'] );
-			$this->assertTrue( $this->client_requirement_exists( 'clientB', $data['conflictingClientRequirements'] ) );
 		};
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
 
-		$this->assertNull( $fa_load->invoke( fa() ) );
-		$this->assertTrue( $failed );
-		$this->assertFalse( $enqueued );
+		$this->assertNotNull( $fa_load->invoke( fa() ) );
+		$this->assertFalse( $failed );
+		$this->assertTrue( $enqueued );
 	}
 
 	public function client_requirement_exists( $name, $reqs ) {

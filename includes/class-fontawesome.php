@@ -161,6 +161,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			),
 			'usePro'                    => false,
 			'removeUnregisteredClients' => false,
+			'version'                   => 'latest',
 		);
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -235,11 +236,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 * @since 4.0.0
 		 */
 		public function run() {
-			/*
-			 * Explicitly indicate that 0 args should be passed in when invoking the function,
-			 * so that the default parameter will be used. Otherwise, the callback seems to be
-			 * called with a single empty string parameter, which confuses load().
-			 */
 			$fa = $this;
 			add_action(
 				'init',
@@ -269,6 +265,11 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					}
 				},
 				10,
+				/**
+				 * Explicitly indicate to the init action hook that 0 args should be passed in when invoking the
+				 * callback function, so that the default parameter will be used.
+				 * Otherwise, the callback seems to be called with a single empty string parameter, which confuses it.
+				 */
 				0
 			);
 
@@ -724,6 +725,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 					[
 						'removeUnregisteredClients' => $this->options()['removeUnregisteredClients'],
 						'usePro'                    => $current_options['usePro'],
+						'version'                   => $current_options['version'],
 					]
 				);
 				return $load_spec;
@@ -997,15 +999,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 							return null; }
 					},
 				),
-				// Version: start with all available versions. For each client requirement, narrow the list with that requirement's version constraint.
-				// Hopefully, we end up with a non-zero list, in which case, we'll sort the list and take the most recent satisfying version.
-				'version'        => array(
-					'value'   => $this->get_available_versions(),
-					'resolve' => function( $prev_req_val, $cur_req_val ) {
-						$satisfying_versions = Semver::satisfiedBy( $prev_req_val, $cur_req_val );
-						return count( $satisfying_versions ) > 0 ? $satisfying_versions : null;
-					},
-				),
 			);
 
 			$valid_keys      = array_keys( $load_spec );
@@ -1024,8 +1017,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 						continue; // these are meta keys that we won't process here.
 					}
 					if ( ! in_array( $key, $valid_keys, true ) ) {
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-						error_log( 'Ignoring invalid requirement key: ' . $key . '. Only these are allowed: ' . join( ', ', $valid_keys ) );
+						// ignore silently.
 						continue;
 					}
 					if ( array_key_exists( 'value', $load_spec[ $key ] ) ) {
@@ -1065,7 +1057,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 			}
 
 			$method  = $this->specified_requirement_or_default( $load_spec['method'], 'webfont' );
-			$version = Semver::rsort( $load_spec['version']['value'] )[0];
+			$version = $this->version();
 
 			/*
 			 * Use v4shims by default, unless method === 'webfont' and version < 5.1.0
@@ -1090,7 +1082,6 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				'method'         => $method,
 				'v4shim'         => $this->specified_requirement_or_default( $load_spec['v4shim'], $v4shim_default ) === 'require',
 				'pseudoElements' => $pseudo_elements,
-				'version'        => $version,
 				'clients'        => $client_versions,
 			);
 		}
@@ -1119,6 +1110,26 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		public function using_pro() {
 			return $this->is_pro_configured();
+		}
+
+		/**
+		 * Convenience method that returns the version of Font Awesome currently specified for being loaded.
+		 * Returns null if no version can be determined, such as when versions metadata cannot be loaded.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @return string|null
+		 */
+		public function version() {
+			if ( 'latest' === $this->options()['version'] ) {
+				try {
+					return $this->get_latest_version();
+				} catch ( FontAwesome_NoReleasesException $e ) {
+					return null;
+				}
+			} else {
+				return $this->options()['version'];
+			}
 		}
 
 		/**
@@ -1151,14 +1162,20 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected function enqueue( $load_spec, $params = [
-			'removeUnregisteredClients' => false,
-			'usePro'                    => false,
-		] ) {
+		protected function enqueue( $load_spec, $params ) {
 			$release_provider = $this->release_provider();
+
+			if ( ! isset( $params['removeUnregisteredClients'] ) ) {
+				throw new InvalidArgumentException( 'missing param: removeUnregisteredClients' );
+			}
+
+			if ( ! isset( $params['usePro'] ) ) {
+				throw new InvalidArgumentException( 'missing param: usePro' );
+			}
+
+			if ( ! isset( $params['version'] ) ) {
+				throw new InvalidArgumentException( 'missing param: version' );
+			}
 
 			$method  = $load_spec['method'];
 			$use_svg = false;
@@ -1172,12 +1189,16 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 				);
 			}
 
+			$version = 'latest' === $params['version']
+				? $this->get_latest_version()
+				: $params['version'];
+
 			/*
 			 * For now, we're hardcoding the style_opt as 'all'. Eventually, we can open up the rest of the
 			 * feature for specifying a subset of styles.
 			 */
 			$resource_collection = $release_provider->get_resource_collection(
-				$load_spec['version'],
+				$version,
 				'all',
 				[
 					'use_pro'  => $params['usePro'],
@@ -1397,8 +1418,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *     'method'         => 'svg', // "svg" or "webfont"
 		 *     'v4shim'         => 'require', // "require" or "forbid"
 		 *     'pseudoElements' => 'require', // "require" or "forbid"
-		 *     'version'        => '~5.5.0', // semver in the form of \Composer\Semver\Semver
-		 *     'name'           => 'Foo Plugin', // (required)
+		 *     'name'           => 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
 		 *     'clientVersion'  => '1.0.1', // (required) The version of your plugin or client
 		 *   )
 		 * ```
@@ -1409,6 +1429,19 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
 		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
+		 *
+		 * <h3>Font Awesome version</h3>
+		 *
+		 * Only the WordPress site owner gets to specify or constraint the version of Font Awesome that is loaded (the icon assets themselves,
+		 * not this plugin).
+		 *
+		 * If you know that your theme or plugin has some Font Awesome version requirements then you should handle that based on
+		 * the version information included in the payload of the `font_awesome_enqueued` hook. For example, you could display
+		 * an admin notice for the web site owner to be alerted that your theme or plugin may not be activated due to a Font Awesome
+		 * version incompatibility. You may need to do this, for example, if you use icons in more recent releases of Font Awesome.
+		 * It's quite possible that site owners will have locked their Font Awesome versions locked to a previous release.
+		 * Hopefully, they'll be able to easily resolve such a problem by selecting a recent compatible version from
+		 * the Font Awesome plugin admin settings page.
 		 *
 		 * <h3>clientVersion and the load specification cache</h3>
 		 *
