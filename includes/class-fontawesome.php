@@ -630,10 +630,15 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @see FontAwesome::OPTIONS_KEY
 		 * @see FontAwesome::DEFAULT_USER_OPTIONS
+		 * @throws FontAwesome_NoReleasesException
 		 * @return array
 		 */
 		public function options() {
-			return wp_parse_args( get_option( self::OPTIONS_KEY ), self::DEFAULT_USER_OPTIONS );
+			$options = wp_parse_args( get_option( self::OPTIONS_KEY ), self::DEFAULT_USER_OPTIONS );
+			if ( 'latest' === $options['version'] ) {
+				$options['version'] = $this->get_latest_version();
+			}
+			return $options;
 		}
 
 		/**
@@ -671,6 +676,7 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 *
 		 * @param array $options optional, overrides any options in the db, using array_replace_recursive()
 		 *        Default: null, no override.
+		 * @throws FontAwesome_NoReleasesException
 		 * @return array|null
 		 * @ignore
 		 */
@@ -1114,21 +1120,18 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 
 		/**
 		 * Convenience method that returns the version of Font Awesome currently specified for being loaded.
-		 * Returns null if no version can be determined, such as when versions metadata cannot be loaded.
 		 *
 		 * @since 4.0.0
 		 *
+		 * @throws FontAwesome_NoReleasesException
 		 * @return string|null
 		 */
 		public function version() {
-			if ( 'latest' === $this->options()['version'] ) {
-				try {
-					return $this->get_latest_version();
-				} catch ( FontAwesome_NoReleasesException $e ) {
-					return null;
-				}
+			$options = $this->options();
+			if ( 'latest' === $options['version'] ) {
+				return $this->get_latest_version();
 			} else {
-				return $this->options()['version'];
+				return $options['version'];
 			}
 		}
 
