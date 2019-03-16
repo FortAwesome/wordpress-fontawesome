@@ -74,14 +74,14 @@ function reset_db() {
 	if ( ! delete_option( \FontAwesome::OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
 		if ( get_option( \FontAwesome::OPTIONS_KEY ) ) {
-			throw new Exception( 'Unsuccessful clear the Font Awesome option key in the db.' );
+			throw new \Exception( 'Unsuccessful clearing the Font Awesome option key in the db.' );
 		}
 	}
 
 	if ( ! delete_transient( \FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
 		if ( get_transient( \FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
-			throw new Exception( 'Unsuccessful clearing the Releases transient.' );
+			throw new \Exception( 'Unsuccessful clearing the Releases transient.' );
 		}
 	}
 }

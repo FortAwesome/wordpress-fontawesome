@@ -20,6 +20,8 @@ class ConfigControllerTest extends WP_UnitTestCase {
 	protected $fa;
 
 	public function setUp() {
+		\FontAwesomePhpUnitUtil\reset_db();
+
 		global $wp_rest_server;
 
 		$this->server = $wp_rest_server = new \WP_REST_Server;

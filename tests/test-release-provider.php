@@ -67,6 +67,10 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		'5.4.1',
 	];
 
+	public function setUp() {
+		\FontAwesomePhpUnitUtil\reset_db();
+	}
+
 	public function test_can_load_and_instantiate() {
 		$obj = fa_release_provider();
 		$this->assertFalse( is_null( $obj ) );

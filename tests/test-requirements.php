@@ -17,6 +17,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @before
 	 */
 	protected function reset() {
+		\FontAwesomePhpUnitUtil\reset_db();
 		FontAwesome::reset();
 		\FontAwesomePhpUnitUtil\Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
