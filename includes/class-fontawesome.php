@@ -471,14 +471,13 @@ if ( ! class_exists( 'FontAwesome' ) ) :
 		 */
 		private function get_admin_asset_manifest() {
 			if ( FONTAWESOME_ENV === 'development' ) {
-				$client   = new GuzzleHttp\Client( [ 'base_uri' => 'http://dockerhost:3030' ] );
-				$response = $client->request( 'GET', '/asset-manifest.json', [] );
+				$response = wp_remote_get( 'http://dockerhost:3030/asset-manifest.json' );
 
-				if ( $response->getStatusCode() !== 200 ) {
+				if ( 200 !== $response['response']['code'] ) {
 					return null;
 				}
 
-				return json_decode( $response->getbody()->getContents(), true );
+				return json_decode( $response['body'], true );
 			} else {
 				$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
 				if ( ! file_exists( $asset_manifest_file ) ) {
