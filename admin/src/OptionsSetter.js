@@ -43,7 +43,7 @@ class OptionsSetter extends React.Component {
     const newState = {
       lastProps: nextProps,
       pseudoElements: nextProps.currentOptions.adminClientLoadSpec.pseudoElements || UNSPECIFIED,
-      version: nextProps.currentOptions.adminClientLoadSpec.version || UNSPECIFIED,
+      version: nextProps.currentOptions.version || UNSPECIFIED,
       v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
       method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
       usePro: !!nextProps.currentOptions.usePro,
@@ -104,9 +104,9 @@ class OptionsSetter extends React.Component {
           name: adminClientInternal,
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
           v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
-          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
-          version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
+          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements
         },
+        version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         usePro: this.state.usePro,
         removeUnregisteredClients: this.state.removeUnregisteredClients
       }

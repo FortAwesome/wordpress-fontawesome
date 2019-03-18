@@ -57,7 +57,6 @@ class ClientRequirementsView extends React.Component {
                 <tr className={ sharedStyles['table-header'] }>
                   <th>Name</th>
                   <th className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>Method</th>
-                  <th className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>Version</th>
                   <th className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>V4 Compat</th>
                   <th className={ classnames({ [styles.conflicted]: 'pseudoElements' === conflict }) }>Pseudo-elements</th>
                 </tr>
@@ -68,7 +67,6 @@ class ClientRequirementsView extends React.Component {
                   return <tr key={ index }>
                     <td>{ client.name === this.props.adminClientInternal ? this.props.adminClientExternal : client.name }</td>
                     <td className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
-                    <td className={ classnames({ [styles.conflicted]: 'version' === conflict }) }>{ client.version ? client.version : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
                     <td className={ classnames({ [styles.conflicted]: 'pseudoElements' === conflict }) }>{ client.pseudoElements ? client.pseudoElements : UNSPECIFIED_INDICATOR }</td>
                   </tr>

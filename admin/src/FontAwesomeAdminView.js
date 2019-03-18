@@ -51,7 +51,7 @@ class FontAwesomeAdminView extends React.Component {
         </p>
         <V3DeprecationWarning wpApiSettings={ this.props.wpApiSettings }/>
         { data.options.lockedLoadSpec &&
-          <LoadSpecView spec={ data.options.lockedLoadSpec } usePro={ data.options.usePro } />
+          <LoadSpecView spec={ data.options.lockedLoadSpec } usePro={ data.options.usePro } version={ data.options.version } />
         }
         { hasConflict &&
           <ClientRequirementsView

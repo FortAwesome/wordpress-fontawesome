@@ -6,11 +6,10 @@ import styles from './LoadSpecView.module.css'
 const PRODUCT_BASE_NAME = 'Font Awesome'
 
 const LoadSpecView = props => {
-  const { usePro, spec: {
+  const { usePro, version, spec: {
     method,
     v4shim,
     pseudoElements,
-    version,
   }} = props
 
   const licenseType = usePro ? 'Pro' : 'Free'
