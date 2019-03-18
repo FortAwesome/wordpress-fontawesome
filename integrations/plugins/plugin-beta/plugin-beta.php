@@ -22,7 +22,6 @@ add_action(
 				array(
 					'name'          => BETA_PLUGIN_LOG_PREFIX,
 					'clientVersion' => BETA_PLUGIN_VERSION,
-					'version'       => '5.1.0',
 					'v4shim'        => 'require',
 				)
 			);
@@ -35,7 +34,7 @@ add_action(
 	function( $load_spec ) {
 		if ( class_exists( 'FontAwesome' ) ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( BETA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . $load_spec['version'] );
+			error_log( BETA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . fa()->version() );
 		}
 	},
 	10,

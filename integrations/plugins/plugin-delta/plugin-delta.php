@@ -26,7 +26,7 @@ add_action('init', function(){
 
 add_action('font_awesome_enqueued', function($loadSpec){
   if ( class_exists('FontAwesome') ) {
-    error_log( DELTA_PLUGIN_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . $loadSpec['version']);
+    error_log( DELTA_PLUGIN_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . fa()->version());
   }
 }, 10, 3);
 

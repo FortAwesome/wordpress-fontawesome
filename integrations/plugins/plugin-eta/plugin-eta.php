@@ -63,7 +63,7 @@ function plugin_eta_fa_classes(){
 		? array_push($class_list, 'fa-license-pro')
 		: array_push($class_list, 'fa-license-free');
 
-	strpos($load_spec['version'], '5.0.') === 0
+	strpos(fa()->version(), '5.0.') === 0
 		? array_push($class_list, 'fa-version-5-0')
 		: array_push($class_list, 'fa-version-5-1');
 

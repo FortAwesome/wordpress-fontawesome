@@ -49,7 +49,7 @@ add_action(
 	function( $load_spec ) {
 		if ( class_exists( 'FontAwesome' ) ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( SIGMA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . $load_spec['version'] );
+			error_log( SIGMA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . fa()->version() );
 		}
 	},
 	10,
