@@ -1,4 +1,8 @@
 <?php
+namespace FortAwesome;
+
+use \Exception, \Error, \InvalidArgumentException;
+
 /**
  * Main plugin class module.
  *
@@ -21,7 +25,7 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 use Composer\Semver\Semver;
 
-if ( ! class_exists( 'FontAwesome' ) ) :
+if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	/**
 	 * Main plugin class, a singleton.
 	 *

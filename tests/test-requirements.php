@@ -1,4 +1,5 @@
 <?php
+namespace FortAwesome;
 /**
  * Class RequirementsTest
  *
@@ -9,7 +10,7 @@
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
-class RequirementsTest extends WP_UnitTestCase {
+class RequirementsTest extends \WP_UnitTestCase {
 
 	/**
 	 * Reset test state.
@@ -17,9 +18,9 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @before
 	 */
 	protected function reset() {
-		\FontAwesomePhpUnitUtil\reset_db();
+		reset_db();
 		FontAwesome::reset();
-		\FontAwesomePhpUnitUtil\Mock_FontAwesome_Releases::mock();
+		Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
@@ -104,7 +105,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	}
 
 	public function test_register_without_name() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( \InvalidArgumentException::class );
 
 		fa()->register(
 			array(
@@ -582,7 +583,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @group pro
 	 */
 	public function test_pro_is_configured() {
-		\FontAwesomePhpUnitUtil\mock_singleton_method(
+		mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'is_pro_configured',
@@ -618,7 +619,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @group pro
 	 */
 	public function test_pro_not_configured() {
-		\FontAwesomePhpUnitUtil\mock_singleton_method(
+		mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'is_pro_configured',
@@ -843,10 +844,10 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
+		begin_error_log_capture( $state );
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$err = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
+		$err = end_error_log_capture( $state );
 
 		$this->assertTrue( $enqueued );
 		$this->assertFalse( $failed );

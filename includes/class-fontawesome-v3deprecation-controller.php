@@ -1,4 +1,8 @@
 <?php
+namespace FortAwesome;
+
+use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+
 /**
  * Module for this plugin's V3 Deprecation REST API controller
  *

@@ -1,6 +1,6 @@
 <?php
 
-namespace FontAwesomePhpUnitUtil;
+namespace FortAwesome;
 
 use \PHPUnit\Framework\TestCase;
 
@@ -37,9 +37,9 @@ class Mock_FontAwesome_Releases extends TestCase {
 
 	public static function mock() {
 		$obj = new self();
-		\FontAwesomePhpUnitUtil\mock_singleton_method(
+		mock_singleton_method(
 			$obj,
-			\FontAwesome_Release_Provider::class,
+			FontAwesome_Release_Provider::class,
 			'releases',
 			function( $method ) {
 				$method->willReturn(

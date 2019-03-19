@@ -1,4 +1,8 @@
 <?php
+namespace FortAwesome;
+
+use \WP_Error, \Error, \Exception, \InvalidArgumentException;
+
 /**
  * Provides metadata about Font Awesome releases.
  *
@@ -197,7 +201,7 @@ class FontAwesome_Release_Provider {
 					'message' => 'Whoops, we failed to update the releases data.',
 				)
 			);
-		} catch ( \Error $e ) {
+		} catch ( Error $e ) {
 			$this->status = array_merge(
 				$init_status,
 				array(

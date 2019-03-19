@@ -1,4 +1,6 @@
 <?php
+namespace FortAwesome;
+
 /**
  * Class RequirementsTest
  *
@@ -13,14 +15,14 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 * Thanks to Josh Pollock for a helpful guide to testing this controller:
 * https://torquemag.io/2017/01/testing-api-endpoints/
 */
-class ConfigControllerTest extends WP_UnitTestCase {
+class ConfigControllerTest extends \WP_UnitTestCase {
 	protected $server;
 	protected $admin_user;
 	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/config';
 	protected $fa;
 
 	public function setUp() {
-		\FontAwesomePhpUnitUtil\reset_db();
+		reset_db();
 
 		global $wp_rest_server;
 
@@ -34,7 +36,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 	// A release provider will be mocked to return those responses, in order,
 	// on consecutive GETs to the fontawesome API.
 	protected function prepare( $responses ) {
-		$mocked_release_provider = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		$mocked_release_provider = mock_singleton_method(
 			$this,
 			FontAwesome_Release_Provider::class,
 			'get',
@@ -43,7 +45,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			}
 		);
 
-		$this->fa = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		$this->fa = mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'release_provider',
@@ -118,7 +120,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			$this->build_shorter_success_response(),
 		]);
 
-		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response = $this->server->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
@@ -221,13 +223,13 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			$this->build_longer_success_response()
 		]);
 
-		$request1  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request1  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response1 = $this->server->dispatch( $request1);
 		$this->assertEquals( 200, $response1->get_status() );
 
 		$data1 = $response1->get_data();
 
-		$request2  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request2  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response2 = $this->server->dispatch( $request2 );
 		$this->assertEquals( 200, $response2->get_status() );
 
@@ -274,7 +276,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'clientVersion' => '1',
 			'method'        => 'svg',
 		]);
-		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response = $this->server->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
@@ -305,7 +307,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'name'          => 'bar',
 			'clientVersion' => '1'
 		]);
-		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response = $this->server->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
@@ -330,7 +332,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'clientVersion' => '1',
 			'version'        => '5.4.1',
 		]);
-		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response1 = $this->server->dispatch( $request );
 		$this->assertEquals( 200, $response1->get_status() );
 		$data1 = $response1->get_data();
@@ -363,7 +365,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'clientVersion' => '1',
 			'method'        => 'webfont'
 		]);
-		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response1 = $this->server->dispatch( $request );
 		$this->assertEquals( 200, $response1->get_status() );
 		$data1 = $response1->get_data();
@@ -405,7 +407,7 @@ class ConfigControllerTest extends WP_UnitTestCase {
 			'name'          => 'foo',
 			'clientVersion' => '1',
 		]);
-		$request  = new WP_REST_Request( 'GET', $this->namespaced_route );
+		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
 		$response1 = $this->server->dispatch( $request );
 		$this->assertEquals( 200, $response1->get_status() );
 		$data1 = $response1->get_data();

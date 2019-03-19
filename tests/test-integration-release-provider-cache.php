@@ -1,4 +1,6 @@
 <?php
+namespace FortAwesome;
+
 /**
  * Tests the release provider, integrated with the main Font Awesome class simulating loading and
  * caching scenarios.
@@ -14,19 +16,19 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 /**
  * Class ReleaseProviderIntegrationTest
  */
-class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
+class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	protected $fa;
 	protected $release_provider;
 
 	public function setUp() {
-		\FontAwesomePhpUnitUtil\reset_db();
+		reset_db();
 	}
 
 	// Pass an array of responses, in the shape returned by wp_remote_get().
 	// A release provider will be mocked to return those responses, in order,
 	// on consecutive GETs to the fontawesome API.
 	protected function prepare( $responses ) {
-		$mocked_release_provider = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		$mocked_release_provider = mock_singleton_method(
 			$this,
 			FontAwesome_Release_Provider::class,
 			'get',
@@ -37,7 +39,7 @@ class ReleaseProviderIntegrationTest extends WP_UnitTestCase {
 
 		$this->release_provider = $mocked_release_provider;
 
-		$this->fa = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		$this->fa = mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'release_provider',

@@ -6,7 +6,9 @@
  * @noinspection PhpIncludeInspection
  */
 
-namespace FontAwesomePhpUnitUtil;
+namespace FortAwesome;
+
+use \ReflectionException, \ReflectionProperty, \Exception;
 
 require_once FONTAWESOME_DIR_PATH . 'tests/_support/class-mock-fontawesome-releases.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
@@ -30,12 +32,12 @@ function mock_singleton_method( $obj, $type, $method, callable $init ) {
 	->disableOriginalConstructor();
 	$mock         = $mock_builder->getMock();
 	try {
-		$ref = new \ReflectionProperty( $type, 'instance' );
+		$ref = new ReflectionProperty( $type, 'instance' );
 		$ref->setAccessible( true );
 		$ref->setValue( null, $mock );
 		$init( $mock->method( $method ) );
 		return $mock;
-	} catch ( \ReflectionException $e ) {
+	} catch ( ReflectionException $e ) {
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 		error_log( 'Reflection error: ' . $e );
 		return null;
@@ -71,17 +73,17 @@ function end_error_log_capture( &$state ) {
 }
 
 function reset_db() {
-	if ( ! delete_option( \FontAwesome::OPTIONS_KEY ) ) {
+	if ( ! delete_option( FontAwesome::OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_option( \FontAwesome::OPTIONS_KEY ) ) {
-			throw new \Exception( 'Unsuccessful clearing the Font Awesome option key in the db.' );
+		if ( get_option( FontAwesome::OPTIONS_KEY ) ) {
+			throw new Exception( 'Unsuccessful clearing the Font Awesome option key in the db.' );
 		}
 	}
 
-	if ( ! delete_transient( \FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+	if ( ! delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_transient( \FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
-			throw new \Exception( 'Unsuccessful clearing the Releases transient.' );
+		if ( get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+			throw new Exception( 'Unsuccessful clearing the Releases transient.' );
 		}
 	}
 }

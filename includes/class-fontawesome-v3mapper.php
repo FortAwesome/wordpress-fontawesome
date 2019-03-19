@@ -1,4 +1,6 @@
 <?php
+namespace FortAwesome;
+
 /**
  * Main plugin class module.
  *

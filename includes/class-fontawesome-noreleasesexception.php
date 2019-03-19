@@ -1,4 +1,8 @@
 <?php
+namespace FortAwesome;
+
+use \Exception;
+
 /**
  * Module for FontAwesome_NoReleasesException.
  *

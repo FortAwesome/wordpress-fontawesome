@@ -1,14 +1,17 @@
 <?php
+namespace FortAwesome;
+
+use \ReflectionMethod;
 
 /**
  * Class ShortcodeTest
  */
-class ShortcodeTest extends WP_UnitTestCase {
+class ShortcodeTest extends \WP_UnitTestCase {
 
 	public function test_shortcode() {
 		$fa = fa();
 
-		$sc = new ReflectionMethod( 'FontAwesome', 'process_shortcode' );
+		$sc = new ReflectionMethod( 'FortAwesome\FontAwesome', 'process_shortcode' );
 		$sc->setAccessible( true );
 
 		$this->assertRegExp( '/<i class="fas fa-coffee">.*?<\/i>/', $sc->invoke( $fa, [ 'name' => 'coffee' ] ) );

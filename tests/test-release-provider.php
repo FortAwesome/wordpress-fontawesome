@@ -1,4 +1,5 @@
 <?php
+namespace FortAwesome;
 /**
  * Tests the release provider.
  *
@@ -7,6 +8,8 @@
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+
+use \InvalidArgumentException;
 use Composer\Semver\Semver;
 
 /**
@@ -47,7 +50,7 @@ use Composer\Semver\Semver;
  * @preserveGlobalState disabled
  * @runTestsInSeparateProcesses
  */
-class ReleaseProviderTest extends WP_UnitTestCase {
+class ReleaseProviderTest extends \WP_UnitTestCase {
 	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
 	protected $known_versions = [
 		'5.0.1',
@@ -68,7 +71,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 	];
 
 	public function setUp() {
-		\FontAwesomePhpUnitUtil\reset_db();
+		reset_db();
 	}
 
 	public function test_can_load_and_instantiate() {
@@ -107,7 +110,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 	}
 
 	protected function create_release_provider_with_mocked_response( $response ) {
-		return \FontAwesomePhpUnitUtil\mock_singleton_method(
+		return mock_singleton_method(
 			$this,
 			FontAwesome_Release_Provider::class,
 			'get',
@@ -129,7 +132,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
-		$this->expectException( \FontAwesome_NoReleasesException::class );
+		$this->expectException( FontAwesome_NoReleasesException::class );
 		$farp->versions();
 		// END: Since this tests an exception, make sure there are no assertions after this point, because
 		// they don't seem to get a chance to run once this expected exception is handled.
@@ -145,7 +148,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			// We need to run this for its side effects, but we don't want to be hijacked by the exception
 			// it throws, because we need to assert something about the state *after* it's thrown.
 			$farp->versions();
-		} catch ( Exception $e ) {
+		} catch ( FontAwesome_NoReleasesException $e ) {
 			// noop.
 		}
 		// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
@@ -163,7 +166,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 			// We need to run this for its side effects, but we don't want to be hijacked by the exception
 			// it throws, because we need to assert something about the state *after* it's thrown.
 			$farp->versions();
-		} catch ( Exception $e ) {
+		} catch ( FontAwesome_NoReleasesException $e ) {
 			// noop.
 		}
 		// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
@@ -450,7 +453,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$this->expectException( InvalidArgumentException::class );
 
 		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
+		begin_error_log_capture( $state );
 		$farp->get_resource_collection(
 			'5.1.0', // version.
 			[ 'foo', 'bar' ], // style_opt, only bad styles.
@@ -460,7 +463,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 				'use_shim' => true,
 			]
 		);
-		$error_log = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
+		$error_log = end_error_log_capture( $state );
 		$this->assertRegExp( '/WARNING.+?unrecognized.+?foo/', $error_log );
 	}
 
@@ -474,7 +477,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
 		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
+		begin_error_log_capture( $state );
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
 			[ 'solid', 'foo' ], // style_opt.
@@ -484,7 +487,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 				'use_shim' => false,
 			]
 		);
-		$error_log           = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
+		$error_log           = end_error_log_capture( $state );
 
 		$this->assertFalse( is_null( $resource_collection ) );
 		$this->assertCount( 2, $resource_collection );
@@ -536,7 +539,7 @@ class ReleaseProviderTest extends WP_UnitTestCase {
 	}
 
 	public function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
-		$mock = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		$mock = mock_singleton_method(
 			$this,
 			FontAwesome_Release_Provider::class,
 			'versions',

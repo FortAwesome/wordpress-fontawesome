@@ -1,4 +1,5 @@
 <?php
+namespace FortAwesome;
 
 /**
  * Fired during plugin activation.

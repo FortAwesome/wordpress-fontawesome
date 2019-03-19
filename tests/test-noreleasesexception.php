@@ -1,4 +1,5 @@
 <?php
+use FortAwesome\FontAwesome_NoReleasesException;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-noreleasesexception.php';
 

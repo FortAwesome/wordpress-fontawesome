@@ -1,4 +1,5 @@
 <?php
+namespace FortAwesome;
 
 if ( ! class_exists( 'FontAwesome_Resource' ) ) :
 	/**
