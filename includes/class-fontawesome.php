@@ -23,8 +23,6 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
-use Composer\Semver\Semver;
-
 if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	/**
 	 * Main plugin class, a singleton.
@@ -453,22 +451,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Returns the latest available version of Font Awesome as a string, formatted
-		 * as a semver.
-		 *
-		 * Example: if the latest version is "5.5.0", this function returns "~5.5.0"
-		 *
-		 * @since 4.0.0
-		 *
-		 * @throws FontAwesome_NoReleasesException
-		 * @link https://getcomposer.org/doc/articles/versions.md
-		 * @return null|string
-		 */
-		public function get_latest_semver() {
-			return( '~' . $this->get_latest_version() );
-		}
-
-		/**
 		 * Returns the previous minor version of Font Awesome as a string.
 		 *
 		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
@@ -481,22 +463,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		public function get_previous_version() {
 			return $this->release_provider()->previous_minor_release();
-		}
-
-		/**
-		 * Returns the previous minor version of Font Awesome as a string, formatted as a semver.
-		 *
-		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
-		 * this function returns "~5.4.1".
-		 *
-		 * @since 4.0.0
-		 *
-		 * @throws FontAwesome_NoReleasesException
-		 * @link https://getcomposer.org/doc/articles/versions.md
-		 * @return null|string
-		 */
-		public function get_previous_semver() {
-			return ( '~' . $this->get_previous_version() );
 		}
 
 		/**
@@ -1129,7 +1095,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			 * to introduce such an exception by our own defaults here.
 			 */
 			$v4shim_default = 'require';
-			if ( 'webfont' === $method && ! Semver::satisfies( $version, '>= 5.1.0' ) ) {
+			if ( 'webfont' === $method && ! \Composer\Semver\Semver::satisfies( $version, '>= 5.1.0' ) ) {
 				$v4shim_default = 'forbid';
 			}
 			$pseudo_elements_default = 'webfont' === $method ? 'require' : null;
