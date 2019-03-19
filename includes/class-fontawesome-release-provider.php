@@ -20,8 +20,8 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
  *
- * @package    FontAwesome
- * @subpackage FontAwesome/includes
+ * Theme and plugin developers normally should _not_ access this Release Provider API directly. It's here to support the
+ * functionality of {@see FontAwesome}.
  */
 class FontAwesome_Release_Provider {
 	/**

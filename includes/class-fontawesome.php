@@ -45,7 +45,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 * - `font_awesome_enqueued`
 	 *
 	 *   Called when a version of Font Awesome has been successfully prepared for enqueuing,
-	 *   whether by building a new load specification, one by or using a locked load specification from a previous load.
+	 *   whether by building a new load specification, or by using a locked load specification from a previous load.
 	 *
 	 *   Clients should register a callback on this action to be notified when it is valid to query the FontAwesome
 	 *   plugin's metadata using methods such as:
@@ -60,9 +60,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *   One parameter, an `array` with a shape like that returned by {@see FontAwesome::conflicts()}
 	 *
 	 * @since 4.0.0
-	 *
-	 * @package    FontAwesome
-	 * @subpackage FontAwesome/includes
 	 */
 	class FontAwesome {
 
@@ -123,8 +120,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		const OPTIONS_PAGE = 'font-awesome';
 		/**
-		 * The handle used when enqueuing this plugin's resulting resource, whether `<script>` or `<link>`,
-		 * via `wp_enqueue_script` or `wp_enqueue_style`.
+		 * The handle used when enqueuing this plugin's resulting resource.
+		 * Used when this plugin calls either `wp_enqueue_script` or `wp_enqueue_style` to enqueue Font Awesome assets.
 		 *
 		 * @since 4.0.0
 		 */
@@ -283,6 +280,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints.
 		 *
+		 * NOTE: this method is not concerned with the version of Font Awesome assets being loaded by this plugin,
+		 * but with the version of this plugin itself.
+		 *
 		 * The constraints array should contain one element per constraint, where each individual constraint is itself
 		 * an array of arguments that can be passed as the second and third arguments to the standard `version_compare`
 		 * function.
@@ -345,24 +345,25 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
 		 * callback on the `font_awesome_requirements` action hook.
 		 *
-		 * The shape of the `$constraints` argument is the same as for @see FontAwesome::satisfies().
+		 * The shape of the `$constraints` argument is the same as for {@see FortAwesome\FontAwesome::satisfies()}.
 		 *
 		 * For example:
 		 * ```php
 		 * add_action(
 		 *   'font_awesome_enqueued',
 		 *   function() {
-		 *     fa()->satisfies_or_warn( [['4.0.0', '>=']], 'Theta' );
+		 *     FortAwesome\fa()->satisfies_or_warn( [['4.0.0', '>=']], 'Theta' );
 		 *   }
 		 * );
 		 * ```
 		 *
 		 * @since 4.0.0
 		 *
-		 * @param array $constraints as required by @see FontAwesome::satisfies()
+		 * @param array $constraints as required by FontAwesome::satisfies()
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
 		 *        given constraint.
-		 * @see FontAwesome For reference on the `font_awesome_enqueued` action hook
+		 * @see FontAwesome font_awesome_enqueued action hook
+		 * @see FortAwesome\FontAwesome::satisfies() satisfies()
 		 * @return bool
 		 * @throws InvalidArgumentException if the constraints provided are not in the expected format
 		 */
@@ -464,16 +465,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Returns all available versions of Font Awesome as an array of strings.
+		 * Returns all available versions of Font Awesome as an array of strings in descending version order.
 		 *
 		 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
-		 * this function returns "~5.4.1".
+		 * this function returns [ "5.5.1", "5.4.1", "5.4.0", "5.3.0"].
 		 *
 		 * @since 4.0.0
 		 *
 		 * @throws FontAwesome_NoReleasesException
 		 * @see FontAwesome_Release_Provider::versions()
-		 * @return null|string
+		 * @return array
 		 */
 		public function get_available_versions() {
 			return $this->release_provider()->versions();
@@ -645,7 +646,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * Returns current options with defaults.
 		 *
-		 * Clients should normally not be access this.
+		 * Clients should normally not access this.
 		 *
 		 * @since 4.0.0
 		 *
@@ -897,12 +898,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *   )
 		 * ```
 		 * This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
-		 * triggered on the first failure. If there are subsequent requirements in conflict, they will not be
-		 * reported until this first one is resolved.
+		 * triggered on the first failure.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @see FontAwesome::register() For a full list of possible client requirement keys
+		 * @see FontAwesome::register() register() documents all client requirement keys
 		 * @return array|null
 		 */
 		public function conflicts() {
@@ -911,6 +911,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 		/**
 		 * Returns plugin version warnings.
+		 *
+		 * These are the warnings that would be reported in the admin UI as a result of clients calling
+		 * {@see FortAwesome\FontAwesome::satisfies_or_warn()}.
 		 *
 		 * @since 4.0.0
 		 *
@@ -932,15 +935,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return current client requirements for all registered clients. The website owner (i.e. the one who
-		 * uses the WordPress admin dashboard) is considered a registered client. So that owner's requirements
-		 * will be represented here.
+		 * Return current client requirements for all registered clients.
 		 *
-		 * Each element of the array has the same shape as the requirements given to {@see FontAwesome::register()}.
+		 * The website owner (i.e. the one who uses the WordPress admin dashboard) is considered a registered client.
+		 * So that owner's requirements will be represented here. But note that these requirements do not include
+		 * the `options`, as returned by {@see FortAwesome\FontAwesome::options()} which also help determine the
+		 * final result of how the Font Awesome assets are loaded.
+		 *
+		 * Each element of the array has the same shape as the requirements given to {@see FortAwesome\FontAwesome::register()}.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @see FontAwesome::register()
+		 * @see FortAwesome\FontAwesome::register()
 		 * @return array
 		 */
 		public function requirements() {
@@ -951,7 +957,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * Return list of found unregistered clients.
 		 *
 		 * Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
-		 * URI that appears to load Font Awesome, but which has not called {@see FontAwesome::register()} to register
+		 * URI that appears to load Font Awesome, but which has not called {@see FortAwesome\FontAwesome::register()} to register
 		 * its requirements with this plugin.
 		 *
 		 * @since 4.0.0
@@ -964,16 +970,25 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * DEPRECATED: Instead of using this method, use the various accessor methods, like the following:
-		 *   - {@see FontAwesome::version()} to discover the version of Font Awesome being loaded
-		 *   - {@see FontAwesome::using_pro()} to discover whether a version with Pro icons is being loaded
-		 *   - {@see FontAwesome::using_pseudo_elements()} to discover whether Font Awesome is being loaded with support
+		 * Returns the subset of metadata required to load Font Awesome that corresponds to client requirements.
+		 *
+		 * *DEPRECATED*
+		 *
+		 * A successful resolution of all factors necessary to load Font Awesome without conflict involves:
+		 * 1. A load specification (this `load_spec`) that satisfies all requirements registered by clients, including the
+		 *    site owner's requirements as specified on the options page.
+		 * 2. Options specified by the site owner that cannot be controlled by other clients. This is available from {@see FortAwesome\FontAwesome::options()}.
+		 *
+		 * Since the metadata returned by this method only includes a _subset_ of what determines how
+		 * Font Awesome is loaded, it's a bit of a misnomer. Rather than trying to keep track of what's stored where,
+		 * it's best to just use the various accessor methods, like these:
+		 *
+		 *   - {@see FortAwesome\FontAwesome::version()} to discover the version of Font Awesome being loaded
+		 *   - {@see FortAwesome\FontAwesome::using_pro()} to discover whether a version with Pro icons is being loaded
+		 *   - {@see FortAwesome\FontAwesome::using_pseudo_elements()} to discover whether Font Awesome is being loaded with support
 		 *     for pseudo-elements
 		 *
-		 * The data structure returned by this method only includes a _subset_ of the metadata required to specify
-		 * how Font Awesome is loaded, so it's a bit of a misnomer.
-		 *
-		 * Returns null if it has not yet been computed.
+		 * Returns `null` if a load spec has not yet been determined.
 		 * If it is still `null` and {@see FontAwesome::conflicts()} returns _not_ `null`, that means the load failed:
 		 * there is no settled load specification because none could be found that satisfies all client requirements.
 		 * For example, one client may have required `'method' => 'svg'` while another required `'method' => 'webfont'`.
@@ -1139,8 +1154,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Convenience method that returns boolean indicating whether, given the currently settled load specification,
-		 * we are loading Font Awesome Pro.
+		 * Indicates whether Font Awesome Pro is being loaded.
 		 *
 		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
 		 *
@@ -1155,12 +1169,20 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Convenience method that returns the version of Font Awesome currently specified for being loaded.
+		 * Reports the version of Font Awesome assets being loaded.
+		 *
+		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
+		 *
+		 * Your theme or plugin should probably query this in order to determine whether all of the icons used in your
+		 * templates will be available, especially if you tend to use newer icons. It should be really easy
+		 * for site owners to update to a new Font Awesome version to accommodate your templates--just a simple dropdown
+		 * selection on the Font Awesome plugin options page. But you might need to show an admin notice to nudge
+		 * them to do so if you detect that the current version of Font Awesome being loaded is older than you'd like.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @throws FontAwesome_NoReleasesException
-		 * @return string|null
+		 * @return string
 		 */
 		public function version() {
 			$options = $this->options();
@@ -1172,15 +1194,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Convenience method that returns boolean indicating whether the currently settled load specification
-		 * includes support for pseudoElements.
+		 * Indicates whether Font Awesome is being loaded with support for CSS pseudo-elements.
 		 *
 		 * Its results are only valid after the `font_awesome_enqueued` action has been triggered.
 		 *
-		 * It's a handy way to toggle the use of pseudo elements icons in a client theme or plugin template code,
-		 * or to present a warning in an admin notice in the event that your client code uses pseudo elements, and
-		 * the `svg` method is loaded. (There may be a performance penalty with that combination, particularly in earlier
-		 * versions of Font Awesome 5.x.)
+		 * You might use this, for example, to detect when the SVG with JavaScript method is being used with
+		 * pseudo-elements enabled. There are known performance problems with this combination.
+		 * It's usually better that you don't "forbid" pseudo-elements in your requirements--to avoid causing unnecessary
+		 * hard conflicts. But you might use this detection to show a relevant warning as an admin notice.
 		 *
 		 * @since 4.0.0
 		 *
@@ -1446,7 +1467,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * *Note on using Pro:* registered clients cannot _require_ the use Font Awesome Pro. That is a feature that
 		 * must be enabled by the web site owner.
 		 *
-		 * If you are shipping at theme or plugin for which you insist on being able to use Font Awesome Pro, your only
+		 * If you are shipping a theme or plugin for which you insist on being able to use Font Awesome Pro, your only
 		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
 		 * websites.
 		 *
@@ -1473,7 +1494,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * is to make it easy for WordPress site owners to install and use Font Awesome conflict-free. And where there
 		 * are unavoidable conflicts, we want the site owner to be able to diagnose and resolve them easily.
 		 * WordPress is a big world and there are limitless combinations of installed themes and plugins. Font Awesome
-		 * is very popular, show it shows up in a lot of those combinations.
+		 * is very popular, so it shows up in a lot of those combinations.
 		 *
 		 * One of the most common sources of conflict with Font Awesome on WordPress is a combination of theme and/or
 		 * plugins that each try to do their own
@@ -1488,29 +1509,29 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * Here's a quick adaptability checklist:
 		 *
-		 * - Make sure your plugin or theme works just as well with either webfont or svg methods
-		 * - Update your icon references to use version 5 names so no v4 shim is required
-		 * - Don't use pseudo-elements
-		 * - Be mindful of which icons you use and in which versions of Font Awesome they're available.
-		 *   Adapt gracefully when the version loaded lacks icons you want to use (see more below).
+		 * - Make sure your plugin or theme works just as well with either webfont or svg methods.
+		 * - Update your icon references to use version 5 names so no {@link https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4 v4 shim} is required.
+		 * - Don't use {@link https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements pseudo-elements}
+		 * - Be mindful of which {@link https://fontawesome.com/icons icons you use and in which versions of Font Awesome they're available}.
+		 * - Adapt gracefully when the version loaded lacks icons you want to use (see more below).
 		 *
-		 * A good example of a legitimate use case for setting one of these requirements is to require the "svg" method,
-		 * in order to make use of Power Transforms.
+		 * A good example of a legitimate use case for setting one of these requirements is to require the `svg` method,
+		 * in order to make use of {@link https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms Power Transforms}.
 		 *
-		 * Another good example: suppose your theme or plugin has a legacy codebase that makes heavy use of pseudo-elements,
-		 * so you should require pseudo-element support. But suppose you test and find that when the svg method is used
-		 * for Font Awesome, all your pseudo-element usage results in a significant performance hit--to much to tolerate.
-		 * A temporary measure might then be to require the "webfont" method (your pseudo-elements will perform fine with webfonts).
+		 * Another good example: Suppose your theme or plugin has a legacy codebase that makes heavy use of pseudo-elements.
+		 * So you should require pseudo-element support. But suppose you test and find that when the svg method is used
+		 * for Font Awesome, all your pseudo-element usage results in a significant performance hit--too much to tolerate.
+		 * A temporary measure might then be to require the `webfont` method (your pseudo-elements will perform fine with webfonts).
 		 * You really should consider that to be a temporary measure, though, and plan on a future iteration to remove
-		 * pseudo-elements as much as possible.
+		 * pseudo-element usage. After removing pseudo-elements from your templates, remove that requirement for pseudo-elements
+		 * in your call to this method.
 		 *
 		 * <h3>Font Awesome version</h3>
 		 *
-		 * Only the WordPress site owner gets to specify or constraint the version of Font Awesome that is loaded (the icon assets themselves,
-		 * not this plugin).
+		 * Only the WordPress site owner gets to specify the version of Font Awesome assets that are loaded.
 		 *
 		 * To maximize compatibility and user-friendliness, keep track of the icons you use and in which versions they're
-		 * introduced (new ones are being added all the time).
+		 * introduced ({@link https://fontawesome.com/changelog/latest new ones are being added all the time}).
 		 * Add a hook on the `font_awesome_enqueued` action to discover what version of Font Awesome is being loaded
 		 * and either turn off or replace newer icons that are not available in older releases, or warn the
 		 * site owner in your own WordPress admin UI that they'll need to update to a new version in order for icons
@@ -1520,12 +1541,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * This plugin is optimized to rebuild the Font Awesome load specification if and only if the inputs change.
 		 * Those inputs include options that can be set only by the site owner in the Font Awesome admin settings UI,
-		 * and these client requirements registered here, which are identified by the client `name` and `clientVersion`.
+		 * and these client requirements registered here. Each client's requirements are identified by `name` and `clientVersion`,
+		 * taken together.
 		 * Therefore, if a client plugin or theme should update its version number, that would trigger a rebuild of
-		 * the load specification.
+		 * the load specification. Simply changing your requirements without bumping the `clientVersion` will _not_
+		 * trigger a rebuild.
 		 *
-		 * If you ship a new version of your theme or plugin with different Font Awesome requirements, you should also
-		 * bump this clientVersion number. Use the version number you've assigned to your theme or plugin.
+		 * So if you ship a new version of your theme or plugin with different Font Awesome requirements, you should also
+		 * bump this `clientVersion` number. You can use the same version number you've assigned to your theme or plugin,
+		 * or any version number scheme you like.
 		 *
 		 * <h3>Notes on "require" and "forbid"</h3>
 		 *
@@ -1536,7 +1560,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * that requirement. For example, because enabling pseudo-elements with SVG with JavaScript may have a negative
 		 * impact on performance, a client that requires svg might forbid pseudo-elements.
 		 *
-		 * Again, theme and plugin developers should strive not to constrain these requirements in order to reduce
+		 * Again, theme and plugin developers should normally strive _not_ to add constraints in order to reduce
 		 * the likelihood of conflicts. Instead of requiring how Font Awesome must be loaded for your code to work,
 		 * write your code to adapt to however Font Awesome might be loaded.
 		 *
