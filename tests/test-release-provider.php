@@ -11,7 +11,6 @@ require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 use \InvalidArgumentException;
-use Composer\Semver\Semver;
 
 /**
  * Class ReleaseProviderTest
@@ -53,22 +52,22 @@ use Composer\Semver\Semver;
  */
 class ReleaseProviderTest extends \WP_UnitTestCase {
 	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
-	protected $known_versions = [
-		'5.0.1',
-		'5.0.2',
-		'5.0.3',
-		'5.0.4',
-		'5.0.6',
-		'5.0.8',
-		'5.0.9',
-		'5.0.10',
-		'5.0.12',
-		'5.0.13',
-		'5.1.0',
-		'5.1.1',
-		'5.2.0',
-		'5.3.1',
+	protected $known_versions_sorted_desc = [
 		'5.4.1',
+		'5.3.1',
+		'5.2.0',
+		'5.1.1',
+		'5.1.0',
+		'5.0.13',
+		'5.0.12',
+		'5.0.10',
+		'5.0.9',
+		'5.0.8',
+		'5.0.6',
+		'5.0.4',
+		'5.0.3',
+		'5.0.2',
+		'5.0.1',
 	];
 
 	public function setUp() {
@@ -180,10 +179,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
-		$versions       = $farp->versions();
-		$known_versions = $this->known_versions;
-		$this->assertCount( count( $this->known_versions ), $versions );
-		$this->assertArraySubset( Semver::rsort( $known_versions ), $versions );
+		$versions = $farp->versions();
+		$this->assertCount( count( $this->known_versions_sorted_desc ), $versions );
+		$this->assertArraySubset( $this->known_versions_sorted_desc, $versions );
 	}
 
 	public function test_5_0_all_free_shimless() {
