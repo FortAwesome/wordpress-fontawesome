@@ -1095,7 +1095,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			 * to introduce such an exception by our own defaults here.
 			 */
 			$v4shim_default = 'require';
-			if ( 'webfont' === $method && ! \Composer\Semver\Semver::satisfies( $version, '>= 5.1.0' ) ) {
+			if ( 'webfont' === $method && version_compare( $version, '5.1.0', '<' ) ) {
 				$v4shim_default = 'forbid';
 			}
 			$pseudo_elements_default = 'webfont' === $method ? 'require' : null;
