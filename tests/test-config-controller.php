@@ -201,9 +201,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$expected_releases = array(
 			'available' => $expected_available_versions,
 			'latest_version' => '5.3.1',
-			'latest_semver' => '~5.3.1',
 			'previous_version' => '5.2.0',
-			'previous_semver' => '~5.2.0',
 		);
 
 		sort( $data['releases']['available'] );
@@ -212,8 +210,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$releases = $data['releases'];
 		$this->assertArrayHasKey( 'available', $releases );
 		$this->assertArrayHasKey( 'latest_version', $releases );
-		$this->assertArrayHasKey( 'latest_semver', $releases );
-		$this->assertArrayHasKey( 'previous_semver', $releases );
 		$this->assertArrayHasKey( 'previous_version', $releases );
 	}
 

@@ -95,9 +95,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				'releases'              => array(
 					'available'        => $fa->get_available_versions(),
 					'latest_version'   => $fa->get_latest_version(),
-					'latest_semver'    => $fa->get_latest_semver(),
 					'previous_version' => $fa->get_previous_version(),
-					'previous_semver'  => $fa->get_previous_semver(),
 				),
 			);
 		}
