@@ -290,13 +290,20 @@ class FontAwesome_Release_Provider {
 	}
 
 	/**
-	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending semantic version order.
+	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending version order.
 	 *
 	 * @throws FontAwesome_NoReleasesException
 	 * @return array
 	 */
 	public function versions() {
-		return Semver::rsort( array_keys( $this->releases() ) );
+		$versions = array_keys( $this->releases() );
+		usort(
+			$versions,
+			function( $first, $second ) {
+				return version_compare( $second, $first );
+			}
+		);
+		return $versions;
 	}
 
 	/**
