@@ -23,9 +23,52 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		FontAwesome_Activator::activate();
 	}
 
-	public function test_satisfies () {
-		//$this->assertTrue( fa()->satisfies('>=1') );
-		$this->assertTrue( true );
+	protected function mock_with_plugin_version($plugin_version) {
+		return mock_singleton_method(
+			$this,
+			FontAwesome::class,
+			'plugin_version',
+			function( $method ) use ( $plugin_version ) {
+				$method->willReturn( $plugin_version );
+			}
+		);
+	}
 
+	public function test_satisfies () {
+		$this->assertTrue(
+			$this->mock_with_plugin_version( '42.1.3' )
+				->satisfies([['42.1.3', '=']])
+		);
+		$this->assertTrue(
+			$this->mock_with_plugin_version( '42.1.3' )
+			     ->satisfies([['42.1.2', '>='], ['43', '<']])
+		);
+	}
+
+	public function test_satisfies_bad_operator () {
+		$this->expectException( \InvalidArgumentException::class );
+
+		$this->assertTrue(
+			$this->mock_with_plugin_version( '42.1.3' )
+			     ->satisfies([['42.1.2', 'xyz']])
+		);
+	}
+
+	public function test_satisfies_bad_argument_1 () {
+		$this->expectException( \InvalidArgumentException::class );
+
+		$this->assertTrue(
+			$this->mock_with_plugin_version( '42.1.3' )
+			     ->satisfies(['42.1.2', 'xyz'])
+		);
+	}
+
+	public function test_satisfies_bad_argument_2 () {
+		$this->expectException( \InvalidArgumentException::class );
+
+		$this->assertTrue(
+			$this->mock_with_plugin_version( '42.1.3' )
+			     ->satisfies('42.1.2', '>')
+		);
 	}
 }
