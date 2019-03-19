@@ -321,7 +321,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			}
 			$result_so_far = true;
 			foreach ( $constraints as $constraint ) {
-				if ( ! is_array( $constraint ) || 2 !== count( $constraint ) || false === array_search( $constraint[1], $valid_operators ) ) {
+				if ( ! is_array( $constraint ) || 2 !== count( $constraint ) || false === array_search( $constraint[1], $valid_operators, true ) ) {
 					throw new InvalidArgumentException( 'each constraint must be an array of [ version, operator ] compatible with PHP\'s version_compare' );
 				}
 				if ( ! version_compare( $this->plugin_version(), $constraint[0], $constraint[1] ) ) {

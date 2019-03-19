@@ -1,5 +1,6 @@
 <?php
 namespace FortAwesome;
+
 /**
  * Tests the release provider.
  *
