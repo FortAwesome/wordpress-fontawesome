@@ -565,6 +565,20 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 			'5.0.13'
 		);
 
+		// A pre-release should not be picked as a previous minor release.
+		$this->assert_latest_and_previous_releases(
+			[
+				'5.1.1',
+				'5.1.0',
+				'5.0.14-1',
+				'5.0.13',
+				'5.0.11',
+				'5.0.0',
+			],
+			'5.1.1',
+			'5.0.13'
+		);
+
 		// There *is* no previous in this case because 5.0.0 is the earliest and 5.0.13 is the latest.
 		// So there's no minor release version before the earliest available in this set.
 		$this->assert_latest_and_previous_releases(

@@ -17,8 +17,6 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 
-use Composer\Semver\Semver;
-
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
  *
@@ -331,7 +329,7 @@ class FontAwesome_Release_Provider {
 	) ) {
 		$resources = array();
 
-		if ( $flags['use_shim'] && ! $flags['use_svg'] && ! Semver::satisfies( $version, '>= 5.1.0' ) ) {
+		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
 			throw new InvalidArgumentException(
 				'A shim was requested for webfonts in Font Awesome version < 5.1.0, ' .
 				'but webfont shims were not introduced until version 5.1.0.'
@@ -397,7 +395,7 @@ class FontAwesome_Release_Provider {
 	 * Returns a version number corresponding to the most recent minor release.
 	 *
 	 * @throws FontAwesome_NoReleasesException
-	 * @return string|null most recent major.minor.patch version (not a semver). Returns null if no versions available.
+	 * @return string|null most recent major.minor.patch version. Returns null if no versions available.
 	 */
 	public function latest_minor_release() {
 		$sorted_versions = $this->versions();
@@ -408,7 +406,7 @@ class FontAwesome_Release_Provider {
 	 * Returns a version number corresponding to the minor release immediately prior to the most recent minor release.
 	 *
 	 * @throws FontAwesome_NoReleasesException
-	 * @return string|null latest patch level for the previous minor version. major.minor.patch version (not a semver).
+	 * @return string|null latest patch level for the previous minor version. major.minor.patch version.
 	 *         Returns null if there is no latest (and therefore no previous).
 	 *         Returns null if there's no previous, because the latest represents the only minor version in the set
 	 *           of available versions.
@@ -421,20 +419,23 @@ class FontAwesome_Release_Provider {
 			return null;
 		}
 
-		// Build a previous minor version semver.
+		// Build a major.minor version corresponding to the previous minor.
 		$version_parts    = explode( '.', $latest );
 		$new_minor_number = intval( $version_parts[1] ) - 1;
 		// make sure we don't try to use a negative number.
-		$new_minor_number                         = $new_minor_number >= 0 ? $new_minor_number : 0;
-		$version_parts[1]                         = $new_minor_number;
-		$version_parts[2]                         = 0; // set patch level of the semver to zero.
-		$previous_minor_release_semver_constraint = '~' . implode( '.', $version_parts );
+		$new_minor_number       = $new_minor_number >= 0 ? $new_minor_number : 0;
+		$version_parts[1]       = $new_minor_number;
+		// This will look like "5.2", instead of "5.2.0".
+		$previous_minor_version_partial = implode( '.', array_slice( $version_parts, 0, 2 ) );
 
-		$satisfying_versions = Semver::rsort(
-			Semver::satisfiedBy( $this->versions(), $previous_minor_release_semver_constraint )
+		$satisfying_versions = array_filter(
+			$this->versions(),
+			function( $version ) use ( $previous_minor_version_partial ) {
+				return preg_match( "/$previous_minor_version_partial\.[0-9]+$/", $version );
+			}
 		);
 
-		$result = count( $satisfying_versions ) > 0 ? $satisfying_versions[0] : null;
+		$result = array_shift( $satisfying_versions );
 
 		return $result === $latest ? null : $result;
 	}
