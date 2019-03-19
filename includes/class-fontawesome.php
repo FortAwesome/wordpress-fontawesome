@@ -333,53 +333,58 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints,
-		 * and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.
+		 * Reports a warning if currently loaded version of the Font Awesome plugin does not
+		 * satisfy the given constraints.
+		 *
+		 * This can help site owners better diagnose conflicts.
 		 *
 		 * Issues warnings in two ways:
 		 *
-		 * 1. An admin notice Using the `admin_notices` WordPress hook. This appears in admin pages _other_ than
+		 * 1. An admin notice using the `admin_notices` WordPress hook. This appears in admin pages _other_ than
 		 *    this plugin's options page.
 		 *
 		 * 2. A section on this plugin's options page.
 		 *
-		 * In order for the second warning to appear, the warning should be registered (with this function) during
+		 * In order for the second warning to appear, this function should be called during
 		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
 		 * callback on the `font_awesome_requirements` action hook.
+		 *
+		 * The shape of the `$constraints` argument is the same as for @see FontAwesome::satisfies().
 		 *
 		 * For example:
 		 * ```php
 		 * add_action(
 		 *   'font_awesome_enqueued',
 		 *   function() {
-		 *     fa()->satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
+		 *     fa()->satisfies_or_warn( [['4.0.0', '>=']], 'Theta' );
 		 *   }
 		 * );
 		 * ```
 		 *
 		 * @since 4.0.0
 		 *
-		 * @param string $constraint expressed as a constraint that can be understood by `Composer\Semver\Semver`
+		 * @param array $constraints as required by @see FontAwesome::satisfies()
 		 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
 		 *        given constraint.
-		 * @link https://getcomposer.org/doc/articles/versions.md
 		 * @see FontAwesome For reference on the `font_awesome_enqueued` action hook
 		 * @return bool
+		 * @throws InvalidArgumentException if the constraints provided are not in the expected format
 		 */
-		public function satisfies_or_warn( $constraint, $name ) {
-			if ( Semver::satisfies( self::PLUGIN_VERSION, $constraint ) ) {
+		public function satisfies_or_warn( $constraints, $name ) {
+			if ( $this->satisfies( $constraints ) ) {
 				return true;
 			} else {
+				$stringified_constraints = $this->stringify_constraints( $constraints );
 				$this->add_plugin_version_warning(
 					array(
 						'name'       => $name,
-						'constraint' => $constraint,
+						'constraint' => $stringified_constraints,
 					)
 				);
 
 				add_action(
 					'admin_notices',
-					function() use ( $constraint, $name ) {
+					function() use ( $stringified_constraints, $name ) {
 						$current_screen = get_current_screen();
 						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
 							?>
@@ -387,7 +392,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								<p>
 									Font Awesome plugin version conflict with a plugin or theme named:
 									<b><?php echo esc_html( $name ); ?> </b><br/>
-									It requires plugin version <?php echo esc_html( $constraint ); ?>
+									It requires plugin version <?php echo esc_html( $stringified_constraints ); ?>
 									but the currently loaded version of the Font Awesome plugin is
 									<?php echo esc_html( self::PLUGIN_VERSION ); ?>.
 								</p>
@@ -398,6 +403,20 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				);
 				return false;
 			}
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		protected function stringify_constraints( $constraints ) {
+			$flipped_concat_each = array_map(
+				function ( $constraint ) {
+					return "$constraint[1] $constraint[0]";
+				},
+				$constraints
+			);
+			return implode( ' and ', $flipped_concat_each );
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -1640,7 +1659,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @ignore
 		 */
 		protected function plugin_version() {
-			return self::PLUGIN_VERSION();
+			return self::PLUGIN_VERSION;
 		}
 	}
 

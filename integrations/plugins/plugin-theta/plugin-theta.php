@@ -13,13 +13,15 @@
 defined( 'WPINC' ) || die;
 define( 'THETA_PLUGIN_VERSION', '0.0.1' );
 define( 'THETA_PLUGIN_LOG_PREFIX', 'theta-plugin' );
-define( 'THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN', '9.0.42' );
+
+use function FortAwesome\fa;
+use FortAwesome\FontAwesome;
 
 add_action(
 	'font_awesome_requirements',
 	function() {
-		fa()->satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
-		if ( class_exists( 'FontAwesome' ) ) {
+		fa()->satisfies_or_warn( [ [ '0.0.1', '<' ] ], 'Theta' );
+		if ( class_exists( 'FortAwesome\FontAwesome' ) ) {
 			fa()->register(
 				array(
 					'name'          => THETA_PLUGIN_LOG_PREFIX,
