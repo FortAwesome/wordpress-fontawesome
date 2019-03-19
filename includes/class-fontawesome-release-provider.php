@@ -423,8 +423,8 @@ class FontAwesome_Release_Provider {
 		$version_parts    = explode( '.', $latest );
 		$new_minor_number = intval( $version_parts[1] ) - 1;
 		// make sure we don't try to use a negative number.
-		$new_minor_number       = $new_minor_number >= 0 ? $new_minor_number : 0;
-		$version_parts[1]       = $new_minor_number;
+		$new_minor_number = $new_minor_number >= 0 ? $new_minor_number : 0;
+		$version_parts[1] = $new_minor_number;
 		// This will look like "5.2", instead of "5.2.0".
 		$previous_minor_version_partial = implode( '.', array_slice( $version_parts, 0, 2 ) );
 
