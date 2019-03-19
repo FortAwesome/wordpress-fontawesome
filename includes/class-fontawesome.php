@@ -44,14 +44,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *
 	 * - `font_awesome_enqueued`
 	 *
-	 *   Called when a {@see FontAwesome::load_spec() load specification} has been successfully prepared for enqueuing,
-	 *   whether by building a new one or using a locked one from a previous load.
+	 *   Called when a version of Font Awesome has been successfully prepared for enqueuing,
+	 *   whether by building a new load specification, one by or using a locked load specification from a previous load.
 	 *
-	 *   One parameter `array`: the load specification.
-	 *
-	 *   Clients could inspect that array to detect whether, say, Pro or pseudo-elements are enabled. Or
-	 *   clients may just use the timing of the action's trigger to call the convenience methods like {@see FontAwesome::using_pro()}
-	 *   or {@see FontAwesome::using_pseudo_elements()} to detect the same values.
+	 *   Clients should register a callback on this action to be notified when it is valid to query the FontAwesome
+	 *   plugin's metadata using methods such as:
+	 *     - {@see FontAwesome::version()} to discover the version of Font Awesome being loaded
+	 *     - {@see FontAwesome::using_pro()} to discover whether a version with Pro icons is being loaded
+	 *     - {@see FontAwesome::using_pseudo_elements()} to discover whether Font Awesome is being loaded with support for pseudo-elements
 	 *
 	 * - `font_awesome_failed`
 	 *
@@ -133,8 +133,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
 		 *
 		 * @since 4.0.0
-		 *
-		 * @see FontAwesome::load_spec()
 		 */
 		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
@@ -945,27 +943,22 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return current load specification, which may be null if has not yet been computed.
+		 * DEPRECATED: Instead of using this method, use the various accessor methods, like the following:
+		 *   - {@see FontAwesome::version()} to discover the version of Font Awesome being loaded
+		 *   - {@see FontAwesome::using_pro()} to discover whether a version with Pro icons is being loaded
+		 *   - {@see FontAwesome::using_pseudo_elements()} to discover whether Font Awesome is being loaded with support
+		 *     for pseudo-elements
+		 *
+		 * The data structure returned by this method only includes a _subset_ of the metadata required to specify
+		 * how Font Awesome is loaded, so it's a bit of a misnomer.
+		 *
+		 * Returns null if it has not yet been computed.
 		 * If it is still `null` and {@see FontAwesome::conflicts()} returns _not_ `null`, that means the load failed:
 		 * there is no settled load specification because none could be found that satisfies all client requirements.
 		 * For example, one client may have required `'method' => 'svg'` while another required `'method' => 'webfont'`.
 		 *
-		 * A `load_spec` or _load specification_ contains the metadata necessary to enqueue the appropriate
-		 * `<script>` (for SVG with JavaScript) or `<link>` (for Web Fonts with CSS) in the `<head>` of the WordPress
-		 * template. It is guaranteed to satisfy all requirements specified by all registered clients of this plugin.
-		 *
-		 * Its shape looks like this:
-		 * ```php
-		 *   array(
-		 *     'method'         => 'svg', // "svg" or "webfont"
-		 *     'v4shim'         => 'require', // "require" or "forbid"
-		 *     'pseudoElements' => 'require', // "require" or "forbid"
-		 *     'version'        => '5.5.0',
-		 *     'usePro'         => true, // boolean indicating whether to use Font Awesome Pro or Free
-		 *  )
-		 * ```
-		 *
 		 * @since 4.0.0
+		 * @deprecated
 		 *
 		 * @return array
 		 */
@@ -1125,11 +1118,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Convenience method that returns boolean indicating whether, given the currently settled `load_spec`,
+		 * Convenience method that returns boolean indicating whether, given the currently settled load specification,
 		 * we are loading Font Awesome Pro.
 		 *
-		 * Since it returns false when {@see FontAwesome::load_spec()} is `null`, it's best to call this only after loading
-		 * is complete and successful.
+		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
 		 *
 		 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
 		 *
@@ -1159,11 +1151,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Convenience method that returns boolean indicating whether the currently settled `load_spec`
+		 * Convenience method that returns boolean indicating whether the currently settled load specification
 		 * includes support for pseudoElements.
 		 *
-		 * Since it returns false when {@see FontAwesome::load_spec()} is `null`, it's best to call this only after loading
-		 * is complete and successful.
+		 * Its results are only valid after the `font_awesome_enqueued` action has been triggered.
 		 *
 		 * It's a handy way to toggle the use of pseudo elements icons in a client theme or plugin template code,
 		 * or to present a warning in an admin notice in the event that your client code uses pseudo elements, and
@@ -1432,8 +1423,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * upon this Font Awesome plugin to load a compatible, properly configured version of Font Awesome.
 		 *
 		 * *Note on using Pro:* registered clients cannot _require_ the use Font Awesome Pro. That is a feature that
-		 * must be enabled by the web site owner. However, if the web site owner does enable it, then the resulting
-		 * `load_spec` will cause Pro to be loaded, and this will be indicated by the return value of {@see FontAwesome::using_pro()}.
+		 * must be enabled by the web site owner.
+		 *
 		 * If you are shipping at theme or plugin for which you insist on being able to use Font Awesome Pro, your only
 		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
 		 * websites.
