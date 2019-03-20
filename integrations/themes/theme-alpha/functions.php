@@ -1,4 +1,6 @@
 <?php
+use function FortAwesome\fa;
+
 define('THEME_ALPHA_LOG_PREFIX', 'theme-alpha');
 define('THEME_ALPHA_VERSION', '0.0.1');
 
