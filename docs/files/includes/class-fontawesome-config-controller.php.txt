@@ -1,6 +1,8 @@
 <?php
 namespace FortAwesome;
 
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
+
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception, \ReflectionMethod;
 
 /**
@@ -163,11 +165,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$fa      = fa();
 				$load_fa = new ReflectionMethod( 'FortAwesome\FontAwesome', 'load' );
 				$load_fa->setAccessible( true );
-				$new_load_spec = $load_fa->invoke( $fa, $item['options'] );
+				$load_spec_success = $load_fa->invoke( $fa, $item['options'] );
 
 				$return_data = $this->build_item( $fa );
 
-				if ( $new_load_spec ) {
+				if ( $load_spec_success ) {
 					return new WP_REST_Response( $return_data, 200 );
 				} else {
 					return new WP_Error(
@@ -176,6 +178,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 						array( 'status' => 403 )
 					);
 				}
+			} catch ( FontAwesome_ConfigurationException $e ) {
+				return new WP_Error( 'cant_update', $e->getMessage(), array( 'status' => 400 ) );
 			} catch ( Exception $e ) {
 				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
 			} catch ( Error $error ) {

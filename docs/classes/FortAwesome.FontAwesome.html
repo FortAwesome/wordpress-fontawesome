@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">8</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">5</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1669150141"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-955622944"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1669150141" class="accordion-body collapse in">
+            <div id="namespace-955622944" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1991766301"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-777432800"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-1991766301" class="accordion-body collapse ">
+            <div id="namespace-777432800" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -275,6 +275,7 @@ plugin's metadata using methods such as:</p>
                         </section>
                         <section class="row-fluid protected">
                             <section class="span4">
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_finalize_load_resources" class="">finalize_load_resources()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_enqueue" class="">enqueue()</a><br />
                                                             </section>
                             <section class="span4">
@@ -1566,13 +1567,14 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
 
                                                     <div class="row-fluid">
         <div class="span8 content class">
-            <a id="method_enqueue" name="method_enqueue" class="anchor"></a>
+            <a id="method_finalize_load_resources" name="method_finalize_load_resources" class="anchor"></a>
             <article class="method">
-                <h3 class="protected ">enqueue()</h3>
+                <h3 class="protected ">finalize_load_resources()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">enqueue(  <span class="argument">$load_spec</span>,   <span class="argument">$params</span>) </pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">finalize_load_resources(  <span class="argument">$load_spec</span>,   <span class="argument">$options</span>) : array</pre>
+                <p><em>Once this runs through successfully and returns a resource collection, we are sure that we have successfully
+resolved everything required to enqueue the assets.</em></p>
+                <p>What's returned by this function is safe to pass on to enqueue()</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1581,6 +1583,47 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
                                 <td>$load_spec </td>
                                 <td></td>
                             </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$options </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FortAwesome\FontAwesome_ConfigurationException|\FortAwesome\FontAwesome_NoReleasesException|\InvalidArgumentException</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_enqueue" name="method_enqueue" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">enqueue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">enqueue(  <span class="argument">$params</span>) </pre>
+                <p><em>This wants to receive params as returned by resolve_resource_collection(), which are guaranteed to work.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
                                                     <tr>
                                 <td></td>
                                 <td>$params </td>
@@ -1653,7 +1696,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on March 19th, 2019 at 23:38.
+                    on March 20th, 2019 at 22:25.
                 </section>
             </section>
         </section>
