@@ -36,8 +36,11 @@ add_filter(
 	'the_content',
 	function( $content ) {
 		$expected = 'NO';
-		$actual = fa()->satisfies( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN ) ? 'YES' : 'NO';
-		$constraint = THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN;
+
+		$actual = fa()->satisfies( [ [ '0.0.1', '<' ] ] ) ? 'YES' : 'NO';
+
+		$constraint = '< 0.0.1';
+
 		$version = FontAwesome::PLUGIN_VERSION;
 
 		$pre_content = <<<EOT
