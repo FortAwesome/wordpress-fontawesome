@@ -57,9 +57,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$load_spec = $fa_load->invoke( fa() );
+		$fa_load->invoke( fa() );
 
-		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
@@ -95,9 +94,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$load_spec = $fa_load->invoke( fa() );
+		$fa_load->invoke( fa() );
 
-		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
@@ -128,9 +126,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$load_spec = $fa_load->invoke( fa() );
+		$fa_load->invoke( fa() );
 
-		$this->assertNull( $load_spec );
 		// We don't expect either callback to be invoked because throwing the
 		// InvalidArgumentException preempts further processing.
 		$this->assertFalse( $failed );
@@ -278,8 +275,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 
-		$this->assertNull( $fa_load->invoke( fa() ) );
-		$this->assertNull( fa()->load_spec() );
+		$this->assertFalse( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertNotNull( fa()->conflicts() );
@@ -749,7 +745,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 
-		$this->assertNull( $fa_load->invoke( fa() ) );
+		$this->assertFalse( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertFalse( wp_script_is( 'font-awesome-v4shim', 'enqueued' ) );
@@ -866,8 +862,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$load_spec1 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec1 = fa()->load_spec();
 		$this->assertNotNull( $load_spec1 );
 
 		// The first requirements required pseudoElements
@@ -883,8 +879,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$load_spec2 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec2 = fa()->load_spec();
 		$this->assertNotNull( $load_spec2 );
 
 		$this->assertNotEquals( $load_spec1, $load_spec2 );
@@ -912,8 +908,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$load_spec1 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec1 = fa()->load_spec();
 		$this->assertNotNull( $load_spec1 );
 
 		// The first requirements required pseudoElements
@@ -929,8 +925,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$load_spec2 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec2 = fa()->load_spec();
 		$this->assertNotNull( $load_spec2 );
 
 		$this->assertEquals( $load_spec1, $load_spec2 );
