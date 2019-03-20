@@ -21,6 +21,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configuration-exception.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
@@ -765,10 +766,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			}
 
 			if ( isset( $load_spec ) ) {
-				// We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
-				// Now enqueue a configuration of Font Awesome that is the result of combining this load spec
-				// with the options specified by the site admin.
-				$this->load_spec = $load_spec;
+				/**
+				 * We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
+				 * Now enqueue a configuration of Font Awesome that is the result of combining this load spec
+				 * with the options specified by the site admin.
+				 * It's possible that while this load_spec is valid unto itself, but there is some incompatibility
+				 * between it and the options set by the site owner. We wont' know if it's totally successful unless
+				 * enqueue() runs without throwing an exception. Only then should we set $this->load_spec.
+				 */
 				$this->enqueue(
 					$load_spec,
 					[
@@ -777,6 +782,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 						'version'                   => $current_options['version'],
 					]
 				);
+
+				$this->load_spec = $load_spec;
 				return true;
 			} else {
 				return false;

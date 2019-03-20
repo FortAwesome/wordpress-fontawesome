@@ -229,12 +229,12 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	/**
 	 * There was no webfont shim in 5.0.x. So this should throw an exception.
 	 */
-	public function test_5_0_webfont_shim() {
+	public function test_5_0_webfont_shim_exception() {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( FontAwesome_ConfigurationException::class );
 
 		$farp->get_resource_collection(
 			'5.0.13', // version.

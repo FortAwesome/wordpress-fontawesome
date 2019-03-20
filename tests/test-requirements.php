@@ -938,5 +938,39 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		$this->assertEquals( $load_spec1, $load_spec2 );
 	}
+
+	/**
+	 * Since there was no webfont shim in 5.0.x, after throwing an exception, fa()->load_spec() should remain null.
+	 */
+	public function test_5_0_webfont_shim_null_load_spec() {
+		global $fa_load;
+
+		$options = fa()->options();
+		$options['version'] = '5.0.9';
+		if ( ! update_option( FontAwesome::OPTIONS_KEY, $options ) ) {
+			throw new Exception('Failed to update font-awesome option for test');
+		}
+
+		// load_spec should be null before
+		$this->assertNull(fa()->load_spec());
+
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'method' => 'webfont',
+				'v4shim' => 'require',
+				'clientVersion' => '1',
+			)
+		);
+
+		try {
+			$fa_load->invoke( fa() );
+		} catch( FontAwesome_ConfigurationException $e ){
+			// no-op.
+		}
+
+		// load_spec should also be null after
+		$this->assertNull( fa()->load_spec() );
+	}
 	// TODO: test where the ReleaseProvider would return a null integrity key, both for webfont and svg.
 }

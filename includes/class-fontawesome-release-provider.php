@@ -16,6 +16,7 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configuration-exception.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -320,6 +321,7 @@ class FontAwesome_Release_Provider {
 	 *         ['solid', 'regular', 'light', 'brands']
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
 	 * @throws InvalidArgumentException | FontAwesome_NoReleasesException
+	 * @throws FontAwesome_ConfigurationException
 	 * @return array
 	 */
 	public function get_resource_collection( $version, $style_opt, $flags = array(
@@ -330,9 +332,10 @@ class FontAwesome_Release_Provider {
 		$resources = array();
 
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
-			throw new InvalidArgumentException(
-				'A shim was requested for webfonts in Font Awesome version < 5.1.0, ' .
-				'but webfont shims were not introduced until version 5.1.0.'
+			throw new FontAwesome_ConfigurationException(
+				'Whoops! You found a corner case here. ' .
+				'Version 4 compatibility for our webfont method was not introduced until Font Awesome 5.1.0. ' .
+				'Try using a newer version, disabling version 4 compatibility, or switch your method to SVG.'
 			);
 		}
 
