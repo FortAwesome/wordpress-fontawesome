@@ -18,6 +18,6 @@
     }
   ],
   "require": {
-    "fortawesome/wordpress-fontawesome": "dev-master"
+    "fortawesome/wordpress-fontawesome": "dev-third-party-library-usage"
   }
 }
