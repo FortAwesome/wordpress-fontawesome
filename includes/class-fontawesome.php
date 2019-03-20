@@ -717,9 +717,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * The `font_awesome_enqueued` hook is always triggered when we are ready to successfully load Font Awesome,
 		 * whether the load specification was locked from a previous build, or built anew.
 		 *
-		 * @param array $options optional, overrides any options in the db, using array_replace_recursive()
+		 * If the load cannot be done successfully, then neither the options nor the load_spec should be changed
+		 * in the db.
+		 *
+		 * @param array $options optional, overrides any options in the db when load is successful, using array_replace_recursive()
 		 *        Default: null, no override.
-		 * @throws FontAwesome_NoReleasesException
+		 * @throws FontAwesome_NoReleasesException|\Exception
 		 * @return bool
 		 * @ignore
 		 */
@@ -743,26 +746,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			// Register the web site admin as a client.
 			$this->register( $current_options['adminClientLoadSpec'] );
 
-			if ( $this->should_rebuild() ) {
+			$using_locked_load_spec = false;
+			// Always rebuild when the options are changing.
+			if ( ! is_null( $options ) || $this->should_rebuild() ) {
 				$load_spec = $this->build();
-
-				if ( isset( $load_spec ) ) {
-					// Save the new conflict-free load spec as our new lockedLoadSpec.
-					wp_cache_delete( 'alloptions', 'options' );
-					$current_options['lockedLoadSpec'] = $load_spec;
-					if ( ! update_option( self::OPTIONS_KEY, $current_options ) ) {
-						// TODO: report options update error to admin UI.
-						// We've managed to build a new load spec, and verified that it's
-						// different, but when trying to update it, we got a falsy response,
-						// and the docs say that means that either the update failed or no update was made.
-						// If we add a mechanism for passing non-fatal warnings up to admin UI client
-						// for display, it would probably make sense to pass such a message up for this one.
-						// Regardless, for now, since we didn't lock a new load spec, we return null.
-						return null;
-					}
-				}
 			} else {
 				$load_spec = $this->options()['lockedLoadSpec'];
+
+				$using_locked_load_spec = true;
 			}
 
 			if ( isset( $load_spec ) ) {
@@ -770,9 +761,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				 * We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
 				 * Now enqueue a configuration of Font Awesome that is the result of combining this load spec
 				 * with the options specified by the site admin.
+				 *
 				 * It's possible that while this load_spec is valid unto itself, but there is some incompatibility
-				 * between it and the options set by the site owner. We wont' know if it's totally successful unless
-				 * enqueue() runs without throwing an exception. Only then should we set $this->load_spec.
+				 * between it and new options being set by the site owner. We won't know if it's totally successful unless
+				 * enqueue() runs without throwing an exception.
+				 *
+				 * Only then should we set $this->load_spec and update the options in the db.
 				 */
 				$this->enqueue(
 					$load_spec,
@@ -783,7 +777,27 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					]
 				);
 
+				if ( ! $using_locked_load_spec ) {
+					wp_cache_delete( 'alloptions', 'options' );
+					$current_options['lockedLoadSpec'] = $load_spec;
+					if ( ! update_option( self::OPTIONS_KEY, $current_options ) ) {
+						// TODO: add test coverage for this case.
+						throw new \Exception(
+							'Could not save new options for some unexpected reason. ' .
+							'Maybe try again? In the meantime, the last known good configuration will remain active.'
+						);
+					}
+				}
+
 				$this->load_spec = $load_spec;
+
+				/**
+				 * Fired when the plugin has successfully built a load specification that satisfies all clients.
+				 *
+				 * @since 4.0.0
+				 */
+				do_action( 'font_awesome_enqueued' );
+
 				return true;
 			} else {
 				return false;
@@ -1401,13 +1415,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				},
 				15
 			);
-
-			/**
-			 * Fired when the plugin has successfully built a load specification that satisfies all clients.
-			 *
-			 * @since 4.0.0
-			 */
-			do_action( 'font_awesome_enqueued' );
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
