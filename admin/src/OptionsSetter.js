@@ -223,7 +223,7 @@ class OptionsSetter extends React.Component {
           </tr>
         </tbody>
       </table>
-      <p className="submit">
+      <div className="submit">
         <input
           type="submit"
           name="submit"
@@ -240,12 +240,14 @@ class OptionsSetter extends React.Component {
                   { submitMessage }
                 </span>
               </span>
-            : <span className={ classnames(styles['submit-status'], styles['fail']) }>
-                <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
-                <span className={ styles['explanation'] }>
+            : <div className={ classnames(styles['submit-status'], styles['fail']) }>
+                <div className={ classnames(styles['fail-icon-container']) }>
+                  <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
+                </div>
+                <div className={ styles['explanation'] }>
                   { submitMessage }
-                </span>
-              </span>
+                </div>
+              </div>
           )
         }
         {isSubmitting &&
@@ -253,7 +255,7 @@ class OptionsSetter extends React.Component {
             <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
           </span>
         }
-      </p>
+      </div>
     </div>
 
   }
