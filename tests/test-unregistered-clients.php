@@ -1,4 +1,6 @@
 <?php
+namespace FortAwesome;
+
 /**
  * Module for UnregisteredClientsTest
  */
@@ -8,7 +10,7 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 /**
  * Class UnregisteredClientsTest
  */
-class UnregisteredClientsTest extends WP_UnitTestCase {
+class UnregisteredClientsTest extends \WP_UnitTestCase {
 
 	protected $fake_unregistered_clients = array(
 		'styles'  => [
@@ -32,7 +34,7 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 	 */
 	protected function reset() {
 		FontAwesome::instance()->reset();
-		\FontAwesomePhpUnitUtil\Mock_FontAwesome_Releases::mock();
+		Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
@@ -61,12 +63,18 @@ class UnregisteredClientsTest extends WP_UnitTestCase {
 	}
 
 	public function test_unregistered_conflict_cleaned() {
-		$fa = \FontAwesomePhpUnitUtil\mock_singleton_method(
+		$fa = mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'options',
 			function( $method ) {
-				$opts = wp_parse_args( array( 'removeUnregisteredClients' => true ), FontAwesome::DEFAULT_USER_OPTIONS );
+				$opts = wp_parse_args(
+					array(
+						'removeUnregisteredClients' => true,
+						'version'                   => '5.0.13',
+					),
+					FontAwesome::DEFAULT_USER_OPTIONS
+				);
 				$method->willReturn( $opts );
 			}
 		);

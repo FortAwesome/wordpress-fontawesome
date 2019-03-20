@@ -87,6 +87,14 @@
 
             <div class="nav-collapse">
                 <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/FortAwesome.html">\FortAwesome</a></li>
+                                                    </ul>
+                    </li>
                                         <li class="dropdown" id="charts-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             Charts <b class="caret"></b>
@@ -106,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">1</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">5</span>
                                 </a>
                             </li>
                             <li>
@@ -116,7 +124,7 @@
                             </li>
                             <li>
                                 <a href="../reports/deprecated.html">
-                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">1</span>
                                 </a>
                             </li>
                         </ul>
@@ -136,18 +144,35 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-285201401"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-955622944"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-285201401" class="accordion-body collapse in">
+            <div id="namespace-955622944" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-777432800"></a>
+                                <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
+            </div>
+            <div id="namespace-777432800" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
                     <ul>
-                                                                                                    <li class="class"><a href="../classes/FontAwesome.html">FontAwesome</a></li>
-                                                    <li class="class"><a href="../classes/FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></li>
-                                                    <li class="class"><a href="../classes/FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></li>
+                                                                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome.html">FontAwesome</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></li>
                                             </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
                 </div>
             </div>
         </div>
@@ -160,11 +185,11 @@
             <div class="row-fluid">
                 <div class="span8 content class">
                     <nav>
-                                                <a href="../namespaces/default.html">\</a> <i class="icon-level-up"></i>
+                                                <a href="../namespaces/FortAwesome.html">\FortAwesome</a> <i class="icon-level-up"></i>
                                             </nav>
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
 
-                    <h1><small>\</small>FontAwesome</h1>
+                    <h1><small>\FortAwesome</small>FontAwesome</h1>
                     <p><em>Main plugin class, a singleton.</em></p>
                     <h3>Action Hooks</h3>
 <p>Fires the following WordPress action hooks:</p>
@@ -172,24 +197,27 @@
 <li>
 <p><code>font_awesome_requirements</code></p>
 <p>Fired when the plugin is ready for clients to register their requirements.</p>
-<p>Client plugins and themes should normally use this action hook to call <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a>
+<p>Client plugins and themes should normally use this action hook to call <a href="../classes/FortAwesome.FontAwesome.html#method_register">\FortAwesome\FontAwesome::register()</a>
 with their requirements.</p>
 <p>This hook is <em>not</em> fired when a previously built (&quot;locked&quot;) load specification is found.</p>
 <p>No parameters.</p>
 </li>
 <li>
 <p><code>font_awesome_enqueued</code></p>
-<p>Called when a <a href="../classes/FontAwesome.html#method_load_spec">load specification</a> has been successfully prepared for enqueuing,
-whether by building a new one or using a locked one from a previous load.</p>
-<p>One parameter <code>array</code>: the load specification.</p>
-<p>Clients could inspect that array to detect whether, say, Pro or pseudo-elements are enabled. Or
-clients may just use the timing of the action's trigger to call the convenience methods like <a href="../classes/FontAwesome.html#method_using_pro">\FontAwesome::using_pro()</a>
-or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAwesome::using_pseudo_elements()</a> to detect the same values.</p>
+<p>Called when a version of Font Awesome has been successfully prepared for enqueuing,
+whether by building a new load specification, or by using a locked load specification from a previous load.</p>
+<p>Clients should register a callback on this action to be notified when it is valid to query the FontAwesome
+plugin's metadata using methods such as:</p>
+<ul>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_version">\FortAwesome\FontAwesome::version()</a> to discover the version of Font Awesome being loaded</li>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_using_pro">\FortAwesome\FontAwesome::using_pro()</a> to discover whether a version with Pro icons is being loaded</li>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_using_pseudo_elements">\FortAwesome\FontAwesome::using_pseudo_elements()</a> to discover whether Font Awesome is being loaded with support for pseudo-elements</li>
+</ul>
 </li>
 <li>
 <p><code>font_awesome_failed</code></p>
 <p>Called when the plugin fails to compute a load specification because of client requirements that cannot be satisfied.</p>
-<p>One parameter, an <code>array</code> with a shape like that returned by <a href="../classes/FontAwesome.html#method_conflicts">\FontAwesome::conflicts()</a></p>
+<p>One parameter, an <code>array</code> with a shape like that returned by <a href="../classes/FortAwesome.FontAwesome.html#method_conflicts">\FortAwesome\FontAwesome::conflicts()</a></p>
 </li>
 </ul>
                     
@@ -209,46 +237,46 @@ or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAweso
                         </section>
                         <section class="row-fluid public">
                             <section class="span4">
-                                                                    <a href="../classes/FontAwesome.html#method_instance" class="">instance()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_run" class="">run()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_satisfies" class="">satisfies()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_satisfies_or_warn" class="">satisfies_or_warn()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_get_latest_version" class="">get_latest_version()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_get_latest_semver" class="">get_latest_semver()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_get_previous_version" class="">get_previous_version()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_get_previous_semver" class="">get_previous_semver()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_get_available_versions" class="">get_available_versions()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_options" class="">options()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_create_admin_page" class="">create_admin_page()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_reset" class="">reset()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_conflicts" class="">conflicts()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_get_plugin_version_warnings" class="">get_plugin_version_warnings()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_requirements" class="">requirements()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_unregistered_clients" class="">unregistered_clients()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_load_spec" class="">load_spec()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_using_pro" class="">using_pro()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_using_pseudo_elements" class="">using_pseudo_elements()</a><br />
-                                                                    <a href="../classes/FontAwesome.html#method_register" class="">register()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_instance" class="">instance()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_run" class="">run()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_satisfies" class="">satisfies()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_satisfies_or_warn" class="">satisfies_or_warn()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_get_latest_version" class="">get_latest_version()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_get_previous_version" class="">get_previous_version()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_get_available_versions" class="">get_available_versions()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_options" class="">options()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_create_admin_page" class="">create_admin_page()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_reset" class="">reset()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_conflicts" class="">conflicts()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_get_plugin_version_warnings" class="">get_plugin_version_warnings()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_requirements" class="">requirements()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_unregistered_clients" class="">unregistered_clients()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_load_spec" class="deprecated">load_spec()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_using_pro" class="">using_pro()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_version" class="">version()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_using_pseudo_elements" class="">using_pseudo_elements()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_register" class="">register()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <em>No public properties found</em>
                                                             </section>
                             <section class="span4">
-                                                                    <a href="../classes/FontAwesome.html#constant_SHORTCODE_TAG" class="">SHORTCODE_TAG</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_DEFAULT_PREFIX" class="">DEFAULT_PREFIX</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_OPTIONS_KEY" class="">OPTIONS_KEY</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_PLUGIN_NAME" class="">PLUGIN_NAME</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_PLUGIN_VERSION" class="">PLUGIN_VERSION</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_REST_API_VERSION" class="">REST_API_VERSION</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_REST_API_NAMESPACE" class="">REST_API_NAMESPACE</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_OPTIONS_PAGE" class="">OPTIONS_PAGE</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_RESOURCE_HANDLE" class="">RESOURCE_HANDLE</a><br />
-                                                                    <a href="../classes/FontAwesome.html#constant_RESOURCE_HANDLE_V4SHIM" class="">RESOURCE_HANDLE_V4SHIM</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_SHORTCODE_TAG" class="">SHORTCODE_TAG</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_DEFAULT_PREFIX" class="">DEFAULT_PREFIX</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_OPTIONS_KEY" class="">OPTIONS_KEY</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_PLUGIN_NAME" class="">PLUGIN_NAME</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_PLUGIN_VERSION" class="">PLUGIN_VERSION</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_REST_API_VERSION" class="">REST_API_VERSION</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_REST_API_NAMESPACE" class="">REST_API_NAMESPACE</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_OPTIONS_PAGE" class="">OPTIONS_PAGE</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_RESOURCE_HANDLE" class="">RESOURCE_HANDLE</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#constant_RESOURCE_HANDLE_V4SHIM" class="">RESOURCE_HANDLE_V4SHIM</a><br />
                                                             </section>
                         </section>
                         <section class="row-fluid protected">
                             <section class="span4">
-                                                                    <em>No protected methods found</em>
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_finalize_load_resources" class="">finalize_load_resources()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_enqueue" class="">enqueue()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <em>No protected properties found</em>
@@ -277,10 +305,10 @@ or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAweso
                         <dt>File</dt>
                             <dd><a href="../files/includes.class-fontawesome.html"><div class="path-wrapper">includes/class-fontawesome.php</div></a></dd>
                                                 <dt>Package</dt>
-                            <dd><div class="namespace-wrapper">FontAwesome\FontAwesome/includes</div></dd>
+                            <dd><div class="namespace-wrapper">Default</div></dd>
                                                 <dt>Class hierarchy</dt>
                             <dd class="hierarchy">
-                                                                                                                                                                    <div class="namespace-wrapper">\FontAwesome</div>
+                                                                                                                                                                    <div class="namespace-wrapper">\FortAwesome\FontAwesome</div>
                             </dd>
 
                         
@@ -533,9 +561,8 @@ or <a href="../classes/FontAwesome.html#method_using_pseudo_elements">\FontAweso
             <article id="constant_RESOURCE_HANDLE" class="constant">
                 <h3 class="">RESOURCE_HANDLE</h3>
                 <pre class="signature">RESOURCE_HANDLE</pre>
-                <p><em>The handle used when enqueuing this plugin&#039;s resulting resource, whether `&lt;script&gt;` or `&lt;link&gt;`,
-via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
-                
+                <p><em>The handle used when enqueuing this plugin&#039;s resulting resource.</em></p>
+                <p>Used when this plugin calls either <code>wp_enqueue_script</code> or <code>wp_enqueue_style</code> to enqueue Font Awesome assets.</p>
             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -569,9 +596,7 @@ via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                         <dl>
-                                                                                            <dt>See also</dt>
-                                                                <dd><a href="../classes/FontAwesome.html#method_load_spec"><span class="namespace-wrapper">\FontAwesome::load_spec()</span></a></dd>
-                                                                </dl>
+                                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -600,14 +625,14 @@ via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
             <article class="method">
                 <h3 class="public ">instance()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">instance() : \FontAwesome</pre>
+                <pre class="signature" style="margin-right: 54px;">instance() : \FortAwesome\FontAwesome</pre>
                 <p><em>Returns the singleton instance of the FontAwesome plugin.</em></p>
                 
 
                 
                 
                                     <h4>Returns</h4>
-                    <a href="../classes/FontAwesome.html">\FontAwesome</a>
+                    <a href="../classes/FortAwesome.FontAwesome.html">\FortAwesome\FontAwesome</a>
                                     				
                             </article>
         </div>
@@ -616,7 +641,7 @@ via `wp_enqueue_script` or `wp_enqueue_style`.</em></p>
                             <span class="label label-info">static</span>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="../namespaces/default.html#function_fa"><span class="namespace-wrapper">\fa()</span></a></dd>
+                                                                <dd><a href="../namespaces/FortAwesome.html#function_fa"><span class="namespace-wrapper">\FortAwesome\fa()</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -672,19 +697,36 @@ not invoke it directly.</em></p>
             <article class="method">
                 <h3 class="public ">satisfies()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">satisfies(string  <span class="argument">$constraint</span>) : boolean</pre>
-                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisies the given constraints.</em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">satisfies(array  <span class="argument">$constraints</span>) : boolean</pre>
+                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints.</em></p>
+                <p>NOTE: this method is not concerned with the version of Font Awesome assets being loaded by this plugin,
+but with the version of this plugin itself.</p>
+<p>The constraints array should contain one element per constraint, where each individual constraint is itself
+an array of arguments that can be passed as the second and third arguments to the standard <code>version_compare</code>
+function.</p>
+<p>The constraints will be ANDed together.</p>
+<p>For example the following constraints...</p>
+<pre><code class="language-php">  array(
+    [ '1.0.0', '&gt;='],
+    [ '2.0.0', '&lt;']
+  )</code></pre>
+<p>...mean: &quot;assert that this plugin's version number is greater than or equal 1.0.0 AND strictly less than 2.0.0&quot;</p>
+<p>To express OR conditions, make multiple calls to this function and OR the results together in your own code.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td>string</td>
-                                <td>$constraint </td>
-                                <td><p>expressed as a constraint that can be understood by <code>Composer\Semver\Semver</code></p></td>
+                                <td>array</td>
+                                <td>$constraints </td>
+                                <td></td>
                             </tr>
                                             </table>
                 
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd></dd>
+                                                                    </dl>
                 
                                     <h4>Returns</h4>
                     boolean
@@ -695,7 +737,7 @@ not invoke it directly.</em></p>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
+                                                                <dd><a href="http://php.net/manual/en/function.version-compare.php"><span class="namespace-wrapper">http://php.net/manual/en/function.version-compare.php</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -717,36 +759,38 @@ not invoke it directly.</em></p>
             <article class="method">
                 <h3 class="public ">satisfies_or_warn()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">satisfies_or_warn(string  <span class="argument">$constraint</span>, string  <span class="argument">$name</span>) : boolean</pre>
-                <p><em>Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints,
-and if not, it warns the WordPress admin in the admin dashboard in order to aid conflict diagnosis.</em></p>
-                <p>Issues warnings in two ways:</p>
+                <pre class="signature" style="margin-right: 54px;">satisfies_or_warn(array  <span class="argument">$constraints</span>, string  <span class="argument">$name</span>) : boolean</pre>
+                <p><em>Reports a warning if currently loaded version of the Font Awesome plugin does not
+satisfy the given constraints.</em></p>
+                <p>This can help site owners better diagnose conflicts.</p>
+<p>Issues warnings in two ways:</p>
 <ol>
 <li>
-<p>An admin notice Using the <code>admin_notices</code> WordPress hook. This appears in admin pages <em>other</em> than
+<p>An admin notice using the <code>admin_notices</code> WordPress hook. This appears in admin pages <em>other</em> than
 this plugin's options page.</p>
 </li>
 <li>
 <p>A section on this plugin's options page.</p>
 </li>
 </ol>
-<p>In order for the second warning to appear, the warning should be registered (with this function) during
+<p>In order for the second warning to appear, this function should be called during
 this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
 callback on the <code>font_awesome_requirements</code> action hook.</p>
+<p>The shape of the <code>$constraints</code> argument is the same as for <a href="../classes/FortAwesome.FontAwesome.html#method_satisfies">\FortAwesome\FontAwesome::satisfies()</a>.</p>
 <p>For example:</p>
 <pre><code class="language-php">add_action(
   'font_awesome_enqueued',
   function() {
-    fa()-&gt;satisfies_or_warn( THETA_PLUGIN_VERSION_CONSTRAINT_FOR_FA_PLUGIN, 'Theta' );
+    FortAwesome\fa()-&gt;satisfies_or_warn( [['4.0.0', '&gt;=']], 'Theta' );
   }
 );</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td>string</td>
-                                <td>$constraint </td>
-                                <td><p>expressed as a constraint that can be understood by <code>Composer\Semver\Semver</code></p></td>
+                                <td>array</td>
+                                <td>$constraints </td>
+                                <td><p>as required by FontAwesome::satisfies()</p></td>
                             </tr>
                                                     <tr>
                                 <td>string</td>
@@ -756,6 +800,11 @@ given constraint.</p></td>
                             </tr>
                                             </table>
                 
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>if the constraints provided are not in the expected format</p></dd>
+                                                                    </dl>
                 
                                     <h4>Returns</h4>
                     boolean
@@ -766,8 +815,8 @@ given constraint.</p></td>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
-                                                                                                    <dd><a href="../classes/FontAwesome.html"><span class="namespace-wrapper">For reference on the `font_awesome_enqueued` action hook</span></a></dd>
+                                                                <dd><a href="../classes/FortAwesome.FontAwesome.html"><span class="namespace-wrapper">font_awesome_enqueued action hook</span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper">satisfies()</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -796,7 +845,7 @@ given constraint.</p></td>
                 
                                     <h4>Throws</h4>
                     <dl>
-                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                                                    <dt>\FortAwesome\FontAwesome_NoReleasesException</dt>
                             <dd></dd>
                                                                     </dl>
                 
@@ -809,49 +858,6 @@ given constraint.</p></td>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                             </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            since
-                        </th>
-                        <td>
-                                                            4.0.0                                
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_get_latest_semver" name="method_get_latest_semver" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">get_latest_semver()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">get_latest_semver() : null|string</pre>
-                <p><em>Returns the latest available version of Font Awesome as a string, formatted
-as a semver.</em></p>
-                <p>Example: if the latest version is &quot;5.5.0&quot;, this function returns &quot;~5.5.0&quot;</p>
-
-                
-                                    <h4>Throws</h4>
-                    <dl>
-                                                    <dt>\FontAwesome_NoReleasesException</dt>
-                            <dd></dd>
-                                                                    </dl>
-                
-                                    <h4>Returns</h4>
-                    null|string
-                                    				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                                            <dt>See also</dt>
-                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
-                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -880,7 +886,7 @@ this function returns &quot;5.4.1&quot;.</p>
                 
                                     <h4>Throws</h4>
                     <dl>
-                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                                                    <dt>\FortAwesome\FontAwesome_NoReleasesException</dt>
                             <dd></dd>
                                                                     </dl>
                 
@@ -909,67 +915,24 @@ this function returns &quot;5.4.1&quot;.</p>
 
                                     <div class="row-fluid">
         <div class="span8 content class">
-            <a id="method_get_previous_semver" name="method_get_previous_semver" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">get_previous_semver()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">get_previous_semver() : null|string</pre>
-                <p><em>Returns the previous minor version of Font Awesome as a string, formatted as a semver.</em></p>
-                <p>Example: if the most recent available versions of Font Awesome were &quot;5.3.0&quot;, &quot;5.4.0&quot;, &quot;5.4.1&quot; and &quot;5.5.1&quot;,
-this function returns &quot;~5.4.1&quot;.</p>
-
-                
-                                    <h4>Throws</h4>
-                    <dl>
-                                                    <dt>\FontAwesome_NoReleasesException</dt>
-                            <dd></dd>
-                                                                    </dl>
-                
-                                    <h4>Returns</h4>
-                    null|string
-                                    				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                                            <dt>See also</dt>
-                                                                <dd><a href="https://getcomposer.org/doc/articles/versions.md"><span class="namespace-wrapper">https://getcomposer.org/doc/articles/versions.md</span></a></dd>
-                                                                </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            since
-                        </th>
-                        <td>
-                                                            4.0.0                                
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
             <a id="method_get_available_versions" name="method_get_available_versions" class="anchor"></a>
             <article class="method">
                 <h3 class="public ">get_available_versions()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">get_available_versions() : null|string</pre>
-                <p><em>Returns all available versions of Font Awesome as an array of strings.</em></p>
+                <pre class="signature" style="margin-right: 54px;">get_available_versions() : array</pre>
+                <p><em>Returns all available versions of Font Awesome as an array of strings in descending version order.</em></p>
                 <p>Example: if the most recent available versions of Font Awesome were &quot;5.3.0&quot;, &quot;5.4.0&quot;, &quot;5.4.1&quot; and &quot;5.5.1&quot;,
-this function returns &quot;~5.4.1&quot;.</p>
+this function returns [ &quot;5.5.1&quot;, &quot;5.4.1&quot;, &quot;5.4.0&quot;, &quot;5.3.0&quot;].</p>
 
                 
                                     <h4>Throws</h4>
                     <dl>
-                                                    <dt>\FontAwesome_NoReleasesException</dt>
+                                                    <dt>\FortAwesome\FontAwesome_NoReleasesException</dt>
                             <dd></dd>
                                                                     </dl>
                 
                                     <h4>Returns</h4>
-                    null|string
+                    array
                                     				
                             </article>
         </div>
@@ -977,7 +940,7 @@ this function returns &quot;~5.4.1&quot;.</p>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="../classes/FontAwesome_Release_Provider.html#method_versions"><span class="namespace-wrapper">\FontAwesome_Release_Provider::versions()</span></a></dd>
+                                                                <dd><a href="../classes/FortAwesome.FontAwesome_Release_Provider.html#method_versions"><span class="namespace-wrapper">\FortAwesome\FontAwesome_Release_Provider::versions()</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1001,9 +964,14 @@ this function returns &quot;~5.4.1&quot;.</p>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">options() : array</pre>
                 <p><em>Returns current options with defaults.</em></p>
-                <p>Clients should normally not be access this.</p>
+                <p>Clients should normally not access this.</p>
 
                 
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FortAwesome\FontAwesome_NoReleasesException</dt>
+                            <dd></dd>
+                                                                    </dl>
                 
                                     <h4>Returns</h4>
                     array
@@ -1014,8 +982,8 @@ this function returns &quot;~5.4.1&quot;.</p>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="../classes/FontAwesome.html#constant_OPTIONS_KEY"><span class="namespace-wrapper">\FontAwesome::OPTIONS_KEY</span></a></dd>
-                                            <dd><a href=""><span class="namespace-wrapper">\FontAwesome::DEFAULT_USER_OPTIONS</span></a></dd>
+                                                                <dd><a href="../classes/FortAwesome.FontAwesome.html#constant_OPTIONS_KEY"><span class="namespace-wrapper">\FortAwesome\FontAwesome::OPTIONS_KEY</span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper">\FortAwesome\FontAwesome::DEFAULT_USER_OPTIONS</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1070,14 +1038,14 @@ this function returns &quot;~5.4.1&quot;.</p>
             <article class="method">
                 <h3 class="public ">reset()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">reset() : \FontAwesome</pre>
+                <pre class="signature" style="margin-right: 54px;">reset() : \FortAwesome\FontAwesome</pre>
                 <p><em>Resets the singleton instance referenced by this class.</em></p>
                 <p>All releases metadata and computed load specification are abandoned.</p>
 
                 
                 
                                     <h4>Returns</h4>
-                    <a href="../classes/FontAwesome.html">\FontAwesome</a>
+                    <a href="../classes/FortAwesome.FontAwesome.html">\FortAwesome\FontAwesome</a>
                                     				
                             </article>
         </div>
@@ -1132,8 +1100,7 @@ admin UI.</p>
     )
   )</code></pre>
 <p>This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
-triggered on the first failure. If there are subsequent requirements in conflict, they will not be
-reported until this first one is resolved.</p>
+triggered on the first failure.</p>
 
                 
                 
@@ -1146,7 +1113,7 @@ reported until this first one is resolved.</p>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="../classes/FontAwesome.html#method_register"><span class="namespace-wrapper">For a full list of possible client requirement keys</span></a></dd>
+                                                                <dd><a href="../classes/FortAwesome.FontAwesome.html#method_register"><span class="namespace-wrapper">register() documents all client requirement keys</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1170,7 +1137,8 @@ reported until this first one is resolved.</p>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">get_plugin_version_warnings() : array|null</pre>
                 <p><em>Returns plugin version warnings.</em></p>
-                
+                <p>These are the warnings that would be reported in the admin UI as a result of clients calling
+<a href="../classes/FortAwesome.FontAwesome.html#method_satisfies_or_warn">\FortAwesome\FontAwesome::satisfies_or_warn()</a>.</p>
 
                 
                 
@@ -1204,10 +1172,12 @@ reported until this first one is resolved.</p>
                 <h3 class="public ">requirements()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">requirements() : array</pre>
-                <p><em>Return current client requirements for all registered clients. The website owner (i.e. the one who
-uses the WordPress admin dashboard) is considered a registered client. So that owner&#039;s requirements
-will be represented here.</em></p>
-                <p>Each element of the array has the same shape as the requirements given to <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a>.</p>
+                <p><em>Return current client requirements for all registered clients.</em></p>
+                <p>The website owner (i.e. the one who uses the WordPress admin dashboard) is considered a registered client.
+So that owner's requirements will be represented here. But note that these requirements do not include
+the <code>options</code>, as returned by <a href="../classes/FortAwesome.FontAwesome.html#method_options">\FortAwesome\FontAwesome::options()</a> which also help determine the
+final result of how the Font Awesome assets are loaded.</p>
+<p>Each element of the array has the same shape as the requirements given to <a href="../classes/FortAwesome.FontAwesome.html#method_register">\FortAwesome\FontAwesome::register()</a>.</p>
 
                 
                 
@@ -1220,7 +1190,7 @@ will be represented here.</em></p>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="../classes/FontAwesome.html#method_register"><span class="namespace-wrapper">\FontAwesome::register()</span></a></dd>
+                                                                <dd><a href=""><span class="namespace-wrapper">\FortAwesome\FortAwesome\FontAwesome::register()</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1245,7 +1215,7 @@ will be represented here.</em></p>
                 <pre class="signature" style="margin-right: 54px;">unregistered_clients() : array</pre>
                 <p><em>Return list of found unregistered clients.</em></p>
                 <p>Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
-URI that appears to load Font Awesome, but which has not called <a href="../classes/FontAwesome.html#method_register">\FontAwesome::register()</a> to register
+URI that appears to load Font Awesome, but which has not called <a href="../classes/FortAwesome.FontAwesome.html#method_register">\FortAwesome\FontAwesome::register()</a> to register
 its requirements with this plugin.</p>
 
                 
@@ -1277,24 +1247,30 @@ its requirements with this plugin.</p>
         <div class="span8 content class">
             <a id="method_load_spec" name="method_load_spec" class="anchor"></a>
             <article class="method">
-                <h3 class="public ">load_spec()</h3>
+                <h3 class="public deprecated">load_spec()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">load_spec() : array</pre>
-                <p><em>Return current load specification, which may be null if has not yet been computed.</em></p>
-                <p>If it is still <code>null</code> and <a href="../classes/FontAwesome.html#method_conflicts">\FontAwesome::conflicts()</a> returns <em>not</em> <code>null</code>, that means the load failed:
+                <p><em>Returns the subset of metadata required to load Font Awesome that corresponds to client requirements.</em></p>
+                <p><em>DEPRECATED</em></p>
+<p>A successful resolution of all factors necessary to load Font Awesome without conflict involves:</p>
+<ol>
+<li>A load specification (this <code>load_spec</code>) that satisfies all requirements registered by clients, including the
+site owner's requirements as specified on the options page.</li>
+<li>Options specified by the site owner that cannot be controlled by other clients. This is available from <a href="../classes/FortAwesome.FontAwesome.html#method_options">\FortAwesome\FontAwesome::options()</a>.</li>
+</ol>
+<p>Since the metadata returned by this method only includes a <em>subset</em> of what determines how
+Font Awesome is loaded, it's a bit of a misnomer. Rather than trying to keep track of what's stored where,
+it's best to just use the various accessor methods, like these:</p>
+<ul>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_version">\FortAwesome\FontAwesome::version()</a> to discover the version of Font Awesome being loaded</li>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_using_pro">\FortAwesome\FontAwesome::using_pro()</a> to discover whether a version with Pro icons is being loaded</li>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_using_pseudo_elements">\FortAwesome\FontAwesome::using_pseudo_elements()</a> to discover whether Font Awesome is being loaded with support
+for pseudo-elements</li>
+</ul>
+<p>Returns <code>null</code> if a load spec has not yet been determined.
+If it is still <code>null</code> and \FontAwesome::conflicts() returns <em>not</em> <code>null</code>, that means the load failed:
 there is no settled load specification because none could be found that satisfies all client requirements.
 For example, one client may have required <code>'method' =&gt; 'svg'</code> while another required <code>'method' =&gt; 'webfont'</code>.</p>
-<p>A <code>load_spec</code> or <em>load specification</em> contains the metadata necessary to enqueue the appropriate
-<code>&lt;script&gt;</code> (for SVG with JavaScript) or <code>&lt;link&gt;</code> (for Web Fonts with CSS) in the <code>&lt;head&gt;</code> of the WordPress
-template. It is guaranteed to satisfy all requirements specified by all registered clients of this plugin.</p>
-<p>Its shape looks like this:</p>
-<pre><code class="language-php">  array(
-    'method'         =&gt; 'svg', // "svg" or "webfont"
-    'v4shim'         =&gt; 'require', // "require" or "forbid"
-    'pseudoElements' =&gt; 'require', // "require" or "forbid"
-    'version'        =&gt; '5.5.0',
-    'usePro'         =&gt; true, // boolean indicating whether to use Font Awesome Pro or Free
- )</code></pre>
 
                 
                 
@@ -1305,7 +1281,11 @@ template. It is guaranteed to satisfy all requirements specified by all register
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
+                                                                <aside class="alert alert-block alert-error">
+                    <h4>Deprecated</h4>
+                    
+                </aside>
+                        <dl>
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1328,10 +1308,8 @@ template. It is guaranteed to satisfy all requirements specified by all register
                 <h3 class="public ">using_pro()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">using_pro() : boolean</pre>
-                <p><em>Convenience method that returns boolean indicating whether, given the currently settled `load_spec`,
-we are loading Font Awesome Pro.</em></p>
-                <p>Since it returns false when <a href="../classes/FontAwesome.html#method_load_spec">\FontAwesome::load_spec()</a> is <code>null</code>, it's best to call this only after loading
-is complete and successful.</p>
+                <p><em>Indicates whether Font Awesome Pro is being loaded.</em></p>
+                <p>Its results are valid only after the <code>font_awesome_enqueued</code> has been triggered.</p>
 <p>It's a handy way to toggle the use of Pro icons in client theme or plugin template code.</p>
 
                 
@@ -1361,19 +1339,62 @@ is complete and successful.</p>
 
                                     <div class="row-fluid">
         <div class="span8 content class">
+            <a id="method_version" name="method_version" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">version()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">version() : string</pre>
+                <p><em>Reports the version of Font Awesome assets being loaded.</em></p>
+                <p>Its results are valid only after the <code>font_awesome_enqueued</code> has been triggered.</p>
+<p>Your theme or plugin should probably query this in order to determine whether all of the icons used in your
+templates will be available, especially if you tend to use newer icons. It should be really easy
+for site owners to update to a new Font Awesome version to accommodate your templates--just a simple dropdown
+selection on the Font Awesome plugin options page. But you might need to show an admin notice to nudge
+them to do so if you detect that the current version of Font Awesome being loaded is older than you'd like.</p>
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FortAwesome\FontAwesome_NoReleasesException</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            4.0.0                                
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
             <a id="method_using_pseudo_elements" name="method_using_pseudo_elements" class="anchor"></a>
             <article class="method">
                 <h3 class="public ">using_pseudo_elements()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">using_pseudo_elements() : boolean</pre>
-                <p><em>Convenience method that returns boolean indicating whether the currently settled `load_spec`
-includes support for pseudoElements.</em></p>
-                <p>Since it returns false when <a href="../classes/FontAwesome.html#method_load_spec">\FontAwesome::load_spec()</a> is <code>null</code>, it's best to call this only after loading
-is complete and successful.</p>
-<p>It's a handy way to toggle the use of pseudo elements icons in a client theme or plugin template code,
-or to present a warning in an admin notice in the event that your client code uses pseudo elements, and
-the <code>svg</code> method is loaded. (There may be a performance penalty with that combination, particularly in earlier
-versions of Font Awesome 5.x.)</p>
+                <p><em>Indicates whether Font Awesome is being loaded with support for CSS pseudo-elements.</em></p>
+                <p>Its results are only valid after the <code>font_awesome_enqueued</code> action has been triggered.</p>
+<p>You might use this, for example, to detect when the SVG with JavaScript method is being used with
+pseudo-elements enabled. There are known performance problems with this combination.
+It's usually better that you don't &quot;forbid&quot; pseudo-elements in your requirements--to avoid causing unnecessary
+hard conflicts. But you might use this detection to show a relevant warning as an admin notice.</p>
 
                 
                 
@@ -1410,9 +1431,8 @@ versions of Font Awesome 5.x.)</p>
                 <p><em>Registers client requirements. This is the &quot;front door&quot; for registered clients—themes and plugins—that depend
 upon this Font Awesome plugin to load a compatible, properly configured version of Font Awesome.</em></p>
                 <p><em>Note on using Pro:</em> registered clients cannot <em>require</em> the use Font Awesome Pro. That is a feature that
-must be enabled by the web site owner. However, if the web site owner does enable it, then the resulting
-<code>load_spec</code> will cause Pro to be loaded, and this will be indicated by the return value of <a href="../classes/FontAwesome.html#method_using_pro">\FontAwesome::using_pro()</a>.
-If you are shipping at theme or plugin for which you insist on being able to use Font Awesome Pro, your only
+must be enabled by the web site owner.</p>
+<p>If you are shipping a theme or plugin for which you insist on being able to use Font Awesome Pro, your only
 option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
 websites.</p>
 <p>The shape of the <code>$client_requirements</code> array parameter looks like this:</p>
@@ -1420,27 +1440,73 @@ websites.</p>
     'method'         =&gt; 'svg', // "svg" or "webfont"
     'v4shim'         =&gt; 'require', // "require" or "forbid"
     'pseudoElements' =&gt; 'require', // "require" or "forbid"
-    'version'        =&gt; '~5.5.0', // semver in the form of \Composer\Semver\Semver
-    'name'           =&gt; 'Foo Plugin', // (required)
+    'name'           =&gt; 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
     'clientVersion'  =&gt; '1.0.1', // (required) The version of your plugin or client
   )</code></pre>
-<p>All requirement specifications are optional, except <code>name</code>. Any that are not specified will allow defaults,
-or the requirements of other registered clients to take precedence. The fewer requirements your client specifies,
-the easier it will be to settle a load specification without conflict.</p>
 <p>We use camelCase instead of snake_case for these keys, because they end up being passed via json
 to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.</p>
-<h3>clientVersion and the load specification cache</h3>
+<p>All requirement specifications are optional, except <code>name</code>. Any that are not specified will allow defaults,
+or the requirements of other registered clients to take precedence.</p>
+<h3>Be Flexible: Narrower Constraints Cause More Conflicts</h3>
+<p>Just because you <em>can</em> set requirements here doesn't mean you <em>should</em>. A huge design goal for this plugin
+is to make it easy for WordPress site owners to install and use Font Awesome conflict-free. And where there
+are unavoidable conflicts, we want the site owner to be able to diagnose and resolve them easily.
+WordPress is a big world and there are limitless combinations of installed themes and plugins. Font Awesome
+is very popular, so it shows up in a lot of those combinations.</p>
+<p>One of the most common sources of conflict with Font Awesome on WordPress is a combination of theme and/or
+plugins that each try to do their own
+thing with Font Awesome and break one another in the process. This plugin serves as a coordination point
+to help developers gain a sense of control and predictability, while also respecting the fact that site owners
+will--and should remain free to--mix and match themes and plugins, any of which may incorporate Font Awesome.</p>
+<p>So don't <em>require</em> what you merely <em>prefer</em>; require only what you'll die without. Do your best to adapt to
+the various configurations that the <em>site owner</em> may prefer. This will improve their experience with <em>your</em>
+code as well, since it will decrease or eliminate the friction they experience when trying to combine
+your theme or plugin with the others they've selected.</p>
+<p>Here's a quick adaptability checklist:</p>
+<ul>
+<li>Make sure your plugin or theme works just as well with either webfont or svg methods.</li>
+<li>Update your icon references to use version 5 names so no <a href="https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">v4 shim</a> is required.</li>
+<li>Don't use <a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a></li>
+<li>Be mindful of which <a href="https://fontawesome.com/icons">icons you use and in which versions of Font Awesome they're available</a>.</li>
+<li>Adapt gracefully when the version loaded lacks icons you want to use (see more below).</li>
+</ul>
+<p>A good example of a legitimate use case for setting one of these requirements is to require the <code>svg</code> method,
+in order to make use of <a href="https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms">Power Transforms</a>.</p>
+<p>Another good example: Suppose your theme or plugin has a legacy codebase that makes heavy use of pseudo-elements.
+So you should require pseudo-element support. But suppose you test and find that when the svg method is used
+for Font Awesome, all your pseudo-element usage results in a significant performance hit--too much to tolerate.
+A temporary measure might then be to require the <code>webfont</code> method (your pseudo-elements will perform fine with webfonts).
+You really should consider that to be a temporary measure, though, and plan on a future iteration to remove
+pseudo-element usage. After removing pseudo-elements from your templates, remove that requirement for pseudo-elements
+in your call to this method.</p>
+<h3>Font Awesome version</h3>
+<p>Only the WordPress site owner gets to specify the version of Font Awesome assets that are loaded.</p>
+<p>To maximize compatibility and user-friendliness, keep track of the icons you use and in which versions they're
+introduced (<a href="https://fontawesome.com/changelog/latest">new ones are being added all the time</a>).
+Add a hook on the <code>font_awesome_enqueued</code> action to discover what version of Font Awesome is being loaded
+and either turn off or replace newer icons that are not available in older releases, or warn the
+site owner in your own WordPress admin UI that they'll need to update to a new version in order for icons
+to work as expected in your templates.</p>
+<h3>Updates: clientVersion and the load specification cache</h3>
 <p>This plugin is optimized to rebuild the Font Awesome load specification if and only if the inputs change.
-The primary inputs are these client requirements, which are identified by the client <code>name</code> and <code>clientVersion</code>.
+Those inputs include options that can be set only by the site owner in the Font Awesome admin settings UI,
+and these client requirements registered here. Each client's requirements are identified by <code>name</code> and <code>clientVersion</code>,
+taken together.
 Therefore, if a client plugin or theme should update its version number, that would trigger a rebuild of
-the load specification.</p>
+the load specification. Simply changing your requirements without bumping the <code>clientVersion</code> will <em>not</em>
+trigger a rebuild.</p>
+<p>So if you ship a new version of your theme or plugin with different Font Awesome requirements, you should also
+bump this <code>clientVersion</code> number. You can use the same version number you've assigned to your theme or plugin,
+or any version number scheme you like.</p>
 <h3>Notes on "require" and "forbid"</h3>
 <p>Specifying <code>require</code> for a requirement like <code>pseudoElements</code> or <code>v4shim</code> will cause the loading of
 Font Awesome to fail unless all clients are satisfied with this requirement.</p>
 <p>Specifying <code>forbid</code> for a requirement will cause loading to fail if any other client specifies <code>require</code>
 that requirement. For example, because enabling pseudo-elements with SVG with JavaScript may have a negative
 impact on performance, a client that requires svg might forbid pseudo-elements.</p>
-<p>Clients should normally not overly constrain the requirements.</p>
+<p>Again, theme and plugin developers should normally strive <em>not</em> to add constraints in order to reduce
+the likelihood of conflicts. Instead of requiring how Font Awesome must be loaded for your code to work,
+write your code to adapt to however Font Awesome might be loaded.</p>
 <h3>Additional Notes on Specific Requirements</h3>
 <ul>
 <li>
@@ -1483,7 +1549,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href="../classes/FontAwesome.html#method_using_pro"><span class="namespace-wrapper">\FontAwesome::using_pro()</span></a></dd>
+                                                                <dd><a href="../classes/FortAwesome.FontAwesome.html#method_using_pro"><span class="namespace-wrapper">\FortAwesome\FontAwesome::using_pro()</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1499,7 +1565,88 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
         </aside>
     </div>
 
-                                                                    </div>
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_finalize_load_resources" name="method_finalize_load_resources" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">finalize_load_resources()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">finalize_load_resources(  <span class="argument">$load_spec</span>,   <span class="argument">$options</span>) : array</pre>
+                <p><em>Once this runs through successfully and returns a resource collection, we are sure that we have successfully
+resolved everything required to enqueue the assets.</em></p>
+                <p>What's returned by this function is safe to pass on to enqueue()</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$load_spec </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$options </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\FortAwesome\FontAwesome_ConfigurationException|\FortAwesome\FontAwesome_NoReleasesException|\InvalidArgumentException</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_enqueue" name="method_enqueue" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">enqueue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">enqueue(  <span class="argument">$params</span>) </pre>
+                <p><em>This wants to receive params as returned by resolve_resource_collection(), which are guaranteed to work.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$params </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    </div>
     </section>
 
     <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
@@ -1521,6 +1668,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
                                                         <h1><i class="icon-code"></i></h1>
                             <div>
                                 <ul>
+                                                                            <li><a href="../namespaces/FortAwesome.html">\FortAwesome</a></li>
                                                                     </ul>
                             </div>
                         </section>
@@ -1548,7 +1696,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on January 17th, 2019 at 14:31.
+                    on March 20th, 2019 at 22:25.
                 </section>
             </section>
         </section>

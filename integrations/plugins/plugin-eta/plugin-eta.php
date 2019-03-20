@@ -10,6 +10,8 @@
  * License:           GPLv3
  */
 
+use function FortAwesome\fa;
+
 defined( 'WPINC' ) || die;
 define( 'ETA_PLUGIN_VERSION', '0.0.1' );
 define( 'ETA_PLUGIN_LOG_PREFIX', 'eta-plugin' );
@@ -63,7 +65,7 @@ function plugin_eta_fa_classes(){
 		? array_push($class_list, 'fa-license-pro')
 		: array_push($class_list, 'fa-license-free');
 
-	strpos($load_spec['version'], '5.0.') === 0
+	strpos(fa()->version(), '5.0.') === 0
 		? array_push($class_list, 'fa-version-5-0')
 		: array_push($class_list, 'fa-version-5-1');
 

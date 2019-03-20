@@ -1,4 +1,6 @@
 <?php
+use function FortAwesome\fa;
+
 define('THEME_ALPHA_LOG_PREFIX', 'theme-alpha');
 define('THEME_ALPHA_VERSION', '0.0.1');
 
@@ -34,7 +36,7 @@ add_action(
 
 add_action('font_awesome_enqueued', function($loadSpec){
   if ( class_exists('FontAwesome') ) {
-    error_log( THEME_ALPHA_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . $loadSpec['version']);
+    error_log( THEME_ALPHA_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . fa()->version());
   }
 }, 10, 3);
 
@@ -47,7 +49,7 @@ function theme_alpha_fa_classes(){
     ? array_push($class_list, 'fa-license-pro')
     : array_push($class_list, 'fa-license-free');
 
-  strpos($load_spec['version'], '5.0.') === 0
+  strpos(fa()->version(), '5.0.') === 0
     ? array_push($class_list, 'fa-version-5-0')
     : array_push($class_list, 'fa-version-5-1');
 

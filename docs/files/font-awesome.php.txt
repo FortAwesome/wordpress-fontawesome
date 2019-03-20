@@ -1,4 +1,8 @@
 <?php
+namespace FortAwesome;
+
+use \Exception, \Error;
+
 /**
  * Plugin Name:       Font Awesome
  * Plugin URI:        https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress

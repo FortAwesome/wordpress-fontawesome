@@ -1,12 +1,12 @@
 <?php
+namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-deactivator.php';
 
 /**
  * Class ActivationTest
  */
-class ActivationTest extends WP_UnitTestCase {
+class ActivationTest extends \WP_UnitTestCase {
 
 	/**
 	 * Reset test data.

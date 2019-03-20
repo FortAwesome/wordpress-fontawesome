@@ -11,6 +11,7 @@
  * @since 1.0
  * @version 1.0
  */
+use function FortAwesome\fa;
 
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?> class="no-js no-svg">

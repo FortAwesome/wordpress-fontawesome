@@ -1,12 +1,10 @@
 <?php
+namespace FortAwesome;
 
 /**
  * Fired during plugin activation.
  *
  * This class defines all code necessary to run during the plugin's activation.
- *
- * @package    FontAwesome
- * @subpackage FontAwesome/includes
  */
 class FontAwesome_Activator {
 

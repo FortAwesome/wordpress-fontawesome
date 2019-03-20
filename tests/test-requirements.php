@@ -1,4 +1,5 @@
 <?php
+namespace FortAwesome;
 /**
  * Class RequirementsTest
  *
@@ -9,7 +10,7 @@
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
-class RequirementsTest extends WP_UnitTestCase {
+class RequirementsTest extends \WP_UnitTestCase {
 
 	/**
 	 * Reset test state.
@@ -17,8 +18,9 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @before
 	 */
 	protected function reset() {
+		reset_db();
 		FontAwesome::reset();
-		\FontAwesomePhpUnitUtil\Mock_FontAwesome_Releases::mock();
+		Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
@@ -30,6 +32,7 @@ class RequirementsTest extends WP_UnitTestCase {
 		$this->assertEquals( 'webfont', $load_spec['method'] );
 		$this->assertTrue( $load_spec['v4shim'] );
 		$this->assertTrue( $load_spec['pseudoElements'] );
+		$this->assertEquals( fa()->get_latest_version(), fa()->version() );
 	}
 
 	public function test_all_default_with_single_client() {
@@ -41,9 +44,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assert_defaults( $load_spec );
+			$this->assert_defaults( fa()->load_spec() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -54,9 +57,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$load_spec = $fa_load->invoke( fa() );
+		$fa_load->invoke( fa() );
 
-		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
@@ -79,9 +81,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assert_defaults( $load_spec );
+			$this->assert_defaults( fa()->load_spec() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -92,9 +94,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$load_spec = $fa_load->invoke( fa() );
+		$fa_load->invoke( fa() );
 
-		$this->assertEquals( $load_spec, fa()->load_spec() );
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
@@ -102,7 +103,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	}
 
 	public function test_register_without_name() {
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( \InvalidArgumentException::class );
 
 		fa()->register(
 			array(
@@ -125,9 +126,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		global $fa_load;
-		$load_spec = $fa_load->invoke( fa() );
+		$fa_load->invoke( fa() );
 
-		$this->assertNull( $load_spec );
 		// We don't expect either callback to be invoked because throwing the
 		// InvalidArgumentException preempts further processing.
 		$this->assertFalse( $failed );
@@ -150,8 +150,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
+			$load_spec = fa()->load_spec();
 			$this->assertEquals( 'svg', $load_spec['method'] );
 			$this->assertTrue( $load_spec['v4shim'] );
 		};
@@ -186,8 +187,9 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
+			$load_spec = fa()->load_spec();
 			$this->assertEquals( 'svg', $load_spec['method'] );
 			$this->assertTrue( $load_spec['v4shim'] );
 		};
@@ -227,7 +229,8 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
+			function() {
+				$load_spec = fa()->load_spec();
 				$this->assertEquals( 'svg', $load_spec['method'] );
 				$this->assertTrue( $load_spec['v4shim'] );
 			}
@@ -275,8 +278,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		global $fa_load;
 
-		$this->assertNull( $fa_load->invoke( fa() ) );
-		$this->assertNull( fa()->load_spec() );
+		$this->assertFalse( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertNotNull( fa()->conflicts() );
@@ -298,7 +300,8 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
+			function() {
+				$load_spec = fa()->load_spec();
 				$this->assertEquals( 'svg', $load_spec['method'] );
 				$this->assertFalse( $load_spec['pseudoElements'] );
 				$this->assertFalse( fa()->using_pseudo_elements() );
@@ -325,7 +328,8 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
+			function() {
+				$load_spec = fa()->load_spec();
 				$this->assertEquals( 'webfont', $load_spec['method'] );
 				$this->assertTrue( $load_spec['pseudoElements'] );
 				$this->assertTrue( fa()->using_pseudo_elements() );
@@ -336,51 +340,37 @@ class RequirementsTest extends WP_UnitTestCase {
 		$fa_load->invoke( fa() );
 	}
 
-	/**
-	 * @group version
-	 */
-	public function test_incompatible_version() {
+	public function test_pseudo_element_config_enqueued_when_svg() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
-
 				fa()->register(
 					array(
-						'name'    => 'clientA',
-						'version' => '5.0.13',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientB',
-						'version' => '5.0.12',
+						'name'   => 'test',
+						'method' => 'svg',
+						'pseudoElements' => 'require',
 						'clientVersion' => '1',
 					)
 				);
 			}
 		);
 
-		$enqueued          = false;
-		$enqueued_callback = function() use ( &$enqueued ) {
-			$enqueued = true;
-		};
-		add_action( 'font_awesome_enqueued', $enqueued_callback );
-
-		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
-			$failed = true;
-			$this->assertEquals( 'version', $data['requirement'] );
-			$this->assertTrue( $this->client_requirement_exists( 'clientB', $data['conflictingClientRequirements'] ) );
-		};
-		add_action( 'font_awesome_failed', $failed_callback );
+		add_action(
+			'font_awesome_enqueued',
+			function() {
+				$load_spec = fa()->load_spec();
+				$this->assertEquals( 'svg', $load_spec['method'] );
+				$this->assertTrue( $load_spec['pseudoElements'] );
+				$this->assertTrue( fa()->using_pseudo_elements() );
+			}
+		);
 
 		global $fa_load;
+		$fa_load->invoke( fa() );
 
-		$this->assertNull( $fa_load->invoke( fa() ) );
-		$this->assertTrue( $failed );
-		$this->assertFalse( $enqueued );
+		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
+
+		$this->expectOutputRegex('/searchPseudoElements:\s*true/');
 	}
 
 	public function client_requirement_exists( $name, $reqs ) {
@@ -395,188 +385,10 @@ class RequirementsTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @group version
-	 */
-	public function test_compatible_with_latest_version() {
-		$stub = $this->createMock( FontAwesome::class );
-		$stub->method( 'get_latest_version' )
-		->willReturn( '5.0.13' );
-
-		add_action(
-			'font_awesome_requirements',
-			function() {
-
-				fa()->register(
-					array(
-						'name'    => 'clientA',
-						'version' => '~5.0.0',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientB',
-						'version' => '>=5.0.12',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientC',
-						'version' => '^5',
-						'clientVersion' => '1',
-					)
-				);
-			}
-		);
-
-		$enqueued          = false;
-		$enqueued_callback = function() use ( &$enqueued ) {
-			$enqueued = true;
-		};
-		add_action( 'font_awesome_enqueued', $enqueued_callback );
-
-		$failed          = false;
-		$failed_callback = function() use ( &$failed ) {
-			$failed = true;
-		};
-		add_action( 'font_awesome_failed', $failed_callback );
-
-		global $fa_load;
-		$fa_load->invoke( fa() );
-		$this->assertFalse( $failed );
-		$this->assertTrue( $enqueued );
-	}
-
-	/**
-	 * @group version
-	 */
-	public function test_compatible_with_earlier_patch_level() {
-		$stub = $this->createMock( FontAwesome::class );
-		$stub->method( 'get_available_versions' )
-		->willReturn(
-			array(
-				'5.1.0',
-				'5.0.13',
-				'5.0.12',
-				'5.0.11',
-				'5.0.10',
-				'5.0.9',
-				'5.0.0',
-			)
-		);
-		add_action(
-			'font_awesome_requirements',
-			function() {
-
-				fa()->register(
-					array(
-						'name'    => 'clientA',
-						'version' => '~5.0.0',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientB',
-						'version' => '>=5.0.12',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientC',
-						'version' => '^5',
-						'clientVersion' => '1',
-					)
-				);
-			}
-		);
-
-		$enqueued          = false;
-		$enqueued_callback = function() use ( &$enqueued ) {
-			$enqueued = true;
-		};
-		add_action( 'font_awesome_enqueued', $enqueued_callback );
-
-		$failed          = false;
-		$failed_callback = function() use ( &$failed ) {
-			$failed = true;
-		};
-		add_action( 'font_awesome_failed', $failed_callback );
-
-		global $fa_load;
-		$fa_load->invoke( fa() );
-		$this->assertFalse( $failed );
-		$this->assertTrue( $enqueued );
-	}
-
-	/**
-	 * @group version
-	 */
-	public function test_compatible_with_earlier_minor_version() {
-		$stub = $this->createMock( FontAwesome::class );
-		$stub->method( 'get_available_versions' )
-		->willReturn(
-			array(
-				'5.1.0',
-				'5.0.13',
-				'5.0.12',
-				'5.0.11',
-				'5.0.10',
-				'5.0.9',
-				'5.0.0',
-			)
-		);
-		add_action(
-			'font_awesome_requirements',
-			function() {
-
-				fa()->register(
-					array(
-						'name'    => 'clientA',
-						'version' => '<=5.1',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientB',
-						'version' => '>=5.0.10',
-						'clientVersion' => '1',
-					)
-				);
-			}
-		);
-
-		$enqueued          = false;
-		$enqueued_callback = function() use ( &$enqueued ) {
-			$enqueued = true;
-		};
-		add_action( 'font_awesome_enqueued', $enqueued_callback );
-
-		$failed          = false;
-		$failed_callback = function() use ( &$failed ) {
-			$failed = true;
-		};
-		add_action( 'font_awesome_failed', $failed_callback );
-
-		global $fa_load;
-		$fa_load->invoke( fa() );
-		$this->assertFalse( $failed );
-		$this->assertTrue( $enqueued );
-	}
-
-	/**
 	 * @group pro
 	 */
 	public function test_pro_is_configured() {
-		\FontAwesomePhpUnitUtil\mock_singleton_method(
+		mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'is_pro_configured',
@@ -612,7 +424,7 @@ class RequirementsTest extends WP_UnitTestCase {
 	 * @group pro
 	 */
 	public function test_pro_not_configured() {
-		\FontAwesomePhpUnitUtil\mock_singleton_method(
+		mock_singleton_method(
 			$this,
 			FontAwesome::class,
 			'is_pro_configured',
@@ -742,7 +554,7 @@ class RequirementsTest extends WP_UnitTestCase {
 
 		global $fa_load;
 
-		$this->assertNull( $fa_load->invoke( fa() ) );
+		$this->assertFalse( $fa_load->invoke( fa() ) );
 		$this->assertTrue( $failed );
 		$this->assertFalse( $enqueued );
 		$this->assertFalse( wp_script_is( 'font-awesome-v4shim', 'enqueued' ) );
@@ -775,7 +587,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
+			$load_spec = fa()->load_spec();
 			$enqueued = true;
 			$this->assertEquals( 'webfont', $load_spec['method'] );
 			$this->assertTrue( $load_spec['pseudoElements'] );
@@ -822,7 +635,8 @@ class RequirementsTest extends WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
+			$load_spec = fa()->load_spec();
 			$enqueued = true;
 			$this->assertEquals( 'webfont', $load_spec['method'] );
 			$this->assertTrue( $load_spec['pseudoElements'] );
@@ -837,10 +651,10 @@ class RequirementsTest extends WP_UnitTestCase {
 		add_action( 'font_awesome_failed', $failed_callback );
 
 		$state = array();
-		\FontAwesomePhpUnitUtil\begin_error_log_capture( $state );
+		begin_error_log_capture( $state );
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$err = \FontAwesomePhpUnitUtil\end_error_log_capture( $state );
+		$err = end_error_log_capture( $state );
 
 		$this->assertTrue( $enqueued );
 		$this->assertFalse( $failed );
@@ -859,8 +673,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			)
 		);
 
-		$load_spec1 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec1 = fa()->load_spec();
 		$this->assertNotNull( $load_spec1 );
 
 		// The first requirements required pseudoElements
@@ -876,8 +690,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			)
 		);
 
-		$load_spec2 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec2 = fa()->load_spec();
 		$this->assertNotNull( $load_spec2 );
 
 		$this->assertNotEquals( $load_spec1, $load_spec2 );
@@ -905,8 +719,8 @@ class RequirementsTest extends WP_UnitTestCase {
 			)
 		);
 
-		$load_spec1 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec1 = fa()->load_spec();
 		$this->assertNotNull( $load_spec1 );
 
 		// The first requirements required pseudoElements
@@ -922,11 +736,47 @@ class RequirementsTest extends WP_UnitTestCase {
 			)
 		);
 
-		$load_spec2 = $fa_load->invoke( fa() );
-
+		$fa_load->invoke( fa() );
+		$load_spec2 = fa()->load_spec();
 		$this->assertNotNull( $load_spec2 );
 
 		$this->assertEquals( $load_spec1, $load_spec2 );
+	}
+
+	/**
+	 * Since there was no webfont shim in 5.0.x, after throwing an exception,
+	 * fa()->load_spec() should remain null, and fa()->options() should remain unchanged.
+	 */
+	public function test_5_0_webfont_shim_null_no_changes_saved() {
+		global $fa_load;
+
+		$original_options = fa()->options();
+
+		$new_options = array_replace_recursive($original_options, array( 'version' => '5.0.9' ));
+
+		// load_spec should be null before
+		$this->assertNull(fa()->load_spec());
+
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'method' => 'webfont',
+				'v4shim' => 'require',
+				'clientVersion' => '1',
+			)
+		);
+
+		try {
+			$fa_load->invoke( fa(), $new_options );
+		} catch( FontAwesome_ConfigurationException $e ){
+			// no-op.
+		}
+
+		// load_spec should also be null after
+		$this->assertNull( fa()->load_spec() );
+
+		// no changes should have been saved to options
+		$this->assertEquals($original_options, fa()->options());
 	}
 	// TODO: test where the ReleaseProvider would return a null integrity key, both for webfont and svg.
 }

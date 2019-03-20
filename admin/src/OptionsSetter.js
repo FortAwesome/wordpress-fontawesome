@@ -43,7 +43,7 @@ class OptionsSetter extends React.Component {
     const newState = {
       lastProps: nextProps,
       pseudoElements: nextProps.currentOptions.adminClientLoadSpec.pseudoElements || UNSPECIFIED,
-      version: nextProps.currentOptions.adminClientLoadSpec.version || UNSPECIFIED,
+      version: nextProps.currentOptions.version || UNSPECIFIED,
       v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
       method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
       usePro: !!nextProps.currentOptions.usePro,
@@ -104,9 +104,9 @@ class OptionsSetter extends React.Component {
           name: adminClientInternal,
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
           v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
-          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
-          version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
+          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements
         },
+        version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         usePro: this.state.usePro,
         removeUnregisteredClients: this.state.removeUnregisteredClients
       }
@@ -153,7 +153,7 @@ class OptionsSetter extends React.Component {
               <span className={styles["label-hint"]}>
                 Requires a subscription.
                 <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
-                <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/domains"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+                <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
               </span>
             </td>
           </tr>
@@ -223,7 +223,7 @@ class OptionsSetter extends React.Component {
           </tr>
         </tbody>
       </table>
-      <p className="submit">
+      <div className="submit">
         <input
           type="submit"
           name="submit"
@@ -240,12 +240,14 @@ class OptionsSetter extends React.Component {
                   { submitMessage }
                 </span>
               </span>
-            : <span className={ classnames(styles['submit-status'], styles['fail']) }>
-                <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
-                <span className={ styles['explanation'] }>
+            : <div className={ classnames(styles['submit-status'], styles['fail']) }>
+                <div className={ classnames(styles['fail-icon-container']) }>
+                  <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
+                </div>
+                <div className={ styles['explanation'] }>
                   { submitMessage }
-                </span>
-              </span>
+                </div>
+              </div>
           )
         }
         {isSubmitting &&
@@ -253,7 +255,7 @@ class OptionsSetter extends React.Component {
             <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
           </span>
         }
-      </p>
+      </div>
     </div>
 
   }
