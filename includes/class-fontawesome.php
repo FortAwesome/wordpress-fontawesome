@@ -14,7 +14,6 @@ use \Exception, \Error, \InvalidArgumentException;
  * @ignore
  */
 require_once trailingslashit( __DIR__ ) . '../defines.php';
-require_once trailingslashit( FONTAWESOME_VENDOR_DIR ) . 'autoload.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
