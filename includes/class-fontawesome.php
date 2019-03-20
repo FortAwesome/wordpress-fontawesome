@@ -1400,7 +1400,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			 *
 			 * @since 4.0.0
 			 */
-			do_action( 'font_awesome_enqueued', $load_spec );
+			do_action( 'font_awesome_enqueued' );
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort

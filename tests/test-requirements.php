@@ -44,9 +44,9 @@ class RequirementsTest extends \WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assert_defaults( $load_spec );
+			$this->assert_defaults( fa()->load_spec() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -81,9 +81,9 @@ class RequirementsTest extends \WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
-			$this->assert_defaults( $load_spec );
+			$this->assert_defaults( fa()->load_spec() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
@@ -150,8 +150,9 @@ class RequirementsTest extends \WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
+			$load_spec = fa()->load_spec();
 			$this->assertEquals( 'svg', $load_spec['method'] );
 			$this->assertTrue( $load_spec['v4shim'] );
 		};
@@ -186,8 +187,9 @@ class RequirementsTest extends \WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
 			$enqueued = true;
+			$load_spec = fa()->load_spec();
 			$this->assertEquals( 'svg', $load_spec['method'] );
 			$this->assertTrue( $load_spec['v4shim'] );
 		};
@@ -227,7 +229,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
+			function() {
+				$load_spec = fa()->load_spec();
 				$this->assertEquals( 'svg', $load_spec['method'] );
 				$this->assertTrue( $load_spec['v4shim'] );
 			}
@@ -297,7 +300,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
+			function() {
+				$load_spec = fa()->load_spec();
 				$this->assertEquals( 'svg', $load_spec['method'] );
 				$this->assertFalse( $load_spec['pseudoElements'] );
 				$this->assertFalse( fa()->using_pseudo_elements() );
@@ -324,7 +328,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_enqueued',
-			function( $load_spec ) {
+			function() {
+				$load_spec = fa()->load_spec();
 				$this->assertEquals( 'webfont', $load_spec['method'] );
 				$this->assertTrue( $load_spec['pseudoElements'] );
 				$this->assertTrue( fa()->using_pseudo_elements() );
@@ -778,7 +783,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
+			$load_spec = fa()->load_spec();
 			$enqueued = true;
 			$this->assertEquals( 'webfont', $load_spec['method'] );
 			$this->assertTrue( $load_spec['pseudoElements'] );
@@ -825,7 +831,8 @@ class RequirementsTest extends \WP_UnitTestCase {
 		);
 
 		$enqueued          = false;
-		$enqueued_callback = function( $load_spec ) use ( &$enqueued ) {
+		$enqueued_callback = function() use ( &$enqueued ) {
+			$load_spec = fa()->load_spec();
 			$enqueued = true;
 			$this->assertEquals( 'webfont', $load_spec['method'] );
 			$this->assertTrue( $load_spec['pseudoElements'] );
