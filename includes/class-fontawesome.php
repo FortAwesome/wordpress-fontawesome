@@ -757,26 +757,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			}
 
 			if ( isset( $load_spec ) ) {
-				/**
-				 * We have a load_spec, whether by retrieving a previously build (locked) one or by building a new one.
-				 * Now enqueue a configuration of Font Awesome that is the result of combining this load spec
-				 * with the options specified by the site admin.
-				 *
-				 * It's possible that while this load_spec is valid unto itself, but there is some incompatibility
-				 * between it and new options being set by the site owner. We won't know if it's totally successful unless
-				 * enqueue() runs without throwing an exception.
-				 *
-				 * Only then should we set $this->load_spec and update the options in the db.
-				 */
-				$this->enqueue(
-					$load_spec,
-					[
-						'removeUnregisteredClients' => $this->options()['removeUnregisteredClients'],
-						'usePro'                    => $current_options['usePro'],
-						'version'                   => $current_options['version'],
-					]
-				);
+				$finalized_load_resources = $this->finalize_load_resources( $load_spec, $current_options );
 
+				/**
+				 * Only now have we completed all of the validation and resolution of all requirements, including
+				 * both those in the load_spec and the options, accounting for any dependencies there may be
+				 * between them.
+				 *
+				 * So we'll save any changes, and then enqueue the result.
+				 *
+				 * We need to update/save both the options and the load_spec at least before firing the
+				 * font_awesome_enqueued action, because clients may be expecting to query this Font Awesome
+				 * object in order to detect the configuration state.
+				 */
+
+				$this->enqueue( $finalized_load_resources );
+
+				// Save any options that need saving.
 				if ( ! $using_locked_load_spec ) {
 					wp_cache_delete( 'alloptions', 'options' );
 					$current_options['lockedLoadSpec'] = $load_spec;
@@ -789,6 +786,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					}
 				}
 
+				// Update the load spec.
 				$this->load_spec = $load_spec;
 
 				/**
@@ -1241,21 +1239,32 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			return array_key_exists( 'value', $requirement ) ? $requirement['value'] : $default;
 		}
 
-		// See comments above on load(), regarding "load_spec" vs. "options" (which are here referred to as "params").
-		protected function enqueue( $load_spec, $params ) {
-			$release_provider = $this->release_provider();
-
-			if ( ! isset( $params['removeUnregisteredClients'] ) ) {
+		/**
+		 * Once this runs through successfully and returns a resource collection, we are sure that we have successfully
+		 * resolved everything required to enqueue the assets.
+		 *
+		 * What's returned by this function is safe to pass on to enqueue()
+		 *
+		 * @param $load_spec
+		 * @param $options
+		 *
+		 * @return array
+		 * @throws FontAwesome_ConfigurationException|FontAwesome_NoReleasesException|\InvalidArgumentException
+		 */
+		protected function finalize_load_resources( $load_spec, $options ) {
+			if ( ! isset( $options['removeUnregisteredClients'] ) ) {
 				throw new InvalidArgumentException( 'missing param: removeUnregisteredClients' );
 			}
 
-			if ( ! isset( $params['usePro'] ) ) {
+			if ( ! isset( $options['usePro'] ) ) {
 				throw new InvalidArgumentException( 'missing param: usePro' );
 			}
 
-			if ( ! isset( $params['version'] ) ) {
+			if ( ! isset( $options['version'] ) ) {
 				throw new InvalidArgumentException( 'missing param: version' );
 			}
+
+			$release_provider = $this->release_provider();
 
 			$method  = $load_spec['method'];
 			$use_svg = false;
@@ -1269,9 +1278,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				);
 			}
 
-			$version = 'latest' === $params['version']
+			$version = 'latest' === $options['version']
 				? $this->get_latest_version()
-				: $params['version'];
+				: $options['version'];
 
 			/*
 			 * For now, we're hardcoding the style_opt as 'all'. Eventually, we can open up the rest of the
@@ -1281,13 +1290,30 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				$version,
 				'all',
 				[
-					'use_pro'  => $params['usePro'],
+					'use_pro'  => $options['usePro'],
 					'use_svg'  => $use_svg,
 					'use_shim' => $load_spec['v4shim'],
 				]
 			);
 
-			if ( 'webfont' === $method ) {
+			return array(
+				'resource_collection' => $resource_collection,
+				'load_spec'           => $load_spec,
+				'options'             => $options,
+			);
+		}
+
+		/**
+		 * This wants to receive params as returned by resolve_resource_collection(), which are guaranteed to work.
+		 *
+		 * @param $params
+		 */
+		protected function enqueue( $params ) {
+			$resource_collection = $params['resource_collection'];
+			$options             = $params['options'];
+			$load_spec           = $params['load_spec'];
+
+			if ( 'webfont' === $load_spec['method'] ) {
 				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 				wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
 
@@ -1343,7 +1369,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-				if ( $this->using_pseudo_elements() ) {
+				if ( $load_spec['pseudoElements'] ) {
 					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 				}
 
@@ -1407,9 +1433,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			// Look for unregistered clients.
 			add_action(
 				'wp_enqueue_scripts',
-				function() use ( $obj, $params ) {
+				function() use ( $obj, $options ) {
 					$obj->detect_unregistered_clients();
-					if ( $params['removeUnregisteredClients'] ) {
+					if ( $options['removeUnregisteredClients'] ) {
 						$obj->remove_unregistered_clients();
 					}
 				},

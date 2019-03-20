@@ -10,6 +10,8 @@
  * License:           GPLv3
  */
 
+use function FortAwesome\fa;
+
 defined( 'WPINC' ) || die;
 define( 'ETA_PLUGIN_VERSION', '0.0.1' );
 define( 'ETA_PLUGIN_LOG_PREFIX', 'eta-plugin' );

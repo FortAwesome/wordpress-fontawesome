@@ -340,55 +340,37 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$fa_load->invoke( fa() );
 	}
 
-	/**
-	 * The Font Awesome version defaults to latest in FontAwesome::DEFAULT_USER_OPTIONS, and can be changed
-	 * through the setting of options by the site owner, but it can longer be constrained by clients.
-	 * So if any clients register a version constraint, ignore it.
-	 *
-	 * @group version
-	 */
-	public function test_incompatible_version_ignored() {
+	public function test_pseudo_element_config_enqueued_when_svg() {
 		add_action(
 			'font_awesome_requirements',
 			function() {
 				fa()->register(
 					array(
-
-						'name'    => "clientB",
-						'version' => '5.0.12',
-						'clientVersion' => '1',
-					)
-				);
-
-				fa()->register(
-					array(
-						'name'    => 'clientC',
-						'version' => '5.0.11',
+						'name'   => 'test',
+						'method' => 'svg',
+						'pseudoElements' => 'require',
 						'clientVersion' => '1',
 					)
 				);
 			}
 		);
 
-		$enqueued          = false;
-		$enqueued_callback = function() use ( &$enqueued ) {
-			$enqueued = true;
-			// The default version should be the latest version
-			$this->assertEquals( fa()->get_latest_version(), fa()->version() );
-		};
-		add_action( 'font_awesome_enqueued', $enqueued_callback );
-
-		$failed          = false;
-		$failed_callback = function( $data ) use ( &$failed ) {
-			$failed = true;
-		};
-		add_action( 'font_awesome_failed', $failed_callback );
+		add_action(
+			'font_awesome_enqueued',
+			function() {
+				$load_spec = fa()->load_spec();
+				$this->assertEquals( 'svg', $load_spec['method'] );
+				$this->assertTrue( $load_spec['pseudoElements'] );
+				$this->assertTrue( fa()->using_pseudo_elements() );
+			}
+		);
 
 		global $fa_load;
+		$fa_load->invoke( fa() );
 
-		$this->assertNotNull( $fa_load->invoke( fa() ) );
-		$this->assertFalse( $failed );
-		$this->assertTrue( $enqueued );
+		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
+
+		$this->expectOutputRegex('/searchPseudoElements:\s*true/');
 	}
 
 	public function client_requirement_exists( $name, $reqs ) {
