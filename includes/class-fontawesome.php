@@ -21,7 +21,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configuration-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :

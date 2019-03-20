@@ -16,7 +16,7 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configuration-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.

@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configuration-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception, \ReflectionMethod;
 
