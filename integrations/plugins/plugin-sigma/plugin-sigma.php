@@ -21,14 +21,12 @@ use function FortAwesome\fa;
 add_action(
 	'font_awesome_requirements',
 	function() {
-		if ( class_exists( 'FontAwesome' ) ) {
-			fa()->register(
-				array(
-					'name'          => SIGMA_PLUGIN_LOG_PREFIX,
-					'clientVersion' => SIGMA_PLUGIN_VERSION,
-				)
-			);
-		}
+		fa()->register(
+			array(
+				'name'          => SIGMA_PLUGIN_LOG_PREFIX,
+				'clientVersion' => SIGMA_PLUGIN_VERSION,
+			)
+		);
 	}
 );
 
@@ -49,10 +47,13 @@ add_action(
 add_action(
 	'font_awesome_enqueued',
 	function( $load_spec ) {
-		if ( class_exists( 'FontAwesome' ) ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( SIGMA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . fa()->version() );
-		}
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		error_log(
+			SIGMA_PLUGIN_LOG_PREFIX .
+			' font_awesome_enqueued: method: ' .
+			fa()->fa_method() .
+			', ver: ' .
+			fa()->version() );
 	},
 	10,
 	3

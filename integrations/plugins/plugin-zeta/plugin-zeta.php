@@ -14,28 +14,32 @@ defined( 'WPINC' ) || die;
 define( 'ZETA_PLUGIN_VERSION', '0.0.1' );
 define( 'ZETA_PLUGIN_LOG_PREFIX', 'zeta-plugin' );
 
+use function FortAwesome\fa;
+
 add_action(
 	'font_awesome_requirements',
 	function() {
-		if ( class_exists( 'FontAwesome' ) ) {
-			fa()->register(
-				array(
-					'name'    => ZETA_PLUGIN_LOG_PREFIX,
-					'clientVersion' => ZETA_PLUGIN_VERSION,
-					'method' => 'svg',
-				)
-			);
-		}
+		fa()->register(
+			array(
+				'name'    => ZETA_PLUGIN_LOG_PREFIX,
+				'clientVersion' => ZETA_PLUGIN_VERSION,
+				'method' => 'svg',
+			)
+		);
 	}
 );
 
 add_action(
 	'font_awesome_enqueued',
-	function( $load_spec ) {
-		if ( class_exists( 'FontAwesome' ) ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( ZETA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . fa()->version() );
-		}
+	function() {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		error_log(
+			ZETA_PLUGIN_LOG_PREFIX .
+			' font_awesome_enqueued: method: ' .
+			fa()->fa_method() .
+			', ver: ' .
+			fa()->version()
+		);
 	},
 	10,
 	3

@@ -19,15 +19,13 @@ define( 'ETA_PLUGIN_LOG_PREFIX', 'eta-plugin' );
 add_action(
 	'font_awesome_requirements',
 	function() {
-		if ( class_exists( 'FontAwesome' ) ) {
-			fa()->register(
-				array(
-					'name'           => ETA_PLUGIN_LOG_PREFIX,
-					'pseudoElements' => 'require',
-					'clientVersion'  => ETA_PLUGIN_VERSION,
-				)
-			);
-		}
+		FortAwesome\fa()->register(
+			array(
+				'name'           => ETA_PLUGIN_LOG_PREFIX,
+				'pseudoElements' => 'require',
+				'clientVersion'  => ETA_PLUGIN_VERSION,
+			)
+		);
 	}
 );
 
