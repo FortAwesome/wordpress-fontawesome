@@ -1,9 +1,9 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
-Stable tag: 4.0.0-rc7
+Stable tag: 4.0.0-rc8
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.0
+Tested up to: 5.1.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -118,7 +118,7 @@ Here's what you can currently configure on the admin settings page:
 
   [Font Awesome Pro](https://fontawesome.com/pro) gets you lots more icons, services, and support, and a steady stream of new icons when you have an active subscription. One of those Pro services is our Pro CDN. To load Font Awesome from the Pro CDN, including all the Pro icons, check "Use Pro" on the admin settings page.
 
-  You'll need to first make sure you've configured your [allowed CDN domains in your fontawesome.com account settings](https://fontawesome.com/account/domains).
+  You'll need to first make sure you've configured your [allowed CDN domains in your fontawesome.com account settings](https://fontawesome.com/account/cdn).
 
 - Remove Unregistered Clients
 
@@ -185,6 +185,13 @@ Find the Font Awesome admin settings page either under the "Settings" menu on th
 [Font Awesome Pro](https://fontawesome.com/pro) subscribers who want to enable Pro icons on their WordPress sites, must first [add their allowed domains](https://fontawesome.com/account/domains) before enabling the "Use Pro" option on the plugin's settings page.
 
 == Changelog ==
+
+= 4.0.0-rc8 =
+
+* Remove dependence on third party libraries, eliminating a class of potential conflicts with other plugins.
+
+* Breaking changes to the API used by theme and plugin developers (no breaking changes for WordPress site owners).
+  See [commit log](https://github.com/FortAwesome/wordpress-fontawesome/commit/80f973b4a0f6ac09cbb4dc3ecc1ae2964ef01d32)
 
 = 4.0.0-rc7 =
 
