@@ -63,6 +63,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertTrue( $enqueued );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+		$this->assertEquals( 'webfont', fa()->fa_method() );
 	}
 
 	public function test_all_default_with_multiple_clients() {
@@ -103,6 +104,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertArrayHasKey( 'Client A', fa()->requirements() );
 		$this->assertArrayHasKey( 'Client B', fa()->requirements() );
 		$this->assertArrayHasKey( FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL, fa()->requirements() );
+		$this->assertEquals( 'webfont', fa()->fa_method() );
 	}
 
 	public function test_register_without_name() {
@@ -164,6 +166,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 		$this->assertTrue( $enqueued );
+		$this->assertEquals( 'svg', fa()->fa_method() );
 	}
 
 	public function test_duplicate_client_registry() {

@@ -1187,6 +1187,19 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
+		 * Indicates which Font Awesome method is being loaded: 'webfont' or 'svg'.
+		 *
+		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @return string
+		 */
+		public function fa_method() {
+			return $this->load_spec['method'];
+		}
+
+		/**
 		 * Reports the version of Font Awesome assets being loaded.
 		 *
 		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
