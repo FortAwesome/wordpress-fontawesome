@@ -1225,6 +1225,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
+		 * Indicates whether Font Awesome is being loaded with a version 4 shim.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @return boolean
+		 */
+		public function v4shim() {
+			return boolval($this->load_spec['v4shim']);
+		}
+
+		/**
 		 * Indicates whether Font Awesome is being loaded with support for CSS pseudo-elements.
 		 *
 		 * Its results are only valid after the `font_awesome_enqueued` action has been triggered.
