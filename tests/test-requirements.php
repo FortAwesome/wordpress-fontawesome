@@ -67,6 +67,10 @@ class RequirementsTest extends \WP_UnitTestCase {
 	}
 
 	public function test_all_default_with_multiple_clients() {
+		// Before loading
+		$this->assertNull(fa()->fa_method());
+		$this->assertFalse(fa()->v4shim());
+
 		fa()->register(
 			array(
 				'name' => 'Client A',

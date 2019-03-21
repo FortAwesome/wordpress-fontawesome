@@ -1189,14 +1189,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * Indicates which Font Awesome method is being loaded: 'webfont' or 'svg'.
 		 *
-		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
+		 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @return string
+		 * @return string|null
 		 */
 		public function fa_method() {
-			return $this->load_spec['method'];
+			return isset( $this->load_spec['method'] ) ? $this->load_spec['method'] : null;
 		}
 
 		/**
@@ -1227,12 +1227,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * Indicates whether Font Awesome is being loaded with a version 4 shim.
 		 *
+		 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
+		 *
 		 * @since 4.0.0
 		 *
 		 * @return boolean
 		 */
 		public function v4shim() {
-			return boolval( $this->load_spec['v4shim'] );
+			return isset( $this->load_spec['v4shim'] ) ? boolval( $this->load_spec['v4shim'] ) : false;
 		}
 
 		/**
