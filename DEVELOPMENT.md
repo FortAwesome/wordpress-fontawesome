@@ -474,9 +474,9 @@ This will snapshot `trunk` as a new release tag. Replace the example tag name wi
 $ svn cp trunk tags/42.1.2 
 ```
 
-13. Update Stable Tag in `readme.txt`
+13. Update `Stable tag` and `Tested up to` tags in `readme.txt`
 
-We've now got three copies of `readme.txt` that should all be updated with the new `Stable Tag`
+We've now got three copies of `readme.txt` that should all be updated with new tag values:
 
 - `wp-svn/trunk/readme.txt`
 - `wp-svn/tags/4.0.0-rc1/readme.txt`

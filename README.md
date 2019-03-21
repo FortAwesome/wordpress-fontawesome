@@ -276,8 +276,9 @@ We have made a REST API endpoint available on `fontawesome.com` which this plugi
 
 ## Caching the Load Specification
 
-This plugin computes a [_load specification_](https://fortawesome.github.io/wordpress-fontawesome/classes/FontAwesome.html#method_load_spec), 
-which is the set of version and configuration options that satisfy the requirements of all registered components.
+This plugin computes a _load specification_, 
+which is the set of version and configuration options that satisfy the requirements of all registered clients, including
+the WordPress site owner via the options page and any themes or plugins that depend on this Font Awesome plugin.
 
 To compute that requires retrieving the latest metadata about Font Awesome releases from a REST API on fontawesome.com
 and reducing all of the requirements registered by all clients of this Font Awesome plugin.
