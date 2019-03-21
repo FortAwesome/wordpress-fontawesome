@@ -311,6 +311,12 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertNull( $data['conflicts'] );
 		$this->assertNotNull($data['currentLoadSpec']);
 		$this->assertTrue($data['currentLoadSpecLocked']);
+
+		$this->assertArrayHasKey( 'clientRequirements', $data );
+		$this->assertEquals(3, count($data['clientRequirements']));
+		$this->assertArrayHasKey( 'user', $data['clientRequirements'] );
+		$this->assertArrayHasKey( 'foo', $data['clientRequirements'] );
+		$this->assertArrayHasKey( 'bar', $data['clientRequirements'] );
 	}
 
 	function test_scenario_b1() {
