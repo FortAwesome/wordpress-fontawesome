@@ -397,7 +397,24 @@ the plugin by "upload" in the WordPress admin dashboard.
 `admin/build`: production build of the admin UI React app. This need to be committed so that it
 can be included in the composer package (which is really just a pull of this repo)  
 
-8. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
+8. Run through some manual acceptance testing
+
+Load up the `integration` WordPress environment in this repo (see above for how to do that).
+
+Install the Font Awesome plugin from the admin dashboard by uploading the `font-awesome.zip` file
+that was created in the previous step.
+
+- activate and deactivate the plugin: expect no errors
+- activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
+- expect to see all of their client requirements listed on the options page under Client Requirements
+- expect to see `plugin-gamma` and `plugin-delta` listed in the unregistered clients section
+- expect to see the over all stat of the plugin to be good/success (such as showing a green thumb icon)
+- change settings on the plugin options page to enable Pro and remove unregistered clients
+- view the site: expect to see all of those integration plugins doing their thing with no missing icons
+- deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
+- ( If you know how to properly test with `plugin-sigma`--it's more complicated--go for it. )
+
+9. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
 
 To check it out initially:
 
@@ -413,7 +430,7 @@ $ svn up
 $ cd ..
 ``` 
 
-9. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
+10. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
 
 ```bash
 $ composer dist2trunk
@@ -423,7 +440,7 @@ This script will just `rm *` anything under `wp-svn/trunk/*` and `wp-svn/assets/
 layout changes the file list from the previous release, or if there are changes to the list of files in `wp-svn/assets`,
 they will show up as file changes when you do `svn stat`.
 
-10. Make sure the svn trunk makes sense with respect to added or removed files
+11. Make sure the svn trunk makes sense with respect to added or removed files
 
 ```bash
 $ cd wp-svn
@@ -432,7 +449,19 @@ $ svn stat
 
 If there are files with `!` status, that indicates they no longer exist and you should do `svn delete` on each of them.
 
+You can do `svn delete` on lots of files with that status at once like this:
+
+```bash
+$ svn stat | grep '^\!' | sed 's/^\![\ ]*trunk/trunk/' | xargs svn delete
+``` 
+
 If there are files with `?` status, that indicates they are being added and you should do `svn add` on each of them.
+
+You can do `svn add` on lots of files with that status at once like this:
+
+```bash
+svn stat | grep '^\?' | sed 's/^\?[\ ]*trunk/trunk/' | xargs svn add
+```
 
 Pay attention to files under either `wp-svn/assets` or `wp-svn/trunk`.
 
@@ -445,7 +474,7 @@ If there's an editor dotfile or other directory that should be ignored by `svn`,
 $ svn propset svn:ignore .idea .
 ``` 
 
-11. Check in the new trunk
+12. Check in the new trunk
 
 Make sure that the `Stable Tag` in `wp-svn/trunk/readme.txt` still reflects the _previous_ release at this point.
 It should point to the previous release that has a subdirectory under `tags/`.
@@ -463,7 +492,7 @@ password. After the first `svn ci` caches the credentials, you probably won't ne
 
 [See also tips on using SVN with WordPress Plugins](https://developer.wordpress.org/plugins/wordpress-org/how-to-use-subversion/#editing-existing-files).
 
-12. Create the new svn release tag
+13. Create the new svn release tag
 
 First, make sure `svn stat` is clean. We want to make sure that the trunk is all committed and clean before we take a 
 snapshot of it for the release tag.
@@ -474,15 +503,15 @@ This will snapshot `trunk` as a new release tag. Replace the example tag name wi
 $ svn cp trunk tags/42.1.2 
 ```
 
-13. Update `Stable tag` and `Tested up to` tags in `readme.txt`
+14. Update `Stable tag` and `Tested up to` tags in `readme.txt`
 
 We've now got three copies of `readme.txt` that should all be updated with new tag values:
 
 - `wp-svn/trunk/readme.txt`
-- `wp-svn/tags/4.0.0-rc1/readme.txt`
+- `wp-svn/tags/<new_tag_name>/readme.txt`
 - `readme.txt` (in the git repo)
 
-14. Check in the latest changes to svn.
+15. Check in the latest changes to svn.
 
 (Again, use the real version number)
 
@@ -491,10 +520,6 @@ From the `wp-svn` dir:
 ```bash
 $ svn ci -m 'Release 42.1.2'
 ```
-
-15. Now update the Stable Tag in the `readme.txt` in the git repo
-
-Set it to `42.1.2` the new release tag.
 
 16. `git add` and `git commit` all that would have been changed so far:
 
