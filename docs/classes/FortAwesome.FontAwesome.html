@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-918151044"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-864557225"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-918151044" class="accordion-body collapse in">
+            <div id="namespace-864557225" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-437313721"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-326140452"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-437313721" class="accordion-body collapse ">
+            <div id="namespace-326140452" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -253,7 +253,9 @@ plugin's metadata using methods such as:</p>
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_unregistered_clients" class="">unregistered_clients()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_load_spec" class="deprecated">load_spec()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_using_pro" class="">using_pro()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_fa_method" class="">fa_method()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_version" class="">version()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_v4shim" class="">v4shim()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_using_pseudo_elements" class="">using_pseudo_elements()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_register" class="">register()</a><br />
                                                             </section>
@@ -1339,6 +1341,41 @@ For example, one client may have required <code>'method' =&gt; 'svg'</code> whil
 
                                     <div class="row-fluid">
         <div class="span8 content class">
+            <a id="method_fa_method" name="method_fa_method" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">fa_method()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">fa_method() : string|null</pre>
+                <p><em>Indicates which Font Awesome method is being loaded: &#039;webfont&#039; or &#039;svg&#039;.</em></p>
+                <p>Its result is valid only after the <code>font_awesome_enqueued</code> has been triggered.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            4.0.0                                
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
             <a id="method_version" name="method_version" class="anchor"></a>
             <article class="method">
                 <h3 class="public ">version()</h3>
@@ -1361,6 +1398,41 @@ them to do so if you detect that the current version of Font Awesome being loade
                 
                                     <h4>Returns</h4>
                     string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            4.0.0                                
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_v4shim" name="method_v4shim" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">v4shim()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">v4shim() : boolean</pre>
+                <p><em>Indicates whether Font Awesome is being loaded with a version 4 shim.</em></p>
+                <p>Its result is valid only after the <code>font_awesome_enqueued</code> has been triggered.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
                                     				
                             </article>
         </div>
@@ -1696,7 +1768,7 @@ resolved everything required to enqueue the assets.</em></p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on March 20th, 2019 at 23:24.
+                    on March 21st, 2019 at 14:26.
                 </section>
             </section>
         </section>
