@@ -1232,7 +1232,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return boolean
 		 */
 		public function v4shim() {
-			return boolval($this->load_spec['v4shim']);
+			return boolval( $this->load_spec['v4shim'] );
 		}
 
 		/**
