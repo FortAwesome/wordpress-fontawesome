@@ -25,9 +25,14 @@ add_action('init', function(){
 });
 
 add_action('font_awesome_enqueued', function($loadSpec){
-  if ( class_exists('FontAwesome') ) {
-    error_log( GAMMA_PLUGIN_LOG_PREFIX . " font_awesome_enqueued: " . "method: " . $loadSpec['method'] . ", ver: " . fa()->version());
-  }
+	error_log(
+		GAMMA_PLUGIN_LOG_PREFIX .
+		" font_awesome_enqueued: " .
+		"method: " .
+		FortAwesome\fa()->fa_method() .
+		", ver: " .
+		FortAwesome\fa()->version()
+	);
 }, 10, 3);
 
 add_filter('the_content', function($content){

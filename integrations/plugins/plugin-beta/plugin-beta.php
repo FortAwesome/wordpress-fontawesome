@@ -14,28 +14,32 @@ defined( 'WPINC' ) || die;
 define( 'BETA_PLUGIN_VERSION', '0.0.1' );
 define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 
+use function FortAwesome\fa;
+
 add_action(
 	'font_awesome_requirements',
 	function() {
-		if ( class_exists( 'FontAwesome' ) ) {
-			fa()->register(
-				array(
-					'name'          => BETA_PLUGIN_LOG_PREFIX,
-					'clientVersion' => BETA_PLUGIN_VERSION,
-					'v4shim'        => 'require',
-				)
-			);
-		}
+		fa()->register(
+			array(
+				'name'          => BETA_PLUGIN_LOG_PREFIX,
+				'clientVersion' => BETA_PLUGIN_VERSION,
+				'v4shim'        => 'require',
+			)
+		);
 	}
 );
 
 add_action(
 	'font_awesome_enqueued',
-	function( $load_spec ) {
-		if ( class_exists( 'FontAwesome' ) ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( BETA_PLUGIN_LOG_PREFIX . ' font_awesome_enqueued: method: ' . $load_spec['method'] . ', ver: ' . fa()->version() );
-		}
+	function() {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		error_log(
+			BETA_PLUGIN_LOG_PREFIX .
+			' font_awesome_enqueued: method: ' .
+			fa()->fa_method() .
+			', ver: ' .
+			fa()->version()
+		);
 	},
 	10,
 	3

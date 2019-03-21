@@ -21,14 +21,12 @@ add_action(
 	'font_awesome_requirements',
 	function() {
 		fa()->satisfies_or_warn( [ [ '0.0.1', '<' ] ], 'Theta' );
-		if ( class_exists( 'FortAwesome\FontAwesome' ) ) {
-			fa()->register(
-				array(
-					'name'          => THETA_PLUGIN_LOG_PREFIX,
-					'clientVersion' => THETA_PLUGIN_VERSION,
-				)
-			);
-		}
+		fa()->register(
+			array(
+				'name'          => THETA_PLUGIN_LOG_PREFIX,
+				'clientVersion' => THETA_PLUGIN_VERSION,
+			)
+		);
 	}
 );
 
