@@ -64,6 +64,15 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 		$this->assertEquals( 'webfont', fa()->fa_method() );
+
+		wp_head();
+
+		# Make sure the main css looks right
+		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK\/iSvJ\+a4\+0owXq79v\+lsFkW54bOGbiDQ"[\s]+crossorigin="anonymous"[\s]*\/>/');
+		# Make sure the v4shim css looks right
+		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-W14o25dsDf2S\/y9FS68rJKUyCoBGkLwr8owWTSTTHj4LOoHdrgSxw1cmNQMULiRb"[\s]+crossorigin="anonymous"[\s]*\/>/');
+		# Make sure that the order is right: main css, followed by v4shim css
+		$this->expectOutputRegex('/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s');
 	}
 
 	public function test_all_default_with_multiple_clients() {
@@ -170,6 +179,17 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertTrue( $enqueued );
 		$this->assertEquals( 'svg', fa()->fa_method() );
 		$this->assertTrue( fa()->v4shim() );
+
+		wp_head();
+
+		# Make sure the main <script> looks right
+		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-4oV5EgaV02iISL2ban6c\/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo\+Khy"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/');
+
+		# Make sure the v4shim <script> looks right
+		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-rn4uxZDX7xwNq5bkqSbpSQ3s4tK9evZrXAO1Gv9WTZK4p1\+NFsJvOQmkos19ebn2"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
+
+		# Make sure that the order is right: main script, followed by v4shim script
+		$this->expectOutputRegex('/<script.+?all\.js.+?<script.+?v4-shims\.js/s');
 	}
 
 	public function test_duplicate_client_registry() {
