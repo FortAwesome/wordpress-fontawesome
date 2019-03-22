@@ -4,6 +4,8 @@ namespace FortAwesome;
  * Class RequirementsTest
  *
  * @noinspection PhpCSValidationInspection
+ * @preserveGlobalState disabled
+ * @runTestsInSeparateProcesses
  */
 // phpcs:ignoreFile Squiz.Commenting.ClassComment.Missing
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
@@ -462,7 +464,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 	}
 
 	/**
