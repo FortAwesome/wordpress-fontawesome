@@ -415,6 +415,88 @@ class RequirementsTest extends \WP_UnitTestCase {
 	/**
 	 * @group pro
 	 */
+	public function test_pro_webfont_assets_enqueued() {
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all', array(
+			'use_pro' => true,
+			'use_svg' => false,
+			'use_shim' => true,
+		) );
+
+		mock_singleton_method(
+			$this,
+			FontAwesome_Release_Provider::class,
+			'get_resource_collection',
+			function( $method ) use( $resource_collection ) {
+				$method->willReturn( $resource_collection );
+			}
+		);
+
+		global $fa_load;
+		$fa_load->invoke( fa() );
+
+		wp_head();
+
+		# Make sure the main css looks right
+		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-TXfwrfuHVznxCssTxWoPZjhcss\/hp38gEOH8UPZG\/JcXonvBQ6SlsIF49wUzsGno"[\s]+crossorigin="anonymous"[\s]*\/>/');
+		# Make sure the v4shim css looks right
+		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-2QRS8Mv2zxkE2FAZ5\/vfIJ7i0j\+oF15LolHAhqFp9Tm4fQ2FEOzgPj4w\/mWOTdnC"[\s]+crossorigin="anonymous"[\s]*\/>/');
+		# Make sure that the order is right: main css, followed by v4shim css
+		$this->expectOutputRegex('/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s');
+	}
+
+	/**
+	 * @group pro
+	 */
+	public function test_pro_svg_assets_enqueued() {
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all', array(
+			'use_pro' => true,
+			'use_svg' => true,
+			'use_shim' => true,
+		) );
+
+		mock_singleton_method(
+			$this,
+			FontAwesome_Release_Provider::class,
+			'get_resource_collection',
+			function( $method ) use( $resource_collection ) {
+				$method->willReturn( $resource_collection );
+			}
+		);
+
+		add_action(
+			'font_awesome_requirements',
+			function() {
+				fa()->register(
+					array(
+						'name' => 'test',
+						'clientVersion' => '1',
+						'method' => 'svg',
+						'v4shim' => 'required',
+					)
+				);
+			}
+		);
+
+		global $fa_load;
+		$fa_load->invoke( fa() );
+
+		wp_head();
+
+		# Make sure the main <script> looks right
+		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-yBZ34R8uZDBb7pIwm\+whKmsCiRDZXCW1vPPn\/3Gz0xm4E95frfRNrOmAUfGbSGqN"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/');
+
+		/*
+		# Make sure the v4shim <script> looks right
+		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-rn4uxZDX7xwNq5bkqSbpSQ3s4tK9evZrXAO1Gv9WTZK4p1\+NFsJvOQmkos19ebn2"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
+
+		# Make sure that the order is right: main script, followed by v4shim script
+		$this->expectOutputRegex('/<script.+?all\.js.+?<script.+?v4-shims\.js/s');
+		*/
+	}
+
+	/**
+	 * @group pro
+	 */
 	public function test_pro_not_configured() {
 		mock_singleton_method(
 			$this,
