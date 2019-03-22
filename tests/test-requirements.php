@@ -471,7 +471,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 						'name' => 'test',
 						'clientVersion' => '1',
 						'method' => 'svg',
-						'v4shim' => 'required',
+						'v4shim' => 'require',
 					)
 				);
 			}
@@ -485,13 +485,11 @@ class RequirementsTest extends \WP_UnitTestCase {
 		# Make sure the main <script> looks right
 		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-yBZ34R8uZDBb7pIwm\+whKmsCiRDZXCW1vPPn\/3Gz0xm4E95frfRNrOmAUfGbSGqN"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/');
 
-		/*
 		# Make sure the v4shim <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-rn4uxZDX7xwNq5bkqSbpSQ3s4tK9evZrXAO1Gv9WTZK4p1\+NFsJvOQmkos19ebn2"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
+		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-aoMjEUBUPf5GpXx1WJUeTZ\/gBmGqQB1u8uUc2J5LW2xnQtJKkGulESZ\+rkoj182s"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
 
 		# Make sure that the order is right: main script, followed by v4shim script
 		$this->expectOutputRegex('/<script.+?all\.js.+?<script.+?v4-shims\.js/s');
-		*/
 	}
 
 	/**
