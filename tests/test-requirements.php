@@ -326,31 +326,6 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertTrue( fa()->using_pseudo_elements() );
 	}
 
-	public function test_pseudo_element_config_enqueued_when_svg() {
-		add_action(
-			'font_awesome_requirements',
-			function() {
-				fa()->register(
-					array(
-						'name'   => 'test',
-						'method' => 'svg',
-						'pseudoElements' => 'require',
-						'clientVersion' => '1',
-					)
-				);
-			}
-		);
-
-		global $fa_load;
-		$fa_load->invoke( fa() );
-		$this->assertTrue( fa()->using_pseudo_elements() );
-		$this->assertEquals( 'svg', fa()->fa_method() );
-
-		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
-
-		$this->expectOutputRegex('/searchPseudoElements:\s*true/');
-	}
-
 	public function client_requirement_exists( $name, $reqs ) {
 		$found = false;
 		foreach ( $reqs as $req ) {
@@ -442,7 +417,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 	}
 
 	/**
