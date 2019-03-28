@@ -1338,6 +1338,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			$options             = $params['options'];
 			$load_spec           = $params['load_spec'];
 			$license_subdomain   = $this->using_pro() ? 'pro' : 'use';
+			$version             = $options['version'];
 
 			if ( 'webfont' === $load_spec['method'] ) {
 
@@ -1372,19 +1373,27 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				if ( $load_spec['v4shim'] ) {
 					add_action(
 						'wp_enqueue_scripts',
-						function () use ( $resource_collection, $options, $license_subdomain ) {
+						function () use ( $resource_collection, $options, $license_subdomain, $version ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
 
+							$font_face = <<< EOT
+@font-face {
+    font-family: "FontAwesome";
+    font-style: normal;
+    font-weight: 900;
+    src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot"),
+         url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"),
+         url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff2") format("woff2"),
+         url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff") format("woff"),
+         url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.ttf") format("truetype"),
+         url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.svg#fontawesome") format("svg");
+}
+EOT;
+
 							wp_add_inline_style(
 								self::RESOURCE_HANDLE_V4SHIM,
-								"@font-face {\n" .
-								"    font-family: \"FontAwesome\";\n" .
-								"    font-style: normal;\n" .
-								"    font-weight: 900;\n" .
-								"    src: url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.eot\");\n" .
-								"    src: url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.eot?#iefix\") format(\"embedded-opentype\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.woff2\") format(\"woff2\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.woff\") format(\"woff\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.ttf\") format(\"truetype\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.svg#fontawesome\") format(\"svg\");\n" .
-								'}'
+								$font_face
 							);
 
 						}
