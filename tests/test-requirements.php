@@ -61,9 +61,20 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
 		$this->assertEquals( 'webfont', fa()->fa_method() );
+
+		$stuff_enqueued = false;
+
+		add_action('wp_enqueue_scripts', function () use (&$stuff_enqueued){
+			$stuff_enqueued = true;
+			$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+			$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+		}, 99);
+
+		do_action('wp_enqueue_scripts');
+
+		$this->assertTrue($stuff_enqueued);
 	}
 
 	public function test_all_default_with_multiple_clients() {
@@ -417,7 +428,17 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$stuff_enqueued = false;
+
+		add_action('wp_enqueue_scripts', function () use (&$stuff_enqueued){
+			$stuff_enqueued = true;
+			$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+		}, 99);
+
+		do_action('wp_enqueue_scripts');
+
+		$this->assertTrue($stuff_enqueued);
 	}
 
 	/**

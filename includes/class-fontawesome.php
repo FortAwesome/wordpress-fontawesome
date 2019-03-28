@@ -1337,10 +1337,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			$resource_collection = $params['resource_collection'];
 			$options             = $params['options'];
 			$load_spec           = $params['load_spec'];
+			$license_subdomain   = $this->using_pro() ? "pro" : "use";
 
 			if ( 'webfont' === $load_spec['method'] ) {
-				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-				wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
+
+				add_action('wp_enqueue_scripts', function () use ( $resource_collection ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
+				});
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
@@ -1363,8 +1367,22 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-					wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
+					add_action('wp_enqueue_scripts', function () use ( $resource_collection, $options, $license_subdomain ) {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+						wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
+
+						wp_add_inline_style(
+							self::RESOURCE_HANDLE_V4SHIM,
+							"@font-face {\n" .
+							"    font-family: \"FontAwesome\";\n" .
+							"    font-style: normal;\n" .
+							"    font-weight: 900;\n" .
+							"    src: url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.eot\");\n" .
+							"    src: url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.eot?#iefix\") format(\"embedded-opentype\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.woff2\") format(\"woff2\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.woff\") format(\"woff\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.ttf\") format(\"truetype\"), url(\"https://${license_subdomain}.fontawesome.com/releases/v" . $options['version'] . "/webfonts/fa-solid-900.svg#fontawesome\") format(\"svg\");\n" .
+							"}"
+						);
+
+					});
 
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 					// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
@@ -1391,12 +1409,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					}
 				}
 			} else {
-				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-				wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
+				add_action('wp_enqueue_scripts', function () use ( $resource_collection, $load_spec ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-				if ( $load_spec['pseudoElements'] ) {
-					wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
-				}
+
+					if ( $load_spec['pseudoElements'] ) {
+						wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
+					}
+				});
 
 				// Filter the <script> tag to add additional attributes for integrity, crossorigin, defer.
 				add_filter(
@@ -1425,8 +1446,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-					wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
+					add_action('wp_enqueue_scripts', function () use ( $resource_collection) {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+						wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
+					});
 
 					add_filter(
 						'script_loader_tag',

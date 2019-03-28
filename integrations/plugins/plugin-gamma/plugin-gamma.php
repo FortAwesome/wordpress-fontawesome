@@ -24,6 +24,8 @@ add_action('init', function(){
   );
 });
 
+wp_enqueue_style( 'plugin-gamma-style', plugins_url( 'style.css', __FILE__ ) );
+
 add_action('font_awesome_enqueued', function($loadSpec){
 	error_log(
 		GAMMA_PLUGIN_LOG_PREFIX .
@@ -40,6 +42,9 @@ add_filter('the_content', function($content){
 <div class="plugin-gamma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Gamma</h2>
   <p>Expected by plugin-gamma (v4.7.0 icon name): "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
+  <p class="group-icon">Also expected: before this paragraph, pseudo-element (v4.7.0 icon name group should become v5 users)</p>
+  <p class="facebook-icon">Also expected: before this paragraph, pseudo-element (v4.7.0 icon name facebook should become v5 facebook-f)</p>
+  <p class="hand-scissors-icon">Also expected: before this paragraph, pseudo-element (v4.7.0 icon name hand-scissors-o should become v5 hand-scissors)</p>
 </div>
 EOT;
   return $pre_content . $content;
