@@ -41,10 +41,10 @@ add_filter('the_content', function($content){
   $pre_content = <<<EOT
 <div class="plugin-gamma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Gamma</h2>
-  <p>Expected by plugin-gamma (v4.7.0 icon name): "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
-  <p class="group-icon">Also expected: before this paragraph, pseudo-element (v4.7.0 icon name group should become v5 users)</p>
-  <p class="facebook-icon">Also expected: before this paragraph, pseudo-element (v4.7.0 icon name facebook should become v5 facebook-f)</p>
-  <p class="hand-scissors-icon">Also expected: before this paragraph, pseudo-element (v4.7.0 icon name hand-scissors-o should become v5 hand-scissors)</p>
+  <p>v4.7.0 icon name: "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
+  <p class="group-icon"><code>:before</code> pseudo-element should match <code>fas fa-users</code>: <i class="fas fa-users"></i></p>
+  <p class="facebook-icon"><code>:before</code> pseudo-element should match <code>fab fa-facebook</code>: <i class="fab fa-facebook"></i></p>
+  <p class="hand-scissors-icon"><code>:before</code> pseudo-element should match <code>far fa-hand-scissors</code>: <i class="far fa-hand-scissors"></i></p>
 </div>
 EOT;
   return $pre_content . $content;
