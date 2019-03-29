@@ -5,3 +5,7 @@
 .table-header th {
   font-weight: bold;
 }
+
+button.more-less {
+  border: 0;
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faAngleDown, faAngleUp, faSpinner, faCheck, faSkull, faExternalLinkAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import styles from './OptionsSetter.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -23,7 +23,8 @@ class OptionsSetter extends React.Component {
       usePro: false,
       removeUnregisteredClients: false,
       versionOptions: null,
-      lastProps: null
+      lastProps: null,
+      showMoreSvgPseudoElementsWarning: false
     }
 
     this.handleMethodSelect = this.handleMethodSelect.bind(this)
@@ -33,6 +34,7 @@ class OptionsSetter extends React.Component {
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
     this.handleRemoveUnregisteredCheck = this.handleRemoveUnregisteredCheck.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
+    this.toggleShowMoreSvgPseudoElementsWarning = this.toggleShowMoreSvgPseudoElementsWarning.bind(this)
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -67,6 +69,10 @@ class OptionsSetter extends React.Component {
       }
       return acc
     }, { [UNSPECIFIED]: '-' })
+  }
+
+  toggleShowMoreSvgPseudoElementsWarning() {
+    this.setState({ showMoreSvgPseudoElementsWarning: ! this.state.showMoreSvgPseudoElementsWarning })
   }
 
   handleMethodSelect(e){
@@ -118,6 +124,20 @@ class OptionsSetter extends React.Component {
 
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
+    const { method, v4shim, pseudoElements } = this.state
+    const showSvgPseudoElementsWarning = 'require' === pseudoElements && 'svg' === method
+    const showSvgPseudoElementsV4Warning = 'require' === pseudoElements && 'svg' === method && 'require' === v4shim
+    const generalWarningCommentAboutPseudoElements =
+      <p>
+        In general, it's best if you avoid using
+        <a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a>
+        because it can make compatibility more difficult. And with our svg technology, it can cause performance to slow
+        down considerably. It's really only there to accommodate situations where you can't control the html markup
+        in order to add <code>&lt;i&gt;</code> tags, or in WordPress, maybe shortcodes. So it's best if you don't
+        make a habit of using pseudo-elements except where you must. And hopefully over time, the themes and plugins
+        you use will migrate away from using pseudo-elements as well.
+      </p>
+
     return <div className="options-setter">
         <h2>Options</h2>
         <p className={ sharedStyles['explanation'] }>
@@ -128,6 +148,48 @@ class OptionsSetter extends React.Component {
           If conflicts are detected, they'll be shown below, and
           you might be able to resolve them just by choosing different options here.
         </p>
+        {
+          'require' === pseudoElements && 'svg' === method &&
+          <div className={ sharedStyles['warning'] }>
+            <FontAwesomeIcon icon={ faExclamationTriangle }/>
+            { 'require' === v4shim
+              ? <div>
+              <p>
+                Warning! You've enabled version 4 compatibility along with svg and pseudo-elements. You should know
+                that there's a corner case that is not supported by this configuration.
+              </p>
+                { this.state.showMoreSvgPseudoElementsWarning &&
+                <div>
+                  <p>
+                    We've seen cases where your WordPress theme or some beloved plugin uses version 4 pseudo-elements.
+                    In the webfont case, the version 4 compatibility provided by this plugin does a pretty good job.
+                    But it doesn't work for svg.
+                  </p>
+                  <p>
+                    This may or may not be a problem in your particular situation. You'll know it's a problem because
+                    you'll
+                    see those dreaded empty boxes where you'd expect icons to be. If that happens with this config
+                    combo,
+                    then you're only viable alternative are probably to either use webfont instead of svg, or remove or
+                    replace that theme or plugin.
+                  </p>
+                </div>
+                }
+              </div>
+              : <p>
+                Watch out! You've got both svg and pseudo-elements enabled. That's a configuration combo known to cause
+                slow browser performance in some scenarios--sometimes <em>really</em> slow.
+              </p>
+            }
+            { this.state.showMoreSvgPseudoElementsWarning &&
+              generalWarningCommentAboutPseudoElements
+            }
+            { this.state.showMoreSvgPseudoElementsWarning
+              ? <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleUp }/> less</button></p>
+              : <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleDown }/> more</button></p>
+            }
+          </div>
+        }
         <table className="form-table">
         <tbody>
           <tr>
