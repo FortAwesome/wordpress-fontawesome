@@ -125,18 +125,25 @@ class OptionsSetter extends React.Component {
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
     const { method, v4shim, pseudoElements } = this.state
-    const showSvgPseudoElementsWarning = 'require' === pseudoElements && 'svg' === method
-    const showSvgPseudoElementsV4Warning = 'require' === pseudoElements && 'svg' === method && 'require' === v4shim
     const generalWarningCommentAboutPseudoElements =
-      <p>
-        In general, it's best if you avoid using
-        <a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a>
-        because it can make compatibility more difficult. And with our svg technology, it can cause performance to slow
-        down considerably. It's really only there to accommodate situations where you can't control the html markup
-        in order to add <code>&lt;i&gt;</code> tags, or in WordPress, maybe shortcodes. So it's best if you don't
-        make a habit of using pseudo-elements except where you must. And hopefully over time, the themes and plugins
-        you use will migrate away from using pseudo-elements as well.
-      </p>
+      <div>
+        <p>
+          If you're using a theme or plugin that places Font Awesome icons using pseudo-elements,
+          you may not have much of a choice but to accommodate by enabling pseudo-elements.
+        </p>
+        <p>
+          However, in general, it's best if you avoid using &nbsp;
+          <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a>&nbsp;
+          because it can make compatibility more difficult. When using our svg technology, it can also cause things to slow
+          down considerably. Pseudo-element support is really only provided to accommodate situations where you can't
+          modify the html markup.
+        </p>
+        <p>
+          Normally, it's best to use <code>&lt;i&gt;</code> tags to place icons.
+          In WordPress, shortcodes are good too.
+          Ideally, your themes and plugins that use pseudo-elements will eventually migrate away from using pseudo-elements as well.
+        </p>
+      </div>
 
     return <div className="options-setter">
         <h2>Options</h2>
@@ -151,35 +158,43 @@ class OptionsSetter extends React.Component {
         {
           'require' === pseudoElements && 'svg' === method &&
           <div className={ sharedStyles['warning'] }>
-            <FontAwesomeIcon icon={ faExclamationTriangle }/>
             { 'require' === v4shim
-              ? <div>
-              <p>
-                Warning! You've enabled version 4 compatibility along with svg and pseudo-elements. You should know
-                that there's a corner case that is not supported by this configuration.
-              </p>
+              ?
+              <div>
+
+                <div className={ styles['warning-banner'] }>
+
+                    <div>
+                      <FontAwesomeIcon icon={ faExclamationTriangle } size='2x'/>
+                    </div>
+                    <div>
+                      Warning! You've enabled version 4 compatibility along with svg and pseudo-elements. Font Awesome
+                      version 4 pseudo-elements will not work in this configuration. If you've used any of those,
+                      or if your theme or any plugins have use them, you'll probably see empty boxes in those spots.
+                    </div>
+
+                </div>
+
+
                 { this.state.showMoreSvgPseudoElementsWarning &&
                 <div>
                   <p>
-                    We've seen cases where your WordPress theme or some beloved plugin uses version 4 pseudo-elements.
-                    In the webfont case, the version 4 compatibility provided by this plugin does a pretty good job.
-                    But it doesn't work for svg.
-                  </p>
-                  <p>
-                    This may or may not be a problem in your particular situation. You'll know it's a problem because
-                    you'll
-                    see those dreaded empty boxes where you'd expect icons to be. If that happens with this config
-                    combo,
-                    then you're only viable alternative are probably to either use webfont instead of svg, or remove or
-                    replace that theme or plugin.
+                    If you get empty boxes instead of icons in those spots, then your best alternatives are
+                    to switch to webfont instead of svg, or remove or replace that theme or plugin.
                   </p>
                 </div>
                 }
               </div>
-              : <p>
-                Watch out! You've got both svg and pseudo-elements enabled. That's a configuration combo known to cause
-                slow browser performance in some scenarios--sometimes <em>really</em> slow.
-              </p>
+              :
+              <div className={ styles['warning-banner'] }>
+                <div>
+                  <FontAwesomeIcon icon={ faExclamationTriangle } size='2x'/>
+                </div>
+                <div>
+                  Watch out! You've got both svg and pseudo-elements enabled. That's a configuration combo known to cause
+                  slow browser performance in some scenarios--sometimes <em>really</em> slow.
+                </div>
+              </div>
             }
             { this.state.showMoreSvgPseudoElementsWarning &&
               generalWarningCommentAboutPseudoElements
