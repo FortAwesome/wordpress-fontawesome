@@ -1374,13 +1374,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 				if ( $load_spec['v4shim'] ) {
 					/**
-					 * Intentionally fire this in the wp_print_scripts action to get our overrides to appear in the
-					 * DOM after other _styles_ are printed, assuming they enqueued themselves as normal, in which
-					 * case, they would have been printed to the head during the wp_print_styles hook that would
-					 * have fired before wp_print_scripts.
+					 * Enqueue v4 compatibility as late as possible, though still within the normal wp_enqueue_scripts hook.
+					 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
+					 * that may try to declare a @font-face with a font-family of "FontAwesome".
 					 */
 					add_action(
-						'wp_print_scripts',
+						'wp_enqueue_scripts',
 						function () use ( $resource_collection, $options, $license_subdomain, $version ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
@@ -1423,7 +1422,8 @@ EOT;
 								$font_face
 							);
 
-						}
+						},
+						PHP_INT_MAX
 					);
 
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
