@@ -49,17 +49,24 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 		}
 	}
 
-	public function enqueue_fakes() {
-		// Add some unregistered clients, both styles and scripts.
-		foreach ( $this->fake_unregistered_clients['styles'] as $style ) {
-			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-			wp_enqueue_style( $style['handle'], $style['src'], array(), null, 'all' );
-		}
+	// By default, we'll enqueue as late as possible, to make sure these are still detected.
+	public function enqueue_fakes( $priority = 99 ) {
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				// Add some unregistered clients, both styles and scripts.
+				foreach ( $this->fake_unregistered_clients['styles'] as $style ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_style( $style['handle'], $style['src'], array(), null, 'all' );
+				}
 
-		foreach ( $this->fake_unregistered_clients['scripts'] as $script ) {
-			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-			wp_enqueue_script( $script['handle'], $script['src'], array(), null, 'all' );
-		}
+				foreach ( $this->fake_unregistered_clients['scripts'] as $script ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+					wp_enqueue_script( $script['handle'], $script['src'], array(), null, 'all' );
+				}
+			},
+			$priority
+		);
 	}
 
 	public function test_unregistered_conflict_cleaned() {

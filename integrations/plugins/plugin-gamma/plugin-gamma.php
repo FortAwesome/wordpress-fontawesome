@@ -14,7 +14,7 @@ defined( 'WPINC' ) || die;
 define( 'GAMMA_PLUGIN_VERSION', '0.0.1' );
 define( 'GAMMA_PLUGIN_LOG_PREFIX', 'gamma-plugin' );
 
-add_action('init', function(){
+add_action('wp_enqueue_scripts', function(){
   wp_enqueue_style(
     'GAMMA_PLUGIN_LOG_PREFIX',
     'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
@@ -22,9 +22,10 @@ add_action('init', function(){
     null,
     'all'
   );
-});
 
-wp_enqueue_style( 'plugin-gamma-style', plugins_url( 'style.css', __FILE__ ) );
+  wp_enqueue_style( 'plugin-gamma-style', plugins_url( 'style.css', __FILE__ ) );
+}, 99);
+
 
 add_action('font_awesome_enqueued', function($loadSpec){
 	error_log(

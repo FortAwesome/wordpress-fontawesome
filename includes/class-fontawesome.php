@@ -978,12 +978,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * URI that appears to load Font Awesome, but which has not called {@see FortAwesome\FontAwesome::register()} to register
 		 * its requirements with this plugin.
 		 *
+		 * Unregistered clients are detected late in the wp_print_styles action hook, after the wp_enqueue_scripts hook,
+		 * which is when we'd  normally expect any themes or plugins to enqueue their styles.
+		 *
 		 * @since 4.0.0
 		 *
 		 * @return array
 		 */
 		public function unregistered_clients() {
-			$this->detect_unregistered_clients();
 			return $this->unregistered_clients;
 		}
 
@@ -1517,16 +1519,22 @@ EOT;
 			}
 
 			$obj = $this;
-			// Look for unregistered clients.
+			/**
+			 * We need to detect unregistered clients *after* they would have been enqueued, if they used
+			 * the recommended mechanism of wp_enqueue_style and wp_enqueue_script.
+			 * The wp_print_styles action hook is fired after the wp_enqueue_scripts hook.
+			 * We'll use priority 0 in an effort to be as early as possible, to prevent any unregistered client
+			 * from actually being printed to the head.
+			 */
 			add_action(
-				'wp_enqueue_scripts',
+				'wp_print_styles',
 				function() use ( $obj, $options ) {
 					$obj->detect_unregistered_clients();
 					if ( $options['removeUnregisteredClients'] ) {
 						$obj->remove_unregistered_clients();
 					}
 				},
-				15
+				0
 			);
 		}
 
