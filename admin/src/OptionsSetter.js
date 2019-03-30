@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faAngleDown, faAngleUp, faSpinner, faCheck, faSkull, faExternalLinkAlt, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import styles from './OptionsSetter.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -23,7 +23,8 @@ class OptionsSetter extends React.Component {
       usePro: false,
       removeUnregisteredClients: false,
       versionOptions: null,
-      lastProps: null
+      lastProps: null,
+      showMoreSvgPseudoElementsWarning: false
     }
 
     this.handleMethodSelect = this.handleMethodSelect.bind(this)
@@ -33,6 +34,7 @@ class OptionsSetter extends React.Component {
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
     this.handleRemoveUnregisteredCheck = this.handleRemoveUnregisteredCheck.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
+    this.toggleShowMoreSvgPseudoElementsWarning = this.toggleShowMoreSvgPseudoElementsWarning.bind(this)
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -67,6 +69,10 @@ class OptionsSetter extends React.Component {
       }
       return acc
     }, { [UNSPECIFIED]: '-' })
+  }
+
+  toggleShowMoreSvgPseudoElementsWarning() {
+    this.setState({ showMoreSvgPseudoElementsWarning: ! this.state.showMoreSvgPseudoElementsWarning })
   }
 
   handleMethodSelect(e){
@@ -116,9 +122,33 @@ class OptionsSetter extends React.Component {
   render() {
     if(this.state.error) throw this.state.error
 
-    const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
+    const { hasSubmitted, isSubmitting, submitSuccess, submitMessage, showPseudoElementsHelpModal } = this.props
 
-    return <div className="options-setter">
+    const { method, v4shim, pseudoElements } = this.state
+    const generalWarningCommentAboutPseudoElements =
+      <div>
+        <p>
+          If you're using a theme or plugin that places Font Awesome icons using pseudo-elements,
+          you may not have much of a choice but to accommodate by enabling pseudo-elements.
+        </p>
+        <p>
+          <button onClick={ showPseudoElementsHelpModal }>Show me how to know whether my theme or plugins are using pseudo-elements</button>
+        </p>
+        <p>
+          However, in general, it's best if you avoid using &nbsp;
+          <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a>&nbsp;
+          because it can make compatibility more difficult. When using our svg technology, it can also cause things to slow
+          down considerably. Pseudo-element support is really only provided to accommodate situations where you can't
+          modify the html markup.
+        </p>
+        <p>
+          Normally, it's best to use <code>&lt;i&gt;</code> tags to place icons.
+          In WordPress, shortcodes are good too.
+          Ideally, your themes and plugins that use pseudo-elements will eventually migrate away from using pseudo-elements as well.
+        </p>
+      </div>
+
+    return <div className={ classnames(styles['options-setter']) }>
         <h2>Options</h2>
         <p className={ sharedStyles['explanation'] }>
           You can tune these options according to your preferences, as long as your preferences
@@ -128,6 +158,56 @@ class OptionsSetter extends React.Component {
           If conflicts are detected, they'll be shown below, and
           you might be able to resolve them just by choosing different options here.
         </p>
+        {
+          'require' === pseudoElements && 'svg' === method &&
+          <div className={ sharedStyles['warning'] }>
+            { 'require' === v4shim
+              ?
+              <div>
+
+                <div className={ styles['warning-banner'] }>
+
+                    <div>
+                      <FontAwesomeIcon icon={ faExclamationTriangle } size='2x'/>
+                    </div>
+                    <div>
+                      Warning! You've enabled version 4 compatibility along with svg and pseudo-elements. Font Awesome
+                      version 4 pseudo-elements will not work in this configuration. If you've used any of those,
+                      or if your theme or any plugins have use them, you'll probably see empty boxes in those spots.
+                    </div>
+
+                </div>
+
+
+                { this.state.showMoreSvgPseudoElementsWarning &&
+                <div>
+                  <p>
+                    If you get empty boxes instead of icons in those spots, then your best alternatives are
+                    to switch to webfont instead of svg, or remove or replace that theme or plugin.
+                  </p>
+                </div>
+                }
+              </div>
+              :
+              <div className={ styles['warning-banner'] }>
+                <div>
+                  <FontAwesomeIcon icon={ faExclamationTriangle } size='2x'/>
+                </div>
+                <div>
+                  Watch out! You've got both svg and pseudo-elements enabled. That's a configuration combo known to cause
+                  slow browser performance in some scenarios--sometimes <em>really</em> slow.
+                </div>
+              </div>
+            }
+            { this.state.showMoreSvgPseudoElementsWarning &&
+              generalWarningCommentAboutPseudoElements
+            }
+            { this.state.showMoreSvgPseudoElementsWarning
+              ? <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleUp }/>less</button></p>
+              : <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleDown }/>more</button></p>
+            }
+          </div>
+        }
         <table className="form-table">
         <tbody>
           <tr>

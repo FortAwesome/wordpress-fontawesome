@@ -43,3 +43,24 @@ div.submit-status.fail .explanation{
 .label-hint a {
   margin-left: 0.5em;
 }
+
+.warning-banner {
+  display: flex;
+  width: 100%;
+}
+
+.warning-banner svg {
+  margin-right: .5em;
+  margin-bottom: .125em;
+}
+
+.options-setter button {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.options-setter button svg {
+    margin-right: 0.5em;
+}

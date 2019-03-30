@@ -14,7 +14,7 @@ defined( 'WPINC' ) || die;
 define( 'GAMMA_PLUGIN_VERSION', '0.0.1' );
 define( 'GAMMA_PLUGIN_LOG_PREFIX', 'gamma-plugin' );
 
-add_action('init', function(){
+add_action('wp_enqueue_scripts', function(){
   wp_enqueue_style(
     'GAMMA_PLUGIN_LOG_PREFIX',
     'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
@@ -22,7 +22,10 @@ add_action('init', function(){
     null,
     'all'
   );
-});
+
+  wp_enqueue_style( 'plugin-gamma-style', plugins_url( 'style.css', __FILE__ ) );
+}, 99);
+
 
 add_action('font_awesome_enqueued', function($loadSpec){
 	error_log(
@@ -39,7 +42,10 @@ add_filter('the_content', function($content){
   $pre_content = <<<EOT
 <div class="plugin-gamma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Gamma</h2>
-  <p>Expected by plugin-gamma (v4.7.0 icon name): "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
+  <p>v4.7.0 icon name: "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
+  <p class="group-icon"><code>:before</code> pseudo-element should match <code>fas fa-users</code>: <i class="fas fa-users"></i></p>
+  <p class="facebook-icon"><code>:before</code> pseudo-element should match <code>fab fa-facebook</code>: <i class="fab fa-facebook"></i></p>
+  <p class="hand-scissors-icon"><code>:before</code> pseudo-element should match <code>far fa-hand-scissors</code>: <i class="far fa-hand-scissors"></i></p>
 </div>
 EOT;
   return $pre_content . $content;

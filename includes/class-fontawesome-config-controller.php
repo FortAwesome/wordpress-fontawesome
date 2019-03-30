@@ -82,6 +82,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			$options          = $fa->options();
 			$locked_load_spec = isset( $options['lockedLoadSpec'] ) ? $options['lockedLoadSpec'] : false;
 
+			/**
+			 * Calling wp_head() is required to trigger the 'wp_enqueue_scripts' action and detection of unregistered clients.
+			 * Note that this can only possibly detect those clients who enqueue their styles or scripts within the context
+			 * of the controller action that invokes this function.
+			 * It's possible than some unregistered client enqueues a style or script in some other circumstance. We
+			 * would not detect that here, but since _removal_ of unregistered clients would happen on any page load,
+			 * it would still be removed. So, in that case, you'd have an unregistered client that this plugin removes
+			 * at the right time, but which does not get reported here. If we wanted to be more sophisticated about
+			 * all of this, we'd have to come up with a way to be more comprehensive about detection, such as
+			 * caching in a transient any unregistered clients on any page load. Then, FontAwesome::unregistered_clients()
+			 * could return that--what may have been detected across any number of page loads--instead of only that
+			 * which is detected on the same page load for which FontAwesome::unregistered_clients() is queried.
+			 */
+			ob_start();
+			wp_head();
+			ob_end_clean();
+
 			return array(
 				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
 				'adminClientExternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,

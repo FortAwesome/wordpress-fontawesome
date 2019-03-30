@@ -21,6 +21,8 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 
 	protected $mock_release_provider = null;
 
+	const OUTPUT_MATCH_FAILURE_MESSAGE = 'Failed output match.';
+
 	/**
 	 * Not using the other release provider mocking features because have multiple methods to mock at the same time.
 	 * Probably means we're due for a refactor on the test utilities here so this doesn't have to be done ad-hoc.
@@ -60,6 +62,16 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
 	}
 
+	protected function captureOutput() {
+		/**
+		 * For some reason the expectOutputRegex feature of PHPUnit is resulting in false positives, so we'll
+		 * handle output buffering and matching ourselves here.
+		 */
+		ob_start();
+		wp_head(); // generates the output
+		return ob_get_clean();
+	}
+
 	/**
 	 * @group output
 	 */
@@ -67,11 +79,11 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/css/all.css',
-				'sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ'
+				'sha384-fake123'
 			),
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/css/v4-shims.css',
-				'sha384-2QRS8Mv2zxkE2FAZ5/vfIJ7i0j+oF15LolHAhqFp9Tm4fQ2FEOzgPj4w/mWOTdnC'
+				'sha384-fake246'
 			),
 		];
 
@@ -82,14 +94,40 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		# Make sure the main css looks right
-		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK\/iSvJ\+a4\+0owXq79v\+lsFkW54bOGbiDQ"[\s]+crossorigin="anonymous"[\s]*\/>/');
-		# Make sure the v4shim css looks right
-		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-W14o25dsDf2S\/y9FS68rJKUyCoBGkLwr8owWTSTTHj4LOoHdrgSxw1cmNQMULiRb"[\s]+crossorigin="anonymous"[\s]*\/>/');
-		# Make sure that the order is right: main css, followed by v4shim css
-		$this->expectOutputRegex('/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s');
+		// Make sure the main css looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake123"[\s]+crossorigin="anonymous"[\s]*\/>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		// Make sure the v4shim css looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake246"[\s]+crossorigin="anonymous"[\s]*\/>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		// Make sure that the order is right: main css, followed by v4shim css.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -99,11 +137,11 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/js/all.js',
-				get_mocked_releases()['5.2.0']['sri']['free']['js/all.js']
+				'sha384-fake123'
 			),
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/js/v4-shims.js',
-				get_mocked_releases()['5.2.0']['sri']['free']['js/v4-shims.js']
+				'sha384-fake246'
 			),
 		];
 
@@ -128,16 +166,40 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		# Make sure the main <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-4oV5EgaV02iISL2ban6c\/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo\+Khy"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/');
+		// Make sure the main <script. looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-fake123"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 
-		# Make sure the v4shim <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-rn4uxZDX7xwNq5bkqSbpSQ3s4tK9evZrXAO1Gv9WTZK4p1\+NFsJvOQmkos19ebn2"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
+		// Make sure the v4shim <script> looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-fake246"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 
-		# Make sure that the order is right: main script, followed by v4shim script
-		$this->expectOutputRegex('/<script.+?all\.js.+?<script.+?v4-shims\.js/s');
+		// Make sure that the order is right: main script, followed by v4shim script.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script.+?all\.js.+?<script.+?v4-shims\.js/s',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -148,11 +210,11 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/css/all.css',
-				'sha384-TXfwrfuHVznxCssTxWoPZjhcss/hp38gEOH8UPZG/JcXonvBQ6SlsIF49wUzsGno'
+				'sha384-fake123'
 			),
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/css/v4-shims.css',
-				'sha384-2QRS8Mv2zxkE2FAZ5/vfIJ7i0j+oF15LolHAhqFp9Tm4fQ2FEOzgPj4w/mWOTdnC'
+				'sha384-fake246'
 			),
 		];
 
@@ -163,14 +225,40 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		# Make sure the main css looks right
-		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-TXfwrfuHVznxCssTxWoPZjhcss\/hp38gEOH8UPZG\/JcXonvBQ6SlsIF49wUzsGno"[\s]+crossorigin="anonymous"[\s]*\/>/');
-		# Make sure the v4shim css looks right
-		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-2QRS8Mv2zxkE2FAZ5\/vfIJ7i0j\+oF15LolHAhqFp9Tm4fQ2FEOzgPj4w\/mWOTdnC"[\s]+crossorigin="anonymous"[\s]*\/>/');
-		# Make sure that the order is right: main css, followed by v4shim css
-		$this->expectOutputRegex('/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s');
+		// Make sure the main css looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake123"[\s]+crossorigin="anonymous"[\s]*\/>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		// Make sure the v4shim css looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake246"[\s]+crossorigin="anonymous"[\s]*\/>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		// Make sure that the order is right: main css, followed by v4shim css.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -213,9 +301,17 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$this->assertTrue( fa()->using_pseudo_elements() );
 		$this->assertEquals( 'svg', fa()->fa_method() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		$this->expectOutputRegex('/searchPseudoElements:\s*true/');
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/searchPseudoElements:\s*true/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -225,11 +321,11 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/js/all.js',
-				'sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy'
+				'sha384-fake123'
 			),
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/js/v4-shims.js',
-				'sha384-aoMjEUBUPf5GpXx1WJUeTZ/gBmGqQB1u8uUc2J5LW2xnQtJKkGulESZ+rkoj182s'
+				'sha384-fake246'
 			),
 		];
 
@@ -254,15 +350,39 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		# Make sure the main <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-yBZ34R8uZDBb7pIwm\+whKmsCiRDZXCW1vPPn\/3Gz0xm4E95frfRNrOmAUfGbSGqN"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/');
+		// Make sure the main <script> looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-fake123"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 
-		# Make sure the v4shim <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-aoMjEUBUPf5GpXx1WJUeTZ\/gBmGqQB1u8uUc2J5LW2xnQtJKkGulESZ\+rkoj182s"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
+		// Make sure the v4shim <script> looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-fake246"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 
-		# Make sure that the order is right: main script, followed by v4shim script
-		$this->expectOutputRegex('/<script.+?all\.js.+?<script.+?v4-shims\.js/s');
+		// Make sure that the order is right: main script, followed by v4shim script
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script.+?all\.js.+?<script.+?v4-shims\.js/s',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 }

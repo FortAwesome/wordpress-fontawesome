@@ -5,3 +5,16 @@
 .table-header th {
   font-weight: bold;
 }
+
+button.more-less {
+  border: 0;
+  background: none;
+}
+
+.warning {
+  background-color: #fdfdf3;
+  max-width: 600px;
+  padding: 1.5em;
+  border-radius: 5px;
+  border: 1px solid black;
+}
