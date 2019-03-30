@@ -53,3 +53,11 @@ div.submit-status.fail .explanation{
   margin-right: .5em;
   margin-bottom: .125em;
 }
+
+.pseudo-elements-screenshot {
+    width: 100%;
+}
+
+.options-setter.blur {
+    background-color: blue;
+}
