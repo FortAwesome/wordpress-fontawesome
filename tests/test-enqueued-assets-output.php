@@ -210,11 +210,11 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/css/all.css',
-				'sha384-TXfwrfuHVznxCssTxWoPZjhcss/hp38gEOH8UPZG/JcXonvBQ6SlsIF49wUzsGno'
+				'sha384-fake123'
 			),
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/css/v4-shims.css',
-				'sha384-2QRS8Mv2zxkE2FAZ5/vfIJ7i0j+oF15LolHAhqFp9Tm4fQ2FEOzgPj4w/mWOTdnC'
+				'sha384-fake246'
 			),
 		];
 
@@ -225,14 +225,40 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		# Make sure the main css looks right
-		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-TXfwrfuHVznxCssTxWoPZjhcss\/hp38gEOH8UPZG\/JcXonvBQ6SlsIF49wUzsGno"[\s]+crossorigin="anonymous"[\s]*\/>/');
-		# Make sure the v4shim css looks right
-		$this->expectOutputRegex('/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-2QRS8Mv2zxkE2FAZ5\/vfIJ7i0j\+oF15LolHAhqFp9Tm4fQ2FEOzgPj4w\/mWOTdnC"[\s]+crossorigin="anonymous"[\s]*\/>/');
-		# Make sure that the order is right: main css, followed by v4shim css
-		$this->expectOutputRegex('/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s');
+		// Make sure the main css looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake123"[\s]+crossorigin="anonymous"[\s]*\/>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		// Make sure the v4shim css looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake246"[\s]+crossorigin="anonymous"[\s]*\/>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		// Make sure that the order is right: main css, followed by v4shim css.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
