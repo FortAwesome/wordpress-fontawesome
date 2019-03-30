@@ -12,3 +12,7 @@
 .status.warning .icon {
     color: #b7b700;
 }
+
+.pseudo-elements-screenshot {
+    width: 100%;
+}

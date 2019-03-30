@@ -54,10 +54,13 @@ div.submit-status.fail .explanation{
   margin-bottom: .125em;
 }
 
-.pseudo-elements-screenshot {
-    width: 100%;
+.options-setter button {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
-.options-setter.blur {
-    background-color: blue;
+.options-setter button svg {
+    margin-right: 0.5em;
 }

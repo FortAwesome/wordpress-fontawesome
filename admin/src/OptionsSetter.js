@@ -6,7 +6,6 @@ import styles from './OptionsSetter.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { isEqual } from 'lodash'
-import Modal from './Modal'
 
 const UNSPECIFIED = ''
 const METHOD_OPTIONS = ['webfont', 'svg', UNSPECIFIED]
@@ -25,8 +24,7 @@ class OptionsSetter extends React.Component {
       removeUnregisteredClients: false,
       versionOptions: null,
       lastProps: null,
-      showMoreSvgPseudoElementsWarning: false,
-      showPseudoElementsHelpModal: false
+      showMoreSvgPseudoElementsWarning: false
     }
 
     this.handleMethodSelect = this.handleMethodSelect.bind(this)
@@ -37,8 +35,6 @@ class OptionsSetter extends React.Component {
     this.handleRemoveUnregisteredCheck = this.handleRemoveUnregisteredCheck.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
     this.toggleShowMoreSvgPseudoElementsWarning = this.toggleShowMoreSvgPseudoElementsWarning.bind(this)
-    this.showPseudoElementsHelpModal = this.showPseudoElementsHelpModal.bind(this)
-    this.hidePseudoElementsHelpModal = this.hidePseudoElementsHelpModal.bind(this)
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -77,47 +73,6 @@ class OptionsSetter extends React.Component {
 
   toggleShowMoreSvgPseudoElementsWarning() {
     this.setState({ showMoreSvgPseudoElementsWarning: ! this.state.showMoreSvgPseudoElementsWarning })
-  }
-
-  showPseudoElementsHelpModal() {
-    this.setState({ showPseudoElementsHelpModal: true })
-  }
-
-  hidePseudoElementsHelpModal() {
-    this.setState({ showPseudoElementsHelpModal: false })
-  }
-
-  getPseudoElementsHelpModal() {
-    return <Modal onClose={ this.hidePseudoElementsHelpModal }>
-      <div className={ styles['pseudo-elements-help'] }>
-        <h1>Inspecting for Pseudo-Elements with Google Chrome DevTools</h1>
-        <p>Here's one way to discover whether pseudo-elements are being used on your pages.</p>
-        <p>
-          <ol>
-            <li>Use Google Chrome to load a page.</li>
-            <li>Open the developer tools. On macOS, that's probably on the menu: View->Developer->Developer Tools (or key Option+Command+I). On Windows, try More tools->Developer tools (or key Ctrl+Shift+I)</li>
-            <li>Click to element inspector tool (see the green arrow on the screenshot below).</li>
-            <li>Click some element you want to inspect, probably a place where there's an empty box where you expect to see an icon (see the red arrow on the screenshot below).</li>
-          </ol>
-        </p>
-        <p>
-          After selecting an element to inspect, you'll see it highlighted in the html source code in the left panel below.
-          See the <code>::before</code> in the screenshot? That's a pseudo-element. It's not really part of the html markup.
-          It's being inserted before the <em>real</em> markup, which is the &lt;p&gt; (paragraph) element with the class "group-icon".
-        </p>
-        <p>
-          Now notice over in the right panel below where the orange arrow is pointing. That's the CSS code that's actually
-          causing that pseudo-element to show up. It's setting <code>font-family: "FontAwesome";</code>, which is the old
-          <code>font-family</code> used for Font Awesome version 4.
-        </p>
-        <p>
-          It's also setting <code>content: '\f0c0';</code>. That's the unicode character for this particular icon.
-          You'll find the unicode character for each icon in its listing in our icon gallery.&nbsp;
-          <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/icons/users?style=solid">Here's the listing</a> for that particular icon.
-        </p>
-        <img className={ styles['pseudo-elements-screenshot'] } src='/wp-content/plugins/font-awesome/public_assets/pseudo-elements-screenshot.png'/>
-      </div>
-    </Modal>
   }
 
   handleMethodSelect(e){
@@ -167,7 +122,7 @@ class OptionsSetter extends React.Component {
   render() {
     if(this.state.error) throw this.state.error
 
-    const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
+    const { hasSubmitted, isSubmitting, submitSuccess, submitMessage, showPseudoElementsHelpModal } = this.props
 
     const { method, v4shim, pseudoElements } = this.state
     const generalWarningCommentAboutPseudoElements =
@@ -177,7 +132,7 @@ class OptionsSetter extends React.Component {
           you may not have much of a choice but to accommodate by enabling pseudo-elements.
         </p>
         <p>
-          <button onClick={ this.showPseudoElementsHelpModal }>show me</button>
+          <button onClick={ showPseudoElementsHelpModal }>Show me how to know whether my theme or plugins are using pseudo-elements</button>
         </p>
         <p>
           However, in general, it's best if you avoid using &nbsp;
@@ -193,8 +148,7 @@ class OptionsSetter extends React.Component {
         </p>
       </div>
 
-    return <div className={classnames( styles['options-setter'], { [styles['blur']]: this.state.showPseudoElementsHelpModal })}>
-        { this.state.showPseudoElementsHelpModal && this.getPseudoElementsHelpModal() }
+    return <div className={ classnames(styles['options-setter']) }>
         <h2>Options</h2>
         <p className={ sharedStyles['explanation'] }>
           You can tune these options according to your preferences, as long as your preferences
@@ -249,8 +203,8 @@ class OptionsSetter extends React.Component {
               generalWarningCommentAboutPseudoElements
             }
             { this.state.showMoreSvgPseudoElementsWarning
-              ? <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleUp }/> less</button></p>
-              : <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleDown }/> more</button></p>
+              ? <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleUp }/>less</button></p>
+              : <p><button onClick={ this.toggleShowMoreSvgPseudoElementsWarning } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleDown }/>more</button></p>
             }
           </div>
         }
