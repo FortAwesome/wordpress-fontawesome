@@ -301,9 +301,17 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$this->assertTrue( fa()->using_pseudo_elements() );
 		$this->assertEquals( 'svg', fa()->fa_method() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		$this->expectOutputRegex('/searchPseudoElements:\s*true/');
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/searchPseudoElements:\s*true/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
