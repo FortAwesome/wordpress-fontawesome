@@ -321,11 +321,11 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/js/all.js',
-				'sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy'
+				'sha384-fake123'
 			),
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/js/v4-shims.js',
-				'sha384-aoMjEUBUPf5GpXx1WJUeTZ/gBmGqQB1u8uUc2J5LW2xnQtJKkGulESZ+rkoj182s'
+				'sha384-fake246'
 			),
 		];
 
@@ -350,15 +350,39 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		wp_head();
+		$output = $this->captureOutput();
 
-		# Make sure the main <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-yBZ34R8uZDBb7pIwm\+whKmsCiRDZXCW1vPPn\/3Gz0xm4E95frfRNrOmAUfGbSGqN"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/');
+		// Make sure the main <script> looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-fake123"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/all\.js\'><\/script>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 
-		# Make sure the v4shim <script> looks right
-		$this->expectOutputRegex('/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-aoMjEUBUPf5GpXx1WJUeTZ\/gBmGqQB1u8uUc2J5LW2xnQtJKkGulESZ\+rkoj182s"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/');
+		// Make sure the v4shim <script> looks right.
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script[\s]+defer[\s]+crossorigin="anonymous"[\s]+integrity="sha384-fake246"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/pro\.fontawesome\.com\/releases\/v5\.2\.0\/js\/v4-shims\.js\'><\/script>/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 
-		# Make sure that the order is right: main script, followed by v4shim script
-		$this->expectOutputRegex('/<script.+?all\.js.+?<script.+?v4-shims\.js/s');
+		// Make sure that the order is right: main script, followed by v4shim script
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/<script.+?all\.js.+?<script.+?v4-shims\.js/s',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 }
