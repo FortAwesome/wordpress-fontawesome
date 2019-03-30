@@ -1,0 +1,35 @@
+.modal-wrapper {
+    padding: 1em;
+    border-radius: 5px;
+    border: 1px solid lightgrey;
+    position: absolute;
+    z-index: -1;
+    width: 80%;
+    max-width: 1024px;
+    background-color: white;
+    opacity: 0;
+    transition: opacity ease 0.2s;
+}
+
+.modal-wrapper.open {
+    z-index: 200;
+    opacity: 1;
+}
+
+.modal-controls {
+    text-align: right;
+}
+
+.modal-controls button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: auto;
+    padding: 1em;
+    display: block;
+}
