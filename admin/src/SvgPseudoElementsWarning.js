@@ -30,15 +30,14 @@ class SvgPseudoElementsWarning extends React.Component {
       <div className={ sharedStyles['alert-message'] }>
         <h2 className={ sharedStyles['alert-title'] }>
           {
-          v4shim
-            ? "Performance might be slow. And watch out for empty boxes!"
-            : "Performance might slow."
+            `Performance might be slow with svg and pseudo-elements.${ v4shim ? " And watch out for empty boxes!" : "" }`
           }
         </h2>
         <div className={ sharedStyles['alert-copy'] }>
           <p>
             Watch out! You've got both svg and pseudo-elements enabled. That's a configuration combo known to cause
-            slow browser performance in some scenarios--sometimes <em>really</em> slow.
+            slow browser performance in some scenarios--sometimes <em>really</em> slow. If you know you need to handle
+            a lot of pseudo-elements, you'll probably be happier using webfont instead of svg.
           </p>
           { v4shim &&
             <p>
