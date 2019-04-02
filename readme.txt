@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
-Stable tag: 4.0.0-rc8
+Stable tag: 4.0.0-rc9
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.1.1
@@ -185,6 +185,14 @@ Find the Font Awesome admin settings page either under the "Settings" menu on th
 [Font Awesome Pro](https://fontawesome.com/pro) subscribers who want to enable Pro icons on their WordPress sites, must first [add their allowed domains](https://fontawesome.com/account/domains) before enabling the "Use Pro" option on the plugin's settings page.
 
 == Changelog ==
+
+= 4.0.0-rc9 =
+
+* Enhance Font Awesome version 4 compatibility: add shimming of the version 4 font-family to enable version 4
+  icons defined as pseudo-elements to be rendered via the version of Font Awesome 5 loaded by this plugin.
+
+* Add warnings to the admin UI to indicate that using svg and pseudo-elements may result in slow performance,
+  and that svg with pseudo-elements and version 4 compatibility is not supported at all.
 
 = 4.0.0-rc8 =
 

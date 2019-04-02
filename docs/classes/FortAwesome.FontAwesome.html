@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-864557225"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1810785800"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-864557225" class="accordion-body collapse in">
+            <div id="namespace-1810785800" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-326140452"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1536368892"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-326140452" class="accordion-body collapse ">
+            <div id="namespace-1536368892" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -1219,6 +1219,8 @@ final result of how the Font Awesome assets are loaded.</p>
                 <p>Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
 URI that appears to load Font Awesome, but which has not called <a href="../classes/FortAwesome.FontAwesome.html#method_register">\FortAwesome\FontAwesome::register()</a> to register
 its requirements with this plugin.</p>
+<p>Unregistered clients are detected late in the wp_print_styles action hook, after the wp_enqueue_scripts hook,
+which is when we'd  normally expect any themes or plugins to enqueue their styles.</p>
 
                 
                 
@@ -1768,7 +1770,7 @@ resolved everything required to enqueue the assets.</em></p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on March 21st, 2019 at 14:26.
+                    on April 2nd, 2019 at 18:30.
                 </section>
             </section>
         </section>

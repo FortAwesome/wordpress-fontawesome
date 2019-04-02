@@ -100,7 +100,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * The version of this WordPress plugin.
 		 */
-		const PLUGIN_VERSION = '4.0.0-rc8';
+		const PLUGIN_VERSION = '4.0.0-rc9';
 		/**
 		 * The version of this plugin's REST API.
 		 *
