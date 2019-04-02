@@ -61,7 +61,7 @@ class FontAwesomeAdminView extends React.Component {
       <div className={ styles['pseudo-elements-help'] }>
         <h1>Inspecting for Pseudo-Elements with Google Chrome DevTools</h1>
         <p>Here's one way to discover whether pseudo-elements are being used on your pages.</p>
-        <img className={ styles['pseudo-elements-screenshot'] } src='/wp-content/plugins/font-awesome/public_assets/pseudo-elements-screenshot.png'/>
+        <img alt='screenshot' className={ styles['pseudo-elements-screenshot'] } src='/wp-content/plugins/font-awesome/public_assets/pseudo-elements-screenshot.png'/>
         <ol>
           <li>Use Google Chrome to load a page.</li>
           <li>Open Chrome's developer tools.
