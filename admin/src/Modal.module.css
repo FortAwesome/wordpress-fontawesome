@@ -29,7 +29,8 @@
     margin: 2em;
     border-radius: 5px;
     border: 1px solid lightgrey;
-    width: 80%;
+    width: 100%;
+    max-width: 960px;
     position: relative;
     background-color: white;
     padding: 1em;
