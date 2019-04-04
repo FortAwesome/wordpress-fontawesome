@@ -31,14 +31,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *
 	 * Fires the following WordPress action hooks:
 	 *
-	 * - `font_awesome_requirements`
+	 * - `font_awesome_preferences`
 	 *
-	 *   Fired when the plugin is ready for clients to register their requirements.
+	 *   Fired when the plugin is ready for clients to register their preferences.
 	 *
 	 *   Client plugins and themes should normally use this action hook to call {@see FontAwesome::register()}
-	 *   with their requirements.
-	 *
-	 *   This hook is _not_ fired when a previously built ("locked") load specification is found.
+	 *   with their preferences.
 	 *
 	 *   No parameters.
 	 *
@@ -55,7 +53,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *
 	 * - `font_awesome_failed`
 	 *
-	 *   Called when the plugin fails to compute a load specification because of client requirements that cannot be satisfied.
+	 *   Called when the plugin fails to compute a load specification because of client preferences that cannot be satisfied.
 	 *
 	 *   One parameter, an `array` with a shape like that returned by {@see FontAwesome::conflicts()}
 	 *
@@ -179,7 +177,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected $client_requirements = array();
+		protected $client_preferences = array();
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -360,7 +358,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * In order for the second warning to appear, this function should be called during
 		 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
-		 * callback on the `font_awesome_requirements` action hook.
+		 * callback on the `font_awesome_preferences` action hook.
 		 *
 		 * The shape of the `$constraints` argument is the same as for {@see FortAwesome\FontAwesome::satisfies()}.
 		 *
@@ -721,225 +719,43 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Main entry point for the loading process. Returns true if loading is successful, otherwise false.
+		 * Triggers the font_awesome_preferences action to gather preferences from clients.
 		 *
-		 * There are two sets of inputs that need to be gathered in order to load Font Awesome: the "load_spec"
-		 * and the "options".
-		 *
-		 * The names and meanings of these have become perhaps unintuitive as this codebase has evolved, which suggests
-		 * that it's due for some refactoring.
-		 *
-		 * 1. The "load_spec" really just pertains to those properties that can be constrained by any client of Font Awesome,
-		 *    such as specifying that the "method" should be "webfont" or "svg". To compute this, we have to go through
-		 *    all of the requirements registered by all clients. We resolve the final values of these properties based
-		 *    on our defaults combined with the requirements that may be provided by clients.
-		 *    It's possible that two clients will register mutually exclusive requirements: for example, one could
-		 *    require a method of "webfont" while another requires a method of "svg". That would be a case where this
-		 *    method returns a false result, failing to compute a settled load spec.
-		 *
-		 * 2. The "options" includes properties that can be specified only by the site administrator. For example,
-		 *    whether or not to use Pro icons. We must know that in order to load the correct bundles of Font Awesome assets,
-		 *    but it's not a property that can be constrained by clients other than the site owner.
-		 *
-		 * 3. For completeness, note too that the site admin can also specify constraints on those properties in the load_spec.
-		 *
-		 * If we already have a previously built ("locked") load specification saved under our options key in the WordPress
-		 * database, then, by default, this function enqueues that load specification without recomputing a new one.
-		 * In that case, the `font_awesome_requirements` hook will _not_ be triggered.
-		 *
-		 * The `font_awesome_enqueued` hook is always triggered when we are ready to successfully load Font Awesome,
-		 * whether the load specification was locked from a previous build, or built anew.
-		 *
-		 * If the load cannot be done successfully, then neither the options nor the load_spec should be changed
-		 * in the db.
-		 *
-		 * @param array $options optional, overrides any options in the db when load is successful, using array_replace_recursive()
-		 *        Default: null, no override.
-		 * @throws FontAwesome_NoReleasesException|\Exception
-		 * @return bool
-		 * @ignore
+		 * @since 4.0.0
 		 */
-		private function load( $options = null ) {
-			$load_spec = null;
-
+		public function gather_preferences() {
 			/**
-			 * Fired when the plugin is ready for clients to register their requirements.
+			 * Fired when the plugin is ready for clients to register their preferences.
 			 *
 			 * Clients should call {@see FontAwesome::register()} and {@see FontAwesome::satisfies_or_warn()}
 			 * from a callback registered on this hook.
 			 *
 			 * @since 4.0.0
 			 */
-			do_action( 'font_awesome_requirements' );
-
-			$current_options = is_null( $options )
-				? $this->options()
-				: $options;
-
-			// Register the web site admin as a client.
-			$this->register( $current_options['adminClientLoadSpec'] );
-
-			$using_locked_load_spec = false;
-			// Always rebuild when the options are changing.
-			if ( ! is_null( $options ) || $this->should_rebuild() ) {
-				$load_spec = $this->build();
-			} else {
-				$load_spec = $this->options()['lockedLoadSpec'];
-
-				$using_locked_load_spec = true;
-			}
-
-			if ( isset( $load_spec ) ) {
-				$finalized_load_resources = $this->finalize_load_resources( $load_spec, $current_options );
-
-				/**
-				 * Only now have we completed all of the validation and resolution of all requirements, including
-				 * both those in the load_spec and the options, accounting for any dependencies there may be
-				 * between them.
-				 *
-				 * So we'll save any changes, and then enqueue the result.
-				 *
-				 * We need to update/save both the options and the load_spec at least before firing the
-				 * font_awesome_enqueued action, because clients may be expecting to query this Font Awesome
-				 * object in order to detect the configuration state.
-				 */
-
-				$this->enqueue( $finalized_load_resources );
-
-				// Save any options that need saving.
-				if ( ! $using_locked_load_spec ) {
-					wp_cache_delete( 'alloptions', 'options' );
-					$current_options['lockedLoadSpec'] = $load_spec;
-					if ( ! update_option( self::OPTIONS_KEY, $current_options ) ) {
-						// TODO: add test coverage for this case.
-						throw new \Exception(
-							'Could not save new options for some unexpected reason. ' .
-							'Maybe try again? In the meantime, the last known good configuration will remain active.'
-						);
-					}
-				}
-
-				// Update the load spec.
-				$this->load_spec = $load_spec;
-
-				/**
-				 * Fired when the plugin has successfully built a load specification that satisfies all clients.
-				 *
-				 * @since 4.0.0
-				 */
-				do_action( 'font_awesome_enqueued' );
-
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		private function should_rebuild() {
-			$options = $this->options();
-			if ( ! isset( $options['lockedLoadSpec'] ) ) {
-				return true;
-			}
-
-			$locked_clients = $options['lockedLoadSpec']['clients'];
-
-			$processed_clients = array();
-
-			foreach ( $this->client_requirements as $client_name => $client_requirement ) {
-				if ( ! isset( $locked_clients[ $client_name ] ) || $locked_clients[ $client_name ] !== $client_requirement['clientVersion'] ) {
-					return true;
-				} else {
-					array_push( $processed_clients, $client_name );
-				}
-			}
-
-			// Get all client names in $locked_clients that we didn't just process in $this->client_requirements.
-			// This would include clients that have just been deactivated, for example, since they would have
-			// previously been part of the lockedLoadSpec, but would not be part of the current client_requirements.
-			// If there are any at all, regardless of version, it means the lockedLoadSpec needs to be re-built.
-			$remaining_clients = array_diff( array_keys( $locked_clients ), $processed_clients );
-			if ( count( $remaining_clients ) > 0 ) {
-				return true;
-			}
-
-			return false;
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		private function build() {
-			$load_spec = $this->compute_load_spec(
-				function( $data ) {
-					// This is the error callback function. It only runs when build_load_spec() needs to report an error.
-					$this->conflicts  = $data;
-					$client_name_list = [];
-					foreach ( $data['conflictingClientRequirements'] as $client ) {
-						array_push(
-							$client_name_list,
-							self::ADMIN_USER_CLIENT_NAME_INTERNAL === $client['name']
-							? self::ADMIN_USER_CLIENT_NAME_EXTERNAL
-							: $client['name']
-						);
-					}
-
-					/**
-					 * Fired when the plugin reaches the first conflicting requirement.
-					 *
-					 * @since 4.0.0
-					 *
-					 * @see FontAwesome
-					 */
-					do_action( 'font_awesome_failed', $data );
-					add_action(
-						'admin_notices',
-						function() use ( $client_name_list ) {
-							$current_screen = get_current_screen();
-							if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-								?>
-									<div class="notice notice-warning is-dismissible">
-									<p>
-										Font Awesome Error! These themes or plugins have conflicting requirements:
-										<?php echo esc_html( implode( $client_name_list, ', ' ) ); ?>.
-										To resolve these conflicts, <a href="<?php echo esc_html( $this->settings_page_url() ); ?>"> Go to Font Awesome Settings</a>.
-									</p>
-									</div>
-								<?php
-							}
-						}
-					);
-				}
-			);
-
-			return $load_spec;
+			do_action( 'font_awesome_preferences' );
 		}
 
 		/**
-		 * Returns current requirements conflicts.
+		 * Returns current preferences conflicts.
 		 *
 		 * Should normally only be called after the `font_awesome_failed` action has triggered, indicating that there
 		 * are some conflicts.
 		 *
-		 * The returned array indicates just the _first_ requirement that failed to be settled among the various
-		 * client requirements, along with all of those client's requirements. This allows code to detect or log
+		 * The returned array indicates just the _first_ preference that failed to be settled among the various
+		 * client preferences, along with all of those client's preferences. This allows code to detect or log
 		 * which clients are responsible for the conflict. This is the same information that is displayed in the
 		 * admin UI.
 		 *
 		 * The shape of the conflicts array looks like this:
 		 * ```php
 		 *   array(
-		 *     // the requirement in conflict, as supplied in the params to FontAwesome::register()
-		 *     "requirement" => "version",
-		 *     // one entry per client that registered a constraint on the conflicting requirement
-		 *     "conflictingClientRequirements" => array(
+		 *     // the preference in conflict, as supplied in the params to FontAwesome::register()
+		 *     "preference" => "version",
+		 *     // one entry per client that registered a constraint on the conflicting preference
+		 *     "conflictingClientPreferences" => array(
 		 *       [0] => array(
 		 *          'name' => 'my-plugin',
-		 *          'version' => '5.5.3', // this client's conflicting constraint on this requirement
+		 *          'version' => '5.5.3', // this client's conflicting constraint on this preference
 		 *            'clientCallSite' => array(
 		 *              'file' => '/var/www/html/wp-content/plugins/my-plugin/includes/my-plugin.php',
 		 *              'line' => 552
@@ -949,12 +765,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *     )
 		 *   )
 		 * ```
-		 * This array will describe the conflict of exactly one requirement—the first conflict found—because this hook is
+		 * This array will describe the conflict of exactly one preference—the first conflict found—because this hook is
 		 * triggered on the first failure.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @see FontAwesome::register() register() documents all client requirement keys
+		 * @see FontAwesome::register() register() documents all client preference keys
 		 * @return array|null
 		 */
 		public function conflicts() {
@@ -987,22 +803,22 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return current client requirements for all registered clients.
+		 * Return current client preferences for all registered clients.
 		 *
 		 * The website owner (i.e. the one who uses the WordPress admin dashboard) is considered a registered client.
-		 * So that owner's requirements will be represented here. But note that these requirements do not include
+		 * So that owner's preferences will be represented here. But note that these preferences do not include
 		 * the `options`, as returned by {@see FortAwesome\FontAwesome::options()} which also help determine the
 		 * final result of how the Font Awesome assets are loaded.
 		 *
-		 * Each element of the array has the same shape as the requirements given to {@see FortAwesome\FontAwesome::register()}.
+		 * Each element of the array has the same shape as the preferences given to {@see FortAwesome\FontAwesome::register()}.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @see FortAwesome\FontAwesome::register()
 		 * @return array
 		 */
-		public function requirements() {
-			return $this->client_requirements;
+		public function client_preferences() {
+			return $this->client_preferences;
 		}
 
 		/**
@@ -1010,7 +826,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
 		 * URI that appears to load Font Awesome, but which has not called {@see FortAwesome\FontAwesome::register()} to register
-		 * its requirements with this plugin.
+		 * its preferences with this plugin.
 		 *
 		 * Unregistered clients are detected late in the wp_print_styles action hook, after the wp_enqueue_scripts hook,
 		 * which is when we'd  normally expect any themes or plugins to enqueue their styles.
@@ -1024,193 +840,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Returns the subset of metadata required to load Font Awesome that corresponds to client requirements.
-		 *
-		 * *DEPRECATED*
-		 *
-		 * A successful resolution of all factors necessary to load Font Awesome without conflict involves:
-		 * 1. A load specification (this `load_spec`) that satisfies all requirements registered by clients, including the
-		 *    site owner's requirements as specified on the options page.
-		 * 2. Options specified by the site owner that cannot be controlled by other clients. This is available from {@see FortAwesome\FontAwesome::options()}.
-		 *
-		 * Since the metadata returned by this method only includes a _subset_ of what determines how
-		 * Font Awesome is loaded, it's a bit of a misnomer. Rather than trying to keep track of what's stored where,
-		 * it's best to just use the various accessor methods, like these:
-		 *
-		 *   - {@see FortAwesome\FontAwesome::version()} to discover the version of Font Awesome being loaded
-		 *   - {@see FortAwesome\FontAwesome::using_pro()} to discover whether a version with Pro icons is being loaded
-		 *   - {@see FortAwesome\FontAwesome::using_pseudo_elements()} to discover whether Font Awesome is being loaded with support
-		 *     for pseudo-elements
-		 *
-		 * Returns `null` if a load spec has not yet been determined.
-		 * If it is still `null` and {@see FontAwesome::conflicts()} returns _not_ `null`, that means the load failed:
-		 * there is no settled load specification because none could be found that satisfies all client requirements.
-		 * For example, one client may have required `'method' => 'svg'` while another required `'method' => 'webfont'`.
-		 *
-		 * @since 4.0.0
-		 * @deprecated
-		 *
-		 * @return array
-		 */
-		public function load_spec() {
-			return $this->load_spec;
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected function compute_load_spec( callable $error_callback ) {
-			// 1. Iterate through $reqs once. For each requirement attribute, see if the current works with the accumulator.
-			// 2. If we see any conflict along the way, bail out early. But how do we report the conflict helpfully?
-			// 3. Compose a final result that uses defaults for keys that have no client-specified requirements.
-			$load_spec = array(
-				'method'         => array(
-					// returns new value if compatible, else null.
-					'resolve' => function( $prev_req_val, $cur_req_val ) {
-						return $prev_req_val === $cur_req_val ? $prev_req_val : null; },
-				),
-				'v4shim'         => array(
-					'resolve' => function( $prev_req_val, $cur_req_val ) {
-						/*
-						 * Cases:
-						 * require, require => true
-						 * require, forbid => false
-						 * forbid, require => false
-						 * forbid, forbid => true
-						 */
-						if ( 'require' === $prev_req_val ) {
-							if ( 'require' === $cur_req_val ) {
-								return $cur_req_val; } elseif ( 'forbid' === $cur_req_val ) {
-								return null; } else {
-										return null; }
-						} elseif ( 'forbid' === $prev_req_val ) {
-							if ( 'forbid' === $cur_req_val ) {
-								return $cur_req_val;
-							} elseif ( 'require' === $cur_req_val ) {
-								return null; } else {
-								return null; }
-						} else {
-							return null; }
-					},
-				),
-				'pseudoElements' => array(
-					'resolve' => function( $prev_req_val, $cur_req_val ) {
-						if ( 'require' === $prev_req_val ) {
-							if ( 'require' === $cur_req_val ) {
-								return $cur_req_val; } elseif ( 'forbid' === $cur_req_val ) {
-								return null; } else {
-										return null; }
-						} elseif ( 'forbid' === $prev_req_val ) {
-							if ( 'forbid' === $cur_req_val ) {
-								return $cur_req_val;
-							} elseif ( 'require' === $cur_req_val ) {
-								return null; } else {
-								return null; }
-						} else {
-							return null; }
-					},
-				),
-			);
-
-			$valid_keys      = array_keys( $load_spec );
-			$bail_early_req  = null;
-			$clients         = array();
-			$client_versions = array();
-
-			// Iterate through each set of requirements registered by a client.
-			foreach ( $this->client_requirements as $requirement ) {
-				$clients[ $requirement['name'] ]         = $requirement['clientCallSite'];
-				$client_versions[ $requirement['name'] ] = $requirement['clientVersion'];
-
-				// For this set of requirements, iterate through each requirement key, like ['method', 'v4shim', ... ].
-				foreach ( $requirement as $key => $payload ) {
-					if ( in_array( $key, [ 'clientCallSite', 'name', 'clientVersion' ], true ) ) {
-						continue; // these are meta keys that we won't process here.
-					}
-					if ( ! in_array( $key, $valid_keys, true ) ) {
-						// ignore silently.
-						continue;
-					}
-					if ( array_key_exists( 'value', $load_spec[ $key ] ) ) {
-						// Check compatibility with existing requirement value.
-						// First, record that this client has made this new requirement.
-						if ( array_key_exists( 'clientRequirements', $load_spec[ $key ] ) ) {
-							array_unshift( $load_spec[ $key ]['clientRequirements'], $requirement );
-						} else {
-							$load_spec[ $key ]['clientRequirements'] = array( $requirement );
-						}
-						$resolved_req = $load_spec[ $key ]['resolve']($load_spec[ $key ]['value'], $requirement[ $key ]);
-						if ( is_null( $resolved_req ) ) {
-							// the compatibility test failed.
-							$bail_early_req = $key;
-							break 2;
-						} else {
-							// The previous and current requirements are compatible, so update the value.
-							$load_spec[ $key ]['value'] = $resolved_req;
-						}
-					} else {
-						// Add this as the first client to make this requirement.
-						$load_spec[ $key ]['value']              = $requirement[ $key ];
-						$load_spec[ $key ]['clientRequirements'] = [ $requirement ];
-					}
-				}
-			}
-
-			if ( $bail_early_req ) {
-				// call the error_callback, indicating which clients registered incompatible requirements.
-				is_callable( $error_callback ) && $error_callback(
-					array(
-						'requirement'                   => $bail_early_req,
-						'conflictingClientRequirements' => $load_spec[ $bail_early_req ]['clientRequirements'],
-					)
-				);
-				return null;
-			}
-
-			$method  = $this->specified_requirement_or_default( $load_spec['method'], 'webfont' );
-			$version = $this->version();
-
-			/*
-			 * Use v4shims by default, unless method === 'webfont' and version < 5.1.0
-			 * If we end up in an invalid state where v4shims are required for webfont v5.0.x, it should be because of an
-			 * invalid client requirement, and in that case, it will be acceptible to throw an exception. But we don't want
-			 * to introduce such an exception by our own defaults here.
-			 */
-			$v4shim_default = 'require';
-			if ( 'webfont' === $method && version_compare( $version, '5.1.0', '<' ) ) {
-				$v4shim_default = 'forbid';
-			}
-			$pseudo_elements_default = 'webfont' === $method ? 'require' : null;
-			$pseudo_elements         = 'require' === $this->specified_requirement_or_default( $load_spec['pseudoElements'], $pseudo_elements_default );
-			if ( 'webfont' === $method && ! $pseudo_elements ) {
-				// TODO: propagate this warning up to the admin UI instead of error_log.
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				error_log( 'WARNING: a client of Font Awesome has forbidden pseudo-elements, but since the webfont method has been selected, pseudo-element support cannot be eliminated.' );
-				$pseudo_elements = true;
-			}
-
-			return array(
-				'method'         => $method,
-				'v4shim'         => $this->specified_requirement_or_default( $load_spec['v4shim'], $v4shim_default ) === 'require',
-				'pseudoElements' => $pseudo_elements,
-				'clients'        => $client_versions,
-			);
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected function is_pro_configured() {
-			$options = $this->options();
-			return( wp_validate_boolean( $options['usePro'] ) );
-		}
-
-		/**
 		 * Indicates whether Font Awesome Pro is being loaded.
-		 *
-		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
 		 *
 		 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
 		 *
@@ -1219,7 +849,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return boolean
 		 */
 		public function using_pro() {
-			return $this->is_pro_configured();
+			try {
+				$options = $this->options();
+				return( wp_validate_boolean( $options['usePro'] ) );
+			} catch ( FontAwesome_NoReleasesException $e ) {
+				return false;
+			}
 		}
 
 		/**
@@ -1280,7 +915,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * You might use this, for example, to detect when the SVG with JavaScript method is being used with
 		 * pseudo-elements enabled. There are known performance problems with this combination.
-		 * It's usually better that you don't "forbid" pseudo-elements in your requirements--to avoid causing unnecessary
+		 * It's usually better that you don't "forbid" pseudo-elements in your preferences--to avoid causing unnecessary
 		 * hard conflicts. But you might use this detection to show a relevant warning as an admin notice.
 		 *
 		 * @since 4.0.0
@@ -1296,97 +931,51 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected function specified_requirement_or_default( $requirement, $default ) {
-			return array_key_exists( 'value', $requirement ) ? $requirement['value'] : $default;
-		}
-
-		/**
-		 * Once this runs through successfully and returns a resource collection, we are sure that we have successfully
-		 * resolved everything required to enqueue the assets.
-		 *
-		 * What's returned by this function is safe to pass on to enqueue()
-		 *
-		 * @param $load_spec
-		 * @param $options
-		 *
-		 * @return array
-		 * @throws FontAwesome_ConfigurationException|FontAwesome_NoReleasesException|\InvalidArgumentException
-		 */
-		protected function finalize_load_resources( $load_spec, $options ) {
-			if ( ! isset( $options['removeUnregisteredClients'] ) ) {
-				throw new InvalidArgumentException( 'missing param: removeUnregisteredClients' );
-			}
-
-			if ( ! isset( $options['usePro'] ) ) {
-				throw new InvalidArgumentException( 'missing param: usePro' );
-			}
-
-			if ( ! isset( $options['version'] ) ) {
-				throw new InvalidArgumentException( 'missing param: version' );
-			}
-
-			$release_provider = $this->release_provider();
-
-			$method  = $load_spec['method'];
-			$use_svg = false;
-			if ( 'svg' === $method ) {
-				$use_svg = true;
-			} elseif ( 'webfont' !== $method ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				error_log(
-					"WARNING: ignoring invalid method \"$method\". Expected either \"webfont\" or \"svg\". " .
-					'Will use the default of "webfont"'
-				);
-			}
-
-			$version = 'latest' === $options['version']
-				? $this->get_latest_version()
-				: $options['version'];
-
-			/*
-			 * For now, we're hardcoding the style_opt as 'all'. Eventually, we can open up the rest of the
-			 * feature for specifying a subset of styles.
-			 */
-			$resource_collection = $release_provider->get_resource_collection(
-				$version,
-				'all',
-				[
-					'use_pro'  => $options['usePro'],
-					'use_svg'  => $use_svg,
-					'use_shim' => $load_spec['v4shim'],
-				]
-			);
-
-			return array(
-				'resource_collection' => $resource_collection,
-				'load_spec'           => $load_spec,
-				'options'             => $options,
-			);
+		protected function specified_preference_or_default( $preference, $default ) {
+			return array_key_exists( 'value', $preference ) ? $preference['value'] : $default;
 		}
 
 		/**
 		 * This wants to receive params as returned by resolve_resource_collection(), which are guaranteed to work.
 		 *
-		 * @param $params
+		 * @internal
+		 * @ignore
+		 * @param $options
+		 * @param $latest_version
+		 * @param $resource_collection
+		 * @throws InvalidArgumentException
 		 */
-		protected function enqueue( $params ) {
-			$resource_collection = $params['resource_collection'];
-			$options             = $params['options'];
-			$load_spec           = $params['load_spec'];
-			$license_subdomain   = $this->using_pro() ? 'pro' : 'use';
-			$version             = $options['version'];
+		public function enqueue( $options, $latest_version, $resource_collection ) {
+			if ( ! array_key_exists( 'pseudoElements', $options ) ) {
+				throw new InvalidArgumentException( 'missing required options key: pseudoElements' );
+			}
 
-			if ( 'webfont' === $load_spec['method'] ) {
+			if ( ! array_key_exists( 'usePro', $options ) ) {
+				throw new InvalidArgumentException( 'missing required options key: usePro' );
+			}
 
-				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
-					add_action(
-						$action,
-						function () use ( $resource_collection ) {
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
-						}
-					);
-				}
+			$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
+
+			if ( ! array_key_exists( 'version', $options ) ) {
+				throw new InvalidArgumentException( 'missing required options key: version' );
+			}
+
+			$version = 'latest' === $options['version']
+				? $latest_version
+				: $options['version'];
+
+			if ( ! ( array_key_exists( 'method', $options ) && ( 'svg' === $options['method'] || 'webfont' === $options['method'] ) ) ) {
+				throw new InvalidArgumentException( 'missing required options key: method, which must equal either svg or webfont' );
+			}
+
+			if ( 'webfont' === $options['method'] ) {
+				add_action(
+					'wp_enqueue_scripts',
+					function () use ( $resource_collection ) {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+						wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
+					}
+				);
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
@@ -1408,7 +997,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					2
 				);
 
-				if ( $load_spec['v4shim'] ) {
+				if ( ! array_key_exists( 'v4shim', $options ) ) {
+					throw new InvalidArgumentException( 'missing required options key: v4shim' );
+				}
+
+				if ( $options['v4shim'] ) {
 					/**
 					 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 					 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
@@ -1492,11 +1085,11 @@ EOT;
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
-						function () use ( $resource_collection, $load_spec ) {
+						function () use ( $resource_collection, $options ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-							if ( $load_spec['pseudoElements'] ) {
+							if ( $options['pseudoElements'] ) {
 								wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 							}
 						}
@@ -1529,7 +1122,7 @@ EOT;
 					2
 				);
 
-				if ( $load_spec['v4shim'] ) {
+				if ( $options['v4shim'] ) {
 					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
@@ -1590,9 +1183,6 @@ EOT;
 		}
 
 		/**
-		 * Detects unregistered clients, which can be retrieved with {@see FontAwesome::unregistered_clients()}.
-		 * For internal use only. Not part of this plugin's public API.
-		 *
 		 * @internal
 		 * @ignore
 		 */
@@ -1648,7 +1238,7 @@ EOT;
 		}
 
 		/**
-		 * Registers client requirements. This is the "front door" for registered clients—themes and plugins—that depend
+		 * Registers client preferences. This is the "front door" for registered clients—themes and plugins—that depend
 		 * upon this Font Awesome plugin to load a compatible, properly configured version of Font Awesome.
 		 *
 		 * *Note on using Pro:* registered clients cannot _require_ the use Font Awesome Pro. That is a feature that
@@ -1658,7 +1248,7 @@ EOT;
 		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
 		 * websites.
 		 *
-		 * The shape of the `$client_requirements` array parameter looks like this:
+		 * The shape of the `$client_preferences` array parameter looks like this:
 		 * ```php
 		 *   array(
 		 *     'method'         => 'svg', // "svg" or "webfont"
@@ -1672,12 +1262,12 @@ EOT;
 		 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
 		 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
 		 *
-		 * All requirement specifications are optional, except `name`. Any that are not specified will allow defaults,
-		 * or the requirements of other registered clients to take precedence.
+		 * All preference specifications are optional, except `name`. Any that are not specified will allow defaults,
+		 * or the preferences of other registered clients to take precedence.
 		 *
 		 * <h3>Be Flexible: Narrower Constraints Cause More Conflicts</h3>
 		 *
-		 * Just because you _can_ set requirements here doesn't mean you _should_. A huge design goal for this plugin
+		 * Just because you _can_ set preferences here doesn't mean you _should_. A huge design goal for this plugin
 		 * is to make it easy for WordPress site owners to install and use Font Awesome conflict-free. And where there
 		 * are unavoidable conflicts, we want the site owner to be able to diagnose and resolve them easily.
 		 * WordPress is a big world and there are limitless combinations of installed themes and plugins. Font Awesome
@@ -1702,7 +1292,7 @@ EOT;
 		 * - Be mindful of which {@link https://fontawesome.com/icons icons you use and in which versions of Font Awesome they're available}.
 		 * - Adapt gracefully when the version loaded lacks icons you want to use (see more below).
 		 *
-		 * A good example of a legitimate use case for setting one of these requirements is to require the `svg` method,
+		 * A good example of a legitimate use case for setting one of these preferences is to require the `svg` method,
 		 * in order to make use of {@link https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms Power Transforms}.
 		 *
 		 * Another good example: Suppose your theme or plugin has a legacy codebase that makes heavy use of pseudo-elements.
@@ -1710,7 +1300,7 @@ EOT;
 		 * for Font Awesome, all your pseudo-element usage results in a significant performance hit--too much to tolerate.
 		 * A temporary measure might then be to require the `webfont` method (your pseudo-elements will perform fine with webfonts).
 		 * You really should consider that to be a temporary measure, though, and plan on a future iteration to remove
-		 * pseudo-element usage. After removing pseudo-elements from your templates, remove that requirement for pseudo-elements
+		 * pseudo-element usage. After removing pseudo-elements from your templates, remove that preference for pseudo-elements
 		 * in your call to this method.
 		 *
 		 * <h3>Font Awesome version</h3>
@@ -1728,30 +1318,30 @@ EOT;
 		 *
 		 * This plugin is optimized to rebuild the Font Awesome load specification if and only if the inputs change.
 		 * Those inputs include options that can be set only by the site owner in the Font Awesome admin settings UI,
-		 * and these client requirements registered here. Each client's requirements are identified by `name` and `clientVersion`,
+		 * and these client preferences registered here. Each client's preferences are identified by `name` and `clientVersion`,
 		 * taken together.
 		 * Therefore, if a client plugin or theme should update its version number, that would trigger a rebuild of
-		 * the load specification. Simply changing your requirements without bumping the `clientVersion` will _not_
+		 * the load specification. Simply changing your preferences without bumping the `clientVersion` will _not_
 		 * trigger a rebuild.
 		 *
-		 * So if you ship a new version of your theme or plugin with different Font Awesome requirements, you should also
+		 * So if you ship a new version of your theme or plugin with different Font Awesome preferences, you should also
 		 * bump this `clientVersion` number. You can use the same version number you've assigned to your theme or plugin,
 		 * or any version number scheme you like.
 		 *
 		 * <h3>Notes on "require" and "forbid"</h3>
 		 *
-		 * Specifying `require` for a requirement like `pseudoElements` or `v4shim` will cause the loading of
-		 * Font Awesome to fail unless all clients are satisfied with this requirement.
+		 * Specifying `require` for a preference like `pseudoElements` or `v4shim` will cause the loading of
+		 * Font Awesome to fail unless all clients are satisfied with this preference.
 		 *
-		 * Specifying `forbid` for a requirement will cause loading to fail if any other client specifies `require`
-		 * that requirement. For example, because enabling pseudo-elements with SVG with JavaScript may have a negative
+		 * Specifying `forbid` for a preference will cause loading to fail if any other client specifies `require`
+		 * that preference. For example, because enabling pseudo-elements with SVG with JavaScript may have a negative
 		 * impact on performance, a client that requires svg might forbid pseudo-elements.
 		 *
 		 * Again, theme and plugin developers should normally strive _not_ to add constraints in order to reduce
 		 * the likelihood of conflicts. Instead of requiring how Font Awesome must be loaded for your code to work,
 		 * write your code to adapt to however Font Awesome might be loaded.
 		 *
-		 * <h3>Additional Notes on Specific Requirements</h3>
+		 * <h3>Additional Notes on Specific Preferences</h3>
 		 *
 		 * - `v4shim`
 		 *
@@ -1772,33 +1362,34 @@ EOT;
 		 * @since 4.0.0
 		 *
 		 * @see FontAwesome::using_pro()
-		 * @param array $client_requirements
+		 * @param array $client_preferences
 		 * @throws InvalidArgumentException
 		 */
-		public function register( $client_requirements ) {
+		public function register( $client_preferences ) {
 			// TODO: consider using a mechanism other than debug_backtrace() to track the calling module, since phpcs complains.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			$bt     = debug_backtrace( 1 );
 			$caller = array_shift( $bt );
-			if ( ! array_key_exists( 'name', $client_requirements ) ) {
+			if ( ! array_key_exists( 'name', $client_preferences ) ) {
 				throw new InvalidArgumentException( 'missing required key: name' );
 			}
-			if ( ! array_key_exists( 'clientVersion', $client_requirements ) ) {
+			if ( ! array_key_exists( 'clientVersion', $client_preferences ) ) {
 				throw new InvalidArgumentException( 'missing required key: clientVersion' );
 			}
-			$client_requirements['clientCallSite'] = array(
+			$client_preferences['clientCallSite'] = array(
 				'file' => $caller['file'],
 				'line' => $caller['line'],
 			);
 
-			$this->client_requirements[ $client_requirements['name'] ] = $client_requirements;
+			$this->client_preferences[ $client_preferences['name'] ] = $client_preferences;
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
+		 * @internal
 		 * @ignore
 		 */
-		private function process_shortcode( $params ) {
+		public function process_shortcode( $params ) {
 			/**
 			 * TODO: add extras to shortcode
 			 * class: just add extra classes
