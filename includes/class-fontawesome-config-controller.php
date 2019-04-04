@@ -106,7 +106,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
 				'adminClientExternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
 				'options'               => $fa->options(),
-				'clientRequirements'    => $fa->requirements(),
+				'clientPreferences'     => $fa->client_preferences(),
 				'conflicts'             => $fa->conflicts(),
 				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
 				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
