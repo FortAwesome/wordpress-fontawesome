@@ -141,12 +141,14 @@ class FontAwesome_Release_Provider {
 		return $mapped_release;
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Loads release metadata. For internal use only.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
-	private function load_releases() {
+	public function load_releases() {
 		$init_status = array(
 			'code'    => null,
 			'message' => '',
