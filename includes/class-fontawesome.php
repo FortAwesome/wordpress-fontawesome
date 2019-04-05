@@ -49,7 +49,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *   plugin's metadata using methods such as:
 	 *     - {@see FontAwesome::version()} to discover the version of Font Awesome being loaded
 	 *     - {@see FontAwesome::pro()} to discover whether a version with Pro icons is being loaded
-	 *     - {@see FontAwesome::pseudo_elements()} to discover whether Font Awesome is being loaded with support for pseudo-elements
+	 *     - {@see FontAwesome::svg_pseudo_elements()} to discover whether Font Awesome is being loaded with support for svg pseudo-elements
 	 *
 	 * - `font_awesome_failed`
 	 *
@@ -163,7 +163,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			'version'                   => 'latest',
 			'v4compat'                  => true,
 			'technology'                => 'webfont',
-			'pseudoElements'            => true,
+			'svgPseudoElements'         => false,
 		);
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -932,23 +932,25 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Indicates whether Font Awesome is being loaded with support for CSS pseudo-elements.
+		 * Indicates whether Font Awesome is being loaded with support for SVG pseudo-elements.
 		 *
 		 * Its results are only valid after the `font_awesome_enqueued` action has been triggered.
+		 * Its value is irrelevant if technology() === 'webfont'.
 		 *
-		 * You might use this, for example, to detect when the SVG with JavaScript method is being used with
-		 * pseudo-elements enabled. There are known performance problems with this combination.
+		 * There are known performance problems with this combination, but it is provided for added
+		 * compatibility where pseudo-elements must be used.
+		 *
+		 * Pseudo-elements are always inherently supported by the webfont technology.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @return boolean
 		 */
-		public function pseudo_elements() {
+		public function svg_pseudo_elements() {
 			$options = $this->options();
-			return 'webfont' === $options['technology'] ||
-			   isset( $options['pseudoElements'] )
-					? boolval( $options['pseudoElements'] )
-					: self::DEFAULT_USER_OPTIONS['pseudoElements'];
+			return isset( $options['svgPseudoElements'] )
+					? boolval( $options['svgPseudoElements'] )
+					: self::DEFAULT_USER_OPTIONS['svgPseudoElements'];
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -969,8 +971,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @throws InvalidArgumentException
 		 */
 		public function enqueue_cdn( $options, $resource_collection ) {
-			if ( ! array_key_exists( 'pseudoElements', $options ) ) {
-				throw new InvalidArgumentException( 'missing required options key: pseudoElements' );
+			if ( ! array_key_exists( 'svgPseudoElements', $options ) ) {
+				throw new InvalidArgumentException( 'missing required options key: svgPseudoElements' );
 			}
 
 			if ( ! array_key_exists( 'usePro', $options ) ) {
@@ -1112,7 +1114,7 @@ EOT;
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-							if ( $options['pseudoElements'] ) {
+							if ( $options['svgPseudoElements'] ) {
 								wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 							}
 						}
@@ -1274,11 +1276,11 @@ EOT;
 		 * The shape of the `$client_preferences` array parameter looks like this:
 		 * ```php
 		 *   array(
-		 *     'method'         => 'svg', // "svg" or "webfont"
-		 *     'v4shim'         => 'require', // "require" or "forbid"
-		 *     'pseudoElements' => 'require', // "require" or "forbid"
-		 *     'name'           => 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
-		 *     'clientVersion'  => '1.0.1', // (required) The version of your plugin or client
+		 *     'technology'        => 'svg', // "svg" or "webfont"
+		 *     'v4compat'          => true, // true or false
+		 *     'svgPseudoElements' => false, // true or false
+		 *     'name'              => 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
+		 *     'clientVersion'     => '1.0.1', // (required) The version of your plugin or client
 		 *   )
 		 * ```
 		 *
@@ -1353,7 +1355,7 @@ EOT;
 		 *
 		 * <h3>Notes on "require" and "forbid"</h3>
 		 *
-		 * Specifying `require` for a preference like `pseudoElements` or `v4shim` will cause the loading of
+		 * Specifying `require` for a preference like `svgPseudoElements` or `v4shim` will cause the loading of
 		 * Font Awesome to fail unless all clients are satisfied with this preference.
 		 *
 		 * Specifying `forbid` for a preference will cause loading to fail if any other client specifies `require`
@@ -1375,7 +1377,7 @@ EOT;
 		 *   Shims for SVG with JavaScript have been available since `5.0.0` and shims for Web Font with CSS have been
 		 *   available since `5.1.0`.
 		 *
-		 * - `pseudoElements`
+		 * - `svgPseudoElements`
 		 *
 		 *   [Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements)
 		 *   are always intrinsically available when using the Web Font with CSS method.
