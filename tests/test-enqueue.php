@@ -22,6 +22,8 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	const OUTPUT_MATCH_FAILURE_MESSAGE = 'Failed output match.';
 
+	const MOCK_LATEST_VERSION = '5.2.0';
+
 	public function setUp() {
 		reset_db();
 		FontAwesome::reset();
@@ -43,51 +45,58 @@ class EnqueueTest extends \WP_UnitTestCase {
 		return ob_get_clean();
 	}
 
-	public function test_default_options() {
-		$options = FontAwesome::DEFAULT_USER_OPTIONS;
+	public function build_mock_resource_collection($options) {
+		$version = ( 'latest' === $options['version'] ) ? self::MOCK_LATEST_VERSION : $options['version'];
 
-		$version = '5.2.0';
+		$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
 
-		$resource_collection = new FontAwesome_ResourceCollection( $version, [
+		$technology_path_part = boolval( $options['technology'] === 'svg' ) ? 'js' : 'css';
+
+		$resources = [
 			new FontAwesome_Resource(
-				"https://use.fontawesome.com/releases/v${version}/css/all.css",
+				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/all.${technology_path_part}",
 				'sha384-fake123'
-			),
-			new FontAwesome_Resource(
-				"https://use.fontawesome.com/releases/v${version}/css/v4-shims.css",
-				'sha384-fake246'
-			),
-		]);
+			)
+		];
 
-		fa()->enqueue_cdn( $options, $resource_collection );
+		if( boolval( $options['v4compat'] ) ) {
+			array_push(
+				$resources,
+				new FontAwesome_Resource(
+					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
+					'sha384-fake246'
+				)
+			);
+		}
 
-		$output = $this->captureOutput();
+		return new FontAwesome_ResourceCollection( $version, $resources );
+	}
 
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
-
-		// Make sure the main css looks right.
+	public function assert_webfont($output, $license_subdomain, $version) {
 		$this->assertEquals(
 			1,
 			preg_match(
-				'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake123"[\s]+crossorigin="anonymous"[\s]*\/>/',
+				"/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake123\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
 
-		// Make sure the v4shim css looks right.
+	public function assert_webfont_v4shim($output, $license_subdomain, $version){
 		$this->assertEquals(
 			1,
 			preg_match(
-				'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake246"[\s]+crossorigin="anonymous"[\s]*\/>/',
+				"/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake246\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
 
+	public function assert_font_face_overrides($output, $license_subdomain, $version){
 		$font_face_match_count = preg_match_all(
-			"/@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]+src: url.*?${version}\/webfonts\/fa-brands-400\.eot\"/",
+			"/@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]+src: url\(\"https:\/\/${license_subdomain}\.fontawesome\.com.*?${version}\/webfonts\/fa-brands-400\.eot\"/",
 			$output,
 			$font_face_matches
 		);
@@ -98,8 +107,9 @@ class EnqueueTest extends \WP_UnitTestCase {
 			$font_face_match_count,
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
 
-		// Make sure that the order is right: main css, followed by v4shim css, followed by font-face overrides.
+	public function assert_webfont_v4_compatibility_load_order($output){
 		$this->assertTrue(
 			boolval(
 				preg_match(
@@ -109,5 +119,25 @@ class EnqueueTest extends \WP_UnitTestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
+
+	public function test_default_options() {
+		$options = FontAwesome::DEFAULT_USER_OPTIONS;
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$output = $this->captureOutput();
+
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->assert_webfont( $output, 'use', $version );
+		$this->assert_webfont_v4shim( $output, 'use', $version );
+		$this->assert_font_face_overrides( $output, 'use', $version );
+		$this->assert_webfont_v4_compatibility_load_order($output);
 	}
 }
