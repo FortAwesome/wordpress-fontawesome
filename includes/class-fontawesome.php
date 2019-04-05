@@ -241,9 +241,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Main entry point for running the plugin. Called automatically when the plugin is loaded. Clients should
-		 * not invoke it directly.
+		 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
 		 *
+		 * Internal only. Clients should * not invoke it directly.
+		 *
+		 * @internal
+		 * @ignore
 		 * @since 4.0.0
 		 */
 		public function run() {
@@ -274,8 +277,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 									'use_shim' => $this->v4_compatibility(),
 								)
 							);
-
-						$latest_version = $this->get_latest_version();
 
 						$this->enqueue_cdn( $options, $resource_collection );
 					} catch ( FontAwesome_NoReleasesException $e ) {
@@ -1280,7 +1281,6 @@ EOT;
 		 *     'v4compat'          => true, // true or false
 		 *     'svgPseudoElements' => false, // true or false
 		 *     'name'              => 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
-		 *     'clientVersion'     => '1.0.1', // (required) The version of your plugin or client
 		 *   )
 		 * ```
 		 *
@@ -1339,36 +1339,9 @@ EOT;
 		 * site owner in your own WordPress admin UI that they'll need to update to a new version in order for icons
 		 * to work as expected in your templates.
 		 *
-		 * <h3>Updates: clientVersion and the load specification cache</h3>
-		 *
-		 * This plugin is optimized to rebuild the Font Awesome load specification if and only if the inputs change.
-		 * Those inputs include options that can be set only by the site owner in the Font Awesome admin settings UI,
-		 * and these client preferences registered here. Each client's preferences are identified by `name` and `clientVersion`,
-		 * taken together.
-		 * Therefore, if a client plugin or theme should update its version number, that would trigger a rebuild of
-		 * the load specification. Simply changing your preferences without bumping the `clientVersion` will _not_
-		 * trigger a rebuild.
-		 *
-		 * So if you ship a new version of your theme or plugin with different Font Awesome preferences, you should also
-		 * bump this `clientVersion` number. You can use the same version number you've assigned to your theme or plugin,
-		 * or any version number scheme you like.
-		 *
-		 * <h3>Notes on "require" and "forbid"</h3>
-		 *
-		 * Specifying `require` for a preference like `svgPseudoElements` or `v4shim` will cause the loading of
-		 * Font Awesome to fail unless all clients are satisfied with this preference.
-		 *
-		 * Specifying `forbid` for a preference will cause loading to fail if any other client specifies `require`
-		 * that preference. For example, because enabling pseudo-elements with SVG with JavaScript may have a negative
-		 * impact on performance, a client that requires svg might forbid pseudo-elements.
-		 *
-		 * Again, theme and plugin developers should normally strive _not_ to add constraints in order to reduce
-		 * the likelihood of conflicts. Instead of requiring how Font Awesome must be loaded for your code to work,
-		 * write your code to adapt to however Font Awesome might be loaded.
-		 *
 		 * <h3>Additional Notes on Specific Preferences</h3>
 		 *
-		 * - `v4shim`
+		 * - `v4compat`
 		 *
 		 *   There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
 		 *   It's best to upgrade name references to the version 5 names,
@@ -1397,9 +1370,6 @@ EOT;
 			$caller = array_shift( $bt );
 			if ( ! array_key_exists( 'name', $client_preferences ) ) {
 				throw new InvalidArgumentException( 'missing required key: name' );
-			}
-			if ( ! array_key_exists( 'clientVersion', $client_preferences ) ) {
-				throw new InvalidArgumentException( 'missing required key: clientVersion' );
 			}
 			$client_preferences['clientCallSite'] = array(
 				'file' => $caller['file'],
