@@ -158,13 +158,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @ignore
 		 */
 		const DEFAULT_USER_OPTIONS = array(
-			'adminClientLoadSpec'       => array(
-				'name'          => self::ADMIN_USER_CLIENT_NAME_INTERNAL,
-				'clientVersion' => 0,
-			),
 			'usePro'                    => false,
 			'removeUnregisteredClients' => false,
 			'version'                   => 'latest',
+			'v4compat'                  => true,
+			'technology'                => 'webfont',
+			'pseudoElements'            => true,
 		);
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -262,7 +261,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					add_filter( 'widget_text', 'do_shortcode' );
 
 					try {
-						$fa->load();
+						$options = $this->options();
+
+						$resource_collection = fa()
+							->release_provider()
+							->get_resource_collection(
+								$options['version'],
+								'all',
+								array(
+									'use_pro'  => $this->using_pro(),
+									'use_svg'  => 'svg' === $this->technology(),
+									'use_shim' => $this->v4_compatibility(),
+								)
+							);
+
+						$latest_version = $this->get_latest_version();
+
+						$this->enqueue( $options, $latest_version, $resource_collection );
 					} catch ( FontAwesome_NoReleasesException $e ) {
 						font_awesome_handle_fatal_error(
 							'Sorry, your WordPress server was unable to contact the Font Awesome server to retrieve available ' .
@@ -677,18 +692,27 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 		/**
 		 * Returns current options with defaults.
+		 * If the version is literally "latest", then "latest" is *not* resolved.
 		 *
-		 * Clients should normally not access this.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @see FontAwesome::OPTIONS_KEY
-		 * @see FontAwesome::DEFAULT_USER_OPTIONS
-		 * @throws FontAwesome_NoReleasesException
+		 * @internal
+		 * @ignore
 		 * @return array
 		 */
 		public function options() {
-			$options = wp_parse_args( get_option( self::OPTIONS_KEY ), self::DEFAULT_USER_OPTIONS );
+			return wp_parse_args( get_option( self::OPTIONS_KEY ), self::DEFAULT_USER_OPTIONS );
+		}
+
+		/**
+		 * Returns current options with defaults. Resolves the latest version. So if the version is "latest",
+		 * it replaces that with an actual version number, like 5.8.1.
+		 *
+		 * @internal
+		 * @ignore
+		 * @throws FontAwesome_NoReleasesException
+		 * @return array
+		 */
+		public function options_with_resolved_version() {
+			$options = $this->options();
 			if ( 'latest' === $options['version'] ) {
 				$options['version'] = $this->get_latest_version();
 			}
@@ -845,6 +869,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
 		 *
 		 * @since 4.0.0
+		 * @throws FontAwesome_NoReleasesException
 		 *
 		 * @return boolean
 		 */
@@ -853,27 +878,27 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				$options = $this->options();
 				return( wp_validate_boolean( $options['usePro'] ) );
 			} catch ( FontAwesome_NoReleasesException $e ) {
-				return false;
+				return self::DEFAULT_USER_OPTIONS['usePro'];
 			}
 		}
 
 		/**
-		 * Indicates which Font Awesome method is being loaded: 'webfont' or 'svg'.
-		 *
-		 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
+		 * Indicates which Font Awesome technology is configured: 'webfont' or 'svg'.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @return string|null
+		 * @return string
 		 */
-		public function fa_method() {
-			return isset( $this->load_spec['method'] ) ? $this->load_spec['method'] : null;
+		public function technology() {
+			$options = $this->options();
+			return isset( $options['technology'] ) ? $options['technology'] : null;
 		}
 
 		/**
 		 * Reports the version of Font Awesome assets being loaded.
 		 *
-		 * Its results are valid only after the `font_awesome_enqueued` has been triggered.
+		 * If the site owner has configured the plugin to load the "latest" version, this function resolves
+		 * the actual version number.
 		 *
 		 * Your theme or plugin should probably query this in order to determine whether all of the icons used in your
 		 * templates will be available, especially if you tend to use newer icons. It should be really easy
@@ -887,16 +912,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return string
 		 */
 		public function version() {
-			$options = $this->options();
-			if ( 'latest' === $options['version'] ) {
-				return $this->get_latest_version();
-			} else {
-				return $options['version'];
-			}
+			$options = $this->options_with_resolved_version();
+
+			return $options['version'];
 		}
 
 		/**
-		 * Indicates whether Font Awesome is being loaded with a version 4 shim.
+		 * Indicates whether Font Awesome is being loaded with version 4 compatibility.
 		 *
 		 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
 		 *
@@ -904,8 +926,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * @return boolean
 		 */
-		public function v4shim() {
-			return isset( $this->load_spec['v4shim'] ) ? boolval( $this->load_spec['v4shim'] ) : false;
+		public function v4_compatibility() {
+			$options = $this->options();
+			return isset( $options['v4compat'] ) ? boolval( $options['v4compat'] ) : self::DEFAULT_USER_OPTIONS['v4compat'];
 		}
 
 		/**
@@ -915,16 +938,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * You might use this, for example, to detect when the SVG with JavaScript method is being used with
 		 * pseudo-elements enabled. There are known performance problems with this combination.
-		 * It's usually better that you don't "forbid" pseudo-elements in your preferences--to avoid causing unnecessary
-		 * hard conflicts. But you might use this detection to show a relevant warning as an admin notice.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @return boolean
 		 */
 		public function using_pseudo_elements() {
-			$load_spec = $this->load_spec();
-			return isset( $load_spec['pseudoElements'] ) && $load_spec['pseudoElements'];
+			$options = $this->options();
+			return 'webfont' === $options['technology'] ||
+			   isset( $options['pseudoElements'] )
+					? boolval( $options['pseudoElements'] )
+					: self::DEFAULT_USER_OPTIONS['pseudoElements'];
 		}
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -964,11 +988,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				? $latest_version
 				: $options['version'];
 
-			if ( ! ( array_key_exists( 'method', $options ) && ( 'svg' === $options['method'] || 'webfont' === $options['method'] ) ) ) {
-				throw new InvalidArgumentException( 'missing required options key: method, which must equal either svg or webfont' );
+			if ( ! ( array_key_exists( 'technology', $options ) && ( 'svg' === $options['technology'] || 'webfont' === $options['technology'] ) ) ) {
+				throw new InvalidArgumentException( 'missing required options key: technology, which must equal either svg or webfont' );
 			}
 
-			if ( 'webfont' === $options['method'] ) {
+			if ( 'webfont' === $options['technology'] ) {
 				add_action(
 					'wp_enqueue_scripts',
 					function () use ( $resource_collection ) {
@@ -997,11 +1021,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					2
 				);
 
-				if ( ! array_key_exists( 'v4shim', $options ) ) {
-					throw new InvalidArgumentException( 'missing required options key: v4shim' );
+				if ( ! array_key_exists( 'v4compat', $options ) ) {
+					throw new InvalidArgumentException( 'missing required options key: v4compat' );
 				}
 
-				if ( $options['v4shim'] ) {
+				if ( $options['v4compat'] ) {
 					/**
 					 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 					 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
