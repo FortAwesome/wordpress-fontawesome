@@ -167,4 +167,26 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont_v4shim( $output, 'use', $version );
 		$this->refute_font_face_overrides( $output, 'use', $version );
 	}
+
+	public function test_pro_webfont_non_latest() {
+		$options = wp_parse_args(
+			['usePro' => true, 'version' => '5.1.1' ],
+			FontAwesome::DEFAULT_USER_OPTIONS
+		);
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$output = $this->captureOutput();
+
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->assert_webfont( $output, 'pro', $version );
+		$this->assert_webfont_v4shim( $output, 'pro', $version );
+		$this->assert_font_face_overrides( $output, 'pro', $version );
+	}
 }
