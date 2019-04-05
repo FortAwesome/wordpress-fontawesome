@@ -960,16 +960,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * This wants to receive params as returned by resolve_resource_collection(), which are guaranteed to work.
+		 * Enqueues <script> or <link> resources.
 		 *
 		 * @internal
 		 * @ignore
 		 * @param $options
-		 * @param $latest_version
-		 * @param $resource_collection
+		 * @param FontAwesome_ResourceCollection $resource_collection
 		 * @throws InvalidArgumentException
 		 */
-		public function enqueue( $options, $latest_version, $resource_collection ) {
+		public function enqueue( $options, $resource_collection ) {
 			if ( ! array_key_exists( 'pseudoElements', $options ) ) {
 				throw new InvalidArgumentException( 'missing required options key: pseudoElements' );
 			}
@@ -984,31 +983,29 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				throw new InvalidArgumentException( 'missing required options key: version' );
 			}
 
-			$version = 'latest' === $options['version']
-				? $latest_version
-				: $options['version'];
-
 			if ( ! ( array_key_exists( 'technology', $options ) && ( 'svg' === $options['technology'] || 'webfont' === $options['technology'] ) ) ) {
 				throw new InvalidArgumentException( 'missing required options key: technology, which must equal either svg or webfont' );
 			}
 
+			$resources = $resource_collection->resources();
+
 			if ( 'webfont' === $options['technology'] ) {
 				add_action(
 					'wp_enqueue_scripts',
-					function () use ( $resource_collection ) {
+					function () use ( $resources ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
+						wp_enqueue_style( self::RESOURCE_HANDLE, $resources[0]->source(), null, null );
 					}
 				);
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
 					'style_loader_tag',
-					function( $html, $handle ) use ( $resource_collection ) {
+					function( $html, $handle ) use ( $resources ) {
 						if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
-										'integrity="' . $resource_collection[0]->integrity_key() .
+										'integrity="' . $resources[0]->integrity_key() .
 										'" crossorigin="anonymous" />',
 										$html,
 										1
@@ -1024,6 +1021,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				if ( ! array_key_exists( 'v4compat', $options ) ) {
 					throw new InvalidArgumentException( 'missing required options key: v4compat' );
 				}
+
+				$version = $resource_collection->version();
 
 				if ( $options['v4compat'] ) {
 					/**
@@ -1084,14 +1083,14 @@ EOT;
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 					// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
 					// that don't.
-					if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
+					if ( ! is_null( $resources[1]->integrity_key() ) ) {
 						add_filter(
 							'style_loader_tag',
-							function ( $html, $handle ) use ( $resource_collection ) {
+							function ( $html, $handle ) use ( $resources ) {
 								if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
 									return preg_replace(
 										'/\/>$/',
-										'integrity="' . $resource_collection[1]->integrity_key() .
+										'integrity="' . $resources[1]->integrity_key() .
 										'" crossorigin="anonymous" />',
 										$html,
 										1
@@ -1123,12 +1122,12 @@ EOT;
 				// Filter the <script> tag to add additional attributes for integrity, crossorigin, defer.
 				add_filter(
 					'script_loader_tag',
-					function ( $tag, $handle ) use ( $resource_collection ) {
+					function ( $tag, $handle ) use ( $resources ) {
 						if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
 							$extra_tag_attributes = 'defer crossorigin="anonymous"';
 
-							if ( ! is_null( $resource_collection[0]->integrity_key() ) ) {
-								$extra_tag_attributes .= ' integrity="' . $resource_collection[0]->integrity_key() . '"';
+							if ( ! is_null( $resources[0]->integrity_key() ) ) {
+								$extra_tag_attributes .= ' integrity="' . $resources[0]->integrity_key() . '"';
 							}
 							$modified_script_tag = preg_replace(
 								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -1146,7 +1145,7 @@ EOT;
 					2
 				);
 
-				if ( $options['v4shim'] ) {
+				if ( $options['v4compat'] ) {
 					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
@@ -1159,11 +1158,11 @@ EOT;
 
 					add_filter(
 						'script_loader_tag',
-						function ( $tag, $handle ) use ( $resource_collection ) {
+						function ( $tag, $handle ) use ( $resources ) {
 							if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
 								$extra_tag_attributes = 'defer crossorigin="anonymous"';
-								if ( ! is_null( $resource_collection[1]->integrity_key() ) ) {
-									$extra_tag_attributes .= ' integrity="' . $resource_collection[1]->integrity_key() . '"';
+								if ( ! is_null( $resources[1]->integrity_key() ) ) {
+									$extra_tag_attributes .= ' integrity="' . $resources[1]->integrity_key() . '"';
 								}
 								$modified_script_tag = preg_replace(
 									// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
