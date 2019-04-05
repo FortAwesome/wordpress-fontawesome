@@ -72,15 +72,34 @@ class EnqueueTest extends \WP_UnitTestCase {
 		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
 
-	public function assert_webfont($output, $license_subdomain, $version) {
+	public function assert_webfont($output, $license_subdomain, $version, $refute = false) {
 		$this->assertEquals(
-			1,
+			$refute ? 0 : 1,
 			preg_match(
 				"/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake123\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
+
+	public function refute_webfont($output, $license_subdomain, $version){
+		$this->assert_webfont($output, $license_subdomain, $version, true);
+	}
+
+	public function assert_svg($output, $license_subdomain, $version, $refute = false) {
+		$this->assertEquals(
+			$refute ? 0 : 1,
+			preg_match(
+				"/<script[\s]+defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/all\.js\'><\/script>/",
+				$output
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	public function refute_svg($output, $license_subdomain, $version){
+		$this->assert_svg($output, $license_subdomain, $version, true);
 	}
 
 	public function assert_webfont_v4shim($output, $license_subdomain, $version, $refute = false){
@@ -96,6 +115,21 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	public function refute_webfont_v4shim($output, $license_subdomain, $version ) {
 		$this->assert_webfont_v4shim($output, $license_subdomain, $version, true);
+	}
+
+	public function assert_svg_v4shim($output, $license_subdomain, $version, $refute = false){
+		$this->assertEquals(
+			$refute ? 0 : 1,
+			preg_match(
+				"/<script[\s]+defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake246\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/v4-shims\.js\'><\/script>/",
+				$output
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	public function refute_svg_v4shim($output, $license_subdomain, $version){
+		$this->assert_svg_v4shim($output, $license_subdomain, $version, true);
 	}
 
 	public function assert_font_face_overrides($output, $license_subdomain, $version, $refute = false){
@@ -143,6 +177,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 
+		$this->refute_svg( $output, 'use', $version );
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
 		$this->assert_font_face_overrides( $output, 'use', $version );
@@ -163,6 +198,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertFalse( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 
+		$this->refute_svg( $output, 'use', $version );
 		$this->assert_webfont( $output, 'use', $version );
 		$this->refute_webfont_v4shim( $output, 'use', $version );
 		$this->refute_font_face_overrides( $output, 'use', $version );
@@ -185,8 +221,31 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 
+		$this->refute_svg( $output, 'pro', $version );
 		$this->assert_webfont( $output, 'pro', $version );
 		$this->assert_webfont_v4shim( $output, 'pro', $version );
 		$this->assert_font_face_overrides( $output, 'pro', $version );
+	}
+
+	public function test_svg_default() {
+		$options = wp_parse_args(
+			[ 'technology' => 'svg' ],
+			FontAwesome::DEFAULT_USER_OPTIONS
+		);
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$output = $this->captureOutput();
+
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->refute_webfont( $output, 'use', $version );
+		$this->assert_svg( $output, 'use', $version );
+		$this->assert_svg_v4shim( $output, 'use', $version );
 	}
 }
