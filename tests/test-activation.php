@@ -25,6 +25,6 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_activation_creates_default_config() {
 		FontAwesome_Activator::activate();
 		$options = get_option( FontAwesome::OPTIONS_KEY );
-		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['adminClientLoadSpec']['name'], $options['adminClientLoadSpec']['name'] );
+		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS, $options );
 	}
 }
