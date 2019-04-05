@@ -61,12 +61,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		do_action('wp_enqueue_scripts');
+		$output = $this->captureOutput();
 
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
-
-		$output = $this->captureOutput();
 
 		// Make sure the main css looks right.
 		$this->assertEquals(
