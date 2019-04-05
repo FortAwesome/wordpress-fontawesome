@@ -152,15 +152,29 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function assert_webfont_v4_compatibility_load_order($output){
-		$this->assertTrue(
-			boolval(
-				preg_match(
-					"/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css.*?font-face {\n.*?font-family: \"FontAwesome\"/s",
-					$output
-				)
+		$this->assertEquals(
+			1,
+			preg_match(
+				"/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css.*?font-face {\n.*?font-family: \"FontAwesome\"/s",
+				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
+
+	public function assert_svg_pseudo_elements($output, $refute = false){
+		$this->assertEquals(
+			$refute ? 0 : 1,
+			preg_match(
+				'/searchPseudoElements:\s*true/',
+				$output
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	public function refute_svg_pseudo_elements($output) {
+		$this->assert_svg_pseudo_elements($output,  true);
 	}
 
 	public function test_default_options() {
@@ -247,6 +261,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont( $output, 'use', $version );
 		$this->assert_svg( $output, 'use', $version );
 		$this->assert_svg_v4shim( $output, 'use', $version );
+		$this->refute_svg_pseudo_elements( $output );
 	}
 
 	public function test_svg_pro_no_v4_compat_non_default_version() {
@@ -269,6 +284,29 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont( $output, 'pro', $version );
 		$this->assert_svg( $output, 'pro', $version );
 		$this->refute_svg_v4shim( $output, 'pro', $version );
+		$this->refute_svg_pseudo_elements( $output );
+	}
 
+	public function test_svg_with_pseudo_elements() {
+		$options = wp_parse_args(
+			[ 'technology' => 'svg', 'usePro' => true, 'v4compat' => false, 'svgPseudoElements' => true ],
+			FontAwesome::DEFAULT_USER_OPTIONS
+		);
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$output = $this->captureOutput();
+
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertFalse( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->refute_webfont( $output, 'pro', $version );
+		$this->assert_svg( $output, 'pro', $version );
+		$this->refute_svg_v4shim( $output, 'pro', $version );
+		$this->assert_svg_pseudo_elements( $output );
 	}
 }
