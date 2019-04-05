@@ -79,9 +79,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @ignore
 		 */
 		protected function build_item( $fa ) {
-			$options          = $fa->options();
-			$locked_load_spec = isset( $options['lockedLoadSpec'] ) ? $options['lockedLoadSpec'] : false;
-
 			/**
 			 * Calling wp_enqueue_scripts() is required to trigger the 'wp_enqueue_scripts' action that is the
 			 * conventional time in the WordPress lifecycle when plugins or themes would enqueue scripts or styles.
@@ -110,8 +107,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				'conflicts'             => $fa->conflicts(),
 				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
 				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
-				'currentLoadSpec'       => $fa->load_spec(),
-				'currentLoadSpecLocked' => $locked_load_spec && $fa->load_spec() === $locked_load_spec,
 				'unregisteredClients'   => $fa->unregistered_clients(),
 				'releaseProviderStatus' => $this->release_provider()->get_status(),
 				'releases'              => array(
@@ -144,14 +139,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			try {
 				$fa = fa();
 
-				// Make sure our releases metadata is fresh.
-				$load_releases = new ReflectionMethod( 'FortAwesome\FontAwesome_Release_Provider', 'load_releases' );
-				$load_releases->setAccessible( true );
-				$load_releases->invoke( $this->release_provider() );
+				$this->release_provider()->load_releases();
 
-				$fa_load = new ReflectionMethod( 'FortAwesome\FontAwesome', 'load' );
-				$fa_load->setAccessible( true );
-				$fa_load->invoke( $fa );
+				fa()->gather_preferences();
 
 				$data = $this->build_item( $fa );
 
