@@ -48,8 +48,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *   Clients should register a callback on this action to be notified when it is valid to query the FontAwesome
 	 *   plugin's metadata using methods such as:
 	 *     - {@see FontAwesome::version()} to discover the version of Font Awesome being loaded
-	 *     - {@see FontAwesome::using_pro()} to discover whether a version with Pro icons is being loaded
-	 *     - {@see FontAwesome::using_pseudo_elements()} to discover whether Font Awesome is being loaded with support for pseudo-elements
+	 *     - {@see FontAwesome::pro()} to discover whether a version with Pro icons is being loaded
+	 *     - {@see FontAwesome::pseudo_elements()} to discover whether Font Awesome is being loaded with support for pseudo-elements
 	 *
 	 * - `font_awesome_failed`
 	 *
@@ -269,7 +269,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								$options['version'],
 								'all',
 								array(
-									'use_pro'  => $this->using_pro(),
+									'use_pro'  => $this->pro(),
 									'use_svg'  => 'svg' === $this->technology(),
 									'use_shim' => $this->v4_compatibility(),
 								)
@@ -277,7 +277,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 						$latest_version = $this->get_latest_version();
 
-						$this->enqueue( $options, $latest_version, $resource_collection );
+						$this->enqueue_cdn( $options, $resource_collection );
 					} catch ( FontAwesome_NoReleasesException $e ) {
 						font_awesome_handle_fatal_error(
 							'Sorry, your WordPress server was unable to contact the Font Awesome server to retrieve available ' .
@@ -1384,7 +1384,7 @@ EOT;
 		 *
 		 * @since 4.0.0
 		 *
-		 * @see FontAwesome::using_pro()
+		 * @see FontAwesome::pro()
 		 * @param array $client_preferences
 		 * @throws InvalidArgumentException
 		 */

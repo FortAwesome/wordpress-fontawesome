@@ -51,7 +51,7 @@ add_action(
 		error_log(
 			SIGMA_PLUGIN_LOG_PREFIX .
 			' font_awesome_enqueued: method: ' .
-			fa()->fa_method() .
+			fa()->technology() .
 			', ver: ' .
 			fa()->version() );
 	},

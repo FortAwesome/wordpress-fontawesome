@@ -35,7 +35,7 @@ add_action('font_awesome_enqueued', function($loadSpec){
 		GAMMA_PLUGIN_LOG_PREFIX .
 		" font_awesome_enqueued: " .
 		"method: " .
-		FortAwesome\fa()->fa_method() .
+		FortAwesome\fa()->technology() .
 		", ver: " .
 		FortAwesome\fa()->version()
 	);
