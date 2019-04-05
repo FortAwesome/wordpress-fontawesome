@@ -69,46 +69,35 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$output = $this->captureOutput();
 
 		// Make sure the main css looks right.
-		$this->assertTrue(
-			boolval(
-				preg_match(
-					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake123"[\s]+crossorigin="anonymous"[\s]*\/>/',
-					$output
-				)
+		$this->assertEquals(
+			1,
+			preg_match(
+				'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake123"[\s]+crossorigin="anonymous"[\s]*\/>/',
+				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
 
 		// Make sure the v4shim css looks right.
-		$this->assertTrue(
-			boolval(
-				preg_match(
-					'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake246"[\s]+crossorigin="anonymous"[\s]*\/>/',
-					$output
-				)
+		$this->assertEquals(
+			1,
+			preg_match(
+				'/<link[\s]+rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/use\.fontawesome\.com\/releases\/v5\.2\.0\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity="sha384-fake246"[\s]+crossorigin="anonymous"[\s]*\/>/',
+				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+
+		$font_face_match_count = preg_match_all(
+			"/@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]+src: url.*?${version}\/webfonts\/fa-brands-400\.eot\"/",
+			$output,
+			$font_face_matches
 		);
 
 		// Make sure the font-face overrides are present.
-		$this->assertTrue(
-			boolval(
-				preg_match(
-					"/<style.*?>\n@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]+src: url.*?${version}\/webfonts\/fa-brands-400\.eot/",
-					$output
-				)
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
-		);
-
-		// Make sure the font-face overrides are present only once.
-		$this->assertFalse(
-			boolval(
-				preg_match(
-					"/(@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]+src: url.*?${version}\/webfonts\/fa-brands-400\.eot).*?\\1/",
-					$output
-				)
-			),
+		$this->assertEquals(
+			1,
+			$font_face_match_count,
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
 
