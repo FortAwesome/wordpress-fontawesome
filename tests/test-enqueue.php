@@ -248,4 +248,27 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assert_svg( $output, 'use', $version );
 		$this->assert_svg_v4shim( $output, 'use', $version );
 	}
+
+	public function test_svg_pro_no_v4_compat_non_default_version() {
+		$options = wp_parse_args(
+			[ 'technology' => 'svg', 'usePro' => true, 'v4compat' => false, 'version' => '5.1.1' ],
+			FontAwesome::DEFAULT_USER_OPTIONS
+		);
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$output = $this->captureOutput();
+
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertFalse( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->refute_webfont( $output, 'pro', $version );
+		$this->assert_svg( $output, 'pro', $version );
+		$this->refute_svg_v4shim( $output, 'pro', $version );
+
+	}
 }
