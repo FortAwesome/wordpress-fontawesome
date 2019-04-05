@@ -873,7 +873,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * @return boolean
 		 */
-		public function using_pro() {
+		public function pro() {
 			try {
 				$options = $this->options();
 				return( wp_validate_boolean( $options['usePro'] ) );
@@ -943,7 +943,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *
 		 * @return boolean
 		 */
-		public function using_pseudo_elements() {
+		public function pseudo_elements() {
 			$options = $this->options();
 			return 'webfont' === $options['technology'] ||
 			   isset( $options['pseudoElements'] )
@@ -960,7 +960,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Enqueues <script> or <link> resources.
+		 * Enqueues <script> or <link> resources to load from Font Awesome 5 free or pro cdn.
 		 *
 		 * @internal
 		 * @ignore
@@ -968,7 +968,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @param FontAwesome_ResourceCollection $resource_collection
 		 * @throws InvalidArgumentException
 		 */
-		public function enqueue( $options, $resource_collection ) {
+		public function enqueue_cdn( $options, $resource_collection ) {
 			if ( ! array_key_exists( 'pseudoElements', $options ) ) {
 				throw new InvalidArgumentException( 'missing required options key: pseudoElements' );
 			}
