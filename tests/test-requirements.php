@@ -62,7 +62,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertFalse( $failed );
 		$this->assertTrue( $enqueued );
 
-		$this->assertEquals( 'webfont', fa()->fa_method() );
+		$this->assertEquals( 'webfont', fa()->technology() );
 
 		$stuff_enqueued = false;
 
@@ -79,7 +79,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 	public function test_all_default_with_multiple_clients() {
 		// Before loading
-		$this->assertNull(fa()->fa_method());
+		$this->assertNull(fa()->technology());
 		$this->assertFalse(fa()->v4shim());
 
 		fa()->register(
@@ -119,7 +119,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertArrayHasKey( 'Client A', fa()->requirements() );
 		$this->assertArrayHasKey( 'Client B', fa()->requirements() );
 		$this->assertArrayHasKey( FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL, fa()->requirements() );
-		$this->assertEquals( 'webfont', fa()->fa_method() );
+		$this->assertEquals( 'webfont', fa()->technology() );
 		$this->assertTrue( fa()->v4shim() );
 	}
 
@@ -179,7 +179,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 		$this->assertTrue( $enqueued );
-		$this->assertEquals( 'svg', fa()->fa_method() );
+		$this->assertEquals( 'svg', fa()->technology() );
 		$this->assertTrue( fa()->v4shim() );
 	}
 
@@ -217,7 +217,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$this->assertTrue( $enqueued );
 		$registered_test_clients = array_filter(fa()->requirements(), function( $client ) { return 'test' === $client['name']; });
 		$this->assertEquals( 1, count( $registered_test_clients ) );
-		$this->assertEquals( 'svg', fa()->fa_method() );
+		$this->assertEquals( 'svg', fa()->technology() );
 		$this->assertTrue( fa()->v4shim() );
 	}
 
@@ -248,7 +248,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertEquals( 'svg', fa()->fa_method() );
+		$this->assertEquals( 'svg', fa()->technology() );
 		$this->assertTrue( fa()->v4shim() );
 	}
 
@@ -313,7 +313,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertEquals( 'svg', fa()->fa_method() );
+		$this->assertEquals( 'svg', fa()->technology() );
 		$this->assertFalse( fa()->using_pseudo_elements() );
 	}
 
@@ -333,7 +333,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		global $fa_load;
 		$fa_load->invoke( fa() );
-		$this->assertEquals( 'webfont', fa()->fa_method() );
+		$this->assertEquals( 'webfont', fa()->technology() );
 		$this->assertTrue( fa()->using_pseudo_elements() );
 	}
 
@@ -564,7 +564,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 		$fa_load->invoke( fa() );
 		$this->assertTrue( $enqueued );
 		$this->assertFalse( $failed );
-		$this->assertEquals( 'webfont', fa()->fa_method() );
+		$this->assertEquals( 'webfont', fa()->technology() );
 		$this->assertTrue( fa()->using_pseudo_elements() );
 	}
 
@@ -614,7 +614,7 @@ class RequirementsTest extends \WP_UnitTestCase {
 
 		$this->assertTrue( $enqueued );
 		$this->assertFalse( $failed );
-		$this->assertEquals( 'webfont', fa()->fa_method() );
+		$this->assertEquals( 'webfont', fa()->technology() );
 		$this->assertTrue( fa()->using_pseudo_elements() );
 		$this->assertRegExp( '/WARNING: a client of Font Awesome has forbidden pseudo-elements/', $err );
 	}

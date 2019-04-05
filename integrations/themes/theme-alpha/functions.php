@@ -37,7 +37,7 @@ add_action('font_awesome_enqueued', function() {
 		THEME_ALPHA_LOG_PREFIX .
 		" font_awesome_enqueued: " .
 		"method: " .
-		fa()->fa_method() .
+		fa()->technology() .
 		", ver: " .
 		fa()->version()
 	);
@@ -55,7 +55,7 @@ function theme_alpha_fa_classes(){
     ? array_push($class_list, 'fa-version-5-0')
     : array_push($class_list, 'fa-version-5-1');
 
-  (fa()->fa_method() == 'svg')
+  (fa()->technology() == 'svg')
     ? array_push($class_list, 'fa-method-svg')
     : array_push($class_list, 'fa-method-webfont');
 
