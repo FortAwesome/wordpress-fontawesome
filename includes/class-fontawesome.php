@@ -700,7 +700,69 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return array
 		 */
 		public function options() {
-			return wp_parse_args( get_option( self::OPTIONS_KEY ), self::DEFAULT_USER_OPTIONS );
+			$options = get_option( self::OPTIONS_KEY );
+			return wp_parse_args( $this->convert_options( $options ), self::DEFAULT_USER_OPTIONS );
+		}
+
+		/**
+		 * Converts options array from a previous schema version to the current one.
+		 *
+		 * @internal
+		 * @ignore
+		 * @param $options
+		 * @return array
+		 */
+		public function convert_options( $options ) {
+			if ( isset( $options['lockedLoadSpec'] ) ) {
+				// v1 schema.
+				return $this->convert_options_from_v1( $options );
+			} else {
+				// Nothing to convert.
+				return $options;
+			}
+		}
+
+		/**
+		 * Converts a given options array with a v1 schema to one with a v2 schema.
+		 * There are significant changes from the schema used by 4.0.0-rc9 and before.
+		 *
+		 * @internal
+		 * @ignore
+		 * @param $options
+		 * @return array
+		 */
+		protected function convert_options_from_v1( $options ) {
+			$converted_options = array();
+
+			if ( isset( $options['usePro'] ) ) {
+				$converted_options['usePro'] = $options['usePro'];
+			}
+
+			if ( isset( $options['removeUnregisteredClients'] ) ) {
+				$converted_options['removeUnregisteredClients'] = $options['removeUnregisteredClients'];
+			}
+
+			if ( isset( $options['version'] ) ) {
+				$converted_options['version'] = $options['version'];
+			}
+
+			if ( isset( $options['lockedLoadSpec'] ) ) {
+				$converted_options['technology'] = $options['lockedLoadSpec']['method'];
+
+				$converted_options['svgPseudoElements'] = 'svg' === $options['lockedLoadSpec']['method']
+					&& $options['lockedLoadSpec']['pseudoElements'];
+
+				$converted_options['v4compat'] = $options['lockedLoadSpec']['v4shim'];
+			} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
+				$converted_options['technology'] = $options['adminClientLoadSpec']['method'];
+
+				$converted_options['svgPseudoElements'] = 'svg' === $options['adminClientLoadSpec']['method']
+					&& $options['adminClientLoadSpec']['pseudoElements'];
+
+				$converted_options['v4compat'] = $options['adminClientLoadSpec']['v4shim'];
+			}
+
+			return $converted_options;
 		}
 
 		/**
