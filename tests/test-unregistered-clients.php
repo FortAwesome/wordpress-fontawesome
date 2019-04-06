@@ -89,19 +89,20 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 		$this->enqueue_fakes();
 
 		add_action(
-			'font_awesome_requirements',
+			'font_awesome_preferences',
 			function() use ( $fa ) {
 				$fa->register(
 					[
-						'name'          => 'clientA',
-						'clientVersion' => '1',
+						'name' => 'clientA',
 					]
 				);
 			}
 		);
 
-		global $fa_load;
-		$fa_load->invoke( $fa );
+		fa()->gather_preferences();
+
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all' );
+		fa()->enqueue_cdn( fa()->options(), $resource_collection );
 
 		ob_start();
 		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
@@ -134,19 +135,20 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 		$this->enqueue_fakes();
 
 		add_action(
-			'font_awesome_requirements',
+			'font_awesome_preferences',
 			function() use ( $fa ) {
 				$fa->register(
 					[
-						'name'          => 'clientA',
-						'clientVersion' => '1',
+						'name' => 'clientA',
 					]
 				);
 			}
 		);
 
-		global $fa_load;
-		$fa_load->invoke( fa() );
+		fa()->gather_preferences();
+
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all' );
+		fa()->enqueue_cdn( fa()->options(), $resource_collection );
 
 		ob_start();
 		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
