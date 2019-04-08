@@ -26,7 +26,7 @@ class ActivationTest extends \WP_UnitTestCase {
 
 	public function test_activation_creates_default_config() {
 		FontAwesome_Activator::activate();
-		$actual_options = get_option( FontAwesome::OPTIONS_KEY );
+		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->get_latest_version() ] );
 		$this->assertEquals( $expected_options, $actual_options );
 	}

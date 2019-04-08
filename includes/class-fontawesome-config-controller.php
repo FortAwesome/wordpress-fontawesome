@@ -170,9 +170,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			try {
 				$item = $this->prepare_item_for_database( $request );
 
-
 				// TODO: fix up this logic to work with the new world
-
 				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
 				// normal load process. If it satisfies all constraints, the new adminClientLoadSpec spec will be
 				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
