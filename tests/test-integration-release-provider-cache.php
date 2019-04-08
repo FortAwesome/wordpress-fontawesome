@@ -89,18 +89,6 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 
 		$fa = $this->fa;
 
-		add_action(
-			'font_awesome_requirements',
-			function() use ( $fa ) {
-				$fa->register(
-					array(
-						'name'          => 'Client A',
-						'clientVersion' => '1',
-					)
-				);
-			}
-		);
-
 		$enqueued_count = 0;
 
 		$enqueued_callback = function() use ( $fa, &$enqueued_count ) {
@@ -109,26 +97,26 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
-		global $fa_load;
-		$fa_load->invoke( $fa );
+		$fa->gather_preferences();
+
+		$resource_collection = $this->release_provider->get_resource_collection( '5.2.0', 'all' );
+		$fa->enqueue_cdn( $fa->options(), $resource_collection );
 
 		$this->assertEquals( 1, $enqueued_count );
 
-		// Make sure the locked load spec is there.
-		$options = get_option( FontAwesome::OPTIONS_KEY );
-		$this->assertArrayHasKey( 'lockedLoadSpec', $options );
-
 		$versions = $this->release_provider->versions();
 
+		$this->assertEquals( 200, $this->release_provider->get_status()['code'] );
+
 		// Now, reset to simulate a subsequent PHP process running, so the Singletons will have to
-		// refresh themselves, but we already have the locked load spec in the db from the previous run.
+		// refresh themselves, but we already have the load configuration in the db from the previous run.
 		$this->prepare(
 			[
 				self::build_500_response(),
 			]
 		);
 
-		$fa_load->invoke( $fa );
+		$fa->enqueue_cdn( $fa->options(), $resource_collection );
 
 		/**
 		 * If it loads the second time without choking on the mock 500 response, then we're good.
