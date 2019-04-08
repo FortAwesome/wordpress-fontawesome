@@ -178,9 +178,9 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function test_default_options() {
-		$options = FontAwesome::DEFAULT_USER_OPTIONS;
+		$options = fa()->options();
 
-		$resource_collection = $this->build_mock_resource_collection( $options );
+		$resource_collection = $this->build_mock_resource_collection( fa()->options() );
 
 		$version = $resource_collection->version();
 
@@ -199,7 +199,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function test_webfont_without_v4_compat() {
-		$options = wp_parse_args( ['v4compat' => false], FontAwesome::DEFAULT_USER_OPTIONS);
+		$options = wp_parse_args( ['v4compat' => false], fa()->options() );
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
 
@@ -221,7 +221,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 	public function test_pro_webfont_non_latest() {
 		$options = wp_parse_args(
 			['usePro' => true, 'version' => '5.1.1' ],
-			FontAwesome::DEFAULT_USER_OPTIONS
+			fa()->options()
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -244,7 +244,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 	public function test_svg_default() {
 		$options = wp_parse_args(
 			[ 'technology' => 'svg' ],
-			FontAwesome::DEFAULT_USER_OPTIONS
+			fa()->options()
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -267,7 +267,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 	public function test_svg_pro_no_v4_compat_non_default_version() {
 		$options = wp_parse_args(
 			[ 'technology' => 'svg', 'usePro' => true, 'v4compat' => false, 'version' => '5.1.1' ],
-			FontAwesome::DEFAULT_USER_OPTIONS
+			fa()->options()
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -290,7 +290,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 	public function test_svg_with_pseudo_elements() {
 		$options = wp_parse_args(
 			[ 'technology' => 'svg', 'usePro' => true, 'v4compat' => false, 'svgPseudoElements' => true ],
-			FontAwesome::DEFAULT_USER_OPTIONS
+			fa()->options()
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );

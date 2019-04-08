@@ -47,6 +47,7 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 			wp_dequeue_script( $script['handle'] );
 			wp_deregister_script( $script['handle'] );
 		}
+		FontAwesome_Activator::activate();
 	}
 
 	// By default, we'll enqueue as late as possible, to make sure these are still detected.
