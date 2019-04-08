@@ -32,6 +32,16 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
 	}
 
+	public function set_options( $version ) {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[ 'version' => $version ]
+			)
+		);
+	}
+
 	// Pass an array of responses, in the shape returned by wp_remote_get().
 	// A release provider will be mocked to return those responses, in order,
 	// on consecutive GETs to the fontawesome API.
@@ -61,6 +71,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 
 		$controllerMock->method('release_provider')
 		               ->willReturn($mocked_release_provider);
+
+		$this->set_options( '5.3.1' );
 
 		add_action(
 			'rest_api_init',
@@ -125,26 +137,17 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
 
-		$this->assertArrayHasKey( 'adminClientInternal', $data );
-		$this->assertEquals( FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL, $data['adminClientInternal'] );
-
-		$this->assertArrayHasKey( 'adminClientExternal', $data );
-		$this->assertEquals( FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL, $data['adminClientExternal'] );
-
 		$this->assertArrayHasKey( 'pluginVersion', $data );
 		$this->assertEquals( FontAwesome::PLUGIN_VERSION, $data['pluginVersion'] );
 
 		$this->assertArrayHasKey( 'options', $data );
-		$this->assertArrayHasKey( 'adminClientLoadSpec', $data['options'] );
-		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['adminClientLoadSpec'], $data['options']['adminClientLoadSpec'] );
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['usePro'], $data['options']['usePro'] );
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['removeUnregisteredClients'], $data['options']['removeUnregisteredClients'] );
 		$this->assertEquals( '5.3.1', $data['options']['version'] );
 
-		$this->assertArrayHasKey( 'clientRequirements', $data );
-		$this->assertArrayHasKey( 'user', $data['clientRequirements'] );
-		// By default, only the admin user client requirements should be present
-		$this->assertEquals( 1, count( $data['clientRequirements'] ) );
+		$this->assertArrayHasKey( 'clientPreferences', $data );
+		// By default, no client preferences, since the admin user is not included as one of these clients.
+		$this->assertEquals( 0, count( $data['clientPreferences'] ) );
 
 		$this->assertArrayHasKey( 'conflicts', $data );
 		// No client conflicts in the default scenario
@@ -153,23 +156,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertArrayHasKey( 'pluginVersionWarnings', $data );
 		// None of these warnings in the default scenario
 		$this->assertNull( $data['pluginVersionWarnings'] );
-
-		$this->assertArrayHasKey( 'clientVersion', $data['clientRequirements']['user'] );
-		$this->assertEquals( 0, $data['clientRequirements']['user']['clientVersion'] );
-
-		$this->assertArrayHasKey( 'currentLoadSpec', $data );
-		$expected_load_spec = array(
-			'method' => 'webfont',
-			'v4shim' => true,
-			'pseudoElements' => true,
-			'clients' => array(
-				'user' => 0
-			)
-		);
-		$this->assertEquals($expected_load_spec, $data['currentLoadSpec']);
-
-		$this->assertArrayHasKey( 'currentLoadSpecLocked', $data );
-		$this->assertEquals( true, $data['currentLoadSpecLocked'] );
 
 		$this->assertArrayHasKey( 'unregisteredClients', $data );
 		// None by default

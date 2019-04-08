@@ -47,6 +47,8 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 				$method->willReturn( $mocked_release_provider );
 			}
 		);
+
+		FontAwesome_Activator::activate();
 	}
 
 	protected static function build_success_response() {
