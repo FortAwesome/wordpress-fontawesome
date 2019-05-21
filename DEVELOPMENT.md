@@ -45,6 +45,26 @@ activated to help with testing and exploring interaction with the plugin at run 
 
 # Development Setup
 
+## 0. Install PHP
+
+Most of our PHP code will run inside a Docker container under the version of PHP installed within that container.
+However, some of the tools for building or running composer will run outside of the container, in the host environment,
+so you'll need a workable version of PHP installed in your host environment.
+
+If you can run `$ php --version` and it shows a PHP version that's 7.1 or later, that should be good enough.
+
+Otherwise, install php in a way appropriate to your host environment. On macOS, use:
+
+`$ brew install php`
+
+### asdf is a nightmare for PHP
+
+While Font Awesome's development environments normally use asdf to help standardize runtime configurations, getting
+the PHP plugin for asdf to work successfully on macOS is probably not worth it at this time. The original plugin
+has apparently [been abandoned](https://github.com/odarriba/asdf-php#why-using-this-plug-in), and the maintainer of the
+current plugin doesn't use it any longer, and thinks that it's ["near to a nightmare"](https://github.com/odarriba/asdf-php/issues/8#issuecomment-362911209)
+on macOS.
+
 ## 1. Make sure Docker is installed
 
 ## 2. Build any number of docker _images_ for the environments you want
