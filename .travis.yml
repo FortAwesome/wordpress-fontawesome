@@ -24,7 +24,9 @@ matrix:
     env: WP_VERSION=latest
   - php: 7.1.29
     env: WP_VERSION=latest
-  - php: 7.1.29
+    # PHP 5.6.20 is the minimum supported version by WordPress, as of WordPress 5.2.0
+    # https://wordpress.org/support/wordpress-version/version-5-2/#php-version-bump
+  - php: 5.6.20
     # env: WP_VERSION=4.4
     # The REST API is included in 4.7 and later. If we want to target >= 4.4 < 4.7, we may need to do it by
     # installing the REST API plugin for those older versions and require that customers do the same.
@@ -41,7 +43,7 @@ before_script:
 - |
   if [[ ! -z "$WP_VERSION" ]] ; then
     bash bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
-    composer global require "phpunit/phpunit=7.5.*"
+    composer global require "phpunit/phpunit=6.5.*"
   fi
 - |
   if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
