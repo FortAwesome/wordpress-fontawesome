@@ -18,8 +18,8 @@ class OptionsSetter extends React.Component {
 
     this.state = {
       method: UNSPECIFIED,
-      v4shim: UNSPECIFIED,
-      pseudoElements: UNSPECIFIED,
+      v4compat: UNSPECIFIED,
+      svgPseudoElements: UNSPECIFIED,
       version: UNSPECIFIED,
       usePro: false,
       removeUnregisteredClients: false,
@@ -43,10 +43,10 @@ class OptionsSetter extends React.Component {
 
     const newState = {
       lastProps: nextProps,
-      pseudoElements: nextProps.currentOptions.adminClientLoadSpec.pseudoElements || UNSPECIFIED,
+      svgPseudoElements: nextProps.currentOptions.svgPseudoElements || UNSPECIFIED,
       version: nextProps.currentOptions.version || UNSPECIFIED,
-      v4shim: nextProps.currentOptions.adminClientLoadSpec.v4shim || UNSPECIFIED,
-      method: nextProps.currentOptions.adminClientLoadSpec.method || UNSPECIFIED,
+      v4compat: nextProps.currentOptions.v4compat || UNSPECIFIED,
+      method: nextProps.currentOptions.method || UNSPECIFIED,
       usePro: !!nextProps.currentOptions.usePro,
       removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
       versionOptions: OptionsSetter.buildVersionOptions(nextProps)
@@ -91,7 +91,7 @@ class OptionsSetter extends React.Component {
   }
 
   handleV4Select(e){
-    this.setState({ v4shim: e.target.value === '-' ? UNSPECIFIED : e.target.value })
+    this.setState({ v4compat: e.target.value === '-' ? UNSPECIFIED : e.target.value })
   }
 
   handleSubmitClick(e) {
@@ -104,7 +104,7 @@ class OptionsSetter extends React.Component {
         adminClientLoadSpec: {
           name: adminClientInternal,
           method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
-          v4shim: this.state.v4shim === UNSPECIFIED ? undefined : this.state.v4shim,
+          v4compat: this.state.v4compat === UNSPECIFIED ? undefined : this.state.v4compat,
           pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements
         },
         version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
@@ -119,7 +119,7 @@ class OptionsSetter extends React.Component {
 
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
-    const { method, v4shim, pseudoElements } = this.state
+    const { method, v4compat, pseudoElements } = this.state
 
     return <div className={ classnames(styles['options-setter']) }>
         <h2>Options</h2>
@@ -135,7 +135,7 @@ class OptionsSetter extends React.Component {
           'require' === pseudoElements
           && 'svg' === method
           && <SvgPseudoElementsWarning
-              v4shim={ 'require' === v4shim }
+              v4compat={ 'require' === v4compat }
               showModal={ this.props.showPseudoElementsHelpModal }
           />
         }
@@ -170,10 +170,10 @@ class OptionsSetter extends React.Component {
           </tr>
           <tr>
             <th scope="row">
-              <label htmlFor="v4shim">Version 4 Compatibility</label>
+              <label htmlFor="v4compat">Version 4 Compatibility</label>
             </th>
             <td>
-              <select name="v4shim" onChange={ this.handleV4Select } value={ this.state.v4shim }>
+              <select name="v4compat" onChange={ this.handleV4Select } value={ this.state.v4compat }>
                 {
                   REQUIRE_FORBID_OPTIONS.map((option, index) => {
                     return <option key={ index } value={ option }>{ option ? option : '-' }</option>
@@ -278,6 +278,5 @@ OptionsSetter.propTypes = {
   putData: PropTypes.func.isRequired,
   currentOptions: PropTypes.object.isRequired,
   releases: PropTypes.object.isRequired,
-  adminClientInternal: PropTypes.string.isRequired,
   releaseProviderStatus: PropTypes.object,
 }
