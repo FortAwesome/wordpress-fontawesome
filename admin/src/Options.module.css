@@ -54,6 +54,35 @@ div.submit-status.fail .explanation{
   margin-bottom: .125em;
 }
 
+.option-header {
+    width: 30%;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.option-value {
+    width: 70%;
+}
+
+.option-value > div {
+    width: 50%;
+}
+
+.option-label {
+    display: flex;
+    flex-direction: flex-row;
+}
+
+.option-label-text {
+    margin-left: 5px;
+}
+
+@media only screen and (min-width: 1024px) {
+    .options-setter {
+        width: 66%;
+    }
+}
+
 .options-setter button {
     background: none;
     border: none;

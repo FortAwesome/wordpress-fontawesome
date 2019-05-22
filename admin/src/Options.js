@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faDotCircle, faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import styles from './Options.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -9,7 +10,6 @@ import { isEqual } from 'lodash'
 import SvgPseudoElementsWarning from "./SvgPseudoElementsWarning";
 
 const UNSPECIFIED = ''
-const METHOD_OPTIONS = ['webfont', 'svg', UNSPECIFIED]
 const REQUIRE_FORBID_OPTIONS = ['require', 'forbid', UNSPECIFIED]
 
 class Options extends React.Component {
@@ -17,7 +17,7 @@ class Options extends React.Component {
     super(props)
 
     this.state = {
-      method: UNSPECIFIED,
+      technology: UNSPECIFIED,
       v4compat: UNSPECIFIED,
       svgPseudoElements: UNSPECIFIED,
       version: UNSPECIFIED,
@@ -46,7 +46,7 @@ class Options extends React.Component {
       svgPseudoElements: nextProps.currentOptions.svgPseudoElements || UNSPECIFIED,
       version: nextProps.currentOptions.version || UNSPECIFIED,
       v4compat: nextProps.currentOptions.v4compat || UNSPECIFIED,
-      method: nextProps.currentOptions.method || UNSPECIFIED,
+      technology: nextProps.currentOptions.technology,
       usePro: !!nextProps.currentOptions.usePro,
       removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
       versionOptions: Options.buildVersionOptions(nextProps)
@@ -71,7 +71,7 @@ class Options extends React.Component {
   }
 
   handleMethodSelect(e){
-    this.setState({ method: e.target.value === '-' ? UNSPECIFIED : e.target.value })
+    this.setState({ technology: e.target.value === '-' ? UNSPECIFIED : e.target.value })
   }
 
   handleVersionSelect(e){
@@ -97,16 +97,13 @@ class Options extends React.Component {
   handleSubmitClick(e) {
     e.preventDefault()
 
-    const { putData, adminClientInternal } = this.props
+    const { putData } = this.props
 
     putData({
       options: {
-        adminClientLoadSpec: {
-          name: adminClientInternal,
-          method: this.state.method === UNSPECIFIED ? undefined : this.state.method,
-          v4compat: this.state.v4compat === UNSPECIFIED ? undefined : this.state.v4compat,
-          pseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements
-        },
+        technology: this.state.technology === UNSPECIFIED ? undefined : this.state.technology,
+        v4compat: this.state.v4compat === UNSPECIFIED ? undefined : this.state.v4compat,
+        svgPseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
         version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
         usePro: this.state.usePro,
         removeUnregisteredClients: this.state.removeUnregisteredClients
@@ -119,42 +116,86 @@ class Options extends React.Component {
 
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
-    const { method, v4compat, pseudoElements } = this.state
+    const { technology, v4compat, pseudoElements } = this.state
 
     return <div className={ classnames(styles['options-setter']) }>
-        <h2>Options</h2>
-        <p className={ sharedStyles['explanation'] }>
-          You can tune these options according to your preferences, as long as your preferences
-          don't conflict with the specifications required by other plugins and themes that you've installed.
-        </p>
-        <p className={ sharedStyles['explanation'] }>
-          If conflicts are detected, they'll be shown below, and
-          you might be able to resolve them just by choosing different options here.
-        </p>
         {
           'require' === pseudoElements
-          && 'svg' === method
+          && 'svg' === technology
           && <SvgPseudoElementsWarning
               v4compat={ 'require' === v4compat }
               showModal={ this.props.showPseudoElementsHelpModal }
           />
         }
+        <form onSubmit={ e => e.preventDefault() }>
+          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+            <div className={ styles['option-header'] }>Technology</div>
+            <div className={ classnames(styles['option-value'], sharedStyles['flex'], sharedStyles['flex-row']) }>
+              <div>
+                <input
+                  id="code_edit_tech_webfont"
+                  name="code_edit_tech"
+                  type="radio"
+                  value="webfont"
+                  checked={ technology === 'webfont' }
+                  onChange={ () => this.setState({ technology: 'webfont' }) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faDotCircle }
+                      size="lg"
+                      fixedWidth
+                      className={ sharedStyles['checked-icon'] }
+                    />
+                    <FontAwesomeIcon
+                      icon={ faCircle }
+                      size="lg"
+                      fixedWidth
+                      className={ sharedStyles['unchecked-icon'] }
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    Web Font
+                  </span>
+                </label>
+              </div>
+              <div>
+                  <input
+                    id="code_edit_tech_svg"
+                    name="code_edit_tech"
+                    type="radio"
+                    value="svg"
+                    checked={ technology === 'svg' }
+                    onChange={ () => this.setState({ technology: 'svg' }) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                  />
+                  <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faDotCircle }
+                        className={ sharedStyles['checked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                      <FontAwesomeIcon
+                        icon={ faCircle }
+                        className={ sharedStyles['unchecked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                    </span>
+                    <span className={ styles['option-label-text'] }>
+                      SVG
+                    </span>
+                  </label>
+                </div>
+            </div>
+          </div>
+        </form>
         <table className="form-table">
         <tbody>
-          <tr>
-            <th scope="row">
-              <label htmlFor="method">Method</label>
-            </th>
-            <td>
-              <select name="method" onChange={ this.handleMethodSelect } value={ this.state.method }>
-                {
-                  METHOD_OPTIONS.map((method, index) => {
-                    return <option key={ index } value={ method }>{ method ? method : '-' }</option>
-                  })
-                }
-              </select>
-            </td>
-          </tr>
           <tr>
             <th scope="row">
               <label htmlFor="use-pro">Use Pro</label>
