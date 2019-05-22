@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDotCircle, faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
-import { faCircle } from '@fortawesome/free-regular-svg-icons'
+import { faDotCircle, faSpinner, faCheckSquare, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './Options.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -17,8 +17,8 @@ class Options extends React.Component {
     super(props)
 
     this.state = {
-      technology: UNSPECIFIED,
-      v4compat: UNSPECIFIED,
+      technology: null,
+      v4compat: null,
       svgPseudoElements: UNSPECIFIED,
       version: UNSPECIFIED,
       usePro: false,
@@ -45,7 +45,7 @@ class Options extends React.Component {
       lastProps: nextProps,
       svgPseudoElements: nextProps.currentOptions.svgPseudoElements || UNSPECIFIED,
       version: nextProps.currentOptions.version || UNSPECIFIED,
-      v4compat: nextProps.currentOptions.v4compat || UNSPECIFIED,
+      v4compat: nextProps.currentOptions.v4compat,
       technology: nextProps.currentOptions.technology,
       usePro: !!nextProps.currentOptions.usePro,
       removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
@@ -101,11 +101,11 @@ class Options extends React.Component {
 
     putData({
       options: {
-        technology: this.state.technology === UNSPECIFIED ? undefined : this.state.technology,
-        v4compat: this.state.v4compat === UNSPECIFIED ? undefined : this.state.v4compat,
+        usePro: this.state.usePro,
+        technology: this.state.technology,
+        v4compat: this.state.v4compat,
         svgPseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
         version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
-        usePro: this.state.usePro,
         removeUnregisteredClients: this.state.removeUnregisteredClients
       }
     })
@@ -141,7 +141,7 @@ class Options extends React.Component {
                     value="webfont"
                     checked={ ! usePro }
                     onChange={ () => this.setState({ usePro: false }) }
-                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
                     <span className={ sharedStyles['relative'] }>
@@ -149,13 +149,13 @@ class Options extends React.Component {
                         icon={ faDotCircle }
                         size="lg"
                         fixedWidth
-                        className={ sharedStyles['checked-icon'] }
+                        className={ styles['checked-icon'] }
                       />
                       <FontAwesomeIcon
                         icon={ faCircle }
                         size="lg"
                         fixedWidth
-                        className={ sharedStyles['unchecked-icon'] }
+                        className={ styles['unchecked-icon'] }
                       />
                     </span>
                     <span className={ styles['option-label-text'] }>
@@ -171,19 +171,19 @@ class Options extends React.Component {
                     value="svg"
                     checked={ usePro }
                     onChange={ () => this.setState({ usePro: true }) }
-                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_icons_pro" className={ styles['option-label'] }>
                       <span className={ sharedStyles['relative'] }>
                         <FontAwesomeIcon
                           icon={ faDotCircle }
-                          className={ sharedStyles['checked-icon'] }
+                          className={ styles['checked-icon'] }
                           size="lg"
                           fixedWidth
                         />
                         <FontAwesomeIcon
                           icon={ faCircle }
-                          className={ sharedStyles['unchecked-icon'] }
+                          className={ styles['unchecked-icon'] }
                           size="lg"
                           fixedWidth
                         />
@@ -222,7 +222,7 @@ class Options extends React.Component {
                     value="webfont"
                     checked={ technology === 'webfont' }
                     onChange={ () => this.setState({ technology: 'webfont' }) }
-                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
                       <span className={ sharedStyles['relative'] }>
@@ -230,13 +230,13 @@ class Options extends React.Component {
                           icon={ faDotCircle }
                           size="lg"
                           fixedWidth
-                          className={ sharedStyles['checked-icon'] }
+                          className={ styles['checked-icon'] }
                         />
                         <FontAwesomeIcon
                           icon={ faCircle }
                           size="lg"
                           fixedWidth
-                          className={ sharedStyles['unchecked-icon'] }
+                          className={ styles['unchecked-icon'] }
                         />
                       </span>
                     <span className={ styles['option-label-text'] }>
@@ -252,19 +252,19 @@ class Options extends React.Component {
                     value="svg"
                     checked={ technology === 'svg' }
                     onChange={ () => this.setState({ technology: 'svg' }) }
-                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
                     <span className={ sharedStyles['relative'] }>
                       <FontAwesomeIcon
                         icon={ faDotCircle }
-                        className={ sharedStyles['checked-icon'] }
+                        className={ styles['checked-icon'] }
                         size="lg"
                         fixedWidth
                       />
                       <FontAwesomeIcon
                         icon={ faCircle }
-                        className={ sharedStyles['unchecked-icon'] }
+                        className={ styles['unchecked-icon'] }
                         size="lg"
                         fixedWidth
                       />
@@ -278,23 +278,52 @@ class Options extends React.Component {
             </div>
           </div>
           <hr className={ styles['option-divider'] }/>
+          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
+            <div className={ styles['option-header'] }>Features</div>
+            <div className={ styles['option-choice-container'] }>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_features_v4compat"
+                  name="code_edit_features"
+                  type="checkbox"
+                  value="v4compat"
+                  checked={ v4compat }
+                  onChange={ () => this.setState({ v4compat: ! this.state.v4compat }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
+                />
+                <label htmlFor="code_edit_features_v4compat" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faCheckSquare }
+                      className={ styles['checked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                    <FontAwesomeIcon
+                      icon={ faSquare }
+                      className={ styles['unchecked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    Version 4 Compatibility
+                    <span className={ styles['option-label-explanation'] }>
+                      Automatically use Font Awesome 5 for all of those version 4 icons already on your site, including
+                      those used by your theme or plugins, without worrying about new syntax and name changes.
+                      Read our guide for
+                      <a rel="noopener noreferrer" target="_blank" href="https://staging.fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">upgrading from version 4</a>
+                      for more info.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <hr className={ styles['option-divider'] }/>
         </form>
         <table className="form-table">
         <tbody>
-          <tr>
-            <th scope="row">
-              <label htmlFor="v4compat">Version 4 Compatibility</label>
-            </th>
-            <td>
-              <select name="v4compat" onChange={ this.handleV4Select } value={ this.state.v4compat }>
-                {
-                  REQUIRE_FORBID_OPTIONS.map((option, index) => {
-                    return <option key={ index } value={ option }>{ option ? option : '-' }</option>
-                  })
-                }
-              </select>
-            </td>
-          </tr>
           <tr>
             <th scope="row">
               <label htmlFor="pseudo-elements">Pseudo-elements Support</label>
@@ -389,7 +418,11 @@ export default Options
 
 Options.propTypes = {
   putData: PropTypes.func.isRequired,
-  currentOptions: PropTypes.object.isRequired,
+  currentOptions: PropTypes.shape({
+    technology: PropTypes.string.isRequired,
+    v4compat: PropTypes.bool.isRequired,
+    usePro: PropTypes.bool.isRequired
+  }).isRequired,
   releases: PropTypes.object.isRequired,
   releaseProviderStatus: PropTypes.object,
 }

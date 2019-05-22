@@ -112,18 +112,3 @@ button.more-less {
   position: relative;
 }
 
-.input-radio-custom ~ label .checked-icon {
-  display:none;
-  opacity:0;
-}
-
-.input-radio-custom:checked ~ label .checked-icon {
-  display:block;
-  opacity:1.0;
-}
-
-.input-radio-custom:checked ~ label .unchecked-icon {
-  display:none;
-  opacity:0;
-}
-
