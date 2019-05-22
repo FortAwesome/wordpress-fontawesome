@@ -15,7 +15,7 @@ define( 'EPSILON_PLUGIN_VERSION', '0.0.1' );
 define( 'EPSILON_PLUGIN_LOG_PREFIX', 'epsilon-plugin' );
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
 		throw new Exception( EPSILON_PLUGIN_LOG_PREFIX . ' throwing' );
 	}
