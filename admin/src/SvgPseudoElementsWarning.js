@@ -21,7 +21,7 @@ class SvgPseudoElementsWarning extends React.Component {
   }
 
   render() {
-    const { v4shim = false, showModal } = this.props
+    const { v4compat = false, showModal } = this.props
 
     return <div className={ classnames(sharedStyles['alert'], sharedStyles['alert-warning']) } role="alert">
       <div className={ sharedStyles['alert-icon'] }>
@@ -30,7 +30,7 @@ class SvgPseudoElementsWarning extends React.Component {
       <div className={ sharedStyles['alert-message'] }>
         <h2 className={ sharedStyles['alert-title'] }>
           {
-            `Performance might be slow with svg and pseudo-elements.${ v4shim ? " And watch out for empty boxes!" : "" }`
+            `Performance might be slow with svg and pseudo-elements.${ v4compat ? " And watch out for empty boxes!" : "" }`
           }
         </h2>
         <div className={ sharedStyles['alert-copy'] }>
@@ -39,7 +39,7 @@ class SvgPseudoElementsWarning extends React.Component {
             slow browser performance in some scenarios--sometimes <em>really</em> slow. If you know you need to handle
             a lot of pseudo-elements, you'll probably be happier using webfont instead of svg.
           </p>
-          { v4shim &&
+          { v4compat &&
             <p>
               Also, you've enabled version 4 compatibility, but Font Awesome
               version 4 pseudo-elements will not work in this configuration. If you've used any of those,
