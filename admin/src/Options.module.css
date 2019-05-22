@@ -137,6 +137,7 @@ div.submit-status.fail .explanation{
     transition: all .1s ease-in;
     margin-left: .25rem;
     margin-right: .25rem;
+    text-decoration-color: rgba(0,0,0,0.15);
 }
 
 .input-radio-custom ~ label .checked-icon, .input-checkbox-custom ~ label .checked-icon {
@@ -165,5 +166,6 @@ div.submit-status.fail .explanation{
 .input-checkbox-custom:checked ~ label .option-label-explanation a:hover,
 .input-checkbox-custom ~ label .option-label-explanation a:hover {
     color: #228be6;
+    text-decoration-color: initial;
 }
 
