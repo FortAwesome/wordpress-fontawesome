@@ -60,12 +60,28 @@ div.submit-status.fail .explanation{
     font-size: larger;
 }
 
-.option-value {
-    width: 70%;
+.option-choices {
+  display: flex;
+  flex-direction: row;
 }
 
-.option-value > div {
+.option-choice {
     width: 50%;
+}
+
+.option-choice-container {
+    display: flex;
+    flex-direction: column;
+    width: 70%
+}
+
+.option-explanation {
+  font-style: italic;
+}
+
+.option-explanation > ul {
+    list-style: none;
+    margin-left: 2em;
 }
 
 .option-label {
@@ -75,6 +91,11 @@ div.submit-status.fail .explanation{
 
 .option-label-text {
     margin-left: 5px;
+}
+
+.option-divider {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 @media only screen and (min-width: 1024px) {
