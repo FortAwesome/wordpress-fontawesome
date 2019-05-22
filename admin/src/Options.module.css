@@ -121,6 +121,7 @@ div.submit-status.fail .explanation{
 
 .features .option-choice {
     width: 100%;
+    margin-bottom: 1.5rem;
 }
 
 .option-label-explanation {

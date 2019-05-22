@@ -32,7 +32,6 @@ class Options extends React.Component {
     this.handleV4Select = this.handleV4Select.bind(this)
     this.handlePseudoElementsSelect = this.handlePseudoElementsSelect.bind(this)
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
-    this.handleRemoveUnregisteredCheck = this.handleRemoveUnregisteredCheck.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
   }
 
@@ -86,10 +85,6 @@ class Options extends React.Component {
     this.setState({ usePro: !this.state.usePro })
   }
 
-  handleRemoveUnregisteredCheck(){
-    this.setState({ removeConflicts: !this.state.removeConflicts })
-  }
-
   handleV4Select(e){
     this.setState({ v4compat: e.target.value === '-' ? UNSPECIFIED : e.target.value })
   }
@@ -116,7 +111,7 @@ class Options extends React.Component {
 
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
-    const { technology, v4compat, pseudoElements, usePro } = this.state
+    const { technology, v4compat, pseudoElements, usePro, removeConflicts } = this.state
 
     return <div className={ classnames(styles['options-setter']) }>
         {
@@ -318,8 +313,44 @@ class Options extends React.Component {
                   </span>
                 </label>
               </div>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_features_remove_conflicts"
+                  name="code_edit_features"
+                  type="checkbox"
+                  value="remove_conflicts"
+                  checked={ removeConflicts }
+                  onChange={ () => this.setState({ removeConflicts: ! this.state.removeConflicts }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
+                />
+                <label htmlFor="code_edit_features_remove_conflicts" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faCheckSquare }
+                      className={ styles['checked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                    <FontAwesomeIcon
+                      icon={ faSquare }
+                      className={ styles['unchecked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    Remove Conflicts
+                    <span className={ styles['option-label-explanation'] }>
+                      We'll try to detect when your theme or other plugins attempt to load their own versions of
+                      Font Awesome, and then block those attempts. Normally this allows them to continue
+                      displaying icons as expected, using the one version of Font Awesome you've configured here,
+                      instead of loading additional conflicting versions.
+                    </span>
+                  </span>
+                </label>
+              </div>
             </div>
-          </div>
+            </div>
           <hr className={ styles['option-divider'] }/>
         </form>
         <table className="form-table">
@@ -358,20 +389,6 @@ class Options extends React.Component {
                   { this.props.releaseProviderStatus.message }
                 </div>
               }
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">
-              <label htmlFor="remove-unregistered">Remove Conflicts</label>
-            </th>
-            <td>
-              <input
-                name="remove-unregistered"
-                checked={ this.state.removeConflicts }
-                value={ this.state.removeConflicts }
-                type="checkbox"
-                onChange={ this.handleRemoveUnregisteredCheck }
-              />
             </td>
           </tr>
         </tbody>
