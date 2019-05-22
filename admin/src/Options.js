@@ -116,7 +116,7 @@ class Options extends React.Component {
 
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
-    const { technology, v4compat, pseudoElements } = this.state
+    const { technology, v4compat, pseudoElements, usePro } = this.state
 
     return <div className={ classnames(styles['options-setter']) }>
         {
@@ -130,38 +130,39 @@ class Options extends React.Component {
         <form onSubmit={ e => e.preventDefault() }>
           <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
             <div className={ styles['option-header'] }>Technology</div>
-            <div className={ classnames(styles['option-value'], sharedStyles['flex'], sharedStyles['flex-row']) }>
-              <div>
-                <input
-                  id="code_edit_tech_webfont"
-                  name="code_edit_tech"
-                  type="radio"
-                  value="webfont"
-                  checked={ technology === 'webfont' }
-                  onChange={ () => this.setState({ technology: 'webfont' }) }
-                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
-                />
-                <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
-                  <span className={ sharedStyles['relative'] }>
-                    <FontAwesomeIcon
-                      icon={ faDotCircle }
-                      size="lg"
-                      fixedWidth
-                      className={ sharedStyles['checked-icon'] }
+              <div className={ styles['option-choice-container'] }>
+                <div className={ styles['option-choices'] }>
+                  <div className={ styles['option-choice'] }>
+                    <input
+                      id="code_edit_tech_webfont"
+                      name="code_edit_tech"
+                      type="radio"
+                      value="webfont"
+                      checked={ technology === 'webfont' }
+                      onChange={ () => this.setState({ technology: 'webfont' }) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                     />
-                    <FontAwesomeIcon
-                      icon={ faCircle }
-                      size="lg"
-                      fixedWidth
-                      className={ sharedStyles['unchecked-icon'] }
-                    />
-                  </span>
-                  <span className={ styles['option-label-text'] }>
-                    Web Font
-                  </span>
-                </label>
-              </div>
-              <div>
+                    <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faDotCircle }
+                          size="lg"
+                          fixedWidth
+                          className={ sharedStyles['checked-icon'] }
+                        />
+                        <FontAwesomeIcon
+                          icon={ faCircle }
+                          size="lg"
+                          fixedWidth
+                          className={ sharedStyles['unchecked-icon'] }
+                        />
+                      </span>
+                      <span className={ styles['option-label-text'] }>
+                        Web Font
+                      </span>
+                    </label>
+                  </div>
+                  <div className={ styles['option-choice'] }>
                   <input
                     id="code_edit_tech_svg"
                     name="code_edit_tech"
@@ -191,24 +192,93 @@ class Options extends React.Component {
                     </span>
                   </label>
                 </div>
+              </div>
+            </div>
+          </div>
+          <hr className={ styles['option-divider'] }/>
+          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+            <div className={ styles['option-header'] }>Icons</div>
+            <div className={ styles['option-choice-container'] }>
+              <div className={ styles['option-choices'] }>
+                <div className={ styles['option-choice'] }>
+                  <input
+                    id="code_edit_icons_free"
+                    name="code_edit_icons"
+                    type="radio"
+                    value="webfont"
+                    checked={ ! usePro }
+                    onChange={ () => this.setState({ usePro: false }) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                  />
+                  <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faDotCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ sharedStyles['checked-icon'] }
+                      />
+                      <FontAwesomeIcon
+                        icon={ faCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ sharedStyles['unchecked-icon'] }
+                      />
+                    </span>
+                    <span className={ styles['option-label-text'] }>
+                      Free
+                    </span>
+                  </label>
+                </div>
+                <div className={ styles['option-choice'] }>
+                  <input
+                    id="code_edit_icons_pro"
+                    name="code_edit_icons"
+                    type="radio"
+                    value="svg"
+                    checked={ usePro }
+                    onChange={ () => this.setState({ usePro: true }) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                  />
+                  <label htmlFor="code_edit_icons_pro" className={ styles['option-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faDotCircle }
+                          className={ sharedStyles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faCircle }
+                          className={ sharedStyles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                      <span className={ styles['option-label-text'] }>
+                        Pro
+                      </span>
+                  </label>
+                </div>
+              </div>
+              { usePro &&
+                <div className={styles['option-explanation']}>
+                  <p>Pro requires a subscription.</p>
+                  <ul>
+                    <li>
+                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
+                    </li>
+                    <li>
+                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+                    </li>
+                  </ul>
+                </div>
+              }
             </div>
           </div>
         </form>
         <table className="form-table">
         <tbody>
-          <tr>
-            <th scope="row">
-              <label htmlFor="use-pro">Use Pro</label>
-            </th>
-            <td>
-              <input name="use-pro" checked={ this.state.usePro } value={ this.state.usePro } type="checkbox" onChange={ this.handleProCheck }/>
-              <span className={styles["label-hint"]}>
-                Requires a subscription.
-                <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
-                <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
-              </span>
-            </td>
-          </tr>
           <tr>
             <th scope="row">
               <label htmlFor="v4compat">Version 4 Compatibility</label>
