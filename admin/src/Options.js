@@ -128,73 +128,6 @@ class Options extends React.Component {
           />
         }
         <form onSubmit={ e => e.preventDefault() }>
-          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
-            <div className={ styles['option-header'] }>Technology</div>
-              <div className={ styles['option-choice-container'] }>
-                <div className={ styles['option-choices'] }>
-                  <div className={ styles['option-choice'] }>
-                    <input
-                      id="code_edit_tech_webfont"
-                      name="code_edit_tech"
-                      type="radio"
-                      value="webfont"
-                      checked={ technology === 'webfont' }
-                      onChange={ () => this.setState({ technology: 'webfont' }) }
-                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
-                    />
-                    <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
-                      <span className={ sharedStyles['relative'] }>
-                        <FontAwesomeIcon
-                          icon={ faDotCircle }
-                          size="lg"
-                          fixedWidth
-                          className={ sharedStyles['checked-icon'] }
-                        />
-                        <FontAwesomeIcon
-                          icon={ faCircle }
-                          size="lg"
-                          fixedWidth
-                          className={ sharedStyles['unchecked-icon'] }
-                        />
-                      </span>
-                      <span className={ styles['option-label-text'] }>
-                        Web Font
-                      </span>
-                    </label>
-                  </div>
-                  <div className={ styles['option-choice'] }>
-                  <input
-                    id="code_edit_tech_svg"
-                    name="code_edit_tech"
-                    type="radio"
-                    value="svg"
-                    checked={ technology === 'svg' }
-                    onChange={ () => this.setState({ technology: 'svg' }) }
-                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
-                  />
-                  <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
-                    <span className={ sharedStyles['relative'] }>
-                      <FontAwesomeIcon
-                        icon={ faDotCircle }
-                        className={ sharedStyles['checked-icon'] }
-                        size="lg"
-                        fixedWidth
-                      />
-                      <FontAwesomeIcon
-                        icon={ faCircle }
-                        className={ sharedStyles['unchecked-icon'] }
-                        size="lg"
-                        fixedWidth
-                      />
-                    </span>
-                    <span className={ styles['option-label-text'] }>
-                      SVG
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
           <hr className={ styles['option-divider'] }/>
           <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
             <div className={ styles['option-header'] }>Icons</div>
@@ -255,27 +188,96 @@ class Options extends React.Component {
                           fixedWidth
                         />
                       </span>
-                      <span className={ styles['option-label-text'] }>
+                    <span className={ styles['option-label-text'] }>
                         Pro
                       </span>
                   </label>
                 </div>
               </div>
               { usePro &&
-                <div className={styles['option-explanation']}>
-                  <p>Pro requires a subscription.</p>
-                  <ul>
-                    <li>
-                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
-                    </li>
-                    <li>
-                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
-                    </li>
-                  </ul>
-                </div>
+              <div className={styles['option-explanation']}>
+                <p>Pro requires a subscription.</p>
+                <ul>
+                  <li>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
+                  </li>
+                  <li>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+                  </li>
+                </ul>
+              </div>
               }
             </div>
           </div>
+          <hr className={ styles['option-divider'] }/>
+          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+            <div className={ styles['option-header'] }>Technology</div>
+            <div className={ styles['option-choice-container'] }>
+              <div className={ styles['option-choices'] }>
+                <div className={ styles['option-choice'] }>
+                  <input
+                    id="code_edit_tech_webfont"
+                    name="code_edit_tech"
+                    type="radio"
+                    value="webfont"
+                    checked={ technology === 'webfont' }
+                    onChange={ () => this.setState({ technology: 'webfont' }) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                  />
+                  <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faDotCircle }
+                          size="lg"
+                          fixedWidth
+                          className={ sharedStyles['checked-icon'] }
+                        />
+                        <FontAwesomeIcon
+                          icon={ faCircle }
+                          size="lg"
+                          fixedWidth
+                          className={ sharedStyles['unchecked-icon'] }
+                        />
+                      </span>
+                    <span className={ styles['option-label-text'] }>
+                        Web Font
+                      </span>
+                  </label>
+                </div>
+                <div className={ styles['option-choice'] }>
+                  <input
+                    id="code_edit_tech_svg"
+                    name="code_edit_tech"
+                    type="radio"
+                    value="svg"
+                    checked={ technology === 'svg' }
+                    onChange={ () => this.setState({ technology: 'svg' }) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                  />
+                  <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faDotCircle }
+                        className={ sharedStyles['checked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                      <FontAwesomeIcon
+                        icon={ faCircle }
+                        className={ sharedStyles['unchecked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                    </span>
+                    <span className={ styles['option-label-text'] }>
+                      SVG
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr className={ styles['option-divider'] }/>
         </form>
         <table className="form-table">
         <tbody>
