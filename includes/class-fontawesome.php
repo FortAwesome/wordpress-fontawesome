@@ -153,11 +153,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @ignore
 		 */
 		const DEFAULT_USER_OPTIONS = array(
-			'usePro'                    => false,
-			'removeUnregisteredClients' => false,
-			'v4compat'                  => true,
-			'technology'                => 'webfont',
-			'svgPseudoElements'         => false,
+			'usePro'            => false,
+			'removeConflicts'   => false,
+			'v4compat'          => true,
+			'technology'        => 'webfont',
+			'svgPseudoElements' => false,
 		);
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -732,7 +732,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			}
 
 			if ( isset( $options['removeUnregisteredClients'] ) ) {
-				$converted_options['removeUnregisteredClients'] = $options['removeUnregisteredClients'];
+				$converted_options['removeConflicts'] = $options['removeUnregisteredClients'];
 			}
 
 			if ( isset( $options['version'] ) ) {
@@ -1231,13 +1231,20 @@ EOT;
 					$action,
 					function() use ( $obj, $options ) {
 						$obj->detect_unregistered_clients();
-						if ( $options['removeUnregisteredClients'] ) {
+						if ( $options['removeConflicts'] ) {
 							$obj->remove_unregistered_clients();
 						}
 					},
 					0
 				);
 			}
+
+			/**
+			 * Fired when the plugin has successfully built a load specification that satisfies all clients.
+			 *
+			 * @since 4.0.0
+			 */
+			do_action( 'font_awesome_enqueued' );
 		}
 
 		/**

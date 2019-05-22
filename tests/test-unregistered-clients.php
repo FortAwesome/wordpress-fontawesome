@@ -78,7 +78,7 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 			function( $method ) {
 				$opts = wp_parse_args(
 					array(
-						'removeUnregisteredClients' => true,
+						'removeConflicts' => true,
 						'version'                   => '5.0.13',
 					),
 					FontAwesome::DEFAULT_USER_OPTIONS

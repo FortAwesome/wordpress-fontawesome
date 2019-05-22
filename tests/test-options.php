@@ -41,7 +41,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				),
 			'version' => '5.8.1',
 			'usePro' => true,
-			'removeUnregisteredClients' => true,
+			'removeConflicts' => true,
 			'lockedLoadSpec' =>
 				array (
 					'method' => 'webfont',
@@ -64,7 +64,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				'version' => '5.8.1',
 				'svgPseudoElements' => true,
 				'technology' => 'svg',
-				'removeUnregisteredClients' => true,
+				'removeConflicts' => true,
 				'usePro' => true,
 				'v4compat' => true,
 			),

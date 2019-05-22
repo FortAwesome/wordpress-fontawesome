@@ -142,7 +142,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'options', $data );
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['usePro'], $data['options']['usePro'] );
-		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['removeUnregisteredClients'], $data['options']['removeUnregisteredClients'] );
+		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['removeConflicts'], $data['options']['removeConflicts'] );
 		$this->assertEquals( '5.3.1', $data['options']['version'] );
 
 		$this->assertArrayHasKey( 'clientPreferences', $data );
