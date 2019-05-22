@@ -1,5 +1,6 @@
 import React from 'react'
 import ErrorFallbackView from './ErrorFallbackView'
+import { get } from 'lodash'
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
