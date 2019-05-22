@@ -114,3 +114,55 @@ div.submit-status.fail .explanation{
 .options-setter button svg {
     margin-right: 0.5em;
 }
+
+.features .option-label-text {
+    font-weight: bold;
+}
+
+.features .option-choice {
+    width: 100%;
+}
+
+.option-label-explanation {
+    display: block;
+    font-weight: normal;
+    line-height: 1.5;
+    margin-top: .25rem;
+    color: #868e96;
+}
+
+.option-label-explanation a {
+    color: #868e96;
+    transition: all .1s ease-in;
+    margin-left: .25rem;
+    margin-right: .25rem;
+}
+
+.input-radio-custom ~ label .checked-icon, .input-checkbox-custom ~ label .checked-icon {
+    display:none;
+    opacity:0;
+}
+
+.input-radio-custom:checked ~ label .checked-icon, .input-checkbox-custom:checked ~ label .checked-icon{
+    display:block;
+    opacity:1.0;
+}
+
+.input-radio-custom:checked ~ label .unchecked-icon, .input-checkbox-custom:checked ~ label .unchecked-icon{
+    display:none;
+    opacity:0;
+}
+
+.input-checkbox-custom:checked ~ label .option-label-explanation {
+    color: #495057;
+}
+
+.input-checkbox-custom:checked ~ label .option-label-explanation a {
+    color: #495057;
+}
+
+.input-checkbox-custom:checked ~ label .option-label-explanation a:hover,
+.input-checkbox-custom ~ label .option-label-explanation a:hover {
+    color: #228be6;
+}
+
