@@ -27,9 +27,6 @@ class Options extends React.Component {
       lastProps: null
     }
 
-    this.handleMethodSelect = this.handleMethodSelect.bind(this)
-    this.handleProCheck = this.handleProCheck.bind(this)
-    this.handleV4Select = this.handleV4Select.bind(this)
     this.handlePseudoElementsSelect = this.handlePseudoElementsSelect.bind(this)
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
@@ -69,24 +66,12 @@ class Options extends React.Component {
     }, { [UNSPECIFIED]: '-' })
   }
 
-  handleMethodSelect(e){
-    this.setState({ technology: e.target.value === '-' ? UNSPECIFIED : e.target.value })
-  }
-
   handleVersionSelect(e){
     this.setState({ version: e.target.value === '-' ? UNSPECIFIED : e.target.value })
   }
 
   handlePseudoElementsSelect(e){
     this.setState({ pseudoElements: e.target.value === '-' ? UNSPECIFIED : e.target.value })
-  }
-
-  handleProCheck(){
-    this.setState({ usePro: !this.state.usePro })
-  }
-
-  handleV4Select(e){
-    this.setState({ v4compat: e.target.value === '-' ? UNSPECIFIED : e.target.value })
   }
 
   handleSubmitClick(e) {
