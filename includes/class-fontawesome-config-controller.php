@@ -122,18 +122,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @return WP_Error|WP_REST_Response
 		 */
 		public function get_item( $request ) {
-			// TODO: consider alternatives to using ini_set() to ensure that display_errors is disabled.
-			// Without this, when a client plugin of Font Awesome throws an error (like our plugin-epsilon
-			// in this repo), instead of this REST controller returning an HTTP status of 500, indicating
-			// the server error, it sends back a status of 200, setting the data property in the response
-			// object equal to an HTML document that describes the error. This confuses the client.
-			// Ideally, we'd be able to detect which plugin results in such an error by catching it and then
-			// reporting to the client which plugin caused the error. But at a minimum, we need to make sure
-			// that we return 500 instead of 200 in these cases.
-			// phpcs:disable
-			ini_set( 'display_errors', 0 );
-			// phpcs:enable
-
 			try {
 				$fa = fa();
 
@@ -163,32 +151,24 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @return WP_Error|WP_REST_Response
 		 */
 		public function update_item( $request ) {
-			// phpcs:disable
-			ini_set( 'display_errors', 0 );
-			// phpcs:enable
-
 			try {
 				$item = $this->prepare_item_for_database( $request );
 
-				// TODO: fix up this logic to work with the new world
-				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
-				// normal load process. If it satisfies all constraints, the new adminClientLoadSpec spec will be
-				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
-				// the error condition to the admin UI.
-				// We reset to avoid duplication client registrations.
-				$fa      = fa();
-				$load_fa = new ReflectionMethod( 'FortAwesome\FontAwesome', 'load' );
-				$load_fa->setAccessible( true );
-				$load_spec_success = $load_fa->invoke( $fa, $item['options'] );
+				$result = update_option(
+					FontAwesome::OPTIONS_KEY,
+					array_merge(
+						FontAwesome::DEFAULT_USER_OPTIONS,
+						$item['options']
+					)
+				);
 
-				$return_data = $this->build_item( $fa );
-
-				if ( $load_spec_success ) {
+				if ( $result ) {
+					$return_data = $this->build_item( fa() );
 					return new WP_REST_Response( $return_data, 200 );
 				} else {
 					return new WP_Error(
 						'cant_update',
-						'Whoops, those options would have resulted in a conflict so we did not save them.',
+						'Whoops, we could not save your options. Please try again.',
 						array( 'status' => 403 )
 					);
 				}

@@ -84,3 +84,46 @@ button.more-less {
   background: rgb(255, 224, 102);
   color: rgb(250, 176, 7);
 }
+
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.relative {
+  position: relative;
+}
+
+.input-radio-custom ~ label .checked-icon {
+  display:none;
+  opacity:0;
+}
+
+.input-radio-custom:checked ~ label .checked-icon {
+  display:block;
+  opacity:1.0;
+}
+
+.input-radio-custom:checked ~ label .unchecked-icon {
+  display:none;
+  opacity:0;
+}
+
