@@ -22,7 +22,7 @@ class Options extends React.Component {
       svgPseudoElements: UNSPECIFIED,
       version: UNSPECIFIED,
       usePro: false,
-      removeUnregisteredClients: false,
+      removeConflicts: false,
       versionOptions: null,
       lastProps: null
     }
@@ -48,7 +48,7 @@ class Options extends React.Component {
       v4compat: nextProps.currentOptions.v4compat,
       technology: nextProps.currentOptions.technology,
       usePro: !!nextProps.currentOptions.usePro,
-      removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
+      removeConflicts: !!nextProps.currentOptions.removeConflicts,
       versionOptions: Options.buildVersionOptions(nextProps)
     }
 
@@ -87,7 +87,7 @@ class Options extends React.Component {
   }
 
   handleRemoveUnregisteredCheck(){
-    this.setState({ removeUnregisteredClients: !this.state.removeUnregisteredClients })
+    this.setState({ removeConflicts: !this.state.removeConflicts })
   }
 
   handleV4Select(e){
@@ -106,7 +106,7 @@ class Options extends React.Component {
         v4compat: this.state.v4compat,
         svgPseudoElements: this.state.pseudoElements === UNSPECIFIED ? undefined : this.state.pseudoElements,
         version: this.state.version === UNSPECIFIED ? undefined : this.state.version,
-        removeUnregisteredClients: this.state.removeUnregisteredClients
+        removeConflicts: this.state.removeConflicts
       }
     })
   }
@@ -362,13 +362,13 @@ class Options extends React.Component {
           </tr>
           <tr>
             <th scope="row">
-              <label htmlFor="remove-unregistered">Remove unregistered clients</label>
+              <label htmlFor="remove-unregistered">Remove Conflicts</label>
             </th>
             <td>
               <input
                 name="remove-unregistered"
-                checked={ this.state.removeUnregisteredClients }
-                value={ this.state.removeUnregisteredClients }
+                checked={ this.state.removeConflicts }
+                value={ this.state.removeConflicts }
                 type="checkbox"
                 onChange={ this.handleRemoveUnregisteredCheck }
               />
