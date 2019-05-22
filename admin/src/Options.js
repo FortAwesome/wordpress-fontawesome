@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
-import styles from './OptionsSetter.module.css'
+import styles from './Options.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { isEqual } from 'lodash'
@@ -12,7 +12,7 @@ const UNSPECIFIED = ''
 const METHOD_OPTIONS = ['webfont', 'svg', UNSPECIFIED]
 const REQUIRE_FORBID_OPTIONS = ['require', 'forbid', UNSPECIFIED]
 
-class OptionsSetter extends React.Component {
+class Options extends React.Component {
   constructor(props){
     super(props)
 
@@ -49,7 +49,7 @@ class OptionsSetter extends React.Component {
       method: nextProps.currentOptions.method || UNSPECIFIED,
       usePro: !!nextProps.currentOptions.usePro,
       removeUnregisteredClients: !!nextProps.currentOptions.removeUnregisteredClients,
-      versionOptions: OptionsSetter.buildVersionOptions(nextProps)
+      versionOptions: Options.buildVersionOptions(nextProps)
     }
 
     return newState
@@ -272,9 +272,9 @@ class OptionsSetter extends React.Component {
   }
 }
 
-export default OptionsSetter
+export default Options
 
-OptionsSetter.propTypes = {
+Options.propTypes = {
   putData: PropTypes.func.isRequired,
   currentOptions: PropTypes.object.isRequired,
   releases: PropTypes.object.isRequired,
