@@ -30,26 +30,27 @@ class SvgPseudoElementsWarning extends React.Component {
       <div className={ sharedStyles['alert-message'] }>
         <h2 className={ sharedStyles['alert-title'] }>
           {
-            `Performance might be slow with svg and pseudo-elements.${ v4compat ? " And watch out for empty boxes!" : "" }`
+            `Performance might be slow with SVG Pseudo-elements`
           }
         </h2>
+        { v4compat && <h4>And with Version 4 Compatibility, watch out for empty boxes!</h4> }
         <div className={ sharedStyles['alert-copy'] }>
-          <p>
-            Watch out! You've got both svg and pseudo-elements enabled. That's a configuration combo known to cause
-            slow browser performance in some scenarios--sometimes <em>really</em> slow. If you know you need to handle
-            a lot of pseudo-elements, you'll probably be happier using webfont instead of svg.
-          </p>
-          { v4compat &&
-            <p>
-              Also, you've enabled version 4 compatibility, but Font Awesome
-              version 4 pseudo-elements will not work in this configuration. If you've used any of those,
-              or if your theme or any plugins have used them, you'll probably see empty boxes in those spots.
-            </p>
-          }
           { this.state.showMore &&
             <div>
               <p>
-                If you're using a theme or plugin that places Font Awesome icons using pseudo-elements,
+                Using SVG with Pseudo-elements is known to cause
+                slow browser performance in some scenarios--sometimes <em>really</em> slow. If you know you need to handle
+                a lot of pseudo-elements, you'll probably be happier using webfont instead of svg.
+              </p>
+              { v4compat &&
+                <p>
+                  Also, you've enabled version 4 compatibility, but Font Awesome
+                  version 4 pseudo-elements will not work in this configuration. If you've used any of those,
+                  or if your theme or any plugins have used them, you'll probably see empty boxes in those spots.
+                </p>
+              }
+              <p>
+                If you're using a theme or plugin that references Font Awesome icons using pseudo-elements,
                 you may not have much of a choice but to accommodate by enabling pseudo-elements.
                 <button onClick={ showModal }>Show me how to find out if pseudo-elements are used.</button>
               </p>
