@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Kappa
  * Plugin URI:        https://fontawesome.com/
- * Description:       Unregistered Client: tries to enqueue its own self-hosted v4.7.0 webfont version. It prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath".
+ * Description:       Unregistered Client: tries to enqueue its own self-hosted v4.7.0 webfont version. It prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath". It also uses some pseudo-elements with a hardcoded version 4 font-family.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
