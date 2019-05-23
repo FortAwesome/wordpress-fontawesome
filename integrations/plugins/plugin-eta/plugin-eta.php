@@ -56,10 +56,9 @@ EOT;
 
 function plugin_eta_fa_classes(){
 	$fa = fa();
-	$load_spec = $fa->load_spec();
 	$class_list = [ 'plugin-eta' ];
 
-	$fa->using_pro()
+	$fa->pro()
 		? array_push($class_list, 'fa-license-pro')
 		: array_push($class_list, 'fa-license-free');
 
@@ -67,7 +66,7 @@ function plugin_eta_fa_classes(){
 		? array_push($class_list, 'fa-version-5-0')
 		: array_push($class_list, 'fa-version-5-1');
 
-	($load_spec['method'] == 'svg')
+	($fa->technology() == 'svg')
 		? array_push($class_list, 'fa-method-svg')
 		: array_push($class_list, 'fa-method-webfont');
 
