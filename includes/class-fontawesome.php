@@ -51,12 +51,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 	 *     - {@see FontAwesome::pro()} to discover whether a version with Pro icons is being loaded
 	 *     - {@see FontAwesome::svg_pseudo_elements()} to discover whether Font Awesome is being loaded with support for svg pseudo-elements
 	 *
-	 * - `font_awesome_failed`
-	 *
-	 *   Called when the plugin fails to compute a load specification because of client preferences that cannot be satisfied.
-	 *
-	 *   One parameter, an `array` with a shape like that returned by {@see FontAwesome::conflicts()}
-	 *
 	 * @since 4.0.0
 	 */
 	class FontAwesome {
@@ -805,8 +799,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * Returns current preferences conflicts.
 		 *
-		 * Should normally only be called after the `font_awesome_failed` action has triggered, indicating that there
-		 * are some conflicts.
+		 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
+		 * client preferences have been registered and processed.
 		 *
 		 * The returned array indicates just the _first_ preference that failed to be settled among the various
 		 * client preferences, along with all of those client's preferences. This allows code to detect or log
@@ -1307,15 +1301,8 @@ EOT;
 		}
 
 		/**
-		 * Registers client preferences. This is the "front door" for registered clients—themes and plugins—that depend
-		 * upon this Font Awesome plugin to load a compatible, properly configured version of Font Awesome.
-		 *
-		 * *Note on using Pro:* registered clients cannot _require_ the use Font Awesome Pro. That is a feature that
-		 * must be enabled by the web site owner.
-		 *
-		 * If you are shipping a theme or plugin for which you insist on being able to use Font Awesome Pro, your only
-		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
-		 * websites.
+		 * Registers client preferences. This is the "front door" for registered clients—themes or plugins—that depend
+		 * upon this Font Awesome plugin to load a compatible version of Font Awesome.
 		 *
 		 * The shape of the `$client_preferences` array parameter looks like this:
 		 * ```php
@@ -1332,25 +1319,20 @@ EOT;
 		 *
 		 * All preference specifications are optional, except `name`. Any that are not specified will allow defaults,
 		 * or the preferences of other registered clients to take precedence.
+		 * Only the WordPress site owner can *determine* the Font Awesome configuration, using the plugin's admin
+		 * settings page. But plugin or theme developers can provide hints to the site owner as to their preferred
+		 * configurations by setting those preferences during registration. When site owners selection configuration
+		 * options that conflict with those preferences, they'll be shown a warning. Hopefully, they'll be able to
+		 * set a configuration that satisfies their theme and any plugins that rely upon this plugin for loading
+		 * Font Awesome. However, similar to writing mobile responsive code where you don't control the size
+		 * of display, but can detect the screen size and adapt, here too, theme and plugin developers do not
+		 * control the Font Awesome environment but should be prepared to adapt.
 		 *
-		 * <h3>Be Flexible: Narrower Constraints Cause More Conflicts</h3>
+		 * This plugin gives you a structured API for discovering with those configured options are so you can
+		 * be sure that Font Awesome is loaded, and can adapt to any configuration differences, or possibly issue
+		 * your own admin notices to the site owner as may be appropriate.
 		 *
-		 * Just because you _can_ set preferences here doesn't mean you _should_. A huge design goal for this plugin
-		 * is to make it easy for WordPress site owners to install and use Font Awesome conflict-free. And where there
-		 * are unavoidable conflicts, we want the site owner to be able to diagnose and resolve them easily.
-		 * WordPress is a big world and there are limitless combinations of installed themes and plugins. Font Awesome
-		 * is very popular, so it shows up in a lot of those combinations.
-		 *
-		 * One of the most common sources of conflict with Font Awesome on WordPress is a combination of theme and/or
-		 * plugins that each try to do their own
-		 * thing with Font Awesome and break one another in the process. This plugin serves as a coordination point
-		 * to help developers gain a sense of control and predictability, while also respecting the fact that site owners
-		 * will--and should remain free to--mix and match themes and plugins, any of which may incorporate Font Awesome.
-		 *
-		 * So don't _require_ what you merely _prefer_; require only what you'll die without. Do your best to adapt to
-		 * the various configurations that the _site owner_ may prefer. This will improve their experience with _your_
-		 * code as well, since it will decrease or eliminate the friction they experience when trying to combine
-		 * your theme or plugin with the others they've selected.
+		 * <h3>Adapting Your Code to the given Font Awesome environment</h3>
 		 *
 		 * Here's a quick adaptability checklist:
 		 *
@@ -1360,20 +1342,13 @@ EOT;
 		 * - Be mindful of which {@link https://fontawesome.com/icons icons you use and in which versions of Font Awesome they're available}.
 		 * - Adapt gracefully when the version loaded lacks icons you want to use (see more below).
 		 *
-		 * A good example of a legitimate use case for setting one of these preferences is to require the `svg` method,
-		 * in order to make use of {@link https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms Power Transforms}.
+		 * <h3>Using Pro icons</h3>
 		 *
-		 * Another good example: Suppose your theme or plugin has a legacy codebase that makes heavy use of pseudo-elements.
-		 * So you should require pseudo-element support. But suppose you test and find that when the svg method is used
-		 * for Font Awesome, all your pseudo-element usage results in a significant performance hit--too much to tolerate.
-		 * A temporary measure might then be to require the `webfont` method (your pseudo-elements will perform fine with webfonts).
-		 * You really should consider that to be a temporary measure, though, and plan on a future iteration to remove
-		 * pseudo-element usage. After removing pseudo-elements from your templates, remove that preference for pseudo-elements
-		 * in your call to this method.
+		 * If you are shipping a theme or plugin for which you insist on being able to use Font Awesome Pro, your only
+		 * option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
+		 * websites.
 		 *
 		 * <h3>Font Awesome version</h3>
-		 *
-		 * Only the WordPress site owner gets to specify the version of Font Awesome assets that are loaded.
 		 *
 		 * To maximize compatibility and user-friendliness, keep track of the icons you use and in which versions they're
 		 * introduced ({@link https://fontawesome.com/changelog/latest new ones are being added all the time}).
@@ -1392,6 +1367,12 @@ EOT;
 		 *   the "v4 shims" accept the v4 icon names and translate them into the equivalent v5 icon names.
 		 *   Shims for SVG with JavaScript have been available since `5.0.0` and shims for Web Font with CSS have been
 		 *   available since `5.1.0`.
+		 *
+		 *   Another common pattern out there on the web (not a recommended practice these days, though) is to place
+		 *   icons as pseudo-elements where the unicode is specific in CSS as `content` and `"FontAwesome"` is specified
+		 *   as the `font-family`. The main problem here is that the `font-family` name has changed for Font Awesome 5,
+		 *   and there are multiple `font-family` names. So the v4compat feature of this plugin also "shims" those
+		 *   hardcoded version 4 `font-family` names so that they will use the corresponding Font Awesome 5 webfont files.
 		 *
 		 * - `svgPseudoElements`
 		 *
