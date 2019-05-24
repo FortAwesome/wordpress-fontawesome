@@ -274,12 +274,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 						$this->enqueue_cdn( $options, $resource_collection );
 					} catch ( FontAwesome_NoReleasesException $e ) {
-						font_awesome_handle_fatal_error(
-							'Sorry, your WordPress server was unable to contact the Font Awesome server to retrieve available ' .
-							'releases data. Most likely, just re-loading this page to get it try again should work. But if you\'re running ' .
-							'WordPress offline, from an airplane, or in some other way that blocks your WordPress server from reaching ' .
-							'fontawesome.com, then that will block you from proceeding until you can connect successfully.'
-						);
+						$current_screen = get_current_screen();
+						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
+							// Don't put up an admin notice on our plugin's admin screen, since it will be redundant.
+							font_awesome_handle_fatal_error(
+								'Sorry, your WordPress server was unable to contact the Font Awesome server to retrieve available ' .
+								'releases data. Most likely, just re-loading this page to get it try again should work. But if you\'re running ' .
+								'WordPress offline, from an airplane, or in some other way that blocks your WordPress server from reaching ' .
+								'fontawesome.com, then that will block you from proceeding until you can connect successfully.'
+							);
+						}
 					} catch ( Exception $e ) {
 						font_awesome_handle_fatal_error( $e->getMessage() );
 					} catch ( Error $e ) {
