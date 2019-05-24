@@ -79,7 +79,7 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 				$opts = wp_parse_args(
 					array(
 						'removeConflicts' => true,
-						'version'                   => '5.0.13',
+						'version'         => '5.0.13',
 					),
 					FontAwesome::DEFAULT_USER_OPTIONS
 				);
