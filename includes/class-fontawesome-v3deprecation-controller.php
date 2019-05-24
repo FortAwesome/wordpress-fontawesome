@@ -97,10 +97,6 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 			// Ideally, we'd be able to detect which plugin results in such an error by catching it and then
 			// reporting to the client which plugin caused the error. But at a minimum, we need to make sure
 			// that we return 500 instead of 200 in these cases.
-			// phpcs:disable
-			ini_set( 'display_errors', 0 );
-			// phpcs:enable
-
 			try {
 				$fa = fa();
 
@@ -126,10 +122,6 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 		 * @return WP_Error|WP_REST_Response
 		 */
 		public function update_item( $request ) {
-			// phpcs:disable
-			ini_set( 'display_errors', 0 );
-			// phpcs:enable
-
 			try {
 				$fa = fa();
 
