@@ -44,21 +44,6 @@ add_action(
 	}
 );
 
-add_action(
-	'font_awesome_enqueued',
-	function( $load_spec ) {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		error_log(
-			SIGMA_PLUGIN_LOG_PREFIX .
-			' font_awesome_enqueued: method: ' .
-			fa()->technology() .
-			', ver: ' .
-			fa()->version() );
-	},
-	10,
-	3
-);
-
 add_filter(
 	'the_content',
 	function( $content ) {
