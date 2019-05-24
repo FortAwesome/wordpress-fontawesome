@@ -9,8 +9,9 @@ import ClientRequirementsView from './ClientRequirementsView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
-import { values } from 'lodash'
+import { values, get } from 'lodash'
 import Modal from './Modal'
+import ReleaseProviderWarning from './ReleaseProviderWarning'
 
 class FontAwesomeAdminView extends React.Component {
 
@@ -112,6 +113,16 @@ class FontAwesomeAdminView extends React.Component {
     </Modal>
   }
 
+  releaseProviderStatusOK() {
+    // If releaseProviderStatus is null, it means that a network request was never issued.
+    // We take that to mean that it's using a cached set of release metadata, which is OK.
+    const status = get(this, ['props', 'data', 'releaseProviderStatus'], null)
+    const code = get(status, 'code', 0)
+
+    // If the status is not null, then the (HTTP) code for that network request should be in the OK range.
+    return status === null || (code >= 200 && code <= 300)
+  }
+
   render(){
     const { data, putData } = this.props
 
@@ -128,6 +139,7 @@ class FontAwesomeAdminView extends React.Component {
           <FontAwesomeIcon className={ styles['icon'] } icon={ statusIcon }/>
         </p>
         <V3DeprecationWarning wpApiSettings={ this.props.wpApiSettings }/>
+        { this.releaseProviderStatusOK() || <ReleaseProviderWarning/> }
         <Options
           releases={ data.releases }
           currentOptions={ data.options }

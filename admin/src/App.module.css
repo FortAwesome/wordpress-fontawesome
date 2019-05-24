@@ -96,6 +96,10 @@ button.more-less {
   width: 1px;
 }
 
+.max800 {
+  max-width: 800px;
+}
+
 .flex {
   display: flex;
 }

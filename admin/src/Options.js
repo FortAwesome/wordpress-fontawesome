@@ -26,7 +26,7 @@ class Options extends React.Component {
       technology: null,
       v4compat: null,
       svgPseudoElements: null,
-      version: UNSPECIFIED,
+      version: null,
       usePro: null,
       removeConflicts: null,
       versionOptions: null,
@@ -44,8 +44,8 @@ class Options extends React.Component {
 
     const newState = {
       lastProps: nextProps,
-      svgPseudoElements: nextProps.currentOptions.svgPseudoElements || UNSPECIFIED,
-      version: nextProps.currentOptions.version || UNSPECIFIED,
+      svgPseudoElements: nextProps.currentOptions.svgPseudoElements,
+      version: nextProps.currentOptions.version,
       v4compat: nextProps.currentOptions.v4compat,
       technology: nextProps.currentOptions.technology,
       usePro: !!nextProps.currentOptions.usePro,
@@ -68,11 +68,11 @@ class Options extends React.Component {
         acc[version] = version
       }
       return acc
-    }, { [UNSPECIFIED]: '-' })
+    }, {})
   }
 
   handleVersionSelect(e){
-    this.setState({ version: e.target.value === '-' ? UNSPECIFIED : e.target.value })
+    this.setState({ version: e.target.value })
   }
 
   handleSubmitClick(e) {
@@ -87,7 +87,7 @@ class Options extends React.Component {
         v4compat: this.state.v4compat,
         svgPseudoElements: this.state.svgPseudoElements,
         removeConflicts: this.state.removeConflicts,
-        version: this.state.version === UNSPECIFIED ? undefined : this.state.version
+        version: this.state.version
       }
     })
   }
@@ -254,6 +254,23 @@ class Options extends React.Component {
             </div>
           </div>
           <hr className={ styles['option-divider'] }/>
+          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+            <div className={ styles['option-header'] }>Version</div>
+            <div className={ styles['option-choice-container'] }>
+              <div className={ styles['option-choices'] }>
+                <select className={ styles['version-select'] } name="version" onChange={ this.handleVersionSelect } value={ this.state.version }>
+                  {
+                    Object.keys(this.state.versionOptions).map((version, index) => {
+                      return <option key={ index } value={ version }>
+                        { version === UNSPECIFIED ? '-' : this.state.versionOptions[version] }
+                      </option>
+                    })
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+          <hr className={ styles['option-divider'] }/>
           <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
             <div className={ styles['option-header'] }>Features</div>
             <div className={ styles['option-choice-container'] }>
@@ -380,32 +397,6 @@ class Options extends React.Component {
           </div>
           <hr className={ styles['option-divider'] }/>
         </form>
-        <table className="form-table">
-        <tbody>
-          <tr>
-            <th scope="row">
-              <label htmlFor="version">Version</label>
-            </th>
-            <td>
-              <select name="version" onChange={ this.handleVersionSelect } value={ this.state.version }>
-                {
-                  Object.keys(this.state.versionOptions).map((version, index) => {
-                    return <option key={ index } value={ version }>
-                      { version === UNSPECIFIED ? '-' : this.state.versionOptions[version] }
-                    </option>
-                  })
-                }
-              </select>
-              {
-                this.props.releaseProviderStatus && this.props.releaseProviderStatus.code !== 200 &&
-                <div className={ styles['release-provider-error'] }>
-                  { this.props.releaseProviderStatus.message }
-                </div>
-              }
-            </td>
-          </tr>
-        </tbody>
-      </table>
       <div className="submit">
         <input
           type="submit"
@@ -451,7 +442,8 @@ Options.propTypes = {
   currentOptions: PropTypes.shape({
     technology: PropTypes.string.isRequired,
     v4compat: PropTypes.bool.isRequired,
-    usePro: PropTypes.bool.isRequired
+    usePro: PropTypes.bool.isRequired,
+    svgPseudoElements: PropTypes.bool.isRequired
   }).isRequired,
   releases: PropTypes.object.isRequired,
   releaseProviderStatus: PropTypes.object,
