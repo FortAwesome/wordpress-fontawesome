@@ -29,7 +29,13 @@ document.fonts.onloadingdone = function(e) {
            * We don't know that if we remove that node that we're removing *only* a conflict. We may be removing more than
            * we want to remove.
            */
-          ownerNode.parentNode.removeChild(ownerNode)
+          // ownerNode.parentNode.removeChild(ownerNode)
+
+          /**
+           * This is a more surgical approach where, rather than removing the entire DOM node (the whole stylesheet),
+           * we just disable the @font-face rule.
+           */
+          sheet.removeRule(sheet.cssRules[j])
         }
       }
     } catch(error) {
