@@ -46,6 +46,18 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		$this->assertEquals( [ 'method' ], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
 	}
 
+	public function test_when_version_does_not_match() {
+		$options = array(
+			'version' => '5.2.0',
+		);
+
+		$client_preferences = array(
+			'version' => [ [ '5.8.2', '>' ] ],
+		);
+
+		$this->assertEquals( [ 'version' ], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
+	}
+
 	public function test_with_empty_preference() {
 		$options = array(
 			'method'   => 'svg',
