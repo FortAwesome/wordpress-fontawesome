@@ -301,10 +301,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Reports whether the currently loaded version of the Font Awesome plugin satisfies the given constraints.
+		 * Reports whether the given $version satisfies the given $constraints.
 		 *
-		 * NOTE: this method is not concerned with the version of Font Awesome assets being loaded by this plugin,
-		 * but with the version of this plugin itself.
+		 * It's really just a generalized utility function, instead of incorporating a full-blown semver library.
 		 *
 		 * The constraints array should contain one element per constraint, where each individual constraint is itself
 		 * an array of arguments that can be passed as the second and third arguments to the standard `version_compare`
@@ -321,7 +320,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *   )
 		 * ```
 		 *
-		 * ...mean: "assert that this plugin's version number is greater than or equal 1.0.0 AND strictly less than 2.0.0"
+		 * ...mean: "assert that the given $version is greater than or equal 1.0.0 AND strictly less than 2.0.0"
 		 *
 		 * To express OR conditions, make multiple calls to this function and OR the results together in your own code.
 		 *
@@ -332,7 +331,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return bool
 		 * @throws InvalidArgumentException
 		 */
-		public function satisfies( $constraints ) {
+		public static function satisfies( $version, $constraints ) {
 			$valid_operators = [ '<', 'lt', '<=', 'le', '>', 'gt', '>=', 'ge', '==', '=', 'eq', '!=', '<>', 'ne' ];
 
 			if ( ! is_array( $constraints ) ) {
@@ -343,7 +342,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				if ( ! is_array( $constraint ) || 2 !== count( $constraint ) || false === array_search( $constraint[1], $valid_operators, true ) ) {
 					throw new InvalidArgumentException( 'each constraint must be an array of [ version, operator ] compatible with PHP\'s version_compare' );
 				}
-				if ( ! version_compare( $this->plugin_version(), $constraint[0], $constraint[1] ) ) {
+				if ( ! version_compare( $version, $constraint[0], $constraint[1] ) ) {
 					$result_so_far = false;
 					break;
 				}
@@ -375,7 +374,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * add_action(
 		 *   'font_awesome_enqueued',
 		 *   function() {
-		 *     FortAwesome\fa()->satisfies_or_warn( [['4.0.0', '>=']], 'Theta' );
+		 *     FortAwesome\fa()->plugin_version_satisfies_or_warn( [['4.0.0', '>=']], 'Theta' );
 		 *   }
 		 * );
 		 * ```
@@ -390,8 +389,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return bool
 		 * @throws InvalidArgumentException if the constraints provided are not in the expected format
 		 */
-		public function satisfies_or_warn( $constraints, $name ) {
-			if ( $this->satisfies( $constraints ) ) {
+		public function plugin_version_satisfies_or_warn( $constraints, $name ) {
+			if ( satisfies( $this->plugin_version(), $constraints ) ) {
 				return true;
 			} else {
 				$stringified_constraints = $this->stringify_constraints( $constraints );
@@ -788,7 +787,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			/**
 			 * Fired when the plugin is ready for clients to register their preferences.
 			 *
-			 * Clients should call {@see FontAwesome::register()} and {@see FontAwesome::satisfies_or_warn()}
+			 * Clients should call {@see FontAwesome::register()} and {@see FontAwesome::plugin_version_satisfies_or_warn()}
 			 * from a callback registered on this hook.
 			 *
 			 * @since 4.0.0
@@ -842,7 +841,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * Returns plugin version warnings.
 		 *
 		 * These are the warnings that would be reported in the admin UI as a result of clients calling
-		 * {@see FortAwesome\FontAwesome::satisfies_or_warn()}.
+		 * {@see FortAwesome\FontAwesome::plugin_version_satisfies_or_warn()}.
 		 *
 		 * @since 4.0.0
 		 *
@@ -1238,7 +1237,8 @@ EOT;
 			}
 
 			/**
-			 * Fired when the plugin has successfully built a load specification that satisfies all clients.
+			 * Fired when the plugin has enqueued a version of Font Awesome. Callback functions on this action
+			 * will be able to query the various accessor methods on the FontAwesome object to discover that configuration.
 			 *
 			 * @since 4.0.0
 			 */

@@ -36,12 +36,10 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 
 	public function test_satisfies () {
 		$this->assertTrue(
-			$this->mock_with_plugin_version( '42.1.3' )
-				->satisfies([['42.1.3', '=']])
+			FontAwesome::satisfies('42.1.3', [['42.1.3', '=']])
 		);
 		$this->assertTrue(
-			$this->mock_with_plugin_version( '42.1.3' )
-			     ->satisfies([['42.1.2', '>='], ['43', '<']])
+			FontAwesome::satisfies('42.1.3', [['42.1.2', '>='], ['43', '<']])
 		);
 	}
 
@@ -49,8 +47,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		$this->expectException( \InvalidArgumentException::class );
 
 		$this->assertTrue(
-			$this->mock_with_plugin_version( '42.1.3' )
-			     ->satisfies([['42.1.2', 'xyz']])
+			FontAwesome::satisfies('42.1.3', [['42.1.2', 'xyz']])
 		);
 	}
 
@@ -58,8 +55,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		$this->expectException( \InvalidArgumentException::class );
 
 		$this->assertTrue(
-			$this->mock_with_plugin_version( '42.1.3' )
-			     ->satisfies(['42.1.2', 'xyz'])
+			FontAwesome::satisfies('42.1.3', ['42.1.2', 'xyz'])
 		);
 	}
 
@@ -72,16 +68,16 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_satisfies_or_warn_when_successful () {
+	public function test_plugin_version_satisfies_or_warn_when_successful () {
 		$this->assertTrue(
 			$this->mock_with_plugin_version( '42.1.3' )
-			     ->satisfies_or_warn([['42.1.2', '>']], 'this_test')
+			     ->plugin_version_satisfies_or_warn([['42.1.2', '>']], 'this_test')
 		);
 	}
 
-	public function test_satisfies_or_warn_when_failing () {
+	public function test_plugin_version_satisfies_or_warn_when_failing () {
 		$this->assertFalse(
-			fa()->satisfies_or_warn([['0.0.1', '<']], 'this_test')
+			fa()->plugin_version_satisfies_or_warn([['0.0.1', '<']], 'this_test')
 		);
 
 		$this->assertEquals(
