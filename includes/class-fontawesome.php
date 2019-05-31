@@ -390,7 +390,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @throws InvalidArgumentException if the constraints provided are not in the expected format
 		 */
 		public function plugin_version_satisfies_or_warn( $constraints, $name ) {
-			if ( satisfies( $this->plugin_version(), $constraints ) ) {
+			if ( self::satisfies( $this->plugin_version(), $constraints ) ) {
 				return true;
 			} else {
 				$stringified_constraints = $this->stringify_constraints( $constraints );
