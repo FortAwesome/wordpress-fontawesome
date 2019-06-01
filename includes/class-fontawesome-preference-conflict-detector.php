@@ -17,7 +17,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * If it does, then delegate to it. We would need to delegate to it for the version option, because
 	 * clients should be able to specify an expression to represent version compatibility.
 	 *
-	 * Internal only. Clients should * not invoke this directly.
+	 * Internal only. Clients should not invoke this directly.
 	 *
 	 * @internal
 	 * @ignore
