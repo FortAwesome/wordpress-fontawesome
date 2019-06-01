@@ -794,7 +794,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Returns current preferences conflicts.
+		 * Returns current preferences conflicts, keyed by option name.
 		 *
 		 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
 		 * client preferences have been registered and processed.
@@ -806,31 +806,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * configured options, but they will be presented to the site owner in the plugin's admin settings page to
 		 * aid in troubleshooting.
 		 *
-		 * The shape of the conflicts array looks like this:
-		 * ```php
-		 *   array(
-		 *     // the preference in conflict, as supplied in the params to FontAwesome::register()
-		 *     "preference" => "version",
-		 *     // one entry per client that registered a constraint on the conflicting preference
-		 *     "conflictingClientPreferences" => array(
-		 *       [0] => array(
-		 *          'name' => 'my-plugin',
-		 *          'version' => '5.5.3', // this client's conflicting constraint on this preference
-		 *       ),
-		 *      // ...
-		 *     )
-		 *   )
-		 * ```
-		 *
 		 * @since 4.0.0
 		 *
+		 * @param $options options to use for comparison. Uses $this->options() by default.
 		 * @see FontAwesome::register() register() documents all client preference keys
 		 * @return array
 		 */
-		public function conflicts_by_option() {
+		public function conflicts_by_option( $options = null ) {
 			$conflicts = array();
 
-			foreach ( $this->conflicts_by_client() as $client_name => $client_conflicts ) {
+			$options_for_comparison = is_null( $options ) ? $this->options() : $options;
+
+			foreach ( $this->conflicts_by_client( $options_for_comparison ) as $client_name => $client_conflicts ) {
 				foreach ( $client_conflicts as $conflicted_option ) {
 					// Initialize the key with an empty array if it doesn't already have something in it.
 					$conflicts[ $conflicted_option ] = isset( $conflicts[ $conflicted_option ] )
@@ -845,13 +832,34 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			return $conflicts;
 		}
 
-		public function conflicts_by_client() {
+		/**
+		 * Returns current preferences conflicts, keyed by client name.
+		 *
+		 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
+		 * client preferences have been registered and processed.
+		 *
+		 * The returned array includes all conflicts between the given options and any preferences registered
+		 * by themes or plugins.
+		 *
+		 * The presence of conflicts will not stop this plugin from loading Font Awesome according to its
+		 * configured options, but they will be presented to the site owner in the plugin's admin settings page to
+		 * aid in troubleshooting.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @param $options options to use for comparison. Uses $this->options() by default.
+		 * @see FontAwesome::register() register() documents all client preference keys
+		 * @return array
+		 */
+		public function conflicts_by_client( $options = null ) {
 			if ( is_null( $this->conflicts_by_client ) ) {
 				$conflicts = array();
 
+				$options_for_comparison = is_null( $options ) ? $this->options() : $options;
+
 				foreach ( $this->client_preferences as $client_name => $client_preferences ) {
 					$current_conflicts = FontAwesome_Preference_Conflict_Detector::detect(
-						$this->options(),
+						$options_for_comparison,
 						$client_preferences
 					);
 					if ( count( $current_conflicts ) > 0 ) {

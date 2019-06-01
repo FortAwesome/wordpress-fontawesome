@@ -164,4 +164,42 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->conflicts_by_option()
 		);
 	}
+
+	public function test_conflicts_by_option_when_no_conflicts_with_non_default() {
+		fa()->register(
+			array(
+				'name'              => 'beta',
+				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+			)
+		);
+
+		$this->assertEquals(
+			array(),
+			fa()->conflicts_by_option(
+				array_merge(
+					FontAwesome::DEFAULT_USER_OPTIONS,
+					[ 'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements'] ]
+				)
+			)
+		);
+	}
+
+	public function test_conflicts_by_client_when_no_conflicts_with_non_default() {
+		fa()->register(
+			array(
+				'name'              => 'beta',
+				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+			)
+		);
+
+		$this->assertEquals(
+			array(),
+			fa()->conflicts_by_option(
+				array_merge(
+					FontAwesome::DEFAULT_USER_OPTIONS,
+					[ 'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements'] ]
+				)
+			)
+		);
+	}
 }
