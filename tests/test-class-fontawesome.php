@@ -89,4 +89,79 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		do_action('admin_notices');
 		$this->expectOutputRegex('/Font Awesome plugin version conflict with a plugin or theme named/');
 	}
+
+	public function test_conflicts_by_client_when_no_conflicts() {
+		fa()->register(
+			array(
+				'name' => 'alpha',
+			)
+		);
+
+		$this->assertEquals( [], fa()->conflicts_by_client() );
+	}
+
+	public function test_conflicts_by_client_when_conflicts() {
+		fa()->register(
+			array(
+				'name' => 'alpha',
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'              => 'beta',
+				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'   => 'gamma',
+				'version' => [ ['5.4.0', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'beta' => ['svgPseudoElements'], 'gamma' => ['version'] ),
+			fa()->conflicts_by_client()
+		);
+	}
+
+	public function test_conflicts_by_option_when_no_conflicts() {
+		fa()->register(
+			array(
+				'name' => 'alpha',
+			)
+		);
+
+		$this->assertEquals( [], fa()->conflicts_by_option() );
+	}
+
+	public function test_conflicts_by_option_when_conflicts() {
+		fa()->register(
+			array(
+				'name' => 'alpha',
+				'version' => [ ['51.23.45', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'              => 'beta',
+				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'   => 'gamma',
+				'version' => [ ['5.4.0', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'version' => ['alpha', 'gamma'], 'svgPseudoElements' => ['beta'] ),
+			fa()->conflicts_by_option()
+		);
+	}
 }

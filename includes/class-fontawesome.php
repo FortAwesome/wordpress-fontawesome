@@ -170,7 +170,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected $conflicts = null;
+		protected $conflicts_by_client = null;
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -651,9 +651,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 						: $this->plugin_version_warnings
 					);
 
-					$count_conflicts = is_null( $this->conflicts() ) ? 0 : 1;
-
-					$alert_count = $count_plugin_version_warnings + $count_conflicts;
+					$alert_count = $count_plugin_version_warnings + count( $this->conflicts_by_option() );
 
 					$menu_label = sprintf(
 						'Font Awesome %s',
@@ -801,10 +799,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
 		 * client preferences have been registered and processed.
 		 *
-		 * The returned array indicates just the _first_ preference that failed to be settled among the various
-		 * client preferences, along with all of those client's preferences. This allows code to detect or log
-		 * which clients are responsible for the conflict. This is the same information that is displayed in the
-		 * admin UI.
+		 * The returned array includes all conflicts between the options configured for this plugin by the site owner
+		 * and any preferences registered by themes or plugins.
+		 *
+		 * The presence of conflicts will not stop this plugin from loading Font Awesome according to its
+		 * configured options, but they will be presented to the site owner in the plugin's admin settings page to
+		 * aid in troubleshooting.
 		 *
 		 * The shape of the conflicts array looks like this:
 		 * ```php
@@ -816,25 +816,55 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 *       [0] => array(
 		 *          'name' => 'my-plugin',
 		 *          'version' => '5.5.3', // this client's conflicting constraint on this preference
-		 *            'clientCallSite' => array(
-		 *              'file' => '/var/www/html/wp-content/plugins/my-plugin/includes/my-plugin.php',
-		 *              'line' => 552
-		 *            )
 		 *       ),
 		 *      // ...
 		 *     )
 		 *   )
 		 * ```
-		 * This array will describe the conflict of exactly one preference—the first conflict found—because this hook is
-		 * triggered on the first failure.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @see FontAwesome::register() register() documents all client preference keys
-		 * @return array|null
+		 * @return array
 		 */
-		public function conflicts() {
-			return $this->conflicts;
+		public function conflicts_by_option() {
+			$conflicts = array();
+
+			foreach ( $this->conflicts_by_client() as $client_name => $client_conflicts ) {
+				foreach ( $client_conflicts as $conflicted_option ) {
+					// Initialize the key with an empty array if it doesn't already have something in it.
+					$conflicts[ $conflicted_option ] = isset( $conflicts[ $conflicted_option ] )
+						? $conflicts[ $conflicted_option ]
+						: array();
+
+					// Push the current client onto that array.
+					array_push( $conflicts[ $conflicted_option ], $client_name );
+				}
+			}
+
+			return $conflicts;
+		}
+
+		public function conflicts_by_client() {
+			if ( is_null( $this->conflicts_by_client ) ) {
+				$conflicts = array();
+
+				foreach ( $this->client_preferences as $client_name => $client_preferences ) {
+					$current_conflicts = FontAwesome_Preference_Conflict_Detector::detect(
+						$this->options(),
+						$client_preferences
+					);
+					if ( count( $current_conflicts ) > 0 ) {
+						$conflicts[ $client_name ] = $current_conflicts;
+					}
+				}
+
+				$this->conflicts_by_client = $conflicts;
+
+				return $conflicts;
+			} else {
+				return $this->conflicts_by_client;
+			}
 		}
 
 		/**
