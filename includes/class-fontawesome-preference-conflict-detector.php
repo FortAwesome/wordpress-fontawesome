@@ -23,7 +23,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @ignore
 	 * @since 4.0.0
 	 */
-	public static function detect( $configured_options, $client_preferences ) {
+	public static function detect( $configured_options = [], $client_preferences = [] ) {
 		return array_reduce(
 			array_keys( $configured_options ),
 			function( $carry, $option ) use ( $configured_options, $client_preferences ) {
