@@ -19,6 +19,9 @@ class ClientPreferencesView extends React.Component {
   }
 
   render() {
+    // TODO: remove temporary hack
+    const conflict = null
+
     return <div className={ styles['client-requirements'] }>
       {
         this.hasConflicts()
@@ -78,5 +81,5 @@ export default ClientPreferencesView
 
 ClientPreferencesView.propTypes = {
   clientPreferences: PropTypes.array.isRequired,
-  conflicts: PropTypes.array
+  conflicts: PropTypes.object
 }
