@@ -17,13 +17,12 @@ define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 use function FortAwesome\fa;
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
 		fa()->register(
 			array(
-				'name'          => BETA_PLUGIN_LOG_PREFIX,
-				'clientVersion' => BETA_PLUGIN_VERSION,
-				'v4shim'        => 'require',
+				'name'     => BETA_PLUGIN_LOG_PREFIX,
+				'v4compat' => true,
 			)
 		);
 	}
