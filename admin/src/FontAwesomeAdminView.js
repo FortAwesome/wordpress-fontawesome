@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import styles from './FontAwesomeAdminView.module.css'
 import Options from './Options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThumbsUp, faExclamationCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import { faThumbsUp, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import ClientRequirementsView from './ClientRequirementsView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
@@ -32,28 +32,6 @@ class FontAwesomeAdminView extends React.Component {
 
   hidePseudoElementsHelpModal() {
     this.setState({ showPseudoElementsHelpModal: false })
-  }
-
-
-  getStatus(hasConflict, haslockedLoadSpec) {
-    if( hasConflict ) {
-      if ( haslockedLoadSpec ) {
-        return {
-          statusLabel: 'warning',
-          statusIcon: faExclamationTriangle
-        }
-      } else {
-        return {
-          statusLabel: 'conflict',
-          statusIcon: faExclamationCircle
-        }
-      }
-    } else {
-      return {
-        statusLabel: 'good',
-        statusIcon: faThumbsUp
-      }
-    }
   }
 
   getPseudoElementsHelpModal() {
@@ -126,9 +104,17 @@ class FontAwesomeAdminView extends React.Component {
   render(){
     const { data, putData } = this.props
 
-    const hasConflict = !!data.conflicts
+    const hasConflict = get(data, ['conflicts', 'length'], 0) > 0
 
-    const { statusLabel, statusIcon } = this.getStatus( hasConflict, !!data.options.lockedLoadSpec )
+    const { statusLabel, statusIcon } = hasConflict
+    ? {
+        statusLabel: 'warning',
+        statusIcon: faExclamationTriangle
+      }
+    : {
+        statusLabel: 'good',
+        statusIcon: faThumbsUp
+      }
 
     return <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: this.state.showPseudoElementsHelpModal }) }>
       { this.state.showPseudoElementsHelpModal && this.getPseudoElementsHelpModal() }
