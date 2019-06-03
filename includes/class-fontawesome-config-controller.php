@@ -102,7 +102,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			return array(
 				'options'               => $fa->options(),
 				'clientPreferences'     => $fa->client_preferences(),
-				'conflicts'             => $fa->conflicts(),
+				'conflicts'             => $fa->conflicts_by_option(),
 				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
 				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
 				'unregisteredClients'   => $fa->unregistered_clients(),
