@@ -151,7 +151,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'conflicts', $data );
 		// No client conflicts in the default scenario
-		$this->assertNull( $data['conflicts'] );
+		$this->assertEquals( [], $data['conflicts'] );
 
 		$this->assertArrayHasKey( 'pluginVersionWarnings', $data );
 		// None of these warnings in the default scenario
