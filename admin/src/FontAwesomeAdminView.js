@@ -5,7 +5,7 @@ import styles from './FontAwesomeAdminView.module.css'
 import Options from './Options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
-import ClientRequirementsView from './ClientRequirementsView'
+import ClientPreferencesView from './ClientPreferencesView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
@@ -107,14 +107,14 @@ class FontAwesomeAdminView extends React.Component {
     const hasConflict = get(data, ['conflicts', 'length'], 0) > 0
 
     const { statusLabel, statusIcon } = hasConflict
-    ? {
-        statusLabel: 'warning',
-        statusIcon: faExclamationTriangle
-      }
-    : {
-        statusLabel: 'good',
-        statusIcon: faThumbsUp
-      }
+      ? {
+          statusLabel: 'warning',
+          statusIcon: faExclamationTriangle
+        }
+      : {
+          statusLabel: 'good',
+          statusIcon: faThumbsUp
+        }
 
     return <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: this.state.showPseudoElementsHelpModal }) }>
       { this.state.showPseudoElementsHelpModal && this.getPseudoElementsHelpModal() }
@@ -135,13 +135,13 @@ class FontAwesomeAdminView extends React.Component {
           submitSuccess={ this.props.submitSuccess }
           submitMessage={ this.props.submitMessage }
           error={ this.props.error }
-          adminClientInternal={ data.adminClientInternal }
           releaseProviderStatus={ data.releaseProviderStatus }
           showPseudoElementsHelpModal={ this.showPseudoElementsHelpModal }
         />
         { !hasConflict &&
-          <ClientRequirementsView
-            clientRequirements={ values( data.clientRequirements ) }
+          <ClientPreferencesView
+            conflicts={ data.conflicts }
+            clientPreferences={ values( data.clientPreferences ) }
           />
         }
         <UnregisteredClientsView clients={ data.unregisteredClients }/>
