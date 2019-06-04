@@ -18,6 +18,12 @@ class ClientPreferencesView extends React.Component {
     return get(this.props, ['conflicts', 'length'], 0) > 0
   }
 
+  static formatVersionPreference(versionPreference = []) {
+    return versionPreference
+      .map(pref => `${pref[1]}${pref[0]}`)
+      .join(' and ')
+  }
+
   render() {
     const { conflicts } = this.props
 
@@ -80,7 +86,7 @@ class ClientPreferencesView extends React.Component {
                     <td
                       className={ classnames({ [styles.conflicted]: clientHasConflict('version') }) }>
                       { has(client, 'version')
-                        ? client.version
+                        ? ClientPreferencesView.formatVersionPreference(client.version)
                         : UNSPECIFIED_INDICATOR
                       }
                     </td>
