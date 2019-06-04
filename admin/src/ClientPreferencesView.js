@@ -15,7 +15,7 @@ class ClientPreferencesView extends React.Component {
   }
 
   hasConflicts() {
-    return get(this.props, ['conflicts', 'length'], 0) > 0
+    return Object.keys(this.props.conflicts).length > 0
   }
 
   static formatVersionPreference(versionPreference = []) {
@@ -37,16 +37,14 @@ class ClientPreferencesView extends React.Component {
         this.hasAdditionalClients()
         ?
           <div>
-            { this.hasConflicts()
-              ? <div>
-                  <p className={sharedStyles['explanation']}>
-                  We found conflicting requirements between two or more plugins or themes, shown below.
-                  </p>
-                </div>
-              : <p className={sharedStyles['explanation']}>
-                Here are some other active plugins or themes, along with their Font Awesome preferences, highlighting
-                conflicts in preferences.
-                If you're trying to resolve a problem with one of them, you might find a clue here.
+            <p className={sharedStyles['explanation']}>
+              Here are some other active plugins or themes, along with their Font Awesome preferences.
+            </p>
+            { this.hasConflicts() &&
+              <p className={sharedStyles['explanation']}>
+                We've highlighted those preferences that differ from the options you've configured.
+                It's best to reconfigure the options in order to satisfy these, if possible.
+                A theme or plugin whose preferences aren't satisfied will probably not work as expected.
               </p>
             }
             <table className={ classnames( 'widefat', 'striped' ) }>
@@ -124,5 +122,5 @@ export default ClientPreferencesView
 
 ClientPreferencesView.propTypes = {
   clientPreferences: PropTypes.array.isRequired,
-  conflicts: PropTypes.object
+  conflicts: PropTypes.object.isRequired
 }
