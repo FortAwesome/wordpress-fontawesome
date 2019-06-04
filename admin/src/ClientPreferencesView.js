@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './ClientPreferencesView.module.css'
 import sharedStyles from './App.module.css'
-import { get } from 'lodash'
+import { find, get, has } from 'lodash'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
@@ -19,8 +19,7 @@ class ClientPreferencesView extends React.Component {
   }
 
   render() {
-    // TODO: remove temporary hack
-    const conflict = null
+    const { conflicts } = this.props
 
     return <div className={ styles['client-requirements'] }>
       {
@@ -39,8 +38,8 @@ class ClientPreferencesView extends React.Component {
                   </p>
                 </div>
               : <p className={sharedStyles['explanation']}>
-                Here are some other active plugins or themes,
-                along with their Font Awesome preferences, shown side-by-side with your configured options.
+                Here are some other active plugins or themes, along with their Font Awesome preferences, highlighting
+                conflicts in preferences.
                 If you're trying to resolve a problem with one of them, you might find a clue here.
               </p>
             }
@@ -48,19 +47,57 @@ class ClientPreferencesView extends React.Component {
               <thead>
                 <tr className={ sharedStyles['table-header'] }>
                   <th>Name</th>
-                  <th className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>Method</th>
-                  <th className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>V4 Compat</th>
-                  <th className={ classnames({ [styles.conflicted]: 'pseudoElements' === conflict }) }>Pseudo-elements</th>
+                  <th className={ classnames({ [styles.conflicted]: !! conflicts['usePro'] }) }>Icons</th>
+                  <th className={ classnames({ [styles.conflicted]: !! conflicts['technology'] }) }>Technology</th>
+                  <th className={ classnames({ [styles.conflicted]: !! conflicts['version'] }) }>Version</th>
+                  <th className={ classnames({ [styles.conflicted]: !! conflicts['v4compat'] }) }>V4 Compat</th>
+                  <th className={ classnames({ [styles.conflicted]: !! conflicts['svgPseudoElements'] }) }>SVG Pseudo-elements</th>
                 </tr>
               </thead>
               <tbody>
               {
                 this.props.clientPreferences.map((client, index)  => {
+                  const clientHasConflict = optionName => !!find(conflicts[optionName], c => c === client.name)
+
                   return <tr key={ index }>
-                    <td>{ client.name === this.props.adminClientInternal ? this.props.adminClientExternal : client.name }</td>
-                    <td className={ classnames({ [styles.conflicted]: 'method' === conflict }) }>{ client.method ? client.method : UNSPECIFIED_INDICATOR }</td>
-                    <td className={ classnames({ [styles.conflicted]: 'v4shim' === conflict }) }>{ client.v4shim ? client.v4shim : UNSPECIFIED_INDICATOR }</td>
-                    <td className={ classnames({ [styles.conflicted]: 'pseudoElements' === conflict }) }>{ client.pseudoElements ? client.pseudoElements : UNSPECIFIED_INDICATOR }</td>
+                    <td>{ client.name }</td>
+                    <td
+                      className={
+                        classnames({ [styles.conflicted]: clientHasConflict('usePro') })
+                      }>
+                      { has(client, 'usePro')
+                        ? client.usePro ? 'Pro' : 'Free'
+                        : UNSPECIFIED_INDICATOR
+                      }
+                    </td>
+                    <td
+                      className={ classnames({ [styles.conflicted]: clientHasConflict('technology') }) }>
+                      { has(client, 'technology')
+                        ? client.technology
+                        : UNSPECIFIED_INDICATOR
+                      }
+                    </td>
+                    <td
+                      className={ classnames({ [styles.conflicted]: clientHasConflict('version') }) }>
+                      { has(client, 'version')
+                        ? client.version
+                        : UNSPECIFIED_INDICATOR
+                      }
+                    </td>
+                    <td
+                      className={ classnames({ [styles.conflicted]: clientHasConflict('v4compat') }) }>
+                      { has(client, 'v4compat')
+                        ? client.v4compat ? 'true' : 'false'
+                        : UNSPECIFIED_INDICATOR
+                      }
+                    </td>
+                    <td
+                      className={ classnames({ [styles.conflicted]: clientHasConflict('svgPseudoElements') }) }>
+                      { has(client, 'svgPseudoElements')
+                        ? client.svgPseudoElements ? 'true' : 'false'
+                        : UNSPECIFIED_INDICATOR
+                      }
+                    </td>
                   </tr>
                 })
               }
