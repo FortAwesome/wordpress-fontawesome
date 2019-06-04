@@ -73,6 +73,8 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		 */
 		public function check_conflicts( $request ) {
 			try {
+				fa()->gather_preferences();
+
 				$conflicts = fa()->conflicts_by_option( $request->get_json_params() );
 
 				return new WP_REST_Response( $conflicts, 200 );
