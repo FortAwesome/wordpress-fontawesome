@@ -163,6 +163,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				);
 
 				if ( $result ) {
+					fa()->gather_preferences();
 					$return_data = $this->build_item( fa() );
 					return new WP_REST_Response( $return_data, 200 );
 				} else {
