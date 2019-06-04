@@ -137,6 +137,7 @@ class FontAwesomeAdminView extends React.Component {
           error={ this.props.error }
           releaseProviderStatus={ data.releaseProviderStatus }
           showPseudoElementsHelpModal={ this.showPseudoElementsHelpModal }
+          wpApiSettings={ this.props.wpApiSettings }
         />
         { !hasConflict &&
           <ClientPreferencesView
