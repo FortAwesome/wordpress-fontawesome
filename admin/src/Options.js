@@ -30,11 +30,13 @@ class Options extends React.Component {
       usePro: null,
       removeConflicts: null,
       versionOptions: null,
-      lastProps: null
+      lastProps: null,
+      formHasChanges: false
     }
 
     this.handleVersionSelect = this.handleVersionSelect.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
+    this.handleOptionChange = this.handleOptionChange.bind(this)
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -50,7 +52,8 @@ class Options extends React.Component {
       technology: nextProps.currentOptions.technology,
       usePro: !!nextProps.currentOptions.usePro,
       removeConflicts: !!nextProps.currentOptions.removeConflicts,
-      versionOptions: Options.buildVersionOptions(nextProps)
+      versionOptions: Options.buildVersionOptions(nextProps),
+      formHasChanges: false
     }
 
     return newState
@@ -73,6 +76,10 @@ class Options extends React.Component {
 
   handleVersionSelect(e){
     this.setState({ version: e.target.value })
+  }
+
+  handleOptionChange(change = {}) {
+    this.setState( { ...change, formHasChanges: true } )
   }
 
   handleSubmitClick(e) {
@@ -113,7 +120,7 @@ class Options extends React.Component {
                     type="radio"
                     value="webfont"
                     checked={ ! usePro }
-                    onChange={ () => this.setState({ usePro: false }) }
+                    onChange={ () => this.handleOptionChange({ usePro: false }) }
                     className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
@@ -143,7 +150,7 @@ class Options extends React.Component {
                     type="radio"
                     value="svg"
                     checked={ usePro }
-                    onChange={ () => this.setState({ usePro: true }) }
+                    onChange={ () => this.handleOptionChange({ usePro: true }) }
                     className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_icons_pro" className={ styles['option-label'] }>
@@ -194,7 +201,7 @@ class Options extends React.Component {
                     type="radio"
                     value="webfont"
                     checked={ technology === 'webfont' }
-                    onChange={ () => this.setState({
+                    onChange={ () => this.handleOptionChange({
                       technology: 'webfont',
                       svgPseudoElements: false
                     }) }
@@ -227,7 +234,7 @@ class Options extends React.Component {
                     type="radio"
                     value="svg"
                     checked={ technology === 'svg' }
-                    onChange={ () => this.setState({ technology: 'svg' }) }
+                    onChange={ () => this.handleOptionChange({ technology: 'svg' }) }
                     className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                   />
                   <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
@@ -258,7 +265,12 @@ class Options extends React.Component {
             <div className={ styles['option-header'] }>Version</div>
             <div className={ styles['option-choice-container'] }>
               <div className={ styles['option-choices'] }>
-                <select className={ styles['version-select'] } name="version" onChange={ this.handleVersionSelect } value={ this.state.version }>
+                <select
+                  className={ styles['version-select'] }
+                  name="version"
+                  onChange={ e => this.handleOptionChange({ version: e.target.value }) }
+                  value={ this.state.version }
+                >
                   {
                     Object.keys(this.state.versionOptions).map((version, index) => {
                       return <option key={ index } value={ version }>
@@ -281,7 +293,7 @@ class Options extends React.Component {
                   type="checkbox"
                   value="v4compat"
                   checked={ v4compat }
-                  onChange={ () => this.setState({ v4compat: ! this.state.v4compat }) }
+                  onChange={ () => this.handleOptionChange({ v4compat: ! this.state.v4compat }) }
                   className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
                 />
                 <label htmlFor="code_edit_features_v4compat" className={ styles['option-label'] }>
@@ -317,7 +329,7 @@ class Options extends React.Component {
                   type="checkbox"
                   value="remove_conflicts"
                   checked={ removeConflicts }
-                  onChange={ () => this.setState({ removeConflicts: ! this.state.removeConflicts }) }
+                  onChange={ () => this.handleOptionChange({ removeConflicts: ! this.state.removeConflicts }) }
                   className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
                 />
                 <label htmlFor="code_edit_features_remove_conflicts" className={ styles['option-label'] }>
@@ -354,7 +366,7 @@ class Options extends React.Component {
                     type="checkbox"
                     value="svg_pseudo_elements"
                     checked={svgPseudoElements}
-                    onChange={() => this.setState({svgPseudoElements: !svgPseudoElements})}
+                    onChange={() => this.handleOptionChange({svgPseudoElements: !svgPseudoElements})}
                     className={classnames(sharedStyles['sr-only'], styles['input-checkbox-custom'])}
                   />
                   <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
@@ -404,6 +416,7 @@ class Options extends React.Component {
           id="submit"
           className="button button-primary"
           value="Save Changes"
+          disabled={ ! this.state.formHasChanges }
           onClick={ this.handleSubmitClick }
         />
         { hasSubmitted &&
