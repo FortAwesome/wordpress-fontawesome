@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDotCircle,
@@ -31,12 +32,16 @@ class Options extends React.Component {
       removeConflicts: null,
       versionOptions: null,
       lastProps: null,
-      formHasChanges: false
+      formHasChanges: false,
+      isChecking: false,
+      hasChecked: false,
+      checkSuccess: false,
+      checkMessage: ''
     }
 
-    this.handleVersionSelect = this.handleVersionSelect.bind(this)
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
     this.handleOptionChange = this.handleOptionChange.bind(this)
+    this.doPreferenceCheck = this.doPreferenceCheck.bind(this)
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -74,12 +79,69 @@ class Options extends React.Component {
     }, {})
   }
 
-  handleVersionSelect(e){
-    this.setState({ version: e.target.value })
-  }
-
   handleOptionChange(change = {}) {
     this.setState( { ...change, formHasChanges: true } )
+    this.doPreferenceCheck({ ...this.currentFormOptions(), ...change })
+  }
+
+  currentFormOptions() {
+    return {
+      usePro: this.state.usePro,
+      technology: this.state.technology,
+      v4compat: this.state.v4compat,
+      svgPseudoElements: this.state.svgPseudoElements,
+      removeConflicts: this.state.removeConflicts,
+      version: this.state.version
+    }
+  }
+
+  async doPreferenceCheck(options = {}) {
+    this.setState({ isChecking: true, hasChecked: false })
+
+    try {
+      const response = await axios.post(
+        `${this.props.wpApiSettings.api_url}/conflict-detection`,
+        { ...options },
+        {
+          headers: {
+            'X-WP-Nonce': this.props.wpApiSettings.api_nonce
+          }
+        }
+      )
+
+      const { status, data } = response
+      if (200 === status) {
+        this.setState({
+          isChecking: false,
+          hasChecked: true,
+          checkSuccess: true,
+          checkMessage: ''
+        })
+      } else {
+        this.setState({
+          isChecking: false,
+          hasChecked: true,
+          checkSuccess: false,
+          checkMessage: 'Failed when checking options changes'
+        })
+      }
+    } catch( error ) {
+      const { response: { data: { code, message }}} = error
+      let checkMessage = ""
+
+      switch(code) {
+        case 'cant_update':
+          checkMessage = message
+          break
+        case 'rest_no_route':
+        case 'rest_cookie_invalid_nonce':
+          checkMessage = "Sorry, we couldn't reach the server"
+          break
+        default:
+          checkMessage = "Update failed"
+      }
+      this.setState({ isChecking: false, hasChecked: true, checkSuccess: false, checkMessage })
+    }
   }
 
   handleSubmitClick(e) {
@@ -88,14 +150,7 @@ class Options extends React.Component {
     const { putData } = this.props
 
     putData({
-      options: {
-        usePro: this.state.usePro,
-        technology: this.state.technology,
-        v4compat: this.state.v4compat,
-        svgPseudoElements: this.state.svgPseudoElements,
-        removeConflicts: this.state.removeConflicts,
-        version: this.state.version
-      }
+      options: this.currentFormOptions()
     })
   }
 
@@ -460,4 +515,5 @@ Options.propTypes = {
   }).isRequired,
   releases: PropTypes.object.isRequired,
   releaseProviderStatus: PropTypes.object,
+  wpApiSettings: PropTypes.object.isRequired
 }
