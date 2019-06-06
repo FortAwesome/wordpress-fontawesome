@@ -38,7 +38,7 @@ class ClientPreferencesView extends React.Component {
         ?
           <div>
             <p className={sharedStyles['explanation']}>
-              Here are some other active plugins or themes, along with their Font Awesome preferences.
+              These are other active plugins or themes that depend on this plugin, along with their Font Awesome preferences.
             </p>
             { this.hasConflicts() &&
               <p className={sharedStyles['explanation']}>
