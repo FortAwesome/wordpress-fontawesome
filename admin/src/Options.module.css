@@ -60,6 +60,12 @@ div.submit-status.fail .explanation{
     font-size: larger;
 }
 
+.option-status {
+    width: 1rem;
+    margin-right: .25rem;
+    text-align: center;
+}
+
 .option-choices {
   display: flex;
   flex-direction: row;
@@ -167,3 +173,8 @@ div.submit-status.fail .explanation{
     text-decoration-color: initial;
 }
 
+
+.checking-option-status-indicator {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

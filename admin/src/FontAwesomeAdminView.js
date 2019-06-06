@@ -135,6 +135,7 @@ class FontAwesomeAdminView extends React.Component {
           hasSubmitted={ this.props.hasSubmitted }
           submitSuccess={ this.props.submitSuccess }
           submitMessage={ this.props.submitMessage }
+          registeredClientsPresent={ data.clientPreferences.length > 0 }
           error={ this.props.error }
           releaseProviderStatus={ data.releaseProviderStatus }
           showPseudoElementsHelpModal={ this.showPseudoElementsHelpModal }

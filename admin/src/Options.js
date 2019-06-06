@@ -14,10 +14,18 @@ import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './Options.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
-import { isEqual } from 'lodash'
+import { has, isEqual } from 'lodash'
 import SvgPseudoElementsWarning from "./SvgPseudoElementsWarning";
+import Alert from './Alert'
 
 const UNSPECIFIED = ''
+
+function CheckingOptionStatusIndicator(){
+  return <div className={ styles['checking-option-status-indicator'] }>
+    <FontAwesomeIcon spin className={ classnames(sharedStyles['icon']) } icon={ faSpinner }/>
+    &nbsp;checking for preference conflicts...
+  </div>
+}
 
 class Options extends React.Component {
   constructor(props){
@@ -32,11 +40,12 @@ class Options extends React.Component {
       removeConflicts: null,
       versionOptions: null,
       lastProps: null,
-      formHasChanges: false,
+      changedOptions: [],
       isChecking: false,
       hasChecked: false,
       checkSuccess: false,
-      checkMessage: ''
+      checkMessage: '',
+      detectedConflicts: {}
     }
 
     this.handleSubmitClick = this.handleSubmitClick.bind(this)
@@ -58,7 +67,7 @@ class Options extends React.Component {
       usePro: !!nextProps.currentOptions.usePro,
       removeConflicts: !!nextProps.currentOptions.removeConflicts,
       versionOptions: Options.buildVersionOptions(nextProps),
-      formHasChanges: false
+      changedOptions: []
     }
 
     return newState
@@ -80,7 +89,7 @@ class Options extends React.Component {
   }
 
   handleOptionChange(change = {}) {
-    this.setState( { ...change, formHasChanges: true } )
+    this.setState( { ...change, changedOptions: [ ...this.state.changedOptions, Object.keys(change)[0] ] } )
     this.doPreferenceCheck({ ...this.currentFormOptions(), ...change })
   }
 
@@ -92,6 +101,58 @@ class Options extends React.Component {
       svgPseudoElements: this.state.svgPseudoElements,
       removeConflicts: this.state.removeConflicts,
       version: this.state.version
+    }
+  }
+
+  optionChanged(option){
+    return !!this.state.changedOptions.find(o => o === option)
+  }
+  
+  getDetectionStatus(option) {
+    if(this.optionChanged(option)) {
+      if(this.state.isChecking) {
+        return <CheckingOptionStatusIndicator/>
+      } else if (has(this.state.detectedConflicts, option)) {
+        return <Alert title='Pending change might cause problems' type='warning'>
+          <p>
+            If you do save this change, it might cause a problem with&nbsp;
+            {
+              this.state.detectedConflicts[option].length > 1
+                ? <span>
+                  these themes or plugins:
+                  <ul>
+                    { this.state.detectedConflicts[option].map( c => <li>{ c }</li>) }
+                  </ul>
+              </span>
+              : <span>
+                this theme or plugin:
+                  <ul>
+                    <li>{ this.state.detectedConflicts[option][0] }</li>
+                  </ul>
+                </span>
+            }
+          </p>
+          <p>
+            See below for details.
+          </p>
+        </Alert>
+      } else {
+        return <Alert title='Pending change looks good!' type='pending'>
+          <p><em>Click to save changes below to make it active on your web site.</em></p>
+          { this.props.registeredClientsPresent
+            ? <p>No other themes or plugins have registered any Font Awesome preferences with this plugin.
+              So, as far we can tell, this change would cause no conflicts.</p>
+            : <p>Any Font Awesome preferences registered with this plugin by other themes or plugins are satisfied
+              with this change.</p>
+          }
+          <p>
+            Remember, any "unregistered" themes or plugins could cause conflicts and we would not know it. If that
+            seems to be a problem in your case, consider enabling the "Remove Conflicts" option.
+          </p>
+        </Alert>
+      }
+    } else {
+      return null
     }
   }
 
@@ -115,7 +176,8 @@ class Options extends React.Component {
           isChecking: false,
           hasChecked: true,
           checkSuccess: true,
-          checkMessage: ''
+          checkMessage: '',
+          detectedConflicts: { ...data }
         })
       } else {
         this.setState({
@@ -230,18 +292,18 @@ class Options extends React.Component {
                 </div>
               </div>
               { usePro &&
-              <div className={styles['option-explanation']}>
-                <p>Pro requires a subscription.</p>
-                <ul>
-                  <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
-                  </li>
-                  <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
-                  </li>
-                </ul>
-              </div>
+                <Alert title='Pro requires a subscription' type='info'>
+                  <ul>
+                    <li>
+                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
+                    </li>
+                    <li>
+                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+                    </li>
+                  </ul>
+                </Alert>
               }
+              { this.getDetectionStatus('usePro') }
             </div>
           </div>
           <hr className={ styles['option-divider'] }/>
@@ -471,7 +533,7 @@ class Options extends React.Component {
           id="submit"
           className="button button-primary"
           value="Save Changes"
-          disabled={ ! this.state.formHasChanges }
+          disabled={ this.state.changedOptions.length === 0 }
           onClick={ this.handleSubmitClick }
         />
         { hasSubmitted &&
@@ -513,6 +575,7 @@ Options.propTypes = {
     usePro: PropTypes.bool.isRequired,
     svgPseudoElements: PropTypes.bool.isRequired
   }).isRequired,
+  registeredClientsPresent: PropTypes.bool.isRequired,
   releases: PropTypes.object.isRequired,
   releaseProviderStatus: PropTypes.object,
   wpApiSettings: PropTypes.object.isRequired
