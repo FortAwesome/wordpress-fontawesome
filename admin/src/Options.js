@@ -115,7 +115,7 @@ class Options extends React.Component {
       } else if (has(this.state.detectedConflicts, option)) {
         return <Alert title='Pending change might cause problems' type='warning'>
           <p>
-            If you do save this change, it might cause a problem with&nbsp;
+            If you save this change, it might cause a problem with&nbsp;
             {
               this.state.detectedConflicts[option].length > 1
                 ? <span>
@@ -138,7 +138,7 @@ class Options extends React.Component {
         </Alert>
       } else {
         return <Alert title='Pending change looks good!' type='pending'>
-          <p><em>Click to save changes below to make it active on your web site.</em></p>
+          <p><em>Click below to save changes and make it active on your web site.</em></p>
           { this.props.registeredClientsPresent
             ? <p>No other themes or plugins have registered any Font Awesome preferences with this plugin.
               So, as far we can tell, this change would cause no conflicts.</p>
@@ -375,6 +375,7 @@ class Options extends React.Component {
                   </label>
                 </div>
               </div>
+              { this.getDetectionStatus('technology') }
             </div>
           </div>
           <hr className={ styles['option-divider'] }/>
@@ -397,6 +398,7 @@ class Options extends React.Component {
                   }
                 </select>
               </div>
+              { this.getDetectionStatus('version') }
             </div>
           </div>
           <hr className={ styles['option-divider'] }/>
@@ -438,6 +440,7 @@ class Options extends React.Component {
                     </span>
                   </span>
                 </label>
+                { this.getDetectionStatus('v4compat') }
               </div>
               <div className={ styles['option-choice'] }>
                 <input
@@ -474,6 +477,7 @@ class Options extends React.Component {
                     </span>
                   </span>
                 </label>
+                { this.getDetectionStatus('removeConflicts') }
               </div>
               { technology === 'svg' &&
                 <div className={styles['option-choice']}>
@@ -513,6 +517,7 @@ class Options extends React.Component {
                     </span>
                   </span>
                   </label>
+                  { this.getDetectionStatus('svgPseudoElements') }
                 </div>
               }
               {
