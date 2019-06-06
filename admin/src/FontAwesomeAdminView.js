@@ -2,10 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import styles from './FontAwesomeAdminView.module.css'
-import sharedStyles from './App.module.css'
 import Options from './Options'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThumbsUp, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import ClientPreferencesView from './ClientPreferencesView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
@@ -105,26 +102,10 @@ class FontAwesomeAdminView extends React.Component {
   render(){
     const { data, putData } = this.props
 
-    const hasConflict = get(data, ['conflicts', 'length'], 0) > 0
-
-    const { statusLabel, statusIcon } = hasConflict
-      ? {
-          statusLabel: 'warning',
-          statusIcon: faExclamationTriangle
-        }
-      : {
-          statusLabel: 'good',
-          statusIcon: faThumbsUp
-        }
-
     return <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: this.state.showPseudoElementsHelpModal }) }>
       { this.state.showPseudoElementsHelpModal && this.getPseudoElementsHelpModal() }
       <h1>Font Awesome</h1>
       <div>
-        <p className={ classnames( sharedStyles['status'], sharedStyles[statusLabel] ) }>
-          <span className={ styles['status-label'] }>Status: </span>
-          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ statusIcon }/>
-        </p>
         <V3DeprecationWarning wpApiSettings={ this.props.wpApiSettings }/>
         { this.releaseProviderStatusOK() || <ReleaseProviderWarning/> }
         <Options
@@ -141,12 +122,10 @@ class FontAwesomeAdminView extends React.Component {
           showPseudoElementsHelpModal={ this.showPseudoElementsHelpModal }
           wpApiSettings={ this.props.wpApiSettings }
         />
-        { !hasConflict &&
-          <ClientPreferencesView
-            conflicts={ data.conflicts }
-            clientPreferences={ values( data.clientPreferences ) }
-          />
-        }
+        <ClientPreferencesView
+          conflicts={ data.conflicts }
+          clientPreferences={ values( data.clientPreferences ) }
+        />
         <UnregisteredClientsView clients={ data.unregisteredClients }/>
         {
           data.pluginVersionWarnings &&
