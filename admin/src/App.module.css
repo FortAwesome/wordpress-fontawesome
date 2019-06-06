@@ -61,3 +61,7 @@ button.more-less {
 .status.warning .icon, .warning-icon {
   color: #b7b700;
 }
+
+.space-left {
+  margin-left: 1rem;
+}

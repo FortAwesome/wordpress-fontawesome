@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+
 
 const UnregisteredClientsView = props => {
 
@@ -64,7 +67,14 @@ const UnregisteredClientsView = props => {
             </li>
           </ol>
         </div>
-      : <p className={ sharedStyles['explanation'] }>We detected no unregistered clients.</p>
+      : <div className={ classnames(sharedStyles['explanation'], sharedStyles['flex'], sharedStyles['flex-row'] )}>
+          <div>
+            <FontAwesomeIcon icon={ faThumbsUp } size='lg'/>
+          </div>
+          <div className={ sharedStyles['space-left'] }>
+            We detected no other plugins or themes loading other versions of Font Awesome.
+          </div>
+      </div>
     }
   </div>
 }
