@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import styles from './FontAwesomeAdminView.module.css'
+import sharedStyles from './App.module.css'
 import Options from './Options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
@@ -120,9 +121,9 @@ class FontAwesomeAdminView extends React.Component {
       { this.state.showPseudoElementsHelpModal && this.getPseudoElementsHelpModal() }
       <h1>Font Awesome</h1>
       <div>
-        <p className={ classnames( styles['status'], styles[statusLabel] ) }>
+        <p className={ classnames( sharedStyles['status'], sharedStyles[statusLabel] ) }>
           <span className={ styles['status-label'] }>Status: </span>
-          <FontAwesomeIcon className={ styles['icon'] } icon={ statusIcon }/>
+          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ statusIcon }/>
         </p>
         <V3DeprecationWarning wpApiSettings={ this.props.wpApiSettings }/>
         { this.releaseProviderStatusOK() || <ReleaseProviderWarning/> }
