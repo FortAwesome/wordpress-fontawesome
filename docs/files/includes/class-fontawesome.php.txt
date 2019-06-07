@@ -100,7 +100,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * The version of this WordPress plugin.
 		 */
-		const PLUGIN_VERSION = '4.0.0-rc9';
+		const PLUGIN_VERSION = '4.0.0-rc10';
 		/**
 		 * The version of this plugin's REST API.
 		 *
@@ -1544,11 +1544,14 @@ EOT;
 			);
 		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
+		 * Detects unregistered clients, which can be retrieved with {@see FontAwesome::unregistered_clients()}.
+		 * For internal use only. Not part of this plugin's public API.
+		 *
+		 * @internal
 		 * @ignore
 		 */
-		protected function detect_unregistered_clients() {
+		public function detect_unregistered_clients() {
 			$wp_styles  = wp_styles();
 			$wp_scripts = wp_scripts();
 
