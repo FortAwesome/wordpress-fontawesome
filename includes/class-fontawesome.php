@@ -1344,7 +1344,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 			if ( 'webfont' === $load_spec['method'] ) {
 
-				foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
+				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
 						function () use ( $resource_collection ) {
@@ -1380,7 +1380,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
 					 * that may try to declare a @font-face with a font-family of "FontAwesome".
 					 */
-					foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
+					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
 							function () use ( $resource_collection, $options, $license_subdomain, $version ) {
@@ -1455,7 +1455,7 @@ EOT;
 					}
 				}
 			} else {
-				foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
+				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
 						function () use ( $resource_collection, $load_spec ) {
@@ -1496,7 +1496,7 @@ EOT;
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
+					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
 							function () use ( $resource_collection ) {
@@ -1541,7 +1541,7 @@ EOT;
 			 * We'll use priority 0 in an effort to be as early as possible, to prevent any unregistered client
 			 * from actually being printed to the head.
 			 */
-			foreach( ['wp_print_styles', 'admin_print_styles', 'login_head'] as $action ) {
+			foreach ( [ 'wp_print_styles', 'admin_print_styles', 'login_head' ] as $action ) {
 				add_action(
 					$action,
 					function() use ( $obj, $options ) {
