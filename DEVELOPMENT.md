@@ -407,6 +407,7 @@ that was created in the previous step.
 - activate and deactivate the plugin: expect no errors
 - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
 - expect to see all of their client requirements listed on the options page under Client Requirements
+  - Especially, look for `plugin-gamma` and `plugin-delta` outputs in all three contexts: front end, admin, login
 - expect to see `plugin-gamma` and `plugin-delta` listed in the unregistered clients section
 - expect to see the over all stat of the plugin to be good/success (such as showing a green thumb icon)
 - change settings on the plugin options page to enable Pro and remove unregistered clients
