@@ -100,7 +100,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * The version of this WordPress plugin.
 		 */
-		const PLUGIN_VERSION = '4.0.0-rc10';
+		const PLUGIN_VERSION = '4.0.0-rc11';
 		/**
 		 * The version of this plugin's REST API.
 		 *
@@ -1344,13 +1344,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 			if ( 'webfont' === $load_spec['method'] ) {
 
-				add_action(
-					'wp_enqueue_scripts',
-					function () use ( $resource_collection ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
-					}
-				);
+				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+					add_action(
+						$action,
+						function () use ( $resource_collection ) {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_style( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null );
+						}
+					);
+				}
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
@@ -1374,17 +1376,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 				if ( $load_spec['v4shim'] ) {
 					/**
-					 * Enqueue v4 compatibility as late as possible, though still within the normal wp_enqueue_scripts hook.
+					 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 					 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
 					 * that may try to declare a @font-face with a font-family of "FontAwesome".
 					 */
-					add_action(
-						'wp_enqueue_scripts',
-						function () use ( $resource_collection, $options, $license_subdomain, $version ) {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
+					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+						add_action(
+							$action,
+							function () use ( $resource_collection, $options, $license_subdomain, $version ) {
+								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
 
-							$font_face = <<< EOT
+								$font_face = <<< EOT
 @font-face {
     font-family: "FontAwesome";
     src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot"),
@@ -1417,14 +1420,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 }
 EOT;
 
-							wp_add_inline_style(
-								self::RESOURCE_HANDLE_V4SHIM,
-								$font_face
-							);
+								wp_add_inline_style(
+									self::RESOURCE_HANDLE_V4SHIM,
+									$font_face
+								);
 
-						},
-						PHP_INT_MAX
-					);
+							},
+							PHP_INT_MAX
+						);
+					}
 
 					// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 					// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
@@ -1451,17 +1455,19 @@ EOT;
 					}
 				}
 			} else {
-				add_action(
-					'wp_enqueue_scripts',
-					function () use ( $resource_collection, $load_spec ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
+				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+					add_action(
+						$action,
+						function () use ( $resource_collection, $load_spec ) {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
 
-						if ( $load_spec['pseudoElements'] ) {
-							wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
+							if ( $load_spec['pseudoElements'] ) {
+								wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
+							}
 						}
-					}
-				);
+					);
+				}
 
 				// Filter the <script> tag to add additional attributes for integrity, crossorigin, defer.
 				add_filter(
@@ -1490,13 +1496,15 @@ EOT;
 				);
 
 				if ( $load_spec['v4shim'] ) {
-					add_action(
-						'wp_enqueue_scripts',
-						function () use ( $resource_collection ) {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
-						}
-					);
+					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+						add_action(
+							$action,
+							function () use ( $resource_collection ) {
+								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+								wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
+							}
+						);
+					}
 
 					add_filter(
 						'script_loader_tag',
@@ -1527,21 +1535,24 @@ EOT;
 			$obj = $this;
 			/**
 			 * We need to detect unregistered clients *after* they would have been enqueued, if they used
-			 * the recommended mechanism of wp_enqueue_style and wp_enqueue_script.
-			 * The wp_print_styles action hook is fired after the wp_enqueue_scripts hook.
+			 * the recommended mechanism of wp_enqueue_style and wp_enqueue_script (or the admin equivalents).
+			 * The wp_print_styles action hook is fired after the wp_enqueue_scripts hook
+			 * (admin_print_styles after admin_enqueue_scripts).
 			 * We'll use priority 0 in an effort to be as early as possible, to prevent any unregistered client
 			 * from actually being printed to the head.
 			 */
-			add_action(
-				'wp_print_styles',
-				function() use ( $obj, $options ) {
-					$obj->detect_unregistered_clients();
-					if ( $options['removeUnregisteredClients'] ) {
-						$obj->remove_unregistered_clients();
-					}
-				},
-				0
-			);
+			foreach ( [ 'wp_print_styles', 'admin_print_styles', 'login_head' ] as $action ) {
+				add_action(
+					$action,
+					function() use ( $obj, $options ) {
+						$obj->detect_unregistered_clients();
+						if ( $options['removeUnregisteredClients'] ) {
+							$obj->remove_unregistered_clients();
+						}
+					},
+					0
+				);
+			}
 		}
 
 		/**
