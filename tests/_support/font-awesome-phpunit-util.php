@@ -38,8 +38,9 @@ function mock_singleton_method( $obj, $type, $method, callable $init ) {
 		$init( $mock->method( $method ) );
 		return $mock;
 	} catch ( ReflectionException $e ) {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		// phpcs:disable
 		error_log( 'Reflection error: ' . $e );
+		// phpcs:enable
 		return null;
 	}
 }
@@ -53,8 +54,9 @@ function mock_singleton_method( $obj, $type, $method, callable $init ) {
 function begin_error_log_capture( &$state ) {
 	$state['error_log_file']     = uniqid( 'fa_error_log' ) . '.log';
 	$state['error_log_original'] = ini_get( 'error_log' );
-	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
+	// phpcs:disable
 	ini_set( 'error_log', $state['error_log_file'] );
+	// phpcs:enable
 }
 
 /**
@@ -67,8 +69,9 @@ function end_error_log_capture( &$state ) {
 	// phpcs:ignore WordPress.WP.AlternativeFunctions
 	$error_log_contents = file_get_contents( $state['error_log_file'] );
 	unlink( $state['error_log_file'] );
-	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
+	// phpcs:disable
 	ini_set( 'error_log', $state['error_log_original'] );
+	// phpcs:enable
 	return $error_log_contents;
 }
 
