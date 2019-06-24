@@ -6,7 +6,7 @@ namespace FortAwesome;
  * Apparently, it's necessary to use the runTestsInSeparateProcesses annotation. Otherwise, the output buffering
  * seems to get confused between the tests, resulting in false negatives.
  * And since doing this normally involves serializing global data between parent and child processes, which doesn't
- * work in our case (singletons?), we also need to use preserverGlobalState disabled.
+ * work in our case (singletons?), we also need to use preserveGlobalState disabled.
  *
  * @noinspection PhpCSValidationInspection
  *
@@ -62,13 +62,31 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
 	}
 
-	protected function captureOutput() {
+	protected function captureOutput($scenario = 'front-end') {
 		/**
 		 * For some reason the expectOutputRegex feature of PHPUnit is resulting in false positives, so we'll
 		 * handle output buffering and matching ourselves here.
 		 */
 		ob_start();
-		wp_head(); // generates the output
+
+		// Trigger the various actions that generates the output for the given scenario.
+		switch ( $scenario ) {
+			case 'admin':
+				do_action('admin_enqueue_scripts');
+				do_action('admin_print_scripts');
+				do_action('admin_print_styles');
+				break;
+			case 'front-end':
+				wp_enqueue_scripts();
+				wp_print_styles();
+				wp_print_scripts();
+				break;
+			case 'login':
+				do_action('login_enqueue_scripts');
+				wp_print_styles();
+				wp_print_scripts();
+		}
+
 		return ob_get_clean();
 	}
 
@@ -95,6 +113,8 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$fa_load->invoke( fa() );
 
 		$output = $this->captureOutput();
+
+		// error_log("\n\nDEBUG output: \n$output\n\n");
 
 		// Make sure the main css looks right.
 		$this->assertTrue(
