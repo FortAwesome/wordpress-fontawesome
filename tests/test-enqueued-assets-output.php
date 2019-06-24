@@ -93,7 +93,25 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	/**
 	 * @group output
 	 */
-	public function test_free_webfont_assets_enqueued() {
+	public function test_free_webfont_assets_enqueued_front_end() {
+		$this->free_webfont_assets_enqueued('front-end');
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_free_webfont_assets_enqueued_admin() {
+		$this->free_webfont_assets_enqueued('admin');
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_free_webfont_assets_enqueued_login() {
+		$this->free_webfont_assets_enqueued('login');
+	}
+
+	public function free_webfont_assets_enqueued($scenario = 'front-end') {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/css/all.css',
@@ -112,7 +130,7 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		$output = $this->captureOutput();
+		$output = $this->captureOutput($scenario);
 
 		// error_log("\n\nDEBUG output: \n$output\n\n");
 
@@ -153,7 +171,25 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	/**
 	 * @group output
 	 */
-	public function test_free_svg_assets_enqueued() {
+	public function test_free_svg_assets_enqueued_front_end() {
+		$this->free_svg_assets_enqueued("front-end");
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_free_svg_assets_enqueued_admin() {
+		$this->free_svg_assets_enqueued("admin");
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_free_svg_assets_enqueued_login() {
+		$this->free_svg_assets_enqueued("login");
+	}
+
+	public function free_svg_assets_enqueued($scenario = 'front-end') {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/js/all.js',
@@ -186,7 +222,7 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		$output = $this->captureOutput();
+		$output = $this->captureOutput($scenario);
 
 		// Make sure the main <script. looks right.
 		$this->assertTrue(
@@ -226,7 +262,27 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group pro
 	 * @group output
 	 */
-	public function test_pro_webfont_assets_enqueued() {
+	public function test_pro_webfont_assets_enqueued_front_end() {
+		$this->pro_webfont_assets_enqueued('front-end');
+	}
+
+	/**
+	 * @group pro
+	 * @group output
+	 */
+	public function test_pro_webfont_assets_enqueued_login() {
+		$this->pro_webfont_assets_enqueued('login');
+	}
+
+	/**
+	 * @group pro
+	 * @group output
+	 */
+	public function test_pro_webfont_assets_enqueued_admin() {
+		$this->pro_webfont_assets_enqueued('admin');
+	}
+
+	public function pro_webfont_assets_enqueued($scenario = 'front-end') {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/css/all.css',
@@ -245,7 +301,7 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		$output = $this->captureOutput();
+		$output = $this->captureOutput($scenario);
 
 		// Make sure the main css looks right.
 		$this->assertTrue(
@@ -284,7 +340,25 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	/**
 	 * @group output
 	 */
-	public function test_pseudo_element_config_enqueued_when_svg() {
+	public function test_pseudo_element_config_enqueued_when_svg_front_end() {
+		$this->pseudo_element_config_enqueued_when_svg('front-end');
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_pseudo_element_config_enqueued_when_svg_admin() {
+		$this->pseudo_element_config_enqueued_when_svg('admin');
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_pseudo_element_config_enqueued_when_svg_login() {
+		$this->pseudo_element_config_enqueued_when_svg('login');
+	}
+
+	public function pseudo_element_config_enqueued_when_svg($scenario = 'front-end') {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://use.fontawesome.com/releases/v5.2.0/js/all.js',
@@ -321,7 +395,7 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		$this->assertTrue( fa()->using_pseudo_elements() );
 		$this->assertEquals( 'svg', fa()->fa_method() );
 
-		$output = $this->captureOutput();
+		$output = $this->captureOutput($scenario);
 
 		$this->assertTrue(
 			boolval(
@@ -336,8 +410,29 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 
 	/**
 	 * @group pro
+	 * @group output
 	 */
-	public function test_pro_svg_assets_enqueued() {
+	public function test_pro_svg_assets_enqueued_front_end() {
+		$this->pro_svg_assets_enqueued('front-end');
+	}
+
+	/**
+	 * @group pro
+	 * @group output
+	 */
+	public function test_pro_svg_assets_enqueued_login() {
+		$this->pro_svg_assets_enqueued('login');
+	}
+
+	/**
+	 * @group pro
+	 * @group output
+	 */
+	public function test_pro_svg_assets_enqueued_admin() {
+		$this->pro_svg_assets_enqueued('admin');
+	}
+
+	public function pro_svg_assets_enqueued($scenario = 'front-end') {
 		$resource_collection = [
 			new FontAwesome_Resource(
 				'https://pro.fontawesome.com/releases/v5.2.0/js/all.js',
@@ -370,7 +465,7 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		global $fa_load;
 		$fa_load->invoke( fa() );
 
-		$output = $this->captureOutput();
+		$output = $this->captureOutput($scenario);
 
 		// Make sure the main <script> looks right.
 		$this->assertTrue(
