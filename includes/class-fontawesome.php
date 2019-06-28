@@ -235,6 +235,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
+		 * Returns this plugin's admin page's screen_id. Only valid after the admin_menu hook has run.
+		 *
+		 * @since 4.0.0
+		 */
+		public function admin_screen_id() {
+			return $this->screen_id;
+		}
+
+		/**
 		 * Main entry point for running the plugin. Called automatically when the plugin is loaded. Clients should
 		 * not invoke it directly.
 		 *
@@ -545,11 +554,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			<?php
 		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
+		 * This function is not part of this plugin's public API.
+		 *
 		 * @ignore
+		 * @internal
 		 */
-		private function initialize_admin() {
+		public function initialize_admin() {
 			$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
 			if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
