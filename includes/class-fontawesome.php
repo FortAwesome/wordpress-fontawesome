@@ -133,6 +133,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
+		/**
+		 * The base name of the handle used for enqueuing this plugin's admin assets, those required for running
+		 * the admin settings page.
+		 *
+		 * @since 4.0.0
+		 */
+		const ADMIN_RESOURCE_HANDLE = self::RESOURCE_HANDLE . '-admin';
+
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
@@ -572,7 +580,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 						$added_wpr_object = false;
 						foreach ( $admin_asset_manifest as $key => $value ) {
 							if ( preg_match( '/\.js$/', $key ) ) {
-								$script_name = self::PLUGIN_NAME . '-' . $script_number;
+								$script_name = self::ADMIN_RESOURCE_HANDLE . '-' . $script_number;
 								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true );
 
@@ -594,8 +602,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 							}
 							if ( preg_match( '/\.css$/', $key ) ) {
 								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_style( self::PLUGIN_NAME . '-' . $script_number, $asset_url_base . $value, [], null, 'all' );
+								wp_enqueue_style( self::ADMIN_RESOURCE_HANDLE . '-' . $script_number, $asset_url_base . $value, [], null, 'all' );
 							}
+							/* This will increment even when there's not a match, so the sequence might be 1, 3, 5,
+							 * instead of 1, 2, 3. That's fine--this is just for uniqueification.
+							 */
 							$script_number++;
 						}
 					}
@@ -1575,21 +1586,19 @@ EOT;
 
 			foreach ( $collections as $key => $collection ) {
 				foreach ( $collection->registered as $handle => $details ) {
-					switch ( $handle ) {
-						case self::RESOURCE_HANDLE:
-						case self::RESOURCE_HANDLE_V4SHIM:
-							break;
-						default:
-							if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
-								array_push(
-									$this->unregistered_clients,
-									array(
-										'handle' => $handle,
-										'type'   => $key,
-										'src'    => $details->src,
-									)
-								);
-							}
+					if( preg_match('/' . self::RESOURCE_HANDLE . '/', $handle)
+					    || preg_match('/' . self::RESOURCE_HANDLE . '/', $handle) ){
+						continue;
+					}
+					if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
+						array_push(
+							$this->unregistered_clients,
+							array(
+								'handle' => $handle,
+								'type'   => $key,
+								'src'    => $details->src,
+							)
+						);
 					}
 				}
 			}
