@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
-Stable tag: 4.0.0-rc11
+Stable tag: 4.0.0-rc12
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.2.2
@@ -185,6 +185,11 @@ Find the Font Awesome admin settings page either under the "Settings" menu on th
 [Font Awesome Pro](https://fontawesome.com/pro) subscribers who want to enable Pro icons on their WordPress sites, must first [add their allowed domains](https://fontawesome.com/account/domains) before enabling the "Use Pro" option on the plugin's settings page.
 
 == Changelog ==
+
+= 4.0.0-rc12 =
+
+* Bug fix: Fix loading of admin page assets when removal of unregistered clients is enabled. This bug has been
+  hiding under a rock for a while. rc11 turned over the rock, and this bug scurried out.
 
 = 4.0.0-rc11 =
 

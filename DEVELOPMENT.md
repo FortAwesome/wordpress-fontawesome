@@ -405,6 +405,7 @@ Install the Font Awesome plugin from the admin dashboard by uploading the `font-
 that was created in the previous step.
 
 - activate and deactivate the plugin: expect no errors
+- enable "remove unregistered clients" and reload the plugin's admin page. Expect it to show up!
 - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
 - expect to see all of their client requirements listed on the options page under Client Requirements
   - Especially, look for `plugin-gamma` and `plugin-delta` outputs in all three contexts: front end, admin, login
