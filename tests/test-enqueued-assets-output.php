@@ -21,6 +21,8 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 
 	protected $mock_release_provider = null;
 
+	protected $admin_user = null;
+
 	const OUTPUT_MATCH_FAILURE_MESSAGE = 'Failed output match.';
 
 	/**
@@ -60,6 +62,8 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
+
+		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
 	}
 
 	protected function captureOutput($scenario = 'front-end') {
@@ -72,7 +76,20 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 		// Trigger the various actions that generates the output for the given scenario.
 		switch ( $scenario ) {
 			case 'admin':
+				wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
+				fa()->initialize_admin();
+				do_action('admin_menu');
+				set_current_screen('edit-post');
 				do_action('admin_enqueue_scripts');
+				do_action('admin_print_scripts');
+				do_action('admin_print_styles');
+				break;
+			case 'settings':
+				wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
+				fa()->initialize_admin();
+				do_action('admin_menu');
+				set_current_screen(fa()->admin_screen_id());
+				do_action('admin_enqueue_scripts', fa()->admin_screen_id());
 				do_action('admin_print_scripts');
 				do_action('admin_print_styles');
 				break;
@@ -94,21 +111,68 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_free_webfont_assets_enqueued_front_end() {
-		$this->free_webfont_assets_enqueued('front-end');
+		$output = $this->free_webfont_assets_enqueued('front-end');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_free_webfont_assets_enqueued_settings() {
+		$output = $this->free_webfont_assets_enqueued('settings');
+
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_free_webfont_assets_enqueued_admin() {
-		$this->free_webfont_assets_enqueued('admin');
+		$output = $this->free_webfont_assets_enqueued('admin');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_free_webfont_assets_enqueued_login() {
-		$this->free_webfont_assets_enqueued('login');
+		$output = $this->free_webfont_assets_enqueued('login');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	public function free_webfont_assets_enqueued($scenario = 'front-end') {
@@ -166,27 +230,76 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+
+		return $output;
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_free_svg_assets_enqueued_front_end() {
-		$this->free_svg_assets_enqueued("front-end");
+		$output = $this->free_svg_assets_enqueued("front-end");
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_free_svg_assets_enqueued_admin() {
-		$this->free_svg_assets_enqueued("admin");
+		$output = $this->free_svg_assets_enqueued("admin");
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_free_svg_assets_enqueued_settings() {
+		$output = $this->free_svg_assets_enqueued("settings");
+
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_free_svg_assets_enqueued_login() {
-		$this->free_svg_assets_enqueued("login");
+		$output = $this->free_svg_assets_enqueued("login");
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	public function free_svg_assets_enqueued($scenario = 'front-end') {
@@ -256,6 +369,8 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+
+		return $output;
 	}
 
 	/**
@@ -263,7 +378,17 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_pro_webfont_assets_enqueued_front_end() {
-		$this->pro_webfont_assets_enqueued('front-end');
+		$output = $this->pro_webfont_assets_enqueued('front-end');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -271,7 +396,17 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_pro_webfont_assets_enqueued_login() {
-		$this->pro_webfont_assets_enqueued('login');
+		$output = $this->pro_webfont_assets_enqueued('login');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -279,7 +414,35 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_pro_webfont_assets_enqueued_admin() {
-		$this->pro_webfont_assets_enqueued('admin');
+		$output = $this->pro_webfont_assets_enqueued('admin');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	/**
+	 * @group pro
+	 * @group output
+	 */
+	public function test_pro_webfont_assets_enqueued_settings() {
+		$output = $this->pro_webfont_assets_enqueued('settings');
+
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	public function pro_webfont_assets_enqueued($scenario = 'front-end') {
@@ -335,27 +498,76 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+
+		return $output;
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_pseudo_element_config_enqueued_when_svg_front_end() {
-		$this->pseudo_element_config_enqueued_when_svg('front-end');
+		$output = $this->pseudo_element_config_enqueued_when_svg('front-end');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_pseudo_element_config_enqueued_when_svg_admin() {
-		$this->pseudo_element_config_enqueued_when_svg('admin');
+		$output = $this->pseudo_element_config_enqueued_when_svg('admin');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	/**
+	 * @group output
+	 */
+	public function test_pseudo_element_config_enqueued_when_svg_settings() {
+		$output = $this->pseudo_element_config_enqueued_when_svg('settings');
+
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
 	 * @group output
 	 */
 	public function test_pseudo_element_config_enqueued_when_svg_login() {
-		$this->pseudo_element_config_enqueued_when_svg('login');
+		$output = $this->pseudo_element_config_enqueued_when_svg('login');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	public function pseudo_element_config_enqueued_when_svg($scenario = 'front-end') {
@@ -406,6 +618,8 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+
+		return $output;
 	}
 
 	/**
@@ -413,7 +627,17 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_pro_svg_assets_enqueued_front_end() {
-		$this->pro_svg_assets_enqueued('front-end');
+		$output = $this->pro_svg_assets_enqueued('front-end');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -421,7 +645,17 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_pro_svg_assets_enqueued_login() {
-		$this->pro_svg_assets_enqueued('login');
+		$output = $this->pro_svg_assets_enqueued('login');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	/**
@@ -429,7 +663,35 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 	 * @group output
 	 */
 	public function test_pro_svg_assets_enqueued_admin() {
-		$this->pro_svg_assets_enqueued('admin');
+		$output = $this->pro_svg_assets_enqueued('admin');
+
+		$this->assertFalse(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	/**
+	 * @group pro
+	 * @group output
+	 */
+	public function test_pro_svg_assets_enqueued_settings() {
+		$output = $this->pro_svg_assets_enqueued('settings');
+
+		$this->assertTrue(
+			boolval(
+				preg_match(
+					'/' . FontAwesome::ADMIN_RESOURCE_HANDLE . '/',
+					$output
+				)
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
 	}
 
 	public function pro_svg_assets_enqueued($scenario = 'front-end') {
@@ -499,5 +761,7 @@ class EnqueuedAssetsOutputTest extends \WP_UnitTestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+
+		return $output;
 	}
 }
