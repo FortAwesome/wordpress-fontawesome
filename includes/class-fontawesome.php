@@ -615,7 +615,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 								wp_enqueue_style( self::ADMIN_RESOURCE_HANDLE . '-' . $script_number, $asset_url_base . $value, [], null, 'all' );
 							}
-							/* This will increment even when there's not a match, so the sequence might be 1, 3, 5,
+							/*
+							 This will increment even when there's not a match, so the sequence might be 1, 3, 5,
 							 * instead of 1, 2, 3. That's fine--this is just for uniqueification.
 							 */
 							$script_number++;
@@ -1597,8 +1598,8 @@ EOT;
 
 			foreach ( $collections as $key => $collection ) {
 				foreach ( $collection->registered as $handle => $details ) {
-					if( preg_match('/' . self::RESOURCE_HANDLE . '/', $handle)
-					    || preg_match('/' . self::RESOURCE_HANDLE . '/', $handle) ){
+					if ( preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle )
+						|| preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle ) ) {
 						continue;
 					}
 					if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
