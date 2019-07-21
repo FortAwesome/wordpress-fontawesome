@@ -2,6 +2,7 @@ version: '3.6'
 
 x-dev_volumes: &dev_volumes
   volumes:
+    - ./volumes/wordpress:/var/www/html
     - .:/var/www/html/wp-content/plugins/font-awesome
     - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
     - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
@@ -15,6 +16,7 @@ x-dev_volumes: &dev_volumes
 
 x-integration_volumes: &integration_volumes
   volumes:
+    - ./volumes/wordpress:/var/www/html
     - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
     - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
     - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma

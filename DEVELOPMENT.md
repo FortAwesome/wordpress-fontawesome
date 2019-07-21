@@ -20,6 +20,7 @@
 - [Cut a Release](#cut-a-release)
 - [Run a Local Docs Server](#run-a-local-docs-server)
 - [Special Notes on plugin-sigma](#special-notes-on-plugin-sigma)
+- [Remote Debugging with VSCode](#remote-debugging-with-vscode)
 - [Configure PhpStorm 2018.1.5 for debugging](#configure-phpstorm-201815-for-debugging)
 
 <!-- tocstop -->
@@ -77,6 +78,16 @@ the WordPress `5.0.0` (in our example) is running, but with tests tagged for Wor
 installed. Probably this won't cause a real problem, but beware.
 
 ## 3. Run an environment (one at a time)
+
+`latest` is the default, so these two are equivalent:
+
+```bash
+$ bin/dev latest
+```
+
+```bash
+$ bin/dev
+```
 
 This table shows the matrix for running each container environment:
 
@@ -188,28 +199,23 @@ site. We're just doing it from the command line with the script to be quick and 
 
 It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
 
-It requires a `-c <container_id>` argument in order to connect to the appropriate container, to make
-sure settings are applied to the right instance of WordPress. If you run `bin/setup` with no args,
-you'll see a set of running containers to make it easy to copy a container ID.
+By default, it will use the container named `com.fontawesome.wordpress-latest-dev`, which will be the container made from the `latest` image.
 
-```bash
-$ bin/setup -c 193d46dcb77b
-```
+You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
 
-WordPress is now ready and initialized in the docker container and reachable at localhost:8080
-with admin username and password as found in `.env`.
+After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://localhost:8080](http://localhost:8080).
+
+You can login to the admin dashboard at [http://localhost:8080/wp-admin](http://localhost:8080/wp-admin) with admin username and password as found in `.env`.
 
 ## 10. Install and/or Activate the Font Awesome plugin
 
-To access the WP Admin dashboard, go to `http://localhost:8080/wp-admin`.
-
-If you're running the `development` environment, you'll find in the admin dashboard that the
+If you're running the `bin/dev` environment, you'll find in the admin dashboard that the
 Font Awesome is already installed, because the source code in this repo is mounted as a volume
 inside the container. You can activate or deactivate the plugin, but you'll find that if you try
 to uninstall it, it seems to wipe out the plugin's code from the working directory of this repo.
 So, probably don't do that.
 
-If you're running the `integration` environment, install via zip archive upload or directly
+If you're running the `bin/integration` environment, install via zip archive upload or directly
 from the WordPress plugins directory. [See above](#development) for more details. 
 
 After activating the plugin you can access the Font Awesome admin page here:
@@ -219,29 +225,24 @@ Or you'll find it linked on the left sidebar under Settings.
 
 # Run phpunit
 
-`./bin/phpunit -c <container_id_or_name>`
+```bash
+$ bin/phpunit
+```
 
-This runs `phpunit` in the specified docker container. It's just a docker wrapper around the normal `phpunit` command,
+This runs `phpunit` in the default docker container. It's just a docker wrapper around the normal `phpunit` command,
 so you can pass any normal `phpunit` command line arguments you might like.
 
-Everything about the command line is the same as you'd normally use for `phpunit`, except the first
-option must be `-c <container_id_or_name>`
+# Use WP-CLI within your Docker environment
 
-Running `bin/phpunit` with no `-c` will show you a list of the currently running relevant containers to
-make it easy to find the appropriate container ID or name to copy and paste.
+For example,
 
-## Pass arguments to phpunit
+```bash
+$ bin/wp plugin list
+```
 
-`./bin/phpunit -c <container_id_or_name> -- [arguments]`
+This will run `wp` inside the default container and list plugins.
 
-Everything after `--` gets passed straight through to the `phpunit` command line in the container.
-
-# Use wp-cli within your Docker environment
-
-`bin/wp` is a wrapper that expects `-c <container_id_or_name>` and then passes through any other 
-arguments to `wp` inside the specified container.
-
-For example, to list the plugins and their activation status:
+To run this under a different container, provide the container's name or id with `-c`:
 
 ```bash
 $ bin/wp -c 193d46dcb77b plugin list 
@@ -250,37 +251,34 @@ $ bin/wp -c 193d46dcb77b plugin list
 Everything about the command line is the same as you'd normally use for `wp`, except the first
 option must be `-c <container_id_name>`
 
-Running `bin/wp` with no `-c` will show you a list of the currently running relevant containers to
-make it easy to find the appropriate container ID or name to copy and paste. 
-
 # Run anything else within your Docker environment
 
 ```bash
-$ bin/env -c <container_id_or_name> <command_line>
+$ bin/env <command_line>
 ```
 
 This is a wrapper that just executes `<command_line>` inside the specified running container.
 
-Running `bin/env` with no `-c` will show you a list of the currently running relevant containers to
-make it easy to find the appropriate container ID or name to copy and paste. 
+Again, use `-c <container_id_name>` to specify a non-default docker container.
 
 ## Run a shell inside your Docker environment
 
 ```bash
-$ bin/env -c <container_id_or_name> bash
+$ bin/env bash
 ```
 # Set a boolean config in wp-config.php
 
-`./bin/set-wp-config -c <container_id_or_name> WP_DEBUG true`
+```bash
+bin/set-wp-config WP_DEBUG true
+```
 
 (Though this particular config is already set automatically in `bin/setup`.)
 
-Running `bin/set-wp-config` with no `-c` will show you a list of the currently running relevant containers to
-make it easy to find the appropriate container ID or name to copy and paste.
-
 # Reset WordPress Docker Environment and Remove Data Volumes
 
-`./bin/clean`
+```bash
+$ bin/clean
+```
 
 This will kill and remove docker containers and delete their data volumes.
 
@@ -294,8 +292,8 @@ This doesn't remove the docker _images_, just the containers and their data volu
 So you won't have to rebuild images after a `clean`. But also, if what you're trying to do is
 remove those images, you'll need to use `docker image rm <image_id>`.
  
-After a `bin/clean`, you'll need to run a new environment again, such as `bin/dev latest` and also
-re-run setup, like `bin/setup -c fd9a98510f40`.
+After a `bin/clean`, you'll need to run a new environment again, such as `bin/dev` and also
+re-run setup, like `bin/setup`.
 
 # Inspecting and Re-setting Plugin States
 
@@ -308,13 +306,13 @@ The main state is stored under an options key: `font-awesome`.
 Inspect it:
 
 ```bash
-$ bin/wp -c 193d46dcb77b option get font-awesome
+$ bin/wp option get font-awesome
 ```
 
 Remove it:
 
 ```bash
-$ bin/wp -c 193d46dcb77b option delete font-awesome
+$ bin/wp option delete font-awesome
 ```
 
 ## Releases Metadata Transient
@@ -325,13 +323,13 @@ as a long-lived WordPress transient: `font-awesome-releases`.
 Inspect it:
 
 ```bash
-$ bin/wp -c 193d46dcb77b transient get font-awesome-releases
+$ bin/wp transient get font-awesome-releases
 ```
 
 Remove it:
 
 ```bash
-$ bin/wp -c 193d46dcb77b transient delete font-awesome-releases
+$ bin/wp transient delete font-awesome-releases
 ```
 
 ## V3 Deprecation Warning
@@ -343,13 +341,13 @@ detection or snoozing is stored in an expiring transient: `font-awesome-v3-depre
 Inspect it:
 
 ```bash
-$ bin/wp -c 193d46dcb77b transient get font-awesome-v3-deprecation-data
+$ bin/wp transient get font-awesome-v3-deprecation-data
 ```
 
 Remove it:
 
 ```bash
-$ bin/wp -c 193d46dcb77b transient delete font-awesome-v3-deprecation-data
+$ bin/wp transient delete font-awesome-v3-deprecation-data
 ```
 
 # Cut a Release
@@ -563,6 +561,21 @@ dependency. In this scenario, the WordPress site admin does not need to separate
 
 In order to activate it you must first run `composer install --prefer-dist` from the 
 `integrations/plugins/plugin-sigma` directory.
+
+# Remote Debugging with VSCode
+
+1. Install the PHP Debug (Felix Becker) extension in VSCode
+1. Restart VSCode
+1. Click the debug tab (looks like a crossed-out bug icon)
+1. Add configuration...
+1. Select PHP
+1. It will show you a default `launch.json` file that includes a "Listen for XDebug. Our container is configured to run XDebug on port 9000, so double-check that this is the port set up there. It should be the default.
+1. Add to that "Listen for XDebug" section, the following:
+    ```json
+    "pathMappings": {
+      "/var/www/html/wp-content/plugins/font-awesome": "${workspaceRoot}"
+    }
+    ```
 
 # Configure PhpStorm 2018.1.5 for debugging
 

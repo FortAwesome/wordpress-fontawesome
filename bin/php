@@ -10,4 +10,4 @@ source $DIR/.common.bash
 # The -- indicates an end to the arguments that getopts should parse, so everything after it should just to
 # straight through to the $@ that becomes the args for php inside the container.
 
-$DOCKER exec -it -w /var/www/html $WP_CONTAINER php $@
+$WP_SUDO $DOCKER exec -it -w /var/www/html $WP_CONTAINER php $@

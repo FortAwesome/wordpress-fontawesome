@@ -7,13 +7,12 @@ if [ ! -x "$DOCKER_COMPOSE" ]; then
   exit 1
 fi
 
+DEFAULT_IMAGE_TAG=latest
+
 if [ "x" = "x$1" ]; then
-	echo "USAGE: $0 <tag>"
-	echo "  Run docker-compose with a wordpress service that has a version of <tag>."
-	echo "  The container as the live source code for the plugin mounted as a volume\n"
-	echo "  and FONTAWESOME_ENV=development so the React admin app will get load from\n"
-	echo "  webpack dev server."
-  exit 1
+  IMAGE_TAG=$DEFAULT_IMAGE_TAG
+else
+  IMAGE_TAG=$1
 fi
 
-$DOCKER_COMPOSE up wordpress-${1}-dev
+$WP_SUDO $DOCKER_COMPOSE up wordpress-${IMAGE_TAG}-dev
