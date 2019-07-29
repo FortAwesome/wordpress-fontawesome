@@ -44,10 +44,10 @@ if [[ -z "$DOCKER_HOST_IP" ]]; then
   echo "     see: http://mattgreensmith.net/2016/12/09/docker-for-mac-how-to-access-host-services-from-containers/"
 fi
 
-echo "Adding WordPress debug configuration...\c"
-$DIR/set-wp-config -c ${WP_CONTAINER} WP_DEBUG true
-$DIR/set-wp-config -c ${WP_CONTAINER} WP_DEBUG_LOG true
-$DIR/set-wp-config -c ${WP_CONTAINER} WP_DEBUG_DISPLAY true
+echo "Adding WordPress debug configuration..."
+$DIR/wp -c ${WP_CONTAINER} config set WP_DEBUG true
+$DIR/wp -c ${WP_CONTAINER} config set WP_DEBUG_LOG true
+$DIR/wp -c ${WP_CONTAINER} config set WP_DEBUG_DISPLAY true
 
 if [ "$?" == "0" ]; then
   echo "ok."
