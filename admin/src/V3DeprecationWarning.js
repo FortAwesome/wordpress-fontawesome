@@ -84,7 +84,7 @@ class V3DeprecationWarning extends React.Component {
       default:
         submitMessage = "Update failed"
     }
-    this.setState({ isSubmitting: false, hasSubmitted: true, error: null, submitSuccess: false, submitMessage })
+    this.setState({ isSubmitting: false, hasSubmitted: true, error: Error(submitMessage), submitSuccess: false, submitMessage })
   }
 
   handleGetError(error) {

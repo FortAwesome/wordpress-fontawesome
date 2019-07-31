@@ -157,17 +157,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
-				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
 				return new WP_Error(
-					'cant-fetch',
+					'cant_fetch',
 					$e->getMessage(),
 					array(
 						'status' => 500,
 						'trace' => $e->getTraceAsString()
 					)
 				);
-			} catch ( Error $error ) {
-				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error trying to load Font Awesome.', array( 'status' => 500 ) );
 			}
 		}
 
@@ -210,9 +207,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			} catch ( FontAwesome_ConfigurationException $e ) {
 				return new WP_Error( 'cant_update', $e->getMessage(), array( 'status' => 400 ) );
 			} catch ( Exception $e ) {
-				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
-			} catch ( Error $error ) {
-				return new WP_Error( 'cant_update', 'Whoops, the attempt to update options failed.', array( 'status' => 500 ) );
+				return new WP_Error(
+					'cant_update',
+					$e->getMessage(),
+					array(
+						'status' => 500,
+						'trace' => $e->getTraceAsString()
+					)
+				);
 			}
 		}
 
