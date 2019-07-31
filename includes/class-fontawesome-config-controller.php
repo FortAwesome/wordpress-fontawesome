@@ -155,10 +155,19 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$data = $this->build_item( $fa );
 
+				throw new Error('fake error');
+
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
-				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical exception trying to load Font Awesome.', array( 'status' => 500 ) );
+				return new WP_Error(
+					'cant-fetch',
+					$e->getMessage(),
+					array(
+						'status' => 500,
+						'trace' => $e->getTraceAsString()
+					)
+				);
 			} catch ( Error $error ) {
 				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error trying to load Font Awesome.', array( 'status' => 500 ) );
 			}
