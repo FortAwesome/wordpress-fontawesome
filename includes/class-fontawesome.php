@@ -513,6 +513,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			if ( FONTAWESOME_ENV === 'development' ) {
 				$response = wp_remote_get( 'http://dockerhost:3030/asset-manifest.json' );
 
+				if( is_wp_error($response) ) {
+					$ms = __( "You're running in dev mode (FONTAWESOME_ENV === 'development'), " .
+							"but we got an error trying to wp_remote_get the admin UI's asset manifest. " .
+							"That usually means you haven't started up the webpack dev server for admin. " .
+							"Make sure that's running. You can start it under the 'admin/' dir with 'yarn start'.",
+							'font-awesome'
+						);
+					wp_die( $ms );
+				}
+
 				if ( 200 !== $response['response']['code'] ) {
 					return null;
 				}
