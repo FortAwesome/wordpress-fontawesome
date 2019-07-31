@@ -100,7 +100,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * The version of this WordPress plugin.
 		 */
-		const PLUGIN_VERSION = '4.0.0-rc12';
+		const PLUGIN_VERSION = '4.0.0-rc13';
 		/**
 		 * The version of this plugin's REST API.
 		 *
@@ -512,6 +512,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		private function get_admin_asset_manifest() {
 			if ( FONTAWESOME_ENV === 'development' ) {
 				$response = wp_remote_get( 'http://dockerhost:3030/asset-manifest.json' );
+
+				if ( is_wp_error( $response ) ) {
+					wp_die(
+						esc_html(
+							__(
+								"You're running in dev mode (FONTAWESOME_ENV === 'development'), but we got an error trying to wp_remote_get the admin UI's asset manifest. That usually means you haven't started up the webpack dev server for admin. Make sure that's running. You can start it under the 'admin/' dir with 'yarn start'.",
+								'font-awesome'
+							)
+						)
+					);
+				}
 
 				if ( 200 !== $response['response']['code'] ) {
 					return null;
