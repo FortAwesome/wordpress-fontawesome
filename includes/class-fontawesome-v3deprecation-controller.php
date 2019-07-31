@@ -108,10 +108,14 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
-				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
-				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
-			} catch ( Error $error ) {
-				return new WP_Error( 'cant-fetch', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+				return new WP_Error(
+					'cant_fetch',
+					$e->getMessage(),
+					array(
+						'status' => 500,
+						'trace'  => $e->getTraceAsString(),
+					)
+				);
 			}
 		}
 
@@ -139,9 +143,14 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 
 				return new WP_REST_Response( $return_data, 200 );
 			} catch ( Exception $e ) {
-				return new WP_Error( 'cant_update', 'Whoops, the attempt to update deprecation settings failed.', array( 'status' => 500 ) );
-			} catch ( Error $error ) {
-				return new WP_Error( 'cant_update', 'Whoops, the attempt to update deprecation settings failed.', array( 'status' => 500 ) );
+				return new WP_Error(
+					'cant_update',
+					$e->getMessage(),
+					array(
+						'status' => 500,
+						'trace'  => $e->getTraceAsString(),
+					)
+				);
 			}
 		}
 
