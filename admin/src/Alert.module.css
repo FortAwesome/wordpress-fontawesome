@@ -1,0 +1,66 @@
+.alert {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: no-wrap;
+  align-items: stretch;
+  background-color: rgb(248, 249, 250);
+  color: rgb(73, 80, 87);
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+  max-width: 800px;
+}
+
+.alert-icon {
+  background-color: rgb(232, 236, 239);
+  color: rgb(134, 142, 150);
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  padding: 2rem 1.5rem;
+  font-size: 1.25rem;
+}
+
+.alert-message {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  line-height: 1.5;
+}
+
+.alert-title {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.alert-copy {
+  margin-bottom: -1.5rem;
+}
+
+.alert-message p {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.alert-action {
+  margin-top: 1rem;
+}
+
+.alert button {
+  color: #0073aa;
+}
+
+.alert button:hover {
+  color: #00a0d2;
+}
+
+/* type: warning */
+.alert-warning {
+  background: rgb(255, 249, 219);
+}
+
+.alert-warning .alert-icon {
+  background: rgb(255, 224, 102);
+  color: rgb(250, 176, 7);
+}

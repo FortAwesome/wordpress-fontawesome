@@ -155,8 +155,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$data = $this->build_item( $fa );
 
-				throw new Error('fake error');
-
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.

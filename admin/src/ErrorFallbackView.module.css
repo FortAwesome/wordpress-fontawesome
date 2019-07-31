@@ -1,0 +1,10 @@
+.error-fallback {
+  max-width: 600px;
+}
+
+.additional-message {
+  padding: 1rem;
+  margin: 1rem 1rem 1rem 0rem;
+  border: 1px dotted grey;
+  border-radius: 5px;
+}
