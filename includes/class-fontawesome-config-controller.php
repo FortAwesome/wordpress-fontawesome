@@ -162,7 +162,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					$e->getMessage(),
 					array(
 						'status' => 500,
-						'trace' => $e->getTraceAsString()
+						'trace'  => $e->getTraceAsString(),
 					)
 				);
 			}
@@ -212,7 +212,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					$e->getMessage(),
 					array(
 						'status' => 500,
-						'trace' => $e->getTraceAsString()
+						'trace'  => $e->getTraceAsString(),
 					)
 				);
 			}

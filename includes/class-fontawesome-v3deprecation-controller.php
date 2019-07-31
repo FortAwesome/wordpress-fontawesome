@@ -113,7 +113,7 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 					$e->getMessage(),
 					array(
 						'status' => 500,
-						'trace' => $e->getTraceAsString()
+						'trace'  => $e->getTraceAsString(),
 					)
 				);
 			}
@@ -148,7 +148,7 @@ if ( ! class_exists( 'FontAwesome_V3Deprecation_Controller' ) ) :
 					$e->getMessage(),
 					array(
 						'status' => 500,
-						'trace' => $e->getTraceAsString()
+						'trace'  => $e->getTraceAsString(),
 					)
 				);
 			}
