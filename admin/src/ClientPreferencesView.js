@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './ClientPreferencesView.module.css'
 import sharedStyles from './App.module.css'
-import { find, get, has } from 'lodash'
+import { find, has, size } from 'lodash'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
@@ -11,11 +11,11 @@ const UNSPECIFIED_INDICATOR = '-'
 class ClientPreferencesView extends React.Component {
 
   hasAdditionalClients() {
-    return get(this.props.clientPreferences, 'length', 0) > 0
+    return size(this.props.clientPreferences) > 0
   }
 
   hasConflicts() {
-    return Object.keys(this.props.conflicts).length > 0
+    return size(this.props.conflicts) > 0
   }
 
   static formatVersionPreference(versionPreference = []) {
