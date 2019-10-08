@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import LoadingView from './LoadingView'
 import FontAwesomeAdminView from './FontAwesomeAdminView'
+import { size } from 'lodash'
 
 class App extends Component {
 
@@ -36,7 +37,10 @@ class App extends Component {
   handleGetResponse(response) {
     const { status, data } = response
     if(200 === status) {
-      this.setState({ data, isLoading: false })
+      this.setState({
+        data: {...data, conflicts: size(data.conflicts) === 0 ? {} : data.conflicts},
+        isLoading: false
+      })
     } else {
       this.setState({ error: new Error("failed to get data"), isLoading: false })
     }
