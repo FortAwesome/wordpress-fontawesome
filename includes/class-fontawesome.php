@@ -1110,7 +1110,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
-							function () use ( $resource_collection, $options, $license_subdomain, $version ) {
+							function () use ( $resource_collection, $options, $version ) {
 								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 								wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
 							
