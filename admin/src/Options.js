@@ -508,12 +508,11 @@ class Options extends React.Component {
                     <span className={styles['option-label-text']}>
                     Enable SVG Pseudo-elements
                     <span className={styles['option-label-explanation']}>
-                      For best compatibility, it's best to avoid using <a rel="noopener noreferrer" target="_blank"
-                                                                          href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a>.
-                      They're a built-in feature of webfonts and CSS, and have no performance penalty in that case.
-                      But if you need to use them with SVG, then you need a little more magic <FontAwesomeIcon
-                      icon={faMagic}/> which
-                      may impact your site's performance.
+                      For best compatibility and performance, it's usually best to avoid using <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a> in
+                      Font Awesome. Pseudo-element icons will be less compatible across major Font Awesome versions and technologies.
+                      As a built-in feature of CSS, they come with no performance penalty when using the CSS and Webfont technology.
+                      However, using them with SVG requires a little more magic <FontAwesomeIcon
+                      icon={faMagic}/> which might make your web site feel signifcantly slower.
                     </span>
                   </span>
                   </label>
