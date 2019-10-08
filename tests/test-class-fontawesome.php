@@ -249,4 +249,29 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->unregistered_clients()
 		);
 	}
+
+	public function test_blacklist_storage_and_retrieval() {
+		// blacklist is empty by default
+		$this->assertEquals(
+			array(),
+			fa()->blacklist()
+		);
+
+		$blacklist = array('abc123', 'xyz456');
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'blacklist' => $blacklist
+				)
+			)
+		);
+
+		$this->assertEquals(
+			$blacklist,
+			fa()->blacklist()
+		);
+	}
 }
