@@ -4,7 +4,7 @@ namespace FortAwesome;
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
 
 /**
- * Module for this plugin's Conflict Detection Controller controller
+ * Module for this plugin's Preference Check controller
  *
  * @noinspection PhpIncludeInspection
  */
@@ -14,12 +14,12 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
  * @ignore
  */
 
-if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
+if ( ! class_exists( 'FontAwesome_Preference_Check_Controller' ) ) :
 
 	/**
 	 * Controller class for REST endpoint
 	 */
-	class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
+	class FontAwesome_Preference_Check_Controller extends WP_REST_Controller {
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -48,7 +48,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		 * @ignore
 		 */
 		public function register_routes() {
-			$route_base = 'conflict-detection';
+			$route_base = 'preference-check';
 
 			register_rest_route(
 				$this->namespace,
@@ -56,7 +56,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 				array(
 					array(
 						'methods'             => 'POST',
-						'callback'            => array( $this, 'check_conflicts' ),
+						'callback'            => array( $this, 'check_preferences' ),
 						'permission_callback' => function() {
 							return current_user_can( 'manage_options' ); },
 						'args'                => array(),
@@ -71,7 +71,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		 * @param WP_REST_Request $request Full data about the request.
 		 * @return WP_Error|WP_REST_Response
 		 */
-		public function check_conflicts( $request ) {
+		public function check_preferences( $request ) {
 			try {
 				fa()->gather_preferences();
 

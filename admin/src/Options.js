@@ -161,7 +161,7 @@ class Options extends React.Component {
 
     try {
       const response = await axios.post(
-        `${this.props.wpApiSettings.api_url}/conflict-detection`,
+        `${this.props.wpApiSettings.api_url}/preference-check`,
         { ...options },
         {
           headers: {
