@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 /**
- * Class ConflictDetectionController
+ * Class PreferenceCheckControllerTest
  *
  * @noinspection PhpCSValidationInspection
  */
@@ -11,12 +11,12 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**
- * Class ConflictDetectionControllerTest
+ * Class PreferenceCheckControllerTest
  */
-class ConflictDetectionControllerTest extends \WP_UnitTestCase {
+class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 	protected $server;
 	protected $admin_user;
-	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/conflict-detection';
+	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/preference-check';
 	protected $fa;
 
 	public function setUp() {
@@ -34,7 +34,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		add_action(
 			'rest_api_init',
 			array(
-				new FontAwesome_Conflict_Detection_Controller(
+				new FontAwesome_Preference_Check_Controller(
 					FontAwesome::PLUGIN_NAME,
 					FontAwesome::REST_API_NAMESPACE
 				),
