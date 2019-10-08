@@ -184,12 +184,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		protected $load_spec = null;
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
 		protected $unregistered_clients = array();
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
