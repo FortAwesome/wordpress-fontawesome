@@ -1110,9 +1110,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
-							function () use ( $resource_collection, $options, $version ) {
+							function () use ( $resources, $options, $version ) {
 								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null );
+								wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null );
 							
 								$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
 
@@ -1187,9 +1187,9 @@ EOT;
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
-						function () use ( $resource_collection, $options ) {
+						function () use ( $resources, $options ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script( self::RESOURCE_HANDLE, $resource_collection[0]->source(), null, null, false );
+							wp_enqueue_script( self::RESOURCE_HANDLE, $resources[0]->source(), null, null, false );
 
 							if ( $options['svgPseudoElements'] ) {
 								wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
@@ -1228,9 +1228,9 @@ EOT;
 					foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 						add_action(
 							$action,
-							function () use ( $resource_collection ) {
+							function () use ( $resources ) {
 								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resource_collection[1]->source(), null, null, false );
+								wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null, false );
 							}
 						);
 					}
