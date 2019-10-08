@@ -732,6 +732,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
+		 * md5 hashes that represent detections of conflicting loads of Font Awesome
+		 * that the administrator has chosen to blacklist, causing the styles and
+		 * scripts associated with these md5 hashes to be dequeued by this plugin.
+		 * 
+		 * @since 4.0.0
+		 * @return array
+		 */
+		public function blacklist() {
+			return $this->options()['blacklist'];
+		}
+
+		/**
 		 * Converts a given options array with a v1 schema to one with a v2 schema.
 		 * There are significant changes from the schema used by 4.0.0-rc9 and before.
 		 *
