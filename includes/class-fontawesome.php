@@ -70,11 +70,33 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		const DEFAULT_PREFIX = 'fas';
 		/**
-		 * Key where this plugin's saved data are stored in the WordPress options table.
+		 * Key where this plugin's saved options data are stored in the WordPress options table.
 		 *
 		 * @since 4.0.0
 		 */
 		const OPTIONS_KEY = 'font-awesome';
+		/**
+		 * Key where this plugin stores metadata about detected unregistered clients in the WordPress options table.
+		 *
+		 * @since 4.0.0
+		 */
+		const UNREGISTERED_CLIENTS_OPTIONS_KEY = 'font-awesome-unregistered-clients';
+		/**
+		 * Version of Font Awesome from which the JavaScript Conflict Detector is loaded
+		 * in the browser when conflict detection is enabled. This version of is what
+		 * determines the way md5 hashes are computed for detect conflicts.
+		 *
+		 * If this version needs to change for some reason, it may signal a need to
+		 * consider that md5 hashes already stored in the options table for unregistered clients
+		 * may need to be recomputed, and/or that the way this plugin's code computes
+		 * those hashes will need to change to produce the same hash values as that
+		 * updated conflict detector.
+		 * 
+		 * @link https://fontawesome.com/how-to-use/on-the-web/other-topics/conflict-detection
+		 *
+		 * @since 4.0.0
+		 */
+		const CONFLICT_DETECTOR_VERSION = '5.11.2';
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * The unique WordPress plugin slug for this plugin.
@@ -149,11 +171,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @ignore
 		 */
 		const DEFAULT_USER_OPTIONS = array(
-			'usePro'            => false,
-			'removeConflicts'   => false,
-			'v4compat'          => true,
-			'technology'        => 'webfont',
-			'svgPseudoElements' => false,
+			'usePro'               => false,
+			'removeConflicts'      => false,
+			'v4compat'             => true,
+			'technology'           => 'webfont',
+			'svgPseudoElements'    => false,
+			'detectConflictsUntil' => null,
+			'blacklist'            => array()
 		);
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -917,21 +941,21 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Return list of found unregistered clients.
+		 * Return unregistered clients that have been detected and stored in the WordPress db.
 		 *
-		 * Unregistered clients are those for which this plugin detects an enqueued script or stylesheet having a
-		 * URI that appears to load Font Awesome, but which has not called {@see FortAwesome\FontAwesome::register()} to register
-		 * its preferences with this plugin.
+		 * Unregistered clients are those for which the in-browser conflict detector
+		 * detects the presence of a Font Awesome version that is not being loaded by
+		 * this plugin, and therefore is likely causing a conflict.
 		 *
-		 * Unregistered clients are detected late in the wp_print_styles action hook, after the wp_enqueue_scripts hook,
-		 * which is when we'd  normally expect any themes or plugins to enqueue their styles.
+		 * Client side conflict detection is enabled in this plugin's setting page in WP admin.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @return array
 		 */
 		public function unregistered_clients() {
-			return $this->unregistered_clients;
+			$unregistered_clients_by_version = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+			return isset($unregistered_clients_by_version[self::CONFLICT_DETECTOR_VERSION]) ? $unregistered_clients_by_version[self::CONFLICT_DETECTOR_VERSION] : array();
 		}
 
 		/**
@@ -1251,7 +1275,7 @@ EOT;
 
 			$obj = $this;
 			/**
-			 * We need to detect unregistered clients *after* they would have been enqueued, if they used
+			 * We need to remove unregistered clients *after* they would have been enqueued, if they used
 			 * the recommended mechanism of wp_enqueue_style and wp_enqueue_script (or the admin equivalents).
 			 * The wp_print_styles action hook is fired after the wp_enqueue_scripts hook
 			 * (admin_print_styles after admin_enqueue_scripts).
@@ -1262,7 +1286,6 @@ EOT;
 				add_action(
 					$action,
 					function() use ( $obj, $options ) {
-						$obj->detect_unregistered_clients();
 						if ( $options['removeConflicts'] ) {
 							$obj->remove_unregistered_clients();
 						}
@@ -1280,46 +1303,13 @@ EOT;
 			do_action( 'font_awesome_enqueued' );
 		}
 
-		/**
-		 * @internal
-		 * @ignore
-		 */
-		public function detect_unregistered_clients() {
-			$wp_styles  = wp_styles();
-			$wp_scripts = wp_scripts();
-
-			$collections = array(
-				'style'  => $wp_styles,
-				'script' => $wp_scripts,
-			);
-
-			$this->unregistered_clients = array(); // re-initialize.
-
-			foreach ( $collections as $key => $collection ) {
-				foreach ( $collection->registered as $handle => $details ) {
-					if ( preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle )
-						|| preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle ) ) {
-						continue;
-					}
-					if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
-						array_push(
-							$this->unregistered_clients,
-							array(
-								'handle' => $handle,
-								'type'   => $key,
-								'src'    => $details->src,
-							)
-						);
-					}
-				}
-			}
-		}
-
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
 		 */
 		protected function remove_unregistered_clients() {
+			// TODO: remove based on md5 hashes (see previous example code)
+			/*
 			foreach ( $this->unregistered_clients as $client ) {
 				switch ( $client['type'] ) {
 					case 'style':
@@ -1333,6 +1323,7 @@ EOT;
 						error_log( 'WARNING: unexpected client type: ' . $client['type'] );
 				}
 			}
+			*/
 		}
 
 		/**

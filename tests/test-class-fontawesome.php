@@ -202,4 +202,51 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			)
 		);
 	}
+
+	public function test_unregistered_clients_option_storage_and_retrieval() {
+		// Before setting anything
+		$this->assertEquals(
+			array(),
+			fa()->unregistered_clients()
+		);
+
+		// When there are unregistered clients that don't match the expected version key.
+		update_option(
+			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+			array(
+				FontAwesome::CONFLICT_DETECTOR_VERSION . "x" => array(1,2,3)
+			),
+			false
+		);
+
+		$this->assertEquals(
+			array(),
+			fa()->unregistered_clients()
+		);
+
+		$unregistered_clients = array(
+			array(
+				'md5'  => "abc123",
+				'desc' => "some description"
+			),
+			array(
+				'md5'  => "XYZ456",
+				'desc' => "some other description"
+			)
+		);
+
+		// When there are unregistered clients that don't match the expected version key.
+		update_option(
+			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+			array(
+				FontAwesome::CONFLICT_DETECTOR_VERSION => $unregistered_clients
+			),
+			false
+		);
+
+		$this->assertEquals(
+			$unregistered_clients,
+			fa()->unregistered_clients()
+		);
+	}
 }
