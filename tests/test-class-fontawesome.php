@@ -10,6 +10,8 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
+use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+
 class FontAwesomeTest extends \WP_UnitTestCase {
 
 	public function setUp() {
@@ -274,6 +276,68 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			$blacklist,
 			fa()->blacklist()
+		);
+	}
+
+	public function test_detecting_conflicts_when_enabled() {
+		$now = new DateTime('now', new DateTimeZone('UTC'));
+		// ten minutes later
+		$later = $now->add(new DateInterval('PT10M'));
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+				)
+			)
+		);
+
+		$this->assertTrue(
+			fa()->detecting_conflicts()
+		);
+	}
+
+	public function test_detecting_conflicts_default() {
+		$this->assertFalse(
+			fa()->detecting_conflicts()
+		);
+	}
+
+	public function test_detecting_conflicts_when_expired() {
+		$now = new DateTime('now', new DateTimeZone('UTC'));
+		// ten minutes earlier
+		$past = $now->sub(new DateInterval('PT10M'));
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'detectConflictsUntil' => $past->format(DateTimeInterface::ATOM)
+				)
+			)
+		);
+
+		$this->assertFalse(
+			fa()->detecting_conflicts()
+		);
+	}
+
+	public function test_detecting_conflicts_when_invalid_date_string() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'detectConflictsUntil' => 'foo'
+				)
+			)
+		);
+
+		$this->assertFalse(
+			fa()->detecting_conflicts()
 		);
 	}
 }
