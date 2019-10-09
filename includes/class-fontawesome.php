@@ -1308,10 +1308,8 @@ EOT;
 			foreach ( [ 'wp_print_styles', 'admin_print_styles', 'login_head' ] as $action ) {
 				add_action(
 					$action,
-					function() use ( $obj, $options ) {
-						if ( $options['removeConflicts'] ) {
-							$obj->remove_blacklist();
-						}
+					function() use ( $obj ) {
+						$obj->remove_blacklist();
 					},
 					0
 				);
@@ -1384,6 +1382,10 @@ EOT;
 		 * @ignore
 		 */
 		protected function remove_blacklist() {
+			if( count( $this->blacklist() ) == 0 ) {
+				return;
+			}
+
 			$wp_styles  = wp_styles();
 			$wp_scripts = wp_scripts();
 
