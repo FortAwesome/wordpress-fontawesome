@@ -76,6 +76,8 @@ function end_error_log_capture( &$state ) {
 }
 
 function reset_db() {
+	wp_cache_delete ( 'alloptions', 'options' );
+
 	if ( ! delete_option( FontAwesome::OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
 		if ( get_option( FontAwesome::OPTIONS_KEY ) ) {
