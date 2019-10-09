@@ -26,16 +26,6 @@ add_action('wp_enqueue_scripts', function(){
   wp_enqueue_style( 'plugin-kappa-style', plugins_url( 'style.css', __FILE__ ) );
 }, 99);
 
-add_action('wp_enqueue_scripts', function(){
-	wp_enqueue_script(
-		'KAPPA_PLUGIN_LOG_PREFIX' . "-diagnose-font-faces",
-		trailingslashit(content_url()) . 'js/diagnose-font-faces.js',
-		array(),
-		null,
-		true
-	);
-}, 99);
-
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
 <div class="plugin-kappa-pre-content" style="border: 1px solid grey;">

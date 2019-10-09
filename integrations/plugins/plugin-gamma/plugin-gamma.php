@@ -26,14 +26,6 @@ foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'
 			'all'
 		);
 
-		wp_enqueue_script(
-			'GAMMA_PLUGIN_LOG_PREFIX' . "-diagnose-font-faces",
-			trailingslashit(content_url()) . 'js/diagnose-font-faces.js',
-			array(),
-			null,
-			true
-		);
-
 		wp_enqueue_style( 'plugin-gamma-style', plugins_url( 'style.css', __FILE__ ) );
 	}, 99 );
 }
