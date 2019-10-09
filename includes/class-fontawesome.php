@@ -1299,7 +1299,7 @@ EOT;
 					$action,
 					function() use ( $obj, $options ) {
 						if ( $options['removeConflicts'] ) {
-							$obj->remove_unregistered_clients();
+							$obj->remove_blacklist();
 						}
 					},
 					0
@@ -1315,27 +1315,86 @@ EOT;
 			do_action( 'font_awesome_enqueued' );
 		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
+		 * This function is not part of this plugin's public API.
+		 *
+		 * @ignore
+		 * @internal
+		 */
+		public function is_url_blacklisted($url) {
+		  return FALSE !== array_search( md5($url), $this->blacklist() );
+		}
+
+		/**
+		 * This function is not part of this plugin's public API.
+		 *
+		 * @ignore
+		 * @internal
+		 */
+		public function is_inline_data_blacklisted($data) {
+			/**
+			 * As of WordPress 5.2.2, both WP_Styles::print_inline_style and WP_Scripts::print_inline_script
+			 * join (implode) the set of 'before' or 'after' resources with a newline, and then wrap the whole
+			 * thing in newlines when printing the <style> or <script> tag. So that's how we'll have to
+			 * reconstruct those inline resources here in order to produce the same input for the md5 function
+			 * that would have been used by the Conflict Detector in the browser.
+			 * 
+			 * Since this newline handling is not documenting as part of the spec, we're admittedly at some risk
+			 * of this changing out from under us. At worst, if that implementation detail changes, it
+			 * will just mean that we get a false negative when matching for blacklisted elements.
+			 * Nothing will crash, but a conflict that we'd intended to catch will
+			 * have slipped through. Our automated test suite should catch this, though.
+			 */
+			if ( $data && is_array($data) && count($data) > 0 ) {
+			  return FALSE !== array_search( md5("\n" . implode("\n", $data) . "\n"), $this->blacklist() );
+			} else {
+				return FALSE;
+			}
+		}		
+
+		/**
+		 * For each handle, we need to check whether there's a conflict for the base resource itself,
+		 * on its "src" attribute (the URL of an external script or stylesheet).
+		 * We also need to check the 'before' and 'after' data for every resource to see if it has
+		 * any inline style or script data associated with it. For our purposes, these are independent potential
+		 * sources of conflict. In other words, the Conflict Detector reports md5 checksums for every external
+		 * or inline style and script without reference to each other. So the only way we can know that we've
+		 * found all of the conflicts is to make sure that we've inspected all of the inline styles and scripts.
+		 * And the only way we can know that we've done that is to look at all of the 'before' and 'after' data
+		 * for every resource.
+		 *
+		 * If we dequeue the main asset, then it automatically gets rid of any associated inline styles or scripts,
+		 * so we can skip looking for those. Hopefully, it's a rare-to-never case that there's a conflict
+		 * with the main resource AND something we need to keep in that resource's "before" or "after" extras.
+		 * In that case, removal of the main resource will be too greedy / aggressive. We seem to be
+		 * at the mercy of how WordPress handles inline styles and scripts--that is, inline styles
+		 * or scripts are always added to some other "main" asset which has its own resource handle.
+		 * 
 		 * @ignore
 		 */
-		protected function remove_unregistered_clients() {
-			// TODO: remove based on md5 hashes (see previous example code)
-			/*
-			foreach ( $this->unregistered_clients as $client ) {
-				switch ( $client['type'] ) {
-					case 'style':
-						wp_dequeue_style( $client['handle'] );
-						break;
-					case 'script':
-						wp_dequeue_script( $client['handle'] );
-						break;
-					default:
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-						error_log( 'WARNING: unexpected client type: ' . $client['type'] );
+		protected function remove_blacklist() {
+			$wp_styles  = wp_styles();
+			$wp_scripts = wp_scripts();
+
+			$collections = array(
+				'style'  => $wp_styles,
+				'script' => $wp_scripts,
+			);
+
+			foreach ( $collections as $type => $collection ) {
+				foreach ( $collection->registered as $handle => $details ) {
+					foreach ( [ 'before', 'after' ] as $position ) {
+						$data = $collection->get_data($handle, $position);
+						if( $this->is_inline_data_blacklisted($data) ) {
+							unset( $collection->registered[$handle]->extra[$position] );
+						}
+					}
+
+					if ( $this->is_url_blacklisted($details->src) ) {
+						call_user_func("wp_dequeue_$type", $handle );
+					}
 				}
 			}
-			*/
 		}
 
 		/**
