@@ -7,7 +7,7 @@ import ClientPreferencesView from './ClientPreferencesView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
-import { values, get } from 'lodash'
+import { values, get, size } from 'lodash'
 import Modal from './Modal'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
 
@@ -116,7 +116,7 @@ class FontAwesomeAdminView extends React.Component {
           hasSubmitted={ this.props.hasSubmitted }
           submitSuccess={ this.props.submitSuccess }
           submitMessage={ this.props.submitMessage }
-          registeredClientsPresent={ data.clientPreferences.length > 0 }
+          registeredClientsPresent={ size(data.clientPreferences) > 0 }
           error={ this.props.error }
           releaseProviderStatus={ data.releaseProviderStatus }
           showPseudoElementsHelpModal={ this.showPseudoElementsHelpModal }

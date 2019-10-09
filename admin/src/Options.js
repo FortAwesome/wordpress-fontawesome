@@ -139,16 +139,10 @@ class Options extends React.Component {
       } else {
         return <Alert title='Pending change looks good!' type='pending'>
           <p><em>Click below to save changes and make it active on your web site.</em></p>
-          { this.props.registeredClientsPresent
-            ? <p>No other themes or plugins have registered any Font Awesome preferences with this plugin.
-              So, as far we can tell, this change would cause no conflicts.</p>
-            : <p>Any Font Awesome preferences registered with this plugin by other themes or plugins are satisfied
+          { this.props.registeredClientsPresent &&
+              <p>Any Font Awesome preferences <em>registered</em> with this plugin by other themes or plugins are satisfied
               with this change.</p>
           }
-          <p>
-            Remember, any "unregistered" themes or plugins could cause conflicts and we would not know it. If that
-            seems to be a problem in your case, consider enabling the "Remove Conflicts" option.
-          </p>
         </Alert>
       }
     } else {
