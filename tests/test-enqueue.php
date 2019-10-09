@@ -17,6 +17,7 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-resourcecollection.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
 
 class EnqueueTest extends \WP_UnitTestCase {
 
@@ -308,5 +309,41 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assert_svg( $output, 'pro', $version );
 		$this->refute_svg_v4shim( $output, 'pro', $version );
 		$this->assert_svg_pseudo_elements( $output );
+	}
+
+	public function test_conflict_detector_enqueued_when_enabled() {
+		$now = new DateTime('now', new DateTimeZone('UTC'));
+		// ten minutes later
+		$later = $now->add(new DateInterval('PT10M'));
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+				)
+			)
+		);
+
+		$options = wp_parse_args(
+			[ 'version' => '5.1.1' ],
+			fa()->options()
+		);
+		$resource_collection = $this->build_mock_resource_collection( $options );
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$output = $this->captureOutput();
+
+		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR, 'enqueued' ) );
+
+		/*
+		$this->refute_webfont( $output, 'pro', $version );
+		$this->assert_svg( $output, 'pro', $version );
+		$this->refute_svg_v4shim( $output, 'pro', $version );
+		$this->assert_svg_pseudo_elements( $output );
+		*/
 	}
 }
