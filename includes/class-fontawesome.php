@@ -172,7 +172,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		const DEFAULT_USER_OPTIONS = array(
 			'usePro'               => false,
-			'removeConflicts'      => false,
 			'v4compat'             => true,
 			'technology'           => 'webfont',
 			'svgPseudoElements'    => false,
@@ -757,10 +756,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 			if ( isset( $options['usePro'] ) ) {
 				$converted_options['usePro'] = $options['usePro'];
-			}
-
-			if ( isset( $options['removeUnregisteredClients'] ) ) {
-				$converted_options['removeConflicts'] = $options['removeUnregisteredClients'];
 			}
 
 			if ( isset( $options['version'] ) ) {
