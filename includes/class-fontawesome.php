@@ -119,11 +119,25 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		const RESOURCE_HANDLE = 'font-awesome-official';
 		/**
-		 * The handle used when enqueuing the v4shim, when it is included in the load specification.
+		 * The handle used when enqueuing the v4shim.
 		 *
 		 * @since 4.0.0
 		 */
 		const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
+
+		/**
+		 * The handle used when enqueuing the conflict detector.
+		 *
+		 * @since 4.0.0
+		 */
+		const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
+
+		/**
+		 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
+		 *
+		 * @since 4.0.0
+		 */
+		const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.11.2/js/conflict-detection.js';
 
 		/**
 		 * The base name of the handle used for enqueuing this plugin's admin assets, those required for running
@@ -1100,6 +1114,45 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			}
 
 			$resources = $resource_collection->resources();
+
+			if ( $this->detecting_conflicts() ) {
+				// Enqueue the conflict detector
+				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+					add_action(
+						$action,
+						function () {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_script( self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::CONFLICT_DETECTOR_SOURCE, null, null, false );
+						}
+					);
+				}
+
+				// Filter all <script> tags to have them ignored by conflict detection
+				add_filter(
+					'script_loader_tag',
+					function ( $tag, $handle ) use ( $resources ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
+							$extra_tag_attributes = 'data-fa-detection-ignore';
+
+							$modified_script_tag = preg_replace(
+								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+								'/<script\s*(.*?src=.*?)>/',
+								"<script $extra_tag_attributes " . '\1>',
+								$tag,
+								1
+							);
+
+							return $modified_script_tag;
+						} else {
+							return $tag;
+						}
+					},
+					10,
+					2
+				);
+
+				// TODO: add data-fa-detection-ignore to any style or link tags enqueued by this plugin
+			}
 
 			if ( 'webfont' === $options['technology'] ) {
 				add_action(
