@@ -14,6 +14,6 @@ class FontAwesome_Deactivator {
 		delete_option( FontAwesome::OPTIONS_KEY );
 		delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 		delete_transient( FontAwesome::V3DEPRECATION_TRANSIENT );
+		// TODO: consider whether it's a good idea to delete FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY.
 	}
 }
-

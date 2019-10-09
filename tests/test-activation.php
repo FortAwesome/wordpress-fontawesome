@@ -15,6 +15,7 @@ class ActivationTest extends \WP_UnitTestCase {
 	 */
 	protected function reset() {
 		delete_option( FontAwesome::OPTIONS_KEY );
+		delete_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
 	}
@@ -29,5 +30,10 @@ class ActivationTest extends \WP_UnitTestCase {
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->get_latest_version() ] );
 		$this->assertEquals( $expected_options, $actual_options );
+
+		$this->assertEquals(
+			array(),
+			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+		);
 	}
 }

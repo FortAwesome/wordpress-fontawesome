@@ -17,6 +17,7 @@ class FontAwesome_Activator {
 		$version = fa()->get_latest_version();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => $version ] );
 		update_option( FontAwesome::OPTIONS_KEY, $options );
+		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, array() );
 	}
 }
 
