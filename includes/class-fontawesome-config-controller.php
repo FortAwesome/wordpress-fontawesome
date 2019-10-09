@@ -79,26 +79,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @ignore
 		 */
 		protected function build_item( $fa ) {
-			/**
-			 * Calling wp_enqueue_scripts() is required to trigger the 'wp_enqueue_scripts' action that is the
-			 * conventional time in the WordPress lifecycle when plugins or themes would enqueue scripts or styles.
-			 * We also have to explicitly run the detection function.
-			 * Note that this can only possibly detect those clients who enqueue their styles or scripts within the context
-			 * of the controller action that invokes this function.
-			 * It's possible than some unregistered client enqueues a style or script in some other circumstance. We
-			 * would not detect that here, but since _removal_ of unregistered clients would happen on any page load,
-			 * it would still be removed. So, in that case, you'd have an unregistered client that this plugin removes
-			 * at the right time, but which does not get reported here. If we wanted to be more sophisticated about
-			 * all of this, we'd have to come up with a way to be more comprehensive about detection, such as
-			 * caching in a transient any unregistered clients on any page load. Then, FontAwesome::unregistered_clients()
-			 * could return that--what may have been detected across any number of page loads--instead of only that
-			 * which is detected on the same page load for which FontAwesome::unregistered_clients() is queried.
-			 */
-			ob_start();
-			wp_enqueue_scripts();
-			$fa->detect_unregistered_clients();
-			ob_end_clean();
-
 			return array(
 				'options'               => $fa->options(),
 				'clientPreferences'     => $fa->client_preferences(),
