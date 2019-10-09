@@ -227,11 +227,13 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		$unregistered_clients = array(
 			array(
 				'md5'  => "abc123",
-				'desc' => "some description"
+				'type' => 'style',
+				'src' => "http://example.com"
 			),
 			array(
 				'md5'  => "XYZ456",
-				'desc' => "some other description"
+				'type' => 'script',
+				'excerpt' => "some bit of inline script"
 			)
 		);
 
