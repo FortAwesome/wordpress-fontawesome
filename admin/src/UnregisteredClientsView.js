@@ -5,11 +5,11 @@ import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
-
+import { get, size } from 'lodash'
 
 const UnregisteredClientsView = props => {
 
-  const detectedUnregisteredClients = props.clients.length > 0
+  const detectedUnregisteredClients = size(props.clients) > 0
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
     <h2>Unregistered Themes or Plugins</h2>
@@ -18,21 +18,17 @@ const UnregisteredClientsView = props => {
           <table className={classnames('widefat', 'striped')}>
             <tbody>
             <tr className={sharedStyles['table-header']}>
-              <th>Name</th>
               <th>Type</th>
-              <th>Loading</th>
+              <th>Source or Excerpt</th>
             </tr>
             {
               props.clients.map((client, index) => (
                 <tr key={index}>
                   <td>
-                    {client.handle}
-                  </td>
-                  <td>
                     {client.type}
                   </td>
                   <td>
-                    {client.src}
+                    {client.src || get(client, 'excerpt', 'UNKNOWN')}
                   </td>
                 </tr>
               ))
