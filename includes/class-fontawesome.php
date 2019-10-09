@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-use \Exception, \Error, \InvalidArgumentException;
+use \Exception, \Error, \InvalidArgumentException, \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
 
 /**
  * Main plugin class module.
@@ -434,6 +434,30 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 						}
 					}
 				);
+				return false;
+			}
+		}
+
+		/**
+		 * Returns boolean indicating whether the plugin's options are currently set
+		 * to detect conflicts.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @return bool
+		 */
+		public function detecting_conflicts() {
+			$until = $this->options()['detectConflictsUntil'];
+			$until_date_time = is_string($until)
+				? DateTime::createFromFormat(DateTimeInterface::ATOM, $until)
+				: null;
+			$interval = $until_date_time
+				? $until_date_time->diff(new DateTime('now', new DateTimeZone('UTC')))
+				: null;
+
+			if ( $interval && $interval->invert == 1 ) {
+				return true;
+			} else {
 				return false;
 			}
 		}
