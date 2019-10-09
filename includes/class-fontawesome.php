@@ -82,22 +82,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @since 4.0.0
 		 */
 		const UNREGISTERED_CLIENTS_OPTIONS_KEY = 'font-awesome-unregistered-clients';
-		/**
-		 * Version of Font Awesome from which the JavaScript Conflict Detector is loaded
-		 * in the browser when conflict detection is enabled. This version of is what
-		 * determines the way md5 hashes are computed for detect conflicts.
-		 *
-		 * If this version needs to change for some reason, it may signal a need to
-		 * consider that md5 hashes already stored in the options table for unregistered clients
-		 * may need to be recomputed, and/or that the way this plugin's code computes
-		 * those hashes will need to change to produce the same hash values as that
-		 * updated conflict detector.
-		 * 
-		 * @link https://fontawesome.com/how-to-use/on-the-web/other-topics/conflict-detection
-		 *
-		 * @since 4.0.0
-		 */
-		const CONFLICT_DETECTOR_VERSION = '5.11.2';
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * The unique WordPress plugin slug for this plugin.
@@ -986,15 +970,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * detects the presence of a Font Awesome version that is not being loaded by
 		 * this plugin, and therefore is likely causing a conflict.
 		 *
-		 * Client side conflict detection is enabled in this plugin's setting page in WP admin.
+		 * Client-side conflict detection is enabled in this plugin's setting page in WP admin.
 		 *
 		 * @since 4.0.0
 		 *
 		 * @return array
 		 */
 		public function unregistered_clients() {
-			$unregistered_clients_by_version = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY );
-			return isset($unregistered_clients_by_version[self::CONFLICT_DETECTOR_VERSION]) ? $unregistered_clients_by_version[self::CONFLICT_DETECTOR_VERSION] : array();
+			$unregistered_clients = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+			return is_array( $unregistered_clients ) ? $unregistered_clients : array();
 		}
 
 		/**
