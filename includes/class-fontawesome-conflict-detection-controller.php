@@ -101,7 +101,9 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
           } else {
 				    return new WP_Error( 'update_failed', "We weren't able to update the unregistered clients data.", array( 'status' => 400 ) );
           }
-        } 
+        } else {
+				  return new WP_REST_Response( null, 204 );
+        }
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
 				return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
@@ -120,7 +122,21 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
     }
     
     protected function option_has_changes($old, $new) {
-      return TRUE;
+      if( ! is_array( $old ) ) {
+        return TRUE;
+      }
+
+      if( count( array_diff_key( $old, $new ) ) > 0  || count( array_diff_key( $new, $old ) ) > 0 ) {
+        return TRUE;
+      } else {
+        foreach( $old as $key => $value )  {
+          if( count( array_diff_assoc( $old[$key], $new[$key] ) ) > 0 ) {
+            return TRUE;
+          }
+        }
+
+        return FALSE;
+      }
     }
 	}
 

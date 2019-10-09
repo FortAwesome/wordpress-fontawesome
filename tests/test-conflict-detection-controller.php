@@ -203,4 +203,94 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
       fa()->unregistered_clients()
     );
   }
+
+  public function test_change_detection() {
+		$now = new DateTime('now', new DateTimeZone('UTC'));
+		// ten minutes later
+		$later = $now->add(new DateInterval('PT10M'));
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+				)
+			)
+		);
+
+    update_option(
+			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+      array(
+        'abc123' => array(
+          'type' => 'script',
+          'src'  => 'http://example.com/fake.js'
+        ),
+      )
+		);
+
+    // No change
+    $body = array(
+      'abc123' => array(
+        'type' => 'script',
+        'src'  => 'http://example.com/fake.js'
+      ),
+    );
+
+		$request  = new \WP_REST_Request(
+			'POST',
+			$this->namespaced_route
+		);
+
+    $request->add_header('Content-Type', 'application/json');
+
+    $request->set_body( wp_json_encode( $body ) );
+
+    $response = $this->server->dispatch( $request );
+
+    // The controller should just return a successful response, making no change
+    $this->assertEquals( 204, $response->get_status() );
+    
+    $this->assertEquals(
+      array(
+        'abc123' => array(
+          'type' => 'script',
+          'src'  => 'http://example.com/fake.js'
+        ),
+      ),
+      fa()->unregistered_clients()
+    );
+
+    // Change only in the value of a sub-array
+    $body = array(
+      'abc123' => array(
+        'type' => 'style',
+        'src'  => 'http://example.com/fake.js'
+      ),
+    );
+
+		$request  = new \WP_REST_Request(
+			'POST',
+			$this->namespaced_route
+		);
+
+    $request->add_header('Content-Type', 'application/json');
+
+    $request->set_body( wp_json_encode( $body ) );
+
+    $response = $this->server->dispatch( $request );
+
+    $this->assertEquals( 204, $response->get_status() );
+    
+    // Expect that an update was successfully applied
+    $this->assertEquals(
+      array(
+        'abc123' => array(
+          'type' => 'style',
+          'src'  => 'http://example.com/fake.js'
+        ),
+      ),
+      fa()->unregistered_clients()
+    );
+  }
 }
