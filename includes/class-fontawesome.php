@@ -19,6 +19,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-conflict-detector.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-check-controller.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-conflict-detection-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
@@ -467,6 +468,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				'rest_api_init',
 				array(
 					new FontAwesome_Preference_Check_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
+					'register_routes',
+				)
+			);
+			add_action(
+				'rest_api_init',
+				array(
+					new FontAwesome_Conflict_Detection_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
 					'register_routes',
 				)
 			);
