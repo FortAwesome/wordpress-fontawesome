@@ -391,15 +391,12 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
 
-	  /**
-		 * TODO: test that every script, style, or link that might be enqueued
-		 * will have the detection ignore attribute on it.
-		 *
-		 * TODO: make sure the conflict detector script itself has the ignore attr, even if the chosen
-		 * technology is webfont.
+		/**
+		 * We do not test the v4 font face shim inline style has the detection ignore
+		 * attr, since we can't filter the inline style tag.
+		 * 
+		 * (Probably we'll have a separate mechanism for ignoring that, if the
+		 * conflict detector reports it.)
 		 */
-		/*
-		$this->assert_font_face_inline_style_detection_ignore($output);
-		*/
 	}
 }
