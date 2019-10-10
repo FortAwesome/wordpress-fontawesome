@@ -140,6 +140,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.11.2/js/conflict-detection.js';
 
 		/**
+		 * The custom data attribute added to script, link, and style elements enqueued
+		 * by this plugin when conflict detection is enabled, in order for them to be
+		 * ignored by the conflict detector.
+		 *
+		 * @since 4.0.0
+		 */
+		const CONFLICT_DETECTION_IGNORE_ATTR = "data-fa-detection-ignore";
+
+		/**
 		 * The base name of the handle used for enqueuing this plugin's admin assets, those required for running
 		 * the admin settings page.
 		 *
@@ -1127,31 +1136,40 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					);
 				}
 
-				// Filter all <script> tags to have them ignored by conflict detection
 				add_filter(
-					'script_loader_tag',
-					function ( $tag, $handle ) use ( $resources ) {
-						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
-							$extra_tag_attributes = 'data-fa-detection-ignore';
-
-							$modified_script_tag = preg_replace(
-								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-								'/<script\s*(.*?src=.*?)>/',
-								"<script $extra_tag_attributes " . '\1>',
-								$tag,
+					'style_loader_tag',
+					function( $html, $handle ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
+							return preg_replace(
+								'/<link[\s]+(.*?)>/',
+								"<link " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+								$html,
 								1
 							);
-
-							return $modified_script_tag;
 						} else {
-							return $tag;
+							return $html;
 						}
 					},
-					10,
+					11, // later than the integrity and crossorigin attr filter.
 					2
 				);
 
-				// TODO: add data-fa-detection-ignore to any style or link tags enqueued by this plugin
+				add_filter(
+					'script_loader_tag',
+					function ( $html, $handle ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR ], true ) ) {
+							 return preg_replace(
+								'/<script[\s]+(.*?)>/',
+								"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+								$html,
+							);
+						} else {
+							return $html;
+						}
+					},
+					11, // later than the integrity and crossorigin attr filter.
+					2
+				);
 			}
 
 			if ( 'webfont' === $options['technology'] ) {
