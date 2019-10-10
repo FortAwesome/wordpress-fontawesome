@@ -28,45 +28,16 @@ class OptionsTest extends \WP_UnitTestCase {
 		FontAwesome_Activator::activate();
 	}
 
-	/*
-	protected function setupV1Options() {
-		$options = array (
-			'adminClientLoadSpec' =>
-				array (
-					'name' => 'user',
-					'method' => 'webfont',
-					'v4shim' => 'require',
-					'pseudoElements' => 'require',
-					'clientVersion' => 1554559421,
-				),
-			'version' => '5.8.1',
-			'usePro' => true,
-			'removeConflicts' => true,
-			'lockedLoadSpec' =>
-				array (
-					'method' => 'webfont',
-					'v4shim' => true,
-					'pseudoElements' => true,
-					'clients' =>
-						array (
-							'user' => 1554559421,
-						),
-				),
-		);
-
-		update_option( FontAwesome::OPTIONS_KEY, $options );
-	}
-	*/
-
 	public function test_convert_options() {
 		$this->assertEquals(
 			array(
 				'version' => '5.8.1',
 				'svgPseudoElements' => true,
 				'technology' => 'svg',
-				'removeConflicts' => true,
 				'usePro' => true,
 				'v4compat' => true,
+				'blacklist' => array(),
+				'detectConflictsUntil' => null,
 			),
 			fa()->convert_options(
 				array (

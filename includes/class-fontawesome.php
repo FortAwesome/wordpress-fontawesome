@@ -782,7 +782,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @return array
 		 */
 		protected function convert_options_from_v1( $options ) {
-			$converted_options = array();
+			$converted_options = self::DEFAULT_USER_OPTIONS;
 
 			if ( isset( $options['usePro'] ) ) {
 				$converted_options['usePro'] = $options['usePro'];
