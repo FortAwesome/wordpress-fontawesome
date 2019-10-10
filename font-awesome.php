@@ -90,3 +90,15 @@ if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
 		font_awesome_handle_fatal_error( $e->getMessage() );
 	}
 }
+
+if ( ! function_exists( 'font_awesome_plugin_dir_url' ) ) {
+	/**
+	 * Helper to get the root level plugin dir URL. Not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	function font_awesome_plugin_dir_url() {
+		return plugin_dir_url( __FILE__ );
+	}
+}
