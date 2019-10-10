@@ -33,6 +33,11 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		 */
 		protected $namespace = null;
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * @ignore
+		 */
+		protected $valid_attrs = ['type', 'technology', 'href', 'src', 'innerText', 'tagName'];
 
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
@@ -77,7 +82,11 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 				  return new WP_REST_Response( null, 404 );
         }
 
-        $item = $this->prepare_item_for_database( $request );
+				$item = $this->prepare_item_for_database( $request );
+				
+				if ( is_null( $item ) ) {
+					return new WP_Error( 'bad_request', "incorrect data schema", array( 'status' => 400 ) );
+				}
         
         $prev_option = get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
 
@@ -118,7 +127,32 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		 */
 		protected function prepare_item_for_database( $request ) {
 			$body = $request->get_json_params();
-			return array_merge( array(), $body );
+
+			if( ! \is_array( $body ) ) {
+				return null;
+			}
+
+			$validated = array();
+
+			foreach( $body as $md5 => $attrs) {
+				if(! is_string( $md5 ) || ! strlen( $md5 ) === 32 ) {
+					return null;
+				}
+
+				if(! is_array( $attrs ) ) {
+					return null;
+				}
+
+				$validated[$md5] = array();
+
+				foreach( $attrs as $key => $value) {
+					if( in_array( $key, $this->valid_attrs, true ) ) {
+						$validated[$md5][$key] = $value;
+					}
+				}
+			}
+
+			return $validated;
     }
     
     protected function option_has_changes($old, $new) {

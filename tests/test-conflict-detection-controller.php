@@ -78,11 +78,11 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 
     $body = array(
-      'abc123' => array(
+      'a9a9aa2d454f77cd623d6755c902c408' => array(
         'type' => 'script',
         'src'  => 'http://example.com/fake.js'
       ),
-      'xyz456' => array(
+      '83c869f6fa4c3138019f564a3358e877' => array(
         'type' => 'style',
         'src'  => 'http://example.com/fake.css'
       )
@@ -119,7 +119,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 
     $body = array(
-      'abc123' => array(
+      'a9a9aa2d454f77cd623d6755c902c408' => array(
         'type' => 'script',
         'src'  => 'http://example.com/fake.js'
       ),
@@ -162,7 +162,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
     update_option(
 			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
       array(
-        'abc123' => array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
           'type' => 'script',
           'src'  => 'http://example.com/fake.js'
         ),
@@ -170,10 +170,14 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 
     $body = array(
-      'xyz456' => array(
+      '83c869f6fa4c3138019f564a3358e877' => array(
         'type' => 'style',
         'src'  => 'http://example.com/fake.css'
       ),
+      'e64490b52100428131b395c57951bfb0' => array(
+        'type' => 'script',
+        'src'  => 'http://example.com/12345.js'
+      )
     );
 
 		$request  = new \WP_REST_Request(
@@ -188,16 +192,75 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
     $response = $this->server->dispatch( $request );
     
     $this->assertEquals( 204, $response->get_status() );
-    
+
     $this->assertEquals(
       array(
-        'abc123' => array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
           'type' => 'script',
           'src'  => 'http://example.com/fake.js'
         ),
-        'xyz456' => array(
+        '83c869f6fa4c3138019f564a3358e877' => array(
           'type' => 'style',
           'src'  => 'http://example.com/fake.css'
+        ),
+        'e64490b52100428131b395c57951bfb0' => array(
+          'type' => 'script',
+          'src'  => 'http://example.com/12345.js'
+        ),
+      ),
+      fa()->unregistered_clients()
+    );
+  }
+
+  public function test_when_adding_with_bad_schema() {
+		$now = new DateTime('now', new DateTimeZone('UTC'));
+		// ten minutes later
+		$later = $now->add(new DateInterval('PT10M'));
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+				)
+			)
+		);
+
+    update_option(
+			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+      array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
+          'type' => 'script',
+          'src'  => 'http://example.com/fake.js'
+        ),
+      )
+		);
+
+    $body = array(
+      'type' => 'style',
+      'src'  => 'http://example.com/fake.css',
+      'md5'  => '83c869f6fa4c3138019f564a3358e877',
+    );
+
+		$request  = new \WP_REST_Request(
+			'POST',
+			$this->namespaced_route
+		);
+
+    $request->add_header('Content-Type', 'application/json');
+
+    $request->set_body( wp_json_encode( $body ) );
+
+    $response = $this->server->dispatch( $request );
+    
+    $this->assertEquals( 400, $response->get_status() );
+
+    $this->assertEquals(
+      array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
+          'type' => 'script',
+          'src'  => 'http://example.com/fake.js'
         ),
       ),
       fa()->unregistered_clients()
@@ -222,7 +285,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
     update_option(
 			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
       array(
-        'abc123' => array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
           'type' => 'script',
           'src'  => 'http://example.com/fake.js'
         ),
@@ -231,7 +294,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
     // No change
     $body = array(
-      'abc123' => array(
+      'a9a9aa2d454f77cd623d6755c902c408' => array(
         'type' => 'script',
         'src'  => 'http://example.com/fake.js'
       ),
@@ -253,7 +316,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
     
     $this->assertEquals(
       array(
-        'abc123' => array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
           'type' => 'script',
           'src'  => 'http://example.com/fake.js'
         ),
@@ -263,7 +326,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
     // Change only in the value of a sub-array
     $body = array(
-      'abc123' => array(
+      'a9a9aa2d454f77cd623d6755c902c408' => array(
         'type' => 'style',
         'src'  => 'http://example.com/fake.js'
       ),
@@ -285,7 +348,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
     // Expect that an update was successfully applied
     $this->assertEquals(
       array(
-        'abc123' => array(
+        'a9a9aa2d454f77cd623d6755c902c408' => array(
           'type' => 'style',
           'src'  => 'http://example.com/fake.js'
         ),
