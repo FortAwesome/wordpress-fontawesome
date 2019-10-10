@@ -2,30 +2,45 @@
 namespace FortAwesome;
 
 /**
- * Module for UnregisteredClientsTest
+ * Module for RemoveBlacklistTest
  */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**
- * Class UnregisteredClientsTest
+ * Class RemoveBlacklistTest
  */
-class UnregisteredClientsTest extends \WP_UnitTestCase {
+class RemoveBlacklistTest extends \WP_UnitTestCase {
 
+	// TODO: add testing for removal of blacklisted inline scripts and styles
 	protected $fake_unregistered_clients = array(
 		'styles'  => [
 			array(
 				'handle' => 'fa-4.7-jsdelivr-css',
 				'src'    => 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
+				'md5'    => '3c937b6d9b50371df1e78b5d70e11512',
 			),
 		],
 		'scripts' => [
 			array(
 				'handle' => 'fa-5.0.13-js',
 				'src'    => 'https://use.fontawesome.com/releases/v5.0.13/js/all.js',
+				'md5'    => 'f975719c4e7654191a03e5f111418585',
 			),
 		],
 	);
+
+	protected function fake_md5s() {
+		$md5s = [];
+
+		foreach(['styles', 'scripts'] as $type) {
+			foreach($this->fake_unregistered_clients[$type] as $item) {
+				array_push($md5s, $item['md5']);
+			}
+		}
+
+		return $md5s;
+	}
 
 	/**
 	 * Resets test data.
@@ -78,8 +93,8 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 			function( $method ) {
 				$opts = wp_parse_args(
 					array(
-						'removeConflicts' => true,
-						'version'         => '5.0.13',
+						'version'   => '5.0.13',
+						'blacklist' => $this->fake_md5s()
 					),
 					FontAwesome::DEFAULT_USER_OPTIONS
 				);
@@ -110,21 +125,22 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 		ob_end_clean();
 
 		// make sure that the fake unregistered clients are no longer enqueued and that our plugin succeeded otherwise.
-		$unregistered_clients = $fa->unregistered_clients();
 		$this->assertCount(
 			count( $this->fake_unregistered_clients['styles'] ) + count( $this->fake_unregistered_clients['scripts'] ),
-			$unregistered_clients
+			fa()->blacklist()
 		);
-		foreach ( $unregistered_clients as $client ) {
-			switch ( $client['type'] ) {
-				case 'style':
-					$this->assertTrue( wp_style_is( $client['handle'], 'registered' ) ); // is *was* there.
-					$this->assertFalse( wp_style_is( $client['handle'], 'enqueued' ) ); // now it's gone.
-					break;
-				case 'script':
-					$this->assertTrue( wp_script_is( $client['handle'], 'registered' ) ); // is *was* there.
-					$this->assertFalse( wp_script_is( $client['handle'], 'enqueued' ) ); // now it's gone.
-					break;
+		foreach ( $this->fake_unregistered_clients as $type => $items ) {
+			foreach ( $items as $item ) {
+				switch ( $type ) {
+					case 'styles':
+						$this->assertTrue( wp_style_is( $item['handle'], 'registered' ) ); // is *was* there.
+						$this->assertFalse( wp_style_is( $item['handle'], 'enqueued' ) ); // now it's gone.
+						break;
+					case 'scripts':
+						$this->assertTrue( wp_script_is( $item['handle'], 'registered' ) ); // is *was* there.
+						$this->assertFalse( wp_script_is( $item['handle'], 'enqueued' ) ); // now it's gone.
+						break;
+				}
 			}
 		}
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there.
@@ -156,19 +172,16 @@ class UnregisteredClientsTest extends \WP_UnitTestCase {
 		ob_end_clean();
 
 		// make sure that the fake unregistered clients remain enqueued.
-		$unregistered_clients = $fa->unregistered_clients();
-		$this->assertCount(
-			count( $this->fake_unregistered_clients['styles'] ) + count( $this->fake_unregistered_clients['scripts'] ),
-			$unregistered_clients
-		);
-		foreach ( $unregistered_clients as $client ) {
-			switch ( $client['type'] ) {
-				case 'style':
-					$this->assertTrue( wp_style_is( $client['handle'], 'enqueued' ) );
-					break;
-				case 'script':
-					$this->assertTrue( wp_script_is( $client['handle'], 'enqueued' ) );
-					break;
+		foreach ( $this->fake_unregistered_clients as $type => $items ) {
+			foreach ( $items as $item ) {
+				switch ( $type ) {
+					case 'styles':
+						$this->assertTrue( wp_style_is( $item['handle'], 'enqueued' ) );
+						break;
+					case 'scripts':
+						$this->assertTrue( wp_script_is( $item['handle'], 'enqueued' ) );
+						break;
+				}
 			}
 		}
 	}
