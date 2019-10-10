@@ -133,6 +133,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
 
 		/**
+		 * The handle used when enqueuing the conflict detector.
+		 *
+		 * @since 4.0.0
+		 */
+		const RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER = 'font-awesome-official-conflict-detection-reporter';
+
+		/**
 		 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
 		 *
 		 * @since 4.0.0
@@ -1124,14 +1131,29 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 			$resources = $resource_collection->resources();
 
-			if ( $this->detecting_conflicts() ) {
+			if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
 				// Enqueue the conflict detector
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
 						function () {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script( self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::CONFLICT_DETECTOR_SOURCE, null, null, false );
+							wp_enqueue_script(
+								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
+								font_awesome_plugin_dir_url() . 'public_assets/conflict-detection-report.js',
+								null,
+								null,
+								false
+							);
+
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_script(
+								self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
+								self::CONFLICT_DETECTOR_SOURCE,
+								[ self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER ],
+								null,
+								false
+							);
 						}
 					);
 				}
