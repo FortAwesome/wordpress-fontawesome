@@ -1146,6 +1146,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								false
 							);
 
+							wp_localize_script(
+								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
+								'wpFontAwesomeOfficialConflictReporting',
+								array(
+									'api_nonce' => wp_create_nonce( 'wp_rest' ),
+									'api_url'   => rest_url( self::REST_API_NAMESPACE ),
+								)
+							);
+
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script(
 								self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
