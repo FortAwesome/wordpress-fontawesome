@@ -1,49 +1,11 @@
-import axios from 'axios'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import ErrorBoundary from '../ErrorBoundary'
+import Reporter from './Reporter'
 
-function reportDetectedConflicts({nodesTested = null}){
-  const apiNonce = window.wpFontAwesomeOfficialConflictReporting['api_nonce'] || null
-  const apiBaseUrl = window.wpFontAwesomeOfficialConflictReporting['api_url'] || null
+const conflictDetectionContainer = document.createElement('DIV')
+conflictDetectionContainer.setAttribute('class', 'font-awesome-plugin-conflict-detection-container')
+conflictDetectionContainer.setAttribute('style', 'position: absolute; right: 100px; bottom: 100px; border: 1px solid black;')
+document.body.appendChild(conflictDetectionContainer)
 
-  if( !apiNonce || !apiBaseUrl ) {
-    console.error("Font Awesome Conflict Detection failed because it's not properly configured.")
-    return
-  }
-
-  const payload = Object.keys(nodesTested.conflict).reduce(function(acc, md5){
-    acc[md5] = nodesTested.conflict[md5]
-    return acc
-  }, {})
-
-  const errorMsg = 'Font Awesome Conflict Detection: found ' +
-    Object.keys(payload).length + ' conflicts' +
-    ' but failed when trying to submit them to your WordPress server. Sorry!'+
-    ' You might just try again by reloading this page.';
-
-  axios.post(
-    apiBaseUrl + '/report-conflicts',
-    payload,
-    {
-      headers: {
-        'X-WP-Nonce': apiNonce
-      }
-    }
-  )
-  .then(function(response){
-    const { status } = response
-    if (204 === status) {
-      console.log('Font Awesome Conflict Detection: ran successfully and submitted ' +
-        Object.keys(payload).length +
-        ' conflicts to your WordPress server.' +
-        ' You can use the Font Awesome plugin settings page to manage them.');
-    } else {
-      console.error(errorMsg)
-    }
-  })
-  .catch(function(error){
-    console.error(errorMsg)
-  })
-}
-
-window.FontAwesomeDetection = {
-  report: reportDetectedConflicts
-}
+ReactDOM.render(<ErrorBoundary><Reporter/></ErrorBoundary>, conflictDetectionContainer)
