@@ -1140,7 +1140,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script(
 								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
-								font_awesome_plugin_dir_url() . 'public_assets/conflict-detection-report.js',
+								fa()->plugin_dir_url() . 'public_assets/conflict-detection-report.js',
 								null,
 								null,
 								false
@@ -1712,6 +1712,17 @@ EOT;
 		 */
 		protected function plugin_version() {
 			return self::PLUGIN_VERSION;
+		}
+
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/**
+		 * Not part of the public API.
+		 *
+		 * @internal
+		 * @ignore
+		 */
+		protected function plugin_dir_url() {
+			return plugin_dir_url( __FILE__ ) . '../';
 		}
 	}
 
