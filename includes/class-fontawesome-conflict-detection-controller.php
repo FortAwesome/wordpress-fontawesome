@@ -128,7 +128,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		protected function prepare_item_for_database( $request ) {
 			$body = $request->get_json_params();
 
-			if( ! \is_array( $body ) ) {
+			if( ! \is_array( $body ) || count( $body ) === 0 ) {
 				return null;
 			}
 
