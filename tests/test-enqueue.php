@@ -25,10 +25,14 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	const MOCK_LATEST_VERSION = '5.2.0';
 
+	protected $admin_user;
+
 	public function setUp() {
 		reset_db();
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
+		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
