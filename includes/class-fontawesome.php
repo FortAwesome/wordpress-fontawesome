@@ -661,48 +661,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				function( $hook ) {
 					if ( $hook === $this->screen_id ) {
 
-						$admin_asset_manifest = $this->get_admin_asset_manifest();
-						$script_number        = 0;
+						$asset_manifest = $this->get_admin_asset_manifest();
 
 						if ( FONTAWESOME_ENV === 'development' ) {
-							$asset_url_base = 'http://localhost:3030/';
+							$asset_url_base = 'http://localhost:3030';
 						} else {
 							$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
 						}
 
-						$added_wpr_object = false;
-						foreach ( $admin_asset_manifest as $key => $value ) {
-							if ( preg_match( '/\.js$/', $key ) ) {
-								$script_name = self::ADMIN_RESOURCE_HANDLE . '-' . $script_number;
-								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_script( $script_name, $asset_url_base . $value, [], null, true );
-
-								if ( ! $added_wpr_object ) {
-									// We have to give a script handle as the first argument to wp_localize_script.
-									// It doesn't really matter which one it is—we're only using it to inject a global JavaScript object
-									// into a <script> tag. This is just a way to to make that injection on the first script handle
-									// we come across.
-									wp_localize_script(
-										$script_name,
-										'wpFontAwesomeOfficial',
-										array(
-											'api_nonce' => wp_create_nonce( 'wp_rest' ),
-											'api_url'   => rest_url( self::REST_API_NAMESPACE ),
-										)
-									);
-									$added_wpr_object = true;
-								}
-							}
-							if ( preg_match( '/\.css$/', $key ) ) {
-								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_style( self::ADMIN_RESOURCE_HANDLE . '-' . $script_number, $asset_url_base . $value, [], null, 'all' );
-							}
-							/**
-							 * This will increment even when there's not a match, so the sequence might be 1, 3, 5,
-							 * instead of 1, 2, 3. That's fine--this is just for uniqueification.
-							 */
-							$script_number++;
-						}
+						wp_enqueue_script( self::ADMIN_RESOURCE_HANDLE, $asset_url_base . $asset_manifest['admin.js'], [], null, true );
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							'wpFontAwesomeOfficial',
+							array(
+								'api_nonce' => wp_create_nonce( 'wp_rest' ),
+								'api_url'   => rest_url( self::REST_API_NAMESPACE ),
+							)
+						);
 					}
 				}
 			);
