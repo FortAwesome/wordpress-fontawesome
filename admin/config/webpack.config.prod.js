@@ -103,7 +103,10 @@ module.exports = {
   // You can exclude the *.map files from the build during deployment.
   devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the app code.
-  entry: [paths.appIndexJs],
+  entry: {
+    admin: [paths.appIndexJs],
+    conflictDetection: [paths.conflictDetectionIndexJs]
+  },
   output: {
     // The build folder.
     path: paths.appBuild,
@@ -179,25 +182,7 @@ module.exports = {
             : false,
         },
       }),
-    ],
-    // Automatically split vendor and commons
-    // https://twitter.com/wSokra/status/969633336732905474
-    // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
-    splitChunks: {
-      chunks: 'all',
-      name: false,
-    },
-    // Keep the runtime chunk seperated to enable long term caching
-    // https://twitter.com/wSokra/status/969679223278505985
-    //
-    // Avoid using tilde (~) in the runtime chunk file name because it causes problems with some URL security
-    // rules. -mlwilkerson
-    // See:
-    //  https://wordpress.org/support/topic/settings-page-is-blank-18/
-    //  https://github.com/webpack/webpack/issues/7875#issuecomment-412148400
-    runtimeChunk: {
-      name: entrypoint => `runtime-${entrypoint.name}`
-    }
+    ]
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
