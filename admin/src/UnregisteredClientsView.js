@@ -9,7 +9,7 @@ import { get, size } from 'lodash'
 
 const UnregisteredClientsView = props => {
 
-  const detectedUnregisteredClients = size(props.clients) > 0
+  const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
     <h2>Unregistered Themes or Plugins</h2>
@@ -22,13 +22,13 @@ const UnregisteredClientsView = props => {
               <th>Source or Excerpt</th>
             </tr>
             {
-              props.clients.map((client, index) => (
-                <tr key={index}>
+              Object.keys(props.clients).map(md5 => (
+                <tr key={md5}>
                   <td>
-                    {client.type}
+                    {props.clients[md5].type}
                   </td>
                   <td>
-                    {client.src || get(client, 'excerpt', 'UNKNOWN')}
+                    {props.clients[md5].src || props.clients[md5].href || get(props.clients[md5], 'excerpt', 'UNKNOWN')}
                   </td>
                 </tr>
               ))
@@ -76,7 +76,7 @@ const UnregisteredClientsView = props => {
 }
 
 UnregisteredClientsView.propTypes = {
-  clients: PropTypes.array.isRequired
+  clients: PropTypes.object.isRequired
 }
 
 export default UnregisteredClientsView
