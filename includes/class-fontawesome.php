@@ -580,44 +580,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * @ignore
 		 */
-		private function get_admin_asset_manifest() {
-			if ( FONTAWESOME_ENV === 'development' ) {
-				$response = wp_remote_get( 'http://dockerhost:3030/asset-manifest.json' );
-
-				if ( is_wp_error( $response ) ) {
-					wp_die(
-						esc_html(
-							__(
-								"You're running in dev mode (FONTAWESOME_ENV === 'development'), but we got an error trying to wp_remote_get the admin UI's asset manifest. That usually means you haven't started up the webpack dev server for admin. Make sure that's running. You can start it under the 'admin/' dir with 'yarn start'.",
-								'font-awesome'
-							)
-						)
-					);
-				}
-
-				if ( 200 !== $response['response']['code'] ) {
-					return null;
-				}
-
-				return json_decode( $response['body'], true );
-			} else {
-				$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
-				if ( ! file_exists( $asset_manifest_file ) ) {
-					return null;
-				}
-				// phpcs:ignore WordPress.WP.AlternativeFunctions
-				$contents = file_get_contents( $asset_manifest_file );
-				if ( empty( $contents ) ) {
-					return null;
-				}
-				return json_decode( $contents, true );
-			}
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
 		private function emit_v3_deprecation_admin_notice( $data ) {
 			?>
 			<div class="notice notice-warning is-dismissible">
@@ -661,15 +623,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				function( $hook ) {
 					if ( $hook === $this->screen_id ) {
 
-						$asset_manifest = $this->get_admin_asset_manifest();
+						$url = $this->get_webpack_asset_url('admin.js');
 
-						if ( FONTAWESOME_ENV === 'development' ) {
-							$asset_url_base = 'http://localhost:3030';
-						} else {
-							$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
-						}
-
-						wp_enqueue_script( self::ADMIN_RESOURCE_HANDLE, $asset_url_base . $asset_manifest['admin.js'], [], null, true );
+						wp_enqueue_script( self::ADMIN_RESOURCE_HANDLE, $url, [], null, true );
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							'wpFontAwesomeOfficial',
@@ -1107,15 +1063,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			$resources = $resource_collection->resources();
 
 			if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
+				$conflict_detection_url = $this->get_webpack_asset_url('conflictDetection.js');
+
 				// Enqueue the conflict detector
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
-						function () {
+						function () use ( $conflict_detection_url ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script(
 								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
-								fa()->plugin_dir_url() . 'public_assets/conflict-detection-report.js',
+								$conflict_detection_url,
 								null,
 								null,
 								false
@@ -1689,15 +1647,62 @@ EOT;
 			return self::PLUGIN_VERSION;
 		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
-		 * Not part of the public API.
+		 * Not public API.
 		 *
 		 * @internal
 		 * @ignore
 		 */
-		protected function plugin_dir_url() {
-			return plugin_dir_url( __FILE__ ) . '../';
+		private function get_webpack_asset_manifest() {
+			if ( FONTAWESOME_ENV === 'development' ) {
+				$response = wp_remote_get( 'http://dockerhost:3030/asset-manifest.json' );
+
+				if ( is_wp_error( $response ) ) {
+					wp_die(
+						esc_html(
+							__(
+								"You're running in dev mode (FONTAWESOME_ENV === 'development'), but we got an error trying to wp_remote_get the admin UI's asset manifest. That usually means you haven't started up the webpack dev server for admin. Make sure that's running. You can start it under the 'admin/' dir with 'yarn start'.",
+								'font-awesome'
+							)
+						)
+					);
+				}
+
+				if ( 200 !== $response['response']['code'] ) {
+					return null;
+				}
+
+				return json_decode( $response['body'], true );
+			} else {
+				$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
+				if ( ! file_exists( $asset_manifest_file ) ) {
+					return null;
+				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions
+				$contents = file_get_contents( $asset_manifest_file );
+				if ( empty( $contents ) ) {
+					return null;
+				}
+				return json_decode( $contents, true );
+			}
+		}
+
+		/**
+		 * Not public API.
+		 *
+		 * @internal
+		 * @ignore
+		 */
+		private function get_webpack_asset_url($asset = '') {
+			$asset_manifest = $this->get_webpack_asset_manifest();
+
+			if ( FONTAWESOME_ENV === 'development' ) {
+				$asset_url_base = 'http://localhost:3030';
+			} else {
+				$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
+			}
+
+			return $asset_url_base . $asset_manifest[$asset];
 		}
 	}
 
