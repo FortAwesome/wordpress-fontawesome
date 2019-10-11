@@ -1,6 +1,5 @@
 function reportDetectedConflicts(params){
   var nodesTested = params.nodesTested || {}
-  var md5ForFontFaceShimInlineStyle = 'f3350ebe5e9c1693c9864031b56b381f'
   var apiNonce = window.wpFontAwesomeOfficialConflictReporting['api_nonce'] || null
   var apiBaseUrl = window.wpFontAwesomeOfficialConflictReporting['api_url'] || null
   var FETCH = typeof window.fetch == 'function' ? window.fetch : null
@@ -15,30 +14,39 @@ function reportDetectedConflicts(params){
     return
   }
 
-  var promises = []
+  var payload = Object.keys(nodesTested.conflict).reduce(function(acc, md5){
+    acc[md5] = nodesTested.conflict[md5]
+    return acc
+  }, {})
 
-  Object.keys(nodesTested.conflict).map(function(key){
-    promises.push(
-      FETCH(
-        apiBaseUrl + '/report-conflicts',
-        {
-          headers: {
-            'X-WP-Nonce': apiNonce,
-            'Content-Type': 'application/json'
-          },
-          method: 'POST',
-          body: JSON.stringify(nodesTested.conflict[key])
-        }
-      )
-    )
-  })
+  var errorMsg = 'Font Awesome Conflict Detection: found ' +
+    Object.keys(payload).length + ' conflicts' +
+    ' but failed when trying to submit them to your WordPress server. Sorry!'+
+    ' You might just try again by reloading this page.';
 
-  Promise.all(promises)
-  .then(function(results){
-    alert('done')
+  FETCH(
+    apiBaseUrl + '/report-conflicts',
+    {
+      headers: {
+        'X-WP-Nonce': apiNonce,
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }
+  )
+  .then(function(response){
+    if( response.ok ) {
+      alert('Font Awesome Conflict Detection: ran successfully and submitted ' +
+        Object.keys(payload).length +
+        ' conflicts to your WordPress server.' +
+        ' You can use the Font Awesome plugin settings page to manage them.');
+    } else {
+      alert(errorMsg);
+    } 
   })
   .catch(function(error){
-    alert('error')
+    alert(errorMsg);
   })
 }
 
