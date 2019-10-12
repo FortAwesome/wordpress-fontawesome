@@ -16,7 +16,12 @@ export default function Reporter() {
   const [runStatus, setRunStatus] = useState(STATUS.running)
   const [error, setError] = useState('')
   const [conflicts, setConflicts] = useState({})
-  const { apiNonce, apiUrl, prevUnregisteredClients, settingsPageUrl } = window.wpFontAwesomeOfficialConflictReporting || {}
+  const {
+    apiNonce,
+    apiUrl,
+    prevUnregisteredClients,
+    settingsPageUrl
+  } = window.wpFontAwesomeOfficialConflictReporting || {}
 
   styles.use()
 
@@ -88,7 +93,11 @@ export default function Reporter() {
                 <p>Previous conflicts: { size(Object.keys(prevUnregisteredClients)) }</p>
                 <p>Conflicts detected on this page: { size(Object.keys(conflicts)) }</p>
                 <p>New conflicts: { countNewConflicts(prevUnregisteredClients, conflicts) }</p>
-                <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
+                {
+                  window.location.href === settingsPageUrl ?
+                  <p>Manage conflict removal right here on the plugin settings page.</p>
+                  : <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
+                }
               </div>,
             Error:
               <div className={ styles['report-body'] }>
