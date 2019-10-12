@@ -3,16 +3,24 @@ import axios from 'axios'
 import styles from './Reporter.module.css'
 import { difference, size } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
+const STATUS = {
+  running: 'Running',
+  done: 'Done',
+  submitting: 'Submitting',
+  error: 'Error'
+}
 
 export default function Reporter() {
-  const [runStatus, setRunStatus] = useState('running')
+  const [runStatus, setRunStatus] = useState(STATUS.running)
+  const [error, setError] = useState('')
   const [conflicts, setConflicts] = useState({})
-  const { apiNonce, apiUrl, prevUnregisteredClients } = window.wpFontAwesomeOfficialConflictReporting || {}
+  const { apiNonce, apiUrl, prevUnregisteredClients, settingsPageUrl } = window.wpFontAwesomeOfficialConflictReporting || {}
 
   function reportDetectedConflicts({nodesTested = null}){
     if( !apiNonce || !apiUrl ) {
-      console.error("Font Awesome Conflict Detection failed because it's not properly configured.")
+      setError("Font Awesome Conflict Detection failed because it's not properly configured for reporting its results back to the WordPress server.")
+      setRunStatus(STATUS.error)
       return
     }
 
@@ -22,11 +30,7 @@ export default function Reporter() {
     }, {})
 
     setConflicts(payload)
-
-    const errorMsg = 'Font Awesome Conflict Detection: found ' +
-      Object.keys(payload).length + ' conflicts' +
-      ' but failed when trying to submit them to your WordPress server. Sorry!'+
-      ' You might just try again by reloading this page.';
+    setRunStatus(STATUS.submitting)
 
     axios.post(
       apiUrl,
@@ -37,20 +41,13 @@ export default function Reporter() {
         }
       }
     )
-    .then(function(response){
-      const { status } = response
-      if (204 === status) {
-        console.log('Font Awesome Conflict Detection: ran successfully and submitted ' +
-          Object.keys(payload).length +
-          ' conflicts to your WordPress server.' +
-          ' You can use the Font Awesome plugin settings page to manage them.')
-        setRunStatus('done')
-      } else {
-        console.error(errorMsg)
-      }
+    .then(function(){
+      setRunStatus(STATUS.done)
     })
     .catch(function(error){
-      console.error(errorMsg)
+      setError(`Submitting results to the WordPress server failed, and this might indicate a bug. Could you report this on the plugin's support forum? There maybe additional diagnostic output in the JavaScript console.\n\n${error}`)
+      setRunStatus(STATUS.error)
+      console.error('Font Awesome Conflict Detection Reporting Error: ', error)
     })
   }
 
@@ -66,21 +63,39 @@ export default function Reporter() {
     <div className={ styles['report-container'] }>
       <h1>FA Conflict Detection</h1>
       {
-        runStatus === 'running'
-        ? 
-          <div className={ styles['report-body'] }>
-            <div className={ styles['status-container'] }>
-              <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+        {
+          Running:
+            <div className={ styles['report-body'] }>
+              <div className={ styles['status-container'] }>
+                <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+              </div>
+            </div>,
+          Submitting:
+            <div className={ styles['report-body'] }>
+              <div className={ styles['status-container'] }>
+                <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+              </div>
+            </div>,
+          Done:
+            <div className={ styles['report-body'] }>
+              <div className={ styles['status-container'] }>
+                  <FontAwesomeIcon icon={ faCheck } /> <span className={styles['status-desc']}>{ runStatus }</span>
+              </div>
+              <p>Previous conflicts: { size(Object.keys(prevUnregisteredClients)) }</p>
+              <p>Conflicts detected on this page: { size(Object.keys(conflicts)) }</p>
+              <p>New conflicts: { countNewConflicts(prevUnregisteredClients, conflicts) }</p>
+              <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
+            </div>,
+          Error:
+            <div className={ styles['report-body'] }>
+              <div className={ styles['status-container'] }>
+                  <FontAwesomeIcon icon={ faSkull } /> <span className={styles['status-desc']}>{ runStatus }</span>
+              </div>
+              <p>
+                { error }
+              </p>
             </div>
-          </div>
-        : <div className={ styles['report-body'] }>
-          <div className={ styles['status-container'] }>
-              <FontAwesomeIcon icon={ faCheck } /> <span className={styles['status-desc']}>{ runStatus }</span>
-          </div>
-          <p>Previous conflicts: { size(Object.keys(prevUnregisteredClients)) }</p>
-          <p>Conflicts detected on this page: { size(Object.keys(conflicts)) }</p>
-          <p>New conflicts: { countNewConflicts(prevUnregisteredClients, conflicts) }</p>
-        </div>
+        }[runStatus]
       }
     </div>
   )
