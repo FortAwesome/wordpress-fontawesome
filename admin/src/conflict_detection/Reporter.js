@@ -56,7 +56,7 @@ export default function Reporter() {
   }
 
   return (
-    <div className={ styles['reporter'] }>
+    <div className={ styles['report-container'] }>
       <p>reporter status: { runStatus }</p>
     </div>
   )
