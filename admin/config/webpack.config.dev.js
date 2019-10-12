@@ -26,13 +26,30 @@ const env = getClientEnvironment(publicUrl);
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
+const cssModuleLazyRegex = /Reporter\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 // common function to get style loaders
-const getStyleLoaders = (cssOptions, preProcessor) => {
+const getStyleLoaders = (cssOptions, lazy, preProcessor) => {
   const loaders = [
-    require.resolve('style-loader'),
+    {
+      loader: require.resolve('style-loader'),
+      options: { 
+        insert: lazy ?
+          function insertIntoShadowDom(element){
+            const shadowHost = document.getElementById('font-awesome-plugin-conflict-detection-shadow-host')
+            if(shadowHost && shadowHost.shadowRoot) {
+              shadowHost.shadowRoot.appendChild(element)
+            }
+          }
+        : function insertIntoHead(element){
+            var parent = document.querySelector('head')
+            parent.appendChild(element)
+          },
+        injectType: lazy ? 'lazyStyleTag' : 'styleTag'
+      }
+    },
     {
       loader: require.resolve('css-loader'),
       options: cssOptions,
@@ -270,11 +287,21 @@ module.exports = {
           // using the extension .module.css
           {
             test: cssModuleRegex,
+            exclude: cssModuleLazyRegex,
             use: getStyleLoaders({
               importLoaders: 1,
               modules: true,
               getLocalIdent: getCSSModuleLocalIdent,
-            }),
+            }, false),
+          },
+          // Handle lazy loaded CSS modules
+          {
+            test: cssModuleLazyRegex,
+            use: getStyleLoaders({
+              importLoaders: 1,
+              modules: true,
+              getLocalIdent: getCSSModuleLocalIdent,
+            }, true),
           },
           // Opt-in support for SASS (using .scss or .sass extensions).
           // Chains the sass-loader with the css-loader and the style-loader
@@ -284,7 +311,7 @@ module.exports = {
           {
             test: sassRegex,
             exclude: sassModuleRegex,
-            use: getStyleLoaders({ importLoaders: 2 }, 'sass-loader'),
+            use: getStyleLoaders({ importLoaders: 2 }, false, 'sass-loader'),
           },
           // Adds support for CSS Modules, but using SASS
           // using the extension .module.scss or .module.sass
@@ -296,6 +323,7 @@ module.exports = {
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
               },
+              false,
               'sass-loader'
             ),
           },
