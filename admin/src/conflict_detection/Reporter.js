@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import styles from './Reporter.module.css'
+import styles from './Reporter.lazy.module.css'
 import { difference, size } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
