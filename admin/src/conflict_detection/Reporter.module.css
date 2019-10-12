@@ -1,4 +1,18 @@
-.report-container {
+.container {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 30%;
+  max-width: 80%;
+  height: auto;
+  max-height: 40%;
+  border: 1px solid lightgrey;
+  background: white;
+  z-index: 99;
+  overflow-y: scroll;
+}
+
+.content {
   width: 100%;
   padding: 1em;
   box-sizing: border-box;

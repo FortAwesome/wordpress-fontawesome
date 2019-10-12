@@ -4,6 +4,7 @@ import styles from './Reporter.module.css'
 import { difference, size } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
+
 const STATUS = {
   running: 'Running',
   done: 'Done',
@@ -16,6 +17,8 @@ export default function Reporter() {
   const [error, setError] = useState('')
   const [conflicts, setConflicts] = useState({})
   const { apiNonce, apiUrl, prevUnregisteredClients, settingsPageUrl } = window.wpFontAwesomeOfficialConflictReporting || {}
+
+  styles.use()
 
   function reportDetectedConflicts({nodesTested = null}){
     if( !apiNonce || !apiUrl ) {
@@ -60,43 +63,45 @@ export default function Reporter() {
   }
 
   return (
-    <div className={ styles['report-container'] }>
-      <h1>FA Conflict Detection</h1>
-      {
+    <div className={ styles.locals['container'] }>
+      <div className={ styles.locals['content'] }>
+        <h1>FA Conflict Detection</h1>
         {
-          Running:
-            <div className={ styles['report-body'] }>
-              <div className={ styles['status-container'] }>
-                <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+          {
+            Running:
+              <div className={ styles.locals['report-body'] }>
+                <div className={ styles['status-container'] }>
+                  <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+                </div>
+              </div>,
+            Submitting:
+              <div className={ styles['report-body'] }>
+                <div className={ styles['status-container'] }>
+                  <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+                </div>
+              </div>,
+            Done:
+              <div className={ styles['report-body'] }>
+                <div className={ styles['status-container'] }>
+                    <FontAwesomeIcon icon={ faCheck } /> <span className={styles['status-desc']}>{ runStatus }</span>
+                </div>
+                <p>Previous conflicts: { size(Object.keys(prevUnregisteredClients)) }</p>
+                <p>Conflicts detected on this page: { size(Object.keys(conflicts)) }</p>
+                <p>New conflicts: { countNewConflicts(prevUnregisteredClients, conflicts) }</p>
+                <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
+              </div>,
+            Error:
+              <div className={ styles['report-body'] }>
+                <div className={ styles['status-container'] }>
+                    <FontAwesomeIcon icon={ faSkull } /> <span className={styles['status-desc']}>{ runStatus }</span>
+                </div>
+                <p>
+                  { error }
+                </p>
               </div>
-            </div>,
-          Submitting:
-            <div className={ styles['report-body'] }>
-              <div className={ styles['status-container'] }>
-                <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
-              </div>
-            </div>,
-          Done:
-            <div className={ styles['report-body'] }>
-              <div className={ styles['status-container'] }>
-                  <FontAwesomeIcon icon={ faCheck } /> <span className={styles['status-desc']}>{ runStatus }</span>
-              </div>
-              <p>Previous conflicts: { size(Object.keys(prevUnregisteredClients)) }</p>
-              <p>Conflicts detected on this page: { size(Object.keys(conflicts)) }</p>
-              <p>New conflicts: { countNewConflicts(prevUnregisteredClients, conflicts) }</p>
-              <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
-            </div>,
-          Error:
-            <div className={ styles['report-body'] }>
-              <div className={ styles['status-container'] }>
-                  <FontAwesomeIcon icon={ faSkull } /> <span className={styles['status-desc']}>{ runStatus }</span>
-              </div>
-              <p>
-                { error }
-              </p>
-            </div>
-        }[runStatus]
-      }
+          }[runStatus]
+        }
+      </div>
     </div>
   )
 }
