@@ -1121,7 +1121,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				add_filter(
 					'script_loader_tag',
 					function ( $html, $handle ) {
-						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR ], true ) ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER ], true ) ) {
 							 return preg_replace(
 								'/<script[\s]+(.*?)>/',
 								"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
