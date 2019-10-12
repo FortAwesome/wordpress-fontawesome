@@ -26,7 +26,7 @@ const env = getClientEnvironment(publicUrl);
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
-const cssModuleLazyRegex = /Reporter\.module\.css$/;
+const cssLazyModuleRegex = /\.lazy\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
@@ -287,7 +287,7 @@ module.exports = {
           // using the extension .module.css
           {
             test: cssModuleRegex,
-            exclude: cssModuleLazyRegex,
+            exclude: cssLazyModuleRegex,
             use: getStyleLoaders({
               importLoaders: 1,
               modules: true,
@@ -296,7 +296,7 @@ module.exports = {
           },
           // Handle lazy loaded CSS modules
           {
-            test: cssModuleLazyRegex,
+            test: cssLazyModuleRegex,
             use: getStyleLoaders({
               importLoaders: 1,
               modules: true,
