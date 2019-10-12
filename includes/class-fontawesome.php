@@ -1065,12 +1065,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
 				$conflict_detection_url = $this->get_webpack_asset_url('conflictDetection.js');
 				$prev_unregistered_clients = $this->unregistered_clients();
+				$settings_page_url = $this->settings_page_url();
 
 				// Enqueue the conflict detector
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
-						function () use ( $conflict_detection_url, $prev_unregistered_clients ) {
+						function () use ( $conflict_detection_url, $prev_unregistered_clients, $settings_page_url ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script(
 								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
@@ -1084,9 +1085,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
 								'wpFontAwesomeOfficialConflictReporting',
 								array(
-									'apiNonce'                   => wp_create_nonce( 'wp_rest' ),
-									'apiUrl'                     => rest_url( self::REST_API_NAMESPACE ) . '/report-conflicts',
+									'apiNonce'                => wp_create_nonce( 'wp_rest' ),
+									'apiUrl'                  => rest_url( self::REST_API_NAMESPACE ) . '/report-conflicts',
 									'prevUnregisteredClients' => $prev_unregistered_clients,
+									'settingsPageUrl'         => $settings_page_url,
 								)
 							);
 
