@@ -38,7 +38,11 @@ class App extends Component {
     const { status, data } = response
     if(200 === status) {
       this.setState({
-        data: {...data, conflicts: size(data.conflicts) === 0 ? {} : data.conflicts},
+        data: {
+          ...data,
+          conflicts: size(data.conflicts) === 0 ? {} : data.conflicts,
+          unregisteredClients: size(data.unregisteredClients) === 0 ? {} : data.unregisteredClients
+        },
         isLoading: false
       })
     } else {
