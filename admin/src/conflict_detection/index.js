@@ -7,7 +7,7 @@ const conflictDetectionContainer = document.createElement('DIV')
 conflictDetectionContainer.setAttribute('class', 'font-awesome-plugin-conflict-detection-container')
 conflictDetectionContainer.setAttribute(
   'style',
-  'position: fixed; right: 10px; bottom: 10px; width: 300px; height: 200px; border: 1px solid lightgrey; background: white; z-index: 99;'
+  'position: fixed; right: 10px; bottom: 10px; width: 300px; height: 200px; border: 1px solid lightgrey; background: white; z-index: 99; overflow-y: scroll;'
 )
 document.body.appendChild(conflictDetectionContainer)
 
