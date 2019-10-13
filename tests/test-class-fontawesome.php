@@ -261,16 +261,16 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	}
 
 	public function test_detecting_conflicts_when_enabled() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
@@ -287,16 +287,16 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	}
 
 	public function test_detecting_conflicts_when_expired() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes earlier
-		$past = $now->sub(new DateInterval('PT10M'));
+		$past = time() - (60 * 10);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $past->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $past
 				)
 			)
 		);

@@ -190,7 +190,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			'v4compat'             => true,
 			'technology'           => 'webfont',
 			'svgPseudoElements'    => false,
-			'detectConflictsUntil' => null,
+			'detectConflictsUntil' => 0,
 			'blacklist'            => array()
 		);
 
@@ -462,17 +462,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		public function detecting_conflicts() {
 			$until = $this->options()['detectConflictsUntil'];
-			$until_date_time = is_string($until)
-				? DateTime::createFromFormat(DateTimeInterface::ATOM, $until)
-				: null;
-			$interval = $until_date_time
-				? $until_date_time->diff(new DateTime('now', new DateTimeZone('UTC')))
-				: null;
-
-			if ( $interval && $interval->invert == 1 ) {
-				return true;
+			if( is_integer($until) ) {
+			  return time() < $until;
 			} else {
-				return false;
+				return FALSE;
 			}
 		}
 

@@ -332,16 +332,16 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function test_conflict_detector_enqueued_when_enabled_svg() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
@@ -365,16 +365,16 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function test_conflict_detector_enqueued_when_enabled_webfont() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
