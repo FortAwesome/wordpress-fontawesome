@@ -44,8 +44,9 @@ Alert.propTypes = {
   title: PropTypes.string.isRequired,
   type: PropTypes.oneOf(['info', 'warning', 'success', 'pending']),
   children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
-    PropTypes.string
+    PropTypes.object,
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.element)
   ]).isRequired
 }
 
