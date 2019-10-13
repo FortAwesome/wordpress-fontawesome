@@ -449,11 +449,9 @@ class Options extends React.Component {
                     if( detectingConflicts ) {
                       // Back it up just a touch
                       const nowish = Math.floor((new Date())/1000) - 1
-                      console.log(`DEBUG: will stop detecting conflicts at: `, nowish)
                       this.handleOptionChange({ detectConflictsUntil: nowish })
                     } else {
                       const tenMinutesLater = Math.floor((new Date((new Date()).valueOf() + (1000 * 60 * 10))) / 1000)
-                      console.log(`DEBUG: will detectConflicts until: `, tenMinutesLater)
                       this.handleOptionChange({ detectConflictsUntil: tenMinutesLater })
                     }
                   } }
@@ -475,16 +473,19 @@ class Options extends React.Component {
                     />
                   </span>
                   <span className={ styles['option-label-text'] }>
-                    Remove Conflicts
+                    Enable Conflict Detection
                     <span className={ styles['option-label-explanation'] }>
-                      We'll try to detect when your theme or other plugins attempt to load their own versions of
-                      Font Awesome, and then block those attempts. Normally this allows them to continue
+                      After enabling, browse various pages on your site where you think there might be conflicts.
+                      The conflict detector will test those pages, looking for other versions of Font Awesome
+                      that may be loaded by other themes or plugins you have installed. You'll see the results
+                      below and can use it to selectively disable them.
+                      Normally this allows them to continue
                       displaying icons as expected, using the one version of Font Awesome you've configured here,
                       instead of loading additional conflicting versions.
                     </span>
                   </span>
                 </label>
-                { this.getDetectionStatus('removeConflicts') }
+                { this.getDetectionStatus('detectConflictsUntil') }
               </div>
               { technology === 'svg' &&
                 <div className={styles['option-choice']}>
