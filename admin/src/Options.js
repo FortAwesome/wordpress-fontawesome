@@ -37,7 +37,7 @@ class Options extends React.Component {
       svgPseudoElements: null,
       version: null,
       usePro: null,
-      removeConflicts: null,
+      detectConflictsUntil: null,
       versionOptions: null,
       lastProps: null,
       changedOptions: [],
@@ -65,7 +65,7 @@ class Options extends React.Component {
       v4compat: nextProps.currentOptions.v4compat,
       technology: nextProps.currentOptions.technology,
       usePro: !!nextProps.currentOptions.usePro,
-      removeConflicts: !!nextProps.currentOptions.removeConflicts,
+      detectConflictsUntil: nextProps.currentOptions.detectConflictsUntil,
       versionOptions: Options.buildVersionOptions(nextProps),
       changedOptions: []
     }
@@ -99,7 +99,7 @@ class Options extends React.Component {
       technology: this.state.technology,
       v4compat: this.state.v4compat,
       svgPseudoElements: this.state.svgPseudoElements,
-      removeConflicts: this.state.removeConflicts,
+      detectConflictsUntil: this.state.detectConflictsUntil,
       version: this.state.version
     }
   }
@@ -215,7 +215,9 @@ class Options extends React.Component {
 
     const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
 
-    const { technology, v4compat, svgPseudoElements, usePro, removeConflicts } = this.state
+    const { technology, v4compat, svgPseudoElements, usePro, detectConflictsUntil } = this.state
+
+    const detectingConflicts = detectConflictsUntil && ((new Date(detectConflictsUntil * 1000)) > (new Date()))
 
     return <div className={ classnames(styles['options-setter']) }>
         <form onSubmit={ e => e.preventDefault() }>
@@ -442,8 +444,19 @@ class Options extends React.Component {
                   name="code_edit_features"
                   type="checkbox"
                   value="remove_conflicts"
-                  checked={ removeConflicts }
-                  onChange={ () => this.handleOptionChange({ removeConflicts: ! this.state.removeConflicts }) }
+                  checked={ detectingConflicts }
+                  onChange={ () => {
+                    if( detectingConflicts ) {
+                      // Back it up just a touch
+                      const nowish = Math.floor((new Date())/1000) - 1
+                      console.log(`DEBUG: will stop detecting conflicts at: `, nowish)
+                      this.handleOptionChange({ detectConflictsUntil: nowish })
+                    } else {
+                      const tenMinutesLater = Math.floor((new Date((new Date()).valueOf() + (1000 * 60 * 10))) / 1000)
+                      console.log(`DEBUG: will detectConflicts until: `, tenMinutesLater)
+                      this.handleOptionChange({ detectConflictsUntil: tenMinutesLater })
+                    }
+                  } }
                   className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
                 />
                 <label htmlFor="code_edit_features_remove_conflicts" className={ styles['option-label'] }>
