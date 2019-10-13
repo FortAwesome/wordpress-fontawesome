@@ -34,15 +34,19 @@ class App extends Component {
     this.handleGetError = this.handleGetError.bind(this)
   }
 
+  coerceData(data) {
+    return {
+      ...data,
+      conflicts: size(data.conflicts) === 0 ? {} : data.conflicts,
+      unregisteredClients: size(data.unregisteredClients) === 0 ? {} : data.unregisteredClients
+    }
+  }
+
   handleGetResponse(response) {
     const { status, data } = response
     if(200 === status) {
       this.setState({
-        data: {
-          ...data,
-          conflicts: size(data.conflicts) === 0 ? {} : data.conflicts,
-          unregisteredClients: size(data.unregisteredClients) === 0 ? {} : data.unregisteredClients
-        },
+        data: this.coerceData(data),
         isLoading: false
       })
     } else {
@@ -54,7 +58,7 @@ class App extends Component {
     const { status, data } = response
     if (200 === status) {
       this.setState({
-        data,
+        data: this.coerceData(data),
         isSubmitting: false,
         hasSubmitted: true,
         error: null,
