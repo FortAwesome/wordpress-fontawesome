@@ -63,16 +63,16 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
   }
 
   public function test_when_detecting_conflicts() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
@@ -113,7 +113,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => null
+					'detectConflictsUntil' => 0
 				)
 			)
 		);
@@ -145,16 +145,16 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
   }
 
   public function test_when_adding_additional_conflicts() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
@@ -213,16 +213,16 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
   }
 
   public function test_when_adding_with_bad_schema() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
@@ -268,16 +268,16 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
   }
 
   public function test_change_detection() {
-		$now = new DateTime('now', new DateTimeZone('UTC'));
+		$now = time();
 		// ten minutes later
-		$later = $now->add(new DateInterval('PT10M'));
+		$later = $now + (10 * 60);
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later->format(DateTimeInterface::ATOM)
+					'detectConflictsUntil' => $later
 				)
 			)
 		);
