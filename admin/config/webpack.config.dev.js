@@ -92,8 +92,7 @@ module.exports = {
   // These are the "entry points" to our application.
   // This means they will be the "root" imports that are included in JS bundle.
   entry: 
-    {
-      admin: [
+       [
         // Include an alternative client for WebpackDevServer. A client's job is to
         // connect to WebpackDevServer by a socket and get notified about changes.
         // When you save a file, the client will either apply hot updates (in case
@@ -110,13 +109,7 @@ module.exports = {
         // We include the app code last so that if there is a runtime error during
         // initialization, it doesn't blow up the WebpackDevServer client, and
         // changing JS code would still trigger a refresh.
-      ],
-      conflictDetection: [
-        require.resolve('webpack-dev-server/client') + '?http://localhost:3030/sockjs-node/',
-        require.resolve('webpack/hot/dev-server'),
-        paths.conflictDetectionIndexJs,
       ]
-    }
   ,
   output: {
     // Add /* filename */ comments to generated require()s in the output.
@@ -124,7 +117,7 @@ module.exports = {
     // This does not produce a real file. It's just the virtual path that is
     // served by WebpackDevServer in development. This is the JS bundle
     // containing code from all our entry points, and the Webpack runtime.
-    filename: 'static/js/[name].bundle.js',
+    filename: 'static/js/bundle.js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: 'static/js/[name].chunk.js',
     // This is the URL that app is served from. We use "/" in development.
