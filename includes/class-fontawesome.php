@@ -163,6 +163,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		const ADMIN_RESOURCE_HANDLE = self::RESOURCE_HANDLE . '-admin';
 
+		/**
+		 * Name used for inline data attached to the JavaScript admin bundle.
+		 * Not part of the public API.
+		 *
+		 * @internal
+		 * @ignore
+		 */
+		const ADMIN_RESOURCE_LOCALIZATION_NAME = '__FontAwesomeOfficialPlugin__';
+
 		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * @ignore
@@ -294,6 +303,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								)
 							);
 
+						$this->maybe_enqueue_js_bundle();
 						$this->enqueue_cdn( $options, $resource_collection );
 					} catch ( FontAwesome_NoReleasesException $e ) {
 						$current_screen = get_current_screen();
@@ -593,6 +603,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 		/**
 		 * This function is not part of this plugin's public API.
+		 * 
+		 * Initalizes everything about the admin environment except the React app
+		 * bundle, which is handled in maybe_enqueue_js_bundle().
 		 *
 		 * @ignore
 		 * @internal
@@ -611,25 +624,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					}
 				);
 			}
-			add_action(
-				'admin_enqueue_scripts',
-				function( $hook ) {
-					if ( $hook === $this->screen_id ) {
-
-						$url = $this->get_webpack_asset_url('admin.js');
-
-						wp_enqueue_script( self::ADMIN_RESOURCE_HANDLE, $url, [], null, true );
-						wp_localize_script(
-							self::ADMIN_RESOURCE_HANDLE,
-							'wpFontAwesomeOfficial',
-							array(
-								'api_nonce' => wp_create_nonce( 'wp_rest' ),
-								'api_url'   => rest_url( self::REST_API_NAMESPACE ),
-							)
-						);
-					}
-				}
-			);
 
 			add_action(
 				'admin_menu',
@@ -1028,6 +1022,104 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
+		 * Not part of the public API.
+		 * 
+		 * Enqueues the JavaScript bundle that is the React app for the admin
+		 * settings page as well as the conflict detection reporter. The same
+		 * bundle will be enqueued for both purposes. When enqueued, it must be
+		 * configured to indicate which React components to mount in the DOM, which
+		 * may be either, both, or neither.
+		 *
+		 * @internal
+		 * @ignore
+		 */
+		public function maybe_enqueue_js_bundle( ) {
+			add_action(
+				'admin_enqueue_scripts',
+				function( $hook ) {
+					if ( $hook === $this->screen_id ) {
+						wp_enqueue_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							$this->get_webpack_asset_url('main.js'),
+							[],
+							null,
+							true
+						);
+
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+							array_merge(
+								$this->common_data_for_js_bundle(),
+								array(
+									'showAdmin'                     => TRUE,
+									'showConflictDetectionReporter' => $this->detecting_conflicts(),
+									'onSettingsPage'								=> TRUE,
+									'clientPreferences'     				=> $this->client_preferences(),
+									'pluginVersionWarnings' 				=> $this->get_plugin_version_warnings(),
+									'releaseProviderStatus' 				=> $this->release_provider()->get_status(),
+									'releases'              				=> array(
+										'available'        						=> $this->get_available_versions(),
+										'latest_version'   						=> $this->get_latest_version(),
+										'previous_version' 						=> $this->get_previous_version(),
+									),
+									'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
+									'initialOptions'               	=> $this->options(),
+									'initialPreferenceConflicts'    => $this->conflicts_by_option(),
+								)
+							),
+						);
+					}
+				}
+			);
+
+			if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
+				foreach ( [ 'wp_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+					add_action(
+						$action,
+						function () {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_script(
+								self::ADMIN_RESOURCE_HANDLE,
+								$this->get_webpack_asset_url('main.js'),
+								null,
+								null,
+								false
+							);
+
+							wp_localize_script(
+								self::ADMIN_RESOURCE_HANDLE,
+								self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+								array_merge(
+									$this->common_data_for_js_bundle(),
+									array(
+										'onSettingsPage'	              => FALSE,
+										'showAdmin'                     => FALSE,
+										'showConflictDetectionReporter' => TRUE,
+									)
+								),
+							);
+						}
+					);
+				}
+			}
+		}
+
+		/**
+		 * Not part of the public API.
+		 * 
+		 * @ignore
+		 * @internal
+		 */
+		public function common_data_for_js_bundle() {
+			return array(
+				'apiNonce'                   => wp_create_nonce( 'wp_rest' ),
+				'apiUrl'                     => rest_url( self::REST_API_NAMESPACE ),
+				'initialUnregisteredClients' => $this->unregistered_clients(),
+			);
+		}
+
+		/**
 		 * Enqueues <script> or <link> resources to load from Font Awesome 5 free or pro cdn.
 		 *
 		 * @internal
@@ -1056,40 +1148,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			$resources = $resource_collection->resources();
 
 			if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
-				$conflict_detection_url = $this->get_webpack_asset_url('conflictDetection.js');
-				$prev_unregistered_clients = $this->unregistered_clients();
-				$settings_page_url = $this->settings_page_url();
-
 				// Enqueue the conflict detector
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
-						function () use ( $conflict_detection_url, $prev_unregistered_clients, $settings_page_url ) {
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script(
-								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
-								$conflict_detection_url,
-								null,
-								null,
-								false
-							);
-
-							wp_localize_script(
-								self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER,
-								'wpFontAwesomeOfficialConflictReporting',
-								array(
-									'apiNonce'                => wp_create_nonce( 'wp_rest' ),
-									'apiUrl'                  => rest_url( self::REST_API_NAMESPACE ) . '/report-conflicts',
-									'prevUnregisteredClients' => $prev_unregistered_clients,
-									'settingsPageUrl'         => $settings_page_url,
-								)
-							);
-
+						function () {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script(
 								self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
 								self::CONFLICT_DETECTOR_SOURCE,
-								[ self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER ],
+								[ self::ADMIN_RESOURCE_HANDLE ],
 								null,
 								false
 							);
@@ -1118,7 +1186,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				add_filter(
 					'script_loader_tag',
 					function ( $html, $handle ) {
-						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER ], true ) ) {
+						if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::ADMIN_RESOURCE_HANDLE ], true ) ) {
 							 return preg_replace(
 								'/<script[\s]+(.*?)>/',
 								"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
