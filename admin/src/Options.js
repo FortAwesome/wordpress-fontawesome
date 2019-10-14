@@ -1,6 +1,10 @@
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  addPendingOption,
+  checkPreferenceConflicts
+} from './store/actions'
 import PropTypes from 'prop-types'
-import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDotCircle,
@@ -14,7 +18,7 @@ import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './Options.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
-import { has, isEqual } from 'lodash'
+import { has, size } from 'lodash'
 import SvgPseudoElementsWarning from "./SvgPseudoElementsWarning";
 import Alert from './Alert'
 
@@ -27,54 +31,32 @@ function CheckingOptionStatusIndicator(){
   </div>
 }
 
-class Options extends React.Component {
-  constructor(props){
-    super(props)
+export default function Options() {
+  const optionSelector = option => useSelector(state => 
+    has(state.pendingOptions, option)
+    ? state.pendingOptions[option]
+    : state.options[option]
+  )
 
-    this.state = {
-      technology: null,
-      v4compat: null,
-      svgPseudoElements: null,
-      version: null,
-      usePro: null,
-      detectConflictsUntil: null,
-      versionOptions: null,
-      lastProps: null,
-      changedOptions: [],
-      isChecking: false,
-      hasChecked: false,
-      checkSuccess: false,
-      checkMessage: '',
-      detectedConflicts: {}
-    }
+  const usePro = optionSelector('usePro')
+  const technology = optionSelector('technology')
+  const version = optionSelector('version')
+  const v4compat = optionSelector('v4compat')
+  const svgPseudoElements = optionSelector('svgPseudoElements')
 
-    this.handleSubmitClick = this.handleSubmitClick.bind(this)
-    this.handleOptionChange = this.handleOptionChange.bind(this)
-    this.doPreferenceCheck = this.doPreferenceCheck.bind(this)
-  }
+  const pendingOptions = useSelector(state => state.pendingOptions)
+  const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
+  const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
+  const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
+  const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)
+  const clientPreferences = useSelector(state => state.clientPreferences)
+  const detectingConflicts = useSelector(state => {
+    const { detectConflictsUntil } = state.options
+    return detectConflictsUntil && ((new Date(detectConflictsUntil * 1000)) > (new Date()))
+  })
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if( nextProps.isSubmitting || isEqual(prevState.lastProps, nextProps) ) {
-      return null
-    }
-
-    const newState = {
-      lastProps: nextProps,
-      svgPseudoElements: nextProps.currentOptions.svgPseudoElements,
-      version: nextProps.currentOptions.version,
-      v4compat: nextProps.currentOptions.v4compat,
-      technology: nextProps.currentOptions.technology,
-      usePro: !!nextProps.currentOptions.usePro,
-      detectConflictsUntil: nextProps.currentOptions.detectConflictsUntil,
-      versionOptions: Options.buildVersionOptions(nextProps),
-      changedOptions: []
-    }
-
-    return newState
-  }
-
-  static buildVersionOptions(props) {
-    const { releases: { available, latest_version, previous_version } } = props
+  const versionOptions = useSelector(state => {
+    const { releases: { available, latest_version, previous_version } } = state
 
     return available.reduce((acc, version) => {
       if( latest_version === version ) {
@@ -86,52 +68,61 @@ class Options extends React.Component {
       }
       return acc
     }, {})
+  })
+
+  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
+  const submitSuccess = useSelector(state => state.optionsFormState.submitSuccess)
+  const submitMessage = useSelector(state => state.optionsFormState.submitMessage)
+  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
+
+  const dispatch = useDispatch()
+
+  function handleOptionChange(change = {}) {
+    dispatch(addPendingOption(change))
+    dispatch(checkPreferenceConflicts())
   }
 
-  handleOptionChange(change = {}) {
-    this.setState( { ...change, changedOptions: [ ...this.state.changedOptions, Object.keys(change)[0] ] } )
-    this.doPreferenceCheck({ ...this.currentFormOptions(), ...change })
+  function handleSubmitClick(e) {
+    e.preventDefault()
+
+    // Dispatch action to store: submit pending options
+    /*
+    const { putData } = this.props
+
+    putData({
+      options: this.currentFormOptions()
+    })
+    */
   }
 
-  currentFormOptions() {
-    return {
-      usePro: this.state.usePro,
-      technology: this.state.technology,
-      v4compat: this.state.v4compat,
-      svgPseudoElements: this.state.svgPseudoElements,
-      detectConflictsUntil: this.state.detectConflictsUntil,
-      version: this.state.version
-    }
-  }
-
-  optionChanged(option){
-    return !!this.state.changedOptions.find(o => o === option)
-  }
-  
-  getDetectionStatus(option) {
-    if(this.optionChanged(option)) {
-      if(this.state.isChecking) {
+  function getDetectionStatus(option) {
+    if(has(pendingOptions, option)) {
+      if(isChecking) {
         return <CheckingOptionStatusIndicator/>
-      } else if (has(this.state.detectedConflicts, option)) {
+      } else if ( ! preferenceCheckSuccess ) {
+        return <Alert title='Error checking preferences' type='warning'>
+          <p>{ preferenceCheckMessage }</p>
+        </Alert>
+      } else if (has(pendingOptionConflicts, option)) {
         return <Alert title='Pending change might cause problems' type='warning'>
           <p>
             If you save this change, it might cause a problem with&nbsp;
+          </p>
             {
-              this.state.detectedConflicts[option].length > 1
-                ? <span>
+              size(pendingOptionConflicts[option]) > 1
+              ? <div>
                   these themes or plugins:
                   <ul>
-                    { this.state.detectedConflicts[option].map( c => <li>{ c }</li>) }
+                    { pendingOptionConflicts[option].map( c => <li>{ c }</li>) }
                   </ul>
-              </span>
-              : <span>
+              </div>
+              : <div>
                 this theme or plugin:
                   <ul>
-                    <li>{ this.state.detectedConflicts[option][0] }</li>
+                    <li>{ pendingOptionConflicts[option][0] }</li>
                   </ul>
-                </span>
+                </div>
             }
-          </p>
           <p>
             See below for details.
           </p>
@@ -139,7 +130,7 @@ class Options extends React.Component {
       } else {
         return <Alert title='Pending change looks good!' type='pending'>
           <p><em>Click below to save changes and make it active on your web site.</em></p>
-          { this.props.registeredClientsPresent
+          { size(clientPreferences)
             ? <p>Any Font Awesome preferences <em>registered</em> with this plugin by other themes or plugins are satisfied
               with this change.</p>
             : null
@@ -151,207 +142,54 @@ class Options extends React.Component {
     }
   }
 
-  async doPreferenceCheck(options = {}) {
-    this.setState({ isChecking: true, hasChecked: false })
-
-    try {
-      const response = await axios.post(
-        `${this.props.wpApiSettings.api_url}/preference-check`,
-        { ...options },
-        {
-          headers: {
-            'X-WP-Nonce': this.props.wpApiSettings.api_nonce
-          }
-        }
-      )
-
-      const { status, data } = response
-      if (200 === status) {
-        this.setState({
-          isChecking: false,
-          hasChecked: true,
-          checkSuccess: true,
-          checkMessage: '',
-          detectedConflicts: { ...data }
-        })
-      } else {
-        this.setState({
-          isChecking: false,
-          hasChecked: true,
-          checkSuccess: false,
-          checkMessage: 'Failed when checking options changes'
-        })
-      }
-    } catch( error ) {
-      const { response: { data: { code, message }}} = error
-      let checkMessage = ""
-
-      switch(code) {
-        case 'cant_update':
-          checkMessage = message
-          break
-        case 'rest_no_route':
-        case 'rest_cookie_invalid_nonce':
-          checkMessage = "Sorry, we couldn't reach the server"
-          break
-        default:
-          checkMessage = "Update failed"
-      }
-      this.setState({ isChecking: false, hasChecked: true, checkSuccess: false, checkMessage })
-    }
-  }
-
-  handleSubmitClick(e) {
-    e.preventDefault()
-
-    const { putData } = this.props
-
-    putData({
-      options: this.currentFormOptions()
-    })
-  }
-
-  render() {
-    if(this.state.error) throw this.state.error
-
-    const { hasSubmitted, isSubmitting, submitSuccess, submitMessage } = this.props
-
-    const { technology, v4compat, svgPseudoElements, usePro, detectConflictsUntil } = this.state
-
-    const detectingConflicts = detectConflictsUntil && ((new Date(detectConflictsUntil * 1000)) > (new Date()))
-
-    return <div className={ classnames(styles['options-setter']) }>
-        <form onSubmit={ e => e.preventDefault() }>
-          <hr className={ styles['option-divider'] }/>
-          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
-            <div className={ styles['option-header'] }>Icons</div>
-            <div className={ styles['option-choice-container'] }>
-              <div className={ styles['option-choices'] }>
-                <div className={ styles['option-choice'] }>
-                  <input
-                    id="code_edit_icons_free"
-                    name="code_edit_icons"
-                    type="radio"
-                    value="webfont"
-                    checked={ ! usePro }
-                    onChange={ () => this.handleOptionChange({ usePro: false }) }
-                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
-                  />
-                  <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
-                    <span className={ sharedStyles['relative'] }>
-                      <FontAwesomeIcon
-                        icon={ faDotCircle }
-                        size="lg"
-                        fixedWidth
-                        className={ styles['checked-icon'] }
-                      />
-                      <FontAwesomeIcon
-                        icon={ faCircle }
-                        size="lg"
-                        fixedWidth
-                        className={ styles['unchecked-icon'] }
-                      />
-                    </span>
-                    <span className={ styles['option-label-text'] }>
-                      Free
-                    </span>
-                  </label>
-                </div>
-                <div className={ styles['option-choice'] }>
-                  <input
-                    id="code_edit_icons_pro"
-                    name="code_edit_icons"
-                    type="radio"
-                    value="svg"
-                    checked={ usePro }
-                    onChange={ () => this.handleOptionChange({ usePro: true }) }
-                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
-                  />
-                  <label htmlFor="code_edit_icons_pro" className={ styles['option-label'] }>
-                      <span className={ sharedStyles['relative'] }>
-                        <FontAwesomeIcon
-                          icon={ faDotCircle }
-                          className={ styles['checked-icon'] }
-                          size="lg"
-                          fixedWidth
-                        />
-                        <FontAwesomeIcon
-                          icon={ faCircle }
-                          className={ styles['unchecked-icon'] }
-                          size="lg"
-                          fixedWidth
-                        />
-                      </span>
-                    <span className={ styles['option-label-text'] }>
-                        Pro
-                      </span>
-                  </label>
-                </div>
+  return <div className={ classnames(styles['options-setter']) }>
+      <form onSubmit={ e => e.preventDefault() }>
+        <hr className={ styles['option-divider'] }/>
+        <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+          <div className={ styles['option-header'] }>Icons</div>
+          <div className={ styles['option-choice-container'] }>
+            <div className={ styles['option-choices'] }>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_icons_free"
+                  name="code_edit_icons"
+                  type="radio"
+                  value="webfont"
+                  checked={ ! usePro }
+                  onChange={ () => handleOptionChange({ usePro: false }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faDotCircle }
+                      size="lg"
+                      fixedWidth
+                      className={ styles['checked-icon'] }
+                    />
+                    <FontAwesomeIcon
+                      icon={ faCircle }
+                      size="lg"
+                      fixedWidth
+                      className={ styles['unchecked-icon'] }
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    Free
+                  </span>
+                </label>
               </div>
-              { usePro &&
-                <Alert title='Pro requires a subscription' type='info'>
-                  <ul>
-                    <li>
-                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
-                    </li>
-                    <li>
-                      <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
-                    </li>
-                  </ul>
-                </Alert>
-              }
-              { this.getDetectionStatus('usePro') }
-            </div>
-          </div>
-          <hr className={ styles['option-divider'] }/>
-          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
-            <div className={ styles['option-header'] }>Technology</div>
-            <div className={ styles['option-choice-container'] }>
-              <div className={ styles['option-choices'] }>
-                <div className={ styles['option-choice'] }>
-                  <input
-                    id="code_edit_tech_webfont"
-                    name="code_edit_tech"
-                    type="radio"
-                    value="webfont"
-                    checked={ technology === 'webfont' }
-                    onChange={ () => this.handleOptionChange({
-                      technology: 'webfont',
-                      svgPseudoElements: false
-                    }) }
-                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
-                  />
-                  <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
-                      <span className={ sharedStyles['relative'] }>
-                        <FontAwesomeIcon
-                          icon={ faDotCircle }
-                          size="lg"
-                          fixedWidth
-                          className={ styles['checked-icon'] }
-                        />
-                        <FontAwesomeIcon
-                          icon={ faCircle }
-                          size="lg"
-                          fixedWidth
-                          className={ styles['unchecked-icon'] }
-                        />
-                      </span>
-                    <span className={ styles['option-label-text'] }>
-                        Web Font
-                      </span>
-                  </label>
-                </div>
-                <div className={ styles['option-choice'] }>
-                  <input
-                    id="code_edit_tech_svg"
-                    name="code_edit_tech"
-                    type="radio"
-                    value="svg"
-                    checked={ technology === 'svg' }
-                    onChange={ () => this.handleOptionChange({ technology: 'svg' }) }
-                    className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
-                  />
-                  <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_icons_pro"
+                  name="code_edit_icons"
+                  type="radio"
+                  value="svg"
+                  checked={ usePro }
+                  onChange={ () => handleOptionChange({ usePro: true }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_icons_pro" className={ styles['option-label'] }>
                     <span className={ sharedStyles['relative'] }>
                       <FontAwesomeIcon
                         icon={ faDotCircle }
@@ -366,220 +204,301 @@ class Options extends React.Component {
                         fixedWidth
                       />
                     </span>
-                    <span className={ styles['option-label-text'] }>
-                      SVG
+                  <span className={ styles['option-label-text'] }>
+                      Pro
                     </span>
-                  </label>
-                </div>
+                </label>
               </div>
-              { this.getDetectionStatus('technology') }
             </div>
+            { usePro &&
+              <Alert title='Pro requires a subscription' type='info'>
+                <ul>
+                  <li>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
+                  </li>
+                  <li>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+                  </li>
+                </ul>
+              </Alert>
+            }
+            { getDetectionStatus('usePro') }
           </div>
-          <hr className={ styles['option-divider'] }/>
-          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
-            <div className={ styles['option-header'] }>Version</div>
-            <div className={ styles['option-choice-container'] }>
-              <div className={ styles['option-choices'] }>
-                <select
-                  className={ styles['version-select'] }
-                  name="version"
-                  onChange={ e => this.handleOptionChange({ version: e.target.value }) }
-                  value={ this.state.version }
-                >
-                  {
-                    Object.keys(this.state.versionOptions).map((version, index) => {
-                      return <option key={ index } value={ version }>
-                        { version === UNSPECIFIED ? '-' : this.state.versionOptions[version] }
-                      </option>
-                    })
-                  }
-                </select>
-              </div>
-              { this.getDetectionStatus('version') }
-            </div>
-          </div>
-          <hr className={ styles['option-divider'] }/>
-          <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
-            <div className={ styles['option-header'] }>Features</div>
-            <div className={ styles['option-choice-container'] }>
+        </div>
+        <hr className={ styles['option-divider'] }/>
+        <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+          <div className={ styles['option-header'] }>Technology</div>
+          <div className={ styles['option-choice-container'] }>
+            <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
                 <input
-                  id="code_edit_features_v4compat"
-                  name="code_edit_features"
-                  type="checkbox"
-                  value="v4compat"
-                  checked={ v4compat }
-                  onChange={ () => this.handleOptionChange({ v4compat: ! this.state.v4compat }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
+                  id="code_edit_tech_webfont"
+                  name="code_edit_tech"
+                  type="radio"
+                  value="webfont"
+                  checked={ technology === 'webfont' }
+                  onChange={ () => handleOptionChange({
+                    technology: 'webfont',
+                    svgPseudoElements: false
+                  }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
                 />
-                <label htmlFor="code_edit_features_v4compat" className={ styles['option-label'] }>
+                <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faDotCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ styles['checked-icon'] }
+                      />
+                      <FontAwesomeIcon
+                        icon={ faCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ styles['unchecked-icon'] }
+                      />
+                    </span>
+                  <span className={ styles['option-label-text'] }>
+                      Web Font
+                    </span>
+                </label>
+              </div>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_tech_svg"
+                  name="code_edit_tech"
+                  type="radio"
+                  value="svg"
+                  checked={ technology === 'svg' }
+                  onChange={ () => handleOptionChange({ technology: 'svg' }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
                   <span className={ sharedStyles['relative'] }>
                     <FontAwesomeIcon
-                      icon={ faCheckSquare }
+                      icon={ faDotCircle }
                       className={ styles['checked-icon'] }
                       size="lg"
                       fixedWidth
                     />
                     <FontAwesomeIcon
-                      icon={ faSquare }
+                      icon={ faCircle }
                       className={ styles['unchecked-icon'] }
                       size="lg"
                       fixedWidth
                     />
                   </span>
                   <span className={ styles['option-label-text'] }>
-                    Version 4 Compatibility
-                    <span className={ styles['option-label-explanation'] }>
-                      Automatically use Font Awesome 5 for all of those version 4 icons already on your site, including
-                      those used by your theme or plugins, without worrying about new syntax and name changes.
-                      Read our guide for <a rel="noopener noreferrer" target="_blank" href="https://staging.fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">upgrading from version 4</a> for
-                      more info.
-                    </span>
+                    SVG
                   </span>
                 </label>
-                { this.getDetectionStatus('v4compat') }
               </div>
-              <div className={ styles['option-choice'] }>
-                <input
-                  id="code_edit_features_remove_conflicts"
-                  name="code_edit_features"
-                  type="checkbox"
-                  value="remove_conflicts"
-                  checked={ detectingConflicts }
-                  onChange={ () => {
-                    if( detectingConflicts ) {
-                      // Back it up just a touch
-                      const nowish = Math.floor((new Date())/1000) - 1
-                      this.handleOptionChange({ detectConflictsUntil: nowish })
-                    } else {
-                      const tenMinutesLater = Math.floor((new Date((new Date()).valueOf() + (1000 * 60 * 10))) / 1000)
-                      this.handleOptionChange({ detectConflictsUntil: tenMinutesLater })
-                    }
-                  } }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
-                />
-                <label htmlFor="code_edit_features_remove_conflicts" className={ styles['option-label'] }>
-                  <span className={ sharedStyles['relative'] }>
-                    <FontAwesomeIcon
-                      icon={ faCheckSquare }
-                      className={ styles['checked-icon'] }
-                      size="lg"
-                      fixedWidth
-                    />
-                    <FontAwesomeIcon
-                      icon={ faSquare }
-                      className={ styles['unchecked-icon'] }
-                      size="lg"
-                      fixedWidth
-                    />
-                  </span>
-                  <span className={ styles['option-label-text'] }>
-                    Enable Conflict Detection
-                    <span className={ styles['option-label-explanation'] }>
-                      After enabling, browse various pages on your site where you think there might be conflicts.
-                      The conflict detector will test those pages, looking for other versions of Font Awesome
-                      that may be loaded by other themes or plugins you have installed. You'll see the results
-                      below and can use it to selectively disable them.
-                      Normally this allows them to continue
-                      displaying icons as expected, using the one version of Font Awesome you've configured here,
-                      instead of loading additional conflicting versions.
-                    </span>
-                  </span>
-                </label>
-                { this.getDetectionStatus('detectConflictsUntil') }
-              </div>
-              { technology === 'svg' &&
-                <div className={styles['option-choice']}>
-                  <input
-                    id="code_edit_features_svg_pseudo_elements"
-                    name="code_edit_features"
-                    type="checkbox"
-                    value="svg_pseudo_elements"
-                    checked={svgPseudoElements}
-                    onChange={() => this.handleOptionChange({svgPseudoElements: !svgPseudoElements})}
-                    className={classnames(sharedStyles['sr-only'], styles['input-checkbox-custom'])}
+            </div>
+            { getDetectionStatus('technology') }
+          </div>
+        </div>
+        <hr className={ styles['option-divider'] }/>
+        <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+          <div className={ styles['option-header'] }>Version</div>
+          <div className={ styles['option-choice-container'] }>
+            <div className={ styles['option-choices'] }>
+              <select
+                className={ styles['version-select'] }
+                name="version"
+                onChange={ e => handleOptionChange({ version: e.target.value }) }
+                value={ version }
+              >
+                {
+                  Object.keys(versionOptions).map((version, index) => {
+                    return <option key={ index } value={ version }>
+                      { version === UNSPECIFIED ? '-' : versionOptions[version] }
+                    </option>
+                  })
+                }
+              </select>
+            </div>
+            { getDetectionStatus('version') }
+          </div>
+        </div>
+        <hr className={ styles['option-divider'] }/>
+        <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
+          <div className={ styles['option-header'] }>Features</div>
+          <div className={ styles['option-choice-container'] }>
+            <div className={ styles['option-choice'] }>
+              <input
+                id="code_edit_features_v4compat"
+                name="code_edit_features"
+                type="checkbox"
+                value="v4compat"
+                checked={ v4compat }
+                onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
+                className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
+              />
+              <label htmlFor="code_edit_features_v4compat" className={ styles['option-label'] }>
+                <span className={ sharedStyles['relative'] }>
+                  <FontAwesomeIcon
+                    icon={ faCheckSquare }
+                    className={ styles['checked-icon'] }
+                    size="lg"
+                    fixedWidth
                   />
-                  <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
-                  <span className={sharedStyles['relative']}>
-                    <FontAwesomeIcon
-                      icon={faCheckSquare}
-                      className={styles['checked-icon']}
-                      size="lg"
-                      fixedWidth
-                    />
-                    <FontAwesomeIcon
-                      icon={faSquare}
-                      className={styles['unchecked-icon']}
-                      size="lg"
-                      fixedWidth
-                    />
-                  </span>
-                    <span className={styles['option-label-text']}>
-                    Enable SVG Pseudo-elements
-                    <span className={styles['option-label-explanation']}>
-                      For best compatibility and performance, it's usually best to avoid using <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a> in
-                      Font Awesome. Pseudo-element icons will be less compatible across major Font Awesome versions and technologies.
-                      As a built-in feature of CSS, they come with no performance penalty when using the CSS and Webfont technology.
-                      However, using them with SVG requires a little more magic <FontAwesomeIcon
-                      icon={faMagic}/> which might make your web site feel signifcantly slower.
-                    </span>
-                  </span>
-                  </label>
-                  { this.getDetectionStatus('svgPseudoElements') }
-                </div>
-              }
-              {
-                svgPseudoElements
-                && <SvgPseudoElementsWarning
-                  v4compat={ v4compat }
-                  showModal={ this.props.showPseudoElementsHelpModal }
-                />
-              }
-            </div>
-          </div>
-          <hr className={ styles['option-divider'] }/>
-        </form>
-      <div className="submit">
-        <input
-          type="submit"
-          name="submit"
-          id="submit"
-          className="button button-primary"
-          value="Save Changes"
-          disabled={ this.state.changedOptions.length === 0 }
-          onClick={ this.handleSubmitClick }
-        />
-        { hasSubmitted &&
-          ( submitSuccess
-            ? <span className={ classnames(styles['submit-status'], styles['success']) }>
-                <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
-                <span className={ styles['explanation'] }>
-                  { submitMessage }
+                  <FontAwesomeIcon
+                    icon={ faSquare }
+                    className={ styles['unchecked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
                 </span>
-              </span>
-            : <div className={ classnames(styles['submit-status'], styles['fail']) }>
-                <div className={ classnames(styles['fail-icon-container']) }>
-                  <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
-                </div>
-                <div className={ styles['explanation'] }>
-                  { submitMessage }
-                </div>
+                <span className={ styles['option-label-text'] }>
+                  Version 4 Compatibility
+                  <span className={ styles['option-label-explanation'] }>
+                    Automatically use Font Awesome 5 for all of those version 4 icons already on your site, including
+                    those used by your theme or plugins, without worrying about new syntax and name changes.
+                    Read our guide for <a rel="noopener noreferrer" target="_blank" href="https://staging.fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">upgrading from version 4</a> for
+                    more info.
+                  </span>
+                </span>
+              </label>
+              { getDetectionStatus('v4compat') }
+            </div>
+            <div className={ styles['option-choice'] }>
+              <input
+                id="code_edit_features_remove_conflicts"
+                name="code_edit_features"
+                type="checkbox"
+                value="remove_conflicts"
+                checked={ detectingConflicts }
+                onChange={ () => {
+                  if( detectingConflicts ) {
+                    // Back it up just a touch
+                    const nowish = Math.floor((new Date())/1000) - 1
+                    handleOptionChange({ detectConflictsUntil: nowish })
+                  } else {
+                    const tenMinutesLater = Math.floor((new Date((new Date()).valueOf() + (1000 * 60 * 10))) / 1000)
+                    handleOptionChange({ detectConflictsUntil: tenMinutesLater })
+                  }
+                } }
+                className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
+              />
+              <label htmlFor="code_edit_features_remove_conflicts" className={ styles['option-label'] }>
+                <span className={ sharedStyles['relative'] }>
+                  <FontAwesomeIcon
+                    icon={ faCheckSquare }
+                    className={ styles['checked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
+                  <FontAwesomeIcon
+                    icon={ faSquare }
+                    className={ styles['unchecked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
+                </span>
+                <span className={ styles['option-label-text'] }>
+                  Enable Conflict Detection
+                  <span className={ styles['option-label-explanation'] }>
+                    After enabling, browse various pages on your site where you think there might be conflicts.
+                    The conflict detector will test those pages, looking for other versions of Font Awesome
+                    that may be loaded by other themes or plugins you have installed. You'll see the results
+                    below and can use it to selectively disable them.
+                    Normally this allows them to continue
+                    displaying icons as expected, using the one version of Font Awesome you've configured here,
+                    instead of loading additional conflicting versions.
+                  </span>
+                </span>
+              </label>
+              { getDetectionStatus('detectConflictsUntil') }
+            </div>
+            { technology === 'svg' &&
+              <div className={styles['option-choice']}>
+                <input
+                  id="code_edit_features_svg_pseudo_elements"
+                  name="code_edit_features"
+                  type="checkbox"
+                  value="svg_pseudo_elements"
+                  checked={ svgPseudoElements }
+                  onChange={() => handleOptionChange({ svgPseudoElements: !svgPseudoElements })}
+                  className={classnames(sharedStyles['sr-only'], styles['input-checkbox-custom'])}
+                />
+                <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
+                <span className={sharedStyles['relative']}>
+                  <FontAwesomeIcon
+                    icon={faCheckSquare}
+                    className={styles['checked-icon']}
+                    size="lg"
+                    fixedWidth
+                  />
+                  <FontAwesomeIcon
+                    icon={faSquare}
+                    className={styles['unchecked-icon']}
+                    size="lg"
+                    fixedWidth
+                  />
+                </span>
+                  <span className={styles['option-label-text']}>
+                  Enable SVG Pseudo-elements
+                  <span className={styles['option-label-explanation']}>
+                    For best compatibility and performance, it's usually best to avoid using <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a> in
+                    Font Awesome. Pseudo-element icons will be less compatible across major Font Awesome versions and technologies.
+                    As a built-in feature of CSS, they come with no performance penalty when using the CSS and Webfont technology.
+                    However, using them with SVG requires a little more magic <FontAwesomeIcon
+                    icon={faMagic}/> which might make your web site feel signifcantly slower.
+                  </span>
+                </span>
+                </label>
+                { getDetectionStatus('svgPseudoElements') }
               </div>
-          )
-        }
-        {isSubmitting &&
-          <span className={ classnames(styles['submit-status'], styles['submitting']) }>
-            <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
-          </span>
-        }
-      </div>
+            }
+            {
+              svgPseudoElements
+              && <SvgPseudoElementsWarning
+                v4compat={ v4compat }
+                showModal={ this.props.showPseudoElementsHelpModal }
+              />
+            }
+          </div>
+        </div>
+        <hr className={ styles['option-divider'] }/>
+      </form>
+    <div className="submit">
+      <input
+        type="submit"
+        name="submit"
+        id="submit"
+        className="button button-primary"
+        value="Save Changes"
+        disabled={ size(pendingOptions) === 0 }
+        onClick={ handleSubmitClick }
+      />
+      { hasSubmitted &&
+        ( submitSuccess
+          ? <span className={ classnames(styles['submit-status'], styles['success']) }>
+              <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
+              <span className={ styles['explanation'] }>
+                { submitMessage }
+              </span>
+            </span>
+          : <div className={ classnames(styles['submit-status'], styles['fail']) }>
+              <div className={ classnames(styles['fail-icon-container']) }>
+                <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
+              </div>
+              <div className={ styles['explanation'] }>
+                { submitMessage }
+              </div>
+            </div>
+        )
+      }
+      {isSubmitting &&
+        <span className={ classnames(styles['submit-status'], styles['submitting']) }>
+          <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
+        </span>
+      }
     </div>
-
-  }
+  </div>
 }
 
-export default Options
-
+//export default Options
 
 // TODO: rework prop types afer refactor
 /*
