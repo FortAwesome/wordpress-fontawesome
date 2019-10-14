@@ -580,6 +580,9 @@ class Options extends React.Component {
 
 export default Options
 
+
+// TODO: rework prop types afer refactor
+/*
 Options.propTypes = {
   putData: PropTypes.func.isRequired,
   currentOptions: PropTypes.shape({
@@ -593,3 +596,4 @@ Options.propTypes = {
   releaseProviderStatus: PropTypes.object,
   wpApiSettings: PropTypes.object.isRequired
 }
+*/
