@@ -1,5 +1,5 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import classnames from 'classnames'
 import styles from './FontAwesomeAdminView.module.css'
 import Options from './Options'
@@ -11,29 +11,38 @@ import { values, get, size } from 'lodash'
 import Modal from './Modal'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
 
-class FontAwesomeAdminView extends React.Component {
+export default function FontAwesomeAdminView() {
+  const releaseProviderStatus = useSelector(state => state.releaseProviderStatus)
 
-  constructor(props) {
-    super(props)
+  const releaseProviderStatusOK = useSelector(state => {
+    // If releaseProviderStatus is null, it means that a network request was never issued.
+    // We take that to mean that it's using a cached set of release metadata, which is OK.
+    const status = releaseProviderStatus || null
+    const code = get(status, 'code', 0)
 
-     this.state = {
-       showPseudoElementsHelpModal: false
-     }
+    // If the status is not null, then the (HTTP) code for that network request should be in the OK range.
+    return status === null || (code >= 200 && code <= 300)
+  })
 
-    this.showPseudoElementsHelpModal = this.showPseudoElementsHelpModal.bind(this)
-    this.hidePseudoElementsHelpModal = this.hidePseudoElementsHelpModal.bind(this)
-  }
+  const hasV3DeprecationWarning = useSelector(state => !!state.v3DeprecationWarning)
 
-  showPseudoElementsHelpModal() {
-    this.setState({ showPseudoElementsHelpModal: true })
-  }
+  const releases = useSelector(state => state.releases)
+  const options = useSelector(state => state.options)
+  const registeredClientsPresent = useSelector(state => size(state.clientPreferences) > 0)
 
-  hidePseudoElementsHelpModal() {
-    this.setState({ showPseudoElementsHelpModal: false })
-  }
+  const [ showingPseudoElementsHelpModal, setShowingPseudoElementsHelpModal ] = useState(false)
 
-  getPseudoElementsHelpModal() {
-    return <Modal onClose={ this.hidePseudoElementsHelpModal }>
+  const showPseudoElementsHelpModal = () => setShowingPseudoElementsHelpModal(true)
+  const hidePseudoElementsHelpModal = () => setShowingPseudoElementsHelpModal(false)
+
+  const conflicts = useSelector(state => state.preferenceConflicts)
+  const clientPreferences = useSelector(state => values( state.clientPreferences ))
+  const unregisteredClients = useSelector(state => state.unregisteredClients)
+  const pluginVersionWarnings = useSelector(state => values( state.pluginVersionWarnings ))
+  const pluginVersion = useSelector(state => state.pluginVersion)
+
+  const getPseudoElementsHelpModal = () => {
+    return <Modal onClose={ hidePseudoElementsHelpModal }>
       <div className={ styles['pseudo-elements-help'] }>
         <h1>Inspecting for Pseudo-Elements with Google Chrome DevTools</h1>
         <p>Here's one way to discover whether pseudo-elements are being used on your pages.</p>
@@ -89,58 +98,37 @@ class FontAwesomeAdminView extends React.Component {
     </Modal>
   }
 
-  releaseProviderStatusOK() {
-    // If releaseProviderStatus is null, it means that a network request was never issued.
-    // We take that to mean that it's using a cached set of release metadata, which is OK.
-    const status = get(this, ['props', 'data', 'releaseProviderStatus'], null)
-    const code = get(status, 'code', 0)
-
-    // If the status is not null, then the (HTTP) code for that network request should be in the OK range.
-    return status === null || (code >= 200 && code <= 300)
-  }
-
-  render(){
-    const { data, putData } = this.props
-
-    return <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: this.state.showPseudoElementsHelpModal }) }>
-      { this.state.showPseudoElementsHelpModal && this.getPseudoElementsHelpModal() }
+  return ( 
+    <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: showingPseudoElementsHelpModal }) }>
+      { showingPseudoElementsHelpModal && getPseudoElementsHelpModal() }
       <h1>Font Awesome</h1>
       <div>
-        <V3DeprecationWarning wpApiSettings={ this.props.wpApiSettings }/>
-        { this.releaseProviderStatusOK() || <ReleaseProviderWarning/> }
+        { hasV3DeprecationWarning && <V3DeprecationWarning /> }
+        { releaseProviderStatusOK || <ReleaseProviderWarning /> }
         <Options
-          releases={ data.releases }
-          currentOptions={ data.options }
-          putData={ putData }
-          isSubmitting={ this.props.isSubmitting }
-          hasSubmitted={ this.props.hasSubmitted }
-          submitSuccess={ this.props.submitSuccess }
-          submitMessage={ this.props.submitMessage }
-          registeredClientsPresent={ size(data.clientPreferences) > 0 }
-          error={ this.props.error }
-          releaseProviderStatus={ data.releaseProviderStatus }
-          showPseudoElementsHelpModal={ this.showPseudoElementsHelpModal }
-          wpApiSettings={ this.props.wpApiSettings }
+          releases={ releases }
+          currentOptions={ options }
+          putData={ () => Promise.resolve() }
+          isSubmitting={ false }
+          hasSubmitted={ false }
+          submitSuccess={ false }
+          submitMessage={ "" }
+          registeredClientsPresent={ registeredClientsPresent }
+          // TODO: figure out how to handle error propagation after refactoring
+          error={ null }
+          releaseProviderStatus={ releaseProviderStatus }
+          showPseudoElementsHelpModal={ showPseudoElementsHelpModal }
         />
         <ClientPreferencesView
-          conflicts={ data.conflicts }
-          clientPreferences={ values( data.clientPreferences ) }
+          conflicts={ conflicts }
+          clientPreferences={ clientPreferences }
         />
-        <UnregisteredClientsView clients={ data.unregisteredClients }/>
+        <UnregisteredClientsView clients={ unregisteredClients }/>
         {
-          data.pluginVersionWarnings &&
-          <PluginVersionWarningsView warnings={ values(data.pluginVersionWarnings) } pluginVersion={ data.pluginVersion }/>
+          !!pluginVersionWarnings &&
+          <PluginVersionWarningsView warnings={ pluginVersionWarnings } pluginVersion={ pluginVersion }/>
         }
       </div>
     </div>
-  }
-}
-
-export default FontAwesomeAdminView
-
-FontAwesomeAdminView.propTypes = {
-  data: PropTypes.object,
-  putData: PropTypes.func.isRequired,
-  wpApiSettings: PropTypes.object.isRequired
-  // TODO: add the other props if we decide to keep them
+  )
 }
