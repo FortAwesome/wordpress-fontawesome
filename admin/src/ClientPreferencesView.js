@@ -120,7 +120,10 @@ class ClientPreferencesView extends React.Component {
 
 export default ClientPreferencesView
 
+// TODO: rework after refactor
+/*
 ClientPreferencesView.propTypes = {
   clientPreferences: PropTypes.array.isRequired,
   conflicts: PropTypes.object.isRequired
 }
+*/
