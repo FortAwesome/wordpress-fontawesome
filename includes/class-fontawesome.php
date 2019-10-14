@@ -195,10 +195,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 * @ignore
 		 */
 		const DEFAULT_USER_OPTIONS = array(
-			'usePro'               => false,
-			'v4compat'             => true,
+			'usePro'               => FALSE,
+			// TODO: maybe fix the camelCasing on this to capitalize the "C"
+			'v4compat'             => TRUE,
 			'technology'           => 'webfont',
-			'svgPseudoElements'    => false,
+			'svgPseudoElements'    => FALSE,
 			'detectConflictsUntil' => 0,
 			'blacklist'            => array()
 		);
@@ -1064,8 +1065,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 										'previous_version' 						=> $this->get_previous_version(),
 									),
 									'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
-									'initialOptions'               	=> $this->options(),
-									'initialPreferenceConflicts'    => $this->conflicts_by_option(),
+									'options'               	      => $this->options(),
+									'preferenceConflicts'           => $this->conflicts_by_option(),
+									'v3DeprecationWarning'          => $this->get_v3deprecation_warning_data(),
 								)
 							),
 						);
@@ -1113,9 +1115,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		public function common_data_for_js_bundle() {
 			return array(
-				'apiNonce'                   => wp_create_nonce( 'wp_rest' ),
-				'apiUrl'                     => rest_url( self::REST_API_NAMESPACE ),
-				'initialUnregisteredClients' => $this->unregistered_clients(),
+				'apiNonce'            => wp_create_nonce( 'wp_rest' ),
+				'apiUrl'              => rest_url( self::REST_API_NAMESPACE ),
+				'unregisteredClients' => $this->unregistered_clients(),
 			);
 		}
 
