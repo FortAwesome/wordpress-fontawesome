@@ -4,6 +4,8 @@ const coerceBool = val => val === true || val === "1"
 
 const coerceEmptyArrayToEmptyObject = val => size(val) === 0 ? {} : val
 
+// TODO: add reducer for the clientPreferences that coerces their boolean options
+
 function options(state = {}, _action = '') {
   return {
     ...state,
