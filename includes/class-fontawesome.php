@@ -1047,6 +1047,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 							true
 						);
 
+						// TODO: wrap this in a try/catch, since it involves executing
+						// client code that may have problems.
+						$this->gather_preferences();
+
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
