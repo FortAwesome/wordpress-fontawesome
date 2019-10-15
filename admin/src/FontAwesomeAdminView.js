@@ -7,7 +7,7 @@ import ClientPreferencesView from './ClientPreferencesView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
-import { values, get, size } from 'lodash'
+import { values, get } from 'lodash'
 import Modal from './Modal'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
 
@@ -31,8 +31,6 @@ export default function FontAwesomeAdminView() {
   const showPseudoElementsHelpModal = () => setShowingPseudoElementsHelpModal(true)
   const hidePseudoElementsHelpModal = () => setShowingPseudoElementsHelpModal(false)
 
-  const conflicts = useSelector(state => state.preferenceConflicts)
-  const clientPreferences = useSelector(state => values( state.clientPreferences ))
   const unregisteredClients = useSelector(state => state.unregisteredClients)
   const pluginVersionWarnings = useSelector(state => values( state.pluginVersionWarnings ))
   const pluginVersion = useSelector(state => state.pluginVersion)
