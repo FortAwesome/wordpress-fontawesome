@@ -80,18 +80,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 */
 		protected function build_item( $fa ) {
 			return array(
-				'options'               => $fa->options(),
-				'clientPreferences'     => $fa->client_preferences(),
-				'conflicts'             => $fa->conflicts_by_option(),
-				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
-				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
-				'unregisteredClients'   => $fa->unregistered_clients(),
-				'releaseProviderStatus' => $this->release_provider()->get_status(),
-				'releases'              => array(
-					'available'        => $fa->get_available_versions(),
-					'latest_version'   => $fa->get_latest_version(),
-					'previous_version' => $fa->get_previous_version(),
-				),
+				'options'   => $fa->options(),
+				'conflicts' => $fa->conflicts_by_option(),
 			);
 		}
 
