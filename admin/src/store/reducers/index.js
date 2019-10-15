@@ -6,22 +6,56 @@ const coerceEmptyArrayToEmptyObject = val => size(val) === 0 ? {} : val
 
 // TODO: add reducer for the clientPreferences that coerces their boolean options
 
-function options(state = {}, _action = '') {
-  return {
-    ...state,
-    usePro: coerceBool(state.usePro),
-    v4compat: coerceBool(state.v4compat),
-    svgPseudoElements: coerceBool(state.svgPseudoElements)
+function options(state = {}, action = {}) {
+  const { type, data } = action
+
+  switch(type) {
+    case 'OPTIONS_FORM_SUBMIT_END':
+      const {
+        options: {
+          technology,
+          usePro,
+          v4compat,
+          svgPseudoElements,
+          detectConflictsUntil,
+          blacklist
+        }
+      } = data
+
+      return {
+        technology,
+        blacklist,
+        detectConflictsUntil,
+        usePro: coerceBool(usePro),
+        v4compat: coerceBool(v4compat),
+        svgPseudoElements: coerceBool(svgPseudoElements)
+      }
+    default:
+      return state
   }
 }
 
-function optionsFormState(state = { hasSubmitted: false, isSubmitting: false, submitSuccess: false, submitMessage: '' }, _action = '') {
-  return  state
+function optionsFormState(
+  state = {
+    hasSubmitted: false,
+    isSubmitting: false,
+    success: false,
+    message: ''
+  }, action = {}) {
+  const { type, success, message } = action
+  
+  switch(type) {
+    case 'OPTIONS_FORM_SUBMIT_START':
+      return { ...state, isSubmitting: true }
+    case 'OPTIONS_FORM_SUBMIT_END':
+      return { ...state, isSubmitting: false, success, message }
+    default:
+      return state
+  }
 }
 
 function pendingOptions(state = {}, action = {}) {
   const { type, change } = action
-  if( ! change ) return state
 
   switch(type) {
     case 'ADD_PENDING_OPTION':
@@ -30,7 +64,20 @@ function pendingOptions(state = {}, action = {}) {
       const option = Object.keys(change)[0]
       return omit(state, option)
     case 'RESET_PENDING_OPTIONS':
+    case 'OPTIONS_FORM_SUBMIT_END':
       return {}
+    default:
+      return state
+  }
+}
+
+function preferenceConflicts(state = {}, action = {}) {
+  const { type } = action
+  
+  switch(type) {
+    case 'OPTIONS_FORM_SUBMIT_END':
+      const { data: { conflicts } } = action
+      return coerceEmptyArrayToEmptyObject(conflicts)
     default:
       return state
   }
@@ -52,6 +99,8 @@ function preferenceConflictDetection(
       return { ...state, isChecking: true }
     case 'PREFERENCE_CHECK_END':
       return { ...state, isChecking: false, hasChecked: true, success, message }
+    case 'OPTIONS_FORM_SUBMIT_END':
+      return { ...state, isChecking: false, hasChecked: false, success: false, message: ''}
     default:
       return state
   }
@@ -63,6 +112,8 @@ function pendingOptionConflicts(state = {}, action = {}) {
   switch(type) {
     case 'PREFERENCE_CHECK_END':
       return { ...detectedConflicts }
+    case 'OPTIONS_FORM_SUBMIT_END':
+      return {}
     default:
       return state
   }
@@ -74,9 +125,9 @@ export default (state = {}, action = {}) => {
     showAdmin: coerceBool(state.showAdmin),
     showConflictDetectionReporter: coerceBool(state.showConflictDetectionReporter),
     onSettingsPage: coerceBool(state.onSettingsPage),
-    preferenceConflicts: coerceEmptyArrayToEmptyObject(state.preferenceConflicts),
     unregisteredClients: coerceEmptyArrayToEmptyObject(state.unregisteredClients),
     clientPreferences: coerceEmptyArrayToEmptyObject(state.clientPreferences),
+    preferenceConflicts: preferenceConflicts(state.preferenceConflicts),
     options: options(state.options, action),
     pendingOptions: pendingOptions(state.pendingOptions, action),
     pendingOptionConflicts: pendingOptionConflicts(state.pendingOptionConflicts, action),
