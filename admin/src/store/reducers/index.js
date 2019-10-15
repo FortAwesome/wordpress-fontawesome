@@ -162,6 +162,17 @@ function unregisteredClientDetectionStatus(
   }
 }
 
+function v3DeprecationWarningStatus(
+  state = {
+    isSubmitting: false,
+    hasSubmitted: false,
+    success: false,
+    message: ''
+  },
+  action = {}) {
+    return state
+}
+
 export default (state = {}, action = {}) => {
   return {
     ...state,
@@ -176,6 +187,7 @@ export default (state = {}, action = {}) => {
     pendingOptions: pendingOptions(state.pendingOptions, action),
     pendingOptionConflicts: pendingOptionConflicts(state.pendingOptionConflicts, action),
     preferenceConflictDetection: preferenceConflictDetection(state.preferenceConflictDetection, action),
-    optionsFormState: optionsFormState(state.optionsFormState, action)
+    optionsFormState: optionsFormState(state.optionsFormState, action),
+    v3DeprecationWarningStatus: v3DeprecationWarningStatus(state.v3DeprecationWarningStatus, action)
   }
 }

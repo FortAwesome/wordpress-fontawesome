@@ -169,3 +169,10 @@ export function reportDetectedConflicts({ nodesTested = null}) {
     })
   }
 }
+
+export function snoozeV3DeprecationWarning() {
+  return (dispatch, getState) => {
+    const { apiNonce, apiUrl } = getState()
+
+  }
+}
