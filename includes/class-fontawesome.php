@@ -1122,6 +1122,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				'apiNonce'            => wp_create_nonce( 'wp_rest' ),
 				'apiUrl'              => rest_url( self::REST_API_NAMESPACE ),
 				'unregisteredClients' => $this->unregistered_clients(),
+				'settingsPageUrl'			=> $this->settings_page_url()
 			);
 		}
 
