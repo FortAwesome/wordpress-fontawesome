@@ -1209,13 +1209,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			}
 
 			if ( 'webfont' === $options['technology'] ) {
-				add_action(
-					'wp_enqueue_scripts',
-					function () use ( $resources ) {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_style( self::RESOURCE_HANDLE, $resources[0]->source(), null, null );
-					}
-				);
+				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+					add_action(
+						$action,
+						function () use ( $resources ) {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_style( self::RESOURCE_HANDLE, $resources[0]->source(), null, null );
+						}
+					);
+				}
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				add_filter(
