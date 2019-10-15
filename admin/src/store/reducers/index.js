@@ -170,7 +170,27 @@ function v3DeprecationWarningStatus(
     message: ''
   },
   action = {}) {
-    return state
+  const { type, success, message } = action
+
+  switch(type) {
+    case 'SNOOZE_V3DEPRECATION_WARNING_START':
+      return { ...state, isSubmitting: true, hasSubmitted: true }
+    case 'SNOOZE_V3DEPRECATION_WARNING_END':
+      return { ...state, isSubmitting: false, success, message }
+    default:
+      return state
+  }
+}
+
+function v3DeprecationWarning(state = {}, action = {}) {
+  const { type, snooze = false } = action
+
+  switch(type) {
+    case 'SNOOZE_V3DEPRECATION_WARNING_END':
+      return { ...state, snooze }
+    default:
+      return state
+  }
 }
 
 export default (state = {}, action = {}) => {
@@ -188,6 +208,7 @@ export default (state = {}, action = {}) => {
     pendingOptionConflicts: pendingOptionConflicts(state.pendingOptionConflicts, action),
     preferenceConflictDetection: preferenceConflictDetection(state.preferenceConflictDetection, action),
     optionsFormState: optionsFormState(state.optionsFormState, action),
-    v3DeprecationWarningStatus: v3DeprecationWarningStatus(state.v3DeprecationWarningStatus, action)
+    v3DeprecationWarningStatus: v3DeprecationWarningStatus(state.v3DeprecationWarningStatus, action),
+    v3DeprecationWarning: v3DeprecationWarning(state.v3DeprecationWarning, action)
   }
 }

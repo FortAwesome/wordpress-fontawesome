@@ -174,5 +174,27 @@ export function snoozeV3DeprecationWarning() {
   return (dispatch, getState) => {
     const { apiNonce, apiUrl } = getState()
 
+    dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_START' })
+
+    axios.put(
+      `${apiUrl}/v3deprecation`,
+      { snooze: true },
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    )
+    .then(function() {
+      dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_END', success: true, snooze: true })
+    })
+    .catch(function(error){
+      console.error('Font Awesome Plugin Error:', error)
+      dispatch({
+        type: 'SNOOZE_V3DEPRECATION_WARNING_END',
+        success: false,
+        message: `Snoozing failed. This might indicate a bug. Could you report this on the plugin's support forum? There maybe additional diagnostic output in the JavaScript console.\n\n${error}`
+      })
+    })
   }
 }
