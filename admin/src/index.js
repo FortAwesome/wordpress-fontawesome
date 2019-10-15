@@ -6,6 +6,7 @@ import Reporter from './conflict_detection/Reporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
 import store from './store'
+import { reportDetectedConflicts } from './store/actions'
 
 const { showAdmin, showConflictDetectionReporter } = store.getState()
 
@@ -25,6 +26,11 @@ if( showAdmin ) {
 // This needs to be mounted earlier than DOMContentLoaded, as soon as it's enqueued,
 // because it needs to add global configuration that the conflict detector will use.
 if( showConflictDetectionReporter ) {
+
+  window.FontAwesomeDetection = {
+    report: params => store.dispatch(reportDetectedConflicts(params))
+  }
+
   const conflictDetectionShadowRootElement = document.createElement('DIV')
   conflictDetectionShadowRootElement.setAttribute('id', 'font-awesome-plugin-conflict-detection-shadow-host')
   document.body.appendChild(conflictDetectionShadowRootElement)

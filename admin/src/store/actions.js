@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { toPairs } from 'lodash'
+import { toPairs, size } from 'lodash'
 
 export function addPendingOption(change) {
   return function(dispatch, getState) {
@@ -126,6 +126,45 @@ export function submitPendingOptions() {
         type: 'OPTIONS_FORM_SUBMIT_END',
         success: false,
         message: submitMessage
+      })
+    })
+  }
+}
+
+export function reportDetectedConflicts({ nodesTested = null}) {
+  return (dispatch, getState) => {
+    const { apiNonce, apiUrl, unregisteredClients } = getState()
+
+    const payload = Object.keys(nodesTested.conflict).reduce(function(acc, md5){
+      acc[md5] = nodesTested.conflict[md5]
+      return acc
+    }, {})
+
+    dispatch({ type: 'CONFLICT_DETECTION_SUBMIT_START', countBeforeDetection: size(unregisteredClients) })
+
+    axios.post(
+      `${apiUrl}/report-conflicts`,
+      payload,
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    )
+    .then(function() {
+      dispatch({
+        type: 'CONFLICT_DETECTION_SUBMIT_END',
+        success: true,
+        unregisteredClients: payload
+      })
+    })
+    .catch(function(error){
+      console.error('Font Awesome Conflict Detection Reporting Error: ', error)
+      dispatch({
+        type: 'CONFLICT_DETECTION_SUBMIT_END',
+        success: false,
+        unregisteredClients: payload,
+        message: `Submitting results to the WordPress server failed, and this might indicate a bug. Could you report this on the plugin's support forum? There maybe additional diagnostic output in the JavaScript console.\n\n${error}`
       })
     })
   }
