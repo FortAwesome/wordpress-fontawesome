@@ -7,7 +7,7 @@ import ClientPreferencesView from './ClientPreferencesView'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import PluginVersionWarningsView from './PluginVersionWarningsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
-import { values, get } from 'lodash'
+import { values, get, size } from 'lodash'
 import Modal from './Modal'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
 
@@ -105,8 +105,9 @@ export default function FontAwesomeAdminView() {
         <ClientPreferencesView />
         <UnregisteredClientsView clients={ unregisteredClients }/>
         {
-          !!pluginVersionWarnings &&
-          <PluginVersionWarningsView warnings={ pluginVersionWarnings } pluginVersion={ pluginVersion }/>
+          size(pluginVersionWarnings) > 0
+          ? <PluginVersionWarningsView warnings={ pluginVersionWarnings } pluginVersion={ pluginVersion }/>
+          : null
         }
       </div>
     </div>
