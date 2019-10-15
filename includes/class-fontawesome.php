@@ -588,7 +588,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			?>
 			<div class="notice notice-warning is-dismissible">
 				<p>
-					Hey there, from the new and improved Font Awesome plugin!
+					Hey there, from the Font Awesome plugin!
 				</p>
 				<p>
 					Looks like you're using an <code>[icon]</code> shortcode with an old Font Awesome 3 icon name: <code><?php echo( esc_html( $data['atts']['name'] ) ); ?></code>.
