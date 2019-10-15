@@ -196,10 +196,20 @@ function v3DeprecationWarning(state = {}, action = {}) {
 export default (state = {}, action = {}) => {
   return {
     ...state,
+    // apiNonce
+    // apiUrl
+    // settingsPageUrl
+    // onSettingsPage
+    // pluginVersionWarnings
+    // releaseProviderStatus
+    // releases
+    // pluginVersion
+    // preferenceConflicts
     showAdmin: coerceBool(state.showAdmin),
     showConflictDetectionReporter: coerceBool(state.showConflictDetectionReporter),
     onSettingsPage: coerceBool(state.onSettingsPage),
     clientPreferences: coerceEmptyArrayToEmptyObject(state.clientPreferences),
+
     unregisteredClients: unregisteredClients(state.unregisteredClients, action),
     unregisteredClientDetectionStatus: unregisteredClientDetectionStatus(state.unregisteredClientDetectionStatus, action),
     preferenceConflicts: preferenceConflicts(state.preferenceConflicts),
