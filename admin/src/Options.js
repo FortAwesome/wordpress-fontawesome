@@ -52,8 +52,12 @@ export default function Options() {
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)
   const clientPreferences = useSelector(state => state.clientPreferences)
   const detectingConflicts = useSelector(state => {
-    const { detectConflictsUntil } = state.options
-    return detectConflictsUntil && ((new Date(detectConflictsUntil * 1000)) > (new Date()))
+    if( !!pendingOptions.detectConflictsUntil ) {
+      return true
+    } else {
+      const { detectConflictsUntil } = state.options
+      return detectConflictsUntil && ((new Date(detectConflictsUntil * 1000)) > (new Date()))
+    }
   })
 
   const versionOptions = useSelector(state => {
