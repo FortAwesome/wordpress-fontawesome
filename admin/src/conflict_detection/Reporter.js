@@ -22,13 +22,13 @@ export default function Reporter() {
   const runStatus = useSelector(state => {
     const { isSubmitting, hasSubmitted, success } = state.unregisteredClientDetectionStatus
     if( isSubmitting ) {
-      return 'Submitting'
+      return STATUS.submitting
     } else if( !hasSubmitted ){
-      return 'Running'
+      return STATUS.running
     } else if ( success ) {
-      return 'Done'
+      return STATUS.done
     } else {
-      return 'Error'
+      return STATUS.error
     }
   })
   const errorMessage = useSelector(
