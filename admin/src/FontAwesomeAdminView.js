@@ -106,17 +106,6 @@ export default function FontAwesomeAdminView() {
         { hasV3DeprecationWarning && <V3DeprecationWarning /> }
         { releaseProviderStatusOK || <ReleaseProviderWarning /> }
         <Options
-          releases={ releases }
-          currentOptions={ options }
-          putData={ () => Promise.resolve() }
-          isSubmitting={ false }
-          hasSubmitted={ false }
-          submitSuccess={ false }
-          submitMessage={ "" }
-          registeredClientsPresent={ registeredClientsPresent }
-          // TODO: figure out how to handle error propagation after refactoring
-          error={ null }
-          releaseProviderStatus={ releaseProviderStatus }
           showPseudoElementsHelpModal={ showPseudoElementsHelpModal }
         />
         <ClientPreferencesView
