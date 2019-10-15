@@ -18,12 +18,14 @@ function options(state = {}, action = {}) {
           v4compat,
           svgPseudoElements,
           detectConflictsUntil,
+          version,
           blacklist
         }
       } = data
 
       return {
         technology,
+        version,
         blacklist,
         detectConflictsUntil,
         usePro: coerceBool(usePro),
