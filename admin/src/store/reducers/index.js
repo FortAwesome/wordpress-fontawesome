@@ -121,14 +121,56 @@ function pendingOptionConflicts(state = {}, action = {}) {
   }
 }
 
+function unregisteredClients(state = {}, action = {}) {
+  const { type, unregisteredClients = {} } = action
+
+  switch(type) {
+    case 'CONFLICT_DETECTION_SUBMIT_END':
+      return { ...state, ...coerceEmptyArrayToEmptyObject(unregisteredClients)}
+    default:
+      return coerceEmptyArrayToEmptyObject(state)
+  }
+}
+
+function unregisteredClientDetectionStatus(
+  state = {
+    success: false,
+    hasSubmitted: false,
+    isSubmitting: false,
+    countBeforeDetection: 0,
+    countAfterDetection: 0,
+    message: ''
+  },
+  action = {}) {
+
+  const { type, success, message, countBeforeDetection } = action
+
+  switch(type) {
+    case 'CONFLICT_DETECTION_SUBMIT_START':
+      return { ...state, isSubmitting: true, countBeforeDetection }
+    case 'CONFLICT_DETECTION_SUBMIT_END':
+      return {
+        ...state,
+        isSubmitting: false,
+        hasSubmitted: true,
+        success,
+        message,
+        countAfterDetection: size(action.unregisteredClients)
+      }
+    default:
+      return state
+  }
+}
+
 export default (state = {}, action = {}) => {
   return {
     ...state,
     showAdmin: coerceBool(state.showAdmin),
     showConflictDetectionReporter: coerceBool(state.showConflictDetectionReporter),
     onSettingsPage: coerceBool(state.onSettingsPage),
-    unregisteredClients: coerceEmptyArrayToEmptyObject(state.unregisteredClients),
     clientPreferences: coerceEmptyArrayToEmptyObject(state.clientPreferences),
+    unregisteredClients: unregisteredClients(state.unregisteredClients, action),
+    unregisteredClientDetectionStatus: unregisteredClientDetectionStatus(state.unregisteredClientDetectionStatus, action),
     preferenceConflicts: preferenceConflicts(state.preferenceConflicts),
     options: options(state.options, action),
     pendingOptions: pendingOptions(state.pendingOptions, action),
