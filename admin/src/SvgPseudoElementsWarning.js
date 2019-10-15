@@ -27,9 +27,9 @@ class SvgPseudoElementsWarning extends React.Component {
         title='Performance might be slow with SVG Pseudo-elements'
         type='warning'
       >
-        { v4compat && <h4>And with Version 4 Compatibility, watch out for empty boxes!</h4> }
-          { this.state.showMore &&
-          <div>
+        { v4compat ? <h4>And with Version 4 Compatibility, watch out for empty boxes!</h4> : null }
+          { this.state.showMore 
+          ? <div>
             <p>
               Using SVG with Pseudo-elements is known to cause
               slow browser performance in some scenarios--sometimes <em>really</em> slow. If you know you need to handle
@@ -60,10 +60,12 @@ class SvgPseudoElementsWarning extends React.Component {
               Ideally, your themes and plugins that use pseudo-elements will eventually migrate away from using pseudo-elements as well.
             </p>
           </div>
+          : null
           }
         <div>
-          { ! this.state.showMore &&
-          <p><button onClick={ this.toggleShowMore } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleDown }/>Tell me more</button></p>
+          { this.state.showMore
+          ? null
+          : <p><button onClick={ this.toggleShowMore } className={ sharedStyles['more-less'] }><FontAwesomeIcon icon={ faAngleDown }/>Tell me more</button></p>
           }
         </div>
     </Alert>
