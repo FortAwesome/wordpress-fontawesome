@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock, faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 import { snoozeV3DeprecationWarning } from './store/actions'
@@ -10,6 +10,7 @@ import Alert from './Alert'
 export default function V3DeprecationWarning() {
   const { snooze, atts, v5name, v5prefix } = useSelector(state => state.v3DeprecationWarning)
   const { isSubmitting, hasSubmitted, success } = useSelector(state => state.v3DeprecationWarningStatus)
+  const dispatch = useDispatch()
 
   if (snooze) return null
 
@@ -83,7 +84,7 @@ export default function V3DeprecationWarning() {
       </p>
 
       <p>
-        <button disabled={ isSubmitting } onClick={ snoozeV3DeprecationWarning } className={ classnames( styles['snooze-button'], 'button', 'button-primary' ) }>
+        <button disabled={ isSubmitting } onClick={ () => dispatch(snoozeV3DeprecationWarning()) } className={ classnames( styles['snooze-button'], 'button', 'button-primary' ) }>
           {
             isSubmitting
               ?  <FontAwesomeIcon icon={ faSpinner } spin className={ styles['submitting'] } />
