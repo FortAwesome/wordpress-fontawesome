@@ -15,7 +15,6 @@ class Modal extends React.Component {
 
   handleEscape(e) {
     const { onClose } = this.props
-    console.log(`DEBUG: handleEscape`)
     if(27 === e.keyCode){
       onClose()
     }
