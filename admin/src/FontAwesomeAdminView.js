@@ -104,10 +104,7 @@ export default function FontAwesomeAdminView() {
         <Options
           showPseudoElementsHelpModal={ showPseudoElementsHelpModal }
         />
-        <ClientPreferencesView
-          conflicts={ conflicts }
-          clientPreferences={ clientPreferences }
-        />
+        <ClientPreferencesView />
         <UnregisteredClientsView clients={ unregisteredClients }/>
         {
           !!pluginVersionWarnings &&
