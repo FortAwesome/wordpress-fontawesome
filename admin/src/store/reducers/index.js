@@ -201,7 +201,6 @@ export default combineReducers({
   apiUrl: simple,
   clientPreferences: coerceEmptyArrayToEmptyObject,
   onSettingsPage: coerceBool,
-  onSettingsPage: simple,
   options,
   optionsFormState,
   pendingOptionConflicts,
