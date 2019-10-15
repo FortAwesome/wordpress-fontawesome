@@ -2,7 +2,8 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   addPendingOption,
-  checkPreferenceConflicts
+  checkPreferenceConflicts,
+  submitPendingOptions
 } from './store/actions'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -85,14 +86,7 @@ export default function Options() {
   function handleSubmitClick(e) {
     e.preventDefault()
 
-    // Dispatch action to store: submit pending options
-    /*
-    const { putData } = this.props
-
-    putData({
-      options: this.currentFormOptions()
-    })
-    */
+    dispatch(submitPendingOptions())
   }
 
   function getDetectionStatus(option) {

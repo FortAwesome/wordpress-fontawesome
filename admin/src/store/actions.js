@@ -74,3 +74,57 @@ export function checkPreferenceConflicts() {
     })
   }
 }
+
+export function submitPendingOptions() {
+  return function(dispatch, getState) {
+    const { apiNonce, apiUrl, options, pendingOptions } = getState()
+
+    dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
+
+    axios.put(
+      `${apiUrl}/config`,
+      { options: { ...options, ...pendingOptions }},
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    ).then(response => {
+    const { status, data } = response
+    if (200 === status) {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        data,
+        success: true,
+        message: 'Changes saved'
+      })
+    } else {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: "Failed to save changes"
+      })
+    }
+    }).catch(error => {
+      const { response: { data: { code, message }}} = error
+
+      const submitMessage = (code => { 
+        switch(code) {
+          case 'cant_update':
+            return message
+          case 'rest_no_route':
+          case 'rest_cookie_invalid_nonce':
+            return "Sorry, we couldn't reach the server"
+          default:
+            return "Update failed"
+        }
+      })(code)
+
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: submitMessage
+      })
+    })
+  }
+}
