@@ -39,6 +39,7 @@ export default function Options() {
     : state.options[option]
   )
 
+  const nowMs = (new Date()).valueOf()
   const usePro = optionSelector('usePro')
   const technology = optionSelector('technology')
   const version = optionSelector('version')
@@ -51,14 +52,11 @@ export default function Options() {
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)
   const clientPreferences = useSelector(state => state.clientPreferences)
-  const detectingConflicts = useSelector(state => {
-    if( !!pendingOptions.detectConflictsUntil ) {
-      return true
-    } else {
-      const { detectConflictsUntil } = state.options
-      return detectConflictsUntil && ((new Date(detectConflictsUntil * 1000)) > (new Date()))
-    }
-  })
+  
+  const detectConflictsUntilNext = optionSelector('detectConflictsUntil')
+  const detectingConflictsNext = (new Date(detectConflictsUntilNext * 1000)) > nowMs
+  const detectConflictsUntilOrig = useSelector(state => state.options.detectConflictsUntil)
+  const detectingConflictsOrig = (new Date(detectConflictsUntilOrig * 1000)) > nowMs
 
   const versionOptions = useSelector(state => {
     const { releases: { available, latest_version, previous_version } } = state
@@ -82,9 +80,9 @@ export default function Options() {
 
   const dispatch = useDispatch()
 
-  function handleOptionChange(change = {}) {
+  function handleOptionChange(change = {}, check = true) {
     dispatch(addPendingOption(change))
-    dispatch(checkPreferenceConflicts())
+    check && dispatch(checkPreferenceConflicts())
   }
 
   function handleSubmitClick(e) {
@@ -365,15 +363,27 @@ export default function Options() {
                 name="code_edit_features"
                 type="checkbox"
                 value="remove_conflicts"
-                checked={ detectingConflicts }
+                checked={ detectingConflictsNext }
                 onChange={ () => {
-                  if( detectingConflicts ) {
-                    // Back it up just a touch
-                    const nowish = Math.floor((new Date())/1000) - 1
-                    handleOptionChange({ detectConflictsUntil: nowish })
+                  if( detectingConflictsNext ) {
+                    // We're disabling detection. The way we do that depends on whether
+                    // we're setting a newly disabled state or reverting to a previously disabled state.
+                    if ( detectingConflictsOrig ) {
+                      // Setting a new disabled state, which means choosing a time that's basically
+                      // "now", but just a touch before now to make sure that when re-rendering, this
+                      // value results in a correct computation for the detectingConflictsNext boolean.
+                      const nowish = Math.floor((new Date())/1000) - 1
+                      handleOptionChange({ detectConflictsUntil: nowish }, false)
+                    } else {
+                      // Turning off conflict detection by resetting it to its originally "off" state,
+                      // but a state that represents the last time when conflict detection had been enabled,
+                      // which we want to keep.
+                      handleOptionChange({ detectConflictsUntil: detectConflictsUntilOrig }, false)
+                    }
                   } else {
+                    // We're enabling detection, so we calculate a time in the future.
                     const tenMinutesLater = Math.floor((new Date((new Date()).valueOf() + (1000 * 60 * 10))) / 1000)
-                    handleOptionChange({ detectConflictsUntil: tenMinutesLater })
+                    handleOptionChange({ detectConflictsUntil: tenMinutesLater }, false)
                   }
                 } }
                 className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
@@ -406,7 +416,6 @@ export default function Options() {
                   </span>
                 </span>
               </label>
-              { getDetectionStatus('detectConflictsUntil') }
             </div>
             { technology === 'svg' &&
               <div className={styles['option-choice']}>

@@ -7,8 +7,10 @@ export function addPendingOption(change) {
 
     const [ key, val ] = toPairs(change)[0]
 
+    const originalValue = options[key]
+
     // If we're changing back to an original setting
-    if( options[key] === val ) {
+    if( originalValue === val ) {
       dispatch({
         type: 'RESET_PENDING_OPTION',
         change
