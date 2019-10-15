@@ -32,7 +32,7 @@ function CheckingOptionStatusIndicator(){
   </div>
 }
 
-export default function Options() {
+export default function Options(props) {
   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
     ? state.pendingOptions[option]
@@ -461,7 +461,7 @@ export default function Options() {
               svgPseudoElements
               && <SvgPseudoElementsWarning
                 v4compat={ v4compat }
-                showModal={ this.props.showPseudoElementsHelpModal }
+                showModal={ props.showPseudoElementsHelpModal }
               />
             }
           </div>
@@ -505,21 +505,6 @@ export default function Options() {
   </div>
 }
 
-//export default Options
-
-// TODO: rework prop types afer refactor
-/*
 Options.propTypes = {
-  putData: PropTypes.func.isRequired,
-  currentOptions: PropTypes.shape({
-    technology: PropTypes.string.isRequired,
-    v4compat: PropTypes.bool.isRequired,
-    usePro: PropTypes.bool.isRequired,
-    svgPseudoElements: PropTypes.bool.isRequired
-  }).isRequired,
-  registeredClientsPresent: PropTypes.bool.isRequired,
-  releases: PropTypes.object.isRequired,
-  releaseProviderStatus: PropTypes.object,
-  wpApiSettings: PropTypes.object.isRequired
+  showPseudoElementsHelpModal: PropTypes.func.isRequired
 }
-*/
