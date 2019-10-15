@@ -112,6 +112,9 @@ module.exports = {
       ]
   ,
   output: {
+    // See: https://reactjs.org/docs/cross-origin-errors.html
+    // and: https://webpack.js.org/configuration/output/#outputcrossoriginloading
+    crossOriginLoading: 'anonymous',
     // Add /* filename */ comments to generated require()s in the output.
     pathinfo: true,
     // This does not produce a real file. It's just the virtual path that is
