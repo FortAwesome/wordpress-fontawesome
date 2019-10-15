@@ -26,10 +26,6 @@ export default function FontAwesomeAdminView() {
 
   const hasV3DeprecationWarning = useSelector(state => !!state.v3DeprecationWarning)
 
-  const releases = useSelector(state => state.releases)
-  const options = useSelector(state => state.options)
-  const registeredClientsPresent = useSelector(state => size(state.clientPreferences) > 0)
-
   const [ showingPseudoElementsHelpModal, setShowingPseudoElementsHelpModal ] = useState(false)
 
   const showPseudoElementsHelpModal = () => setShowingPseudoElementsHelpModal(true)
