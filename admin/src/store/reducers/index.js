@@ -1,4 +1,5 @@
 import { size, omit } from 'lodash'
+import { combineReducers } from 'redux'
 
 const coerceBool = val => val === true || val === "1"
 
@@ -81,7 +82,7 @@ function preferenceConflicts(state = {}, action = {}) {
       const { data: { conflicts } } = action
       return coerceEmptyArrayToEmptyObject(conflicts)
     default:
-      return state
+      return coerceEmptyArrayToEmptyObject(state)
   }
 }
 
@@ -193,32 +194,29 @@ function v3DeprecationWarning(state = {}, action = {}) {
   }
 }
 
-export default (state = {}, action = {}) => {
-  return {
-    ...state,
-    // apiNonce
-    // apiUrl
-    // settingsPageUrl
-    // onSettingsPage
-    // pluginVersionWarnings
-    // releaseProviderStatus
-    // releases
-    // pluginVersion
-    // preferenceConflicts
-    showAdmin: coerceBool(state.showAdmin),
-    showConflictDetectionReporter: coerceBool(state.showConflictDetectionReporter),
-    onSettingsPage: coerceBool(state.onSettingsPage),
-    clientPreferences: coerceEmptyArrayToEmptyObject(state.clientPreferences),
+function simple(state = {}, _action) { return state }
 
-    unregisteredClients: unregisteredClients(state.unregisteredClients, action),
-    unregisteredClientDetectionStatus: unregisteredClientDetectionStatus(state.unregisteredClientDetectionStatus, action),
-    preferenceConflicts: preferenceConflicts(state.preferenceConflicts),
-    options: options(state.options, action),
-    pendingOptions: pendingOptions(state.pendingOptions, action),
-    pendingOptionConflicts: pendingOptionConflicts(state.pendingOptionConflicts, action),
-    preferenceConflictDetection: preferenceConflictDetection(state.preferenceConflictDetection, action),
-    optionsFormState: optionsFormState(state.optionsFormState, action),
-    v3DeprecationWarningStatus: v3DeprecationWarningStatus(state.v3DeprecationWarningStatus, action),
-    v3DeprecationWarning: v3DeprecationWarning(state.v3DeprecationWarning, action)
-  }
-}
+export default combineReducers({
+  apiNonce: simple,
+  apiUrl: simple,
+  settingsPageUrl: simple,
+  onSettingsPage: simple,
+  pluginVersionWarnings: simple,
+  releaseProviderStatus: simple,
+  releases: simple,
+  pluginVersion: simple,
+  showAdmin: coerceBool,
+  showConflictDetectionReporter: coerceBool,
+  onSettingsPage: coerceBool,
+  clientPreferences: coerceEmptyArrayToEmptyObject,
+  unregisteredClients,
+  unregisteredClientDetectionStatus,
+  preferenceConflicts,
+  options,
+  pendingOptions,
+  pendingOptionConflicts,
+  preferenceConflictDetection,
+  optionsFormState,
+  v3DeprecationWarningStatus,
+  v3DeprecationWarning
+})
