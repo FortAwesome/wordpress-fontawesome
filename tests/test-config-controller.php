@@ -137,86 +137,12 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
 
-		$this->assertArrayHasKey( 'pluginVersion', $data );
-		$this->assertEquals( FontAwesome::PLUGIN_VERSION, $data['pluginVersion'] );
-
 		$this->assertArrayHasKey( 'options', $data );
 		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['usePro'], $data['options']['usePro'] );
 		$this->assertEquals( '5.3.1', $data['options']['version'] );
 
-		$this->assertArrayHasKey( 'clientPreferences', $data );
-		// By default, no client preferences, since the admin user is not included as one of these clients.
-		$this->assertEquals( 0, count( $data['clientPreferences'] ) );
-
 		$this->assertArrayHasKey( 'conflicts', $data );
 		// No client conflicts in the default scenario
 		$this->assertEquals( [], $data['conflicts'] );
-
-		$this->assertArrayHasKey( 'pluginVersionWarnings', $data );
-		// None of these warnings in the default scenario
-		$this->assertNull( $data['pluginVersionWarnings'] );
-
-		$this->assertArrayHasKey( 'unregisteredClients', $data );
-		// None by default
-		$this->assertEquals( [], $data['unregisteredClients'] );
-
-		$this->assertArrayHasKey( 'releaseProviderStatus', $data );
-		$this->assertEquals( [ 'code' => 200, 'message' => 'ok' ], $data['releaseProviderStatus'] );
-
-		$this->assertArrayHasKey( 'releases', $data );
-
-		$expected_available_versions = [
-			'5.0.1',
-			'5.0.2',
-			'5.0.3',
-			'5.0.4',
-			'5.0.6',
-			'5.0.8',
-			'5.0.9',
-			'5.0.10',
-			'5.0.12',
-			'5.0.13',
-			'5.1.0',
-			'5.1.1',
-			'5.2.0',
-			'5.3.1',
-		];
-		sort($expected_available_versions);
-
-		$expected_releases = array(
-			'available' => $expected_available_versions,
-			'latest_version' => '5.3.1',
-			'previous_version' => '5.2.0',
-		);
-
-		sort( $data['releases']['available'] );
-		$this->assertEquals( $expected_releases, $data['releases'] );
-
-		$releases = $data['releases'];
-		$this->assertArrayHasKey( 'available', $releases );
-		$this->assertArrayHasKey( 'latest_version', $releases );
-		$this->assertArrayHasKey( 'previous_version', $releases );
-	}
-
-	function test_each_get_refreshes_releases() {
-		$this->prepare([
-			$this->build_shorter_success_response(),
-			$this->build_longer_success_response()
-		]);
-
-		$request1  = new \WP_REST_Request( 'GET', $this->namespaced_route );
-		$response1 = $this->server->dispatch( $request1);
-		$this->assertEquals( 200, $response1->get_status() );
-
-		$data1 = $response1->get_data();
-
-		$request2  = new \WP_REST_Request( 'GET', $this->namespaced_route );
-		$response2 = $this->server->dispatch( $request2 );
-		$this->assertEquals( 200, $response2->get_status() );
-
-		$data2 = $response2->get_data();
-
-		$this->assertEquals('5.3.1', $data1['releases']['latest_version']);
-		$this->assertEquals('5.4.1', $data2['releases']['latest_version']);
 	}
 }
