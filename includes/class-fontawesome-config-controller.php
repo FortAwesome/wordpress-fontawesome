@@ -97,8 +97,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$this->release_provider()->load_releases();
 
-				$fa->gather_preferences();
-
 				$data = $this->build_item( $fa );
 
 				return new WP_REST_Response( $data, 200 );
