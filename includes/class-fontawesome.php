@@ -24,6 +24,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preferenceregistrationexception.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
@@ -290,6 +291,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					add_filter( 'widget_text', 'do_shortcode' );
 
 					try {
+						$this->gather_preferences();
+
 						$options = $this->options();
 
 						$resource_collection = fa()
@@ -306,6 +309,20 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 						$this->maybe_enqueue_js_bundle();
 						$this->enqueue_cdn( $options, $resource_collection );
+					} catch ( FontAwesome_PreferenceRegistrationException $e ) {
+						/**
+						 * MAYBE: we could make this a non-fatal error. We should be able to record it
+						 * as an error and report it in the admin settings UI to alert the site owner
+						 * of the situation. But this kind of error need not undermine the functionality
+						 * of this plugin otherwise.
+						 */
+						font_awesome_handle_fatal_error(
+							'A theme or plugin experienced an error while registering its preferences with the Font Awesome plugin. ' .
+							'That probably means it has a bug. If you want Font Awesome to continue working, you\'ll probably need to disable ' .
+							'that other theme or plugin until it\'s bug is resolved. To help you track down which theme or plugin has the bug, here\'s ' .
+							'the name of the code file where the error occurred: ' .
+							$e->getOriginalException()->getFile()
+						);
 					} catch ( FontAwesome_NoReleasesException $e ) {
 						$current_screen = get_current_screen();
 						if ( $current_screen && $current_screen->id !== $this->screen_id ) {
@@ -772,6 +789,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		/**
 		 * Triggers the font_awesome_preferences action to gather preferences from clients.
 		 *
+		 * @throws FontAwesome_PreferenceRegistrationException
 		 * @since 4.0.0
 		 */
 		public function gather_preferences() {
@@ -783,7 +801,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			 *
 			 * @since 4.0.0
 			 */
-			do_action( 'font_awesome_preferences' );
+			try {
+			  do_action( 'font_awesome_preferences' );
+			} catch(Exception $e) {
+				throw new FontAwesome_PreferenceRegistrationException($e);
+			}
 		}
 
 		/**
@@ -1056,10 +1078,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								'all'
 							);
 						}
-
-						// TODO: wrap this in a try/catch, since it involves executing
-						// client code that may have problems.
-						$this->gather_preferences();
 
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
