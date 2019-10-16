@@ -32,9 +32,7 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 // common function to get style loaders
 const getStyleLoaders = (cssOptions, preProcessor) => {
   const loaders = [
-    {
-      loader: require.resolve('style-loader')
-    },
+    require.resolve('style-loader'),
     {
       loader: require.resolve('css-loader'),
       options: cssOptions,
@@ -268,7 +266,6 @@ module.exports = {
           // using the extension .module.css
           {
             test: cssModuleRegex,
-            exclude: cssLazyModuleRegex,
             use: getStyleLoaders({
               importLoaders: 1,
               modules: true,
