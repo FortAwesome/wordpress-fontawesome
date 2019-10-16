@@ -1,6 +1,5 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import styles from './Reporter.lazy.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 
@@ -9,6 +8,38 @@ const STATUS = {
   done: 'Done',
   submitting: 'Submitting',
   error: 'Error'
+}
+
+const STYLES = {
+  container: {
+    position: 'fixed',
+    fontFamily: 'sans-serif',
+    right: '10px',
+    bottom: '10px',
+    width: '30%',
+    maxWidth: '80%',
+    height: 'auto',
+    maxHeight: '60%',
+    border: '1px solid lightgrey',
+    background: 'white',
+    zIndex: '99',
+    overflowY: 'scroll',
+    fontSize: '13px',
+    lineHeight: '1.4em',
+    color: '#444'
+  },
+  h1: {
+    fontSize: '26px'
+  },
+  p: {
+    marginBlockStart: '1em',
+    marginBlockEnd: '1em'
+  },
+  content: {
+    width: '100%',
+    padding: '1em',
+    boxSizing: 'border-box'
+  }
 }
 
 export default function Reporter() {
@@ -35,30 +66,28 @@ export default function Reporter() {
     state => state.unregisteredClientDetectionStatus.message
   )
 
-  styles.use()
-
   return (
-    <div className={ styles.locals['container'] }>
-      <div className={ styles.locals['content'] }>
+    <div style={ STYLES.container }>
+      <div style={ STYLES.content }>
         <h1>FA Conflict Detection</h1>
         {
           {
             Running:
-              <div className={ styles.locals['report-body'] }>
-                <div className={ styles['status-container'] }>
-                  <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+              <div>
+                <div>
+                  <FontAwesomeIcon icon={ faSpinner } spin /> <span>{ runStatus }</span>
                 </div>
               </div>,
             Submitting:
-              <div className={ styles['report-body'] }>
-                <div className={ styles['status-container'] }>
-                  <FontAwesomeIcon icon={ faSpinner } spin /> <span className={styles['status-desc']}>{ runStatus }</span>
+              <div>
+                <div>
+                  <FontAwesomeIcon icon={ faSpinner } spin /> <span>{ runStatus }</span>
                 </div>
               </div>,
             Done:
-              <div className={ styles['report-body'] }>
-                <div className={ styles['status-container'] }>
-                    <FontAwesomeIcon icon={ faCheck } /> <span className={styles['status-desc']}>{ runStatus }</span>
+              <div>
+                <div>
+                    <FontAwesomeIcon icon={ faCheck } /> <span>{ runStatus }</span>
                 </div>
                 <p>Conflicts known before detection: { countBefore }</p>
                 <p>Conflicts known after detection: { countAfter }</p>
@@ -69,9 +98,9 @@ export default function Reporter() {
                 }
               </div>,
             Error:
-              <div className={ styles['report-body'] }>
-                <div className={ styles['status-container'] }>
-                    <FontAwesomeIcon icon={ faSkull } /> <span className={styles['status-desc']}>{ runStatus }</span>
+              <div>
+                <div>
+                    <FontAwesomeIcon icon={ faSkull } /> <span>{ runStatus }</span>
                 </div>
                 <p>
                   { errorMessage }
