@@ -16,32 +16,32 @@ use \Exception;
  * @internal
  */
 class FontAwesome_PreferenceRegistrationException extends Exception {
-		/**
-     * Namespace internal
-     *
-		 * @ignore
-     * @internal
-		 */
-    protected $original_exception = null;
-    
-		/**
-     * Namespace internal
-     *
-		 * @ignore
-		 */
-		public function __construct($original_exception = null) {
-      $this->original_exception = $original_exception;
-    }
-    
-    /**
-     * Returns the exception that was caught in third party code and re-thrown as
-     * this exception.
-     *
-     * @ignore
-     * @internal
-     * @return Exception
-     */
-    public function getOriginalException() {
-      return $this->original_exception;
-    }
+	/**
+	 * Namespace internal
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	protected $original_exception = null;
+
+	/**
+	 * Namespace internal
+	 *
+	 * @ignore
+	 */
+	public function __construct( $original_exception = null ) {
+		$this->original_exception = $original_exception;
+	}
+
+	/**
+	 * Returns the exception that was caught in third party code and re-thrown as
+	 * this exception.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return Exception
+	 */
+	public function getOriginalException() {
+		return $this->original_exception;
+	}
 }
