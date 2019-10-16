@@ -1046,6 +1046,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 							null,
 							true
 						);
+			
+						if ( FONTAWESOME_ENV !== 'development' ) {
+							wp_enqueue_style(
+								self::ADMIN_RESOURCE_HANDLE . '-css',
+								$this->get_webpack_asset_url('main.css'),
+								[],
+								null,
+								'all'
+							);
+						}
 
 						// TODO: wrap this in a try/catch, since it involves executing
 						// client code that may have problems.
