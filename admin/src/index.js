@@ -19,41 +19,42 @@ if( showAdmin ) {
         </Provider>
       </ErrorBoundary>,
       document.getElementById('font-awesome-admin')
-    );
+    )
   })
 }
 
-// This needs to be mounted earlier than DOMContentLoaded, as soon as it's enqueued,
-// because it needs to add global configuration that the conflict detector will use.
 if( showConflictDetectionReporter ) {
-
+  // This needs to be set earlier than DOMContentLoaded, as soon as this script is enqueued,
+  // because it needs to add global configuration that the conflict detector will use.
   window.FontAwesomeDetection = {
     report: params => store.dispatch(reportDetectedConflicts(params))
   }
 
-  const conflictDetectionShadowRootElement = document.createElement('DIV')
-  conflictDetectionShadowRootElement.setAttribute('id', 'font-awesome-plugin-conflict-detection-shadow-host')
-  document.body.appendChild(conflictDetectionShadowRootElement)
-  const shadow = conflictDetectionShadowRootElement.attachShadow({ mode: 'open' })
+  document.addEventListener('DOMContentLoaded', () => {
+    const conflictDetectionShadowRootElement = document.createElement('DIV')
+    conflictDetectionShadowRootElement.setAttribute('id', 'font-awesome-plugin-conflict-detection-shadow-host')
+    document.body.appendChild(conflictDetectionShadowRootElement)
+    const shadow = conflictDetectionShadowRootElement.attachShadow({ mode: 'open' })
 
-  const faStyle = document.createElement('STYLE')
-  const css = dom.css()
-  const cssText = document.createTextNode(css)
-  faStyle.appendChild(cssText)
+    const faStyle = document.createElement('STYLE')
+    const css = dom.css()
+    const cssText = document.createTextNode(css)
+    faStyle.appendChild(cssText)
 
-  const shadowContainer = document.createElement('DIV')
+    const shadowContainer = document.createElement('DIV')
 
-  shadow.appendChild(faStyle)
-  shadow.appendChild(shadowContainer)
+    shadow.appendChild(faStyle)
+    shadow.appendChild(shadowContainer)
 
-  // TODO: need a different ErrorFallbackView for the ErrorBoundary used by the reporter, since
-  // it's smaller.
-  ReactDOM.render(
-    <ErrorBoundary>
-      <Provider store={ store }>
-        <Reporter />
-      </Provider>
-    </ErrorBoundary>,
-    shadowContainer
-  )
+    // TODO: need a different ErrorFallbackView for the ErrorBoundary used by the reporter, since
+    // it's smaller.
+    ReactDOM.render(
+      <ErrorBoundary>
+        <Provider store={ store }>
+          <Reporter />
+        </Provider>
+      </ErrorBoundary>,
+      shadowContainer
+    )
+  })
 }
