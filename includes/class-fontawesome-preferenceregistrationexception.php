@@ -17,7 +17,7 @@ use \Exception;
  */
 class FontAwesome_PreferenceRegistrationException extends Exception {
 		/**
-     * Ignore
+     * Namespace internal
      *
 		 * @ignore
      * @internal
@@ -25,7 +25,7 @@ class FontAwesome_PreferenceRegistrationException extends Exception {
     protected $original_exception = null;
     
 		/**
-     * Ignore
+     * Namespace internal
      *
 		 * @ignore
 		 */
