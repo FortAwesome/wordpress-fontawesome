@@ -158,6 +158,8 @@ function unregisteredClientDetectionStatus(
         message,
         countAfterDetection: size(action.unregisteredClients)
       }
+    case 'CONFLICT_DETECTION_NONE_FOUND':
+      return { ...state, isSubmitting: false, success: true }
     default:
       return state
   }
