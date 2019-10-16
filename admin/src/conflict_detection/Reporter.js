@@ -1,12 +1,13 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faCheck, faSkull, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 
 const STATUS = {
   running: 'Running',
   done: 'Done',
   submitting: 'Submitting',
+  none: 'None',
   error: 'Error'
 }
 
@@ -17,6 +18,7 @@ const STYLES = {
     right: '10px',
     bottom: '10px',
     width: '30%',
+    minWidth: '325px',
     maxWidth: '80%',
     height: 'auto',
     maxHeight: '60%',
@@ -29,7 +31,7 @@ const STYLES = {
     color: '#444'
   },
   h1: {
-    fontSize: '26px'
+    fontSize: '1.5em'
   },
   p: {
     marginBlockStart: '1em',
@@ -51,8 +53,10 @@ export default function Reporter() {
     state => state.unregisteredClientDetectionStatus.countAfterDetection
   )
   const runStatus = useSelector(state => {
-    const { isSubmitting, hasSubmitted, success } = state.unregisteredClientDetectionStatus
-    if( isSubmitting ) {
+    const { isSubmitting, hasSubmitted, success, countBeforeDetection, countAfterDetection } = state.unregisteredClientDetectionStatus
+    if ( success && (countBeforeDetection === countAfterDetection) ) {
+      return STATUS.none
+    } else if( isSubmitting ) {
       return STATUS.submitting
     } else if( !hasSubmitted ){
       return STATUS.running
@@ -69,9 +73,18 @@ export default function Reporter() {
   return (
     <div style={ STYLES.container }>
       <div style={ STYLES.content }>
-        <h1>FA Conflict Detection</h1>
+        <h1 style={ STYLES.h1 }>Font Awesome Conflict Scanner</h1>
         {
           {
+            None:
+              <div>
+                <div>
+                  <FontAwesomeIcon icon={ faThumbsUp } />
+                </div>
+                <p>
+                  No conflicts found on this page!
+                </p>
+              </div>,
             Running:
               <div>
                 <div>
