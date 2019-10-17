@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import ConflictDetectionTimer from './ConflictDetectionTimer'
 
 const STATUS = {
   running: 'Running',
@@ -73,6 +74,7 @@ export default function ConflictDetectionReporter() {
   return (
     <div style={ STYLES.container }>
       <div style={ STYLES.content }>
+        <ConflictDetectionTimer />
         <h1 style={ STYLES.h1 }>Font Awesome Conflict Scanner</h1>
         {
           {
