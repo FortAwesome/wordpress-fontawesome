@@ -26,14 +26,14 @@ export function timerString(durationSeconds) {
 }
 
 function secondsRemaining(endTime) {
-  const now = Math.floor((new Date()).valueOf() / 1000)
+  const now = Math.floor((new Date()) / 1000)
   const remaining = endTime - now
 
   return remaining < 0 ? 0 : remaining
 }
 
 export default function ConflictDetectionTimer() {
-  const detectConflictsUntil = useSelector(state => state.detectConflictsUntil)
+  const detectConflictsUntil = useSelector(state => state.options.detectConflictsUntil)
   const [timeRemaining, setTimer] = useState(timerString(secondsRemaining(detectConflictsUntil)))
 
   function runTimer() {
@@ -49,6 +49,8 @@ export default function ConflictDetectionTimer() {
       1000
     )
   }
+
+  runTimer()
 
   return <span className="conflict-detection-timer">{ timeRemaining }</span>
 }
