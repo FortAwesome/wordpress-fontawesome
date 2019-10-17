@@ -44,7 +44,7 @@ const STYLES = {
   }
 }
 
-export default function Reporter() {
+export default function ConflictDetectionReporter() {
   const settingsPageUrl = useSelector(state => state.settingsPageUrl)
   const countBefore = useSelector(
     state => state.unregisteredClientDetectionStatus.countBeforeDetection

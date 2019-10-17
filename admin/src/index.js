@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import ErrorBoundary from './ErrorBoundary'
 import FontAwesomeAdminView from './FontAwesomeAdminView'
-import Reporter from './conflict_detection/Reporter'
+import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
 import store from './store'
@@ -51,7 +51,7 @@ if( showConflictDetectionReporter ) {
     ReactDOM.render(
       <ErrorBoundary>
         <Provider store={ store }>
-          <Reporter />
+          <ConflictDetectionReporter />
         </Provider>
       </ErrorBoundary>,
       shadowContainer
