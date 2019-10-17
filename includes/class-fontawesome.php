@@ -134,13 +134,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
 
 		/**
-		 * The handle used when enqueuing the conflict detector.
-		 *
-		 * @since 4.0.0
-		 */
-		const RESOURCE_HANDLE_CONFLICT_DETECTION_REPORTER = 'font-awesome-official-conflict-detection-reporter';
-
-		/**
 		 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
 		 *
 		 * @since 4.0.0
@@ -1060,7 +1053,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			add_action(
 				'admin_enqueue_scripts',
 				function( $hook ) {
-					if ( $hook === $this->screen_id ) {
+					if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
 						wp_enqueue_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							$this->get_webpack_asset_url('main.js'),
@@ -1068,7 +1061,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 							null,
 							true
 						);
-			
+					}
+
+					if ( $hook === $this->screen_id ) {
 						if ( FONTAWESOME_ENV !== 'development' ) {
 							wp_enqueue_style(
 								self::ADMIN_RESOURCE_HANDLE . '-css',
@@ -1086,7 +1081,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								$this->common_data_for_js_bundle(),
 								array(
 									'showAdmin'                     => TRUE,
-									'showConflictDetectionReporter' => $this->detecting_conflicts(),
 									'onSettingsPage'								=> TRUE,
 									'clientPreferences'     				=> $this->client_preferences(),
 									'pluginVersionWarnings' 				=> $this->get_plugin_version_warnings(),
@@ -1102,6 +1096,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 									'v3DeprecationWarning'          => $this->get_v3deprecation_warning_data(),
 								)
 							),
+						);
+					} else {
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+							$this->common_data_for_js_bundle()
 						);
 					}
 				}
@@ -1147,10 +1147,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		 */
 		public function common_data_for_js_bundle() {
 			return array(
-				'apiNonce'            => wp_create_nonce( 'wp_rest' ),
-				'apiUrl'              => rest_url( self::REST_API_NAMESPACE ),
-				'unregisteredClients' => $this->unregistered_clients(),
-				'settingsPageUrl'			=> $this->settings_page_url()
+				'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
+				'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
+				'unregisteredClients'           => $this->unregistered_clients(),
+				'showConflictDetectionReporter' => $this->detecting_conflicts(),
+				'settingsPageUrl'			    => $this->settings_page_url()
 			);
 		}
 
