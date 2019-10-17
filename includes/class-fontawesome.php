@@ -1091,7 +1091,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 										'previous_version' 						=> $this->get_previous_version(),
 									),
 									'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
-									'options'               	      => $this->options(),
 									'preferenceConflicts'           => $this->conflicts_by_option(),
 									'v3DeprecationWarning'          => $this->get_v3deprecation_warning_data(),
 								)
@@ -1127,7 +1126,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 								array_merge(
 									$this->common_data_for_js_bundle(),
 									array(
-										'onSettingsPage'	              => FALSE,
+										'onSettingsPage'				=> FALSE,
 										'showAdmin'                     => FALSE,
 										'showConflictDetectionReporter' => TRUE,
 									)
@@ -1151,7 +1150,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 				'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
 				'unregisteredClients'           => $this->unregistered_clients(),
 				'showConflictDetectionReporter' => $this->detecting_conflicts(),
-				'settingsPageUrl'			    => $this->settings_page_url()
+				'settingsPageUrl'			    => $this->settings_page_url(),
+				'options'						=> $this->options(),
 			);
 		}
 
