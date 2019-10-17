@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { padStart, dropWhile } from 'lodash'
 
 const SECONDS_PER_DAY = 60 * 60 * 24
@@ -35,6 +35,7 @@ function secondsRemaining(endTime) {
 export default function ConflictDetectionTimer() {
   const detectConflictsUntil = useSelector(state => state.options.detectConflictsUntil)
   const [timeRemaining, setTimer] = useState(timerString(secondsRemaining(detectConflictsUntil)))
+  const dispatch = useDispatch()
 
   const countdown = () => setTimer(timerString(secondsRemaining(detectConflictsUntil)))
 
@@ -43,6 +44,9 @@ export default function ConflictDetectionTimer() {
       setTimeout(countdown, 1000)
     } else {
       setTimer(timerString(0))
+      dispatch({
+        type: 'CONFLICT_DETECTION_TIMER_EXPIRED'
+      })
     }
   }, [detectConflictsUntil, timeRemaining])
 
