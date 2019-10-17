@@ -196,6 +196,17 @@ function v3DeprecationWarning(state = {}, action = {}) {
   }
 }
 
+function showConflictDetectionReporter(state = false, action = {}) {
+  const { type } = action
+
+  switch(type) {
+    case 'CONFLICT_DETECTION_TIMER_EXPIRED':
+      return false
+    default:
+      return coerceBool(state)
+  }
+}
+
 function simple(state = {}, _action) { return state }
 
 export default combineReducers({
@@ -215,7 +226,7 @@ export default combineReducers({
   releases: simple,
   settingsPageUrl: simple,
   showAdmin: coerceBool,
-  showConflictDetectionReporter: coerceBool,
+  showConflictDetectionReporter,
   unregisteredClientDetectionStatus,
   unregisteredClients,
   v3DeprecationWarning,

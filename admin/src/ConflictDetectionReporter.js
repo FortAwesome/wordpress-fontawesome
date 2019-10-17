@@ -9,7 +9,8 @@ const STATUS = {
   done: 'Done',
   submitting: 'Submitting',
   none: 'None',
-  error: 'Error'
+  error: 'Error',
+  expired: 'Expired'
 }
 
 const STYLES = {
@@ -53,9 +54,15 @@ export default function ConflictDetectionReporter() {
   const countAfter = useSelector(
     state => state.unregisteredClientDetectionStatus.countAfterDetection
   )
+  const showConflictDetectionReporter = useSelector(
+    state => state.showConflictDetectionReporter
+  )
+
   const runStatus = useSelector(state => {
     const { isSubmitting, hasSubmitted, success, countBeforeDetection, countAfterDetection } = state.unregisteredClientDetectionStatus
-    if ( success && (countBeforeDetection === countAfterDetection) ) {
+    if ( !showConflictDetectionReporter ) {
+      return STATUS.expired
+    } else if ( success && (countBeforeDetection === countAfterDetection) ) {
       return STATUS.none
     } else if( isSubmitting ) {
       return STATUS.submitting
@@ -111,6 +118,23 @@ export default function ConflictDetectionReporter() {
                   <p>Manage conflict removal right here on the plugin settings page.</p>
                   : <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
                 }
+              </div>,
+            Expired:
+              <div>
+                <p>
+                  The scanner is no longer active. If you need more time, just re-enable it 
+                  {
+                    window.location.href === settingsPageUrl
+                    ? ' here on the '
+                    : ' on the '
+                  }
+                  {
+                    window.location.href === settingsPageUrl
+                    ? <span> settings </span>
+                    : <span> <a href={ settingsPageUrl }>settings</a> </span>
+                  }
+                  page.
+                </p>
               </div>,
             Error:
               <div>
