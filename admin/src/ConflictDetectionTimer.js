@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { padStart, dropWhile } from 'lodash'
 
@@ -36,21 +36,15 @@ export default function ConflictDetectionTimer() {
   const detectConflictsUntil = useSelector(state => state.options.detectConflictsUntil)
   const [timeRemaining, setTimer] = useState(timerString(secondsRemaining(detectConflictsUntil)))
 
-  function runTimer() {
-    setTimeout(
-      () => {
-        const remaining = secondsRemaining(detectConflictsUntil)
-        setTimer(timerString(remaining))
+  const countdown = () => setTimer(timerString(secondsRemaining(detectConflictsUntil)))
 
-        if( remaining > 0 ) {
-          runTimer()
-        }
-      },
-      1000
-    )
-  }
-
-  runTimer()
+  useEffect(() => {
+    if(secondsRemaining(detectConflictsUntil) > 0) {
+      setTimeout(countdown, 1000)
+    } else {
+      setTimer(timerString(0))
+    }
+  }, [detectConflictsUntil, timeRemaining])
 
   return <span className="conflict-detection-timer">{ timeRemaining }</span>
 }
