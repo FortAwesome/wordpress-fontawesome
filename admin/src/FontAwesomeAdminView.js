@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames'
 import styles from './FontAwesomeAdminView.module.css'
 import Options from './Options'
@@ -10,9 +10,15 @@ import V3DeprecationWarning from './V3DeprecationWarning'
 import { values, get, size } from 'lodash'
 import Modal from './Modal'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
+import SettingsTab from './SettingsTab'
+import TroubleshootTab from './TroubleshootTab'
+import { ADMIN_TAB_SETTINGS, ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
+import { setActiveAdminTab } from './store/actions'
 
 export default function FontAwesomeAdminView() {
+  const activeAdminTab = useSelector(state => state.activeAdminTab )
   const releaseProviderStatus = useSelector(state => state.releaseProviderStatus)
+  const dispatch = useDispatch()
 
   const releaseProviderStatusOK = useSelector(state => {
     // If releaseProviderStatus is null, it means that a network request was never issued.
@@ -96,6 +102,26 @@ export default function FontAwesomeAdminView() {
     <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: showingPseudoElementsHelpModal }) }>
       { showingPseudoElementsHelpModal && getPseudoElementsHelpModal() }
       <h1>Font Awesome</h1>
+      <div className={styles['tab-header']}>
+        <button 
+          onClick={() => dispatch(setActiveAdminTab(ADMIN_TAB_SETTINGS))}
+          disabled={ activeAdminTab === ADMIN_TAB_SETTINGS }
+        >
+          Settings
+        </button>
+        <button
+          onClick={() => dispatch(setActiveAdminTab(ADMIN_TAB_TROUBLESHOOT))}
+          disabled={ activeAdminTab === ADMIN_TAB_TROUBLESHOOT }
+        >
+          Troubleshoot
+        </button>
+      </div>
+      {
+        {
+          [ADMIN_TAB_SETTINGS]: <SettingsTab/>,
+          [ADMIN_TAB_TROUBLESHOOT]: <TroubleshootTab/>
+        }[activeAdminTab]
+      }
       <div>
         { hasV3DeprecationWarning && <V3DeprecationWarning /> }
         { releaseProviderStatusOK || <ReleaseProviderWarning /> }
