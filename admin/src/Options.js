@@ -5,7 +5,6 @@ import {
   checkPreferenceConflicts,
   submitPendingOptions
 } from './store/actions'
-import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDotCircle,
@@ -459,10 +458,10 @@ export default function Options(props) {
             }
             {
               svgPseudoElements
-              && <SvgPseudoElementsWarning
+              ? <SvgPseudoElementsWarning
                 v4compat={ v4compat }
-                showModal={ props.showPseudoElementsHelpModal }
               />
+              : null
             }
           </div>
         </div>
@@ -503,8 +502,4 @@ export default function Options(props) {
       }
     </div>
   </div>
-}
-
-Options.propTypes = {
-  showPseudoElementsHelpModal: PropTypes.func.isRequired
 }

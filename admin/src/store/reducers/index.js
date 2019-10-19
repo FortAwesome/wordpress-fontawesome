@@ -221,6 +221,19 @@ function activeAdminTab(state = ADMIN_TAB_SETTINGS, action = {}) {
   }
 }
 
+function showingPseudoElementsHelp(state = false, action = {}) {
+  const { type } = action
+
+  switch(type){
+    case 'HIDE_PSEUDO_ELEMENTS_HELP':
+      return false
+    case 'SHOW_PSEUDO_ELEMENTS_HELP':
+      return true
+    default:
+      return state
+  }
+}
+
 function simple(state = {}, _action) { return state }
 
 export default combineReducers({
@@ -242,6 +255,7 @@ export default combineReducers({
   settingsPageUrl: simple,
   showAdmin: coerceBool,
   showConflictDetectionReporter,
+  showingPseudoElementsHelp,
   unregisteredClientDetectionStatus,
   unregisteredClients,
   v3DeprecationWarning,

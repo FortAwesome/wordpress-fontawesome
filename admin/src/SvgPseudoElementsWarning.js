@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
-import PropTypes from 'prop-types'
+import { useSelector, useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import sharedStyles from './App.module.css'
 import Alert from './Alert'
+import { showPseudoElementsHelp } from './store/actions'
 
-export default function SvgPseudoElementsWarning(props) {
-  const [ showMore, setShowMore ] = useState(false)
+export default function SvgPseudoElementsWarning() {
   const v4compat = useSelector(state => state.options.v4compat)
-  const { showModal } = props
+  const [ showMore, setShowMore ] = useState(false)
+  const dispatch = useDispatch()
 
   return <Alert
       title='Performance might be slow with SVG Pseudo-elements'
@@ -33,7 +33,7 @@ export default function SvgPseudoElementsWarning(props) {
           <p>
             If you're using a theme or plugin that references Font Awesome icons using pseudo-elements,
             you may not have much of a choice but to accommodate by enabling pseudo-elements.
-            <button onClick={ showModal }>Show me how to find out if pseudo-elements are used.</button>
+            <button onClick={ () => dispatch(showPseudoElementsHelp()) }>Show me how to find out if pseudo-elements are used.</button>
           </p>
           <p>
             However, in general, it's best if you avoid using &nbsp;
@@ -57,8 +57,4 @@ export default function SvgPseudoElementsWarning(props) {
         }
       </div>
   </Alert>
-}
-
-SvgPseudoElementsWarning.propTypes = {
-  showModal: PropTypes.func.isRequired
 }
