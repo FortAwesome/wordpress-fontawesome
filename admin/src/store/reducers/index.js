@@ -1,6 +1,9 @@
 import { size, omit } from 'lodash'
 import { combineReducers } from 'redux'
 
+export const ADMIN_TAB_SETTINGS = 'ADMIN_TAB_SETTINGS'
+export const ADMIN_TAB_TROUBLESHOOT = 'ADMIN_TAB_TROUBLESHOOT'
+
 const coerceBool = val => val === true || val === "1"
 
 const coerceEmptyArrayToEmptyObject = val => size(val) === 0 ? {} : val
@@ -207,9 +210,21 @@ function showConflictDetectionReporter(state = false, action = {}) {
   }
 }
 
+function activeAdminTab(state = ADMIN_TAB_SETTINGS, action = {}) {
+  const { type, tab } = action
+
+  switch(type) {
+    case 'SET_ACTIVE_ADMIN_TAB':
+      return tab
+    default:
+      return state
+  }
+}
+
 function simple(state = {}, _action) { return state }
 
 export default combineReducers({
+  activeAdminTab,
   apiNonce: simple,
   apiUrl: simple,
   clientPreferences: coerceEmptyArrayToEmptyObject,

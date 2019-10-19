@@ -202,3 +202,10 @@ export function snoozeV3DeprecationWarning() {
     })
   }
 }
+
+export function setActiveAdminTab(tab) {
+  return {
+    type: 'SET_ACTIVE_ADMIN_TAB',
+    tab
+  }
+}
