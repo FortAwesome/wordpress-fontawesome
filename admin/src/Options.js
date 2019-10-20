@@ -50,7 +50,6 @@ export default function Options(props) {
   const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)
-  const clientPreferences = useSelector(state => state.clientPreferences)
   
   const detectConflictsUntilNext = optionSelector('detectConflictsUntil')
   const detectingConflictsNext = (new Date(detectConflictsUntilNext * 1000)) > nowMs
