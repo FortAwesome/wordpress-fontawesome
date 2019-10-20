@@ -98,28 +98,16 @@ export default function Options(props) {
           <p>{ preferenceCheckMessage }</p>
         </Alert>
       } else if (has(pendingOptionConflicts, option)) {
-        return <Alert title='Pending change might cause problems' type='warning'>
-          <p>
-            If you save this change, it might cause a problem with&nbsp;
-          </p>
+        return <Alert title="Preference Conflict" type='warning'>
             {
               size(pendingOptionConflicts[option]) > 1
               ? <div>
-                  these themes or plugins:
-                  <ul>
-                    { pendingOptionConflicts[option].map( c => <li>{ c }</li>) }
-                  </ul>
+                This change might cause problems for these themes or plugins: { pendingOptionConflicts[option].join(', ') }.
               </div>
               : <div>
-                this theme or plugin:
-                  <ul>
-                    <li>{ pendingOptionConflicts[option][0] }</li>
-                  </ul>
+                This change might cause problems for the theme or plugin: { pendingOptionConflicts[option][0] }.
                 </div>
             }
-          <p>
-            See below for details.
-          </p>
         </Alert>
       } else {
         return null
