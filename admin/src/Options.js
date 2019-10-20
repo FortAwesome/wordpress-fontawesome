@@ -126,36 +126,6 @@ export default function Options(props) {
             <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
                 <input
-                  id="code_edit_icons_free"
-                  name="code_edit_icons"
-                  type="radio"
-                  value="webfont"
-                  checked={ ! usePro }
-                  onChange={ () => handleOptionChange({ usePro: false }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
-                />
-                <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
-                  <span className={ sharedStyles['relative'] }>
-                    <FontAwesomeIcon
-                      icon={ faDotCircle }
-                      size="lg"
-                      fixedWidth
-                      className={ styles['checked-icon'] }
-                    />
-                    <FontAwesomeIcon
-                      icon={ faCircle }
-                      size="lg"
-                      fixedWidth
-                      className={ styles['unchecked-icon'] }
-                    />
-                  </span>
-                  <span className={ styles['option-label-text'] }>
-                    Free
-                  </span>
-                </label>
-              </div>
-              <div className={ styles['option-choice'] }>
-                <input
                   id="code_edit_icons_pro"
                   name="code_edit_icons"
                   type="radio"
@@ -182,6 +152,36 @@ export default function Options(props) {
                   <span className={ styles['option-label-text'] }>
                       Pro
                     </span>
+                </label>
+              </div>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_icons_free"
+                  name="code_edit_icons"
+                  type="radio"
+                  value="webfont"
+                  checked={ ! usePro }
+                  onChange={ () => handleOptionChange({ usePro: false }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faDotCircle }
+                      size="lg"
+                      fixedWidth
+                      className={ styles['checked-icon'] }
+                    />
+                    <FontAwesomeIcon
+                      icon={ faCircle }
+                      size="lg"
+                      fixedWidth
+                      className={ styles['unchecked-icon'] }
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    Free
+                  </span>
                 </label>
               </div>
             </div>
