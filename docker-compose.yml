@@ -34,7 +34,6 @@ x-integration_volumes: &integration_volumes
 x-wordpress-defaults: &wordpress_defaults
   ports:
     - "8080:80"
-  restart: always
   extra_hosts:
     - "dockerhost:169.254.254.254"
   command:
@@ -46,7 +45,6 @@ x-wordpress-dev-defaults: &wordpress_dev_defaults
 
 x-mysql-defaults: &mysql_defaults
   image: mysql:5.7
-  restart: always
   ports:
     - "3306:3306"
   environment:
