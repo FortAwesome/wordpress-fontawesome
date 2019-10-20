@@ -123,14 +123,7 @@ export default function Options(props) {
           </p>
         </Alert>
       } else {
-        return <Alert title='Pending change looks good!' type='pending'>
-          <p><em>Click below to save changes and make it active on your web site.</em></p>
-          { size(clientPreferences)
-            ? <p>Any Font Awesome preferences <em>registered</em> with this plugin by other themes or plugins are satisfied
-              with this change.</p>
-            : null
-          }
-        </Alert>
+        return null
       }
     } else {
       return null
