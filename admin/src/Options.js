@@ -207,6 +207,36 @@ export default function Options(props) {
             <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
                 <input
+                  id="code_edit_tech_svg"
+                  name="code_edit_tech"
+                  type="radio"
+                  value="svg"
+                  checked={ technology === 'svg' }
+                  onChange={ () => handleOptionChange({ technology: 'svg' }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faDotCircle }
+                      className={ styles['checked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                    <FontAwesomeIcon
+                      icon={ faCircle }
+                      className={ styles['unchecked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    SVG
+                  </span>
+                </label>
+              </div>
+              <div className={ styles['option-choice'] }>
+                <input
                   id="code_edit_tech_webfont"
                   name="code_edit_tech"
                   type="radio"
@@ -236,36 +266,6 @@ export default function Options(props) {
                   <span className={ styles['option-label-text'] }>
                       Web Font
                     </span>
-                </label>
-              </div>
-              <div className={ styles['option-choice'] }>
-                <input
-                  id="code_edit_tech_svg"
-                  name="code_edit_tech"
-                  type="radio"
-                  value="svg"
-                  checked={ technology === 'svg' }
-                  onChange={ () => handleOptionChange({ technology: 'svg' }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
-                />
-                <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
-                  <span className={ sharedStyles['relative'] }>
-                    <FontAwesomeIcon
-                      icon={ faDotCircle }
-                      className={ styles['checked-icon'] }
-                      size="lg"
-                      fixedWidth
-                    />
-                    <FontAwesomeIcon
-                      icon={ faCircle }
-                      className={ styles['unchecked-icon'] }
-                      size="lg"
-                      fixedWidth
-                    />
-                  </span>
-                  <span className={ styles['option-label-text'] }>
-                    SVG
-                  </span>
                 </label>
               </div>
             </div>
