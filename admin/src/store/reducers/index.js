@@ -36,6 +36,11 @@ function options(state = {}, action = {}) {
         v4compat: coerceBool(v4compat),
         svgPseudoElements: coerceBool(svgPseudoElements)
       }
+    case 'SET_CONFLICT_DETECTION_SCANNER_END':
+      return {
+        ...state,
+        detectConflictsUntil: data.options.detectConflictsUntil
+      }
     default:
       return state
   }
@@ -136,6 +141,8 @@ function unregisteredClients(state = {}, action = {}) {
   }
 }
 
+// Handles the state regarding what the conflict detection scanner finds when
+// scanning and the submission of those results to the server.
 function unregisteredClientDetectionStatus(
   state = {
     success: false,
@@ -163,6 +170,29 @@ function unregisteredClientDetectionStatus(
       }
     case 'CONFLICT_DETECTION_NONE_FOUND':
       return { ...state, isSubmitting: false, success: true }
+    default:
+      return state
+  }
+}
+
+// Handles the state regarding the enabling or disabling of the conflict
+// detection scanner overall.
+function conflictDetectionScannerStatus(
+  state = {
+    isSubmitting: false,
+    hasSubmitted: false,
+    success: false,
+    message: ''
+  },
+  action = {}) {
+
+  const { type, success, message } = action
+
+  switch(type) {
+    case ' SET_CONFLICT_DETECTION_SCANNER_START':
+      return { ...state, isSubmitting: true }
+    case ' SET_CONFLICT_DETECTION_SCANNER_END':
+      return { ...state, isSubmitting: false, success, message }
     default:
       return state
   }
@@ -228,6 +258,7 @@ export default combineReducers({
   apiNonce: simple,
   apiUrl: simple,
   clientPreferences: coerceEmptyArrayToEmptyObject,
+  conflictDetectionScannerStatus,
   onSettingsPage: coerceBool,
   options,
   optionsFormState,
