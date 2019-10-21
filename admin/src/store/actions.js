@@ -1,6 +1,16 @@
 import axios from 'axios'
 import { toPairs, size } from 'lodash'
 
+// How far into the future from "now" until the conflict detection scanner
+// will be enabled.
+export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
+
+// How far in the past to set detectConflictsUntil when the conflict detection
+// scanner is being disabled. We can use a non-zero but negligible value in
+// order to protect against possible race conditions, instead of 0
+// (which would just be exactly "now").
+const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
+
 export function addPendingOption(change) {
   return function(dispatch, getState) {
     const { options } = getState()
@@ -207,5 +217,67 @@ export function setActiveAdminTab(tab) {
   return {
     type: 'SET_ACTIVE_ADMIN_TAB',
     tab
+  }
+}
+
+export function setConflictDetectionScanner({ enable = true }) {
+  return function(dispatch, getState) {
+    const { apiNonce, apiUrl, options } = getState()
+
+    dispatch({type: 'SET_CONFLICT_DETECTION_SCANNER_START'})
+
+    axios.put(
+      `${apiUrl}/config`,
+      {
+        options: {
+          ...options,
+          detectConflictsUntil:
+            enable
+              ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)
+              : Math.floor((new Date())/1000) - CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS
+        }
+      },
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    ).then(response => {
+    const { status, data } = response
+    if (200 === status) {
+      dispatch({
+        type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+        data,
+        success: true,
+        message: ''
+      })
+    } else {
+      dispatch({
+        type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+        success: false,
+        message: "Failed to save changes"
+      })
+    }
+    }).catch(error => {
+      const { response: { data: { code, message }}} = error
+
+      const submitMessage = (code => { 
+        switch(code) {
+          case 'cant_update':
+            return message
+          case 'rest_no_route':
+          case 'rest_cookie_invalid_nonce':
+            return "Sorry, we couldn't reach the server"
+          default:
+            return "Update failed"
+        }
+      })(code)
+
+      dispatch({
+        type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+        success: false,
+        message: submitMessage
+      })
+    })
   }
 }
