@@ -370,10 +370,11 @@ export default function Options(props) {
                 <span className={ styles['option-label-text'] }>
                   Version 4 Compatibility
                   <span className={ styles['option-label-explanation'] }>
-                    Automatically use Font Awesome 5 for all of those version 4 icons already on your site, including
-                    those used by your theme or plugins, without worrying about new syntax and name changes.
-                    Read our guide for <a rel="noopener noreferrer" target="_blank" href="https://staging.fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">upgrading from version 4</a> for
-                    more info.
+                  Automatically use Font Awesome 5 for any version 4 icons already on your site, including those used by themes or plugins, without worrying about new syntax and name changes.
+                  <br/>
+                  <a rel="noopener noreferrer" target="_blank" href="https://staging.fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> More info
+                  </a>
                   </span>
                 </span>
               </label>
