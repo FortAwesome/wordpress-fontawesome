@@ -12,14 +12,12 @@ import {
   faCheckSquare,
   faCheck,
   faSkull,
-  faExternalLinkAlt,
-  faMagic } from '@fortawesome/free-solid-svg-icons'
+  faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './Options.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { has, size } from 'lodash'
-import SvgPseudoElementsWarning from "./SvgPseudoElementsWarning";
 import Alert from './Alert'
 
 const UNSPECIFIED = ''
@@ -272,6 +270,51 @@ export default function Options(props) {
             { getDetectionStatus('technology') }
           </div>
         </div>
+        <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
+          <div className={ styles['option-header'] }></div>
+          <div className={ styles['option-choice-container'] } style={{marginTop: '1em'}}>
+            { technology === 'svg' &&
+              <>
+                <input
+                  id="code_edit_features_svg_pseudo_elements"
+                  name="code_edit_features"
+                  type="checkbox"
+                  value="svg_pseudo_elements"
+                  checked={ svgPseudoElements }
+                  onChange={() => handleOptionChange({ svgPseudoElements: !svgPseudoElements })}
+                  className={classnames(sharedStyles['sr-only'], styles['input-checkbox-custom'])}
+                />
+                <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
+                <span className={sharedStyles['relative']}>
+                  <FontAwesomeIcon
+                    icon={faCheckSquare}
+                    className={styles['checked-icon']}
+                    size="lg"
+                    fixedWidth
+                  />
+                  <FontAwesomeIcon
+                    icon={faSquare}
+                    className={styles['unchecked-icon']}
+                    size="lg"
+                    fixedWidth
+                  />
+                </span>
+                  <span className={styles['option-label-text']}>
+                  Enable SVG Pseudo-elements
+                  <span className={styles['option-label-explanation']}>
+                    Can be tricky and may be slower than other methods.
+                    <br/>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">
+                      <FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more
+                    </a>
+                  </span>
+                </span>
+                </label>
+                { getDetectionStatus('svgPseudoElements') }
+              </>
+            }
+          </div>
+        </div>
         <hr className={ styles['option-divider'] }/>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
           <div className={ styles['option-header'] }>Version</div>
@@ -396,53 +439,6 @@ export default function Options(props) {
                 </span>
               </label>
             </div>
-            { technology === 'svg' &&
-              <div className={styles['option-choice']}>
-                <input
-                  id="code_edit_features_svg_pseudo_elements"
-                  name="code_edit_features"
-                  type="checkbox"
-                  value="svg_pseudo_elements"
-                  checked={ svgPseudoElements }
-                  onChange={() => handleOptionChange({ svgPseudoElements: !svgPseudoElements })}
-                  className={classnames(sharedStyles['sr-only'], styles['input-checkbox-custom'])}
-                />
-                <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
-                <span className={sharedStyles['relative']}>
-                  <FontAwesomeIcon
-                    icon={faCheckSquare}
-                    className={styles['checked-icon']}
-                    size="lg"
-                    fixedWidth
-                  />
-                  <FontAwesomeIcon
-                    icon={faSquare}
-                    className={styles['unchecked-icon']}
-                    size="lg"
-                    fixedWidth
-                  />
-                </span>
-                  <span className={styles['option-label-text']}>
-                  Enable SVG Pseudo-elements
-                  <span className={styles['option-label-explanation']}>
-                    For best compatibility and performance, it's usually best to avoid using <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a> in
-                    Font Awesome. Pseudo-element icons will be less compatible across major Font Awesome versions and technologies.
-                    As a built-in feature of CSS, they come with no performance penalty when using the CSS and Webfont technology.
-                    However, using them with SVG requires a little more magic <FontAwesomeIcon
-                    icon={faMagic}/> which might make your web site feel signifcantly slower.
-                  </span>
-                </span>
-                </label>
-                { getDetectionStatus('svgPseudoElements') }
-              </div>
-            }
-            {
-              svgPseudoElements
-              ? <SvgPseudoElementsWarning
-                v4compat={ v4compat }
-              />
-              : null
-            }
           </div>
         </div>
         <hr className={ styles['option-divider'] }/>
