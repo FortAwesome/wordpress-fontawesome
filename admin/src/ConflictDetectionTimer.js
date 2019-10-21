@@ -40,14 +40,18 @@ export default function ConflictDetectionTimer() {
   const countdown = () => setTimer(timerString(secondsRemaining(detectConflictsUntil)))
 
   useEffect(() => {
+    let timeoutId = null
+
     if(secondsRemaining(detectConflictsUntil) > 0) {
-      setTimeout(countdown, 1000)
+      timeoutId = setTimeout(countdown, 1000)
     } else {
       setTimer(timerString(0))
       dispatch({
         type: 'CONFLICT_DETECTION_TIMER_EXPIRED'
       })
     }
+
+    return () => timeoutId && clearTimeout( timeoutId )
   }, [detectConflictsUntil, timeRemaining])
 
   return <span className="conflict-detection-timer">{ timeRemaining }</span>
