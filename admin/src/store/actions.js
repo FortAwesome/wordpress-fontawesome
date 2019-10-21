@@ -209,15 +209,3 @@ export function setActiveAdminTab(tab) {
     tab
   }
 }
-
-export function hidePseudoElementsHelp() {
-  return {
-    type: 'HIDE_PSEUDO_ELEMENTS_HELP'
-  }
-}
-
-export function showPseudoElementsHelp() {
-  return {
-    type: 'SHOW_PSEUDO_ELEMENTS_HELP'
-  }
-}
