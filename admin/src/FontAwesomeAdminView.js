@@ -6,20 +6,13 @@ import SettingsTab from './SettingsTab'
 import TroubleshootTab from './TroubleshootTab'
 import { ADMIN_TAB_SETTINGS, ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import { setActiveAdminTab } from './store/actions'
-import PseudoElementsHelp from './PseudoElementsHelp'
 
 export default function FontAwesomeAdminView() {
   const activeAdminTab = useSelector(state => state.activeAdminTab )
   const dispatch = useDispatch()
-  const showingPseudoElementsHelp = useSelector(state => state.showingPseudoElementsHelp)
 
   return ( 
-    <div className={ classnames(styles['font-awesome-admin-view'], { [ styles['blur'] ]: showingPseudoElementsHelp }) }>
-      { 
-        showingPseudoElementsHelp
-        ? <PseudoElementsHelp/>
-        : null
-      }
+    <div className={ classnames(styles['font-awesome-admin-view']) }>
       <h1>Font Awesome</h1>
       <div className={styles['tab-header']}>
         <button 
