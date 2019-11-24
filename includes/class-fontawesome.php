@@ -2334,7 +2334,7 @@ EOT;
 		}
 
 		$classes = rtrim( implode( ' ', [ $prefix_and_name_classes, $atts['class'] ] ) );
-		return '<i class="' . $classes . '">&nbsp;</i>';
+		return '<i class="' . $classes . '"></i>';
 	}
 
 	/**
