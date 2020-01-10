@@ -334,6 +334,10 @@ class FontAwesome_Release_Provider {
 	) ) {
 		$resources = array();
 
+		if ( ! is_string($version) || 0 == strlen( $version ) ) {
+			throw new InvalidArgumentException( "A valid Font Awesome version has not been provided. This might be caused by your WordPress server being unable to contact the Font Awesome API server, such as when you're using WordPress in offline mode." );
+		}
+
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
 			throw new FontAwesome_ConfigurationException(
 				'Whoops! You found a corner case here. ' .
