@@ -24,6 +24,7 @@ rcp($plugin_dir . '/public_assets', $dist_dir . '/public_assets');
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
 copy($plugin_dir . '/defines.php', $dist_dir . '/defines.php');
 copy($plugin_dir . '/font-awesome.php', $dist_dir . '/font-awesome.php');
+copy($plugin_dir . '/font-awesome-init.php', $dist_dir . '/font-awesome-init.php');
 copy($repo_dir . '/readme.txt', $dist_dir . '/readme.txt');
 copy($repo_dir . '/LICENSE', $dist_dir . '/LICENSE');
 copy($plugin_dir . '/v3shims.php', $dist_dir . '/v3shims.php');
