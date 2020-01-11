@@ -676,13 +676,19 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 		}
 
 		/**
-		 * Returns current options with defaults.
+		 * Returns current options as stored in the database, after converting
+		 * from previous schema versions.
+		 * 
+		 * Default options should have already been set in the database at plugin
+		 * activation time.
 		 *
 		 * @internal
 		 * @ignore
 		 * @return array
 		 */
 		public function options() {
+			// TODO: figure out how to best handle the situation where we don't have
+			// options set. Other stuff down the line will freak out. How will we handle it?
 			$options = get_option( self::OPTIONS_KEY );
 			return $this->convert_options( $options );
 		}

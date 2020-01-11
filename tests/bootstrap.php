@@ -27,7 +27,7 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require_once dirname( dirname( __FILE__ ) ) . '/includes/class-fontawesome.php';
+	require_once dirname( dirname( __FILE__ ) ) . '/index.php';
 }
 set_include_path( get_include_path() . PATH_SEPARATOR . dirname( dirname( __FILE__ ) . '../' ) );
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
