@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
-	bootstrap="tests/bootstrap.php"
+	bootstrap="tests/bootstrap-loader.php"
 	backupGlobals="false"
 	colors="true"
 	convertErrorsToExceptions="true"
@@ -9,8 +9,7 @@
 	>
 	<testsuites>
 		<testsuite name="Default Test Suite">
-			<directory prefix="test-" suffix=".php">./tests/</directory>
-			<exclude>./tests/loader/</exclude>
+			<directory prefix="test-" suffix=".php">./tests/loader</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>

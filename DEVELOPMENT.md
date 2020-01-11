@@ -252,6 +252,12 @@ $ bin/phpunit
 This runs `phpunit` in the default docker container. It's just a docker wrapper around the normal `phpunit` command,
 so you can pass any normal `phpunit` command line arguments you might like.
 
+To run the loader tests, use this alternate test config:
+
+```bash
+$ bin/phpunit -c phpunit-loader.xml.dist
+```
+
 # Use WP-CLI within your Docker environment
 
 For example,
