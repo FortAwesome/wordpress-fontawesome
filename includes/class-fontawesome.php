@@ -673,6 +673,36 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 					return array_merge( $links, $mylinks );
 				}
 			);
+
+			add_action(
+				"after_plugin_row_" . FONTAWESOME_PLUGIN_FILE,
+				function($plugin_file, $plugin_data, $status) {
+					if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
+						$loader_version = FontAwesome_Loader::$_loaded['path'];
+						echo '<tr><td>&nbsp;</td><td colspan="2">';
+						?>
+
+						<p>
+						Heads up! There's more than one installation of the Font
+						Awesome plugin in your WordPress setup. No problem. We just
+						use the latest version. But it means that the plugin version
+						listed above doesn't reflect the version that is active
+						on your site. The active version is <?php echo FontAwesome::PLUGIN_VERSION; ?> and is being loaded
+						by another plugin or theme from here: <?php  echo $loader_version; ?>.
+						</p>
+
+						<p>
+						As long as that one remains active, everything will continue
+						working as it is now, even if you deactivate and delete
+						this plugin from your plugins directory here.
+						</p>
+						<?php
+						echo '</td></tr>';
+					}
+				},
+				10,
+				3
+			);
 		}
 
 		/**
