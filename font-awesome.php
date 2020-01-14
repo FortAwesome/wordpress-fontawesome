@@ -102,6 +102,64 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		}
 
 		/**
+		 * Runs initialize() for the plugin installation that has been selected for loading.
+		 * convenience static method for initialize_plugin().
+		 */
+		public static function initialize() {
+			self::instance()->initialize_plugin();
+		}
+
+		/**
+		 * Runs initialize() for the plugin installation that has been selected for loading.
+		 */
+		public function initialize_plugin() {
+			$this->select_latest_version_plugin_installation();
+			try {
+				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
+				FontAwesome_Activator::initialize();
+			} catch ( Exception $e ) {
+				echo '<div class="error"><p>Sorry, Font Awesome could not be initialized.</p></div>';
+				exit;
+			} catch ( Error $e ) {
+				echo '<div class="error"><p>Sorry, Font Awesome could not be initialized.</p></div>';
+				exit;
+			}
+		}
+
+		/**
+		 * Uninstalls, cleaning up database tables and such, if this represents
+		 * the last plugin installation trying to clean up.
+		 * If there would be other remaining installations, it does not uninstall,
+		 * since one of those others will end up becoming active and relying on the options data.
+		 */
+		public static function maybe_uninstall() {
+			if( count( self::$data ) == 1 ) {
+				// If there's only installation in the list, then it's
+				// the one that has invoked this function and is is about to
+				// go away, so it's safe to clean up.
+				$version_key = array_keys( self::$data )[0];
+
+				require_once trailingslashit( self::$data[$version_key] ) . 'includes/class-fontawesome-deactivator.php';
+				FontAwesome_Deactivator::uninstall();
+			}
+		}
+
+		/**
+		 * Deactivates, cleaning up database tables and such, if this represents
+		 * the last plugin installation.
+		 * If there would be other remaining installations, it does not deactivate,
+		 * since one of those others will end up becoming active and relying on the data.
+		 */
+		public static function maybe_deactivate() {
+			if( count( self::$data ) == 1 ) {
+				$version_key = array_keys( self::$data )[0];
+
+				require_once trailingslashit( self::$data[$version_key] ) . 'includes/class-fontawesome-deactivator.php';
+				FontAwesome_Deactivator::deactivate();
+			}
+		}
+
+		/**
 		 * Creates A Static Instances
 		 *
 		 * @return \FontAwesome_Loader
