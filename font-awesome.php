@@ -56,7 +56,19 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		private function select_latest_version_plugin_installation() {
 			if ( count(self::$_loaded) > 0 ) return;
 
-			$latest_version = max( array_keys( self::$data ) );
+			$versions = array_keys( self::$data );
+
+			usort($versions, function($a, $b) {
+				if(version_compare($a, $b, '=')){
+				  return 0;
+				} elseif(version_compare($a, $b, 'gt')) {
+				  return -1;
+				} else {
+				  return 1;
+				}
+			});
+
+			$latest_version = $versions[0];
 			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
 
 			if ( empty( $info ) ) {

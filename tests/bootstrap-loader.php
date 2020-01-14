@@ -25,8 +25,8 @@ require_once $_tests_dir . '/includes/functions.php';
 
 function _manually_load_plugin() {
 	require_once dirname( dirname( __FILE__ ) ) . '/index.php';
-	require_once dirname( __FILE__ ) . '/loader/mock_installations/ver42/index.php';
-	require_once dirname( __FILE__ ) . '/loader/mock_installations/ver43/index.php';
+	require_once dirname( __FILE__ ) . '/loader/mock_installations/ver_a/index.php';
+	require_once dirname( __FILE__ ) . '/loader/mock_installations/ver_b/index.php';
 }
 set_include_path( get_include_path() . PATH_SEPARATOR . dirname( dirname( __FILE__ ) . '../' ) );
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
