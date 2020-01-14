@@ -8,23 +8,66 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-deactivator.p
  */
 class DeactivationTest extends \WP_UnitTestCase {
 
-	public function setUp() {
-		set_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT, array( 'foo' => 'bar' ) );
-		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, array( 'foo' => 'bar' ) );
-		update_option( FontAwesome::OPTIONS_KEY, array( 'foo' => 'bar' ) );
-	}
+	public function test_deactivate_preserves_data() {
+		$foobar = array( 'foo' => 'bar' );
+		set_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT, $foobar );
+		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, $foobar );
+		update_option( FontAwesome::OPTIONS_KEY, $foobar );
+		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, $foobar );
 
-	public function test_deactivation_deletes_db_state() {
 		FontAwesome_Deactivator::deactivate();
 
-		// Options.
-		$options = get_option( FontAwesome::OPTIONS_KEY );
-		$this->assertFalse( $options );
+		$this->assertEquals(
+			get_option( FontAwesome::OPTIONS_KEY ),
+			$foobar
+		);
 
-		// Releases transient.
-		$this->assertFalse( get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) );
+		$this->assertEquals(
+			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY ),
+			$foobar
+		);
 
-		// V3 Deprecation Transient.
-		$this->assertFalse( get_transient( FontAwesome::V3DEPRECATION_TRANSIENT ) );
+		$this->assertEquals(
+			get_transient( FontAwesome::V3DEPRECATION_TRANSIENT ),
+			$foobar
+		);
+
+		$this->assertEquals(
+			get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ),
+			$foobar
+		);
+
+		$this->assertEquals(
+			get_transient( FontAwesome::V3DEPRECATION_TRANSIENT ),
+			$foobar
+		);
+	}
+
+	public function test_clean_removes_data() {
+		$foobar = array( 'foo' => 'bar' );
+		set_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT, $foobar );
+		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, $foobar );
+		update_option( FontAwesome::OPTIONS_KEY, $foobar );
+		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, $foobar );
+
+		FontAwesome_Deactivator::clean();
+
+		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
+
+		$this->assertFalse(
+			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+		);
+
+		$this->assertFalse(
+			get_transient( FontAwesome::V3DEPRECATION_TRANSIENT )
+		);
+
+		$this->assertFalse(
+			get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT )
+		);
+
+		$this->assertFalse(
+			get_transient( FontAwesome::V3DEPRECATION_TRANSIENT )
+		);
 	}
 }
