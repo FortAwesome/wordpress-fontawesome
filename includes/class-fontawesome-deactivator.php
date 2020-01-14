@@ -1,8 +1,6 @@
 <?php
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
-
 /**
  * Fired during plugin deactivation.
  *
