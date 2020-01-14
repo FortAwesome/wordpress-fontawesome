@@ -17,8 +17,20 @@ define( 'SIGMA_PLUGIN_LOG_PREFIX', 'sigma-plugin' );
 // index.php is the entry point that must be required in order to leverage
 // the FontAwesome_Loader.
 require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
+require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/includes/class-fontawesome-activator.php';
 
 use function FortAwesome\fa;
+
+// A client like this should initialize() Font Awesome upon its own activation.
+// Otherwise, it will not have the initial options settings it requires.
+// See the doc for initialize() regarding how any pre-existing option settings
+// are handled, preserved, or overwritten.
+register_activation_hook(
+	__FILE__,
+	function () {
+		FortAwesome\FontAwesome_Activator::initialize();
+	}
+);
 
 add_action(
 	'font_awesome_requirements',
