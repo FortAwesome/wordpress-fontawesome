@@ -4,6 +4,7 @@ namespace FortAwesome;
 use \Exception, \Error;
 
 defined( 'WPINC' ) || die;
+defined( 'FONTAWESOME_PLUGIN_FILE' ) || define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
 
 // Loader pattern follows that of wponion.
 // Thanks to Varun Sridharan <varunsridharan23@gmail.com>.
@@ -45,7 +46,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 */
 		public function __construct() {
 			add_action( 'plugins_loaded', [ &$this, 'load_plugin' ], -1 );
-			add_action( 'activated_plugin', [ &$this, 'activate_plugin' ], -1);
+			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1);
 		}
 
 		/**
@@ -89,8 +90,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		public function activate_plugin() {
 			$this->select_latest_version_plugin_installation();
 			try {
-				require_once self::$_loaded['path'] . 'defines.php';
-				require_once self::$_loaded['path'] . 'includes/class-fontawesome.php';
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
 			} catch ( Exception $e ) {

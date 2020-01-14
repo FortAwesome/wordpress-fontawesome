@@ -1,6 +1,9 @@
 <?php
 namespace FortAwesome;
 
+require_once trailingslashit( dirname(__FILE__) ) . '../defines.php';
+require_once trailingslashit( dirname(__FILE__) ) . 'class-fontawesome.php';
+
 /**
  * Fired during plugin activation.
  *
