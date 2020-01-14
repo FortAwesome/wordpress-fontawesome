@@ -665,10 +665,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 			);
 
 			add_filter(
-				'plugin_action_links_' . trailingslashit( self::PLUGIN_NAME ) . self::PLUGIN_NAME . '.php',
+				'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
 				function( $links ) {
 					$mylinks = array(
-						'<a href="' . $this->settings_page_url() . '">Settings</a>',
+						'<a href="' . $this->settings_page_url() . '">Settings</a>'
 					);
 					return array_merge( $links, $mylinks );
 				}
