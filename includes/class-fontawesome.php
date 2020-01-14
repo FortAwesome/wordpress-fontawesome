@@ -684,10 +684,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome' ) ) :
 
 						<p>
 						Heads up! There's more than one installation of the Font
-						Awesome plugin in your WordPress setup. No problem. We just
-						use the latest version. But it means that the plugin version
+						Awesome plugin in your WordPress setup. No problem. If more
+						than one is activated, we just use the latest version.
+						But it means that the plugin version
 						listed above doesn't reflect the version that is active
-						on your site. The active version is <?php echo FontAwesome::PLUGIN_VERSION; ?> and is being loaded
+						on your site, which might be confusing.
+						</p>
+						
+						<p>
+						The active version is <?php echo FontAwesome::PLUGIN_VERSION; ?> and is being loaded
 						by another plugin or theme from here: <?php  echo $loader_version; ?>.
 						</p>
 
