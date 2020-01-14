@@ -1,6 +1,8 @@
 <?php
 namespace FortAwesome;
 
+require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome.php';
+
 /**
  * Fired during plugin deactivation.
  *
@@ -9,17 +11,19 @@ namespace FortAwesome;
 class FontAwesome_Deactivator {
 
 	/**
-	 * Noop. All plugin options and transients are left alone when deactivating
-	 * the plugin. To clean up all plugin state, use clean().
+	 * Any caches or transients are removed when deactivating.
+	 * To remove options data, use uninstall().
 	 */
 	public static function deactivate() {
-		// noop
-	}
-
-	public static function clean() {
-		delete_option( FontAwesome::OPTIONS_KEY );
 		delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 		delete_transient( FontAwesome::V3DEPRECATION_TRANSIENT );
+	}
+
+	/**
+	 * Delete options data.
+	 */
+	public static function uninstall() {
+		delete_option( FontAwesome::OPTIONS_KEY );
 		delete_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
 	}
 }

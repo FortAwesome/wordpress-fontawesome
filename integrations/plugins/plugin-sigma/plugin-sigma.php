@@ -17,7 +17,6 @@ define( 'SIGMA_PLUGIN_LOG_PREFIX', 'sigma-plugin' );
 // index.php is the entry point that must be required in order to leverage
 // the FontAwesome_Loader.
 require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
-require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/includes/class-fontawesome-activator.php';
 
 use function FortAwesome\fa;
 
@@ -27,9 +26,23 @@ use function FortAwesome\fa;
 // are handled, preserved, or overwritten.
 register_activation_hook(
 	__FILE__,
-	function () {
-		FortAwesome\FontAwesome_Activator::initialize();
-	}
+	'FortAwesome\FontAwesome_Loader::initialize'
+);
+
+// A client should invoke FortAwesome\FontAwesome_Loader::maybe_deactivate()
+// when it is deactivated. Actual deactivation will only occur if this is the
+// last remaining plugin installation.
+register_deactivation_hook(
+	__FILE__,
+	'FortAwesome\FontAwesome_Loader::maybe_deactivate'
+);
+
+// A client should invoke FortAwesome\FontAwesome_Loader::maybe_uninstall()
+// when it is uninstalled. Actual uninstall will only occur if this is the
+// last remaining plugin installation.
+register_uninstall_hook(
+	__FILE__,
+	'FortAwesome\FontAwesome_Loader::maybe_uninstall'
 );
 
 add_action(
