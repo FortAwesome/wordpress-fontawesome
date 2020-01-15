@@ -5,8 +5,16 @@ import FontAwesomeAdminView from './FontAwesomeAdminView'
 import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
-import store from './store'
+import { createStore } from './store'
 import { reportDetectedConflicts } from './store/actions'
+
+const initialData = window['__FontAwesomeOfficialPlugin__']
+
+if(! initialData){
+  console.error('Font Awesome plugin is broken: initial state data missing.')
+}
+
+const store = createStore(initialData)
 
 const { showAdmin, showConflictDetectionReporter } = store.getState()
 
