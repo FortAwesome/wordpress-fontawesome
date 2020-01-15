@@ -24,10 +24,10 @@ import Alert from './Alert'
 const UNSPECIFIED = ''
 
 function CheckingOptionStatusIndicator(){
-  return <div className={ styles['checking-option-status-indicator'] }>
+  return <span className={ styles['checking-option-status-indicator'] }>
     <FontAwesomeIcon spin className={ classnames(sharedStyles['icon']) } icon={ faSpinner }/>
     &nbsp;checking for preference conflicts...
-  </div>
+  </span>
 }
 
 export default function Options(props) {
@@ -46,6 +46,7 @@ export default function Options(props) {
   const pendingOptions = useSelector(state => state.pendingOptions)
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
   const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
+  const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
 
@@ -82,11 +83,9 @@ export default function Options(props) {
     dispatch(submitPendingOptions())
   }
 
-  function getDetectionStatus(option) {
+  function getDetectionStatusForOption(option) {
     if(has(pendingOptions, option)) {
-      if(isChecking) {
-        return <CheckingOptionStatusIndicator/>
-      } else if ( ! preferenceCheckSuccess ) {
+      if ( hasChecked && ! preferenceCheckSuccess ) {
         return <Alert title='Error checking preferences' type='warning'>
           <p>{ preferenceCheckMessage }</p>
         </Alert>
@@ -190,7 +189,7 @@ export default function Options(props) {
                 </ul>
               </Alert>
             }
-            { getDetectionStatus('usePro') }
+            { getDetectionStatusForOption('usePro') }
           </div>
         </div>
         <hr className={ styles['option-divider'] }/>
@@ -262,7 +261,7 @@ export default function Options(props) {
                 </label>
               </div>
             </div>
-            { getDetectionStatus('technology') }
+            { getDetectionStatusForOption('technology') }
           </div>
         </div>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
@@ -305,7 +304,7 @@ export default function Options(props) {
                   </span>
                 </span>
                 </label>
-                { getDetectionStatus('svgPseudoElements') }
+                { getDetectionStatusForOption('svgPseudoElements') }
               </>
             }
           </div>
@@ -330,7 +329,7 @@ export default function Options(props) {
                 }
               </select>
             </div>
-            { getDetectionStatus('version') }
+            { getDetectionStatusForOption('version') }
           </div>
         </div>
         <hr className={ styles['option-divider'] }/>
@@ -399,7 +398,7 @@ export default function Options(props) {
                 </label>
               </div>
             </div>
-            { getDetectionStatus('v4compat') }
+            { getDetectionStatusForOption('v4compat') }
           </div>
         </div>
         <hr className={ styles['option-divider'] }/>
@@ -431,7 +430,9 @@ export default function Options(props) {
       }
       {
         size(pendingOptions) > 0
-        ? <span className={ styles['submit-status'] }>you have pending changes</span>
+        ? isChecking
+          ? <CheckingOptionStatusIndicator/>
+          : <span className={ styles['submit-status'] }>you have pending changes</span>
         : isSubmitting &&
             <span className={ classnames(styles['submit-status'], styles['submitting']) }>
               <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
