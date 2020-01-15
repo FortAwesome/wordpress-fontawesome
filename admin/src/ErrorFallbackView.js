@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './ErrorFallbackView.module.css'
 import Alert from './Alert'
 import PropTypes from 'prop-types'
-import { get } from 'lodash'
+import get from 'lodash/get'
 
 function ErrorFallbackView(props) {
   const { error = {} } = props

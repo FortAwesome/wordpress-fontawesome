@@ -1,4 +1,5 @@
-import { size, omit } from 'lodash'
+import size from 'lodash/size'
+import omit from 'lodash/omit'
 import { combineReducers } from 'redux'
 
 export const ADMIN_TAB_SETTINGS = 'ADMIN_TAB_SETTINGS'

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { padStart, dropWhile } from 'lodash'
+import padStart from 'lodash/padStart'
+import dropWhile from 'lodash/dropWhile'
 
 const SECONDS_PER_DAY = 60 * 60 * 24
 const SECONDS_PER_HOUR = 60 * 60

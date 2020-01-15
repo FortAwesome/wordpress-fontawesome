@@ -5,7 +5,8 @@ import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
-import { get, size } from 'lodash'
+import get from 'lodash/get'
+import size from 'lodash/size'
 
 const UnregisteredClientsView = props => {
 

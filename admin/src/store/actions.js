@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { toPairs, size } from 'lodash'
+import toPairs from 'lodash/toPairs'
+import size from 'lodash/size'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
