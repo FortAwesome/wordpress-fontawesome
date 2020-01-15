@@ -61,6 +61,8 @@ function optionsFormState(
       return { ...state, isSubmitting: true }
     case 'OPTIONS_FORM_SUBMIT_END':
       return { ...state, isSubmitting: false, hasSubmitted: true, success, message }
+    case 'ADD_PENDING_OPTION':
+      return { ...state, hasSubmitted: false, success: false, message: '' }
     default:
       return state
   }
