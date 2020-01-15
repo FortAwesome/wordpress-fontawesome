@@ -65,8 +65,8 @@ export default function Options(props) {
   })
 
   const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
-  const submitSuccess = useSelector(state => state.optionsFormState.submitSuccess)
-  const submitMessage = useSelector(state => state.optionsFormState.submitMessage)
+  const submitSuccess = useSelector(state => state.optionsFormState.success)
+  const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
 
   const dispatch = useDispatch()
@@ -414,13 +414,10 @@ export default function Options(props) {
         disabled={ size(pendingOptions) === 0 }
         onClick={ handleSubmitClick }
       />
-      { hasSubmitted &&
-        ( submitSuccess
+      { hasSubmitted 
+        ? submitSuccess
           ? <span className={ classnames(styles['submit-status'], styles['success']) }>
               <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
-              <span className={ styles['explanation'] }>
-                { submitMessage }
-              </span>
             </span>
           : <div className={ classnames(styles['submit-status'], styles['fail']) }>
               <div className={ classnames(styles['fail-icon-container']) }>
@@ -430,12 +427,15 @@ export default function Options(props) {
                 { submitMessage }
               </div>
             </div>
-        )
+        : null
       }
-      {isSubmitting &&
-        <span className={ classnames(styles['submit-status'], styles['submitting']) }>
-          <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
-        </span>
+      {
+        size(pendingOptions) > 0
+        ? <span className={ styles['submit-status'] }>you have pending changes</span>
+        : isSubmitting &&
+            <span className={ classnames(styles['submit-status'], styles['submitting']) }>
+              <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
+            </span>
       }
     </div>
   </div>
