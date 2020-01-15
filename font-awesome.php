@@ -4,14 +4,54 @@ namespace FortAwesome;
 use \Exception, \Error;
 
 defined( 'WPINC' ) || die;
-defined( 'FONTAWESOME_PLUGIN_FILE' ) || define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
 
-// Loader pattern follows that of wponion.
-// Thanks to Varun Sridharan <varunsridharan23@gmail.com>.
+if(! defined( 'FONTAWESOME_PLUGIN_FILE' ) ) {
+	/**
+	 * Name of this plugin's entrypoint file.
+	 * 
+	 * Relative to the plugins directory, as would
+	 * be used for `$plugin` in the
+	 * [`activate_{$plugin}`](https://developer.wordpress.org/reference/hooks/activate_plugin/) action hook.
+	 * 
+	 * @since 4.0
+	 */
+	define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
+}
 
 if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	/**
 	 * Class FontAwesome_Loader
+	 *
+	 * This loader singleton manages potentially multiple installations of
+	 * the Font Awesome plugin code, which may be installed either directly
+	 * as a plugin appearing in the plugins table, or as a composer dependency
+	 * of any number of themes or other plugins.
+	 *
+	 * All plugin installations should attempt to load themselves via this loader,
+	 * which will ensure that the code for plugin installation with the latest
+	 * semantic version is what actually runs. It also ensures appropriate
+	 * handling of initialization, deactivation and uninstallation, so that the
+	 * actions of one plugin installation don't interfere with anothers'.
+	 *
+	 * For example, suppose the following scenario: A later version of the plugin
+	 * is installed directly, appearing in the plugins table. It is activated.
+	 * Then suppose a page builder plugin is installed and activated. That page builder
+	 * plugin includes this plugin code as a composer dependency. In that case,
+	 * the more recent plugin code will be the one loaded and executed at runtime.
+	 * The page builder plugin should work just as expected, even though it would
+	 * be running against a newer version of the Font Awesome plugin code.
+	 * 
+	 * Now suppose that the site owner deactivates and deletes the plugin that
+	 * appears in the plugins table. Because this loader knows that the page builder
+	 * plugin's installation is still present, that deactivation and uninstallation
+	 * will not cause the plugins options and transients to be removed from the
+	 * database. And as soon as that plugin installation is no longer present,
+	 * the installation included by the page builder plugin as a composer dependency
+	 * is automatically promoted and runs as expected with no change to the
+	 * plugin's state in the database.
+	 * 
+	 * This loader pattern follows that of [wponion](https://github.com/wponion/wponion/blob/master/wponion.php).
+	 * Thanks to Varun Sridharan.
 	 *
 	 * @since 4.0
 	 */
@@ -19,39 +59,47 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		/**
 		 * Stores Loader Instance.
 		 *
-		 * @var \FontAwesome_Loader
-		 * @static
+		 * @ignore
+		 * @internal
 		 */
-		public static $_instance = null;
+		private static $_instance = null;
 
 		/**
 		 * Stores metadata about the various modules attempted to be
 		 * loaded as the FontAwesome plugin.
 		 *
-		 * @var array
-		 * @static
+		 * @ignore
+		 * @internal
 		 */
-		public static $_loaded = array();
+		private static $_loaded = array();
 
 		/**
-		 * Stores Data.
+		 * Stores data about each plugin installation that has
+		 * invoked font_awesome_load().
 		 *
-		 * @var array
-		 * @static
+		 * @ignore
+		 * @internal
 		 */
-		public static $data = array();
+		private static $data = array();
 
 		/**
 		 * FontAwesome_Loader constructor.
+		 *
+		 * @ignore
+		 * @internal
 		 */
-		public function __construct() {
+		private function __construct() {
 			add_action( 'plugins_loaded', [ &$this, 'load_plugin' ], -1 );
 			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1);
 		}
 
 		/**
-		 * Choose the plugin installation with the latest version to be the one
-		 * that we'll load.
+		 * Choose the plugin installation with the latest semantic version to be
+		 * the one that we'll load and use for other lifecycle operations like
+		 * initialization, deactivation or uninstallation.
+		 *
+		 * @ignore
+		 * @internal
 		 */
 		private function select_latest_version_plugin_installation() {
 			if ( count(self::$_loaded) > 0 ) return;
@@ -89,6 +137,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 		/**
 		 * Loads the plugin installation that has been selected for loading.
+		 * 
+		 * This is public because it's a callback, but should not be considered
+		 * part of this plugin's API.
+		 * 
+		 * For an example of how to use this loader when importing this plugin
+		 * as a composer dependency, see `integrations/plugins/plugin-sigma.php`
+		 * in this repo.
+		 * 
+		 * @internal
+		 * @ignore
 		 */
 		public function load_plugin() {
 			$this->select_latest_version_plugin_installation();
@@ -98,6 +156,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		/**
 		 * Loads the activation hook for the plugin installation that has been
 		 * selected for loading.
+		 *
+		 * This is public because it's a callback, but should not be considered
+		 * part of this plugin's API.
+		 * 
+		 * @internal
+		 * @ignore 
 		 */
 		public function activate_plugin() {
 			$this->select_latest_version_plugin_installation();
@@ -114,8 +178,26 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		}
 
 		/**
-		 * Runs initialize() for the plugin installation that has been selected for loading.
-		 * convenience static method for initialize_plugin().
+		 * Initializes the Font Awesome plugin's options.
+		 * 
+		 * If multiple installations of the plugin are installed, such as by
+		 * composer dependencies in multiple plugins, this will ensure that the
+		 * plugin is not re-initialized.
+		 * 
+		 * If the plugin's options are empty, this will initialize with defaults.
+		 * Otherwise, it will leave them alone.
+		 * 
+		 * Any theme or plugin that uses this plugin as a composer dependency
+		 * should call this method from its own activation hook. For example:
+		 * 
+		 * ```php
+		 * register_activation_hook(
+		 *     __FILE__,
+		 *     'FortAwesome\FontAwesome_Loader::initialize'
+		 * );
+		 * ```
+		 *
+		 * @since 4.0
 		 */
 		public static function initialize() {
 			self::instance()->initialize_plugin();
@@ -123,8 +205,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 		/**
 		 * Runs initialize() for the plugin installation that has been selected for loading.
+		 * 
+		 * @ignore
+		 * @internal
 		 */
-		public function initialize_plugin() {
+		private function initialize_plugin() {
 			$this->select_latest_version_plugin_installation();
 			try {
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
@@ -139,10 +224,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		}
 
 		/**
-		 * Uninstalls, cleaning up database tables and such, if this represents
-		 * the last plugin installation trying to clean up.
-		 * If there would be other remaining installations, it does not uninstall,
+		 * Runs uninstall logic for the plugin, but only if its invocation
+		 * represents the last plugin installation trying to clean up.
+		 *
+		 * Deletes options records in the database.
+		 *
+		 * If there would be other remaining installations previously added to this
+		 * loader via {@link \FortAwesome\font_awesome_load()}, it does not delete the plugin options,
 		 * since one of those others will end up becoming active and relying on the options data.
+		 *
+		 * @since 4.0
 		 */
 		public static function maybe_uninstall() {
 			if( count( self::$data ) == 1 ) {
@@ -172,9 +263,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		}
 
 		/**
-		 * Creates A Static Instances
+		 * Creates and/or returns the static instance for this Singleton.
 		 *
-		 * @return \FontAwesome_Loader
+		 * It is probably not necessary for a theme or plugin that depends upon
+		 * the Font Awesome plugin to invoke this. It's probably more convenience
+		 * to access the Loader's functionality through the its public static methods.
+		 *
+		 * @return \FortAwesome\FontAwesome_Loader
+		 * @see FontAwesome_Loader::initialize()
+		 * @see FontAwesome_Loader::maybe_deactivate()
+		 * @see FontAwesome_Loader::maybe_uninstall()
+		 * @since 4.0
 		 */
 		public static function instance() {
 			if ( null === self::$_instance ) {
@@ -184,11 +283,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		}
 
 		/**
-		 * Stores plugin version and its details
+		 * Stores plugin version and details for an installation that is being
+		 * registered with this loader.
+		 *
+		 * This method is not part of this plugin's public API.
 		 *
 		 * @param string      $data other information.
 		 * @param string|bool $version framework version.
 		 *
+		 * @ignore
+		 * @internal
 		 * @return $this
 		 */
 		public function add( $data = '', $version = false ) {
@@ -206,11 +310,22 @@ endif; // ! class_exists
 
 if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
 	/**
-	 * Adds plugin installation path to the list array which later used to compare and
-	 * load the plugin from a plugin installation which has the latest version.
+	 * Adds plugin installation path to be managed by this loader.
 	 *
+	 * Any theme or plugin that includes this plugin as a composer dependency
+	 * should not invoke this directly, but instead `require` the the `index.php`
+	 * in the root of this plugin, which will ensure that Font Awesome plugin
+	 * code being included by that theme or other plugin is properly registered.
+	 * 
+	 * For example, as in `integrations/plugins/plugin-sigma`:
+	 * 
+	 * ```php
+	 * require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
+	 * ```
+	 * 
 	 * @param string $plugin_installation_path
 	 * @param bool   $version
+	 * @since 4.0
 	 */
 	function font_awesome_load( $plugin_installation_path = __DIR__, $version = false ) {
 		FontAwesome_Loader::instance()
