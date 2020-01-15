@@ -21,12 +21,11 @@ add_action('after_switch_theme', function(){
 });
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
 		fa()->register(
 			array(
-				'name'          => THEME_ALPHA_LOG_PREFIX,
-				'clientVersion' => THEME_ALPHA_VERSION,
+				'name' => THEME_ALPHA_LOG_PREFIX,
 			)
 		);
 	}
