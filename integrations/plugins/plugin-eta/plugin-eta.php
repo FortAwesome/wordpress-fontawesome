@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Eta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client requiring pseudoElements. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
+ * Description:       Registered Client with preferences: technology: true, svgPseudoElements: true. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -17,13 +17,13 @@ define( 'ETA_PLUGIN_VERSION', '0.0.1' );
 define( 'ETA_PLUGIN_LOG_PREFIX', 'eta-plugin' );
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
-		FortAwesome\fa()->register(
+		fa()->register(
 			array(
 				'name'           => ETA_PLUGIN_LOG_PREFIX,
-				'pseudoElements' => 'require',
-				'clientVersion'  => ETA_PLUGIN_VERSION,
+				'svgPseudoElements' => true,
+				'technology' => 'svg'
 			)
 		);
 	}
