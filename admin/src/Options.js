@@ -335,46 +335,71 @@ export default function Options(props) {
         </div>
         <hr className={ styles['option-divider'] }/>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
-          <div className={ styles['option-header'] }>Features</div>
+          <div className={ styles['option-header'] }>Version 4 Compatibility</div>
           <div className={ styles['option-choice-container'] }>
-            <div className={ styles['option-choice'] }>
-              <input
-                id="code_edit_features_v4compat"
-                name="code_edit_features"
-                type="checkbox"
-                value="v4compat"
-                checked={ v4compat }
-                onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
-                className={ classnames(sharedStyles['sr-only'], styles['input-checkbox-custom']) }
-              />
-              <label htmlFor="code_edit_features_v4compat" className={ styles['option-label'] }>
-                <span className={ sharedStyles['relative'] }>
-                  <FontAwesomeIcon
-                    icon={ faCheckSquare }
-                    className={ styles['checked-icon'] }
-                    size="lg"
-                    fixedWidth
-                  />
-                  <FontAwesomeIcon
-                    icon={ faSquare }
-                    className={ styles['unchecked-icon'] }
-                    size="lg"
-                    fixedWidth
-                  />
-                </span>
-                <span className={ styles['option-label-text'] }>
-                  Version 4 Compatibility
-                  <span className={ styles['option-label-explanation'] }>
-                  Automatically use Font Awesome 5 for any version 4 icons already on your site, including those used by themes or plugins, without worrying about new syntax and name changes.
-                  <br/>
-                  <a rel="noopener noreferrer" target="_blank" href="https://staging.fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> More info
-                  </a>
+            <div className={ styles['option-choices'] }>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_v4compat_on"
+                  name="code_edit_v4compat_on"
+                  type="radio"
+                  value={ v4compat }
+                  checked={ v4compat }
+                  onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_v4compat_on" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faDotCircle }
+                      className={ styles['checked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                    <FontAwesomeIcon
+                      icon={ faCircle }
+                      className={ styles['unchecked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
                   </span>
-                </span>
-              </label>
-              { getDetectionStatus('v4compat') }
+                  <span className={ styles['option-label-text'] }>
+                    On
+                  </span>
+                </label>
+              </div>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="code_edit_v4_compat_off"
+                  name="code_edit_v4_compat_off"
+                  type="radio"
+                  value={ ! v4compat }
+                  checked={ ! v4compat }
+                  onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
+                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                />
+                <label htmlFor="code_edit_v4_compat_off" className={ styles['option-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faDotCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ styles['checked-icon'] }
+                      />
+                      <FontAwesomeIcon
+                        icon={ faCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ styles['unchecked-icon'] }
+                      />
+                    </span>
+                    <span className={ styles['option-label-text'] }>
+                      Off
+                    </span>
+                </label>
+              </div>
             </div>
+            { getDetectionStatus('v4compat') }
           </div>
         </div>
         <hr className={ styles['option-divider'] }/>
