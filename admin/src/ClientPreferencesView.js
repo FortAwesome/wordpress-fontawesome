@@ -2,7 +2,9 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import styles from './ClientPreferencesView.module.css'
 import sharedStyles from './App.module.css'
-import { find, has, size } from 'lodash'
+import find from 'lodash/find'
+import has from 'lodash/has'
+import size from 'lodash/size'
 import classnames from 'classnames'
 
 // TODO: refactor this with the one in OptionsSetter

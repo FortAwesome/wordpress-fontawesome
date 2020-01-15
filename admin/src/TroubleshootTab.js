@@ -5,7 +5,9 @@ import PluginVersionWarningsView from './PluginVersionWarningsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
 import ConflictDetectionScannerSection from './ConflictDetectionScannerSection'
-import { get, values, size } from 'lodash'
+import get from 'lodash/get'
+import values from 'lodash/values'
+import size from 'lodash/size'
 import { useSelector } from 'react-redux'
 
 export default function TroubleshootTab() {
