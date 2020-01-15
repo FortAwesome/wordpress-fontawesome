@@ -17,6 +17,7 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -140,12 +141,14 @@ class FontAwesome_Release_Provider {
 		return $mapped_release;
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Loads release metadata. For internal use only.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
-	private function load_releases() {
+	public function load_releases() {
 		$init_status = array(
 			'code'    => null,
 			'message' => '',
@@ -331,6 +334,10 @@ class FontAwesome_Release_Provider {
 	) ) {
 		$resources = array();
 
+		if ( ! is_string($version) || 0 == strlen( $version ) ) {
+			throw new InvalidArgumentException( "A valid Font Awesome version has not been provided. This might be caused by your WordPress server being unable to contact the Font Awesome API server, such as when you're using WordPress in offline mode." );
+		}
+
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
 			throw new FontAwesome_ConfigurationException(
 				'Whoops! You found a corner case here. ' .
@@ -391,7 +398,7 @@ class FontAwesome_Release_Provider {
 			);
 		}
 
-		return $resources;
+		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
 
 	/**
