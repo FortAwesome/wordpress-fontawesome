@@ -45,13 +45,16 @@ register_uninstall_hook(
 	'FortAwesome\FontAwesome_Loader::maybe_uninstall'
 );
 
+// It is good to register as a client, even if no configuration preferences
+// are being specified, because the plugin's settings page may show the site owner
+// a listing of which plugins or themes are actively using Font Awesome and
+// what their preferences are.
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
 		fa()->register(
 			array(
-				'name'          => SIGMA_PLUGIN_LOG_PREFIX,
-				'clientVersion' => SIGMA_PLUGIN_VERSION,
+				'name' => SIGMA_PLUGIN_LOG_PREFIX,
 			)
 		);
 	}
