@@ -58,5 +58,8 @@
         "docsrv": "cd docsrv && yarn && node index.js",
         "dist": "composer clean && composer build.admin && bin/make-wp-dist",
         "dist2trunk": "bin/dist-to-trunk.sh"
+    },
+    "require": {
+        "webonyx/graphql-php": "^0.13.8"
     }
 }

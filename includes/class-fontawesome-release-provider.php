@@ -160,7 +160,7 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = $this->get( FONTAWESOME_API_URL . '/api/releases' );
+			$response = $this->get( FONTAWESOME_API_URL_OLD . '/api/releases' );
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
@@ -214,6 +214,36 @@ class FontAwesome_Release_Provider {
 				array(
 					'code'    => 0,
 					'message' => 'Whoops, we failed when trying to update the releases data.',
+				)
+			);
+		}
+	}
+
+	/**
+	 * Fetches metadata for a release. For internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
+	public function load_release_metadata( $version ) {
+		$init_status = array(
+			'code'    => null,
+			'message' => '',
+		);
+
+		try {
+			$response = $this->get( FONTAWESOME_API_URL . '/graphiql' );
+
+			if ( $response instanceof WP_Error ) {
+				throw new Error();
+			}
+		} catch ( Exception $e ) {
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, we failed to fetch the data.',
 				)
 			);
 		}
