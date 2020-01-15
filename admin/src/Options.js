@@ -179,7 +179,7 @@ export default function Options(props) {
               </div>
             </div>
             { usePro &&
-              <Alert title='Pro requires a subscription' type='info'>
+              <Alert title='Pro requires a Font Awesome subscription' type='info'>
                 <ul>
                   <li>
                     <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
