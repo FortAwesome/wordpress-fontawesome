@@ -60,7 +60,7 @@ function optionsFormState(
     case 'OPTIONS_FORM_SUBMIT_START':
       return { ...state, isSubmitting: true }
     case 'OPTIONS_FORM_SUBMIT_END':
-      return { ...state, isSubmitting: false, success, message }
+      return { ...state, isSubmitting: false, hasSubmitted: true, success, message }
     default:
       return state
   }
