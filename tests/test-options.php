@@ -47,6 +47,7 @@ class OptionsTest extends \WP_UnitTestCase {
 						'method' => 'webfont',
 						'v4shim' => 'require',
 						'pseudoElements' => 'require',
+						// clientVersion was a previous option
 						'clientVersion' => 1554559421,
 					),
 				'version' => '5.8.1',
