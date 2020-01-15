@@ -8,13 +8,11 @@ Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Resolves conflicts across many plugins or themes that use Font Awesome.
+The official way to use Font Awesome Free or Pro icons on your site, brought to you by the Font Awesome team.
 
 == Description ==
 
-Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Resolves conflicts across many plugins or themes that use Font Awesome.
-
-This is the official plugin from the Font Awesome team.
+The official way to use Font Awesome Free or Pro icons on your site, brought to you by the Font Awesome team.
 
 = New Plugin, Replacing an Old Plugin =
 
