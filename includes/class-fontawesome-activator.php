@@ -5,9 +5,16 @@ require_once trailingslashit( dirname(__FILE__) ) . '../defines.php';
 require_once trailingslashit( dirname(__FILE__) ) . 'class-fontawesome.php';
 
 /**
- * Fired during plugin activation.
- *
- * This class defines all code necessary to run during the plugin's activation.
+ * Plugin activation logic.
+ * 
+ * The methods defined in this class should normally not be invoked directly,
+ * but only by FontAwesome_Loader, which handles cases
+ * where multiple installations of this plugin are present.
+ * 
+ * Most client code that depends upon this plugin should limit its invocations
+ * to the corresponding Loader methods, such as FontAwesome_Loader::initialize().
+ * 
+ * @since 4.0
  */
 class FontAwesome_Activator {
 
@@ -23,6 +30,7 @@ class FontAwesome_Activator {
 
 	/**
 	 * Initializes plugin options with defaults only if they are empty.
+	 *
 	 * Otherwise, it leaves alone options that are already present.
 	 * 
 	 * Sets default user options. Will attempt to get the latest available version,
