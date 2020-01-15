@@ -18,13 +18,12 @@ use function FortAwesome\fa;
 use FortAwesome\FontAwesome;
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
-		fa()->satisfies_or_warn( [ [ '0.0.1', '<' ] ], 'Theta' );
+		fa()->plugin_version_satisfies_or_warn( [ [ '0.0.1', '<' ] ], 'Theta' );
 		fa()->register(
 			array(
-				'name'          => THETA_PLUGIN_LOG_PREFIX,
-				'clientVersion' => THETA_PLUGIN_VERSION,
+				'name' => THETA_PLUGIN_LOG_PREFIX
 			)
 		);
 	}
@@ -35,7 +34,7 @@ add_filter(
 	function( $content ) {
 		$expected = 'NO';
 
-		$actual = fa()->satisfies( [ [ '0.0.1', '<' ] ] ) ? 'YES' : 'NO';
+		$actual = fa()->satisfies( fa()->version(), [ [ '0.0.1', '<' ] ] ) ? 'YES' : 'NO';
 
 		$constraint = '< 0.0.1';
 
