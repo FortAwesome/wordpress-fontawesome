@@ -236,8 +236,8 @@ function showConflictDetectionReporter(state = false, action = {}) {
   const { type } = action
 
   switch(type) {
-    case 'SET_CONFLICT_DETECTION_SCANNER_START':
-      return true
+    case 'SET_CONFLICT_DETECTION_SCANNER_END':
+      return action.success
     case 'CONFLICT_DETECTION_TIMER_EXPIRED':
       return false
     default:
