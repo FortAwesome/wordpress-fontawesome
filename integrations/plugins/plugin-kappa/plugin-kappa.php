@@ -14,17 +14,23 @@ defined( 'WPINC' ) || die;
 define( 'KAPPA_PLUGIN_VERSION', '0.0.1' );
 define( 'KAPPA_PLUGIN_LOG_PREFIX', 'kappa-plugin' );
 
-add_action('wp_enqueue_scripts', function(){
-  wp_enqueue_style(
-  	'font-awesome-4-7',
-    plugins_url( 'font-awesome-4.7.0/css/font-awesome.css', __FILE__ ),
-    array(),
-	null,
-	'all'
-  );
+foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
+	add_action(
+		$action,
+		function() {
+			wp_enqueue_style(
+				'font-awesome-4-7',
+				plugins_url( 'font-awesome-4.7.0/css/font-awesome.css', __FILE__ ),
+				array(),
+				null,
+				'all'
+			);
 
-  wp_enqueue_style( 'plugin-kappa-style', plugins_url( 'style.css', __FILE__ ) );
-}, 99);
+			wp_enqueue_style( 'plugin-kappa-style', plugins_url( 'style.css', __FILE__ ) );
+		},
+		10
+	);
+}
 
 add_filter('the_content', function($content){
   $pre_content = <<<EOT
