@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import sharedStyles from './App.module.css'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector, useStore } from 'react-redux'
 import { setConflictDetectionScanner, CONFLICT_DETECTION_SCANNER_DURATION_MIN } from './store/actions'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
+import mountConflictDetectionReporter from './mountConflictDetectionReporter'
 
 export default function ConflictDetectionScannerSection() {
   const dispatch = useDispatch()
@@ -12,6 +13,18 @@ export default function ConflictDetectionScannerSection() {
   const nowMs = (new Date()).valueOf()
   const detectingConflicts = (new Date(detectConflictsUntil * 1000)) > nowMs
   const { isSubmitting, hasSubmitted, message, success } = useSelector(state => state.conflictDetectionScannerStatus)
+  const showConflictDetectionReporter = useSelector(state => state.showConflictDetectionReporter)
+  const store = useStore()
+
+  useEffect(() => {
+    if(showConflictDetectionReporter) {
+      mountConflictDetectionReporter(
+        () => {},
+        store,
+        true
+      )
+    }
+  }, [showConflictDetectionReporter])
 
   return <div>
     <h1>Conflict Detection Scanner</h1>
