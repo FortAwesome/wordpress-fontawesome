@@ -22,7 +22,7 @@ if( ! defined( 'FONTAWESOME_DIR_PATH' ) ) {
 	 * of this constant would look more like this:
 	 * `/var/www/html/wp-content/plugins/font-awesome/`
 	 *
-	 * @since 4.0
+	 * @since 4.0.0
 	 */
 	define( 'FONTAWESOME_DIR_PATH', plugin_dir_path( __FILE__ ) );
 }
@@ -46,7 +46,7 @@ if(! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	 * of this constant would look more like this:
 	 * `http://localhost:8080/wp-content/plugins/font-awesome/`
 	 *
-	 * @since 4.0
+	 * @since 4.0.0
 	*/
 	define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
 }
