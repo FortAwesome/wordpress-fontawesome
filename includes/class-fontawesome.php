@@ -76,7 +76,6 @@ class FontAwesome {
 	 * @since 4.0.0
 	 */
 	const UNREGISTERED_CLIENTS_OPTIONS_KEY = 'font-awesome-unregistered-clients';
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * The unique WordPress plugin slug for this plugin.
 	 *
@@ -89,14 +88,22 @@ class FontAwesome {
 	const PLUGIN_VERSION = '4.0.0-rc13';
 	/**
 	 * The version of this plugin's REST API.
+	 * 
+	 * The REST API is being deprecated and replaced by the GraphQL API.
 	 *
-	 * @since 4.0.0
+	 * @internal
+	 * @deprecated
+	 * @ignore
 	 */
 	const REST_API_VERSION = '1';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
-	 * @since 4.0.0
+	 * The REST API is being deprecated and replaced by the GraphQL API.
+	 * 
+	 * @internal
+	 * @deprecated
+	 * @ignore
 	 */
 	const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v' . self::REST_API_VERSION;
 	/**
@@ -159,27 +166,25 @@ class FontAwesome {
 	 */
 	const ADMIN_RESOURCE_LOCALIZATION_NAME = '__FontAwesomeOfficialPlugin__';
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 * @deprecated
 	 */
 	const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 * @deprecated
 	 */
 	const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * We will not use a default for version, since we want the version stored in the options
 	 * to always be resolved to an actual version number, which requires that the release
 	 * provider successfully runs at least once. We'll do that upon plugin activation.
 	 *
 	 * @ignore
+	 * @internal
 	 */
 	const DEFAULT_USER_OPTIONS = array(
 		'usePro'               => FALSE,
@@ -191,32 +196,32 @@ class FontAwesome {
 		'blacklist'            => array()
 	);
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * @internal
 	 * @ignore
 	 */
 	protected static $instance = null;
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * @internal
 	 * @ignore
 	 */
 	protected $client_preferences = array();
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * @internal
 	 * @ignore
 	 */
 	protected $conflicts_by_client = null;
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * @internal
 	 * @ignore
 	 */
 	protected $plugin_version_warnings = null;
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * @internal
 	 * @ignore
 	 */
 	protected $screen_id = null;
@@ -236,7 +241,6 @@ class FontAwesome {
 		return self::$instance;
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
@@ -256,7 +260,7 @@ class FontAwesome {
 	/**
 	 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
 	 *
-	 * Internal only. Clients should * not invoke it directly.
+	 * Internal only. Clients should not invoke it directly.
 	 *
 	 * @internal
 	 * @ignore
@@ -343,7 +347,7 @@ class FontAwesome {
 	}
 
 	/**
-	 * Reports whether the given $version satisfies the given $constraints.
+	 * Reports whether the given version satisfies the given constraints.
 	 *
 	 * It's really just a generalized utility function, instead of incorporating a full-blown semver library.
 	 *
@@ -397,7 +401,8 @@ class FontAwesome {
 	 * Reports a warning if currently loaded version of the Font Awesome plugin does not
 	 * satisfy the given constraints.
 	 *
-	 * This can help site owners better diagnose conflicts.
+	 * This can help site owners better diagnose conflicts, but probably should
+	 * not be used 
 	 *
 	 * Issues warnings in two ways:
 	 *
