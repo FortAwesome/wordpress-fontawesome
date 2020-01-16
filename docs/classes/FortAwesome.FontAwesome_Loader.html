@@ -114,12 +114,12 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">5</span>
+                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">4</span>
+                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
                                 </a>
                             </li>
                             <li>
@@ -144,26 +144,25 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1856449989"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1870380803"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1856449989" class="accordion-body collapse in">
+            <div id="namespace-1870380803" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1974026249"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-524502119"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-1974026249" class="accordion-body collapse ">
+            <div id="namespace-524502119" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
                     <ul>
-                                                                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></li>
+                                                                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome.html">FontAwesome</a></li>
                                                     <li class="class"><a href="../classes/FortAwesome.FontAwesome_Loader.html">FontAwesome_Loader</a></li>
-                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></li>
                                             </ul>
                 </div>
             </div>
@@ -190,31 +189,47 @@
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
 
                     <h1><small>\FortAwesome</small>FontAwesome_Loader</h1>
-                    <p><em>Class FontAwesome_Loader</em></p>
-                    <p>This loader singleton manages potentially multiple installations of
-the Font Awesome plugin code, which may be installed either directly
+                    <p><em>Loader class, a Singleton. Coordinates potentially multiple installations of
+the Font Awesome plugin code, and ensures that the latest available semantic
+version is selected for execution at runtime. Exposes a few public API
+methods for initialization (activation), deactivation, and uninstallation
+of plugin code.</em></p>
+                    <p>Font Awesome plugin installations may be installed either directly
 as a plugin appearing in the plugins table, or as a composer dependency
 of any number of themes or other plugins.</p>
-<p>All plugin installations should attempt to load themselves via this loader,
+<p>We only have in mind various installations of this code base,
+of course. Not other non-official Font Awesome plugins. We don't try
+to anticipate what <em>other</em> potentially conflicting plugins might be installed.</p>
+<p>All Font Awesome plugin installations should attempt to load themselves via this loader,
 which will ensure that the code for plugin installation with the latest
 semantic version is what actually runs. It also ensures appropriate
 handling of initialization, deactivation and uninstallation, so that the
-actions of one plugin installation don't interfere with anothers'.</p>
+actions of one plugin installation don't interfere with another's.</p>
+<p>Refer to <code>integrations/plugins/plugin-sigma</code>
+in this repo for an example of how to load the Font Awesome plugin code
+via this Loader when including it as a composer dependency.</p>
+<p>The client code should <code>require_once</code> the <code>index.php</code> found
+in the root of this code base:</p>
+<pre><code class="language-php">require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';</code></pre>
 <p>For example, suppose the following scenario: A later version of the plugin
-is installed directly, appearing in the plugins table. It is activated.
+is installed from the WordPress plugins directory and appears in the
+plugins table. It is activated.
 Then suppose a page builder plugin is installed and activated. That page builder
 plugin includes this plugin code as a composer dependency. In that case,
-the more recent plugin code will be the one loaded and executed at runtime.
+the plugin code with the later semantic version will be the one loaded
+and executed at runtime.
 The page builder plugin should work just as expected, even though it would
-be running against a newer version of the Font Awesome plugin code.</p>
+be running against a newer version of the Font Awesome plugin code than it
+had shipped in its own vendor bundle.</p>
 <p>Now suppose that the site owner deactivates and deletes the plugin that
-appears in the plugins table. Because this loader knows that the page builder
+appears in the plugins table, the one that had been installed from the
+WordPress plugins directory. Because this loader knows that the page builder
 plugin's installation is still present, that deactivation and uninstallation
-will not cause the plugins options and transients to be removed from the
-database. And as soon as that plugin installation is no longer present,
-the installation included by the page builder plugin as a composer dependency
-is automatically promoted and runs as expected with no change to the
-plugin's state in the database.</p>
+will not cause the Font Awesome plugin's options and transients to be removed from the
+database. And as soon as that plugin installation is removed,
+the Font Awesome plugin installation included in the page builder plugin's
+composer vendor bundle is automatically promoted and runs as expected with
+no change to the plugin's state in the database.</p>
 <p>This loader pattern follows that of <a href="https://github.com/wponion/wponion/blob/master/wponion.php">wponion</a>.
 Thanks to Varun Sridharan.</p>
                     
@@ -366,8 +381,14 @@ should call this method from its own activation hook. For example:</p>
 represents the last plugin installation trying to clean up.</em></p>
                 <p>Deletes options records in the database.</p>
 <p>If there would be other remaining installations previously added to this
-loader via <a href="../namespaces/FortAwesome.html#function_font_awesome_load">\FortAwesome\font_awesome_load()</a>, it does not delete the plugin options,
+loader via \FortAwesome\font_awesome_load(), it does not delete the plugin options,
 since one of those others will end up becoming active and relying on the options data.</p>
+<p>Any theme or plugin that includes this Font Awesome plugin as a library
+dependency should call this from its own uninstall hook. For example:</p>
+<pre><code class="language-php">register_uninstall_hook(
+    __FILE__,
+    'FortAwesome\FontAwesome_Loader::maybe_uninstall'
+);</code></pre>
 
                 
                 
@@ -400,10 +421,17 @@ since one of those others will end up becoming active and relying on the options
                 <h3 class="public ">maybe_deactivate()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">maybe_deactivate() </pre>
-                <p><em>Deactivates, cleaning up database tables and such, if this represents
-the last plugin installation.</em></p>
-                <p>If there would be other remaining installations, it does not deactivate,
-since one of those others will end up becoming active and relying on the data.</p>
+                <p><em>Deactivates, cleaning up temporary data, such as transients, if this
+represents the last installed copy of the Font Awesome plugin being deactivated.</em></p>
+                <p>However, if this loader is aware of any remaining installations, it does
+not clean up temporary data, since one of those other Font Awesome plugin
+installations, if active, will be promoted and end up relying on the data.</p>
+<p>Any theme or plugin that includes this Font Awesome plugin as a library
+dependency should call this from its own uninstall hook. For example:</p>
+<pre><code class="language-php"> register_deactivation_hook(
+    __FILE__,
+    'FortAwesome\FontAwesome_Loader::maybe_deactivate'
+ );</code></pre>
 
                 
                 
@@ -417,7 +445,14 @@ since one of those others will end up becoming active and relying on the data.</
                                                                             </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            4.0                                
+                                                    </td>
+                    </tr>
                             </table>
         </aside>
     </div>
@@ -431,7 +466,7 @@ since one of those others will end up becoming active and relying on the data.</
                 <pre class="signature" style="margin-right: 54px;">instance() : \FortAwesome\FontAwesome_Loader</pre>
                 <p><em>Creates and/or returns the static instance for this Singleton.</em></p>
                 <p>It is probably not necessary for a theme or plugin that depends upon
-the Font Awesome plugin to invoke this. It's probably more convenience
+the Font Awesome plugin to invoke this. It's probably more convenient
 to access the Loader's functionality through the its public static methods.</p>
 
                 
@@ -514,7 +549,7 @@ to access the Loader's functionality through the its public static methods.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on January 15th, 2020 at 01:36.
+                    on January 16th, 2020 at 01:53.
                 </section>
             </section>
         </section>

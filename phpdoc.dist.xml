@@ -8,9 +8,8 @@
     </transformer>
     <files>
         <file>font-awesome.php</file>
+        <file>defines.php</file>
         <file>includes/class-fontawesome.php</file>
-        <file>includes/class-fontawesome-config-controller.php</file>
-        <file>includes/class-fontawesome-release-provider.php</file>
         <ignore>admin/*</ignore>
         <ignore>tests/*</ignore>
         <ignore>bin/*</ignore>

@@ -1,4 +1,9 @@
 <?php
+/**
+ * This module is not considered part of the public API, only internal.
+ * Any data or functionality that it produces should be exported by the
+ * main FontAwesome class and the API documented and semantically versioned there.
+ */
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
