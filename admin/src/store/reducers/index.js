@@ -38,9 +38,13 @@ function options(state = {}, action = {}) {
         svgPseudoElements: coerceBool(svgPseudoElements)
       }
     case 'SET_CONFLICT_DETECTION_SCANNER_END':
-      return {
-        ...state,
-        detectConflictsUntil: data.options.detectConflictsUntil
+      if(action.success) {
+        return {
+          ...state,
+          detectConflictsUntil: data.options.detectConflictsUntil
+        }
+      } else {
+        return state
       }
     default:
       return state
@@ -192,10 +196,10 @@ function conflictDetectionScannerStatus(
   const { type, success, message } = action
 
   switch(type) {
-    case ' SET_CONFLICT_DETECTION_SCANNER_START':
+    case 'SET_CONFLICT_DETECTION_SCANNER_START':
       return { ...state, isSubmitting: true }
-    case ' SET_CONFLICT_DETECTION_SCANNER_END':
-      return { ...state, isSubmitting: false, success, message }
+    case 'SET_CONFLICT_DETECTION_SCANNER_END':
+      return { ...state, hasSubmitted: true, isSubmitting: false, success, message }
     default:
       return state
   }
