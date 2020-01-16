@@ -15,12 +15,18 @@ define( 'DELTA_PLUGIN_VERSION', '0.0.1' );
 define( 'DELTA_PLUGIN_LOG_PREFIX', 'delta-plugin' );
 
 foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
-	wp_enqueue_script(
-		'DELTA_PLUGIN_LOG_PREFIX',
-		'https://use.fontawesome.com/releases/v5.0.11/js/all.js',
-		array(),
-		null,
-		false
+	add_action(
+		$action,
+		function() {
+			wp_enqueue_script(
+				'DELTA_PLUGIN_LOG_PREFIX',
+				'https://use.fontawesome.com/releases/v5.0.11/js/all.js',
+				array(),
+				null,
+				false
+			);
+		},
+		10
 	);
 }
 
