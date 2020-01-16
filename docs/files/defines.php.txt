@@ -66,3 +66,4 @@ if(! defined( 'FONTAWESOME_ENV' ) ) {
 	 */
 	define( 'FONTAWESOME_ENV', getenv( 'FONTAWESOME_ENV' ) );
 }
+

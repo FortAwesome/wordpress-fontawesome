@@ -1,4 +1,9 @@
 <?php
+/**
+ * This example theme assumes the presence of the Font Awesome plugin.
+ * It does not bundle Font Awesome as a library dependency, such as via composer.
+ * See integrations/plugins/plugin-sigma for an example of do that.
+ */
 use function FortAwesome\fa;
 
 define('THEME_ALPHA_LOG_PREFIX', 'theme-alpha');
