@@ -14,7 +14,7 @@ require_once trailingslashit( dirname(__FILE__) ) . 'class-fontawesome.php';
  * Most client code that depends upon this plugin should limit its invocations
  * to the corresponding Loader methods, such as FontAwesome_Loader::initialize().
  * 
- * @since 4.0
+ * @since 4.0.0
  */
 class FontAwesome_Activator {
 

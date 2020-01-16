@@ -16,7 +16,7 @@ if(! defined( 'FONTAWESOME_PLUGIN_FILE' ) ) {
 	 * be used for `$plugin` in the
 	 * [`activate_{$plugin}`](https://developer.wordpress.org/reference/hooks/activate_plugin/) action hook.
 	 * 
-	 * @since 4.0
+	 * @since 4.0.0
 	 */
 	define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
 }
@@ -78,7 +78,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 * This loader pattern follows that of [wponion](https://github.com/wponion/wponion/blob/master/wponion.php).
 	 * Thanks to Varun Sridharan.
 	 *
-	 * @since 4.0
+	 * @since 4.0.0
 	 */
 	final class FontAwesome_Loader {
 		/**
@@ -222,7 +222,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * );
 		 * ```
 		 *
-		 * @since 4.0
+		 * @since 4.0.0
 		 */
 		public static function initialize() {
 			self::instance()->initialize_plugin();
@@ -268,7 +268,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 *	);
 		 * ```
 		 *
-		 * @since 4.0
+		 * @since 4.0.0
 		 */
 		public static function maybe_uninstall() {
 			if( count( self::$data ) == 1 ) {
@@ -299,7 +299,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 *  	'FortAwesome\FontAwesome_Loader::maybe_deactivate'
 		 *  );
 		 * ```
-		 * @since 4.0
+		 * @since 4.0.0
 		 */
 		public static function maybe_deactivate() {
 			if( count( self::$data ) == 1 ) {
@@ -321,7 +321,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @see FontAwesome_Loader::initialize()
 		 * @see FontAwesome_Loader::maybe_deactivate()
 		 * @see FontAwesome_Loader::maybe_uninstall()
-		 * @since 4.0
+		 * @since 4.0.0
 		 */
 		public static function instance() {
 			if ( null === self::$_instance ) {
@@ -364,7 +364,7 @@ if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
 	 * @param bool   $version
 	 * @ignore
 	 * @internal
-	 * @since 4.0
+	 * @since 4.0.0
 	 */
 	function font_awesome_load( $plugin_installation_path = __DIR__, $version = false ) {
 		FontAwesome_Loader::instance()
