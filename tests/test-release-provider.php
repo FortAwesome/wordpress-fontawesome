@@ -89,6 +89,10 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
+	public function test_load_release_metadata_with_version() {
+		load_release_metadata('5.0.1', 'free');
+	}
+
 	public function test_versions_no_releases_exception() {
 		/**
 		 * When the GET for releases does not return successfully and we have no version metadata available,

@@ -7,6 +7,10 @@
 namespace FortAwesome;
 
 use \WP_Error, \Error, \Exception, \InvalidArgumentException;
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
+use GraphQL\GraphQL;
+use GraphQL\Type\Schema;
 
 /**
  * Provides metadata about Font Awesome releases.
@@ -226,14 +230,17 @@ class FontAwesome_Release_Provider {
 	 * @ignore
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
-	public function load_release_metadata( $version ) {
+	public function load_release_metadata( $version, $type_flag ) {
 		$init_status = array(
 			'code'    => null,
 			'message' => '',
 		);
 
+		$test_var = "What's up?";
+		print_r($test_var);
+		
 		try {
-			$response = $this->get( FONTAWESOME_API_URL . '/graphiql' );
+			$response = $this->get( FONTAWESOME_API_URL . '/' );
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
