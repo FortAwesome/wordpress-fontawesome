@@ -245,20 +245,20 @@ export function setConflictDetectionScanner({ enable = true }) {
       }
     ).then(response => {
     const { status, data } = response
-    if (200 === status) {
-      dispatch({
-        type: 'SET_CONFLICT_DETECTION_SCANNER_END',
-        data,
-        success: true,
-        message: ''
-      })
-    } else {
-      dispatch({
-        type: 'SET_CONFLICT_DETECTION_SCANNER_END',
-        success: false,
-        message: "Failed to save changes"
-      })
-    }
+      if (200 === status) {
+        dispatch({
+          type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+          data,
+          success: true,
+          message: ''
+        })
+      } else {
+        dispatch({
+          type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+          success: false,
+          message: "Failed to save changes"
+        })
+      }
     }).catch(error => {
       const { response: { data: { code, message }}} = error
 
