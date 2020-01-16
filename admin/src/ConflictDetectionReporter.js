@@ -10,7 +10,8 @@ const STATUS = {
   submitting: 'Submitting',
   none: 'None',
   error: 'Error',
-  expired: 'Expired'
+  expired: 'Expired',
+  ready: 'Ready'
 }
 
 const STYLES = {
@@ -58,10 +59,16 @@ export default function ConflictDetectionReporter() {
     state => state.showConflictDetectionReporter
   )
 
+  const scannerReady = useSelector(
+    state => state.conflictDetectionScannerStatus.hasSubmitted && state.conflictDetectionScannerStatus.success
+  )
+
   const runStatus = useSelector(state => {
     const { isSubmitting, hasSubmitted, success, countBeforeDetection, countAfterDetection } = state.unregisteredClientDetectionStatus
     if ( !showConflictDetectionReporter ) {
       return STATUS.expired
+    } else if (scannerReady) {
+      return STATUS.ready
     } else if ( success && (countBeforeDetection === countAfterDetection) ) {
       return STATUS.none
     } else if( isSubmitting ) {
@@ -98,6 +105,12 @@ export default function ConflictDetectionReporter() {
               <div>
                 <div>
                   <FontAwesomeIcon icon={ faSpinner } spin /> <span>{ runStatus }</span>
+                </div>
+              </div>,
+            Ready:
+              <div>
+                <div>
+                  <FontAwesomeIcon icon={ faThumbsUp } /> <span>Ready to detect conflicts. Just start navigating to various pages on your web site and this scanner will show you its progress along the way.</span>
                 </div>
               </div>,
             Submitting:
