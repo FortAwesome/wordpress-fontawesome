@@ -227,7 +227,17 @@ After setup completes, WordPress is ready and initialized in the docker containe
 
 You can login to the admin dashboard at [http://localhost:8080/wp-admin](http://localhost:8080/wp-admin) with admin username and password as found in `.env`.
 
-## 10. Install and/or Activate the Font Awesome plugin
+## 10. OPTIONAL: configure debugging
+
+```bash
+bin/configure-debugging
+```
+
+This will setup debugging configuration in `wp-config.php` inside the container
+and will also install several plugins to power the debug bar available from the
+upper right hand nav bar when logged into WordPress as admin.
+
+## 11. Install and/or Activate the Font Awesome plugin
 
 If you're running the `bin/dev` environment, you'll find in the admin dashboard that the
 Font Awesome is already installed, because the source code in this repo is mounted as a volume

@@ -3,5 +3,5 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
 
-$WP_SUDO $DOCKER exec -it -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user $WP_CONTAINER wp $@
+$WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user $WP_CONTAINER wp $@
 
