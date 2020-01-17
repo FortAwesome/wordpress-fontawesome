@@ -1,5 +1,5 @@
 import React from 'react'
-import ClientPreferencesView from './ClientPreferencesView'
+import ManageFontAwesomeVersionsSection from './ManageFontAwesomeVersionsSection'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
 import ReleaseProviderWarning from './ReleaseProviderWarning'
@@ -25,7 +25,7 @@ export default function TroubleshootTab() {
     { hasV3DeprecationWarning && <V3DeprecationWarning /> }
     { releaseProviderStatusOK || <ReleaseProviderWarning /> }
     <ConflictDetectionScannerSection />
-    <ClientPreferencesView />
+    <ManageFontAwesomeVersionsSection />
     <UnregisteredClientsView clients={ unregisteredClients }/>
   </div>
 }
