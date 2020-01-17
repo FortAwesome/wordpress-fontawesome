@@ -154,7 +154,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	public function assert_font_face_overrides($output, $license_subdomain, $version, $refute = false){
 		$font_face_match_count = preg_match_all(
-			"/@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]+src: url\(\"https:\/\/${license_subdomain}\.fontawesome\.com.*?${version}\/webfonts\/fa-brands-400\.eot\"/",
+			"/@font-face {\n.*?font-family: \"FontAwesome\";\n[\s]*src: url\(\"https:\/\/${license_subdomain}\.fontawesome\.com.*?${version}\/webfonts\/fa-brands-400\.eot\"/",
 			$output,
 			$font_face_matches
 		);
