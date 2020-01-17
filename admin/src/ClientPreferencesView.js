@@ -23,23 +23,19 @@ export default function ClientPreferencesView() {
   const hasConflicts = size(conflicts)
 
   return <div className={ styles['client-requirements'] }>
-    {
-      hasConflicts
-      ? <h2>Conflicting Preferences</h2>
-      : <h2>Other Theme or Plugin Preferences</h2>
-    }
+    <h2>Registered themes or plugins</h2>
     {
       hasAdditionalClients
       ?
         <div>
           <p className={sharedStyles['explanation']}>
-            These are other active plugins or themes that depend on this plugin, along with their Font Awesome preferences.
+            Below is the list of active themes or plugins that have opted-in (registered) to use your settings in this plugin, and their Font Awesome preferences.
           </p>
           { hasConflicts
             ? <p className={sharedStyles['explanation']}>
               We've highlighted those preferences that differ from the options you've configured.
               It's best to reconfigure the options in order to satisfy these, if possible.
-              A theme or plugin whose preferences aren't satisfied will probably not work as expected.
+              A theme or plugin whose preferences aren't satisfied may not work as expected.
             </p>
             : null
           }
@@ -106,8 +102,7 @@ export default function ClientPreferencesView() {
         </div>
       :
         <p className={ sharedStyles['explanation'] }>
-          We don't detect any other active theme or plugins that have registered
-          preferences for Font Awesome.
+          No active theme or plugins have registered preferences for Font Awesome.
         </p>
     }
   </div>
