@@ -4,7 +4,10 @@ import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheckSquare,
+  faSquare,
+  faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import get from 'lodash/get'
 import size from 'lodash/size'
 
@@ -26,12 +29,40 @@ const UnregisteredClientsView = props => {
           <table className={classnames('widefat', 'striped')}>
             <tbody>
             <tr className={sharedStyles['table-header']}>
+              <th>Block</th>
               <th>Type</th>
-              <th>Source or Excerpt</th>
+              <th>URL</th>
             </tr>
             {
               Object.keys(props.clients).map(md5 => (
                 <tr key={md5}>
+                  <td>
+                    <input
+                      id={`block_${md5}`}
+                      name={`block_${md5}`}
+                      type="checkbox"
+                      value={ md5 }
+                      checked={ true }
+                      onChange={ () => console.log('changed') }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                    />
+                    <label htmlFor={`block_${md5}`} className={ styles['option-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faCheckSquare }
+                          className={ styles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faSquare }
+                          className={ styles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                    </label>
+                  </td>
                   <td>
                     {props.clients[md5].type}
                   </td>
