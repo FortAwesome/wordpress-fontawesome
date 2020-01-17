@@ -22,6 +22,9 @@ COPY ./install-wp-tests-docker.sh /tmp
 
 RUN /tmp/install-wp-tests-docker.sh latest
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer require webonyx/graphql-php --ignore-platform-reqs
+
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000
 
