@@ -37,7 +37,8 @@ function options(state = {}, action = {}) {
         v4compat: coerceBool(v4compat),
         svgPseudoElements: coerceBool(svgPseudoElements)
       }
-    case 'SET_CONFLICT_DETECTION_SCANNER_END':
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
+    case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
       if(action.success) {
         return {
           ...state,
@@ -196,9 +197,11 @@ function conflictDetectionScannerStatus(
   const { type, success, message } = action
 
   switch(type) {
-    case 'SET_CONFLICT_DETECTION_SCANNER_START':
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_START':
+    case 'DISABLE_CONFLICT_DETECTION_SCANNER_START':
       return { ...state, isSubmitting: true }
-    case 'SET_CONFLICT_DETECTION_SCANNER_END':
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
+    case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
       return { ...state, hasSubmitted: true, isSubmitting: false, success, message }
     default:
       return state
@@ -240,8 +243,13 @@ function showConflictDetectionReporter(state = false, action = {}) {
   const { type } = action
 
   switch(type) {
-    case 'SET_CONFLICT_DETECTION_SCANNER_END':
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
       return action.success
+    case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
+      // If we failed trying to disable the scanner, then it should remain
+      // visible to present the error state. If we succeeded, then we could
+      // stop showing it.
+      return ! action.success
     case 'CONFLICT_DETECTION_TIMER_EXPIRED':
       return false
     default:

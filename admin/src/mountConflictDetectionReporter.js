@@ -4,6 +4,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import ErrorBoundary from './ErrorBoundary'
 import { Provider } from 'react-redux'
+import retargetEvents from 'react-shadow-dom-retarget-events'
 // report: the report callback function to assign to the global
 //     window.FontAwesomeDetection.report
 // store: the redux store
@@ -21,6 +22,10 @@ export default function (report = () => {}, store, now = false) {
     conflictDetectionShadowRootElement.setAttribute('id', 'font-awesome-plugin-conflict-detection-shadow-host')
     document.body.appendChild(conflictDetectionShadowRootElement)
     const shadow = conflictDetectionShadowRootElement.attachShadow({ mode: 'open' })
+    // React doesn't seem to natively handle click events that originate inside
+    // a shadow DOM. This utility will cause things to work like you'd expect.
+    // See: https://github.com/spring-media/react-shadow-dom-retarget-events
+    retargetEvents(shadow)
 
     const faStyle = document.createElement('STYLE')
     const css = dom.css()

@@ -1,7 +1,8 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setConflictDetectionScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faCheck, faSkull, faThumbsUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 
 const STATUS = {
@@ -48,6 +49,7 @@ const STYLES = {
 }
 
 export default function ConflictDetectionReporter() {
+  const dispatch = useDispatch()
   const settingsPageUrl = useSelector(state => state.settingsPageUrl)
   const countBefore = useSelector(
     state => state.unregisteredClientDetectionStatus.countBeforeDetection
@@ -63,10 +65,18 @@ export default function ConflictDetectionReporter() {
     state => state.conflictDetectionScannerStatus.hasSubmitted && state.conflictDetectionScannerStatus.success
   )
 
+  const scannerDisableFailed = useSelector(
+    state => state.conflictDetectionScannerStatus.hasSubmitted
+      && !state.conflictDetectionScannerStatus.success
+      && state.showConflictDetectionReporter
+  )
+
   const runStatus = useSelector(state => {
     const { isSubmitting, hasSubmitted, success, countBeforeDetection, countAfterDetection } = state.unregisteredClientDetectionStatus
     if ( !showConflictDetectionReporter ) {
       return STATUS.expired
+    } else if ( scannerDisableFailed ) {
+      return STATUS.error
     } else if (scannerReady) {
       return STATUS.ready
     } else if ( success && (countBeforeDetection === countAfterDetection) ) {
@@ -89,6 +99,14 @@ export default function ConflictDetectionReporter() {
     <div style={ STYLES.container }>
       <div style={ STYLES.content }>
         <ConflictDetectionTimer />
+        {
+          runStatus === STATUS.expired
+          ? null
+          :
+            <button onClick={() => dispatch(setConflictDetectionScanner({ enable: false }))}>
+              <FontAwesomeIcon icon={ faTimes } />
+            </button>
+        }
         <h1 style={ STYLES.h1 }>Font Awesome Conflict Scanner</h1>
         {
           {
@@ -156,6 +174,9 @@ export default function ConflictDetectionReporter() {
                 </div>
                 <p>
                   { errorMessage }
+                </p>
+                <p>
+                  Maybe try reloading the page?
                 </p>
               </div>
           }[runStatus]
