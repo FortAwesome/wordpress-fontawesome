@@ -1,0 +1,25 @@
+#!/bin/sh
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/../.env
+source $DIR/.common.bash
+
+echo "Adding WordPress debug configuration..."
+$DIR/wp -c ${WP_CONTAINER} config set WP_DEBUG true \
+&& $DIR/wp -c ${WP_CONTAINER} config set WP_DEBUG_LOG true \
+&& $DIR/wp -c ${WP_CONTAINER} config set WP_DEBUG_DISPLAY true \
+&& $DIR/wp -c ${WP_CONTAINER} config set SAVEQUERIES true \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar-console \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar-constants \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar-actions-and-filters-addon \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar-transients \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar-list-dependencies \
+&& $DIR/wp -c ${WP_CONTAINER} plugin install debug-bar-remote-requests
+
+if [ "$?" == "0" ]; then
+  echo "ok."
+else
+  echo "FAIL"
+  exit 1
+fi
