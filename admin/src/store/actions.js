@@ -225,7 +225,15 @@ export function setConflictDetectionScanner({ enable = true }) {
   return function(dispatch, getState) {
     const { apiNonce, apiUrl, options } = getState()
 
-    dispatch({type: 'SET_CONFLICT_DETECTION_SCANNER_START'})
+    const actionStartType = enable
+      ? 'ENABLE_CONFLICT_DETECTION_SCANNER_START'
+      : 'DISABLE_CONFLICT_DETECTION_SCANNER_START'
+
+    const actionEndType = enable
+      ? 'ENABLE_CONFLICT_DETECTION_SCANNER_END'
+      : 'DISABLE_CONFLICT_DETECTION_SCANNER_END'
+
+    dispatch({type: actionStartType})
 
     axios.put(
       `${apiUrl}/config`,
@@ -247,14 +255,14 @@ export function setConflictDetectionScanner({ enable = true }) {
     const { status, data } = response
       if (200 === status) {
         dispatch({
-          type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+          type: actionEndType,
           data,
           success: true,
           message: ''
         })
       } else {
         dispatch({
-          type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+          type: actionEndType,
           success: false,
           message: "Failed to save changes"
         })
@@ -275,7 +283,7 @@ export function setConflictDetectionScanner({ enable = true }) {
       })(code)
 
       dispatch({
-        type: 'SET_CONFLICT_DETECTION_SCANNER_END',
+        type: actionEndType,
         success: false,
         message: submitMessage
       })
