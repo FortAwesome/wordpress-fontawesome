@@ -1,4 +1,6 @@
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { addPendingOption } from './store/actions'
 import PropTypes from 'prop-types'
 import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
@@ -10,10 +12,35 @@ import {
   faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import get from 'lodash/get'
 import size from 'lodash/size'
+import has from 'lodash/has'
 
-const UnregisteredClientsView = props => {
+export default function UnregisteredClientsView(props) {
+  const dispatch = useDispatch()
+
+  const optionSelector = option => useSelector(state => 
+    has(state.pendingOptions, option)
+    ? state.pendingOptions[option]
+    : state.options[option]
+  )
+  const blacklist = optionSelector('blacklist')
 
   const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
+
+  function handleBlockSelection(change = {}) {
+    dispatch(addPendingOption(change))
+  }
+
+  function isCheckedForBlocking(md5) {
+    return !! blacklist.find(x => x === md5)
+  }
+
+  function changeCheckForBlocking(md5) {
+    const newBlacklist = isCheckedForBlocking(md5)
+      ? blacklist.filter(x => x !== md5)
+      : [...blacklist, md5]
+    
+    handleBlockSelection({ blacklist: newBlacklist })
+  }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
     <h2>Other themes or plugins</h2>
@@ -42,8 +69,8 @@ const UnregisteredClientsView = props => {
                       name={`block_${md5}`}
                       type="checkbox"
                       value={ md5 }
-                      checked={ true }
-                      onChange={ () => console.log('changed') }
+                      checked={ isCheckedForBlocking(md5) }
+                      onChange={ () => changeCheckForBlocking(md5) }
                       className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
                     />
                     <label htmlFor={`block_${md5}`} className={ styles['checkbox-label'] }>
@@ -90,6 +117,3 @@ const UnregisteredClientsView = props => {
 UnregisteredClientsView.propTypes = {
   clients: PropTypes.object.isRequired
 }
-
-export default UnregisteredClientsView
-
