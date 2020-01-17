@@ -282,7 +282,6 @@ export default combineReducers({
   pendingOptionConflicts,
   pendingOptions,
   pluginVersion: simple,
-  pluginVersionWarnings: simple,
   preferenceConflictDetection,
   preferenceConflicts,
   releaseProviderStatus: simple,

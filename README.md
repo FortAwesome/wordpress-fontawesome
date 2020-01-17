@@ -228,7 +228,7 @@ loading their own versions. But we can try, and most of the time, we expect it t
 
 ## Install as Composer Dependency
 
-Developers and ship this plugin as a dependency of their own plugins or themes. The advantage of doing so is to simplify
+Developers can ship this plugin as a dependency of their own plugins or themes. The advantage of doing so is to simplify
 the installation of your component for your users. Those users do not need to separately install the Font Awesome plugin.
 
 The plugin uses the Singleton pattern to ensure that only one instance is loaded at any given time. So multiple
@@ -241,15 +241,9 @@ the Font Awesome plugin separately.
 
 One caveat with this approach is that it's possible that the version of the Font Awesome plugin that is active when
 your code runs may not be the version you included in your composer bundle. It may be the version included in some
-_other_ plugin's bundle, which happens to load before yours and takes the Singleton slot.
+_other_ plugin's bundle.
 
-One way to handle this is to use `FontAwesome::PLUGIN_VERSION`, `satisfies()` and `satisfies_or_warn()` methods to react appropriately to unmet
-plugin version requirements.
-
-Unfortunately, there's no way to guarantee exactly what will be loaded at runtime: such is the nature of WordPress's
-pluggable nature. The best we can do is to try and provide an API that gives both developers and site owners more
-control and transparency into what's going on so that diagnosis and fixing of conflicts can be handled more
-straightforwardly. And hopefully, this plugin helps those conflicts to occur far less often in the first place.
+The `FontAwesome_Loader` class ensures that the plugin code with the latest semantic version wins.
 
 ## API Reference
 
@@ -327,20 +321,6 @@ of those assets in your plugin or theme, doing so would defeat one of the chief 
 to create a conflict-free experience of loading Font Awesome, both for developers and site owners.
 If you ship and load your own Font Awesome assets, you might just end up being the bad citizen whose code
 breaks other components.
-
-### Detect and Warn When the Font Awesome Plugin Version Doesn't Match Your Requirements  
-
-Remember there are two different versions that you care about:
-
-1. The version of Font Awesome itself: the assets that this plugin is trying to load correctly into WordPress pages.
-
-1. The version of this plugin.
-
-When the API of the _plugin_ changes and your code expects a different version of this plugin than is active
-at the time your code tries to use it, it could cause your code to break. So rather than assuming that the plugin
-version active at runtime is the same as the version you were expecting, you can detect the version and react
-appropriately. If your code needs to work in some alternate way, including maybe refusing to activate, you can
-use `satisfies_or_warn()` to alert the site owner in the admin dashboard.
 
 ## How to Make Pro Icons Available in Your Theme or Plugin
 
