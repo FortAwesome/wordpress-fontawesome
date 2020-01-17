@@ -124,19 +124,19 @@ export default function Options(props) {
                   value="svg"
                   checked={ usePro }
                   onChange={ () => handleOptionChange({ usePro: true }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_icons_pro" className={ styles['option-label'] }>
                     <span className={ sharedStyles['relative'] }>
                       <FontAwesomeIcon
                         icon={ faDotCircle }
-                        className={ styles['checked-icon'] }
+                        className={ sharedStyles['checked-icon'] }
                         size="lg"
                         fixedWidth
                       />
                       <FontAwesomeIcon
                         icon={ faCircle }
-                        className={ styles['unchecked-icon'] }
+                        className={ sharedStyles['unchecked-icon'] }
                         size="lg"
                         fixedWidth
                       />
@@ -154,7 +154,7 @@ export default function Options(props) {
                   value="webfont"
                   checked={ ! usePro }
                   onChange={ () => handleOptionChange({ usePro: false }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_icons_free" className={ styles['option-label'] }>
                   <span className={ sharedStyles['relative'] }>
@@ -162,13 +162,13 @@ export default function Options(props) {
                       icon={ faDotCircle }
                       size="lg"
                       fixedWidth
-                      className={ styles['checked-icon'] }
+                      className={ sharedStyles['checked-icon'] }
                     />
                     <FontAwesomeIcon
                       icon={ faCircle }
                       size="lg"
                       fixedWidth
-                      className={ styles['unchecked-icon'] }
+                      className={ sharedStyles['unchecked-icon'] }
                     />
                   </span>
                   <span className={ styles['option-label-text'] }>
@@ -205,19 +205,19 @@ export default function Options(props) {
                   value="svg"
                   checked={ technology === 'svg' }
                   onChange={ () => handleOptionChange({ technology: 'svg' }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_tech_svg" className={ styles['option-label'] }>
                   <span className={ sharedStyles['relative'] }>
                     <FontAwesomeIcon
                       icon={ faDotCircle }
-                      className={ styles['checked-icon'] }
+                      className={ sharedStyles['checked-icon'] }
                       size="lg"
                       fixedWidth
                     />
                     <FontAwesomeIcon
                       icon={ faCircle }
-                      className={ styles['unchecked-icon'] }
+                      className={ sharedStyles['unchecked-icon'] }
                       size="lg"
                       fixedWidth
                     />
@@ -238,7 +238,7 @@ export default function Options(props) {
                     technology: 'webfont',
                     svgPseudoElements: false
                   }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_tech_webfont" className={ styles['option-label'] }>
                     <span className={ sharedStyles['relative'] }>
@@ -246,13 +246,13 @@ export default function Options(props) {
                         icon={ faDotCircle }
                         size="lg"
                         fixedWidth
-                        className={ styles['checked-icon'] }
+                        className={ sharedStyles['checked-icon'] }
                       />
                       <FontAwesomeIcon
                         icon={ faCircle }
                         size="lg"
                         fixedWidth
-                        className={ styles['unchecked-icon'] }
+                        className={ sharedStyles['unchecked-icon'] }
                       />
                     </span>
                   <span className={ styles['option-label-text'] }>
@@ -276,19 +276,19 @@ export default function Options(props) {
                   value="svg_pseudo_elements"
                   checked={ svgPseudoElements }
                   onChange={() => handleOptionChange({ svgPseudoElements: !svgPseudoElements })}
-                  className={classnames(sharedStyles['sr-only'], styles['input-checkbox-custom'])}
+                  className={classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom'])}
                 />
                 <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
                 <span className={sharedStyles['relative']}>
                   <FontAwesomeIcon
                     icon={faCheckSquare}
-                    className={styles['checked-icon']}
+                    className={sharedStyles['checked-icon']}
                     size="lg"
                     fixedWidth
                   />
                   <FontAwesomeIcon
                     icon={faSquare}
-                    className={styles['unchecked-icon']}
+                    className={sharedStyles['unchecked-icon']}
                     size="lg"
                     fixedWidth
                   />
@@ -345,19 +345,19 @@ export default function Options(props) {
                   value={ v4compat }
                   checked={ v4compat }
                   onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_v4compat_on" className={ styles['option-label'] }>
                   <span className={ sharedStyles['relative'] }>
                     <FontAwesomeIcon
                       icon={ faDotCircle }
-                      className={ styles['checked-icon'] }
+                      className={ sharedStyles['checked-icon'] }
                       size="lg"
                       fixedWidth
                     />
                     <FontAwesomeIcon
                       icon={ faCircle }
-                      className={ styles['unchecked-icon'] }
+                      className={ sharedStyles['unchecked-icon'] }
                       size="lg"
                       fixedWidth
                     />
@@ -375,7 +375,7 @@ export default function Options(props) {
                   value={ ! v4compat }
                   checked={ ! v4compat }
                   onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
-                  className={ classnames(sharedStyles['sr-only'], styles['input-radio-custom']) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_v4_compat_off" className={ styles['option-label'] }>
                     <span className={ sharedStyles['relative'] }>
@@ -383,13 +383,13 @@ export default function Options(props) {
                         icon={ faDotCircle }
                         size="lg"
                         fixedWidth
-                        className={ styles['checked-icon'] }
+                        className={ sharedStyles['checked-icon'] }
                       />
                       <FontAwesomeIcon
                         icon={ faCircle }
                         size="lg"
                         fixedWidth
-                        className={ styles['unchecked-icon'] }
+                        className={ sharedStyles['unchecked-icon'] }
                       />
                     </span>
                     <span className={ styles['option-label-text'] }>

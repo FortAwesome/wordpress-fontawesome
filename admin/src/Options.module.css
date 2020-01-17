@@ -144,36 +144,6 @@ div.submit-status.fail .explanation{
     text-decoration-color: rgba(0,0,0,0.15);
 }
 
-.input-radio-custom ~ label .checked-icon, .input-checkbox-custom ~ label .checked-icon {
-    display:none;
-    opacity:0;
-}
-
-.input-radio-custom:checked ~ label .checked-icon, .input-checkbox-custom:checked ~ label .checked-icon{
-    display:block;
-    opacity:1.0;
-}
-
-.input-radio-custom:checked ~ label .unchecked-icon, .input-checkbox-custom:checked ~ label .unchecked-icon{
-    display:none;
-    opacity:0;
-}
-
-.input-checkbox-custom:checked ~ label .option-label-explanation {
-    color: #495057;
-}
-
-.input-checkbox-custom:checked ~ label .option-label-explanation a {
-    color: #495057;
-}
-
-.input-checkbox-custom:checked ~ label .option-label-explanation a:hover,
-.input-checkbox-custom ~ label .option-label-explanation a:hover {
-    color: #228be6;
-    text-decoration-color: initial;
-}
-
-
 .checking-option-status-indicator {
   padding-left: 1em;
 }
