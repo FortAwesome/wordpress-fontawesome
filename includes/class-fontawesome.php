@@ -1235,9 +1235,10 @@ class FontAwesome {
 							self::CONFLICT_DETECTOR_SOURCE,
 							[ self::ADMIN_RESOURCE_HANDLE ],
 							null,
-							false
+							true
 						);
-					}
+					},
+					PHP_INT_MAX
 				);
 			}
 
