@@ -70,28 +70,6 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_plugin_version_satisfies_or_warn_when_successful () {
-		$this->assertTrue(
-			$this->mock_with_plugin_version( '42.1.3' )
-			     ->plugin_version_satisfies_or_warn([['42.1.2', '>']], 'this_test')
-		);
-	}
-
-	public function test_plugin_version_satisfies_or_warn_when_failing () {
-		$this->assertFalse(
-			fa()->plugin_version_satisfies_or_warn([['0.0.1', '<']], 'this_test')
-		);
-
-		$this->assertEquals(
-			fa()->get_plugin_version_warnings(),
-			[ 'this_test' => [ 'name' => 'this_test', 'constraint' => '< 0.0.1' ] ]
-		);
-
-		set_current_screen('foo');
-		do_action('admin_notices');
-		$this->expectOutputRegex('/Font Awesome plugin version conflict with a plugin or theme named/');
-	}
-
 	public function test_conflicts_by_client_when_no_conflicts() {
 		fa()->register(
 			array(

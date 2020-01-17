@@ -218,12 +218,6 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	protected $plugin_version_warnings = null;
-
-	/**
-	 * @internal
-	 * @ignore
-	 */
 	protected $screen_id = null;
 
 	/**
@@ -398,81 +392,6 @@ class FontAwesome {
 	}
 
 	/**
-	 * Reports a warning if currently loaded version of the Font Awesome plugin does not
-	 * satisfy the given constraints.
-	 *
-	 * This can help site owners better diagnose conflicts, but probably should
-	 * not be used 
-	 *
-	 * Issues warnings in two ways:
-	 *
-	 * 1. An admin notice using the `admin_notices` WordPress hook. This appears in admin pages _other_ than
-	 *    this plugin's options page.
-	 *
-	 * 2. A section on this plugin's options page.
-	 *
-	 * In order for the second warning to appear, this function should be called during
-	 * this plugin's main loading logic. Therefore, the recommended time to call this function is from the client's
-	 * callback on the `font_awesome_preferences` action hook.
-	 *
-	 * The shape of the `$constraints` argument is the same as for {@see FortAwesome\FontAwesome::satisfies()}.
-	 *
-	 * For example:
-	 * ```php
-	 * add_action(
-	 *   'font_awesome_enqueued',
-	 *   function() {
-	 *     FortAwesome\fa()->plugin_version_satisfies_or_warn( [['4.0.0', '>=']], 'Theta' );
-	 *   }
-	 * );
-	 * ```
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param array $constraints as required by FontAwesome::satisfies()
-	 * @param string $name name to be displayed in admin notice if the loaded Font Awesome version does not satisfy the
-	 *        given constraint.
-	 * @see FontAwesome font_awesome_enqueued action hook
-	 * @see FortAwesome\FontAwesome::satisfies() satisfies()
-	 * @return bool
-	 * @throws InvalidArgumentException if the constraints provided are not in the expected format
-	 */
-	public function plugin_version_satisfies_or_warn( $constraints, $name ) {
-		if ( self::satisfies( $this->plugin_version(), $constraints ) ) {
-			return true;
-		} else {
-			$stringified_constraints = $this->stringify_constraints( $constraints );
-			$this->add_plugin_version_warning(
-				array(
-					'name'       => $name,
-					'constraint' => $stringified_constraints,
-				)
-			);
-
-			add_action(
-				'admin_notices',
-				function() use ( $stringified_constraints, $name ) {
-					$current_screen = get_current_screen();
-					if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-						?>
-						<div class="notice notice-warning is-dismissible">
-							<p>
-								Font Awesome plugin version conflict with a plugin or theme named:
-								<b><?php echo esc_html( $name ); ?> </b><br/>
-								It requires plugin version <?php echo esc_html( $stringified_constraints ); ?>
-								but the currently loaded version of the Font Awesome plugin is
-								<?php echo esc_html( self::PLUGIN_VERSION ); ?>.
-							</p>
-						</div>
-						<?php
-					}
-				}
-			);
-			return false;
-		}
-	}
-
-	/**
 	 * Returns boolean indicating whether the plugin's options are currently set
 	 * to detect conflicts.
 	 *
@@ -639,13 +558,7 @@ class FontAwesome {
 			'admin_menu',
 			function() {
 
-				$count_plugin_version_warnings = count(
-					is_null( $this->plugin_version_warnings )
-					? []
-					: $this->plugin_version_warnings
-				);
-
-				$alert_count = $count_plugin_version_warnings + count( $this->conflicts_by_option() );
+				$alert_count = count( $this->conflicts_by_option() );
 
 				$menu_label = sprintf(
 					'Font Awesome %s',
@@ -829,9 +742,6 @@ class FontAwesome {
 		/**
 		 * Fired when the plugin is ready for clients to register their preferences.
 		 *
-		 * Clients should call {@see FontAwesome::register()} and {@see FontAwesome::plugin_version_satisfies_or_warn()}
-		 * from a callback registered on this hook.
-		 *
 		 * @since 4.0.0
 		 */
 		try {
@@ -921,31 +831,6 @@ class FontAwesome {
 		} else {
 			return $this->conflicts_by_client;
 		}
-	}
-
-	/**
-	 * Returns plugin version warnings.
-	 *
-	 * These are the warnings that would be reported in the admin UI as a result of clients calling
-	 * {@see FortAwesome\FontAwesome::plugin_version_satisfies_or_warn()}.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return array|null
-	 */
-	public function get_plugin_version_warnings() {
-		return $this->plugin_version_warnings;
-	}
-
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
-	 * @ignore
-	 */
-	private function add_plugin_version_warning( $warning ) {
-		if ( is_null( $this->plugin_version_warnings ) || ! is_array( $this->plugin_version_warnings ) ) {
-			$this->plugin_version_warnings = array();
-		}
-		$this->plugin_version_warnings[ $warning['name'] ] = $warning;
 	}
 
 	/**
@@ -1123,7 +1008,6 @@ class FontAwesome {
 								'showAdmin'                     => TRUE,
 								'onSettingsPage'								=> TRUE,
 								'clientPreferences'     				=> $this->client_preferences(),
-								'pluginVersionWarnings' 				=> $this->get_plugin_version_warnings(),
 								'releaseProviderStatus' 				=> $this->release_provider()->get_status(),
 								'releases'              				=> array(
 									'available'        						=> $this->get_available_versions(),
