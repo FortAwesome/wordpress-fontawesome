@@ -44,19 +44,19 @@ const UnregisteredClientsView = props => {
                       value={ md5 }
                       checked={ true }
                       onChange={ () => console.log('changed') }
-                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
                     />
-                    <label htmlFor={`block_${md5}`} className={ styles['option-label'] }>
+                    <label htmlFor={`block_${md5}`} className={ styles['checkbox-label'] }>
                       <span className={ sharedStyles['relative'] }>
                         <FontAwesomeIcon
                           icon={ faCheckSquare }
-                          className={ styles['checked-icon'] }
+                          className={ sharedStyles['checked-icon'] }
                           size="lg"
                           fixedWidth
                         />
                         <FontAwesomeIcon
                           icon={ faSquare }
-                          className={ styles['unchecked-icon'] }
+                          className={ sharedStyles['unchecked-icon'] }
                           size="lg"
                           fixedWidth
                         />
