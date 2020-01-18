@@ -1,12 +1,15 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { addPendingOption } from './store/actions'
+import { addPendingOption, submitPendingOptions } from './store/actions'
 import PropTypes from 'prop-types'
 import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCheck,
+  faSkull,
+  faSpinner,
   faCheckSquare,
   faSquare,
   faThumbsUp } from '@fortawesome/free-solid-svg-icons'
@@ -23,8 +26,18 @@ export default function UnregisteredClientsView(props) {
     : state.options[option]
   )
   const blacklist = optionSelector('blacklist')
-
+  const pendingOptions = useSelector(state => state.pendingOptions)
+  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
+  const submitSuccess = useSelector(state => state.optionsFormState.success)
+  const submitMessage = useSelector(state => state.optionsFormState.message)
+  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
+
+  function handleSubmitClick(e) {
+    e.preventDefault()
+
+    dispatch(submitPendingOptions())
+  }
 
   function handleBlockSelection(change = {}) {
     dispatch(addPendingOption(change))
@@ -101,6 +114,40 @@ export default function UnregisteredClientsView(props) {
             }
             </tbody>
           </table>
+          <div className="submit">
+            <input
+              type="submit"
+              name="submit"
+              id="submit"
+              className="button button-primary"
+              value="Save Changes"
+              disabled={ size(pendingOptions) === 0 }
+              onClick={ handleSubmitClick }
+            />
+            { hasSubmitted 
+              ? submitSuccess
+                ? <span className={ classnames(styles['submit-status'], styles['success']) }>
+                    <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
+                  </span>
+                : <div className={ classnames(styles['submit-status'], styles['fail']) }>
+                    <div className={ classnames(styles['fail-icon-container']) }>
+                      <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
+                    </div>
+                    <div className={ styles['explanation'] }>
+                      { submitMessage }
+                    </div>
+                  </div>
+              : null
+            }
+            {
+              size(pendingOptions) > 0
+              ? <span className={ styles['submit-status'] }>you have pending changes</span>
+              : isSubmitting &&
+                  <span className={ classnames(styles['submit-status'], styles['submitting']) }>
+                    <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
+                  </span>
+            }
+          </div>
         </div>
       : <div className={ classnames(sharedStyles['explanation'], sharedStyles['flex'], sharedStyles['flex-row'] )}>
           <div>
