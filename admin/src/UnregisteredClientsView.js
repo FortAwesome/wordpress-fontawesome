@@ -16,6 +16,7 @@ import {
 import get from 'lodash/get'
 import size from 'lodash/size'
 import has from 'lodash/has'
+import isEqual from 'lodash/isEqual'
 
 export default function UnregisteredClientsView(props) {
   const dispatch = useDispatch()
@@ -32,6 +33,9 @@ export default function UnregisteredClientsView(props) {
   const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
+  const allDetectedConflictsSelectedForBlocking = 
+              isEqual(Object.keys(props.clients).sort(), [...(blacklist || [])].sort())
+  const allDetectedConflicts = Object.keys(props.clients)
 
   function handleSubmitClick(e) {
     e.preventDefault()
@@ -47,10 +51,14 @@ export default function UnregisteredClientsView(props) {
     return !! blacklist.find(x => x === md5)
   }
 
-  function changeCheckForBlocking(md5) {
-    const newBlacklist = isCheckedForBlocking(md5)
-      ? blacklist.filter(x => x !== md5)
-      : [...blacklist, md5]
+  function changeCheckForBlocking(md5, allDetectedConflicts) {
+    const newBlacklist = 'all' === md5
+      ? allDetectedConflictsSelectedForBlocking
+        ? [] // uncheck them all
+        : allDetectedConflicts // check them all
+      : isCheckedForBlocking(md5)
+        ? blacklist.filter(x => x !== md5)
+        : [...blacklist, md5]
     
     handleBlockSelection({ blacklist: newBlacklist })
   }
@@ -66,6 +74,34 @@ export default function UnregisteredClientsView(props) {
             conflicting version of Font Awesome and doesn't affect the other
             functions of the plugin, but you should verify your site works as expected.
           </p>
+          <div>
+            <input
+              id='block_all_detected_conflicts'
+              name='block_all_detected_conflicts'
+              type="checkbox"
+              value='all'
+              checked={ allDetectedConflictsSelectedForBlocking }
+              onChange={ () => changeCheckForBlocking('all', allDetectedConflicts) }
+              className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+            />
+            <label htmlFor='block_all_detected_conflicts' className={ styles['checkbox-label'] }>
+              <span className={ sharedStyles['relative'] }>
+                <FontAwesomeIcon
+                  icon={ faCheckSquare }
+                  className={ sharedStyles['checked-icon'] }
+                  size="lg"
+                  fixedWidth
+                />
+                <FontAwesomeIcon
+                  icon={ faSquare }
+                  className={ sharedStyles['unchecked-icon'] }
+                  size="lg"
+                  fixedWidth
+                />
+              </span>
+              All
+            </label>
+          </div>
           <table className={classnames('widefat', 'striped')}>
             <tbody>
             <tr className={sharedStyles['table-header']}>
@@ -74,7 +110,7 @@ export default function UnregisteredClientsView(props) {
               <th>URL</th>
             </tr>
             {
-              Object.keys(props.clients).map(md5 => (
+              allDetectedConflicts.map(md5 => (
                 <tr key={md5}>
                   <td>
                     <input
