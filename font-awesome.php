@@ -18,7 +18,7 @@ use \Exception, \Error;
 
 defined( 'WPINC' ) || die;
 
-if ( ! function_exists( 'font_awesome_handle_fatal_error' ) ) {
+if ( ! function_exists( __NAMESPACE__ . '\font_awesome_handle_fatal_error' ) ) {
 	/**
 	 * Handle fatal errors
 	 *
