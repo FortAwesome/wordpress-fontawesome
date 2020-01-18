@@ -126,26 +126,27 @@ export default function UnregisteredClientsView(props) {
             />
             { hasSubmitted 
               ? submitSuccess
-                ? <span className={ classnames(styles['submit-status'], styles['success']) }>
-                    <FontAwesomeIcon className={ styles['icon'] } icon={ faCheck } />
+                ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
+                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
                   </span>
-                : <div className={ classnames(styles['submit-status'], styles['fail']) }>
-                    <div className={ classnames(styles['fail-icon-container']) }>
-                      <FontAwesomeIcon className={ styles['icon'] } icon={ faSkull } />
+                : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+                    <div className={ classnames(sharedStyles['fail-icon-container']) }>
+                      <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
                     </div>
-                    <div className={ styles['explanation'] }>
+                    <div className={ sharedStyles['explanation'] }>
                       { submitMessage }
                     </div>
                   </div>
               : null
             }
             {
-              size(pendingOptions) > 0
-              ? <span className={ styles['submit-status'] }>you have pending changes</span>
-              : isSubmitting &&
-                  <span className={ classnames(styles['submit-status'], styles['submitting']) }>
-                    <FontAwesomeIcon className={ styles['icon'] } icon={faSpinner} spin/>
-                  </span>
+              isSubmitting
+              ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+                </span>
+              : size(pendingOptions) > 0
+                ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
+                : null
             }
           </div>
         </div>

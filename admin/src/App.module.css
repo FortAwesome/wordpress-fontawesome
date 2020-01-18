@@ -1,3 +1,33 @@
+.submit-status {
+  padding-left: 1em;
+}
+
+div.submit-status.fail {
+  display: flex;
+	margin-top: 1em;
+	background-color: #fda09a;
+	border-radius: 5px;
+	max-width: 450px;
+	padding: 1em;
+}
+
+div.submit-status.fail .fail-icon-container{
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+div.submit-status.fail .explanation{
+  max-width: 400px;
+}
+
+.submit-status .explanation {
+  padding-left: 1em;
+}
+
+.submit-status.success .icon {
+  color: green;
+}
+
 .explanation {
   max-width: 500px;
 }
