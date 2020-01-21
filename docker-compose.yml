@@ -13,7 +13,7 @@ x-dev_volumes: &dev_volumes
     - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
     - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
     - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
     - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
 
 x-integration_volumes: &integration_volumes
@@ -28,7 +28,7 @@ x-integration_volumes: &integration_volumes
     - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
     - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
     - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
     - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
 
 x-wordpress-defaults: &wordpress_defaults
