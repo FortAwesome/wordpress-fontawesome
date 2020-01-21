@@ -213,28 +213,28 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_blacklist_storage_and_retrieval() {
-		// blacklist is empty by default
+	public function test_blocklist_storage_and_retrieval() {
+		// blocklist is empty by default
 		$this->assertEquals(
 			array(),
-			fa()->blacklist()
+			fa()->blocklist()
 		);
 
-		$blacklist = array('abc123', 'xyz456');
+		$blocklist = array('abc123', 'xyz456');
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'blacklist' => $blacklist
+					'blocklist' => $blocklist
 				)
 			)
 		);
 
 		$this->assertEquals(
-			$blacklist,
-			fa()->blacklist()
+			$blocklist,
+			fa()->blocklist()
 		);
 	}
 

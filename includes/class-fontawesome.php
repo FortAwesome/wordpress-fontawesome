@@ -193,7 +193,7 @@ class FontAwesome {
 		'technology'           => 'webfont',
 		'svgPseudoElements'    => FALSE,
 		'detectConflictsUntil' => 0,
-		'blacklist'            => array()
+		'blocklist'            => array()
 	);
 
 	/**
@@ -660,14 +660,14 @@ class FontAwesome {
 
 	/**
 	 * md5 hashes that represent detections of conflicting loads of Font Awesome
-	 * that the administrator has chosen to blacklist, causing the styles and
+	 * that the administrator has chosen to block, causing the styles and
 	 * scripts associated with these md5 hashes to be dequeued by this plugin.
 	 * 
 	 * @since 4.0.0
 	 * @return array
 	 */
-	public function blacklist() {
-		return $this->options()['blacklist'];
+	public function blocklist() {
+		return $this->options()['blocklist'];
 	}
 
 	/**
@@ -1372,7 +1372,7 @@ EOT;
 			add_action(
 				$action,
 				function() use ( $obj ) {
-					$obj->remove_blacklist();
+					$obj->remove_blocklist();
 				},
 				PHP_INT_MAX
 			);
@@ -1393,8 +1393,8 @@ EOT;
 	 * @ignore
 	 * @internal
 	 */
-	public function is_url_blacklisted($url) {
-		return FALSE !== array_search( md5($url), $this->blacklist() );
+	public function is_url_blocked($url) {
+		return FALSE !== array_search( md5($url), $this->blocklist() );
 	}
 
 	/**
@@ -1403,7 +1403,7 @@ EOT;
 	 * @ignore
 	 * @internal
 	 */
-	public function is_inline_data_blacklisted($data) {
+	public function is_inline_data_blocked($data) {
 		/**
 		 * As of WordPress 5.2.2, both WP_Styles::print_inline_style and WP_Scripts::print_inline_script
 		 * join (implode) the set of 'before' or 'after' resources with a newline, and then wrap the whole
@@ -1413,12 +1413,12 @@ EOT;
 		 * 
 		 * Since this newline handling is not documenting as part of the spec, we're admittedly at some risk
 		 * of this changing out from under us. At worst, if that implementation detail changes, it
-		 * will just mean that we get a false negative when matching for blacklisted elements.
+		 * will just mean that we get a false negative when matching for blocked elements.
 		 * Nothing will crash, but a conflict that we'd intended to catch will
 		 * have slipped through. Our automated test suite should catch this, though.
 		 */
 		if ( $data && is_array($data) && count($data) > 0 ) {
-			return FALSE !== array_search( md5("\n" . implode("\n", $data) . "\n"), $this->blacklist() );
+			return FALSE !== array_search( md5("\n" . implode("\n", $data) . "\n"), $this->blocklist() );
 		} else {
 			return FALSE;
 		}
@@ -1444,8 +1444,8 @@ EOT;
 	 * 
 	 * @ignore
 	 */
-	protected function remove_blacklist() {
-		if( count( $this->blacklist() ) == 0 ) {
+	protected function remove_blocklist() {
+		if( count( $this->blocklist() ) == 0 ) {
 			return;
 		}
 
@@ -1461,12 +1461,12 @@ EOT;
 			foreach ( $collection->registered as $handle => $details ) {
 				foreach ( [ 'before', 'after' ] as $position ) {
 					$data = $collection->get_data($handle, $position);
-					if( $this->is_inline_data_blacklisted($data) ) {
+					if( $this->is_inline_data_blocked($data) ) {
 						unset( $collection->registered[$handle]->extra[$position] );
 					}
 				}
 
-				if ( $this->is_url_blacklisted($details->src) ) {
+				if ( $this->is_url_blocked($details->src) ) {
 					call_user_func("wp_dequeue_$type", $handle );
 				}
 			}
