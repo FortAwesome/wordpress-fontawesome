@@ -140,10 +140,10 @@ export default function UnregisteredClientsView(props) {
                     </label>
                   </td>
                   <td>
-                    {props.clients[md5].type}
+                    {get(props.clients[md5], 'tagName', 'unknown').toLowerCase()}
                   </td>
                   <td>
-                    {props.clients[md5].src || props.clients[md5].href || get(props.clients[md5], 'excerpt', 'UNKNOWN')}
+                    {props.clients[md5].src || props.clients[md5].href || get(props.clients[md5], 'excerpt') || <em>in page source</em>}
                   </td>
                 </tr>
               ))
