@@ -2,17 +2,17 @@
 namespace FortAwesome;
 
 /**
- * Module for RemoveBlacklistTest
+ * Module for RemoveBlocklistTest
  */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**
- * Class RemoveBlacklistTest
+ * Class RemoveBlocklistTest
  */
-class RemoveBlacklistTest extends \WP_UnitTestCase {
+class RemoveBlocklistTest extends \WP_UnitTestCase {
 
-	// TODO: add testing for removal of blacklisted inline scripts and styles
+	// TODO: add testing for removal of blocked inline scripts and styles
 	protected $fake_unregistered_clients = array(
 		'styles'  => [
 			array(
@@ -94,7 +94,7 @@ class RemoveBlacklistTest extends \WP_UnitTestCase {
 				$opts = wp_parse_args(
 					array(
 						'version'   => '5.0.13',
-						'blacklist' => $this->fake_md5s()
+						'blocklist' => $this->fake_md5s()
 					),
 					FontAwesome::DEFAULT_USER_OPTIONS
 				);
@@ -127,7 +127,7 @@ class RemoveBlacklistTest extends \WP_UnitTestCase {
 		// make sure that the fake unregistered clients are no longer enqueued and that our plugin succeeded otherwise.
 		$this->assertCount(
 			count( $this->fake_unregistered_clients['styles'] ) + count( $this->fake_unregistered_clients['scripts'] ),
-			fa()->blacklist()
+			fa()->blocklist()
 		);
 		foreach ( $this->fake_unregistered_clients as $type => $items ) {
 			foreach ( $items as $item ) {

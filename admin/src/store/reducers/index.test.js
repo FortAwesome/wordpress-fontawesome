@@ -23,7 +23,7 @@ describe('options', () => {
           svgPseudoElements: true,
           detectConflictsUntil: 0,
           version: '5.11.2',
-          blacklist: []
+          blocklist: []
         }
       }
 

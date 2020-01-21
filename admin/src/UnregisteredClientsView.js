@@ -26,7 +26,7 @@ export default function UnregisteredClientsView(props) {
     ? state.pendingOptions[option]
     : state.options[option]
   )
-  const blacklist = optionSelector('blacklist')
+  const blocklist = optionSelector('blocklist')
   const pendingOptions = useSelector(state => state.pendingOptions)
   const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
   const submitSuccess = useSelector(state => state.optionsFormState.success)
@@ -34,7 +34,7 @@ export default function UnregisteredClientsView(props) {
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
   const allDetectedConflictsSelectedForBlocking = 
-              isEqual(Object.keys(props.clients).sort(), [...(blacklist || [])].sort())
+              isEqual(Object.keys(props.clients).sort(), [...(blocklist || [])].sort())
   const allDetectedConflicts = Object.keys(props.clients)
 
   function handleSubmitClick(e) {
@@ -48,19 +48,19 @@ export default function UnregisteredClientsView(props) {
   }
 
   function isCheckedForBlocking(md5) {
-    return !! blacklist.find(x => x === md5)
+    return !! blocklist.find(x => x === md5)
   }
 
   function changeCheckForBlocking(md5, allDetectedConflicts) {
-    const newBlacklist = 'all' === md5
+    const newBlocklist = 'all' === md5
       ? allDetectedConflictsSelectedForBlocking
         ? [] // uncheck them all
         : allDetectedConflicts // check them all
       : isCheckedForBlocking(md5)
-        ? blacklist.filter(x => x !== md5)
-        : [...blacklist, md5]
+        ? blocklist.filter(x => x !== md5)
+        : [...blocklist, md5]
     
-    handleBlockSelection({ blacklist: newBlacklist })
+    handleBlockSelection({ blocklist: newBlocklist })
   }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>

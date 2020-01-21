@@ -28,14 +28,14 @@ export function options(state = {}, action = {}) {
             svgPseudoElements,
             detectConflictsUntil,
             version,
-            blacklist
+            blocklist
           }
         } = data
 
         return {
           technology,
           version,
-          blacklist,
+          blocklist,
           detectConflictsUntil,
           usePro: coerceBool(usePro),
           v4compat: coerceBool(v4compat),
