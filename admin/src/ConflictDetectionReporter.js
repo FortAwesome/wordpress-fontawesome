@@ -5,6 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull, faThumbsUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 
+// NOTE: We don't have Webpack set up to handle the loading of CSS modules in
+// a way that is compatible with our use of Shadow DOM. After a failed attempt
+// to do so, we'll just use the standard React Style Object technique for assigning
+// styles.
+// See: https://reactjs.org/docs/dom-elements.html#style
+
 const STATUS = {
   running: 'Running',
   done: 'Done',
@@ -45,6 +51,9 @@ const STYLES = {
     width: '100%',
     padding: '1em',
     boxSizing: 'border-box'
+  },
+  adminEyesOnly: {
+    fontStyle: 'italic'
   }
 }
 
@@ -181,6 +190,7 @@ export default function ConflictDetectionReporter() {
               </div>
           }[runStatus]
         }
+        <p style={ STYLES.adminEyesOnly }>only you can see this box</p>
       </div>
     </div>
   )
