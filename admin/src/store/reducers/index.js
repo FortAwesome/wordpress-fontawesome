@@ -1,5 +1,6 @@
 import size from 'lodash/size'
 import omit from 'lodash/omit'
+import get from 'lodash/get'
 import { combineReducers } from 'redux'
 
 export const ADMIN_TAB_SETTINGS = 'ADMIN_TAB_SETTINGS'
@@ -11,31 +12,35 @@ const coerceEmptyArrayToEmptyObject = val => size(val) === 0 ? {} : val
 
 // TODO: add reducer for the clientPreferences that coerces their boolean options
 
-function options(state = {}, action = {}) {
+export function options(state = {}, action = {}) {
   const { type, data } = action
 
   switch(type) {
     case 'OPTIONS_FORM_SUBMIT_END':
-      const {
-        options: {
-          technology,
-          usePro,
-          v4compat,
-          svgPseudoElements,
-          detectConflictsUntil,
-          version,
-          blacklist
-        }
-      } = data
+      if(! get(action, 'data.options')) {
+        return state
+      } else {
+        const {
+          options: {
+            technology,
+            usePro,
+            v4compat,
+            svgPseudoElements,
+            detectConflictsUntil,
+            version,
+            blacklist
+          }
+        } = data
 
-      return {
-        technology,
-        version,
-        blacklist,
-        detectConflictsUntil,
-        usePro: coerceBool(usePro),
-        v4compat: coerceBool(v4compat),
-        svgPseudoElements: coerceBool(svgPseudoElements)
+        return {
+          technology,
+          version,
+          blacklist,
+          detectConflictsUntil,
+          usePro: coerceBool(usePro),
+          v4compat: coerceBool(v4compat),
+          svgPseudoElements: coerceBool(svgPseudoElements)
+        }
       }
     case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
     case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
@@ -95,8 +100,13 @@ function preferenceConflicts(state = {}, action = {}) {
   
   switch(type) {
     case 'OPTIONS_FORM_SUBMIT_END':
-      const { data: { conflicts } } = action
-      return coerceEmptyArrayToEmptyObject(conflicts)
+      const conflicts = get(action, 'action.data.conflicts')
+
+      if(!! conflicts) {
+        return coerceEmptyArrayToEmptyObject(conflicts)
+      } else {
+        return coerceEmptyArrayToEmptyObject(state)
+      }
     default:
       return coerceEmptyArrayToEmptyObject(state)
   }
