@@ -1361,20 +1361,20 @@ EOT;
 
 		$obj = $this;
 		/**
-		 * We need to remove unregistered clients *after* they would have been enqueued, if they used
-		 * the recommended mechanism of wp_enqueue_style and wp_enqueue_script (or the admin equivalents).
-		 * The wp_print_styles action hook is fired after the wp_enqueue_scripts hook
-		 * (admin_print_styles after admin_enqueue_scripts).
-		 * We'll use priority 0 in an effort to be as early as possible, to prevent any unregistered client
-		 * from actually being printed to the head.
+		 * We need to remove unregistered clients *after* they would have been
+		 * enqueued, if they used the recommended mechanism of wp_enqueue_style
+		 * and wp_enqueue_script (or the admin equivalents).
+		 * We'll use priority PHP_INT_MAX in an effort to run as late as possible,
+		 * hopefully allowing any unregistered client to have already enqueued
+		 * itself so that our attempt to dequeue it will be successful.
 		 */
-		foreach ( [ 'wp_print_styles', 'admin_print_styles', 'login_head' ] as $action ) {
+		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 			add_action(
 				$action,
 				function() use ( $obj ) {
 					$obj->remove_blacklist();
 				},
-				0
+				PHP_INT_MAX
 			);
 		}
 
