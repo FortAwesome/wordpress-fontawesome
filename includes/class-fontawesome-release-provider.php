@@ -23,7 +23,6 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'vendor/autoload.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
