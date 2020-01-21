@@ -7,10 +7,6 @@
 namespace FortAwesome;
 
 use \WP_Error, \Error, \Exception, \InvalidArgumentException;
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
-use GraphQL\GraphQL;
-use GraphQL\Type\Schema;
 
 /**
  * Provides metadata about Font Awesome releases.
@@ -27,6 +23,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'vendor/autoload.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -137,6 +134,16 @@ class FontAwesome_Release_Provider {
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Loads all versions.
+	 *
+	 * @ignore
+	 */
+	private function get_metadata_for_version( $version, $license ) {
+		// TODO: Put code here
+	}
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
 	 * @ignore
 	 */
 	private function map_api_release( $release ) {
@@ -236,9 +243,11 @@ class FontAwesome_Release_Provider {
 			'message' => '',
 		);
 
+		$schema = $this->get_metadata_for_version( "{ flipping: blah }", "arg2" );
 		$test_var = "What's up?";
 		print_r($test_var);
-		
+		print_r($schema);
+
 		try {
 			$response = $this->get( FONTAWESOME_API_URL . '/' );
 
