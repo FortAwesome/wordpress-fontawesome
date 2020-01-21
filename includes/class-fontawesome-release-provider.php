@@ -137,7 +137,7 @@ class FontAwesome_Release_Provider {
 	 *
 	 * @ignore
 	 */
-	private function get_metadata_for_version( $version, $license ) {
+	public function get_available_versions() {
 		// TODO: Put code here
 	}
 
@@ -224,41 +224,6 @@ class FontAwesome_Release_Provider {
 				array(
 					'code'    => 0,
 					'message' => 'Whoops, we failed when trying to update the releases data.',
-				)
-			);
-		}
-	}
-
-	/**
-	 * Fetches metadata for a release. For internal use only.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
-	public function load_release_metadata( $version, $type_flag ) {
-		$init_status = array(
-			'code'    => null,
-			'message' => '',
-		);
-
-		$schema = $this->get_metadata_for_version( "{ flipping: blah }", "arg2" );
-		$test_var = "What's up?";
-		print_r($test_var);
-		print_r($schema);
-
-		try {
-			$response = $this->get( FONTAWESOME_API_URL . '/' );
-
-			if ( $response instanceof WP_Error ) {
-				throw new Error();
-			}
-		} catch ( Exception $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, we failed to fetch the data.',
 				)
 			);
 		}

@@ -89,21 +89,10 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_load_release_metadata_with_version() {
-		// $boo = FontAwesome_release_provider::class
-		// $boo->load_release_metadata('5.0.1', 'free');
-		// return mock_singleton_method(
-		// 	$this,
-		// 	FontAwesome_Release_Provider::class,
-		// 	'get',
-
-		// );
+	public function test_get_available_versions_() {
 		$mock_response = self::build_500_response();
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		// $foo = new FontAwesome_Release_Provider();
-		$farp->load_release_metadata('5.0.1', 'free');
-		// require_once('FontAwesome_Release_Provider');
-		// load_release_metadata('5.0.1', 'free');
+		$farp->get_available_versions();
 	}
 
 	public function test_versions_no_releases_exception() {
