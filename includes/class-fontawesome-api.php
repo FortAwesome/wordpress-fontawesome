@@ -107,7 +107,7 @@ class FontAwesome_Metadata_API {
 				'Content-Type' => 'application/json'
 				)
 			);
-		$url = 'http://dockerhost:4000/';
+		$url = FONTAWESOME_API_URL;
 		$query = 'query={versions}';
 
 		try {
