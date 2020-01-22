@@ -89,14 +89,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_get_available_versions() {
-		// $mock_response = self::build_500_response();
-		// $farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		// $farp->get_available_versions();
-		$release_provider = FontAwesome_Release_Provider::instance();
-		$release_provider->get_available_versions();
-	}
-
 	public function test_versions_no_releases_exception() {
 		/**
 		 * When the GET for releases does not return successfully and we have no version metadata available,
