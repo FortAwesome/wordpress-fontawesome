@@ -221,6 +221,18 @@ class FontAwesome {
 	protected $screen_id = null;
 
 	/**
+	 * This tracks the state of whether, when we process options after the
+	 * plugin upgrades from using the v1 options schema to v2, the former
+	 * removeUnregisteredClients option was set. If so we use some automatic
+	 * conflict detection and resolution, like that old feature worked.
+	 * 
+	 * @deprecated
+	 * @internal
+	 * @ignore
+	 */
+	protected $_old_remove_unregistered_clients = false;
+
+	/**
 	 * Returns the singleton instance of the FontAwesome plugin.
 	 *
 	 * @since 4.0.0
@@ -687,6 +699,10 @@ class FontAwesome {
 
 		if ( isset( $options['version'] ) ) {
 			$converted_options['version'] = $options['version'];
+		}
+
+		if ( isset( $options['removeUnregisteredClients'] ) ) {
+			$this->_old_remove_unregistered_clients = true;
 		}
 
 		if ( isset( $options['lockedLoadSpec'] ) ) {
