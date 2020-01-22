@@ -146,6 +146,95 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there.
 	}
 
+	public function test_unregistered_conflict_cleaned_automatically_when_old_feature_detected() {
+		$options_v1_schema = array(
+			'adminClientLoadSpec' => array(
+				'name'          => 'admin-user',
+				'clientVersion' => 0,
+				'method'		=> 'svg',
+				'pseudoElements' => true,
+				'v4shim'		=> true
+			),
+			'usePro'                    => false,
+			'removeUnregisteredClients' => true,
+			'version'                   => 'latest',
+		);
+
+		update_option( FontAwesome::OPTIONS_KEY, $options_v1_schema );
+
+		$this->enqueue_fakes();
+
+		add_action(
+			'font_awesome_preferences',
+			function() {
+				fa()->register(
+					[
+						'name' => 'clientA',
+					]
+				);
+			}
+		);
+
+		fa()->gather_preferences();
+
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all' );
+		fa()->enqueue_cdn( fa()->options(), $resource_collection );
+
+		ob_start();
+		wp_head(); // required to trigger the 'wp_enqueue_scripts' action.
+		ob_end_clean();
+
+		// make sure that the fake unregistered clients are no longer enqueued and that our plugin succeeded otherwise.
+		$this->assertCount(
+			count( $this->fake_unregistered_clients['styles'] ) + count( $this->fake_unregistered_clients['scripts'] ),
+			fa()->blocklist()
+		);
+		foreach ( $this->fake_unregistered_clients as $type => $items ) {
+			foreach ( $items as $item ) {
+				switch ( $type ) {
+					case 'styles':
+						$this->assertTrue( wp_style_is( $item['handle'], 'registered' ) ); // is *was* there.
+						$this->assertFalse( wp_style_is( $item['handle'], 'enqueued' ) ); // now it's gone.
+						break;
+					case 'scripts':
+						$this->assertTrue( wp_script_is( $item['handle'], 'registered' ) ); // is *was* there.
+						$this->assertFalse( wp_script_is( $item['handle'], 'enqueued' ) ); // now it's gone.
+						break;
+				}
+			}
+		}
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there.
+
+		// There are some expected side effects: the options should have been updated
+		// as a result of inferring unregistered clients by url.
+		$this->assertEquals(
+			array(
+				'usePro' => false,
+				'v4compat' => true,
+				'technology' => 'svg',
+				'svgPseudoElements' => true,
+				'detectConflictsUntil' => 0,
+				'version' => 'latest',
+				'blocklist' => $this->fake_md5s()
+			),
+			fa()->options()
+		);
+
+		$this->assertEquals(
+			array(
+				'3c937b6d9b50371df1e78b5d70e11512' => array(
+					'src' => 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
+					'type' => 'style'
+				),
+				'f975719c4e7654191a03e5f111418585' => array(
+					'src' => 'https://use.fontawesome.com/releases/v5.0.13/js/all.js',
+					'type' => 'script'
+				)
+			),
+			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+		);
+	}
+
 	public function test_unregistered_conflict_unresolved_by_default() {
 		$fa = fa();
 
