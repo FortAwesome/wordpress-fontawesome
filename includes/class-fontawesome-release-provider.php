@@ -138,7 +138,70 @@ class FontAwesome_Release_Provider {
 	 * @ignore
 	 */
 	public function get_available_versions() {
-		// TODO: Put code here
+		$init_status = array(
+			'code'    => null,
+			'message' => '',
+		);
+
+		try {
+			$response = $this->get( 'dockerhost:4000' );
+			print_r($response);
+
+			if ( $response instanceof WP_Error ) {
+				throw new Error();
+			}
+
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => $response['response']['code'],
+					'message' => $response['response']['message'],
+				)
+			);
+
+			if ( 200 !== $this->status['code'] ) {
+				return;
+			}
+
+			$body_contents = $response['body'];
+			$body_json     = json_decode( $body_contents, true );
+			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
+			$releases      = array();
+			foreach ( $api_releases as $release ) {
+				$releases[ $release['version'] ] = $release;
+			}
+
+			$previous_transient = get_transient( self::RELEASES_TRANSIENT );
+
+			if ( $previous_transient ) {
+				// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
+				delete_transient( self::RELEASES_TRANSIENT );
+			}
+
+			$ret = set_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
+
+			if ( ! $ret ) {
+				throw new Exception();
+			}
+
+			$this->releases = $releases;
+		} catch ( Exception $e ) {
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, we failed to update the releases data.',
+				)
+			);
+		} catch ( Error $e ) {
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, we failed when trying to update the releases data.',
+				)
+			);
+		}
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
