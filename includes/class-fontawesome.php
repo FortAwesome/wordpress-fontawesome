@@ -1376,6 +1376,23 @@ EOT;
 
 		$obj = $this;
 		/**
+		 * If we're upgrading from the v1 option schema and the previous
+		 * removeUnregisteredClients feature had been enabled, then we will
+		 * run some server-side detection like that old feature worked and
+		 * add what we find to the new-style blocklist.
+		 */
+		if( $this->_old_remove_unregistered_clients ) {
+			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+				add_action(
+					$action,
+					function() use ( $obj ) {
+						$obj->infer_unregistered_clients_by_resource_url();
+					},
+					PHP_INT_MAX - 1
+				);
+			}
+		}
+		/**
 		 * We need to remove unregistered clients *after* they would have been
 		 * enqueued, if they used the recommended mechanism of wp_enqueue_style
 		 * and wp_enqueue_script (or the admin equivalents).
@@ -1401,6 +1418,73 @@ EOT;
 		 */
 		do_action( 'font_awesome_enqueued' );
 	}
+
+	/**
+	 * Updates the unregistered clients option and blocklist with any enqueued
+	 * styles or scripts whose src matches 'fontawesome' or 'font-awesome'.
+	 * 
+	 * This is for internal use only. Not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	private function infer_unregistered_clients_by_resource_url() {
+		$wp_styles  = wp_styles();
+		$wp_scripts = wp_scripts();
+
+		$collections = array(
+			'style'  => $wp_styles,
+			'script' => $wp_scripts,
+		);
+
+		$inferred_unregistered_clients = [];
+
+		foreach ( $collections as $key => $collection ) {
+			foreach ( $collection->registered as $handle => $details ) {
+				if ( preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle )
+					|| preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle ) ) {
+					continue;
+				}
+				if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
+					/**
+					 * For each match we find, we'll update both the main option's
+					 * blocklist, and the unregistered clients option.
+					 * 
+					 * We'll accumulate those matches in these data structures,
+					 * and then call update_option() once for each option at the end.
+					 */
+					$md5 = md5($details->src);
+
+					$inferred_unregistered_clients[$md5] = array(
+						'src' => $details->src,
+						'type' => $key
+					);
+				}
+			}
+		}
+
+		if( count($inferred_unregistered_clients) > 0 ) {
+			$prev_unreg_clients_option = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+
+			update_option(
+				self::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+				array_merge(
+					$prev_unreg_clients_option,
+					$inferred_unregistered_clients
+				)
+			);
+
+			update_option(
+				self::OPTIONS_KEY,
+				array_merge(
+					$this->options(),
+					array(
+						'blocklist' => array_keys($inferred_unregistered_clients)
+					)
+				)
+			);
+		}
+	}	
 
 	/**
 	 * This function is not part of this plugin's public API.
