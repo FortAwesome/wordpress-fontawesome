@@ -660,7 +660,11 @@ class FontAwesome {
 	 * @return array
 	 */
 	public function convert_options( $options ) {
-		if ( isset( $options['lockedLoadSpec'] ) ) {
+		if ( isset( $options['removeUnregisteredClients'] ) ) {
+			$this->_old_remove_unregistered_clients = true;
+		}
+
+		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			// v1 schema.
 			return $this->convert_options_from_v1( $options );
 		} else {
@@ -699,10 +703,6 @@ class FontAwesome {
 
 		if ( isset( $options['version'] ) ) {
 			$converted_options['version'] = $options['version'];
-		}
-
-		if ( isset( $options['removeUnregisteredClients'] ) ) {
-			$this->_old_remove_unregistered_clients = true;
 		}
 
 		if ( isset( $options['lockedLoadSpec'] ) ) {
