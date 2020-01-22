@@ -24,6 +24,7 @@ class MetadataAPITest extends \WP_UnitTestCase {
       // $farp = $this->create_release_provider_with_mocked_response( $mock_response );
       // $farp->get_available_versions();
       $metadata_api = FontAwesome_Metadata_API::instance();
-      $metadata_api->get_available_versions();
+      $returned_value = $metadata_api->get_available_versions();
+      print_r($returned_value);
     }
 }

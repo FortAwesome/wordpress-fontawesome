@@ -32,7 +32,16 @@ class FontAwesome_Metadata_API {
 	 */
 	protected function get( $url, $args = array() ) {
 		return wp_remote_get( $url, $args );
+  }
+
+  // phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected function build_query_url( $url, $query ) {
+		return "{$url}?{$query}";
 	}
+
 
 	/**
 	 * Returns the FontAwesome_Metadata_API singleton instance.
@@ -102,7 +111,7 @@ class FontAwesome_Metadata_API {
 		$query = 'query={versions}';
 
 		try {
-			$response = $this->get( $url . '?' . $query, $args );
+			$response = $this->get( $this->build_query_url( $url, $query), $args );
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
@@ -121,16 +130,9 @@ class FontAwesome_Metadata_API {
 			}
 
 			$body_contents = $response['body'];
-			$body_json     = json_decode( $body_contents, true );
-			print_r($body_json);
-			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
-			print_r($api_releases);
-			$releases      = array();
-			foreach ( $api_releases as $release ) {
-				$releases[ $release['version'] ] = $release;
-			}
+      $versions = json_decode( $body_contents, true );
 
-			$this->releases = $releases;
+			return $versions;
 		} catch ( Exception $e ) {
 			$this->status = array_merge(
 				$init_status,
