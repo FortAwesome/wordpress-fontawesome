@@ -130,7 +130,19 @@ class FontAwesome_Metadata_API {
 			}
 
 			$body_contents = $response['body'];
-      $versions = json_decode( $body_contents, true );
+      $json_body = json_decode( $body_contents );
+      $versions = array();
+
+      foreach($json_body->data->versions as $key => $val) {
+        array_push( $versions, strval( $val ) );
+      }
+
+      usort(
+        $versions,
+        function( $first, $second ) {
+          return version_compare( $second, $first );
+        }
+      );
 
 			return $versions;
 		} catch ( Exception $e ) {
