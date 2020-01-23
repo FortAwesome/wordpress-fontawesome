@@ -1464,7 +1464,7 @@ EOT;
 		}
 
 		if( count($inferred_unregistered_clients) > 0 ) {
-			$prev_unreg_clients_option = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+			$prev_unreg_clients_option = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY, array() );
 
 			update_option(
 				self::UNREGISTERED_CLIENTS_OPTIONS_KEY,
