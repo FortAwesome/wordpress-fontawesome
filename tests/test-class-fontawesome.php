@@ -299,4 +299,14 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->detecting_conflicts()
 		);
 	}
+	
+	// public function test_query() {
+	// 	$return_val = fa()->query( 'query={ release(version: "5.9.0") {date download {separatesWebDesktop} iconCount {free pro} isLatest srisByLicense {free {path value} pro {path value}}}}' );
+	// 	print_r( $return_val );
+	// }
+
+	// public function test_available_icons() {
+	// 	$return_val = fa()->availavle_icons("5.9.0");
+	// 	print_r( $return_val );
+	// }
 }

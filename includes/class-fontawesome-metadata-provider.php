@@ -94,10 +94,10 @@ class FontAwesome_Metadata_Provider {
 		$query = 'query={versions}';
 
 		try {
-      $json_body = $this->metadata_query($query);
+      $json = $this->metadata_query($query);
       $versions = array();
 
-      foreach($json_body->data->versions as $key => $val) {
+      foreach($json->versions as $key => $val) {
         array_push( $versions, strval( $val ) );
       }
 
@@ -170,7 +170,7 @@ class FontAwesome_Metadata_Provider {
 			$body_contents = $response['body'];
       $json_body = json_decode( $body_contents );
 
-			return $json_body;
+			return $json_body->data;
 		} catch ( Exception $e ) {
 			$this->status = array_merge(
 				$init_status,
@@ -189,5 +189,15 @@ class FontAwesome_Metadata_Provider {
 			);
 		}
 	}
+}
 
+/**
+ * Convenience global function to get a singleton instance of the Metadata Provider.
+ * Normally, plugins and themes should not need to access this directly.
+ *
+ * @see FontAwesome_Metadata_Provider::instance()
+ * @return FontAwesome_Metadata_Provider
+ */
+function fa_metadata_provider() {
+	return FontAwesome_Metadata_Provider::instance();
 }

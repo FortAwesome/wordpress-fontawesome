@@ -8,6 +8,7 @@ use \Exception, \Error, \InvalidArgumentException, \DateTime, \DateInterval, \Da
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-conflict-detector.php';
@@ -1675,6 +1676,45 @@ EOT;
 		$this->client_preferences[ $client_preferences['name'] ] = $client_preferences;
 	}
 
+	/**
+	 * Allows direct querying of the Font Awesome GraphQL metadata API.
+	 * It accepts a GraphQL query string like 'query={versions}'.
+	 * More information about using GraphQL queries can be found {@link https://graphql.org/learn/ here}.
+	 *
+	 * @param string $query_string
+	 * @since 4.0.0
+	 */
+	public function query( $query_string ) {
+		return $this->metadata_provider()->metadata_query( $query_string );
+	}
+
+	/**
+	 * Returns the list of icons for a given version as an array of PHP objects.
+	 *
+	 * @param string $version
+	 * @since 4.0.0
+	 */
+	public function availavle_icons( $version ) {
+		$query_string = 'query={ release(version:' .
+			"\"{$version}\"" .
+			') {icons {
+				id
+				label
+				membership {
+					free
+					pro
+				}
+				shim {
+					id
+					name
+					prefix
+				}
+				styles
+				unicode
+			}}}';
+		return $this->query( $query_string );
+	}
+
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @internal
@@ -1762,6 +1802,16 @@ EOT;
 	 */
 	protected function release_provider() {
 		return fa_release_provider();
+	}
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * Allows a test subclass to mock the release provider.
+	 *
+	 * @ignore
+	 */
+	protected function metadata_provider() {
+		return fa_metadata_provider();
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
