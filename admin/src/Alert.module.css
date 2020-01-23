@@ -11,11 +11,11 @@
 }
 
 .alert-icon {
-  background-color: rgb(232, 236, 239);
-  color: rgb(134, 142, 150);
+  background-color: rgb(215, 220, 225);
+  color: rgb(124, 132, 140);
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
-  padding: 2rem 1.5rem;
+  padding: .75rem .5rem;
   font-size: 1.25rem;
 }
 
@@ -23,20 +23,30 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: .5rem 1rem .75rem 1rem;
   line-height: 1.5;
 }
 
 .alert-title {
   margin-top: 0;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  font-size: .9rem;
   font-weight: 600;
 }
 
 .alert-message p {
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+.alert-message ul {
+  margin: 0;
+}
+
+.alert-message li {
+  display: inline-block;
+  padding-right: 1rem;
+  margin-bottom: 0;
 }
 
 .alert-action {
