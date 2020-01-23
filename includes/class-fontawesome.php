@@ -211,6 +211,10 @@ class FontAwesome {
 		'v4Compat'             => TRUE,
 		'technology'           => 'webfont',
 		'svgPseudoElements'    => FALSE,
+		'kitToken'             => NULL,	
+		// whether the token is present, not the token's value
+		'apiToken'             => false,
+		'apiScopes'            => []
 	);
 
 	/**
