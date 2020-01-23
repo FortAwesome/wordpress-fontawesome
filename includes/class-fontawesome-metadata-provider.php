@@ -1,7 +1,8 @@
 <?php
 /**
- * This module is meant to return metadata about Font Awesome versions and icons.
- * Publicly accessible functions should be put here.
+ * This module is not considered part of the public API, only internal.
+ * Any data or functionality that it produces should be exported by the
+ * main FontAwesome class and the API documented and semantically versioned there.
  */
 namespace FortAwesome;
 
@@ -18,7 +19,7 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
  * @ignore
  */
 
-class FontAwesome_Metadata_API {
+class FontAwesome_Metadata_Provider {
 
   // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -44,9 +45,9 @@ class FontAwesome_Metadata_API {
 
 
 	/**
-	 * Returns the FontAwesome_Metadata_API singleton instance.
+	 * Returns the FontAwesome_Metadata_Provider singleton instance.
 	 *
-	 * @return FontAwesome_Metadata_API
+	 * @return FontAwesome_Metadata_Provider
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -59,7 +60,7 @@ class FontAwesome_Metadata_API {
 	 * Resets the singleton instance referenced by this class and returns that new instance.
 	 * All previous releases metadata held in the previous instance will be abandoned.
 	 *
-	 * @return FontAwesome_Metadata_API
+	 * @return FontAwesome_Metadata_Provider
 	 */
 	public static function reset() {
 		self::$instance = null;
