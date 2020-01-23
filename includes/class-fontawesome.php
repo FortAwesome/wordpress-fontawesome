@@ -660,7 +660,7 @@ class FontAwesome {
 	 * @return array
 	 */
 	public function convert_options( $options ) {
-		if ( isset( $options['removeUnregisteredClients'] ) ) {
+		if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
 			$this->_old_remove_unregistered_clients = true;
 		}
 
