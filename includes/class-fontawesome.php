@@ -601,7 +601,7 @@ class FontAwesome {
 			"after_plugin_row_" . FONTAWESOME_PLUGIN_FILE,
 			function($plugin_file, $plugin_data, $status) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
-					$loader_version = FontAwesome_Loader::$_loaded['path'];
+					$loader_version = FontAwesome_Loader::instance()->loaded_path();
 					echo '<tr><td>&nbsp;</td><td colspan="2">';
 					?>
 

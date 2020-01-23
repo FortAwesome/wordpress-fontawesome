@@ -179,6 +179,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		}
 
 		/**
+		 * Returns the path to the plugin installation that is actively loaded.
+		 * 
+		 * @since 4.0.0
+		 */
+		public function loaded_path() {
+			return self::$_loaded['path'];
+		}
+
+		/**
 		 * Loads the activation hook for the plugin installation that has been
 		 * selected for loading.
 		 *
@@ -194,9 +203,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
 			} catch ( Exception $e ) {
+				error_log($e->getMessage());
 				echo '<div class="error"><p>Sorry, Font Awesome could not be activated.</p></div>';
 				exit;
 			} catch ( Error $e ) {
+				error_log($e->getMessage());
 				echo '<div class="error"><p>Sorry, Font Awesome could not be activated.</p></div>';
 				exit;
 			}

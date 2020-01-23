@@ -8,5 +8,9 @@ class FontAwesomeLoaderTest extends \WP_UnitTestCase {
 			loader_scenario_version(),
 			'42.0.1'
 		);
+		$this->assertEquals(
+			FontAwesome_Loader::instance()->loaded_path(),
+			trailingslashit(__DIR__) . 'mock_installations/ver_a/'
+		);
 	}
 }
