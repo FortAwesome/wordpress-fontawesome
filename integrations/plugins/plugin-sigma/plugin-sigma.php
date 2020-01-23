@@ -60,20 +60,6 @@ add_action(
 	}
 );
 
-add_action(
-	'init',
-	function() {
-		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-		wp_enqueue_style(
-			'plugin-sigma-style',
-			trailingslashit( plugins_url() ) . trailingslashit( plugin_basename( __DIR__ ) ) . 'style.css',
-			array(),
-			null,
-			'all'
-		);
-	}
-);
-
 add_filter(
 	'the_content',
 	function( $content ) {
