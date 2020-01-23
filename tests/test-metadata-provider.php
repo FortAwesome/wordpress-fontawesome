@@ -17,11 +17,18 @@ use \InvalidArgumentException;
  *
  * @group api
  */
-class MetadataAPITest extends \WP_UnitTestCase {
+class MetadataProviderTest extends \WP_UnitTestCase {
 
   public function test_get_available_versions() {
       // $mock_response = self::build_500_response();
       $metadata_api = FontAwesome_Metadata_Provider::instance();
       $returned_value = $metadata_api->get_available_versions();
+      print_r($returned_value);
     }
+
+  public function test_metadata_query() {
+    $metadata_api = FontAwesome_Metadata_Provider::instance();
+    $returned_value = $metadata_api->metadata_query('query={versions}');
+    // print_r($returned_value);
+  }
 }

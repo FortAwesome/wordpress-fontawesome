@@ -88,7 +88,7 @@ class FontAwesome {
 	const PLUGIN_VERSION = '4.0.0-rc13';
 	/**
 	 * The version of this plugin's REST API.
-	 * 
+	 *
 	 * The REST API is being deprecated and replaced by the GraphQL API.
 	 *
 	 * @internal
@@ -100,7 +100,7 @@ class FontAwesome {
 	 * The namespace for this plugin's REST API.
 	 *
 	 * The REST API is being deprecated and replaced by the GraphQL API.
-	 * 
+	 *
 	 * @internal
 	 * @deprecated
 	 * @ignore
@@ -225,7 +225,7 @@ class FontAwesome {
 	 * plugin upgrades from using the v1 options schema to v2, the former
 	 * removeUnregisteredClients option was set. If so we use some automatic
 	 * conflict detection and resolution, like that old feature worked.
-	 * 
+	 *
 	 * @deprecated
 	 * @internal
 	 * @ignore
@@ -544,7 +544,7 @@ class FontAwesome {
 
 	/**
 	 * This function is not part of this plugin's public API.
-	 * 
+	 *
 	 * Initalizes everything about the admin environment except the React app
 	 * bundle, which is handled in maybe_enqueue_js_bundle().
 	 *
@@ -613,7 +613,7 @@ class FontAwesome {
 					listed above doesn't reflect the version that is active
 					on your site, which might be confusing.
 					</p>
-					
+
 					<p>
 					The active version is <?php echo FontAwesome::PLUGIN_VERSION; ?> and is being loaded
 					by another plugin or theme from here: <?php  echo $loader_version; ?>.
@@ -636,7 +636,7 @@ class FontAwesome {
 	/**
 	 * Returns current options as stored in the database, after converting
 	 * from previous schema versions.
-	 * 
+	 *
 	 * Default options should have already been set in the database at plugin
 	 * activation time.
 	 *
@@ -677,7 +677,7 @@ class FontAwesome {
 	 * md5 hashes that represent detections of conflicting loads of Font Awesome
 	 * that the administrator has chosen to block, causing the styles and
 	 * scripts associated with these md5 hashes to be dequeued by this plugin.
-	 * 
+	 *
 	 * @since 4.0.0
 	 * @return array
 	 */
@@ -979,7 +979,7 @@ class FontAwesome {
 
 	/**
 	 * Not part of the public API.
-	 * 
+	 *
 	 * Enqueues the JavaScript bundle that is the React app for the admin
 	 * settings page as well as the conflict detection reporter. The same
 	 * bundle will be enqueued for both purposes. When enqueued, it must be
@@ -1079,7 +1079,7 @@ class FontAwesome {
 
 	/**
 	 * Not part of the public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -1226,7 +1226,7 @@ class FontAwesome {
 						function () use ( $resources, $options, $version ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null );
-						
+
 							$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
 
 							$font_face = <<< EOT
@@ -1422,7 +1422,7 @@ EOT;
 	/**
 	 * Updates the unregistered clients option and blocklist with any enqueued
 	 * styles or scripts whose src matches 'fontawesome' or 'font-awesome'.
-	 * 
+	 *
 	 * This is for internal use only. Not part of this plugin's public API.
 	 *
 	 * @internal
@@ -1449,7 +1449,7 @@ EOT;
 					/**
 					 * For each match we find, we'll update both the main option's
 					 * blocklist, and the unregistered clients option.
-					 * 
+					 *
 					 * We'll accumulate those matches in these data structures,
 					 * and then call update_option() once for each option at the end.
 					 */
@@ -1484,7 +1484,7 @@ EOT;
 				)
 			);
 		}
-	}	
+	}
 
 	/**
 	 * This function is not part of this plugin's public API.
@@ -1509,7 +1509,7 @@ EOT;
 		 * thing in newlines when printing the <style> or <script> tag. So that's how we'll have to
 		 * reconstruct those inline resources here in order to produce the same input for the md5 function
 		 * that would have been used by the Conflict Detector in the browser.
-		 * 
+		 *
 		 * Since this newline handling is not documenting as part of the spec, we're admittedly at some risk
 		 * of this changing out from under us. At worst, if that implementation detail changes, it
 		 * will just mean that we get a false negative when matching for blocked elements.
@@ -1521,7 +1521,7 @@ EOT;
 		} else {
 			return FALSE;
 		}
-	}		
+	}
 
 	/**
 	 * For each handle, we need to check whether there's a conflict for the base resource itself,
@@ -1540,7 +1540,7 @@ EOT;
 	 * In that case, removal of the main resource will be too greedy / aggressive. We seem to be
 	 * at the mercy of how WordPress handles inline styles and scripts--that is, inline styles
 	 * or scripts are always added to some other "main" asset which has its own resource handle.
-	 * 
+	 *
 	 * @ignore
 	 */
 	protected function remove_blocklist() {
@@ -1834,20 +1834,20 @@ EOT;
 
 	/**
 	 * Not public API.
-	 * 
+	 *
 	 * @internal
 	 * @ignore
 	 */
 	private function get_admin_icon_color() {
 		// Adapted from wp_color_scheme_settings in WP Core:
 		global $_wp_admin_css_colors;
- 
+
 		$color_scheme = get_user_option( 'admin_color' );
-	 
+
 		if ( empty( $_wp_admin_css_colors[ $color_scheme ] ) ) {
 			$color_scheme = 'fresh';
 		}
-	 
+
 		if ( ! empty( $_wp_admin_css_colors[ $color_scheme ]->icon_colors ) ) {
 			$icon_colors = $_wp_admin_css_colors[ $color_scheme ]->icon_colors;
 		} elseif ( ! empty( $_wp_admin_css_colors['fresh']->icon_colors ) ) {

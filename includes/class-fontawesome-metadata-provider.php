@@ -56,17 +56,6 @@ class FontAwesome_Metadata_Provider {
 		return self::$instance;
 	}
 
-	/**
-	 * Resets the singleton instance referenced by this class and returns that new instance.
-	 * All previous releases metadata held in the previous instance will be abandoned.
-	 *
-	 * @return FontAwesome_Metadata_Provider
-	 */
-	public static function reset() {
-		self::$instance = null;
-		return self::instance();
-  }
-
   /**
 	 * Returns an associative array indicating the status of the status of the last network
 	 * request that attempted to retrieve releases metadata, or null if no network request has
@@ -102,36 +91,10 @@ class FontAwesome_Metadata_Provider {
 			'code'    => null,
 			'message' => '',
 		);
-
-		$args = array(
-			'headers' => array(
-				'Content-Type' => 'application/json'
-				)
-			);
-		$url = FONTAWESOME_API_URL;
 		$query = 'query={versions}';
 
 		try {
-			$response = $this->get( $this->build_query_url( $url, $query), $args );
-
-			if ( $response instanceof WP_Error ) {
-				throw new Error();
-			}
-
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $response['response']['code'],
-					'message' => $response['response']['message'],
-				)
-			);
-
-			if ( 200 !== $this->status['code'] ) {
-				return;
-			}
-
-			$body_contents = $response['body'];
-      $json_body = json_decode( $body_contents );
+      $json_body = $this->metadata_query($query);
       $versions = array();
 
       foreach($json_body->data->versions as $key => $val) {
@@ -165,4 +128,66 @@ class FontAwesome_Metadata_Provider {
 		}
 	}
 
-};
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * Provides a way to query the API and return the data as parsed json
+	 * based on the passed in query string.
+	 *
+	 * @ignore
+	 */
+	public function metadata_query($query_string) {
+		$init_status = array(
+			'code'    => null,
+			'message' => '',
+		);
+
+		$args = array(
+			'headers' => array(
+				'Content-Type' => 'application/json'
+				)
+			);
+		$url = FONTAWESOME_API_URL;
+
+		try {
+			$response = $this->get( $this->build_query_url( $url, $query_string), $args );
+
+			if ( $response instanceof WP_Error ) {
+				throw new Error();
+			}
+
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => $response['response']['code'],
+					'message' => $response['response']['message'],
+				)
+			);
+
+			if ( 200 !== $this->status['code'] ) {
+				return;
+			}
+
+			$body_contents = $response['body'];
+      $json_body = json_decode( $body_contents );
+
+			return $json_body;
+		} catch ( Exception $e ) {
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, the query failed.',
+				)
+			);
+		} catch ( Error $e ) {
+			$this->status = array_merge(
+				$init_status,
+				array(
+					'code'    => 0,
+					'message' => 'Whoops, there was an error while querying.',
+				)
+			);
+		}
+	}
+
+}
