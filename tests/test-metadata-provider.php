@@ -82,12 +82,24 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		 */
 
 		$mock_response = self::build_500_response();
-
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
     $this->assertEquals( 0, $famp->get_available_versions()['code'] );
     $this->assertEquals( "Whoops, we failed to fetch the versions.", $famp->get_available_versions()['message'] );
-	}
+  }
+
+  public function test_get_available_versions_with_error() {
+    /**
+     * When the GET for get_available_versions has a 400 level response
+     * we expect an error to be thrown.
+     */
+
+     $mock_response = self::build_403_response();
+     $famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
+
+     $this->assertEquals( 0, $famp->get_available_versions()['code'] );
+     $this->assertEquals( "Whoops, we failed when trying to fetch the versions.", $famp->get_available_versions()['message'] );
+  }
 
   // public function test_get_available_versions() {
   //     $metadata_api = FontAwesome_Metadata_Provider::instance();

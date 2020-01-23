@@ -1694,7 +1694,7 @@ EOT;
 	 * @param string $version
 	 * @since 4.0.0
 	 */
-	public function availavle_icons( $version ) {
+	public function available_icons( $version ) {
 		$query_string = 'query={ release(version:' .
 			"\"{$version}\"" .
 			') {icons {
