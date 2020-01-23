@@ -87,18 +87,14 @@ class FontAwesome_Metadata_Provider {
 	 * @ignore
 	 */
 	public function get_available_versions() {
-		$init_status = array(
-			'code'    => null,
-			'message' => '',
-		);
 		$query = 'query={versions}';
+		$json = $this->metadata_query($query);
+		$version_array = array();
 
 		try {
-      $json = $this->metadata_query($query);
-      $versions = array();
-
-      foreach($json->versions as $key => $val) {
-        array_push( $versions, strval( $val ) );
+			$versions = $json->versions;
+      foreach($versions as $key => $val) {
+        array_push( $version_array, strval( $val ) );
       }
 
       usort(
@@ -110,20 +106,14 @@ class FontAwesome_Metadata_Provider {
 
 			return $versions;
 		} catch ( Exception $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
+			return array(
 					'code'    => 0,
 					'message' => 'Whoops, we failed to fetch the versions.',
-				)
 			);
 		} catch ( Error $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
+			return array(
 					'code'    => 0,
 					'message' => 'Whoops, we failed when trying to fetch the versions.',
-				)
 			);
 		}
 	}
