@@ -36,6 +36,9 @@ class OptionsTest extends \WP_UnitTestCase {
 				'technology' => 'svg',
 				'usePro' => true,
 				'v4Compat' => true,
+				'kitToken' => null,
+				'apiScopes' => [],
+				'apiToken' => false
 			),
 			fa()->convert_options(
 				array (
