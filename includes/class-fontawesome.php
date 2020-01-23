@@ -1678,8 +1678,9 @@ EOT;
 
 	/**
 	 * Allows direct querying of the Font Awesome GraphQL metadata API.
-	 * It accepts a GraphQL query string like 'query={versions}'.
+	 * It accepts a GraphQL query string like 'query {versions}'.
 	 * More information about using GraphQL queries can be found {@link https://graphql.org/learn/ here}.
+	 * TODO: Put Font Awesome specific documentation here.
 	 *
 	 * @param string $query_string
 	 * @since 4.0.0

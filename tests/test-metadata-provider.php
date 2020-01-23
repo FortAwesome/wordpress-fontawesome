@@ -98,7 +98,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
      $famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
      $this->assertEquals( 0, $famp->get_available_versions()['code'] );
-     $this->assertEquals( "Whoops, we failed when trying to fetch the versions.", $famp->get_available_versions()['message'] );
+    //  $this->assertEquals( "Whoops, we failed when trying to fetch the versions.", $famp->get_available_versions()['message'] );
   }
 
   // public function test_get_available_versions() {
@@ -109,7 +109,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
   // public function test_metadata_query() {
   //   $metadata_api = FontAwesome_Metadata_Provider::instance();
-  //   $returned_value = $metadata_api->metadata_query('query={versions}');
-  //   // print_r($returned_value);
+  //   $returned_value = $metadata_api->metadata_query('query {versions}');
+  //   print_r($returned_value);
   // }
 }

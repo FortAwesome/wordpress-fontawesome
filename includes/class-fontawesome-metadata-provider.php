@@ -31,18 +31,9 @@ class FontAwesome_Metadata_Provider {
 	/**
 	 * @ignore
 	 */
-	protected function get( $url, $args = array() ) {
-		return wp_remote_get( $url, $args );
+	protected function post( $url, $args = array() ) {
+		return wp_remote_post( $url, $args );
   }
-
-  // phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
-	 * @ignore
-	 */
-	protected function build_query_url( $url, $query ) {
-		return "{$url}?{$query}";
-	}
-
 
 	/**
 	 * Returns the FontAwesome_Metadata_Provider singleton instance.
@@ -87,7 +78,7 @@ class FontAwesome_Metadata_Provider {
 	 * @ignore
 	 */
 	public function get_available_versions() {
-		$query = 'query={versions}';
+		$query = 'query {versions}';
 		$json = $this->metadata_query($query);
 		$version_array = array();
 
@@ -132,14 +123,17 @@ class FontAwesome_Metadata_Provider {
 		);
 
 		$args = array(
+			'method' => 'POST',
 			'headers' => array(
 				'Content-Type' => 'application/json'
-				)
-			);
+			),
+			'body' => '{"query": "' . $query_string . '"}'
+		);
 		$url = FONTAWESOME_API_URL;
 
 		try {
-			$response = $this->get( $this->build_query_url( $url, $query_string), $args );
+			$response = $this->post( $url, $args );
+			print_r($response);
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
