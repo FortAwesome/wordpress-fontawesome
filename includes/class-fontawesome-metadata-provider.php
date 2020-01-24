@@ -47,6 +47,23 @@ class FontAwesome_Metadata_Provider {
 		return self::$instance;
 	}
 
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * Returns query errors if there was a problem querying the
+	 * graphql api in a readable string.
+	 *
+	 * @ignore
+	 */
+	protected function query_errors( $errors ) {
+		$error_string = "";
+
+		foreach ($errors as $error) {
+			$error_string .= $error->message;
+		}
+
+		return $error_string;
+	}
+
   /**
 	 * Returns an associative array indicating the status of the status of the last network
 	 * request that attempted to retrieve releases metadata, or null if no network request has
@@ -81,6 +98,10 @@ class FontAwesome_Metadata_Provider {
 		$query = 'query {versions}';
 		$json = $this->metadata_query($query);
 		$version_array = array();
+
+		if ( 200 !== $this->status['code'] ) {
+			return $this->status;
+		}
 
 		try {
 			$versions = $json->versions;
@@ -147,11 +168,18 @@ class FontAwesome_Metadata_Provider {
 			);
 
 			if ( 200 !== $this->status['code'] ) {
-				return;
+				return $this->status;
 			}
 
 			$body_contents = $response['body'];
-      $json_body = json_decode( $body_contents );
+			$json_body = json_decode( $body_contents );
+
+			if (property_exists($json_body, 'errors')) {
+				return array(
+					'code' => 200,
+					'message' => $this->query_errors( $json_body->errors ),
+				);
+			}
 
 			return $json_body->data;
 		} catch ( Exception $e ) {
