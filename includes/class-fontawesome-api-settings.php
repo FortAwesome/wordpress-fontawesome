@@ -137,6 +137,7 @@ class FontAwesome_API_Settings {
 	 * 
 	 * @ignore
 	 * @internal
+	 * @return bool whether write succeeded
 	 */
 	public function write() {
 		$date = date(DATE_RFC2822);
@@ -163,7 +164,9 @@ access_token_expiration_time = '$access_token_expiration_time'
 EOD;
 		if ( !@file_put_contents( self::ini_path(), $contents ) ) { 
 			return false; 
-		} 
+		}  else {
+			return true;
+		}
 	}
 
 	/**

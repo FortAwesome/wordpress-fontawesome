@@ -56,7 +56,8 @@ EOD;
 		$api_settings->set_access_token('bar');
 		$api_settings->set_access_token_expiration_time('42');
 
-		$api_settings->write();
+		$result = $api_settings->write();
+		$this->assertTrue($result, 'writing ini file failed');
 
 		// Force re-read
 		$api_settings = FontAwesome_API_Settings::reset();
