@@ -69,7 +69,7 @@ class FontAwesome_Metadata_Provider {
 	 */
 	public function get_status() {
 		return $this->status;
-  }
+	}
 
   // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -127,13 +127,12 @@ class FontAwesome_Metadata_Provider {
 			'headers' => array(
 				'Content-Type' => 'application/json'
 			),
-			'body' => '{"query": "' . $query_string . '"}'
+			'body' => '{"query": ' . json_encode($query_string) . '}'
 		);
 		$url = FONTAWESOME_API_URL;
 
 		try {
 			$response = $this->post( $url, $args );
-			print_r($response);
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
