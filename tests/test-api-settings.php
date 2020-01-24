@@ -67,4 +67,24 @@ EOD;
 		$this->assertEquals('42', $api_settings->access_token_expiration_time());
 
 	}
+
+	// What if we only write an api token, leave the others null, and the
+	// read it back in?
+	public function test_round_trip_only_api_token() {
+		// Start with nothing
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$api_settings->set_api_token('foo');
+
+		$result = $api_settings->write();
+		$this->assertTrue($result, 'writing ini file failed');
+
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->assertEquals('foo', $api_settings->api_token());
+		$this->assertNull($api_settings->access_token());
+		$this->assertNull($api_settings->access_token_expiration_time());
+	}
 }

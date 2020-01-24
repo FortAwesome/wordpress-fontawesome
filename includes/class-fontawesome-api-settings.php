@@ -158,10 +158,21 @@ class FontAwesome_API_Settings {
 ; plugin settings page to delete the API Token. That will cause this whole file
 ; to go away, and also do the other cleanup necessary in the database.
 
-api_token = '$api_token'
-access_token = '$access_token'
-access_token_expiration_time = '$access_token_expiration_time'
 EOD;
+		// Write each setting to the file conditionally, if it doesn't have
+		// a string value in memory, don't write it at all.
+		if ( is_string( $api_token ) ) {
+			$contents .= "\napi_token = " . $api_token . "\n";
+		}
+
+		if ( is_string( $access_token ) ) {
+			$contents .= "\naccess_token = " . $access_token . "\n";
+		}
+
+		if ( is_string( $access_token_expiration_time ) ) {
+			$contents .= "\naccess_token_expiration_time = " . $access_token_expiration_time . "\n";
+		}
+
 		if ( !@file_put_contents( self::ini_path(), $contents ) ) { 
 			return false; 
 		}  else {
