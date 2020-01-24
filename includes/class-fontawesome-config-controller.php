@@ -91,13 +91,39 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 */
 		public function update_item( $request ) {
 			try {
-				$item = $this->prepare_item_for_database( $request );
+				$body = $request->get_json_params();
+
+				$api_token = isset($body['options']) ? $body['options']['apiToken'] : null;
+
+				if ( is_string( $api_token ) ) {
+					$result = FontAwesome::save_api_token( $api_token );
+
+					if ( ! $result ) {
+						return new WP_Error(
+							'cant_update',
+							"Whoops, we couldn't save your API token.",
+							array( 'status' => 403 )
+						);
+					}
+				}
+
+				$db_item = array_merge(
+					array(),
+					$body,
+					// Override any literal apiToken with just a boolean value
+					// indicating its presence
+					array( 
+						'options' => array(
+							'apiToken' => boolval( $api_token )
+						)
+					),
+				);
 
 				$result = update_option(
 					FontAwesome::OPTIONS_KEY,
 					array_merge(
 						FontAwesome::DEFAULT_USER_OPTIONS,
-						$item['options']
+						$db_item['options']
 					)
 				);
 
@@ -126,16 +152,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			}
 		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected function prepare_item_for_database( $request ) {
-			$body = $request->get_json_params();
-			return array_merge( array(), $body );
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 		/**
 		 * Allows a test subclass to mock the release provider.
 		 *
