@@ -323,6 +323,9 @@ class FontAwesome {
 
 					$options = $this->options();
 
+					// TODO: probably throw an exception right here if for some reason
+					// we don't have options like we expect.
+
 					$resource_collection = fa()
 						->release_provider()
 						->get_resource_collection(
@@ -1271,6 +1274,72 @@ class FontAwesome {
 			)
 		);
 	}
+
+	/** 
+     * Returns WP config file path 
+	 * 
+	 * Borrowed from W3 Total Cache plugin under the GPL.
+	 * 
+	 * Not part of this plugin's public API.
+	 * 
+	 * @ignore
+     * @internal
+     * @return string 
+     */ 
+    static public function wp_config_path() { 
+        $search = array( 
+            ABSPATH . 'wp-config.php', 
+            dirname( ABSPATH ) . DIRECTORY_SEPARATOR . 'wp-config.php' 
+        ); 
+
+        foreach ( $search as $path ) { 
+            if ( file_exists( $path ) ) { 
+                return $path; 
+            } 
+        } 
+
+        return false; 
+	} 
+	
+	/** 
+     * Saves a Font Awesome API Token to the wp-config.php.
+	 * 
+	 * Borrowed from the W3 Total Cache plugin under the GPL.
+	 * 
+	 * Not part of this plugin's public API.
+     * 
+	 * @ignore
+	 * @internal
+     * @return bool 
+     */ 
+    static public function save_api_token( $api_token ) { 
+        $config_path = self::wp_config_path(); 
+		$config_data = @file_get_contents( $config_path ); 
+		
+		if( ! is_string( $api_token) ) {
+			return false;
+		}
+
+        if ( $config_data === false ) { 
+            return false; 
+		} 
+
+		if ( 1 === preg_match('/define\(\'FONTAWESOME_API_TOKEN\',/', $config_data) ) {
+			// replace existing
+			$new_config_data = preg_replace('/define\(\'FONTAWESOME_API_TOKEN\',.*?\);/', "define('FONTAWESOME_API_TOKEN', '$api_token');", $config_data);
+		} else {
+			// add new
+			$new_config_data = preg_replace('/<\?php\s*?/', "<?php\ndefine('FONTAWESOME_API_TOKEN', '$api_token');", $config_data);
+		}
+
+        if ( $new_config_data != $config_data ) { 
+            if ( !@file_put_contents( $config_path, $new_config_data ) ) { 
+                return false; 
+            } 
+        } 
+
+        return true; 
+    } 
 
 	/**
 	 * Enqueues <script> or <link> resources to load from Font Awesome 5 free or pro cdn.
