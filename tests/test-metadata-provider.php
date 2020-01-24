@@ -121,7 +121,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
   public function test_metadata_query() {
 		$mock_response = self::build_success_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
-
-    $this->assertEquals("", $famp->metadata_query( 'query {versions}' ));
+		print_r($famp->metadata_query('floop'));
+    // $this->assertEquals("", $famp->metadata_query( 'query {versions}' ));
   }
 }
