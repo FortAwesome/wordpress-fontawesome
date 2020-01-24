@@ -66,7 +66,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		return mock_singleton_method(
 			$this,
 			FontAwesome_Metadata_Provider::class,
-			'get',
+			'post',
 			function( $method ) use ( $response ) {
 				$method->willReturn(
 					$response
@@ -107,9 +107,34 @@ class MetadataProviderTest extends \WP_UnitTestCase {
   //     print_r($returned_value);
   //   }
 
-  // public function test_metadata_query() {
-  //   $metadata_api = FontAwesome_Metadata_Provider::instance();
-  //   $returned_value = $metadata_api->metadata_query('query {versions}');
-  //   print_r($returned_value);
-  // }
+  public function test_metadata_query() {
+    $metadata_api = FontAwesome_Metadata_Provider::instance();
+		// $returned_value = $metadata_api->metadata_query('query {versions}');
+		// $returned_value = $metadata_api->metadata_query('query { release(version: "5.9.0") {
+		// 		date
+		// 	}
+		// }');
+		// $returned_value = $metadata_api->metadata_query('query {     release(    version:   "5.9.0"   )    {date   }    }');
+		// $returned_value = $metadata_api->metadata_query('query {
+		// 	release(version: "5.0.9"){
+		// 		icons {
+		// 			id
+		// 			label
+		// 			membership {
+		// 				free
+		// 				pro
+		// 			}
+		// 			shim {
+		// 				id
+		// 				name
+		// 				prefix
+		// 			}
+		// 			styles
+		// 			unicode
+		// 		}
+		// 	}
+		// }');
+
+    // print_r($returned_value);
+  }
 }
