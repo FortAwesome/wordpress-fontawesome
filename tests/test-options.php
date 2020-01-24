@@ -37,7 +37,6 @@ class OptionsTest extends \WP_UnitTestCase {
 				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
-				'apiScopes' => [],
 				'apiToken' => false
 			),
 			fa()->convert_options(
