@@ -42,7 +42,30 @@ export default function KitsConfigView(props) {
   */
 
   const kitToken = optionSelector('kitToken')
-  const apiToken = optionSelector('apiToken')
+  //const apiToken = optionSelector('apiToken')
+  const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
+  const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
+
+  function ApiTokenInput() {
+    return <>
+      <label htmlFor="api_token" className={ styles['option-label'] }>
+        API Token
+      </label>
+      <input
+        id="api_token"
+        name="api_token"
+        type="password"
+        placeholder="api token here"
+        value={ pendingApiToken }
+        size="20"
+        onChange={ e => {
+          e.preventDefault()
+          e.stopPropagation()
+          handleOptionChange({ apiToken: e.target.value }) 
+        }}
+      />
+    </>
+  }
 
   const kitOptions = useSelector(state => {
     return (state.kits || []).reduce((acc, kit) => {
@@ -64,6 +87,13 @@ export default function KitsConfigView(props) {
 
   return <div>
     <div>
+      {
+        hasSavedApiToken
+        ? <span>ok, we have a good API token.</span>
+        : <ApiTokenInput />
+      }
+    </div>
+    <div>
       <select
         className={ styles['version-select'] }
         name="kit"
@@ -79,9 +109,6 @@ export default function KitsConfigView(props) {
         }
       </select>
     </div>
-    <p>
-      apiToken: { apiToken }
-    </p>
     <div className="submit">
       <input
         type="submit"
