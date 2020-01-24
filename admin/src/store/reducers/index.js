@@ -38,7 +38,8 @@ export function options(state = {}, action = {}) {
             v4Compat,
             svgPseudoElements,
             version,
-            kitToken
+            kitToken,
+            apiToken
           }
         } = data
 
@@ -46,6 +47,7 @@ export function options(state = {}, action = {}) {
           technology,
           version,
           kitToken,
+          apiToken,
           usePro: coerceBool(usePro),
           v4Compat: coerceBool(v4Compat),
           svgPseudoElements: coerceBool(svgPseudoElements)
