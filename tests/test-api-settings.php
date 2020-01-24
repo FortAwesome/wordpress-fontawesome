@@ -87,4 +87,32 @@ EOD;
 		$this->assertNull($api_settings->access_token());
 		$this->assertNull($api_settings->access_token_expiration_time());
 	}
+
+	public function test_save_api_token() {
+		$contents = <<< EOD
+api_token = "abc123"
+access_token = "xyz456"
+access_token_expiration_time = "999999999"
+EOD;		
+		$path = FontAwesome_API_Settings::ini_path();
+		$this->assertStringEndsWith(FontAwesome_API_Settings::FILENAME, $path);
+
+		$write_result = @file_put_contents( $path, $contents ); 
+
+		$this->assertGreaterThan(0, $write_result, 'writing ini file failed');
+
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$result = $api_settings->save_api_token('foo');
+
+		$this->assertTrue($result, 'writing ini file failed');
+
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->assertEquals('foo', $api_settings->api_token());
+		$this->assertNull($api_settings->access_token());
+		$this->assertNull($api_settings->access_token_expiration_time());
+	}
 }
