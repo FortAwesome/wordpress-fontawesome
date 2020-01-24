@@ -9,6 +9,7 @@ use \Exception, \Error, \InvalidArgumentException, \DateTime, \DateInterval, \Da
 require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-conflict-detector.php';
@@ -1275,69 +1276,26 @@ class FontAwesome {
 	}
 
 	/** 
-     * Returns WP config file path 
+     * Saves a new Font Awesome API Token and nulls the current
+	 * access token and access_token_expiration_time.
 	 * 
-	 * Borrowed from W3 Total Cache plugin under the GPL.
-	 * 
-	 * Not part of this plugin's public API.
-	 * 
-	 * @ignore
-     * @internal
-     * @return string 
-     */ 
-    static public function wp_config_path() { 
-        $search = array( 
-            ABSPATH . 'wp-config.php', 
-            dirname( ABSPATH ) . DIRECTORY_SEPARATOR . 'wp-config.php' 
-        ); 
-
-        foreach ( $search as $path ) { 
-            if ( file_exists( $path ) ) { 
-                return $path; 
-            } 
-        } 
-
-        return false; 
-	} 
-	
-	/** 
-     * Saves a Font Awesome API Token to the wp-config.php.
-	 * 
-	 * Borrowed from the W3 Total Cache plugin under the GPL.
-	 * 
-	 * Not part of this plugin's public API.
+	 * Internal use only. Not part of this plugin's public API.
      * 
 	 * @ignore
 	 * @internal
      * @return bool 
      */ 
-    static public function save_api_token( $api_token ) { 
-        $config_path = self::wp_config_path(); 
-		$config_data = @file_get_contents( $config_path ); 
+    public function save_api_token( $api_token ) { 
 		
 		if( ! is_string( $api_token) ) {
 			return false;
 		}
 
-        if ( $config_data === false ) { 
-            return false; 
-		} 
+		fa_api_settings()->set_api_token( $api_token );
+		fa_api_settings()->set_access_token( null );
+		fa_api_settings()->set_access_token_expiration_time( null );
 
-		if ( 1 === preg_match('/define\(\'FONTAWESOME_API_TOKEN\',/', $config_data) ) {
-			// replace existing
-			$new_config_data = preg_replace('/define\(\'FONTAWESOME_API_TOKEN\',.*?\);/', "define('FONTAWESOME_API_TOKEN', '$api_token');", $config_data);
-		} else {
-			// add new
-			$new_config_data = preg_replace('/<\?php\s*?/', "<?php\ndefine('FONTAWESOME_API_TOKEN', '$api_token');", $config_data);
-		}
-
-        if ( $new_config_data != $config_data ) { 
-            if ( !@file_put_contents( $config_path, $new_config_data ) ) { 
-                return false; 
-            } 
-        } 
-
-        return true; 
+		return fa_api_settings()->write();
     } 
 
 	/**
