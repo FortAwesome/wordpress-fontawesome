@@ -7,6 +7,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 
@@ -96,11 +97,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$api_token = isset($body['options']) ? $body['options']['apiToken'] : null;
 
 				if ( is_string( $api_token ) ) {
-					$result = FontAwesome::save_api_token( $api_token );
+					// TODO: complete the logic here.
+					// Before we save the token, first try to use it to
+					// generate an access_token
+					// Only if we generate the access_token successfully would we
+					// then store the api token.
+					// If it fails, then we should return a WP_Error with a reason code
+					// that indicates tha the API Token failed.
+					$result = fa_api_settings()->save_api_token( $api_token );
 
 					if ( ! $result ) {
 						return new WP_Error(
-							'cant_update',
+							'api_token',
 							"Whoops, we couldn't save your API token.",
 							array( 'status' => 403 )
 						);
