@@ -85,43 +85,43 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-  // public function test_get_available_versions_with_exception() {
-	// 	/**
-	// 	 * When the GET for get_available_versions does not return successfully
-	// 	 * we expect to receive a 500 response.
-	// 	 */
+  public function test_get_available_versions_with_exception() {
+		/**
+		 * When the GET for get_available_versions does not return successfully
+		 * we expect to receive a 500 response.
+		 */
 
-	// 	$mock_response = self::build_500_response();
-	// 	$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
+		$mock_response = self::build_500_response();
+		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-  //   $this->assertEquals( 500, $famp->get_available_versions()['code'] );
-  //   $this->assertEquals( "Internal Server Error", $famp->get_available_versions()['message'] );
-  // }
+    $this->assertEquals( 500, $famp->get_available_versions()['code'] );
+    $this->assertEquals( "Internal Server Error", $famp->get_available_versions()['message'] );
+  }
 
-  // public function test_get_available_versions_with_error() {
-  //   /**
-  //    * When the GET for get_available_versions has a 403 response
-  //    * we expect to receive that error back.
-  //    */
+  public function test_get_available_versions_with_error() {
+    /**
+     * When the GET for get_available_versions has a 403 response
+     * we expect to receive that error back.
+     */
 
-  //    $mock_response = self::build_403_response();
-  //    $famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
+     $mock_response = self::build_403_response();
+     $famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-  //    $this->assertEquals( 403, $famp->get_available_versions()['code'] );
-  //    $this->assertEquals( "Forbidden", $famp->get_available_versions()['message'] );
-  // }
+     $this->assertEquals( 403, $famp->get_available_versions()['code'] );
+     $this->assertEquals( "Forbidden", $famp->get_available_versions()['message'] );
+  }
 
-  // public function test_get_available_versions() {
-	// 	$mock_response = self::build_success_response();
-	// 	$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
+  public function test_get_available_versions() {
+		$mock_response = self::build_success_response();
+		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-	// 	$this->assertEquals("5.11.2", $famp->get_available_versions()[0]);
-	// }
+		$this->assertEquals("5.11.2", $famp->get_available_versions()[0]);
+	}
 
   public function test_metadata_query() {
 		$mock_response = self::build_success_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
-		print_r($famp->metadata_query('floop'));
-    // $this->assertEquals("", $famp->metadata_query( 'query {versions}' ));
+
+    $this->assertEquals("5.0.1", $famp->metadata_query( 'query {versions}' )->versions[0]);
   }
 }
