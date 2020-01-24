@@ -397,6 +397,7 @@ export default combineReducers({
   clientPreferences: coerceEmptyArrayToEmptyObject,
   conflictDetectionScannerStatus,
   detectConflictsUntil,
+  kits: simple,
   onSettingsPage: coerceBool,
   options,
   optionsFormState,
