@@ -20,15 +20,9 @@ import classnames from 'classnames'
 import has from 'lodash/has'
 import size from 'lodash/size'
 import Alert from './Alert'
+import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
 
 const UNSPECIFIED = ''
-
-function CheckingOptionStatusIndicator(){
-  return <span className={ styles['checking-option-status-indicator'] }>
-    <FontAwesomeIcon spin className={ classnames(sharedStyles['icon']) } icon={ faSpinner }/>
-    &nbsp;checking for preference conflicts...
-  </span>
-}
 
 export default function Options(props) {
   const optionSelector = option => useSelector(state => 
