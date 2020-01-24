@@ -214,7 +214,6 @@ class FontAwesome {
 		'kitToken'             => NULL,	
 		// whether the token is present, not the token's value
 		'apiToken'             => false,
-		'apiScopes'            => []
 	);
 
 	/**
