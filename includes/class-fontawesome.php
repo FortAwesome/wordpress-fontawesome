@@ -603,28 +603,21 @@ class FontAwesome {
 			function($plugin_file, $plugin_data, $status) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
-					echo '<tr><td>&nbsp;</td><td colspan="2">';
+					echo '<tr><td>&nbsp;</td><td colspan="2" class="notice notice-info notice-alt">';
 					?>
-
-					<p>
-					Heads up! There's more than one installation of the Font
-					Awesome plugin in your WordPress setup. No problem. If more
-					than one is activated, we just use the latest version.
-					But it means that the plugin version
-					listed above doesn't reflect the version that is active
-					on your site, which might be confusing.
-					</p>
-
-					<p>
-					The active version is <?php echo FontAwesome::PLUGIN_VERSION; ?> and is being loaded
-					by another plugin or theme from here: <?php  echo $loader_version; ?>.
-					</p>
-
-					<p>
-					As long as that one remains active, everything will continue
-					working as it is now, even if you deactivate and delete
-					this plugin from your plugins directory here.
-					</p>
+						<p><b>Great Scott!</b>
+							You've got more than one version of the Font Awesome
+							plugin installed.
+						</p>
+						<p>The active version of the Font Awesome plugin
+							is being loaded by this plugin or theme:
+							<code><?php  echo $loader_version; ?></code> since it's the
+							newest (<b>ver. <?php echo FontAwesome::PLUGIN_VERSION; ?></b>).
+							We recommend you update the plugin above to the latest version.
+							In the meantime, we'll use that newer version for editing your
+							Font Awesome settings so you'll be sure to hit 88mph with those 
+							icons.
+						</p>
 					<?php
 					echo '</td></tr>';
 				}
