@@ -119,6 +119,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$api_token = isset($body['options']) ? $body['options']['apiToken'] : null;
 
 				if ( is_string( $api_token ) ) {
+					// We're adding an api_token
 
 					$api_settings = new MockApiSettingsSuccess();
 
@@ -129,6 +130,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					if ( $result instanceof WP_Error ) {
 						return $result;
 					}
+				} elseif ( boolval( fa_api_settings()->api_token() ) && ! boolval( $api_token ) ) {
+					// We're removing an existing API Token
+
+					fa_api_settings()->remove();
 				}
 
 				$db_item = $this->prepare_item_for_database( $body, boolval( $api_token ) );
