@@ -280,12 +280,12 @@ EOD;
 	 * 
 	 * @ignore
 	 * @internal
-	 * @return bool TRUE if the request was successful and we have an access_token; otherwise, FALSE.
+	 * @return WP_Error | TRUE if the request was successful and we have an access_token; otherwise, WP_Error
 	 * @throws WP_Error
 	 */
 	public function request_access_token() {
 		if ( ! is_string( $this->api_token() ) ) {
-			throw new WP_Error(
+			return new WP_Error(
 				'api_token',
 				'Whoops, it looks like you have not provided an API Token. Enter one on the Font Awesome plugin settings page.',
 				array( 'status' => 403 )
@@ -302,7 +302,7 @@ EOD;
 		);
 
 		if ( $response instanceof WP_Error ) {
-			throw new WP_Error(
+			return new WP_Error(
 				'access_token',
 				'Sorry, our attempt to authenticate with the Font Awesome API server failed. Reload and try again?',
 				array( 'status' => 403 )
@@ -310,7 +310,7 @@ EOD;
 		}
 
 		if ( 200 !== $response['response']['code'] ) {
-			throw new WP_Error(
+			return new WP_Error(
 				'access_token',
 				'Whoops, it looks like that API Token is not valid. Try another one?',
 				array( 'status' => 403 )
@@ -325,7 +325,7 @@ EOD;
 			! isset( $body['expires_in'] ) ||
 		 	! is_int( $body['expires_in'] )
 		) {
-			throw new WP_Error(
+			return new WP_Error(
 				'access_token',
 				'Oh no! It looks like your API Token was valid, but the Font Awesome API server failed anyway.',
 				array( 'status' => 403 )
@@ -338,7 +338,7 @@ EOD;
 		$result = $this->write();
 
 		if ( ! boolval( $result ) ) {
-			throw new WP_Error(
+			return new WP_Error(
 				'access_token',
 				'Ouch. Your API Token was valid, but when we tried to save it on your WordPress server, it failed.',
 				array( 'status' => 403 )

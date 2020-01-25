@@ -7,7 +7,7 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
-//use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+use \WP_Error;
 
 class ApiSettingsTest extends \WP_UnitTestCase {
 
@@ -160,5 +160,112 @@ EOD;
 		$this->assertEquals('123', $api_settings->access_token());
 		$this->assertEquals('xyz', $api_settings->api_token());
 		$this->assertEqualsWithDelta(time() + 3600, $api_settings->access_token_expiration_time(), 2.0);
+	}
+
+	public function test_request_access_token_without_api_token() {
+		$api_settings = $this->create_api_settings_with_mocked_response(
+			array(
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'body'     => json_encode(
+					array(
+						'access_token' => '123',
+						'expires_in' => 3600
+					)
+				),
+			) 
+		); 
+
+		$result = $api_settings->request_access_token();
+
+		$this->assertTrue( $result instanceof WP_Error );
+		$this->assertEquals( 'api_token', $result->get_error_code() );
+	}
+
+	public function test_request_access_token_when_request_errors() {
+		$api_settings = $this->create_api_settings_with_mocked_response(
+			new WP_Error()
+		); 
+
+		$api_settings->set_api_token('xyz');
+
+		$result = $api_settings->request_access_token();
+
+		$this->assertTrue( $result instanceof WP_Error );
+		$this->assertEquals( 'access_token', $result->get_error_code() );
+		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+	}
+
+	public function test_request_access_token_when_request_returns_non_200_response() {
+		$api_settings = $this->create_api_settings_with_mocked_response(
+			array(
+				'response' => array(
+					'code'    => 403,
+					'message' => 'Forbidden',
+				),
+				'body'     => ''
+			) 
+		); 
+
+
+		$api_settings->set_api_token('xyz');
+
+		$result = $api_settings->request_access_token();
+
+		$this->assertTrue( $result instanceof WP_Error );
+		$this->assertEquals( 'access_token', $result->get_error_code() );
+		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+	}
+
+	public function test_request_access_token_when_request_body_lacks_access_token() {
+		$api_settings = $this->create_api_settings_with_mocked_response(
+			array(
+				'response' => array(
+					'code'    => 403,
+					'message' => 'Forbidden',
+				),
+				'body'     => json_encode(
+					array(
+						'expires_in' => 3600
+					)
+				)
+			) 
+		); 
+
+
+		$api_settings->set_api_token('xyz');
+
+		$result = $api_settings->request_access_token();
+
+		$this->assertTrue( $result instanceof WP_Error );
+		$this->assertEquals( 'access_token', $result->get_error_code() );
+		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+	}
+
+	public function test_request_access_token_when_request_body_lacks_expires_in() {
+		$api_settings = $this->create_api_settings_with_mocked_response(
+			array(
+				'response' => array(
+					'code'    => 403,
+					'message' => 'Forbidden',
+				),
+				'body'     => json_encode(
+					array(
+						'access_token' => 'abc'
+					)
+				)
+			) 
+		); 
+
+
+		$api_settings->set_api_token('xyz');
+
+		$result = $api_settings->request_access_token();
+
+		$this->assertTrue( $result instanceof WP_Error );
+		$this->assertEquals( 'access_token', $result->get_error_code() );
+		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
 	}
 }
