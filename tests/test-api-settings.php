@@ -267,4 +267,59 @@ EOD;
 
 		$api_settings->set_access_token_expiration_time(0);
 	}
+
+	public function test_reset() {
+		$contents = <<< EOD
+api_token = "abc123"
+access_token = "xyz456"
+access_token_expiration_time = "999999999"
+EOD;		
+		$path = FontAwesome_API_Settings::ini_path();
+		$this->assertStringEndsWith(FontAwesome_API_Settings::FILENAME, $path);
+
+		$write_result = @file_put_contents( $path, $contents ); 
+
+		$this->assertGreaterThan(0, $write_result, 'writing ini file failed');
+
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->assertEquals('abc123', $api_settings->api_token());
+		$this->assertEquals('xyz456', $api_settings->access_token());
+		$this->assertEquals('999999999', $api_settings->access_token_expiration_time());
+
+	}
+
+	public function test_remove() {
+		$contents = <<< EOD
+api_token = "abc123"
+access_token = "xyz456"
+access_token_expiration_time = 999999999
+EOD;		
+		$path = FontAwesome_API_Settings::ini_path();
+		$this->assertStringEndsWith(FontAwesome_API_Settings::FILENAME, $path);
+
+		$write_result = @file_put_contents( $path, $contents ); 
+		$this->assertGreaterThan(0, $write_result, 'writing ini file failed');
+
+		$this->assertTrue( file_exists( FontAwesome_API_Settings::ini_path() ) );
+
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->assertEquals('abc123', $api_settings->api_token());
+		$this->assertEquals('xyz456', $api_settings->access_token());
+		$this->assertEquals(999999999, $api_settings->access_token_expiration_time());
+
+		// Now remove it, expecting both the in-memory and on-disk data to be cleared.
+		$api_settings->remove();
+
+		// Force re-read again
+		$api_settings = FontAwesome_API_Settings::reset();
+		$this->assertNull($api_settings->api_token());
+		$this->assertNull($api_settings->access_token());
+		$this->assertNull($api_settings->access_token_expiration_time());
+
+		$this->assertFalse( file_exists( FontAwesome_API_Settings::ini_path() ) );
+	}
 }
