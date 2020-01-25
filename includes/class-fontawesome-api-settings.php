@@ -4,8 +4,7 @@
  */
 namespace FortAwesome;
 
-use \WP_Error;
-//, \Error, \Exception, \InvalidArgumentException;
+use \WP_Error, \InvalidArgumentException;
 
 /**
  * Provides read/write access to the Font Awesome API settings.
@@ -100,7 +99,13 @@ class FontAwesome_API_Settings {
 				$this->_access_token = $initial_data['access_token'];
 			}
 			if ( isset( $initial_data['access_token_expiration_time'] ) ) {
-				$this->_access_token_expiration_time = $initial_data['access_token_expiration_time'];
+				$int_val = intval( $initial_data['access_token_expiration_time'] );
+
+				if ( 0 !== $int_val ) {
+					$this->_access_token_expiration_time = $int_val;
+				} else {
+					$this->_access_token_expiration_time = null;
+				}
 			}
 		}
 	}
@@ -169,15 +174,15 @@ EOD;
 		// Write each setting to the file conditionally, if it doesn't have
 		// a string value in memory, don't write it at all.
 		if ( is_string( $api_token ) ) {
-			$contents .= "\napi_token = '" . $api_token . "'\n";
+			$contents .= "\napi_token = \"" . $api_token . "\"\n";
 		}
 
 		if ( is_string( $access_token ) ) {
-			$contents .= "\naccess_token = '" . $access_token . "'\n";
+			$contents .= "\naccess_token = \"" . $access_token . "\"\n";
 		}
 
 		if ( is_int( $access_token_expiration_time ) ) {
-			$contents .= "\naccess_token_expiration_time = '" . $access_token_expiration_time . "'\n";
+			$contents .= "\naccess_token_expiration_time = " . $access_token_expiration_time . "\n";
 		}
 
 		if ( !@file_put_contents( self::ini_path(), $contents ) ) { 
@@ -233,9 +238,18 @@ EOD;
 	 * Sets the current access_token_expiration_time.
 	 * 
 	 * Internal use only. Not part of this plugin's public API.
+	 * 
+	 * @param int $access_token_expiration_time time in unix epoch seconds as non-zero integer value
+	 * @throws InvalidArgumentException if the given param is zero or cannot be cast as an integer
 	 */
 	public function set_access_token_expiration_time($access_token_expiration_time) {
-		$this->_access_token_expiration_time = $access_token_expiration_time;
+		$int_val = intval( $access_token_expiration_time );
+
+		if ( 0 !== $int_val ) {
+			$this->_access_token_expiration_time = $access_token_expiration_time;
+		} else {
+			throw new InvalidArgumentException("value must be a non-zero integer");
+		}
 	}
 
 	/**

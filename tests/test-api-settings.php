@@ -7,7 +7,7 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
-use \WP_Error;
+use \WP_Error, \InvalidArgumentException;
 
 class ApiSettingsTest extends \WP_UnitTestCase {
 
@@ -78,7 +78,18 @@ EOD;
 		$this->assertEquals('foo', $api_settings->api_token());
 		$this->assertEquals('bar', $api_settings->access_token());
 		$this->assertEquals(42, $api_settings->access_token_expiration_time());
+		$this->assertTrue( is_int( $api_settings->access_token_expiration_time() ) );
 
+		// Round-trip it again
+
+		$result = $api_settings->write();
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->assertEquals('foo', $api_settings->api_token());
+		$this->assertEquals('bar', $api_settings->access_token());
+		$this->assertEquals(42, $api_settings->access_token_expiration_time());
+		$this->assertTrue( is_int( $api_settings->access_token_expiration_time() ) );
 	}
 
 	// What if we only write an api token, leave the others null, and the
@@ -239,5 +250,21 @@ EOD;
 		$this->assertTrue( $result instanceof WP_Error );
 		$this->assertEquals( 'access_token', $result->get_error_code() );
 		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+	}
+
+	public function test_set_access_token_expiration_time_non_integer() {
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->expectException( InvalidArgumentException::class );
+
+		$api_settings->set_access_token_expiration_time("abc");
+	}
+
+	public function test_set_access_token_expiration_time_given_zero() {
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		$this->expectException( InvalidArgumentException::class );
+
+		$api_settings->set_access_token_expiration_time(0);
 	}
 }
