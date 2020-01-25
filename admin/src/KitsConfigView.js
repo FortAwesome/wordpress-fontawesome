@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import has from 'lodash/has'
 import size from 'lodash/size'
@@ -9,7 +9,6 @@ import {
   faSpinner,
   faCheck,
   faSkull } from '@fortawesome/free-solid-svg-icons'
-//import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './KitsConfigView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -34,6 +33,27 @@ export default function KitsConfigView(props) {
   const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
+
+  /**
+   * This seems like a lot of effort just to keep the focus on the API Token input
+   * field during data entry, but it's because the component is being re-rendered
+   * on each change, and thus a new input DOM element is being created on each change.
+   * So the input element doesn't so much "lose focus" as is it just replaced by a
+   * different DOM element.
+   * So it's more like we have to re-focus on that new DOM element each time it changes.
+   * This would happen keystroke by keystroke if the user types in an API Token.
+   * Or if content is pasted into the field all at once, we'd like the focus to remain there
+   * in the input field until the user intentionally blurs by clicking the submit
+   * button, or pressing the tab key, for example.
+   */
+  const apiTokenInputRef = createRef()
+  const [ apiTokenInputHasFocus, setApiTokenInputHasFocus ] = useState( false )
+  useEffect(() => {
+    if( apiTokenInputHasFocus ) {
+      apiTokenInputRef.current.focus()
+    }
+  })
+
   /*
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
   const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
@@ -42,7 +62,6 @@ export default function KitsConfigView(props) {
   */
 
   const kitToken = optionSelector('kitToken')
-  //const apiToken = optionSelector('apiToken')
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
   const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
 
@@ -55,12 +74,13 @@ export default function KitsConfigView(props) {
         id="api_token"
         name="api_token"
         type="text"
-        placeholder="api token here"
+        ref={ apiTokenInputRef }
+        placeholder="paste API Token here"
         value={ pendingApiToken }
         size="20"
+        onBlur={ () => setApiTokenInputHasFocus( false ) }
         onChange={ e => {
-          e.preventDefault()
-          e.stopPropagation()
+          setApiTokenInputHasFocus( true )
           handleOptionChange({ apiToken: e.target.value }) 
         }}
       />
@@ -79,11 +99,6 @@ export default function KitsConfigView(props) {
 
     dispatch(submitPendingOptions())
   }
-  /*
-		kitToken
-		apiToken
-    apiScopes
-  */
 
   return <div>
     <div>
