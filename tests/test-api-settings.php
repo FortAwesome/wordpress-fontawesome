@@ -33,7 +33,7 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 		$contents = <<< EOD
 api_token = "abc123"
 access_token = "xyz456"
-access_token_expiration_time = "999999999"
+access_token_expiration_time = 999999999
 EOD;		
 		$path = FontAwesome_API_Settings::ini_path();
 		$this->assertStringEndsWith(FontAwesome_API_Settings::FILENAME, $path);
@@ -47,7 +47,7 @@ EOD;
 
 		$this->assertEquals('abc123', $api_settings->api_token());
 		$this->assertEquals('xyz456', $api_settings->access_token());
-		$this->assertEquals('999999999', $api_settings->access_token_expiration_time());
+		$this->assertEquals(999999999, $api_settings->access_token_expiration_time());
 
 	}
 
@@ -272,7 +272,7 @@ EOD;
 		$contents = <<< EOD
 api_token = "abc123"
 access_token = "xyz456"
-access_token_expiration_time = "999999999"
+access_token_expiration_time = 999999999
 EOD;		
 		$path = FontAwesome_API_Settings::ini_path();
 		$this->assertStringEndsWith(FontAwesome_API_Settings::FILENAME, $path);
@@ -286,8 +286,7 @@ EOD;
 
 		$this->assertEquals('abc123', $api_settings->api_token());
 		$this->assertEquals('xyz456', $api_settings->access_token());
-		$this->assertEquals('999999999', $api_settings->access_token_expiration_time());
-
+		$this->assertEquals(999999999, $api_settings->access_token_expiration_time());
 	}
 
 	public function test_remove() {
