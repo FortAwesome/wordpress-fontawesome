@@ -16,7 +16,9 @@ import classnames from 'classnames'
 const UNSPECIFIED = '-'
 
 export default function KitsConfigView(props) {
-  const optionSelector = option => useSelector(state => 
+   const dispatch = useDispatch()
+
+   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
     ? state.pendingOptions[option]
     : state.options[option]
@@ -26,7 +28,12 @@ export default function KitsConfigView(props) {
     dispatch(addPendingOption(change))
   }
 
-  const dispatch = useDispatch()
+  function handleSubmitClick(e) {
+    e.preventDefault()
+
+    dispatch(submitPendingOptions())
+  }
+
   const pendingOptions = useSelector(state => state.pendingOptions)
   const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
   const submitSuccess = useSelector(state => state.optionsFormState.success)
@@ -65,6 +72,13 @@ export default function KitsConfigView(props) {
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
   const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
 
+  const kitOptions = useSelector(state => {
+    return (state.kits || []).reduce((acc, kit) => {
+      acc[kit.token] = kit.name
+      return acc
+    }, { [UNSPECIFIED]: UNSPECIFIED })
+  })
+
   function ApiTokenInput() {
     return <>
       <label htmlFor="api_token" className={ styles['option-label'] }>
@@ -85,19 +99,6 @@ export default function KitsConfigView(props) {
         }}
       />
     </>
-  }
-
-  const kitOptions = useSelector(state => {
-    return (state.kits || []).reduce((acc, kit) => {
-      acc[kit.token] = kit.name
-      return acc
-    }, { [UNSPECIFIED]: UNSPECIFIED })
-  })
-
-  function handleSubmitClick(e) {
-    e.preventDefault()
-
-    dispatch(submitPendingOptions())
   }
 
   return <div>
