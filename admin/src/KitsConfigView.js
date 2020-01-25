@@ -34,6 +34,11 @@ export default function KitsConfigView(props) {
     dispatch(submitPendingOptions())
   }
 
+  function removeApiToken() {
+    handleOptionChange({ apiToken: false })
+    dispatch(submitPendingOptions())
+  }
+
   const pendingOptions = useSelector(state => state.pendingOptions)
   const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
   const submitSuccess = useSelector(state => state.optionsFormState.success)
@@ -101,29 +106,45 @@ export default function KitsConfigView(props) {
     </>
   }
 
+  function ApiTokenControl() {
+    return <div className={ styles['api-token-control'] }>
+      <span>API Token</span>
+      <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
+        <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
+      </span>
+      <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button">remove</button>
+    </div>
+  }
+
+  function KitSelector() {
+      return <div className={ styles['kit-selector-container'] }>
+          <select
+          className={ styles['version-select'] }
+          name="kit"
+          onChange={ e => handleOptionChange({ kitToken: e.target.value }) }
+          value={ kitToken || UNSPECIFIED }
+        >
+          {
+            Object.keys(kitOptions).map((token, index) => {
+              return <option key={ index } value={ token }>
+                { token === UNSPECIFIED ? 'Select a kit' : `${ kitOptions[token] } (${ token })`}
+              </option>
+            })
+          }
+        </select>
+      </div>
+  }
+
   return <div>
     <div>
       {
         hasSavedApiToken
-        ? <span>ok, we have a good API token.</span>
+        ? <>
+            <ApiTokenControl />
+            <KitSelector />
+          </>
         : <ApiTokenInput />
       }
-    </div>
-    <div>
-      <select
-        className={ styles['version-select'] }
-        name="kit"
-        onChange={ e => handleOptionChange({ kitToken: e.target.value }) }
-        value={ kitToken || UNSPECIFIED }
-      >
-        {
-          Object.keys(kitOptions).map((token, index) => {
-            return <option key={ index } value={ token }>
-              { token === UNSPECIFIED ? 'Select a kit' : `${ kitOptions[token] } (${ token })`}
-            </option>
-          })
-        }
-      </select>
     </div>
     <div className="submit">
       <input
