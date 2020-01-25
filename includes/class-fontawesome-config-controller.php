@@ -11,6 +11,28 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 
+// TODO: remove this mock
+					class MockApiSettingsSuccess extends FontAwesome_API_Settings {
+						public function __construct() {
+							/* noop */
+						}
+						protected function post( $args ) {
+							error_log('DEBUG: doing stuff in the mock');
+							return array(
+								'response' => array(
+									'code'    => 200,
+									'message' => 'OK',
+								),
+								'body'     => json_encode(
+									array(
+										'access_token' => '123',
+										'expires_in' => 3600
+									)
+								),
+							);
+						}
+					}
+
 /**
  * Module for this plugin's Configuration REST API controller
  *
@@ -97,7 +119,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$api_token = isset($body['options']) ? $body['options']['apiToken'] : null;
 
 				if ( is_string( $api_token ) ) {
-					$api_settings = FontAwesome_API_Settings::reset();
+
+					$api_settings = new MockApiSettingsSuccess();
+
+					// $api_settings = FontAwesome_API_Settings::reset();
 					$api_settings->set_api_token( $api_token );
 					$result = $api_settings->request_access_token();
 
