@@ -55,7 +55,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected static $_instance = null;
+	protected static $instance = null;
 
 	/**
 	 * Returns the FontAwesome_API_Settings singleton instance.
@@ -65,10 +65,10 @@ class FontAwesome_API_Settings {
 	 * @return FontAwesome_API_Settings
 	 */
 	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -78,7 +78,7 @@ class FontAwesome_API_Settings {
 	 * @return FontAwesome_API_Settings
 	 */
 	public static function reset() {
-		self::$_instance = null;
+		self::$instance = null;
 		return self::instance();
 	}
 
@@ -176,7 +176,7 @@ EOD;
 			$contents .= "\naccess_token = '" . $access_token . "'\n";
 		}
 
-		if ( is_string( $access_token_expiration_time ) ) {
+		if ( is_int( $access_token_expiration_time ) ) {
 			$contents .= "\naccess_token_expiration_time = '" . $access_token_expiration_time . "'\n";
 		}
 
@@ -284,7 +284,22 @@ EOD;
 	 * @throws WP_Error
 	 */
 	public function request_access_token() {
-		$response = $this->post();
+		if ( ! is_string( $this->api_token() ) ) {
+			throw new WP_Error(
+				'api_token',
+				'Whoops, it looks like you have not provided an API Token. Enter one on the Font Awesome plugin settings page.',
+				array( 'status' => 403 )
+			);
+		}
+
+		$response = $this->post(
+			array(
+				'body'    => '',
+				'headers' => array(
+					'authorization' => 'Bearer ' . $this->api_token()
+				)
+			)
+		);
 
 		if ( $response instanceof WP_Error ) {
 			throw new WP_Error(

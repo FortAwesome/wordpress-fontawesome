@@ -16,6 +16,19 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 		FontAwesome_Activator::activate();
 	}
 
+	protected function create_api_settings_with_mocked_response( $response ) {
+		return mock_singleton_method(
+			$this,
+			FontAwesome_API_Settings::class,
+			'post',
+			function( $method ) use ( $response ) {
+				$method->willReturn(
+					$response
+				);
+			}
+		);
+	}
+
 	public function test_read_from_file() {
 		$contents = <<< EOD
 api_token = "abc123"
@@ -54,7 +67,7 @@ EOD;
 
 		$api_settings->set_api_token('foo');
 		$api_settings->set_access_token('bar');
-		$api_settings->set_access_token_expiration_time('42');
+		$api_settings->set_access_token_expiration_time(42);
 
 		$result = $api_settings->write();
 		$this->assertTrue($result, 'writing ini file failed');
@@ -64,7 +77,7 @@ EOD;
 
 		$this->assertEquals('foo', $api_settings->api_token());
 		$this->assertEquals('bar', $api_settings->access_token());
-		$this->assertEquals('42', $api_settings->access_token_expiration_time());
+		$this->assertEquals(42, $api_settings->access_token_expiration_time());
 
 	}
 
@@ -114,5 +127,38 @@ EOD;
 		$this->assertEquals('foo', $api_settings->api_token());
 		$this->assertNull($api_settings->access_token());
 		$this->assertNull($api_settings->access_token_expiration_time());
+	}
+
+	public function test_request_access_token() {
+		$api_settings = $this->create_api_settings_with_mocked_response(
+			array(
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'body'     => json_encode(
+					array(
+						'access_token' => '123',
+						'expires_in' => 3600
+					)
+				),
+			) 
+		); 
+
+		$api_settings->set_api_token('xyz');
+		$result = $api_settings->request_access_token();
+
+		$this->assertTrue($result);
+		$this->assertEquals('123', $api_settings->access_token());
+		$this->assertEquals('xyz', $api_settings->api_token());
+		$this->assertEqualsWithDelta(time() + 3600, $api_settings->access_token_expiration_time(), 2.0);
+
+		// Force re-read
+		$api_settings = FontAwesome_API_Settings::reset();
+
+		// Everything should have remained the same through the write/read round trip
+		$this->assertEquals('123', $api_settings->access_token());
+		$this->assertEquals('xyz', $api_settings->api_token());
+		$this->assertEqualsWithDelta(time() + 3600, $api_settings->access_token_expiration_time(), 2.0);
 	}
 }
