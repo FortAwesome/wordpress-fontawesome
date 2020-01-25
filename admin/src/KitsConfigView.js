@@ -54,7 +54,7 @@ export default function KitsConfigView(props) {
       <input
         id="api_token"
         name="api_token"
-        type="password"
+        type="text"
         placeholder="api token here"
         value={ pendingApiToken }
         size="20"
