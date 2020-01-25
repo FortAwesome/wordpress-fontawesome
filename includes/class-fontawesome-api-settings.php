@@ -193,6 +193,20 @@ EOD;
 	}
 
 	/**
+	 * Removes current API Token and related settings, setting them all to null,
+	 * and deletes the backing ini file store.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
+	 * 
+	 * @internal
+	 * @ignore
+	 */
+	public function remove() {
+		wp_delete_file( self::ini_path() );
+		self::reset();
+	}
+
+	/**
 	 * Returns the current API Token.
 	 * 
 	 * Internal use only. Not part of this plugin's public API.
