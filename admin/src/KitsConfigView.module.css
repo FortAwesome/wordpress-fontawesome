@@ -1,0 +1,21 @@
+/*
+.kit-selector-container {
+  
+}
+
+.api-token-control {
+
+}
+*/
+button.remove {
+  border: none;  
+  cursor: pointer;
+  background-color: transparent;
+  text-decoration: underline;
+  text-decoration-color: rgba(0,0,0,0.15);
+  color: #535353;
+  transition: 0.1s ease-in;
+}
+button.remove:hover {
+  text-decoration-color: initial;
+}
