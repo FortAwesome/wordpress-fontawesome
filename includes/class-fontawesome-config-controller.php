@@ -97,21 +97,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$api_token = isset($body['options']) ? $body['options']['apiToken'] : null;
 
 				if ( is_string( $api_token ) ) {
-					// TODO: complete the logic here.
-					// Before we save the token, first try to use it to
-					// generate an access_token
-					// Only if we generate the access_token successfully would we
-					// then store the api token.
-					// If it fails, then we should return a WP_Error with a reason code
-					// that indicates tha the API Token failed.
-					$result = fa_api_settings()->save_api_token( $api_token );
+					$api_settings = FontAwesome_API_Settings::reset();
+					$api_settings->set_api_token( $api_token );
+					$result = $api_settings->request_access_token();
 
-					if ( ! $result ) {
-						return new WP_Error(
-							'api_token',
-							"Whoops, we couldn't save your API token.",
-							array( 'status' => 403 )
-						);
+					if ( $result instanceof WP_Error ) {
+						return $result;
 					}
 				}
 
