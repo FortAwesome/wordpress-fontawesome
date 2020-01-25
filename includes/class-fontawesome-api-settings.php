@@ -4,7 +4,8 @@
  */
 namespace FortAwesome;
 
-//use \WP_Error, \Error, \Exception, \InvalidArgumentException;
+use \WP_Error;
+//, \Error, \Exception, \InvalidArgumentException;
 
 /**
  * Provides read/write access to the Font Awesome API settings.
@@ -17,6 +18,12 @@ class FontAwesome_API_Settings {
 	 * @ignore
 	 */
 	const FILENAME = 'font-awesome-api.ini';
+
+	/**
+	 * TODO: remove either this one or the one that has been defined
+	 * in the new Metadata API module.
+	 */
+	const FONTAWESOME_API_URL = 'https://api.fontawesome.com';
 
 	/**
 	 * Current access token.
@@ -263,7 +270,82 @@ EOD;
 		fa_api_settings()->set_access_token_expiration_time( null );
 
 		return fa_api_settings()->write();
-    } 
+	} 
+	
+	/**
+	 * Requests an access_token with the current api_token. Stores the result
+	 * upon successfully retrieving an access token.
+	 * 
+	 * Internal use only. Not part of this plugin's API.
+	 * 
+	 * @ignore
+	 * @internal
+	 * @return bool TRUE if the request was successful and we have an access_token; otherwise, FALSE.
+	 * @throws WP_Error
+	 */
+	public function request_access_token() {
+		$response = $this->post();
+
+		if ( $response instanceof WP_Error ) {
+			throw new WP_Error(
+				'access_token',
+				'Sorry, our attempt to authenticate with the Font Awesome API server failed. Reload and try again?',
+				array( 'status' => 403 )
+			);
+		}
+
+		if ( 200 !== $response['response']['code'] ) {
+			throw new WP_Error(
+				'access_token',
+				'Whoops, it looks like that API Token is not valid. Try another one?',
+				array( 'status' => 403 )
+			);
+		}
+
+		$body = json_decode( $response['body'], true );
+
+		if (
+			! isset( $body['access_token'] ) ||
+			! is_string( $body['access_token'] ) ||
+			! isset( $body['expires_in'] ) ||
+		 	! is_int( $body['expires_in'] )
+		) {
+			throw new WP_Error(
+				'access_token',
+				'Oh no! It looks like your API Token was valid, but the Font Awesome API server failed anyway.',
+				array( 'status' => 403 )
+			);
+		}
+
+		$this->set_access_token( $body['access_token'] );
+		$this->set_access_token_expiration_time( $body['expires_in'] + time() );
+
+		$result = $this->write();
+
+		if ( ! boolval( $result ) ) {
+			throw new WP_Error(
+				'access_token',
+				'Ouch. Your API Token was valid, but when we tried to save it on your WordPress server, it failed.',
+				array( 'status' => 403 )
+			);
+		} else {
+			return TRUE;
+		}
+	}
+
+	/**
+	 * Wrapper for wp_remote_post(). Mostly to make it easier to mock the network
+	 * request with a subclass.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
+	 * 
+	 * @ignore
+	 * @internal
+	 * @return WP_Error | array just like wp_remote_post()
+	 */
+	protected function post( $args ) {
+		return wp_remote_post( self::FONTAWESOME_API_URL . '/token', $args );
+	}
 }
 
 /**
