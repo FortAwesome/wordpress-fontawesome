@@ -250,28 +250,6 @@ EOD;
 		return $this->_access_token_expiration_time;
 	}
 
-	/** 
-     * Convenience method to saves a new Font Awesome API Token and null the current
-	 * access token and access_token_expiration_time.
-	 * 
-	 * Internal use only. Not part of this plugin's public API.
-     * 
-	 * @ignore
-	 * @internal
-     * @return bool 
-     */ 
-    public function save_api_token( $api_token ) { 
-		if( ! is_string( $api_token) ) {
-			return false;
-		}
-
-		fa_api_settings()->set_api_token( $api_token );
-		fa_api_settings()->set_access_token( null );
-		fa_api_settings()->set_access_token_expiration_time( null );
-
-		return fa_api_settings()->write();
-	} 
-	
 	/**
 	 * Requests an access_token with the current api_token. Stores the result
 	 * upon successfully retrieving an access token.
