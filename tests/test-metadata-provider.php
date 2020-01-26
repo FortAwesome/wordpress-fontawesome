@@ -8,6 +8,7 @@ namespace FortAwesome;
  */
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-metadata-provider.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-api-settings.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 use \Exception, \WP_Error;
@@ -137,5 +138,66 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		$this->assertFalse( $result instanceof WP_Error );
 		$this->assertEquals("5.0.1", $result['versions'][0]);
+	}
+
+	public function test_authorized_request_with_valid_access_token() {
+		$token_endpoint_requested = false;
+		$authorization_header_ok = false;
+
+		 // doc for pre_http_request filter
+		 //* Returning a non-false value from the filter will short-circuit the HTTP request and return
+		 //* early with that value. A filter should return either:
+		 //*
+		 //*  - An array containing 'headers', 'body', 'response', 'cookies', and 'filename' elements
+		 //*  - A WP_Error instance
+		 //*  - boolean false (to avoid short-circuiting the response)
+		 //*
+		 //* Returning any other value may result in unexpected behaviour.
+		 //*
+		 //* @since 2.9.0
+		 //*
+		 //* @param false|array|WP_Error $preempt     Whether to preempt an HTTP request's return value. Default false.
+		 //* @param array                $parsed_args HTTP request arguments.
+		 //* @param string               $url         The request URL.
+
+		add_filter(
+			'pre_http_request',
+			function( $preempt, $parsed_args, $url ) use( &$token_endpoint_requested, &$authorization_header_ok ) {
+				if ( preg_match('/token$/', $url) ) {
+					$token_endpoint_requested = true;
+					return new WP_Error(
+						'unexpected_token_endpoint_request'
+					);
+				}
+
+				$expected_authorization_header = ( "Bearer " . fa_api_settings()->access_token() );
+
+				if (
+					isset( $parsed_args['headers']['authorization'] )
+					&&
+					$parsed_args['headers']['authorization'] ===  $expected_authorization_header
+				) {
+					$authorization_header_ok = true;
+					return false;
+				}
+
+				return new WP_Error(
+					'unexpected_request_lacking_authorization',
+				);
+			},
+			1, // filter priority
+			3  // num args accepted
+		);
+
+		fa_api_settings()->remove();
+		fa_api_settings()->set_api_token('abc');
+		fa_api_settings()->set_access_token('xyz');
+		fa_api_settings()->set_access_token_expiration_time(time() + 3600);
+
+		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
+
+		$this->assertTrue( $authorization_header_ok );
+		$this->assertFalse( $token_endpoint_requested );
+		$this->assertFalse( $result instanceof WP_Error );
 	}
 }
