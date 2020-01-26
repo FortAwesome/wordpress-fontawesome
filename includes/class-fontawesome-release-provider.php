@@ -146,6 +146,7 @@ class FontAwesome_Release_Provider {
 			$query = <<< EOD
 query {
 	releases {
+		version
 		srisByLicense {
 			free {
 				path
@@ -176,6 +177,8 @@ EOD;
 						$sris[$license][$sri['path']] = $sri['value'];
 					}
 				}
+
+				error_log("DEBUG: release: " . print_r($release, true));
 
 				$releases[ $release['version'] ] = array(
 					'sri' => $sris
