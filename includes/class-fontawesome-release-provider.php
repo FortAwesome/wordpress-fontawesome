@@ -23,6 +23,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -160,26 +161,33 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = $this->get( FONTAWESOME_API_URL_OLD . '/api/releases' );
-
-			if ( $response instanceof WP_Error ) {
-				throw new Error();
+			$query = <<< EOD
+query {
+	releases {
+		version
+		date
+		iconCount {
+			free
+			pro
+		}
+		srisByLicense {
+			free {
+				path
+				value
 			}
-
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $response['response']['code'],
-					'message' => $response['response']['message'],
-				)
-			);
-
-			if ( 200 !== $this->status['code'] ) {
-				return;
+			pro {
+				path
+				value
 			}
+		}
+	}
+}
+EOD;
+			$result = $this->query( $query );
 
-			$body_contents = $response['body'];
-			$body_json     = json_decode( $body_contents, true );
+			// TODO: map from the way it comes back from GraphQL to the way we've
+			// been formatting it up to now.
+
 			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
 			$releases      = array();
 			foreach ( $api_releases as $release ) {
@@ -249,12 +257,15 @@ class FontAwesome_Release_Provider {
 		return( new FontAwesome_Resource( $full_url, $integrity_key ) );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only. Not part of this plugin's public API.
+	 *
 	 * @ignore
+	 * @internal
+	 * @throws Error
 	 */
-	protected function get( $url, $args = array() ) {
-		return wp_remote_get( $url, $args );
+	protected function query( $query ) {
+		return fa_metadata_provider()->metadata_query( $query );
 	}
 
 	/**
