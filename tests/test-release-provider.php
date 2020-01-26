@@ -75,6 +75,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		 */
 
 		$mock_response = self::build_error_response();
+		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
