@@ -51,15 +51,6 @@ if(! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
 }
 
-if(! defined( 'FONTAWESOME_API_URL_OLD' ) ) {
-	/**
-	 * The old REST API endpoint at https://fontawesome.com is deprecated and will be removed in a future release
-	 * @internal
-	 * @ignore
-	 */
-	define( 'FONTAWESOME_API_URL_OLD', 'https://fontawesome.com' );
-}
-
 if(! defined( 'FONTAWESOME_API_URL' ) ) {
 	/**
 	 * @internal
