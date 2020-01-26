@@ -155,7 +155,7 @@ class FontAwesome_Release_Provider {
 		);
 
 		try {
-			$response = $this->get( FONTAWESOME_API_URL . '/api/releases' );
+			$response = $this->get( FONTAWESOME_API_URL_OLD . '/api/releases' );
 
 			if ( $response instanceof WP_Error ) {
 				throw new Error();
