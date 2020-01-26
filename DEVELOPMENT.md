@@ -354,18 +354,22 @@ $ bin/wp option delete font-awesome
 ## Releases Metadata Transient
 
 When the plugin retrieves releases metadata from `https://fontawesome.com/api/releases` it caches the results
-as a long-lived WordPress transient: `font-awesome-releases`. 
+as a long-lived WordPress transient: `font-awesome-releases`.
+
+(We use set_site_transient() for these, to support multi-site mode, so you have to
+use the `--network` switch on the following commands. Otherwise, it's like they
+aren't there at all.)
 
 Inspect it:
 
 ```bash
-$ bin/wp transient get font-awesome-releases
+$ bin/wp transient get font-awesome-releases --network
 ```
 
 Remove it:
 
 ```bash
-$ bin/wp transient delete font-awesome-releases
+$ bin/wp transient delete font-awesome-releases --network
 ```
 
 ## V3 Deprecation Warning
