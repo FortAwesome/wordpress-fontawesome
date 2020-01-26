@@ -10,26 +10,25 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 
 /**
  * Provides metadata about Font Awesome icons.
+ * 
+ * Internal use only. Not part of this plugin's public API.
  *
- * @noinspection PhpIncludeInspection
+ * @internal
  */
-
- // phpcs:ignore Generic.Commenting.DocComment.MissingShort
-/**
- * @ignore
- */
-
 class FontAwesome_Metadata_Provider {
-
-  // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
-	 * @ignore
+	 * Singleton instance.
+	 * 
+	 * @internal
 	 */
 	protected static $instance = null;
 
-  // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
-	 * @ignore
+	 * Post method that wraps wp_remote_post.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
+	 * 
+	 * @internal
 	 */
 	protected function post( $url, $args = array() ) {
 		return wp_remote_post( $url, $args );
@@ -38,7 +37,10 @@ class FontAwesome_Metadata_Provider {
 	/**
 	 * Returns the FontAwesome_Metadata_Provider singleton instance.
 	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 *
 	 * @return FontAwesome_Metadata_Provider
+	 * @internal
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -47,7 +49,6 @@ class FontAwesome_Metadata_Provider {
 		return self::$instance;
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * Returns query errors if there was a problem querying the
 	 * graphql api in a readable string.
@@ -88,11 +89,12 @@ class FontAwesome_Metadata_Provider {
 		return $this->status;
 	}
 
-  // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * Loads all versions.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
 	 *
-	 * @ignore
+	 * @internal
 	 */
 	public function get_available_versions() {
 		$query         = 'query {versions}';
@@ -130,10 +132,12 @@ class FontAwesome_Metadata_Provider {
 		}
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * Provides a way to query the API and return the data as parsed json
 	 * based on the passed in query string.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
+	 * Use the query() method on FortAwesome\FontAwesome instead.
 	 *
 	 * @ignore
 	 */
@@ -204,10 +208,12 @@ class FontAwesome_Metadata_Provider {
 
 /**
  * Convenience global function to get a singleton instance of the Metadata Provider.
- * Normally, plugins and themes should not need to access this directly.
+ * 
+ * Internal use only. Not part of this plugin's public API.
  *
  * @see FontAwesome_Metadata_Provider::instance()
  * @return FontAwesome_Metadata_Provider
+ * @internal
  */
 function fa_metadata_provider() {
 	return FontAwesome_Metadata_Provider::instance();
