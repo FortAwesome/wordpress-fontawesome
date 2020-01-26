@@ -10,7 +10,7 @@ class DeactivationTest extends \WP_UnitTestCase {
 
 	public function test_deactivate_preserves_options_deletes_transients() {
 		$foobar = array( 'foo' => 'bar' );
-		set_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT, $foobar );
+		set_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT, $foobar );
 		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, $foobar );
 		update_option( FontAwesome::OPTIONS_KEY, $foobar );
 		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, $foobar );
@@ -32,7 +32,7 @@ class DeactivationTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertFalse(
-			get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT )
+			get_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT )
 		);
 	}
 
