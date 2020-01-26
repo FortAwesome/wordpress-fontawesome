@@ -11,7 +11,7 @@ require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
 
-use \InvalidArgumentException;
+use \InvalidArgumentException, \WP_Error;
 
 /**
  * Class ReleaseProviderTest
@@ -51,24 +51,8 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		return graphql_releases_query_fixture();
 	}
 
-	protected static function build_500_response() {
-		return array(
-			'response' => array(
-				'code'    => 500,
-				'message' => 'Internal Server Error',
-			),
-			'body'     => '',
-		);
-	}
-
-	protected static function build_403_response() {
-		return array(
-			'response' => array(
-				'code'    => 403,
-				'message' => 'Forbidden',
-			),
-			'body'     => '',
-		);
+	protected static function build_error_response() {
+		return new WP_Error();
 	}
 
 	protected function create_release_provider_with_mocked_response( $response ) {
@@ -90,7 +74,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		 * we expect an exception to be thrown.
 		 */
 
-		$mock_response = self::build_500_response();
+		$mock_response = self::build_error_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
@@ -100,43 +84,17 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		// they don't seem to get a chance to run once this expected exception is handled.
 	}
 
-	public function test_client_failure_500() {
-		$mock_response = self::build_500_response();
+	public function test_error_response() {
+		$mock_response = self::build_error_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 
-		// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-		try {
-			// We need to run this for its side effects, but we don't want to be hijacked by the exception
-			// it throws, because we need to assert something about the state *after* it's thrown.
-			$farp->versions();
-		} catch ( FontAwesome_NoReleasesException $e ) {
-			// noop.
-		}
-		// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		$result = $farp->load_releases();
 
-		$this->assertEquals( 500, $farp->get_status()['code'] );
+		$this->assertTrue( $result instanceof WP_Error );
 	}
 
-	public function test_client_failure_403() {
-		$mock_response = self::build_403_response();
-
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-
-		// phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-		try {
-			// We need to run this for its side effects, but we don't want to be hijacked by the exception
-			// it throws, because we need to assert something about the state *after* it's thrown.
-			$farp->versions();
-		} catch ( FontAwesome_NoReleasesException $e ) {
-			// noop.
-		}
-		// phpcs:enable Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-
-		$this->assertEquals( 403, $farp->get_status()['code'] );
-	}
-
-	public function test_versions() {
+	public function test_versions_success() {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );

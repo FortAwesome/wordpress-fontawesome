@@ -132,44 +132,20 @@ class FontAwesome_Release_Provider {
 		}
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
-	 * @ignore
-	 */
-	private function map_api_release( $release ) {
-		$mapped_release              = array();
-		$mapped_release['version']   = $release['attributes']['version'];
-		$mapped_release['download']  = $release['attributes']['download'];
-		$mapped_release['date']      = $release['attributes']['date'];
-		$mapped_release['iconCount'] = $release['attributes']['icon-count'];
-		$mapped_release['sri']       = $release['attributes']['sri'];
-
-		return $mapped_release;
-	}
-
-	/**
-	 * Loads release metadata. For internal use only.
+	 * Loads release metadata and saves to a transient.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
+	 * @return WP_Error | 1
 	 */
-	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	public function load_releases() {
-		$init_status = array(
-			'code'    => null,
-			'message' => '',
-		);
-
 		try {
 			$query = <<< EOD
 query {
 	releases {
-		version
-		date
-		iconCount {
-			free
-			pro
-		}
 		srisByLicense {
 			free {
 				path
@@ -185,49 +161,59 @@ query {
 EOD;
 			$result = $this->query( $query );
 
-			// TODO: map from the way it comes back from GraphQL to the way we've
-			// been formatting it up to now.
-
-			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
-			$releases      = array();
-			foreach ( $api_releases as $release ) {
-				$releases[ $release['version'] ] = $release;
+			if ( $result instanceof WP_Error ) {
+				return $result;
 			}
 
-			$previous_transient = get_transient( self::RELEASES_TRANSIENT );
+			$releases = array();
+
+			foreach ( $result['releases'] as $release ) {
+				$sris = array();
+
+				foreach ( $release['srisByLicense'] as $license => $sri_set ) {
+					$sris[$license] = array();
+					foreach ( $sri_set as $sri ) {
+						$sris[$license][$sri['path']] = $sri['value'];
+					}
+				}
+
+				$releases[ $release['version'] ] = array(
+					'sri' => $sris
+				);
+			}
+
+			$previous_transient = get_site_transient( self::RELEASES_TRANSIENT );
 
 			if ( $previous_transient ) {
 				// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
-				delete_transient( self::RELEASES_TRANSIENT );
+				delete_site_transient( self::RELEASES_TRANSIENT );
 			}
 
-			$ret = set_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
+			$ret = set_site_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
 
 			if ( ! $ret ) {
-				throw new Exception();
+				return new WP_Error(
+					'fontawesome_release_provider_transient',
+					'Failed to store releases transient'
+				);
 			}
 
 			$this->releases = $releases;
+
+			return 1;
 		} catch ( Exception $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, we failed to update the releases data.',
-				)
+			return new WP_Error(
+				'fontawesome_release_provider_exception',
+				$e->getMessage()
 			);
 		} catch ( Error $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, we failed when trying to update the releases data.',
-				)
+			return new WP_Error(
+				'fontawesome_release_provider_error',
+				$e->getMessage()
 			);
 		}
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore
 	 */
@@ -262,7 +248,7 @@ EOD;
 	 *
 	 * @ignore
 	 * @internal
-	 * @throws Error
+	 * @return WP_Error | array
 	 */
 	protected function query( $query ) {
 		return fa_metadata_provider()->metadata_query( $query );
@@ -288,15 +274,15 @@ EOD;
 		if ( $this->releases ) {
 			return $this->releases;
 		} else {
-			$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+			$cached_releases = get_site_transient( self::RELEASES_TRANSIENT );
 
 			if ( $cached_releases ) {
 				return $cached_releases;
 			} elseif ( is_null( $this->releases ) ) {
-				$this->load_releases();
+				$result = $this->load_releases();
 
-				// TODO: consider adding retry logic for loading Font Awesome releases.
-				if ( is_null( $this->releases ) ) {
+				// TODO: probably stop throwing this exception and just return WP_Error.
+				if ( $result instanceof WP_Error || is_null( $this->releases ) ) {
 					throw new FontAwesome_NoReleasesException();
 				} else {
 					return $this->releases;
