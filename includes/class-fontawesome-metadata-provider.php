@@ -59,77 +59,10 @@ class FontAwesome_Metadata_Provider {
 		$error_string = '';
 
 		foreach ( $errors as $error ) {
-			$error_string .= $error->message;
+			$error_string .= $error['message'];
 		}
 
 		return $error_string;
-	}
-
-	/**
-	 * Returns an associative array indicating the status of the status of the last network
-	 * request that attempted to retrieve releases metadata, or null if no network request has
-	 * been issued during the life time of the current Singleton instance.
-	 *
-	 * The shape of an array return looks like this:
-	 * ```php
-	 * array(
-	 *   'code' => 403,
-	 *   'message' => 'some message',
-	 * )
-	 * ```
-	 *
-	 * The value of the `code` key is one of:
-	 * - `200` if successful,
-	 * - `0` if there was some code error that prevented the network request from completing
-	 * - otherwise some HTTP error code as returned by `wp_remote_get()`
-	 *
-	 * @return array|null
-	 */
-	public function get_status() {
-		return $this->status;
-	}
-
-	/**
-	 * Loads all versions.
-	 *
-	 * Internal use only. Not part of this plugin's public API.
-	 *
-	 * @internal
-	 */
-	public function get_available_versions() {
-		$query         = 'query {versions}';
-		$json          = $this->metadata_query( $query );
-		$version_array = array();
-
-		if ( 200 !== $this->status['code'] ) {
-			return $this->status;
-		}
-
-		try {
-			$versions = $json->versions;
-			foreach ( $versions as $key => $val ) {
-				array_push( $version_array, strval( $val ) );
-			}
-
-			usort(
-				$versions,
-				function( $first, $second ) {
-					return version_compare( $second, $first );
-				}
-			);
-
-			return $versions;
-		} catch ( Exception $e ) {
-			return array(
-				'code'    => 0,
-				'message' => 'Whoops, we failed to fetch the versions.',
-			);
-		} catch ( Error $e ) {
-			return array(
-				'code'    => 0,
-				'message' => 'Whoops, we failed when trying to fetch the versions.',
-			);
-		}
 	}
 
 	/**
@@ -140,14 +73,9 @@ class FontAwesome_Metadata_Provider {
 	 * Use the query() method on FortAwesome\FontAwesome instead.
 	 *
 	 * @ignore
-	 * @throws Error
+	 * @return WP_Error | array
 	 */
 	public function metadata_query( $query_string ) {
-		$init_status = array(
-			'code'    => null,
-			'message' => '',
-		);
-
 		$args = array(
 			'method'  => 'POST',
 			'headers' => array(
@@ -155,53 +83,44 @@ class FontAwesome_Metadata_Provider {
 			),
 			'body'    => '{"query": ' . json_encode( $query_string ) . '}',
 		);
-		$url  = FONTAWESOME_API_URL;
 
 		try {
-			$response = $this->post( $url, $args );
+			$response = $this->post( FONTAWESOME_API_URL, $args );
 
 			if ( $response instanceof WP_Error ) {
-				throw new Error();
+				return $response;
 			}
 
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $response['response']['code'],
-					'message' => $response['response']['message'],
-				)
-			);
-
-			if ( 200 !== $this->status['code'] ) {
-				return $this->status;
-			}
-
-			$body_contents = $response['body'];
-			$json_body     = json_decode( $body_contents );
-
-			if ( property_exists( $json_body, 'errors' ) ) {
-				return array(
-					'code'    => 200,
-					'message' => $this->query_errors( $json_body->errors ),
+			if ( 200 !== $response['response']['code'] ) {
+				return new WP_Error(
+					'fontawesome_api_failed_request',
+					$response['response']['message'],
+					array( 'status' => $response['response']['code'] )
 				);
 			}
 
-			return $json_body->data;
+			$body = json_decode( $response['body'], true );
+
+			$export = var_export($body, true);
+
+			if ( isset( $body['errors'] ) ) {
+				return new WP_Error(
+					'fontawesome_api_query_error',
+					$this->query_errors( $body['errors'] ),
+					array( 'status' => $response['response']['code'] )
+				);
+			}
+
+			return $body['data'];
 		} catch ( Exception $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, the query failed.',
-				)
+			return new WP_Error(
+				'fontawesome_exception',
+				$e->getMessage()
 			);
 		} catch ( Error $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, there was an error while querying.',
-				)
+			return new WP_Error(
+				'fontawesome_error',
+				$e->getMessage()
 			);
 		}
 	}

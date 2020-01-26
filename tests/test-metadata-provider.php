@@ -10,7 +10,7 @@ namespace FortAwesome;
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-metadata-provider.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
-use \Exception;
+use \Exception, \WP_Error;
 
 /**
  * Class ReleaseProviderTest
@@ -63,7 +63,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-  protected function create_metadata_provider_with_mocked_response( $response ) {
+	protected function create_metadata_provider_with_mocked_response( $response ) {
 		return mock_singleton_method(
 			$this,
 			FontAwesome_Metadata_Provider::class,
@@ -79,42 +79,6 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 	public function test_can_load_and_instantiate() {
 		$obj = fa_metadata_provider();
 		$this->assertFalse( is_null( $obj ) );
-  }
-
-  public function test_get_available_versions_with_exception() {
-		/**
-		 * When the POST for get_available_versions does not return successfully
-		 * we expect to receive a 500 response.
-		 */
-
-		$mock_response = self::build_500_response();
-		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
-
-    $this->assertEquals( 500, $famp->get_available_versions()['code'] );
-    $this->assertEquals( "Internal Server Error", $famp->get_available_versions()['message'] );
-  }
-
-  public function test_get_available_versions_with_error() {
-    /**
-     * When the POST for get_available_versions has a 403 response
-     * we expect to receive that error back.
-     */
-
-     $mock_response = self::build_403_response();
-     $famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
-
-     $this->assertEquals( 403, $famp->get_available_versions()['code'] );
-     $this->assertEquals( "Forbidden", $famp->get_available_versions()['message'] );
-  }
-
-  public function test_get_available_versions() {
-		/**
-		 * get_available_versions() returns a descending order list of versions
-		 */
-		$mock_response = self::build_success_response();
-		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
-
-		$this->assertEquals("5.11.2", $famp->get_available_versions()[0]);
 	}
 
 	public function test_metadata_query_500_error() {
@@ -124,8 +88,12 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_500_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$this->assertEquals( 500, $famp->metadata_query( 'query {versions}' )['code'] );
-    $this->assertEquals( "Internal Server Error", $famp->metadata_query( 'query {versions}' )['message'] );
+		$result = $famp->metadata_query( 'query {versions}' );
+
+		$this->assertTrue( $result instanceof WP_Error);
+    	$this->assertEquals( "Internal Server Error", $result->get_error_message() );
+		$this->assertArraySubset( ["status" => 500], $result->get_error_data() );
+		$this->assertEquals( "fontawesome_api_failed_request", $result->get_error_code() );
 	}
 
 	public function test_metadata_query_403_error() {
@@ -133,10 +101,14 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		 * When a query fails with a forbidden error we expect a 403 response.
 		 */
 		$mock_response = self::build_403_response();
-    $famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
+		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-    $this->assertEquals( 403, $famp->metadata_query( 'query {versions}' )['code'] );
-    $this->assertEquals( "Forbidden", $famp->metadata_query( 'query {versions}' )['message'] );
+		$result = $famp->metadata_query( 'query {versions}' );
+
+		$this->assertTrue( $result instanceof WP_Error);
+		$this->assertArraySubset( ["status" => 403], $result->get_error_data() );
+		$this->assertEquals( "Forbidden", $result->get_error_message() );
+		$this->assertEquals( "fontawesome_api_failed_request", $result->get_error_code() );
 	}
 
 	public function test_metadata_query_error_on_query() {
@@ -147,17 +119,23 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_query_error_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$this->assertEquals( 200, $famp->metadata_query( 'queryversions' )['code']);
-		$this->assertEquals('syntax error before: "queryversions"', $famp->metadata_query( 'queryversions' )['message']);
+		$result = $famp->metadata_query( 'queryversions' );
+
+		$this->assertEquals( "fontawesome_api_query_error", $result->get_error_code() );
+		$this->assertArraySubset( ["status" => 200], $result->get_error_data() );
+		$this->assertEquals('syntax error before: "queryversions"', $result->get_error_message() );
 	}
 
-  public function test_metadata_query() {
+	public function test_metadata_query_success() {
 		/**
 		 * metadata_query() returns json decoded PHP objects in an array
 		 */
 		$mock_response = self::build_success_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-    $this->assertEquals("5.0.1", $famp->metadata_query( 'query {versions}' )->versions[0]);
-  }
+		$result = $famp->metadata_query( 'query {versions}' );
+
+		$this->assertFalse( $result instanceof WP_Error );
+		$this->assertEquals("5.0.1", $result['versions'][0]);
+	}
 }
