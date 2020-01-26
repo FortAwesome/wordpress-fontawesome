@@ -98,15 +98,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 */
 		public function get_item( $request ) {
 			try {
-				$fa = fa();
-
-				// TODO: maybe don't refresh release metadata here at all.
-				// But if try, and it fails, don't return a 500 error.
-				// Previously, when load_releases() would throw, that may have
-				// happened.
-				$this->release_provider()->load_releases();
-
-				$data = $this->build_item( $fa );
+				$data = $this->build_item( fa() );
 
 				return new WP_REST_Response( $data, 200 );
 			} catch ( Exception $e ) {
