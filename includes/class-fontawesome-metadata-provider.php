@@ -10,7 +10,7 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 
 /**
  * Provides metadata about Font Awesome icons.
- * 
+ *
  * Internal use only. Not part of this plugin's public API.
  *
  * @internal
@@ -18,16 +18,16 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 class FontAwesome_Metadata_Provider {
 	/**
 	 * Singleton instance.
-	 * 
+	 *
 	 * @internal
 	 */
 	protected static $instance = null;
 
 	/**
 	 * Post method that wraps wp_remote_post.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @internal
 	 */
 	protected function post( $url, $args = array() ) {
@@ -91,7 +91,7 @@ class FontAwesome_Metadata_Provider {
 
 	/**
 	 * Loads all versions.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @internal
@@ -135,7 +135,7 @@ class FontAwesome_Metadata_Provider {
 	/**
 	 * Provides a way to query the API and return the data as parsed json
 	 * based on the passed in query string.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 * Use the query() method on FortAwesome\FontAwesome instead.
 	 *
@@ -208,7 +208,7 @@ class FontAwesome_Metadata_Provider {
 
 /**
  * Convenience global function to get a singleton instance of the Metadata Provider.
- * 
+ *
  * Internal use only. Not part of this plugin's public API.
  *
  * @see FontAwesome_Metadata_Provider::instance()
