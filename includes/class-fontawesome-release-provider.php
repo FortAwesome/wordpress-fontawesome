@@ -178,8 +178,6 @@ EOD;
 					}
 				}
 
-				error_log("DEBUG: release: " . print_r($release, true));
-
 				$releases[ $release['version'] ] = array(
 					'sri' => $sris
 				);
