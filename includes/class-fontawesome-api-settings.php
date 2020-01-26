@@ -34,7 +34,7 @@ class FontAwesome_API_Settings {
 
 	/**
 	 * Expiration time for current access token.
-	 * 
+	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -42,7 +42,7 @@ class FontAwesome_API_Settings {
 
 	/**
 	 * Current API token.
-	 * 
+	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -50,7 +50,7 @@ class FontAwesome_API_Settings {
 
 	/**
 	 * Singleton instance.
-	 * 
+	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -58,7 +58,7 @@ class FontAwesome_API_Settings {
 
 	/**
 	 * Returns the FontAwesome_API_Settings singleton instance.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @return FontAwesome_API_Settings
@@ -113,50 +113,50 @@ class FontAwesome_API_Settings {
 	/**
 	 * Reads ini file into an associative array, or returns false
 	 * if the file does not exist or there is an error.
-	 * 
+	 *
 	 * Internal use only, not part of this plugin's public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 */
 	protected static function read_from_file() {
-		$config_path = self::ini_path(); 
+		$config_path = self::ini_path();
 
-        if ( ! file_exists( $config_path ) ) { 
-            return false; 
-		} 
+		if ( ! file_exists( $config_path ) ) {
+			return false;
+		}
 
-		return parse_ini_file ( $config_path, TRUE );
+		return parse_ini_file( $config_path, true );
 	}
 
 	/**
-     * Returns the path to our font-awesome-api.ini file where we'll store
+	 * Returns the path to our font-awesome-api.ini file where we'll store
 	 * API token and access token data.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
 	 */
-	static public function ini_path() {
+	public static function ini_path() {
 		return trailingslashit( ABSPATH ) . self::FILENAME;
 	}
 
 	/**
 	 * Writes current config.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 * @return bool whether write succeeded
 	 */
 	public function write() {
-		$date = date(DATE_RFC2822);
-		$api_token = $this->api_token();
-		$access_token = $this->access_token();
+		$date                         = date( DATE_RFC2822 );
+		$api_token                    = $this->api_token();
+		$access_token                 = $this->access_token();
 		$access_token_expiration_time = $this->access_token_expiration_time();
-		$contents = <<< EOD
+		$contents                     = <<< EOD
 ; Font Awesome API Settings
 ;
 ; Created by the font-awesome plugin on $date
@@ -185,9 +185,9 @@ EOD;
 			$contents .= "\naccess_token_expiration_time = " . $access_token_expiration_time . "\n";
 		}
 
-		if ( !@file_put_contents( self::ini_path(), $contents ) ) { 
-			return false; 
-		}  else {
+		if ( ! @file_put_contents( self::ini_path(), $contents ) ) {
+			return false;
+		} else {
 			return true;
 		}
 	}
@@ -195,9 +195,9 @@ EOD;
 	/**
 	 * Removes current API Token and related settings, setting them all to null,
 	 * and deletes the backing ini file store.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -208,9 +208,9 @@ EOD;
 
 	/**
 	 * Returns the current API Token.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -220,18 +220,18 @@ EOD;
 
 	/**
 	 * Sets the API Token.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 */
-	public function set_api_token($api_token) {
+	public function set_api_token( $api_token ) {
 		$this->_api_token = $api_token;
 	}
 
 	/**
 	 * Returns the current access token.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -241,36 +241,36 @@ EOD;
 
 	/**
 	 * Sets the current access_token.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 */
-	public function set_access_token($access_token) {
+	public function set_access_token( $access_token ) {
 		$this->_access_token = $access_token;
 	}
 
 	/**
 	 * Sets the current access_token_expiration_time.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @param int $access_token_expiration_time time in unix epoch seconds as non-zero integer value
 	 * @throws InvalidArgumentException if the given param is zero or cannot be cast as an integer
 	 */
-	public function set_access_token_expiration_time($access_token_expiration_time) {
+	public function set_access_token_expiration_time( $access_token_expiration_time ) {
 		$int_val = intval( $access_token_expiration_time );
 
 		if ( 0 !== $int_val ) {
 			$this->_access_token_expiration_time = $access_token_expiration_time;
 		} else {
-			throw new InvalidArgumentException("value must be a non-zero integer");
+			throw new InvalidArgumentException( 'value must be a non-zero integer' );
 		}
 	}
 
 	/**
 	 * Returns the expiration time for the current access token.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -281,9 +281,9 @@ EOD;
 	/**
 	 * Requests an access_token with the current api_token. Stores the result
 	 * upon successfully retrieving an access token.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 * @return WP_Error | TRUE if the request was successful and we have an access_token; otherwise, WP_Error
@@ -302,8 +302,8 @@ EOD;
 			array(
 				'body'    => '',
 				'headers' => array(
-					'authorization' => 'Bearer ' . $this->api_token()
-				)
+					'authorization' => 'Bearer ' . $this->api_token(),
+				),
 			)
 		);
 
@@ -329,7 +329,7 @@ EOD;
 			! isset( $body['access_token'] ) ||
 			! is_string( $body['access_token'] ) ||
 			! isset( $body['expires_in'] ) ||
-		 	! is_int( $body['expires_in'] )
+			! is_int( $body['expires_in'] )
 		) {
 			return new WP_Error(
 				'access_token',
@@ -350,16 +350,16 @@ EOD;
 				array( 'status' => 403 )
 			);
 		} else {
-			return TRUE;
+			return true;
 		}
 	}
 
 	/**
 	 * Wrapper for wp_remote_post(). Mostly to make it easier to mock the network
 	 * request with a subclass.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 * @return WP_Error | array just like wp_remote_post()
@@ -371,7 +371,7 @@ EOD;
 
 /**
  * Convenience global function to get a singleton instance of the API Settings.
- * 
+ *
  * Internal use only. Not part of this plugin's public API.
  *
  * @return FontAwesome_API_Settings
