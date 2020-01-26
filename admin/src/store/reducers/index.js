@@ -294,7 +294,6 @@ export default combineReducers({
   pluginVersion: simple,
   preferenceConflictDetection,
   preferenceConflicts,
-  releaseProviderStatus: simple,
   releases: simple,
   settingsPageUrl: simple,
   showAdmin: coerceBool,
