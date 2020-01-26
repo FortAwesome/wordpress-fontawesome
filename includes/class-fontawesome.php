@@ -1024,7 +1024,6 @@ class FontAwesome {
 								'showAdmin'                     => TRUE,
 								'onSettingsPage'								=> TRUE,
 								'clientPreferences'     				=> $this->client_preferences(),
-								'releaseProviderStatus' 				=> $this->release_provider()->get_status(),
 								'releases'              				=> array(
 									'available'        						=> $this->get_available_versions(),
 									'latest_version'   						=> $this->get_latest_version(),
