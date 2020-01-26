@@ -140,6 +140,7 @@ class FontAwesome_Metadata_Provider {
 	 * Use the query() method on FortAwesome\FontAwesome instead.
 	 *
 	 * @ignore
+	 * @throws Error
 	 */
 	public function metadata_query( $query_string ) {
 		$init_status = array(
