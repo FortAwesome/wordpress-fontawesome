@@ -8,6 +8,8 @@ namespace FortAwesome;
 
 use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
+
 /**
  * Provides metadata about Font Awesome icons.
  *
@@ -84,6 +86,13 @@ class FontAwesome_Metadata_Provider {
 			'body'    => '{"query": ' . json_encode( $query_string ) . '}',
 		);
 
+		$access_token = $this->current_access_token();
+		if ( $access_token instanceof WP_Error ) {
+			// TODO: handle this error case
+		} elseif ( is_string( $access_token ) ) {
+			$args['headers']['authorization'] = "Bearer $access_token";
+		}
+
 		try {
 			$response = $this->post( FONTAWESOME_API_URL, $args );
 
@@ -123,6 +132,23 @@ class FontAwesome_Metadata_Provider {
 				$e->getMessage()
 			);
 		}
+	}
+
+	/**
+	 * Returns a current access_token, if available. Attempts to refresh an
+	 * access_token if the one we have is near or past expiration and an api_token
+	 * is present.
+	 * 
+	 * Returns WP_Error indicating any error when trying to refresh an access_token.
+	 * Returns null when no current access_token nor api_token is available.
+	 * Otherwise, returns the current access_token as a string.
+	 * 
+	 * @return WP_Error|string|null access_token if available; null if unavailable,
+	 *    or WP_Error if there is an error while refreshing the access_token.
+	 */
+	protected function current_access_token() {
+		// TODO: remove hardcode hack
+		return fa_api_settings()->access_token();
 	}
 }
 
