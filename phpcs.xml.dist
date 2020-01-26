@@ -6,6 +6,8 @@
 	  <exclude name="Squiz.Commenting.FileComment" />
 	  <exclude name="Squiz.Commenting.VariableComment" />
 	  <exclude name="Squiz.Commenting.FunctionComment" />
+		<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged" />
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents" />
 	</rule>
 
 	<!-- Check all PHP files in directory tree by default. -->
