@@ -4,6 +4,8 @@ import { setConflictDetectionScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull, faThumbsUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
+import size from 'lodash/size'
+import has from 'lodash/has'
 
 // NOTE: We don't have Webpack set up to handle the loading of CSS modules in
 // a way that is compatible with our use of Shadow DOM. After a failed attempt
@@ -60,12 +62,19 @@ const STYLES = {
 export default function ConflictDetectionReporter() {
   const dispatch = useDispatch()
   const settingsPageUrl = useSelector(state => state.settingsPageUrl)
-  const countBefore = useSelector(
-    state => state.unregisteredClientDetectionStatus.countBeforeDetection
+
+  const unregisteredClients = useSelector(
+    state => state.unregisteredClients
   )
-  const countAfter = useSelector(
-    state => state.unregisteredClientDetectionStatus.countAfterDetection
+
+  const unregisteredClientsBeforeDetection = useSelector(
+    state => state.unregisteredClientDetectionStatus.unregisteredClientsBeforeDetection
   )
+
+  const recentConflictsDetected = useSelector(
+    state => state.unregisteredClientDetectionStatus.recentConflictsDetected
+  )
+
   const showConflictDetectionReporter = useSelector(
     state => state.showConflictDetectionReporter
   )
@@ -81,14 +90,14 @@ export default function ConflictDetectionReporter() {
   )
 
   const runStatus = useSelector(state => {
-    const { isSubmitting, hasSubmitted, success, countBeforeDetection, countAfterDetection } = state.unregisteredClientDetectionStatus
+    const { isSubmitting, hasSubmitted, success } = state.unregisteredClientDetectionStatus
     if ( !showConflictDetectionReporter ) {
       return STATUS.expired
     } else if ( scannerDisableFailed ) {
       return STATUS.error
     } else if (scannerReady) {
       return STATUS.ready
-    } else if ( success && (countBeforeDetection === countAfterDetection) ) {
+    } else if ( success && 0 === size( recentConflictsDetected ) ) {
       return STATUS.none
     } else if( isSubmitting ) {
       return STATUS.submitting
@@ -151,8 +160,9 @@ export default function ConflictDetectionReporter() {
                 <div>
                     <FontAwesomeIcon icon={ faCheck } /> <span>{ runStatus }</span>
                 </div>
-                <p>Conflicts known before detection: { countBefore }</p>
-                <p>Conflicts known after detection: { countAfter }</p>
+                <p>Total conflicts ever detected: { size( unregisteredClients ) }</p>
+                <p>Conflicts found on this page: { size( recentConflictsDetected ) }</p>
+                <p>New conflicts found on this page: { size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</p>
                 {
                   window.location.href === settingsPageUrl ?
                   <p>Manage conflict removal right here on the plugin settings page.</p>

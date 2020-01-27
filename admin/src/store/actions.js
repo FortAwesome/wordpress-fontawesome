@@ -152,7 +152,11 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         return acc
       }, {})
 
-      dispatch({ type: 'CONFLICT_DETECTION_SUBMIT_START', countBeforeDetection: size(unregisteredClients) })
+      dispatch({
+        type: 'CONFLICT_DETECTION_SUBMIT_START',
+        unregisteredClientsBeforeDetection: unregisteredClients,
+        recentConflictsDetected: nodesTested.conflict
+      })
 
       axios.post(
         `${apiUrl}/report-conflicts`,
@@ -163,19 +167,28 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
           }
         }
       )
-      .then(function() {
-        dispatch({
-          type: 'CONFLICT_DETECTION_SUBMIT_END',
-          success: true,
-          unregisteredClients: payload
-        })
+      .then(response => {
+        const { status, data } = response
+
+        if( 200 === status) {
+          dispatch({
+            type: 'CONFLICT_DETECTION_SUBMIT_END',
+            success: true,
+            unregisteredClients: data
+          })
+        } else {
+          dispatch({
+            type: 'CONFLICT_DETECTION_SUBMIT_END',
+            success: false,
+            message: 'Sorry, we failed to submit those conflicts to your WordPress server. Try again?'
+          })
+        }
       })
       .catch(function(error){
         console.error('Font Awesome Conflict Detection Reporting Error: ', error)
         dispatch({
           type: 'CONFLICT_DETECTION_SUBMIT_END',
           success: false,
-          unregisteredClients: payload,
           message: `Submitting results to the WordPress server failed, and this might indicate a bug. Could you report this on the plugin's support forum? There maybe additional diagnostic output in the JavaScript console.\n\n${error}`
         })
       })
