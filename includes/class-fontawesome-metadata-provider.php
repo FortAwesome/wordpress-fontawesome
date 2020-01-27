@@ -52,6 +52,19 @@ class FontAwesome_Metadata_Provider {
 	}
 
 	/**
+	 * Resets the singleton instance referenced by this class and returns that new instance.
+	 * All previous releases metadata held in the previous instance will be abandoned.
+	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @return FontAwesome_Metadata_Provider
+	 */
+	public static function reset() {
+		self::$instance = null;
+		return self::instance();
+	}
+
+	/**
 	 * Returns query errors if there was a problem querying the
 	 * graphql api in a readable string.
 	 *
