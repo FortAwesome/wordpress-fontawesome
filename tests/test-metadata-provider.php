@@ -200,4 +200,72 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$this->assertFalse( $token_endpoint_requested );
 		$this->assertFalse( $result instanceof WP_Error );
 	}
+
+	public function test_authorized_request_with_expired_access_token() {
+		$token_endpoint_requested = false;
+		$authorization_header_ok = false;
+
+		add_filter(
+			'pre_http_request',
+			function( $preempt, $parsed_args, $url ) use( &$token_endpoint_requested, &$authorization_header_ok ) {
+				if ( preg_match( '/token$/', $url ) ) {
+					if (
+						isset( $parsed_args['headers']['authorization'] )
+						&&
+						$parsed_args['headers']['authorization'] ===  'Bearer xyz_api_token'
+					) {
+						$token_endpoint_requested = true;
+
+						return array(
+							'response' => array(
+								'code' => 200
+							),
+							'body' => array(
+								'access_token' => 'new_access_token',
+								'expires_in' => 3600
+							)
+						);
+					}
+				}
+
+				if (
+					isset( $parsed_args['headers']['authorization'] )
+					&&
+					$parsed_args['headers']['authorization'] ===  'Bearer new_access_token'
+				) {
+					$authorization_header_ok = true;
+					return false;
+				}
+
+				return new WP_Error(
+					'unexpected_request',
+				);
+			},
+			1, // filter priority
+			3  // num args accepted
+		);
+
+		fa_api_settings()->remove();
+		fa_api_settings()->set_api_token( 'xyz_api_token' );
+		fa_api_settings()->set_access_token( 'old_access_token' );
+		// expired 10 seconds ago
+		fa_api_settings()->set_access_token_expiration_time( time() - 10 );
+		fa_api_settings()->write();
+
+		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
+
+		$this->assertTrue( $authorization_header_ok );
+		$this->assertTrue( $token_endpoint_requested );
+		$this->assertFalse( $result instanceof WP_Error );
+		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
+		$this->assertEqualsWithDelta( time() + 3600, fa_api_settings()->access_token_expiration_time(), 2.0 );
+
+		// Make sure that the api_settings can be re-read from disk and still be correct.
+		// That is, the refreshed access_token and expiration time should have
+		// been stored.
+
+		FontAwesome_API_Settings::reset();
+		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
+		$this->assertEqualsWithDelta( time() + 3600, fa_api_settings()->access_token_expiration_time(), 2.0 );
+	}
 }
