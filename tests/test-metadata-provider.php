@@ -10,6 +10,7 @@ namespace FortAwesome;
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-metadata-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-api-settings.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
 
 use \Exception, \WP_Error;
 
@@ -19,6 +20,12 @@ use \Exception, \WP_Error;
  * @group api
  */
 class MetadataProviderTest extends \WP_UnitTestCase {
+
+	public function setUp() {
+		fa_api_settings()->remove();
+		FontAwesome_Metadata_Provider::reset();
+		remove_all_filters( 'pre_http_request' );
+	}
 
 	protected static function build_success_response() {
 		return array(
@@ -44,7 +51,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-  protected static function build_500_response() {
+	protected static function build_500_response() {
 		return array(
 			'response'  => array(
 				'code'    => 500,
@@ -92,10 +99,10 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$result = $famp->metadata_query( 'query {versions}' );
 
 		$this->assertTrue( $result instanceof WP_Error);
-    	$this->assertEquals( "Internal Server Error", $result->get_error_message() );
+ 		$this->assertEquals( "Internal Server Error", $result->get_error_message() );
 		$this->assertArraySubset( ["status" => 500], $result->get_error_data() );
 		$this->assertEquals( "fontawesome_api_failed_request", $result->get_error_code() );
-	}
+	 }
 
 	public function test_metadata_query_403_error() {
 		/**
@@ -140,51 +147,62 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$this->assertEquals("5.0.1", $result['versions'][0]);
 	}
 
+	public function handle_pre_http_request_for_valid_current_access_token( $preempt, $parsed_args, $url ) {
+		if ( preg_match('/token$/', $url) ) {
+			throw Error( 'unexpected_token_endpoint_request' );
+		}
+
+		$expected_authorization_header = ( "Bearer " . fa_api_settings()->access_token() );
+
+		if (
+			isset( $parsed_args['headers']['authorization'] )
+			&&
+			$parsed_args['headers']['authorization'] ===  $expected_authorization_header
+		) {
+			return self::build_success_response();
+		}
+
+		return new WP_Error(
+			'unexpected_request_lacking_authorization',
+		);
+	}
+
+	public function handle_pre_http_request_for_expiring_access_token( $preempt, $parsed_args, $url ) {
+		if ( preg_match( '/token$/', $url ) ) {
+			if (
+				isset( $parsed_args['headers']['authorization'] )
+				&&
+				$parsed_args['headers']['authorization'] ===  'Bearer xyz_api_token'
+			) {
+				return array(
+					'response' => array(
+						'code' => 200
+					),
+					'body' => array(
+						'access_token' => 'new_access_token',
+						'expires_in' => 3600
+					)
+				);
+			}
+		}
+
+		if (
+			isset( $parsed_args['headers']['authorization'] )
+			&&
+			$parsed_args['headers']['authorization'] ===  'Bearer new_access_token'
+		) {
+			return self::build_success_response();
+		}
+
+		return new WP_Error(
+			'unexpected_request',
+		);
+	}
+
 	public function test_authorized_request_with_valid_access_token() {
-		$token_endpoint_requested = false;
-		$authorization_header_ok = false;
-
-		 // doc for pre_http_request filter
-		 //* Returning a non-false value from the filter will short-circuit the HTTP request and return
-		 //* early with that value. A filter should return either:
-		 //*
-		 //*  - An array containing 'headers', 'body', 'response', 'cookies', and 'filename' elements
-		 //*  - A WP_Error instance
-		 //*  - boolean false (to avoid short-circuiting the response)
-		 //*
-		 //* Returning any other value may result in unexpected behaviour.
-		 //*
-		 //* @since 2.9.0
-		 //*
-		 //* @param false|array|WP_Error $preempt     Whether to preempt an HTTP request's return value. Default false.
-		 //* @param array                $parsed_args HTTP request arguments.
-		 //* @param string               $url         The request URL.
-
 		add_filter(
 			'pre_http_request',
-			function( $preempt, $parsed_args, $url ) use( &$token_endpoint_requested, &$authorization_header_ok ) {
-				if ( preg_match('/token$/', $url) ) {
-					$token_endpoint_requested = true;
-					return new WP_Error(
-						'unexpected_token_endpoint_request'
-					);
-				}
-
-				$expected_authorization_header = ( "Bearer " . fa_api_settings()->access_token() );
-
-				if (
-					isset( $parsed_args['headers']['authorization'] )
-					&&
-					$parsed_args['headers']['authorization'] ===  $expected_authorization_header
-				) {
-					$authorization_header_ok = true;
-					return false;
-				}
-
-				return new WP_Error(
-					'unexpected_request_lacking_authorization',
-				);
-			},
+			[$this, 'handle_pre_http_request_for_valid_current_access_token'],
 			1, // filter priority
 			3  // num args accepted
 		);
@@ -196,51 +214,15 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
 
-		$this->assertTrue( $authorization_header_ok );
-		$this->assertFalse( $token_endpoint_requested );
+		fa_api_settings()->remove();
+
 		$this->assertFalse( $result instanceof WP_Error );
 	}
 
 	public function test_authorized_request_with_expired_access_token() {
-		$token_endpoint_requested = false;
-		$authorization_header_ok = false;
-
 		add_filter(
 			'pre_http_request',
-			function( $preempt, $parsed_args, $url ) use( &$token_endpoint_requested, &$authorization_header_ok ) {
-				if ( preg_match( '/token$/', $url ) ) {
-					if (
-						isset( $parsed_args['headers']['authorization'] )
-						&&
-						$parsed_args['headers']['authorization'] ===  'Bearer xyz_api_token'
-					) {
-						$token_endpoint_requested = true;
-
-						return array(
-							'response' => array(
-								'code' => 200
-							),
-							'body' => array(
-								'access_token' => 'new_access_token',
-								'expires_in' => 3600
-							)
-						);
-					}
-				}
-
-				if (
-					isset( $parsed_args['headers']['authorization'] )
-					&&
-					$parsed_args['headers']['authorization'] ===  'Bearer new_access_token'
-				) {
-					$authorization_header_ok = true;
-					return false;
-				}
-
-				return new WP_Error(
-					'unexpected_request',
-				);
-			},
+			[$this, 'handle_pre_http_request_for_expiring_access_token'],
 			1, // filter priority
 			3  // num args accepted
 		);
@@ -254,8 +236,6 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
 
-		$this->assertTrue( $authorization_header_ok );
-		$this->assertTrue( $token_endpoint_requested );
 		$this->assertFalse( $result instanceof WP_Error );
 		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
 		$this->assertEqualsWithDelta( time() + 3600, fa_api_settings()->access_token_expiration_time(), 2.0 );
