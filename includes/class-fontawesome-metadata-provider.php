@@ -88,7 +88,7 @@ class FontAwesome_Metadata_Provider {
 
 		$access_token = $this->current_access_token();
 		if ( $access_token instanceof WP_Error ) {
-			// TODO: handle this error case
+			return $access_token;
 		} elseif ( is_string( $access_token ) ) {
 			$args['headers']['authorization'] = "Bearer $access_token";
 		}
@@ -140,15 +140,52 @@ class FontAwesome_Metadata_Provider {
 	 * is present.
 	 * 
 	 * Returns WP_Error indicating any error when trying to refresh an access_token.
-	 * Returns null when no current access_token nor api_token is available.
+	 * Returns null when there is no api_token.
 	 * Otherwise, returns the current access_token as a string.
 	 * 
 	 * @return WP_Error|string|null access_token if available; null if unavailable,
 	 *    or WP_Error if there is an error while refreshing the access_token.
 	 */
 	protected function current_access_token() {
-		// TODO: remove hardcode hack
-		return fa_api_settings()->access_token();
+		if ( ! boolval( fa_api_settings()->api_token() ) ) {
+			return null;
+		}
+		
+		$exp = fa_api_settings()->access_token_expiration_time();
+		$access_token = fa_api_settings()->access_token();
+
+		if ( is_string( $access_token ) && $exp > ( time() - 5 ) ) {
+			return $access_token;
+		} else {
+			// refresh the access token
+			$refresh_args = array(
+				'method'  => 'POST',
+				'headers' => array(
+					'Content-Type' => 'x-www-form-urlencoded',
+					'authorization' => "Bearer " . fa_api_settings()->api_token()
+				)
+			);
+
+			$refresh_response = $this->post( FONTAWESOME_API_URL . '/token', $refresh_args );
+
+			if ( $refresh_response instanceof WP_Error ) {
+				return WP_Error;
+			} elseif (
+				isset( $refresh_response['response']['code'] ) && 
+				200 === $refresh_response['response']['code'] &&
+				isset( $refresh_response['body']['access_token'] ) && 
+				isset( $refresh_response['body']['expires_in'] ) && 
+				is_int( $refresh_response['body']['expires_in'] ) ) {
+					fa_api_settings()->set_access_token( $refresh_response['body']['access_token'] );
+					fa_api_settings()->set_access_token_expiration_time( time() + $refresh_response['body']['expires_in'] );
+					fa_api_settings()->write();
+					return fa_api_settings()->access_token();
+			} else {
+				return new WP_Error(
+					'fontawesome_api_access_token_refresh'
+				);
+			}
+		}
 	}
 }
 
