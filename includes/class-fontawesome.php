@@ -1184,7 +1184,6 @@ class FontAwesome {
 								'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
 								'preferenceConflicts'           => $this->conflicts_by_option(),
 								'v3DeprecationWarning'          => $this->get_v3deprecation_warning_data(),
-								'kits'                          => $this->maybe_get_kits()
 							)
 						)
 					);
@@ -1246,40 +1245,6 @@ class FontAwesome {
 			'settingsPageUrl'			    => $this->settings_page_url(),
 			'activeAdminTab'				=> $this->active_admin_tab(),
 			'options'						=> $this->options(),
-		);
-	}
-
-	/**
-	 * Retrieve kits from the Font Awesome GraphQL API if there's an appropriate
-	 * API key available.
-	 */
-	protected function maybe_get_kits() {
-		// TODO: replace this mock data with an API query
-        return array(
-			array(
-				"autoAccessibilityEnabled" => TRUE,
-				"domains" => [ "*.*" ],
-				"licenseSelected" => "pro",
-				"minified" => TRUE,
-				"name" => "Alpha Kit",
-				"shimEnabled" => TRUE,
-				"technologySelected" => "webfonts",
-				"token" => "778ccf8260",
-				"useIntegrityHash" => FALSE,
-				"version" => "latest"
-			  ),
-			array(
-				"autoAccessibilityEnabled" => FALSE,
-				"domains" => [ "*.*" ],
-				"licenseSelected" => "free",
-				"minified" => TRUE,
-				"name" => "Beta Kit",
-				"shimEnabled" => FALSE,
-				"technologySelected" => "svg",
-				"token" => "7cf0c88c97",
-				"useIntegrityHash" => FALSE,
-				"version" => "latest"
-			)
 		);
 	}
 
