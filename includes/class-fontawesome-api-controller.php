@@ -77,10 +77,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 		 */
 		public function query( $request ) {
 			try {
-				$result = $this->metadata_provider()->metadata_query( $request->get_json_params() );
+				$result = $this->metadata_provider()->metadata_query( $request->get_body() );
 
 				if ( $result instanceof WP_Error ) {
-					return $result;
+					return new WP_Error(
+						$result->get_error_code(),
+						$result->get_error_message(),
+						array ( 'status' => 400 )
+					);
 				} else {
 					return new WP_REST_Response( $result, 200 );
 				}
