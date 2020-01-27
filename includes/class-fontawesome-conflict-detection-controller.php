@@ -106,12 +106,12 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 						FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
 						$new_option_value
 					) ) {
-						return new WP_REST_Response( null, 204 );
+						return new WP_REST_Response( $new_option_value, 200 );
 					} else {
 						return new WP_Error( 'update_failed', "We weren't able to update the unregistered clients data.", array( 'status' => 400 ) );
 					}
 				} else {
-					return new WP_REST_Response( null, 204 );
+					return new WP_REST_Response( $prev_option, 200 );
 				}
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.

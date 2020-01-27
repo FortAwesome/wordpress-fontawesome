@@ -166,25 +166,24 @@ function unregisteredClientDetectionStatus(
     success: false,
     hasSubmitted: false,
     isSubmitting: false,
-    countBeforeDetection: 0,
-    countAfterDetection: 0,
+    unregisteredClientsBeforeDetection: [],
+    recentConflictsDetected: {},
     message: ''
   },
   action = {}) {
 
-  const { type, success, message, countBeforeDetection } = action
+  const { type, success, message, unregisteredClientsBeforeDetection, recentConflictsDetected } = action
 
   switch(type) {
     case 'CONFLICT_DETECTION_SUBMIT_START':
-      return { ...state, isSubmitting: true, countBeforeDetection }
+      return { ...state, isSubmitting: true, unregisteredClientsBeforeDetection, recentConflictsDetected }
     case 'CONFLICT_DETECTION_SUBMIT_END':
       return {
         ...state,
         isSubmitting: false,
         hasSubmitted: true,
         success,
-        message,
-        countAfterDetection: size(action.unregisteredClients)
+        message
       }
     case 'CONFLICT_DETECTION_NONE_FOUND':
       return { ...state, isSubmitting: false, success: true }
