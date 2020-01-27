@@ -194,6 +194,40 @@ function preferenceConflictDetection(
   }
 }
 
+function kitsQueryStatus(
+  state = {
+    success: false,
+    hasSubmitted: false,
+    isSubmitting: false,
+    message: ''
+  },
+  action = {}) {
+  const { type, success, message } = action
+
+  switch(type) {
+    case 'KITS_QUERY_START':
+      return { ...state, isSubmitting: true }
+    case 'KITS_QUERY_END':
+      return { ...state, isSubmitting: false, hasSubmitted: true, success, message }
+    default:
+      return state
+  }
+}
+
+function kits( state = [], action = {} ) {
+  const { type, data, success } = action
+  switch(type) {
+    case 'KITS_QUERY_END':
+      if(success) {
+        return get(data, 'me.kits', [])
+      } else {
+        return state
+      }
+    default:
+      return state
+  }
+}
+
 function pendingOptionConflicts(state = {}, action = {}) {
   const { type, detectedConflicts = {} } = action
 
@@ -401,7 +435,8 @@ export default combineReducers({
   clientPreferences: coerceEmptyArrayToEmptyObject,
   conflictDetectionScannerStatus,
   detectConflictsUntil,
-  kits: simple,
+  kits,
+  kitsQueryStatus,
   onSettingsPage: coerceBool,
   options,
   optionsFormState,
