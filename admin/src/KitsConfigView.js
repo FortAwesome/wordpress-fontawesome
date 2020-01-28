@@ -65,7 +65,7 @@ export default function KitsConfigView() {
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
   const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
 
-  const kitOptions = useSelector(state => {
+  const kitSelectOptions = useSelector(state => {
     return (state.kits || []).reduce((acc, kit) => {
       acc[kit.token] = kit.name
       return acc
@@ -125,9 +125,9 @@ export default function KitsConfigView() {
                 value={ kitToken || UNSPECIFIED }
                 >
                 {
-                  Object.keys(kitOptions).map((token, index) => {
+                  Object.keys(kitSelectOptions).map((token, index) => {
                     return <option key={ index } value={ token }>
-                      { token === UNSPECIFIED ? 'Select a kit' : `${ kitOptions[token] } (${ token })`}
+                      { token === UNSPECIFIED ? 'Select a kit' : `${ kitSelectOptions[token] } (${ token })`}
                     </option>
                   })
                 }
