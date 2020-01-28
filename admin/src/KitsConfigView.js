@@ -1,6 +1,6 @@
 import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { submitPendingOptions, queryKits, addPendingOption } from './store/actions'
+import { submitPendingOptions, queryKits, addPendingOption, checkPreferenceConflicts } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
@@ -56,6 +56,8 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
       // toggling svgPseudoElement support. But if that support is added
       svgPseudoElements: false
     }))
+
+    dispatch(checkPreferenceConflicts())
   }
 
   const kitsQueryStatus = useSelector(state => state.kitsQueryStatus)
