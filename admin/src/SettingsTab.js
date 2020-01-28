@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import OptionsView from './OptionsView'
 import KitsConfigView from './KitsConfigView'
 import sharedStyles from './App.module.css'
@@ -9,10 +9,23 @@ import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
+import has from 'lodash/has'
+import { addPendingOption } from './store/actions'
 
 export default function SettingsTab() {
+  const dispatch = useDispatch()
   const alreadyUsingKit = useSelector( state => !!state.options.kitToken )
   const [useKit, setUseKit] = useState(alreadyUsingKit)
+
+  const optionSelector = option => useSelector(state => 
+    has(state.pendingOptions, option)
+    ? state.pendingOptions[option]
+    : state.options[option]
+  )
+
+  function handleOptionChange(change = {}) {
+    dispatch(addPendingOption(change))
+  }
 
   return <div>
     <div className={ styles['select-config-container'] }>
@@ -78,8 +91,8 @@ export default function SettingsTab() {
       </div>
     </div>
     <>
-      { useKit && <KitsConfigView /> }
-      <OptionsView useKit={ useKit } />
+      { useKit && <KitsConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } /> }
+      <OptionsView useKit={ useKit } optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } />
     </>
   </div>
 }

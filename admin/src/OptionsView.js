@@ -25,13 +25,7 @@ import PropTypes from 'prop-types'
 
 const UNSPECIFIED = ''
 
-export default function OptionsView({ useKit }) {
-  const optionSelector = option => useSelector(state => 
-    has(state.pendingOptions, option)
-    ? state.pendingOptions[option]
-    : state.options[option]
-  )
-
+export default function OptionsView({ useKit, optionSelector }) {
   const usePro = optionSelector('usePro')
   const technology = optionSelector('technology')
   const version = optionSelector('version')
@@ -446,5 +440,7 @@ export default function OptionsView({ useKit }) {
 }
 
 OptionsView.propTypes = {
-  useKits: PropTypes.bool
+  useKits: PropTypes.bool,
+  optionSelector: PropTypes.func.isRequired,
+  handleOptionChange: PropTypes.func.isRequired
 }

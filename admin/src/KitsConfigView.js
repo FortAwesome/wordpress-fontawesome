@@ -1,7 +1,6 @@
 import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import has from 'lodash/has'
-import { addPendingOption, submitPendingOptions, queryKits } from './store/actions'
+import { submitPendingOptions, queryKits } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
@@ -10,21 +9,12 @@ import {
 import styles from './KitsConfigView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 
 const UNSPECIFIED = '-'
 
-export default function KitsConfigView() {
+export default function KitsConfigView({ optionSelector, handleOptionChange }) {
    const dispatch = useDispatch()
-
-   const optionSelector = option => useSelector(state => 
-    has(state.pendingOptions, option)
-    ? state.pendingOptions[option]
-    : state.options[option]
-  )
-
-  function handleOptionChange(change = {}) {
-    dispatch(addPendingOption(change))
-  }
 
   function removeApiToken() {
     handleOptionChange({ apiToken: false })
@@ -157,4 +147,9 @@ export default function KitsConfigView() {
       }
     </div>
   </div>
+}
+
+KitsConfigView.propTypes = {
+  optionSelector: PropTypes.func.isRequired,
+  handleOptionChange: PropTypes.func.isRequired
 }
