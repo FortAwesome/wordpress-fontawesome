@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import Options from './Options'
+import OptionsView from './OptionsView'
 import KitsConfigView from './KitsConfigView'
 import sharedStyles from './App.module.css'
-import optionStyles from './Options.module.css'
+import optionStyles from './OptionsView.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
@@ -80,7 +80,7 @@ export default function SettingsTab() {
     {
       useKits
       ? <KitsConfigView />
-      : <Options />
+      : <OptionsView />
     }
   </div>
 }

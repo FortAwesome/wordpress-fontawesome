@@ -14,7 +14,7 @@ import {
   faSkull,
   faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
-import styles from './Options.module.css'
+import styles from './OptionsView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import has from 'lodash/has'
@@ -24,7 +24,7 @@ import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
 
 const UNSPECIFIED = ''
 
-export default function Options(props) {
+export default function OptionsView() {
   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
     ? state.pendingOptions[option]
