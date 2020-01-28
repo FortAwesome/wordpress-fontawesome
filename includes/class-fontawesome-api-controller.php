@@ -31,6 +31,14 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 						public function metadata_query( $args ) {
 							error_log('DEBUG: mocking with MockMetaDataProvider');
 
+							/*
+							return new WP_Error(
+								'fontawesome_api_failed_request',
+								'mocked bad request',
+								array( 'status' => 400 )
+							);
+							*/
+
 							return json_decode(<<<EOD
 								{
 									"data": {
