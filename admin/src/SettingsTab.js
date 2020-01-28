@@ -10,7 +10,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
 import has from 'lodash/has'
-import { addPendingOption } from './store/actions'
+import { addPendingOption, resetOptionsForNonKit } from './store/actions'
 
 export default function SettingsTab() {
   const dispatch = useDispatch()
@@ -25,6 +25,17 @@ export default function SettingsTab() {
 
   function handleOptionChange(change = {}) {
     dispatch(addPendingOption(change))
+  }
+
+  /**
+   * In this case, we need to not only toggle the component's local
+   * state, but also get rid of the kitToken and any pending options
+   * that a kit selection might have put onto the form.
+   */
+  function handleNonKitConfigSelection() {
+    setUseKit( false )
+
+    dispatch( resetOptionsForNonKit() )
   }
 
   return <div>
@@ -66,7 +77,7 @@ export default function SettingsTab() {
           type="radio"
           value={ ! useKit }
           checked={ ! useKit }
-          onChange={ () => setUseKit(! useKit) }
+          onChange={ () => handleNonKitConfigSelection() }
           className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
         />
         <label htmlFor="select_use_cdn" className={ optionStyles['option-label'] }>

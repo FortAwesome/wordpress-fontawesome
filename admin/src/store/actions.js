@@ -199,6 +199,10 @@ export function checkPreferenceConflicts() {
   }
 }
 
+export function resetOptionsForNonKit() {
+  return { type: 'RESET_OPTIONS_FOR_NON_KIT' }
+}
+
 export function queryKits() {
   return function(dispatch, getState) {
     const { apiNonce, apiUrl } = getState()
