@@ -11,12 +11,10 @@ import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
-const UNSPECIFIED = '-'
-
 export default function KitsConfigView({ optionSelector, handleOptionChange }) {
   const dispatch = useDispatch()
   const kitToken = optionSelector('kitToken')
-  const kits = useSelector( state => state.kits )
+  const kits = useSelector( state => state.kits ) || []
 
   function removeApiToken() {
     handleOptionChange({ apiToken: false })
@@ -35,29 +33,18 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
    * with registered clients.
    */
   function handleKitChange({ kitToken }) {
+    if('' === kitToken) {
+      // You can't select a non-kit option. The empty option only
+      // appears in the selection dropdown as a placeholder before a kit is
+      // selected
+      return
+    }
+
     const selectedKit = (kits || []).find(k => k.token === kitToken)
 
     if( !selectedKit ) {
       throw new Error(`When selecting to use kit ${ kitToken }, somehow the information we needed was missing. Try reloading the page.`)
     }
-
-    /*
-											"autoAccessibilityEnabled": true,
-											"domains": [
-											  "*.*"
-											],
-											"integrityHash": "sha384-wPybhX+N4JKW9PJklK8cC+QNngu6rJv5lwuPRhqJgQM6hApd6s8hq9mJnb5IbeKM",
-											"licenseSelected": "pro",
-											"minified": true,
-											"name": "Alpha Kit",
-											"shimEnabled": true,
-											"status": "publishing",
-											"technologySelected": "webfonts",
-											"token": "778ccf8260",
-											"useIntegrityHash": false,
-											"version": "latest"
-
-    */
 
     dispatch(addPendingOption({
       kitToken,
@@ -103,13 +90,6 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
 
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
   const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
-
-  const kitSelectOptions = useSelector(state => {
-    return (state.kits || []).reduce((acc, kit) => {
-      acc[kit.token] = kit.name
-      return acc
-    }, { [UNSPECIFIED]: UNSPECIFIED })
-  })
 
   function ApiTokenInput() {
     return <>
@@ -161,12 +141,13 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
                 className={ styles['version-select'] }
                 name="kit"
                 onChange={ e => handleKitChange({ kitToken: e.target.value }) }
-                value={ kitToken || UNSPECIFIED }
+                value={ kitToken }
                 >
+                  <option key='empty' value=''>Select a kit</option>
                 {
-                  Object.keys(kitSelectOptions).map((token, index) => {
-                    return <option key={ index } value={ token }>
-                      { token === UNSPECIFIED ? 'Select a kit' : `${ kitSelectOptions[token] } (${ token })`}
+                  kits.map((kit, index) => {
+                    return <option key={ index } value={ kit.token }>
+                      { `${ kit.name } (${ kit.token })` }
                     </option>
                   })
                 }
