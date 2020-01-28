@@ -979,7 +979,8 @@ class FontAwesome {
 			foreach ( $this->client_preferences as $client_name => $client_preferences ) {
 				$current_conflicts = FontAwesome_Preference_Conflict_Detector::detect(
 					$options_for_comparison,
-					$client_preferences
+					$client_preferences,
+					$this->get_latest_version()
 				);
 				if ( count( $current_conflicts ) > 0 ) {
 					$conflicts[ $client_name ] = $current_conflicts;
