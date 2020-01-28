@@ -48,8 +48,8 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
 
     dispatch(addPendingOption({
       kitToken,
-      technology: selectedKit.technology,
-      usePro: selectedKit.licenseSelected === 'pro',
+      technology: 'svg' == selectedKit.technologySelected ? 'svg' : 'webfont',
+      usePro: 'pro' === selectedKit.licenseSelected,
       v4compat: selectedKit.shimEnabled,
       version: selectedKit.version,
       // At the time this is being implemented, kits don't yet support
