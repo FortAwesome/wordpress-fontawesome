@@ -58,7 +58,7 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 											"technologySelected": "webfonts",
 											"token": "778ccf8260",
 											"useIntegrityHash": false,
-											"version": "latest"
+											"version": "5.4.1"
 										  },
 										  {
 											"autoAccessibilityEnabled": false,
