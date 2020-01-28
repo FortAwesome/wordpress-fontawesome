@@ -1,10 +1,8 @@
 import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import has from 'lodash/has'
-import size from 'lodash/size'
 import { addPendingOption, submitPendingOptions, queryKits } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
 import {
   faSpinner,
   faCheck,
@@ -28,23 +26,11 @@ export default function KitsConfigView() {
     dispatch(addPendingOption(change))
   }
 
-  function handleSubmitClick(e) {
-    e.preventDefault()
-
-    dispatch(submitPendingOptions())
-  }
-
   function removeApiToken() {
     handleOptionChange({ apiToken: false })
     dispatch(submitPendingOptions())
   }
 
-  const pendingOptions = useSelector(state => state.pendingOptions)
-  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
-  const submitSuccess = useSelector(state => state.optionsFormState.success)
-  const submitMessage = useSelector(state => state.optionsFormState.message)
-  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
-  const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
   const kitsQueryStatus = useSelector(state => state.kitsQueryStatus)
 
   /**
@@ -74,13 +60,6 @@ export default function KitsConfigView() {
       dispatch( queryKits() )
     }
   }, [ kitsQueryStatus.hasSubmitted ])
-
-  /*
-  const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
-  const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
-  const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
-  const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
-  */
 
   const kitToken = optionSelector('kitToken')
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
@@ -175,43 +154,6 @@ export default function KitsConfigView() {
             <KitSelector />
           </>
         : <ApiTokenInput />
-      }
-    </div>
-    <div className="submit">
-      <input
-        type="submit"
-        name="submit"
-        id="submit"
-        className="button button-primary"
-        value="Save Changes"
-        disabled={ size(pendingOptions) === 0 }
-        onClick={ handleSubmitClick }
-      />
-      { hasSubmitted 
-        ? submitSuccess
-          ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-              <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
-            </span>
-          : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-              <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-              </div>
-              <div className={ sharedStyles['explanation'] }>
-                { submitMessage }
-              </div>
-            </div>
-        : null
-      }
-      {
-        isSubmitting
-        ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
-          </span>
-        : isChecking
-          ? <CheckingOptionStatusIndicator/>
-          : size(pendingOptions) > 0
-            ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
-            : null
       }
     </div>
   </div>

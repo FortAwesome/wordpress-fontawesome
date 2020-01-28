@@ -12,7 +12,7 @@ import styles from './SettingsTab.module.css'
 
 export default function SettingsTab() {
   const alreadyUsingKit = useSelector( state => !!state.options.kitToken )
-  const [useKits, setUseKits] = useState(alreadyUsingKit)
+  const [useKit, setUseKit] = useState(alreadyUsingKit)
 
   return <div>
     <div className={ styles['select-config-container'] }>
@@ -21,9 +21,9 @@ export default function SettingsTab() {
           id="select_use_kits"
           name="select_use_kits"
           type="radio"
-          value={ useKits }
-          checked={ useKits }
-          onChange={ () => setUseKits(! useKits) }
+          value={ useKit }
+          checked={ useKit }
+          onChange={ () => setUseKit(! useKit) }
           className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
         />
         <label htmlFor="select_use_kits" className={ optionStyles['option-label'] }>
@@ -51,9 +51,9 @@ export default function SettingsTab() {
           id="select_use_cdn"
           name="select_use_cdn"
           type="radio"
-          value={ ! useKits }
-          checked={ ! useKits }
-          onChange={ () => setUseKits(! useKits) }
+          value={ ! useKit }
+          checked={ ! useKit }
+          onChange={ () => setUseKit(! useKit) }
           className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
         />
         <label htmlFor="select_use_cdn" className={ optionStyles['option-label'] }>
@@ -77,10 +77,9 @@ export default function SettingsTab() {
         </label>
       </div>
     </div>
-    {
-      useKits
-      ? <KitsConfigView />
-      : <OptionsView />
-    }
+    <>
+      { useKit && <KitsConfigView /> }
+      <OptionsView useKit={ useKit } />
+    </>
   </div>
 }
