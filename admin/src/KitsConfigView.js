@@ -2,7 +2,7 @@ import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import has from 'lodash/has'
 import size from 'lodash/size'
-import { addPendingOption, submitPendingOptions } from './store/actions'
+import { addPendingOption, submitPendingOptions, queryKits } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
 import {
@@ -45,6 +45,7 @@ export default function KitsConfigView(props) {
   const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
+  const kitsQueryStatus = useSelector(state => state.kitsQueryStatus)
 
   /**
    * This seems like a lot of effort just to keep the focus on the API Token input
@@ -65,6 +66,14 @@ export default function KitsConfigView(props) {
       apiTokenInputRef.current.focus()
     }
   })
+
+  // Kits query effect: when we first load the page, if we havent' already loaded
+  // any kits, load them.
+  useEffect(() => {
+    if ( ! kitsQueryStatus.hasSubmitted ) {
+      dispatch( queryKits() )
+    }
+  }, [ kitsQueryStatus.hasSubmitted ])
 
   /*
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
@@ -118,20 +127,42 @@ export default function KitsConfigView(props) {
 
   function KitSelector() {
       return <div className={ styles['kit-selector-container'] }>
-          <select
-          className={ styles['version-select'] }
-          name="kit"
-          onChange={ e => handleOptionChange({ kitToken: e.target.value }) }
-          value={ kitToken || UNSPECIFIED }
-        >
-          {
-            Object.keys(kitOptions).map((token, index) => {
-              return <option key={ index } value={ token }>
-                { token === UNSPECIFIED ? 'Select a kit' : `${ kitOptions[token] } (${ token })`}
-              </option>
-            })
-          }
-        </select>
+        {
+          kitsQueryStatus.isSubmitting
+          ? <div>
+              <span>
+                Loading your kits...
+              </span>
+              <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+              </span>
+            </div>
+          : kitsQueryStatus.hasSubmitted
+            ? kitsQueryStatus.success
+              ? <select
+                className={ styles['version-select'] }
+                name="kit"
+                onChange={ e => handleOptionChange({ kitToken: e.target.value }) }
+                value={ kitToken || UNSPECIFIED }
+                >
+                {
+                  Object.keys(kitOptions).map((token, index) => {
+                    return <option key={ index } value={ token }>
+                      { token === UNSPECIFIED ? 'Select a kit' : `${ kitOptions[token] } (${ token })`}
+                    </option>
+                  })
+                }
+                </select>
+              : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+                  <div className={ classnames(sharedStyles['fail-icon-container']) }>
+                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
+                  </div>
+                  <div className={ sharedStyles['explanation'] }>
+                    { kitsQueryStatus.message }
+                  </div>
+                </div>
+          : null
+        }
       </div>
   }
 
