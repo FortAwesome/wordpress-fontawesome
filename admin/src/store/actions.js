@@ -246,6 +246,12 @@ export function queryKits() {
           message: 'Failed to fetch kits'
         })
       }
+    }).catch(error => {
+        dispatch({
+          type: 'KITS_QUERY_END',
+          success: false,
+          message: 'Failed to fetch kits'
+        })
     })
   }
 }
