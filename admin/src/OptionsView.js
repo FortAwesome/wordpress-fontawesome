@@ -21,10 +21,11 @@ import has from 'lodash/has'
 import size from 'lodash/size'
 import Alert from './Alert'
 import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
+import PropTypes from 'prop-types'
 
 const UNSPECIFIED = ''
 
-export default function OptionsView() {
+export default function OptionsView({ useKit }) {
   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
     ? state.pendingOptions[option]
@@ -115,6 +116,7 @@ export default function OptionsView() {
                   type="radio"
                   value="svg"
                   checked={ usePro }
+                  disabled={ useKit }
                   onChange={ () => handleOptionChange({ usePro: true }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
@@ -145,6 +147,7 @@ export default function OptionsView() {
                   type="radio"
                   value="webfont"
                   checked={ ! usePro }
+                  disabled={ useKit }
                   onChange={ () => handleOptionChange({ usePro: false }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
@@ -196,6 +199,7 @@ export default function OptionsView() {
                   type="radio"
                   value="svg"
                   checked={ technology === 'svg' }
+                  disabled={ useKit }
                   onChange={ () => handleOptionChange({ technology: 'svg' }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
@@ -226,6 +230,7 @@ export default function OptionsView() {
                   type="radio"
                   value="webfont"
                   checked={ technology === 'webfont' }
+                  disabled={ useKit }
                   onChange={ () => handleOptionChange({
                     technology: 'webfont',
                     svgPseudoElements: false
@@ -267,6 +272,7 @@ export default function OptionsView() {
                   type="checkbox"
                   value="svg_pseudo_elements"
                   checked={ svgPseudoElements }
+                  disabled={ useKit }
                   onChange={() => handleOptionChange({ svgPseudoElements: !svgPseudoElements })}
                   className={classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom'])}
                 />
@@ -306,20 +312,24 @@ export default function OptionsView() {
           <div className={ styles['option-header'] }>Version</div>
           <div className={ styles['option-choice-container'] }>
             <div className={ styles['option-choices'] }>
-              <select
-                className={ styles['version-select'] }
-                name="version"
-                onChange={ e => handleOptionChange({ version: e.target.value }) }
-                value={ version }
-              >
-                {
-                  Object.keys(versionOptions).map((version, index) => {
-                    return <option key={ index } value={ version }>
-                      { version === UNSPECIFIED ? '-' : versionOptions[version] }
-                    </option>
-                  })
-                }
-              </select>
+              {
+                useKit
+                ? <span>kit version: { version }</span>
+                : <select
+                    className={ styles['version-select'] }
+                    name="version"
+                    onChange={ e => handleOptionChange({ version: e.target.value }) }
+                    value={ version }
+                  >
+                    {
+                      Object.keys(versionOptions).map((version, index) => {
+                        return <option key={ index } value={ version }>
+                          { version === UNSPECIFIED ? '-' : versionOptions[version] }
+                        </option>
+                      })
+                    }
+                  </select>
+              }
             </div>
             { getDetectionStatusForOption('version') }
           </div>
@@ -433,4 +443,8 @@ export default function OptionsView() {
       }
     </div>
   </div>
+}
+
+OptionsView.propTypes = {
+  useKits: PropTypes.bool
 }
