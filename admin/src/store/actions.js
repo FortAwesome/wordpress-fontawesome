@@ -199,6 +199,57 @@ export function checkPreferenceConflicts() {
   }
 }
 
+export function queryKits() {
+  return function(dispatch, getState) {
+    const { apiNonce, apiUrl } = getState()
+
+    dispatch({ type: 'KITS_QUERY_START' })
+
+    axios.post(
+      `${apiUrl}/api`,
+      `query {
+        me {
+          kits {
+            name
+            version
+            technologySelected
+            licenseSelected
+            domains
+            minified
+            token
+            shimEnabled
+            integrityHash
+            useIntegrityHash
+            autoAccessibilityEnabled
+            status
+          }
+        }
+      }`,
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    ).then(response => {
+      const { status, data } = response
+
+      if ( 200 === status ) {
+        dispatch({
+          type: 'KITS_QUERY_END',
+          data,
+          success: true
+        })
+      } else {
+        dispatch({
+          type: 'KITS_QUERY_END',
+          success: false,
+          message: 'Failed to fetch kits'
+        })
+      }
+    })
+  }
+}
+
 export function submitPendingOptions() {
   return function(dispatch, getState) {
     const { apiNonce, apiUrl, options, pendingOptions } = getState()
@@ -225,50 +276,7 @@ export function submitPendingOptions() {
 
         // Now, if we have an API key, we should fetch or re-fetch kits
         if ( data.apiToken ) {
-          dispatch({ type: 'KITS_QUERY_START' })
-
-          axios.post(
-            `${apiUrl}/api`,
-            `query {
-              me {
-                kits {
-                  name
-                  version      
-                  technologySelected
-                  licenseSelected
-                  domains
-                  minified
-                  token
-                  shimEnabled
-                  integrityHash
-                  useIntegrityHash
-                  autoAccessibilityEnabled
-                  status
-                }
-              }
-            }`,
-            {
-              headers: {
-                'X-WP-Nonce': apiNonce
-              }
-            }
-          ).then(response => {
-            const { status, data } = response
-
-            if ( 200 === status ) {
-              dispatch({
-                type: 'KITS_QUERY_END',
-                data,
-                success: true
-              })
-            } else {
-              dispatch({
-                type: 'KITS_QUERY_END',
-                success: false,
-                message: 'Failed to fetch kits'
-              })
-            }
-          })
+          dispatch(queryKits())
         }
     } else {
       dispatch({
