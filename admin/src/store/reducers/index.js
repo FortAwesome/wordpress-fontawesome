@@ -106,6 +106,8 @@ function blocklistUpdateStatus(
       } else {
         return state
       }
+    case 'RESET_OPTIONS_FOR_NON_KIT':
+      return { ...state, kitToken: null }
     default:
       return state
   }
@@ -146,6 +148,17 @@ function pendingOptions(state = {}, action = {}) {
     case 'RESET_PENDING_OPTION':
       const option = Object.keys(change)[0]
       return omit(state, option)
+    case 'RESET_OPTIONS_FOR_NON_KIT':
+      // If we're switching from kit-based config to a non-kit config
+      // we'll want to reset any related pending configuration options.
+      // But, for now, we'll assume that if the user has any pending blocklist
+      // changes, those should not be reset.
+      const { blocklist } = state
+      if(blocklist) {
+        return { blocklist }
+      } else {
+        return {}
+      }
     case 'RESET_PENDING_OPTIONS':
     case 'OPTIONS_FORM_SUBMIT_END':
       return {}
