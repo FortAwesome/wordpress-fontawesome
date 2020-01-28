@@ -15,7 +15,7 @@ import classnames from 'classnames'
 
 const UNSPECIFIED = '-'
 
-export default function KitsConfigView(props) {
+export default function KitsConfigView() {
    const dispatch = useDispatch()
 
    const optionSelector = option => useSelector(state => 
