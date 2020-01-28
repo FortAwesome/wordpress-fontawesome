@@ -1,6 +1,6 @@
 import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { submitPendingOptions, queryKits } from './store/actions'
+import { submitPendingOptions, queryKits, addPendingOption } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
@@ -14,11 +14,61 @@ import PropTypes from 'prop-types'
 const UNSPECIFIED = '-'
 
 export default function KitsConfigView({ optionSelector, handleOptionChange }) {
-   const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  const kitToken = optionSelector('kitToken')
+  const kits = useSelector( state => state.kits )
 
   function removeApiToken() {
     handleOptionChange({ apiToken: false })
+    // TODO: validate the assumption that at the time we do this submission,
+    // the only pending option is the apiToken. We're not trying to set any
+    // other options at this point
     dispatch(submitPendingOptions())
+  }
+  
+  /**
+   * When selecting a kit, we go through each of its configuration options
+   * and add them as pending options. We don't set those options in this system:
+   * they come as read-only from the Font Awesome API. But setting them as pending
+   * here allows them to processed by the preference checker to notify the user
+   * in the UI if selecting this kit would result in any known preference conflicts
+   * with registered clients.
+   */
+  function handleKitChange({ kitToken }) {
+    const selectedKit = (kits || []).find(k => k.token === kitToken)
+
+    if( !selectedKit ) {
+      throw new Error(`When selecting to use kit ${ kitToken }, somehow the information we needed was missing. Try reloading the page.`)
+    }
+
+    /*
+											"autoAccessibilityEnabled": true,
+											"domains": [
+											  "*.*"
+											],
+											"integrityHash": "sha384-wPybhX+N4JKW9PJklK8cC+QNngu6rJv5lwuPRhqJgQM6hApd6s8hq9mJnb5IbeKM",
+											"licenseSelected": "pro",
+											"minified": true,
+											"name": "Alpha Kit",
+											"shimEnabled": true,
+											"status": "publishing",
+											"technologySelected": "webfonts",
+											"token": "778ccf8260",
+											"useIntegrityHash": false,
+											"version": "latest"
+
+    */
+
+    dispatch(addPendingOption({
+      kitToken,
+      technology: selectedKit.technology,
+      usePro: selectedKit.licenseSelected === 'pro',
+      v4compat: selectedKit.shimEnabled,
+      version: selectedKit.version,
+      // At the time this is being implemented, kits don't yet support
+      // toggling svgPseudoElement support. But if that support is added
+      svgPseudoElements: false
+    }))
   }
 
   const kitsQueryStatus = useSelector(state => state.kitsQueryStatus)
@@ -51,7 +101,6 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
     }
   }, [ kitsQueryStatus.hasSubmitted ])
 
-  const kitToken = optionSelector('kitToken')
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
   const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
 
@@ -111,7 +160,7 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
               ? <select
                 className={ styles['version-select'] }
                 name="kit"
-                onChange={ e => handleOptionChange({ kitToken: e.target.value }) }
+                onChange={ e => handleKitChange({ kitToken: e.target.value }) }
                 value={ kitToken || UNSPECIFIED }
                 >
                 {
