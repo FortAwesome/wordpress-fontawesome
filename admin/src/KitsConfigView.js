@@ -143,7 +143,7 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
                 className={ styles['version-select'] }
                 name="kit"
                 onChange={ e => handleKitChange({ kitToken: e.target.value }) }
-                value={ kitToken }
+                value={ kitToken || '' }
                 >
                   <option key='empty' value=''>Select a kit</option>
                 {
