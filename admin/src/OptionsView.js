@@ -159,7 +159,7 @@ export default function OptionsView({ useKit, optionSelector, handleSubmit }) {
                 </label>
               </div>
             </div>
-            { usePro &&
+            { ( usePro && !useKit ) &&
               <Alert title='Pro requires a Font Awesome subscription' type='info'>
                 <ul>
                   <li>
