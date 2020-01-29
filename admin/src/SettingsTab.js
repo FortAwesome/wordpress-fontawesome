@@ -10,7 +10,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
 import has from 'lodash/has'
-import { addPendingOption, resetOptionsForNonKit } from './store/actions'
+import { addPendingOption, changeOptionsAwayFromKit } from './store/actions'
 
 export default function SettingsTab() {
   const dispatch = useDispatch()
@@ -23,7 +23,11 @@ export default function SettingsTab() {
     : state.options[option]
   )
 
+  // The kitToken that may be a pendingOption
   const kitToken = optionSelector( 'kitToken' )
+
+  // The one that's actually saved in the database already
+  const activeKitToken = useSelector( state => state.options.kitToken )
 
   function handleOptionChange(change = {}) {
     dispatch(addPendingOption(change))
@@ -34,10 +38,10 @@ export default function SettingsTab() {
    * state, but also get rid of the kitToken and any pending options
    * that a kit selection might have put onto the form.
    */
-  function handleNonKitConfigSelection() {
+  function handleSwitchAwayFromKitConfig() {
     setUseKit( false )
 
-    dispatch( resetOptionsForNonKit() )
+    dispatch( changeOptionsAwayFromKit({ activeKitToken }) )
   }
 
   return <div>
@@ -79,7 +83,7 @@ export default function SettingsTab() {
           type="radio"
           value={ ! useKit }
           checked={ ! useKit }
-          onChange={ () => handleNonKitConfigSelection() }
+          onChange={ () => handleSwitchAwayFromKitConfig() }
           className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
         />
         <label htmlFor="select_use_cdn" className={ optionStyles['option-label'] }>
