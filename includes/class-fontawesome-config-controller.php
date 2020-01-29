@@ -34,16 +34,11 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 					}
 
 /**
- * Module for this plugin's Configuration REST API controller
+ * Module for this plugin's Configuration REST API controller.
  *
- * @noinspection PhpIncludeInspection
- */
-
-// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-/**
+ * @internal
  * @ignore
  */
-
 if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 	/**
