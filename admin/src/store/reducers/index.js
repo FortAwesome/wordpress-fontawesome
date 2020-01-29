@@ -260,6 +260,8 @@ function pendingOptionConflicts(state = {}, action = {}) {
     case 'PREFERENCE_CHECK_END':
       return { ...detectedConflicts }
     case 'OPTIONS_FORM_SUBMIT_END':
+    case 'CHOOSE_AWAY_FROM_KIT_CONFIG':
+    case 'CHOOSE_INTO_KIT_CONFIG':
       return {}
     default:
       return state
