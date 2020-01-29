@@ -11,10 +11,14 @@ import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
-export default function KitsConfigView({ optionSelector, handleOptionChange }) {
+export default function KitsConfigView({ optionSelector, handleOptionChange, handleSubmit }) {
   const dispatch = useDispatch()
   const kitToken = optionSelector('kitToken')
   const kits = useSelector( state => state.kits ) || []
+  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
+  const submitSuccess = useSelector(state => state.optionsFormState.success)
+  const submitMessage = useSelector(state => state.optionsFormState.message)
+  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
 
   function removeApiToken() {
     handleOptionChange({ apiToken: false })
@@ -77,7 +81,7 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
   const apiTokenInputRef = createRef()
   const [ apiTokenInputHasFocus, setApiTokenInputHasFocus ] = useState( false )
   useEffect(() => {
-    if( apiTokenInputHasFocus ) {
+    if( !!apiTokenInputRef.current && apiTokenInputHasFocus ) {
       apiTokenInputRef.current.focus()
     }
   })
@@ -106,12 +110,39 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
         placeholder="paste API Token here"
         value={ pendingApiToken }
         size="20"
-        onBlur={ () => setApiTokenInputHasFocus( false ) }
         onChange={ e => {
           setApiTokenInputHasFocus( true )
           handleOptionChange({ apiToken: e.target.value }) 
         }}
       />
+      <div className="submit">
+        <input
+          type="submit"
+          name="submit"
+          id="submit"
+          className="button button-primary"
+          value="Save Changes"
+          disabled={ !pendingApiToken }
+          onMouseDown={ handleSubmit }
+        />
+        { 
+          (hasSubmitted && ! submitSuccess) &&
+          <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+            <div className={ classnames(sharedStyles['fail-icon-container']) }>
+              <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
+            </div>
+            <div className={ sharedStyles['explanation'] }>
+              { submitMessage }
+            </div>
+          </div>
+        }
+        {
+          isSubmitting &&
+          <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+          </span>
+        }
+      </div>
     </>
   }
 
@@ -183,5 +214,6 @@ export default function KitsConfigView({ optionSelector, handleOptionChange }) {
 
 KitsConfigView.propTypes = {
   optionSelector: PropTypes.func.isRequired,
-  handleOptionChange: PropTypes.func.isRequired
+  handleOptionChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired
 }

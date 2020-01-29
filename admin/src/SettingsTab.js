@@ -10,7 +10,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
 import has from 'lodash/has'
-import { addPendingOption, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
+import { addPendingOption, submitPendingOptions, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
 
 export default function SettingsTab() {
   const dispatch = useDispatch()
@@ -22,6 +22,14 @@ export default function SettingsTab() {
     ? state.pendingOptions[option]
     : state.options[option]
   )
+
+  function handleSubmit(e) {
+    if(!!e && 'function' == typeof e.preventDefault) {
+      e.preventDefault()
+    }
+
+    dispatch(submitPendingOptions())
+  }
 
   // The kitToken that may be a pendingOption
   const kitToken = optionSelector( 'kitToken' )
@@ -114,10 +122,10 @@ export default function SettingsTab() {
       </div>
     </div>
     <>
-      { useKit && <KitsConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } /> }
+      { useKit && <KitsConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/> }
       {
         (!useKit || !!kitToken)
-        ? <OptionsView useKit={ useKit } optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } />
+        ? <OptionsView useKit={ useKit } optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
         : null
       }
     </>
