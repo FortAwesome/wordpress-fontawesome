@@ -4,12 +4,14 @@ import { submitPendingOptions, queryKits, addPendingOption, checkPreferenceConfl
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
+  faExternalLinkAlt,
   faCheck,
   faSkull } from '@fortawesome/free-solid-svg-icons'
 import styles from './KitsConfigView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
+import size from 'lodash/size'
 
 export default function KitsConfigView({ optionSelector, handleOptionChange, handleSubmit }) {
   const dispatch = useDispatch()
@@ -173,21 +175,26 @@ export default function KitsConfigView({ optionSelector, handleOptionChange, han
             </div>
           : kitsQueryStatus.hasSubmitted
             ? kitsQueryStatus.success
-              ? <select
-                className={ styles['version-select'] }
-                name="kit"
-                onChange={ e => handleKitChange({ kitToken: e.target.value }) }
-                value={ kitToken || '' }
-                >
-                  <option key='empty' value=''>Select a kit</option>
-                {
-                  kits.map((kit, index) => {
-                    return <option key={ index } value={ kit.token }>
-                      { `${ kit.name } (${ kit.token })` }
-                    </option>
-                  })
-                }
-                </select>
+              ? size( kits ) > 0
+                ? <select
+                  className={ styles['version-select'] }
+                  name="kit"
+                  onChange={ e => handleKitChange({ kitToken: e.target.value }) }
+                  value={ kitToken || '' }
+                  >
+                    <option key='empty' value=''>Select a kit</option>
+                  {
+                    kits.map((kit, index) => {
+                      return <option key={ index } value={ kit.token }>
+                        { `${ kit.name } (${ kit.token })` }
+                      </option>
+                    })
+                  }
+                  </select>
+                : <>
+                  <p>Oh no! You don't have any kits set up.</p>
+                  <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits"><FontAwesomeIcon icon={faExternalLinkAlt} />Font Awesome account</a> to create one. Then come back here and reload this page.</p>
+                </>
               : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
                   <div className={ classnames(sharedStyles['fail-icon-container']) }>
                     <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
