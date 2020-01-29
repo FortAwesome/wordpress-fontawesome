@@ -461,6 +461,24 @@ class FontAwesome {
 		}
 	}
 
+	/**
+	 * Returns boolean indicating whether a kit is configured.
+	 * 
+	 * It normally shouldn't make a difference to other theme's or plugins
+	 * as to whether Font Awesome is configured to use the standard CDN or a kit.
+	 * Yet this is a valid way to determine that.
+	 *
+	 * @since 4.0.0
+	 * @return bool
+	 */
+	public function using_kit() {
+		$options = $this->options();
+		return isset( $options['kitToken'] )
+			&& isset( $options['apiToken'] )
+			&& $options['apiToken']
+			&& is_string( $options['kitToken'] );
+	}
+
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * @ignore

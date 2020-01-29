@@ -345,5 +345,65 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		fa()->refresh_releases();
 
 		$this->assertEqualsWithDelta( time(), fa()->releases_refreshed_at(), 1 );
+  }
+
+	public function test_using_kits_when_default() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			FontAwesome::DEFAULT_USER_OPTIONS
+		);
+
+		$this->assertFalse(
+			fa()->using_kit()
+		);
+	}
+
+	public function test_using_kits_when_lacking_kit_token() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'apiToken' => true
+				)
+			)
+		);
+
+		$this->assertFalse(
+			fa()->using_kit()
+		);
+	}
+
+	public function test_using_kits_when_lacking_api_token() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'kitToken' => 'abc123'
+				)
+			)
+		);
+
+		$this->assertFalse(
+			fa()->using_kit()
+		);
+	}
+
+	public function test_using_kits_when_valid_kit() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				)
+			)
+		);
+
+		$this->assertTrue(
+			fa()->using_kit()
+		);
 	}
 }
