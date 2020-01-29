@@ -152,7 +152,10 @@ export default function KitsConfigView({ optionSelector, handleOptionChange, han
       <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
         <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
       </span>
-      <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button">remove</button>
+      {
+        !!kitToken ||
+        <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button">remove</button>
+      }
     </div>
   }
 
