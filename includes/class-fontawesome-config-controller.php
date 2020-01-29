@@ -138,7 +138,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					fa_api_settings()->remove();
 				}
 
-				$db_item = $this->prepare_item_for_database( $given_options, boolval( $api_token ) );
+				$db_item = $this->prepare_item_for_database( $given_options );
+
+				if ( $db_item instanceof WP_Error ) {
+					return $db_item;
+				}
 
 				update_option(
 					FontAwesome::OPTIONS_KEY,
@@ -169,8 +173,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$return_data = $this->build_item( fa() );
 				return new WP_REST_Response( $return_data, 200 );
-			} catch ( FontAwesome_ConfigurationException $e ) {
-				return new WP_Error( 'cant_update', $e->getMessage(), array( 'status' => 400 ) );
 			} catch ( Exception $e ) {
 				return new WP_Error(
 					'cant_update',
@@ -190,16 +192,43 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @internal
 		 * @ignore
 		 * @param array $given_options the options from the request body
-		 * @throws FontAwesome_ConfigurationException when options indicate a non-kits
-		 *   CDN configuration, but no valid version is present.
+		 * @return WP_Error|array The item to store on the options key or WP_Error
+		 *     if there is some error.
 		 */
 		protected function prepare_item_for_database( $given_options ) {
-			// start with a copy of the defaults and just override them indivually
+			// start with a copy of the defaults and just override them indivually.
 			$item = array_merge( array(), FontAwesome::DEFAULT_USER_OPTIONS );
 			$given_options = isset( $body['options'] ) ? $body['options'] : [];
 
-			// Most of the options are handled in the same way:
-			// if they are provided at all, we just use that to override the default
+			/**
+			 * The apiToken is handled specially.
+			 * We only store a boolean value indicating whether and apiToken
+			 * has been stored. It's the responsibility of the calling code
+			 * to store the actual API Token appropriately.
+			 */
+			$api_token = isset( $given_options['apiToken'] ) && boolval( $given_options['apiToken'] );
+			$item['apiToken'] = boolval( $given_options['apiToken'] );
+
+			/**
+			 * kitToken is handled specially.
+			 * If one is provided, but there's no API token, then that is invalid.
+			 */
+			if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) ) {
+				if ( $api_token ) {
+					$item['kitToken'] = $given_options['kitToken'];
+				} else {
+					return new WP_Error(
+						'fontawesome_config',
+						'A kitToken was given without a valid apiToken',
+						array( 'status' => 400 )
+					);
+				}
+			}
+
+			/**
+			 * For the following options, if they are provided at all, we just
+			 * use that to override the default.
+			 */
 			if ( isset( $given_options['usePro'] ) ) {
 				$item['usePro'] = $given_options['usePro'];
 			}
@@ -215,9 +244,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			if ( isset( $given_options['detectConflictsUntil'] ) ) {
 				$item['detectConflictsUntil'] = $given_options['detectConflictsUntil'];
 			}
-			if ( isset( $given_options['kitToken'] ) ) {
-				$item['kitToken'] = $given_options['kitToken'];
-			}
 			if ( isset( $given_options['usePro'] ) ) {
 				$item['usePro'] = $given_options['usePro'];
 			}
@@ -225,34 +251,33 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$item['blocklist'] = $given_options['blocklist'];
 			}
 
-			// The apiToken is handled specially.
-			// We only store a boolean value indicating whether and apiToken
-			// has been stored. It's the responsibility of the calling code
-			// to store the actual API Token appropriately.
-			if ( isset( $given_options['apiToken'] ) ) {
-				$item['apiToken'] = boolval( $given_options['apiToken'] );
-			}
+			$version_is_symbolic_latest = isset( $given_options['version'] )
+				&& 'latest' === $given_options['version'];
 
-			// The version is handled specially.
-			// 1. An valid version number but be used, if any version is present at all.
-			//    The string 'latest' is not valid here. It's need to be something like 5.12.0.
-			//
-			// 2. If the options are configured to use a kit, then version is not
-			//    required, because the version comes from the kit itself. Otherwise,
-			//    we must have a version. It's configured to use a kit if the kitToken
-			//    is some string value.
-			//
-			// 3. To ensure that switching back and forth between kits and non-kits
-			//    configurations is smooth, if we do switch a kits config here, we'll
-			//    keep the last-used version.
-			if (! isset( $given_options['kitToken'] ) || ! is_string( $given_options['kitToken'] ) ) {
-				if ( isset( $given_options['version'] ) && 1 === preg_match('/[0-9]+\.[0-9]+/', $given_options['version'] ) ) {
-					$item['version'] = $given_options['version'];
-				} else {
-					throw new FontAwesome_ConfigurationException('valid version expected but not given');
-				}
+			$version_is_concrete = isset( $given_options['version'] )
+				&& 1 === preg_match('/[0-9]+\.[0-9]+/', $given_options['version'] );
+
+			/**
+			 * The version is handled specially.
+			 *
+			 * An valid concrete version number must be used, if any version is present at all.
+			 * The string 'latest' is not valid here. It's need to be something like 5.12.0.
+			 */
+			if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) && $version_is_symbolic_latest ) {
+				// We're using a kit, so the possibility of using 'latest' as a version applies. 
+				$item['version'] = fa()->get_latest_version();
+			} elseif ( $version_is_concrete ) {
+				/**
+				 * If it's not a kit with 'latest', then it must be concrete like '5.4.1'.
+				 * It may not be symbolic like 'latest'.
+				 */
+				$item['version'] = $given_options['version'];
 			} else {
-				$item['version'] = fa()->version();
+				return new WP_Error(
+					'fontawesome_config',
+					'A version number in the form major.minor.patch expected but not given',
+					array( 'status' => 400 )
+				);
 			}
 
 			return $item;
