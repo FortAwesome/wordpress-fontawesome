@@ -2,8 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   addPendingOption,
-  checkPreferenceConflicts,
-  submitPendingOptions
+  checkPreferenceConflicts
 } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -25,7 +24,7 @@ import PropTypes from 'prop-types'
 
 const UNSPECIFIED = ''
 
-export default function OptionsView({ useKit, optionSelector }) {
+export default function OptionsView({ useKit, optionSelector, handleSubmit }) {
   const usePro = optionSelector('usePro')
   const technology = optionSelector('technology')
   const version = optionSelector('version')
@@ -62,12 +61,6 @@ export default function OptionsView({ useKit, optionSelector }) {
   function handleOptionChange(change = {}, check = true) {
     dispatch(addPendingOption(change))
     check && dispatch(checkPreferenceConflicts())
-  }
-
-  function handleSubmitClick(e) {
-    e.preventDefault()
-
-    dispatch(submitPendingOptions())
   }
 
   function getDetectionStatusForOption(option) {
@@ -407,7 +400,7 @@ export default function OptionsView({ useKit, optionSelector }) {
         className="button button-primary"
         value="Save Changes"
         disabled={ size(pendingOptions) === 0 }
-        onClick={ handleSubmitClick }
+        onClick={ handleSubmit }
       />
       { hasSubmitted 
         ? submitSuccess
@@ -442,5 +435,6 @@ export default function OptionsView({ useKit, optionSelector }) {
 OptionsView.propTypes = {
   useKits: PropTypes.bool,
   optionSelector: PropTypes.func.isRequired,
-  handleOptionChange: PropTypes.func.isRequired
+  handleOptionChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired
 }
