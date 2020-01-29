@@ -86,16 +86,16 @@ export default function KitsConfigView({ optionSelector, handleOptionChange, han
     }
   })
 
+  const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
+  const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
+
   // Kits query effect: when we first load the page, if we havent' already loaded
   // any kits, load them.
   useEffect(() => {
-    if ( ! kitsQueryStatus.hasSubmitted ) {
+    if ( (hasSavedApiToken || !!pendingApiToken) && !kitsQueryStatus.hasSubmitted ) {
       dispatch( queryKits() )
     }
-  }, [ kitsQueryStatus.hasSubmitted ])
-
-  const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
-  const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
+  }, [ kitsQueryStatus.hasSubmitted, pendingApiToken, hasSavedApiToken ])
 
   function ApiTokenInput() {
     return <>
