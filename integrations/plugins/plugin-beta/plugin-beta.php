@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Beta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client with preferences version: 5.1.0, v4shim: on. Prepends a block before each blog post that displays (1) "fab fa-font-awesome", (2) "fa fa-arrows", which is a v4 icon declaration that the v4 shim should translate to "fas fa-arrows-alt", and (3) "fas fa-angry", which was a new icon in v5.1.0.
+ * Description:       Registered Client with preferences version: webfont, 5.1.0, v4shim: on. Prepends a block before each blog post that displays (1) "fab fa-font-awesome", (2) "fa fa-arrows", which is a v4 icon declaration that the v4 shim should translate to "fas fa-arrows-alt", and (3) "fas fa-angry", which was a new icon in v5.1.0.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -23,6 +23,7 @@ add_action(
 			array(
 				'name'     => BETA_PLUGIN_LOG_PREFIX,
 				'v4Compat' => true,
+				'technology' => 'webfont',
 				'version' => [ [ '5.1.0', '>=' ] ]
 			)
 		);
