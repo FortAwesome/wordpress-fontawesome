@@ -10,7 +10,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
 import has from 'lodash/has'
-import { addPendingOption, changeOptionsAwayFromKit } from './store/actions'
+import { addPendingOption, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
 
 export default function SettingsTab() {
   const dispatch = useDispatch()
@@ -41,7 +41,13 @@ export default function SettingsTab() {
   function handleSwitchAwayFromKitConfig() {
     setUseKit( false )
 
-    dispatch( changeOptionsAwayFromKit({ activeKitToken }) )
+    dispatch( chooseAwayFromKitConfig({ activeKitToken }) )
+  }
+
+  function handleSwitchToKitConfig() {
+    setUseKit( true )
+
+    dispatch( chooseIntoKitConfig() )
   }
 
   return <div>
@@ -53,7 +59,7 @@ export default function SettingsTab() {
           type="radio"
           value={ useKit }
           checked={ useKit }
-          onChange={ () => setUseKit(! useKit) }
+          onChange={ () => handleSwitchToKitConfig() }
           className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
         />
         <label htmlFor="select_use_kits" className={ optionStyles['option-label'] }>

@@ -199,8 +199,12 @@ export function checkPreferenceConflicts() {
   }
 }
 
-export function changeOptionsAwayFromKit({ activeKitToken }) {
-  return { type: 'CHANGE_OPTIONS_AWAY_FROM_KIT', activeKitToken }
+export function chooseAwayFromKitConfig({ activeKitToken }) {
+  return { type: 'CHOOSE_AWAY_FROM_KIT_CONFIG', activeKitToken }
+}
+
+export function chooseIntoKitConfig() {
+  return { type: 'CHOOSE_INTO_KIT_CONFIG' }
 }
 
 export function queryKits() {
