@@ -160,21 +160,14 @@ export function checkPreferenceConflicts() {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      if (200 === status) {
-        dispatch({
-          type: 'PREFERENCE_CHECK_END',
-          success: true,
-          message: '',
-          detectedConflicts: data
-        })
-      } else {
-        dispatch({
-          type: 'PREFERENCE_CHECK_END',
-          success: false,
-          message: 'Failed when checking options changes',
-        })
-      }
+      const { data } = response
+
+      dispatch({
+        type: 'PREFERENCE_CHECK_END',
+        success: true,
+        message: '',
+        detectedConflicts: data
+      })
     }).catch(error => {
       const { response: { data: { code, message }}} = error
 
