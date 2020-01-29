@@ -199,8 +199,8 @@ export function checkPreferenceConflicts() {
   }
 }
 
-export function resetOptionsForNonKit() {
-  return { type: 'RESET_OPTIONS_FOR_NON_KIT' }
+export function changeOptionsAwayFromKit({ activeKitToken }) {
+  return { type: 'CHANGE_OPTIONS_AWAY_FROM_KIT', activeKitToken }
 }
 
 export function queryKits() {
