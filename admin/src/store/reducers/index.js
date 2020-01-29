@@ -53,6 +53,8 @@ export function options(state = {}, action = {}) {
           svgPseudoElements: coerceBool(svgPseudoElements)
         }
       }
+    case 'CHOOSE_AWAY_FROM_KIT_CONFIG':
+      return { ...state, kitToken: null }
     default:
       return state
   }
@@ -106,8 +108,6 @@ function blocklistUpdateStatus(
       } else {
         return state
       }
-    case 'CHANGE_OPTIONS_AWAY_FROM_KIT':
-      return { ...state, kitToken: null }
     default:
       return state
   }
@@ -141,6 +141,7 @@ function unregisteredClientsDeletionStatus(
 
 function pendingOptions(state = {}, action = {}) {
   const { type, change, activeKitToken } = action
+  const { blocklist } = state
 
   switch(type) {
     case 'ADD_PENDING_OPTION':
@@ -148,17 +149,23 @@ function pendingOptions(state = {}, action = {}) {
     case 'RESET_PENDING_OPTION':
       const option = Object.keys(change)[0]
       return omit(state, option)
-    case 'CHANGE_OPTIONS_AWAY_FROM_KIT':
+    case 'CHOOSE_AWAY_FROM_KIT_CONFIG':
       const newPartialState = !!activeKitToken ? { kitToken: null } : {}
       // If we're switching from kit-based config to a non-kit config
       // we'll want to reset any related pending configuration options.
       // But, for now, we'll assume that if the user has any pending blocklist
       // changes, those should not be reset.
-      const { blocklist } = state
       if(blocklist) {
         return { ...newPartialState, blocklist }
       } else {
         return newPartialState
+      }
+    case 'CHOOSE_INTO_KIT_CONFIG':
+      // preserve only blocklist, if present
+      if(blocklist) {
+        return { blocklist }
+      } else {
+        return {}
       }
     case 'RESET_PENDING_OPTIONS':
     case 'OPTIONS_FORM_SUBMIT_END':
