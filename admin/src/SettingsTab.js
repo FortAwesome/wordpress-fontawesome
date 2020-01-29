@@ -23,6 +23,8 @@ export default function SettingsTab() {
     : state.options[option]
   )
 
+  const kitToken = optionSelector( 'kitToken' )
+
   function handleOptionChange(change = {}) {
     dispatch(addPendingOption(change))
   }
@@ -103,7 +105,11 @@ export default function SettingsTab() {
     </div>
     <>
       { useKit && <KitsConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } /> }
-      <OptionsView useKit={ useKit } optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } />
+      {
+        (!useKit || !!kitToken)
+        ? <OptionsView useKit={ useKit } optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } />
+        : null
+      }
     </>
   </div>
 }
