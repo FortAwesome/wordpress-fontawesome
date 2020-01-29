@@ -233,7 +233,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				$item['apiToken'] = boolval( $given_options['apiToken'] );
 			}
 
-			// The version is handle specially.
+			// The version is handled specially.
 			// 1. An valid version number but be used, if any version is present at all.
 			//    The string 'latest' is not valid here. It's need to be something like 5.12.0.
 			//
