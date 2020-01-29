@@ -116,7 +116,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			try {
 				$body = $request->get_json_params();
 
-				$api_token = isset($body['options']) ? $body['options']['apiToken'] : null;
+				$given_options = isset( $body['options'] ) ? $body['options'] : null;
+
+				$api_token = isset( $given_options['apiToken'] ) ? $given_options['apiToken'] : null;
 
 				if ( is_string( $api_token ) ) {
 					// We're adding an api_token
@@ -136,14 +138,35 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					fa_api_settings()->remove();
 				}
 
-				$db_item = $this->prepare_item_for_database( $body, boolval( $api_token ) );
+				$db_item = $this->prepare_item_for_database( $given_options, boolval( $api_token ) );
 
 				update_option(
 					FontAwesome::OPTIONS_KEY,
 					$db_item
 				);
 
-				fa()->gather_preferences();
+				// Re-gather preferences after updating options. Preference conflicts may have changed.
+				try {
+					fa()->gather_preferences();
+				} catch ( Exception $e ) {
+					/**
+					 * TODO: determine whether to report anything about this error
+					 * case.
+					 * 
+					 * After successfully saving changes to options, we have tried
+					 * to update the preference conflict report by re-gathering
+					 * preferences from registered themes or plugins.
+					 * 
+					 * Since this involves triggering an action hook that invokes
+					 * callbacks in those clients, it's possible that bugs in *their* 
+					 * code could result in an exception being thrown.
+					 * 
+					 * For now, we're going to swallow this exception so that
+					 * we return successfully with the saved options, and at worst,
+					 * the previous state of the preference conflicts.
+					 */
+				}
+
 				$return_data = $this->build_item( fa() );
 				return new WP_REST_Response( $return_data, 200 );
 			} catch ( FontAwesome_ConfigurationException $e ) {
@@ -166,11 +189,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 *
 		 * @internal
 		 * @ignore
-		 * @param array $body the request body as returned by get_json_params()
+		 * @param array $given_options the options from the request body
 		 * @throws FontAwesome_ConfigurationException when options indicate a non-kits
 		 *   CDN configuration, but no valid version is present.
 		 */
-		protected function prepare_item_for_database( $body ) {
+		protected function prepare_item_for_database( $given_options ) {
 			// start with a copy of the defaults and just override them indivually
 			$item = array_merge( array(), FontAwesome::DEFAULT_USER_OPTIONS );
 			$given_options = isset( $body['options'] ) ? $body['options'] : [];

@@ -180,7 +180,11 @@ function preferenceConflicts(state = {}, action = {}) {
   
   switch(type) {
     case 'OPTIONS_FORM_SUBMIT_END':
-      const conflicts = get(action, 'action.data.conflicts')
+      if ( ! action.success ) {
+        return state
+      }
+
+      const conflicts = get(action, 'data.conflicts')
 
       if(!! conflicts) {
         return coerceEmptyArrayToEmptyObject(conflicts)
