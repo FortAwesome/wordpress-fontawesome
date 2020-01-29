@@ -138,22 +138,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$db_item = $this->prepare_item_for_database( $body, boolval( $api_token ) );
 
-				$result = update_option(
+				update_option(
 					FontAwesome::OPTIONS_KEY,
 					$db_item
 				);
 
-				if ( $result ) {
-					fa()->gather_preferences();
-					$return_data = $this->build_item( fa() );
-					return new WP_REST_Response( $return_data, 200 );
-				} else {
-					return new WP_Error(
-						'cant_update',
-						'Whoops, we could not save your options. Please try again.',
-						array( 'status' => 403 )
-					);
-				}
+				fa()->gather_preferences();
+				$return_data = $this->build_item( fa() );
+				return new WP_REST_Response( $return_data, 200 );
 			} catch ( FontAwesome_ConfigurationException $e ) {
 				return new WP_Error( 'cant_update', $e->getMessage(), array( 'status' => 400 ) );
 			} catch ( Exception $e ) {
