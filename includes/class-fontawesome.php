@@ -170,7 +170,7 @@ class FontAwesome {
 
 	/**
 	 * Name used for inline data attached to the JavaScript admin bundle.
-	 * Not part of the public API.
+	 * Not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -192,13 +192,23 @@ class FontAwesome {
 	/**
 	 * Refresh the ReleaseProvider automatically no more often than this
 	 * number of seconds.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
+   *
+   * @ignore
+   * @internal
+   */
+	const RELEASES_REFRESH_INTERNAL = 10 * 60;
+
+  /**
+	 * Base URL for kit loading.
+   *
+	 * Not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
 	 */
-	const RELEASES_REFRESH_INTERNAL = 10 * 60;
+	const KIT_LOADER_BASE_URL = 'https://kit.fontawesome.com';
 
 	/**
 	 * We will not use a default for version, since we want the version stored in the options
@@ -306,41 +316,42 @@ class FontAwesome {
 	 * @since 4.0.0
 	 */
 	public function run() {
-		$fa = $this;
 		add_action(
 			'init',
-			function () use ( $fa ) {
+			function () {
 				add_shortcode(
 					self::SHORTCODE_TAG,
-					function( $params ) use ( $fa ) {
-						return $fa->process_shortcode( $params );
+					function( $params ) {
+						return $this->process_shortcode( $params );
 					}
 				);
 
 				add_filter( 'widget_text', 'do_shortcode' );
 
 				try {
+					$this->validate_options();
+
 					$this->gather_preferences();
 
-					$options = $this->options();
+					$this->maybe_enqueue_admin_js_bundle();
 
-					// TODO: probably throw an exception right here if for some reason
-					// we don't have options like we expect.
+					if ( $this->using_kit() ) {
+						$this->enqueue_kit( $this->options()['kitToken'] );
+					} else {
+						$resource_collection = $this
+							->release_provider()
+							->get_resource_collection(
+								$this->options()['version'],
+								'all',
+								array(
+									'use_pro'  => $this->pro(),
+									'use_svg'  => 'svg' === $this->technology(),
+									'use_shim' => $this->v4_compatibility(),
+								)
+							);
 
-					$resource_collection = fa()
-						->release_provider()
-						->get_resource_collection(
-							$options['version'],
-							'all',
-							array(
-								'use_pro'  => $this->pro(),
-								'use_svg'  => 'svg' === $this->technology(),
-								'use_shim' => $this->v4_compatibility(),
-							)
-						);
-
-					$this->maybe_enqueue_js_bundle();
-					$this->enqueue_cdn( $options, $resource_collection );
+						$this->enqueue_cdn( $this->options(), $resource_collection );
+					}
 				} catch ( FontAwesome_PreferenceRegistrationException $e ) {
 					/**
 					 * MAYBE: we could make this a non-fatal error. We should be able to record it
@@ -354,6 +365,13 @@ class FontAwesome {
 						'that other theme or plugin until it\'s bug is resolved. To help you track down which theme or plugin has the bug, here\'s ' .
 						'the name of the code file where the error occurred: ' .
 						$e->getOriginalException()->getFile()
+					);
+				} catch ( FontAwesome_ConfigurationException $e ) {
+					font_awesome_handle_fatal_error(
+						'Sorry, somehow your Font Awesome plugin configuration got corrupted. The options as currently configured ' .
+						'are invalid so we can\'t load Font Awesome. To completely start from scratch, you could deactivate, un-install, ' .
+						're-install, and re-activate this plugin. Some additional details on this error: ' .
+						$e->getMessage()
 					);
 				} catch ( FontAwesome_NoReleasesException $e ) {
 					$current_screen = get_current_screen();
@@ -671,7 +689,7 @@ class FontAwesome {
 	/**
 	 * Initalizes everything about the admin environment except the React app
 	 * bundle, which is handled in maybe_enqueue_js_bundle().
-	 * 
+	 *
 	 * Internal use only. This function is not part of this plugin's public API.
 	 *
 	 * @ignore
@@ -790,6 +808,80 @@ class FontAwesome {
 			// Nothing to convert.
 			return $options;
 		}
+	}
+
+	/**
+	 * Validates options.
+	 *
+	 * This doesn't necessarily validate every single thing that could be validated.
+	 * Maybe only the most crucial, high-level issues. This validation is expected
+	 * to be run early in the lifecycle of loading the plugin.
+	 * More validations could be added here over time, if helpful.
+	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 * 
+	 * @ignore
+	 * @internal
+	 * @throws FontAwesome_ConfigurationException with a message describing the reason if options are invalid
+	 * @return TRUE if options are valid; otherwise it throws
+	 */
+	public function validate_options() {
+		$using_kit = $this->using_kit();
+		$options = $this->options();
+		$kit_token = isset( $options['kitToken'] ) ? $options['kitToken'] : null;
+		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
+		$version = isset( $options['version'] ) ? $options['version'] : null;
+
+		if ( $using_kit ) {
+			if ( ! boolval( $api_token ) ) {
+				throw new FontAwesome_ConfigurationException(
+					'Font Awesome is configured to use a kit but no API Token has been provided. ' .
+					'Add a valid API Token on the Font Awesome plugin settings page.'
+				);
+			}
+
+			if ( ! is_string( $kit_token ) ) {
+				throw new FontAwesome_ConfigurationException(
+					'Font Awesome is configured to use a kit but no valid kit token has been provided. ' .
+					'Try again to select one of your kits on the Font Awesome plugin settings page and save your changes.'
+				);
+			}
+
+			if ( ! is_string( $version ) ) {
+				throw new FontAwesome_ConfigurationException(
+					'Font Awesome is configured to use a kit but somehow does not know what version that kit is loading. ' .
+					'Consider uninstalling and reinstalling the Font Awesome plugin and trying again to set up your kit. ' .
+					'If that doesn\'t work, report the issue in the plugin\'s support forum. Font Awesome Pro subscribers can ' .
+					'also get support by emailing hello@fontawesome.com.'
+				);
+			}
+		} else {
+			/**
+			 * Intentionally not constraining the ending of the version number to
+			 * open the possibility of a pre-release version, which means it would have
+			 * something like -rc42 on the end.
+			 * For example, 5.12.0-rc42.
+			 */ 
+			$version_is_concrete = is_string( $version )
+				&& 1 === preg_match('/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+
+			if ( ! $version_is_concrete ) {
+				throw new FontAwesome_ConfigurationException(
+					'Font Awesome is configured with an invalid version number. ' .
+					'Consider uninstalling and reinstalling the Font Awesome plugin and trying again to set up your kit. ' .
+					'If that doesn\'t work, report the issue in the plugin\'s support forum. Font Awesome Pro subscribers can ' .
+					'also get support by emailing hello@fontawesome.com.'
+				);
+			}
+		}
+
+		/**
+		 * TODO: maybe add a general validation just asserting all in one fell swoop
+		 * that the various other options at least _exist_, like $options['blocklist'],
+		 * so we don't have a runtime exception later.
+		 */
+
+		return TRUE;
 	}
 
 	/**
@@ -1160,7 +1252,7 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	public function maybe_enqueue_js_bundle( ) {
+	public function maybe_enqueue_admin_js_bundle( ) {
 		add_action(
 			'admin_enqueue_scripts',
 			function( $hook ) {
@@ -1264,6 +1356,41 @@ class FontAwesome {
 			'settingsPageUrl'			    => $this->settings_page_url(),
 			'activeAdminTab'				=> $this->active_admin_tab(),
 			'options'						=> $this->options(),
+		);
+	}
+
+	/**
+	 * Enqueues a kit loader <script>.
+	 *
+	 * A proper kit loader <script>  looks like this:
+	 *
+	 * <script src="https://kit.fontawesome.com/deadbeef00.js" crossorigin="anonymous"></script>
+	 * 
+	 * where deadbeef00 is the kitToken
+	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @throws FontAwesome_ConfigurationException if the kit_token is not a string
+	 */
+	public function enqueue_kit( $kit_token ) {
+		if ( ! is_string( $kit_token ) ) {
+			throw new FontAwesome_ConfigurationException(
+				'Font Awesome is configured to use a kit, but no valid kit token was provided.'
+			);
+		}
+
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				wp_enqueue_script(
+					trailingslashit( self::KIT_LOADER_BASE_URL ) . $kit_token . '.js',
+					[],
+					null,
+					false
+				);
+			}
 		);
 	}
 
