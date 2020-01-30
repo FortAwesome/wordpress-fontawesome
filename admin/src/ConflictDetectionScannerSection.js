@@ -27,37 +27,40 @@ export default function ConflictDetectionScannerSection() {
   }, [showConflictDetectionReporter])
 
   return <div>
-    <h1>Conflict Detection Scanner</h1>
-    <p className={sharedStyles['explanation']}>
-      If you are having trouble loading icons on your site, you can use this
-      conflict scanner to detect possible Font Awesome version conflicts coming
-      from themes or other plugins that are loading other versions of Font Awesome.
+    <h2 className={ sharedStyles['section-title'] }>Conflict Detection Scanner</h2>
+    <div className={sharedStyles['explanation']}>
+      <p>If you are having trouble loading Font Awesome icons on your site, use this
+      conflict scanner to detect possible conflicts coming from themes or other plugins
+      that are loading other versions of Font Awesome.</p>
 
-      After you enable the scanner, a scanner box will appear in the bottom corner
-      of your window (only you can see it) while it runs for 10 minutes. You can
-      then browse your site -- especially pages that are having trouble -- to
-      catch the conflicts in the scanner. Then return to this page to review and
-      manage any Font Awesome versions found.
-    </p>
-    <div>
+      <p>Enable the scanner below and a box will appear in the bottom corner
+      of your window (that only you can see) while it runs for 10 minutes. Then browse
+      your site, especially to the pages having trouble, to
+      catch any Slimers - *ahem* - conflicts in the scanner. Then come back here to review and
+      manage Font Awesome versions found.</p>
+    </div>
+    <div className={sharedStyles['scanner-actions']}>
       {
         detectingConflicts
-        ? <button disabled >
+        ? <button className={sharedStyles['faPrimary']} disabled >
             Scanner running: <ConflictDetectionTimer />
           </button>
-        : <button disabled={ isSubmitting } onClick={() => dispatch(setConflictDetectionScanner({ enable: true }))}>
+        : <button className={sharedStyles['faPrimary']} disabled={ isSubmitting } onClick={() => dispatch(setConflictDetectionScanner({ enable: true }))}>
             Enable scanner for <span>{ CONFLICT_DETECTION_SCANNER_DURATION_MIN } minutes</span>
           </button>
       }
+      <div className={sharedStyles['scanner-runstatus']}>
       {
         isSubmitting
         ? <FontAwesomeIcon icon={ faSpinner } spin />
         : hasSubmitted
           ? success
             ? <FontAwesomeIcon icon={ faCheck } />
-            : <><FontAwesomeIcon icon={ faSkull } /><span>{ message }</span></>
+            : <><FontAwesomeIcon icon={ faSkull } /> <span>{ message }</span></>
           : null
       }
+      </div>
     </div>
+    <hr className={ sharedStyles['section-divider'] }/>
   </div>
 }

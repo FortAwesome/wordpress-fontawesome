@@ -6,12 +6,14 @@ import classnames from 'classnames'
 
 export default function ManageFontAwesomeVersionsSection() {
   return <div className={ classnames(sharedStyles['explanation'], styles['font-awesome-versions-section']) }>
-    <h1>Manage Font Awesome versions</h1>
+    <h2 className={ sharedStyles['section-title'] }>Manage Font Awesome versions</h2>
     <p>
-    Below is the list of Font Awesome versions being used on your site. You can
-    block any or all of the other versions being loaded to prevent issues.
-    Normally this allows the plugins or themes to continue displaying icons as
-    expected using the version of Font Awesome you've configured in this plugin.
+    Below is information about the Font Awesome versions we found on your site.
+    <b> Registered plugins and themes</b> have opted to share information about the
+    Font Awesome settings they are expecting, and are therefore easier to fix.
+    For the <b>unregistered plugins and themes</b>, which are more unpredictable, we
+    have provided options for you to block their Font Awesome source from loading and
+    causing issues.
     </p>
     <ClientPreferencesView />
   </div>

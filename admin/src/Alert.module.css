@@ -3,7 +3,7 @@
   flex-direction: row;
   flex-wrap: no-wrap;
   align-items: stretch;
-  background-color: rgb(248, 249, 250);
+  background-color: #E4F6FF;
   color: rgb(73, 80, 87);
   border-radius: 0.25rem;
   margin-top: 1rem;
@@ -11,8 +11,8 @@
 }
 
 .alert-icon {
-  background-color: rgb(215, 220, 225);
-  color: rgb(124, 132, 140);
+  background-color: #CAEBFF;
+  color: #5AC1FF;
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
   padding: .75rem .5rem;

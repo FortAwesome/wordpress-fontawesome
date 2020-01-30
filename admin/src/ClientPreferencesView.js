@@ -23,22 +23,22 @@ export default function ClientPreferencesView() {
   const hasConflicts = size(conflicts)
 
   return <div className={ styles['client-requirements'] }>
-    <h2>Registered themes or plugins</h2>
+    <h3 className={ sharedStyles['section-title'] }>Registered themes or plugins</h3>
     {
       hasAdditionalClients
       ?
         <div>
           <p className={sharedStyles['explanation']}>
-            Below is the list of active themes or plugins that have opted-in (registered) to use your settings in this plugin, and their Font Awesome preferences.
-          </p>
+            Below is the list of active themes or plugins using Font Awesome
+            that have opted-in to share information about the settings they
+            are expecting.
           { hasConflicts
-            ? <p className={sharedStyles['explanation']}>
-              We've highlighted those preferences that differ from the options you've configured.
-              It's best to reconfigure the options in order to satisfy these, if possible.
-              A theme or plugin whose preferences aren't satisfied may not work as expected.
-            </p>
+            ? <span className={sharedStyles['explanation']}> The highlights
+            show where the settings are mismatched. You might want to adjust
+            your settings to match, or things may not work as expected.
+            </span>
             : null
-          }
+          }</p>
           <table className={ classnames( 'widefat', 'striped' ) }>
             <thead>
               <tr className={ sharedStyles['table-header'] }>
@@ -102,7 +102,7 @@ export default function ClientPreferencesView() {
         </div>
       :
         <p className={ sharedStyles['explanation'] }>
-          No active theme or plugins have registered preferences for Font Awesome.
+          No active themes or plugins have requested preferences for Font Awesome.
         </p>
     }
   </div>

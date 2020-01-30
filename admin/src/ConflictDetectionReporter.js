@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setConflictDetectionScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faCheckCircle, faCog, faGrin, faSkull, faStopwatch, faThumbsUp, faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faCog, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import size from 'lodash/size'
 import has from 'lodash/has'
@@ -26,7 +26,7 @@ const STATUS = {
 const STYLES = {
   container: {
     position: 'fixed',
-    fontFamily: 'fa5-proxima-nova,"Helvetica Neue",Helvetica,Arial,sans-serif',
+    fontFamily:'"Helvetica Neue",Helvetica,Arial,sans-serif',
     right: '10px',
     bottom: '10px',
     width: '450px',
@@ -161,7 +161,7 @@ export default function ConflictDetectionReporter() {
     <div style={ STYLES.container }>
       <div style={ STYLES.header }>
         <h1 style={ STYLES.h1 }>Font Awesome Conflict Scanner</h1>
-        <p style={ STYLES.adminEyesOnly }>only you can see this box</p>
+        <p style={ STYLES.adminEyesOnly }>only admins can see this box</p>
       </div>
       <div style={ STYLES.content }>
 
@@ -229,9 +229,6 @@ export default function ConflictDetectionReporter() {
                 <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faSkull } /> <span>Don’t cross the streams! It would be bad.</span></h2>
                 <p style={ STYLES.p }>
                   { errorMessage }
-                </p>
-                <p style={ STYLES.p }>
-                  Maybe try reloading the page?
                 </p>
               </div>
           }[runStatus]
