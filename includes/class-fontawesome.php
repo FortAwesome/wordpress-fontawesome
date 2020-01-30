@@ -1383,14 +1383,33 @@ class FontAwesome {
 
 		add_action(
 			'wp_enqueue_scripts',
-			function () {
+			function () use( $kit_token ) {
 				wp_enqueue_script(
+					self::RESOURCE_HANDLE,
 					trailingslashit( self::KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 					[],
 					null,
 					false
 				);
 			}
+		);
+
+		// TODO: probably refactor to DRY out this filter with the similar one in enqueue_cdn.
+		add_filter(
+			'script_loader_tag',
+			function ( $html, $handle ) {
+				if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::ADMIN_RESOURCE_HANDLE ], true ) ) {
+					return preg_replace(
+						'/<script[\s]+(.*?)>/',
+						"<script crossorigin=\"anonymous\" " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+						$html
+					);
+				} else {
+					return $html;
+				}
+			},
+			11, // later than the integrity and crossorigin attr filter.
+			2
 		);
 	}
 
