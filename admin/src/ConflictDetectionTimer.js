@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
 import padStart from 'lodash/padStart'
 import dropWhile from 'lodash/dropWhile'
@@ -33,12 +34,12 @@ function secondsRemaining(endTime) {
   return remaining < 0 ? 0 : remaining
 }
 
-export default function ConflictDetectionTimer() {
+export default function ConflictDetectionTimer({ addDescription }) {
   const detectConflictsUntil = useSelector(state => state.options.detectConflictsUntil)
-  const [timeRemaining, setTimer] = useState(timerString(secondsRemaining(detectConflictsUntil)))
+  const [timeRemaining, setTimer] = useState(secondsRemaining(detectConflictsUntil))
   const dispatch = useDispatch()
 
-  const countdown = () => setTimer(timerString(secondsRemaining(detectConflictsUntil)))
+  const countdown = () => setTimer(secondsRemaining(detectConflictsUntil))
 
   useEffect(() => {
     let timeoutId = null
@@ -55,5 +56,19 @@ export default function ConflictDetectionTimer() {
     return () => timeoutId && clearTimeout( timeoutId )
   }, [detectConflictsUntil, timeRemaining])
 
-  return <span className="conflict-detection-timer">{ timeRemaining }</span>
+  return timeRemaining <= 0 ? null : <span className="conflict-detection-timer">
+    { timerString( timeRemaining ) }
+    {
+      !!addDescription &&
+      (
+        timeRemaining > 60
+        ? " more minutes to browse your site for trouble"
+        : " more seconds to browse your site for trouble"
+      )
+    }
+    </span>
+}
+
+ConflictDetectionTimer.propTypes = {
+  addDescription: PropTypes.bool
 }

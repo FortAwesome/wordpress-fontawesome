@@ -116,7 +116,7 @@ export default function ConflictDetectionReporter() {
   return (
     <div style={ STYLES.container }>
       <div style={ STYLES.content }>
-        <ConflictDetectionTimer />
+        <ConflictDetectionTimer addDescription />
         {
           runStatus === STATUS.expired
           ? null
