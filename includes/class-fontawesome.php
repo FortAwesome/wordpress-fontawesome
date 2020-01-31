@@ -1391,24 +1391,74 @@ class FontAwesome {
 					null,
 					false
 				);
+
+				/**
+				 * Kits have built-in support for detecting conflicts, but we need to
+				 * inject some configuration to turn it on. We will do that by manipulating
+				 * the FontAwesomeKitConfig global property.
+				 */
+				if ( $this->detecting_conflicts() ) {
+					/**
+					 * Kits Conflict Detection expects this value to be in milliseconds
+					 * since the unix epoch.
+					 */
+					$detect_conflicts_until = $this->options()['detectConflictsUntil'] * 1000;
+
+					wp_add_inline_script(
+						self::RESOURCE_HANDLE,
+						<<<EOD
+window.__FontAwesome__WP__KitConfig__ = {
+	detectConflictsUntil: $detect_conflicts_until
+}
+
+Object.defineProperty(window, 'FontAwesomeKitConfig', {
+	enumerable: true,
+	configurable: false,
+	get() { return window.__FontAwesome__WP__KitConfig__ },
+	set( newValue ) {
+		var newValueCopy = Object.assign({}, newValue)
+		window.__FontAwesome__WP__KitConfig__ = Object.assign(newValueCopy, window.__FontAwesome__WP__KitConfig__)
+	}
+})
+EOD,
+						'before'
+					);
+				}
 			}
 		);
 
-		// TODO: probably refactor to DRY out this filter with the similar one in enqueue_cdn.
 		add_filter(
 			'script_loader_tag',
 			function ( $html, $handle ) {
-				if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::ADMIN_RESOURCE_HANDLE ], true ) ) {
-					return preg_replace(
+				$revised_html = $html;
+
+				/**
+				 * Set the crossorigin attr to ensure that the Origin header is
+				 * by the browser when the kit loader script is loaded.
+				 * Needed for authorization.
+				 */
+				if ( self::RESOURCE_HANDLE === $handle ) {
+					$revised_html = preg_replace(
 						'/<script[\s]+(.*?)>/',
-						"<script crossorigin=\"anonymous\" " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
-						$html
+						'<script crossorigin="anonymous" \1>',
+						$revised_html
 					);
-				} else {
-					return $html;
 				}
+
+				/**
+				 * If we're detecting conflicts, ignore the admin js bundle.
+				 */
+				if ( self::ADMIN_RESOURCE_HANDLE === $handle && $this->detecting_conflicts() ) {
+					$revised_html = preg_replace(
+						'/<script[\s]+(.*?)>/',
+						'<script ' . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+						$revised_html
+					);
+				}
+
+				return $revised_html;
 			},
-			11, // later than the integrity and crossorigin attr filter.
+			11,
 			2
 		);
 	}
