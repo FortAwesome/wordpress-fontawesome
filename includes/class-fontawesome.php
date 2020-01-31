@@ -478,8 +478,8 @@ class FontAwesome {
 	 * @throws FontAwesome_NoReleasesException
 	 * @return null|string
 	 */
-	public function get_latest_version() {
-		return $this->release_provider()->latest_minor_release();
+	public function latest_version() {
+		return $this->release_provider()->latest_version();
 	}
 
 	/**
@@ -1019,7 +1019,7 @@ class FontAwesome {
 								'clientPreferences'     				=> $this->client_preferences(),
 								'releases'              				=> array(
 									'available'        						=> $this->get_available_versions(),
-									'latest_version'   						=> $this->get_latest_version(),
+									'latest_version'   						=> $this->latest_version(),
 									'previous_version' 						=> $this->get_previous_version(),
 								),
 								'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,

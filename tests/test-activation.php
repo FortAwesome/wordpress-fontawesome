@@ -28,7 +28,7 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_activation_creates_default_config() {
 		FontAwesome_Activator::activate();
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->get_latest_version() ] );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->latest_version() ] );
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
@@ -40,7 +40,7 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_initialize_from_scratch_creates_default_config() {
 		FontAwesome_Activator::initialize();
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->get_latest_version() ] );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->latest_version() ] );
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
@@ -91,7 +91,7 @@ class ActivationTest extends \WP_UnitTestCase {
 			$initial_unregistered_clients_options
 		);
 
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->get_latest_version() ] );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->latest_version() ] );
 
 		FontAwesome_Activator::initialize(TRUE);
 		$actual_options = get_option( FontAwesome::OPTIONS_KEY );

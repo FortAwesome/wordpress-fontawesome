@@ -99,6 +99,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$versions = $farp->versions();
 		$this->assertCount( count( $this->known_versions_sorted_desc ), $versions );
@@ -109,6 +110,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -136,6 +138,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -160,6 +163,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$this->expectException( FontAwesome_ConfigurationException::class );
 
@@ -178,6 +182,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -200,6 +205,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -222,6 +228,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -245,6 +252,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -311,6 +319,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -357,6 +366,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$this->expectException( InvalidArgumentException::class );
 
@@ -375,6 +385,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$this->expectException( InvalidArgumentException::class );
 
@@ -401,6 +412,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$state = array();
 		begin_error_log_capture( $state );
@@ -449,6 +461,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
 		$this->expectException( InvalidArgumentException::class );
 
@@ -465,77 +478,12 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		// END: since we're testing an exception, code won't run after the exception-throwing statement.
 	}
 
-	public function assert_latest_and_previous_releases( $mocked_available_versions, $expected_latest, $expected_previous ) {
-		$mock = mock_singleton_method(
-			$this,
-			FontAwesome_Release_Provider::class,
-			'versions',
-			function( $method ) use ( $mocked_available_versions ) {
-				$method->willReturn(
-					$mocked_available_versions
-				);
-			}
-		);
-		$this->assertEquals( $expected_latest, $mock->latest_minor_release() );
-		$this->assertEquals( $expected_previous, $mock->previous_minor_release() );
-	}
+	public function test_latest_version() {
+		$mock_response = self::build_success_response();
 
-	public function test_latest_and_previous_scenarios() {
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.1.1',
-				'5.1.0',
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
-			'5.1.1',
-			'5.0.13'
-		);
+		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp->load_releases();
 
-		// A pre-release should not be picked as a previous minor release.
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.1.1',
-				'5.1.0',
-				'5.0.14-1',
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
-			'5.1.1',
-			'5.0.13'
-		);
-
-		// There *is* no previous in this case because 5.0.0 is the earliest and 5.0.13 is the latest.
-		// So there's no minor release version before the earliest available in this set.
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
-			'5.0.13',
-			null
-		);
-
-		$this->assert_latest_and_previous_releases(
-			[
-				'5.2.0',
-				'5.1.1',
-				'5.0.13',
-				'5.0.11',
-				'5.0.0',
-			],
-			'5.2.0',
-			'5.1.1'
-		);
-
-		// empty set.
-		$this->assert_latest_and_previous_releases(
-			[],
-			null,
-			null
-		);
+		$this->assertEquals( '5.4.1', $farp->latest_version() ); 
 	}
 }
