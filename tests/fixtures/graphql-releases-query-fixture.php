@@ -3,6 +3,9 @@ namespace FortAwesome;
 
 function graphql_releases_query_fixture() {
 	return array (
+		'latest' => array(
+			'version' => '5.4.1'
+		),
 		'releases' => 
 		array (
 		  0 => 

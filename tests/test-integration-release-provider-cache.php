@@ -42,6 +42,8 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 
 		$this->release_provider = $mocked_release_provider;
 
+		$mocked_release_provider->load_releases();
+
 		$this->fa = mock_singleton_method(
 			$this,
 			FontAwesome::class,
@@ -86,7 +88,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 
 		$enqueued_callback = function() use ( $fa, &$enqueued_count ) {
 			$enqueued_count++;
-			$this->assertEquals( $fa->get_latest_version(), $fa->version() );
+			$this->assertEquals( $fa->latest_version(), $fa->version() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 

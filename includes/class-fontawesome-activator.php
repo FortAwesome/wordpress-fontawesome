@@ -53,7 +53,7 @@ class FontAwesome_Activator {
 	}
 
 	private static function initialize_user_options() {
-		$version = fa()->get_latest_version();
+		$version = fa()->latest_version();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => $version ] );
 		update_option( FontAwesome::OPTIONS_KEY, $options );
 	}

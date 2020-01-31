@@ -16,7 +16,7 @@ class Mock_FontAwesome_Releases extends TestCase {
 
 	public static function releases() {
 		if ( null === self::$releases ) {
-			self::$releases = get_mocked_releases();
+			self::$releases = get_mocked_releases()['releases'];
 		}
 		return self::$releases;
 	}
