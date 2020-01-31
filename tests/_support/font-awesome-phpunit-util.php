@@ -92,9 +92,9 @@ function reset_db() {
 		}
 	}
 
-	if ( ! delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+	if ( ! delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+		if ( get_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
 			throw new Exception( 'Unsuccessful clearing the Releases transient.' );
 		}
 	}
