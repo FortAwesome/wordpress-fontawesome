@@ -99,7 +99,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
     $response = $this->server->dispatch( $request );
     
-    $this->assertEquals( 204, $response->get_status() );
+    $this->assertEquals( 200, $response->get_status() );
     
     $this->assertEquals(
       $body,
@@ -191,7 +191,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
     $response = $this->server->dispatch( $request );
     
-    $this->assertEquals( 204, $response->get_status() );
+    $this->assertEquals( 200, $response->get_status() );
 
     $this->assertEquals(
       array(
@@ -312,7 +312,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
     $response = $this->server->dispatch( $request );
 
     // The controller should just return a successful response, making no change
-    $this->assertEquals( 204, $response->get_status() );
+    $this->assertEquals( 200, $response->get_status() );
     
     $this->assertEquals(
       array(
@@ -343,7 +343,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
     $response = $this->server->dispatch( $request );
 
-    $this->assertEquals( 204, $response->get_status() );
+    $this->assertEquals( 200, $response->get_status() );
     
     // Expect that an update was successfully applied
     $this->assertEquals(
