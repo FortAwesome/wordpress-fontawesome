@@ -36,7 +36,7 @@ export default function ConflictDetectionScannerSection() {
       <p>Enable the scanner below and a box will appear in the bottom corner
       of your window (that only you can see) while it runs for 10 minutes. Then browse
       your site, especially to the pages having trouble, to
-      catch any Slimers - *ahem* - conflicts in the scanner. Then come back here to review and
+      catch any <span style={{ whiteSpace: "nowrap" }}>Slimers - *ahem* - conflicts</span> in the scanner. Then come back here to review and
       manage Font Awesome versions found.</p>
     </div>
     <div className={sharedStyles['scanner-actions']}>
