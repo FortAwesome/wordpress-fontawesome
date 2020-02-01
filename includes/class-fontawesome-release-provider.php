@@ -332,9 +332,11 @@ EOD;
 	 * Internal use only. Clients should use the public API method on the
 	 * FontAwesome object.
 	 * 
+	 * @ignore
+	 * @internal
 	 * @return null|int
 	 */
-	protected function refreshed_at() {
+	public function refreshed_at() {
 		return $this->refreshed_at;
 	}
 
