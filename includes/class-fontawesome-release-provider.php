@@ -462,44 +462,6 @@ EOD;
 	public function latest_version() {
 		return $this->latest_version;
 	}
-
-	/**
-	 * Returns a version number corresponding to the minor release immediately prior to the most recent minor release.
-	 *
-	 * @throws FontAwesome_NoReleasesException
-	 * @return string|null latest patch level for the previous minor version. major.minor.patch version.
-	 *         Returns null if there is no latest (and therefore no previous).
-	 *         Returns null if there's no previous, because the latest represents the only minor version in the set
-	 *           of available versions.
-	 */
-	public function previous_minor_release() {
-		// Find the latest.
-		$latest = $this->latest_version();
-
-		if ( is_null( $latest ) ) {
-			return null;
-		}
-
-		// Build a major.minor version corresponding to the previous minor.
-		$version_parts    = explode( '.', $latest );
-		$new_minor_number = intval( $version_parts[1] ) - 1;
-		// make sure we don't try to use a negative number.
-		$new_minor_number = $new_minor_number >= 0 ? $new_minor_number : 0;
-		$version_parts[1] = $new_minor_number;
-		// This will look like "5.2", instead of "5.2.0".
-		$previous_minor_version_partial = implode( '.', array_slice( $version_parts, 0, 2 ) );
-
-		$satisfying_versions = array_filter(
-			$this->versions(),
-			function( $version ) use ( $previous_minor_version_partial ) {
-				return preg_match( "/$previous_minor_version_partial\.[0-9]+$/", $version );
-			}
-		);
-
-		$result = array_shift( $satisfying_versions );
-
-		return $result === $latest ? null : $result;
-	}
 }
 
 /**

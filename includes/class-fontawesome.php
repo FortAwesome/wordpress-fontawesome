@@ -483,21 +483,6 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns the previous minor version of Font Awesome as a string.
-	 *
-	 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
-	 * this function returns "5.4.1".
-	 *
-	 * @since 4.0.0
-	 *
-	 * @throws FontAwesome_NoReleasesException
-	 * @return null|string
-	 */
-	public function get_previous_version() {
-		return $this->release_provider()->previous_minor_release();
-	}
-
-	/**
 	 * Returns all available versions of Font Awesome as an array of strings in descending version order.
 	 *
 	 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
@@ -1020,7 +1005,6 @@ class FontAwesome {
 								'releases'              				=> array(
 									'available'        						=> $this->get_available_versions(),
 									'latest_version'   						=> $this->latest_version(),
-									'previous_version' 						=> $this->get_previous_version(),
 								),
 								'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
 								'preferenceConflicts'           => $this->conflicts_by_option(),
