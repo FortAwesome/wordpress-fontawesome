@@ -2,7 +2,7 @@
 
 namespace FortAwesome;
 
-require_once FONTAWESOME_DIR_PATH . 'tests/fixtures/releases.php';
+require_once dirname( __FILE__ ) . '/../fixtures/graphql-releases-query-fixture.php';
 
 use \PHPUnit\Framework\TestCase;
 
@@ -12,31 +12,24 @@ use \PHPUnit\Framework\TestCase;
  * @package FontAwesomePhpUnitUtil
  */
 class Mock_FontAwesome_Releases extends TestCase {
-	public static $releases = null;
-
-	public static function releases() {
-		if ( null === self::$releases ) {
-			self::$releases = get_mocked_releases()['releases'];
-		}
-		return self::$releases;
-	}
-
 	public static function mock() {
 		$obj = new self();
 		mock_singleton_method(
 			$obj,
 			FontAwesome_Release_Provider::class,
-			'releases',
+			'query',
 			function( $method ) {
 				$method->willReturn(
-					Mock_FontAwesome_Releases::releases()
+					graphql_releases_query_fixture()
 				);
 			}
 		);
 	}
 
+	public function test_basic() {
+		self::mock();
+		FontAwesome_Release_Provider::instance()->load_releases();
 
-	public function test_mock_releases_loaded() {
-		$this->assertNotNull( self::releases() );
+		$this->assertEquals( '5.4.1', fa()->latest_version() );
 	}
 }
