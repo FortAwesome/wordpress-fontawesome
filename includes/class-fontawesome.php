@@ -483,6 +483,32 @@ class FontAwesome {
 	}
 
 	/**
+	 * Queries the Font Awesome API to load releases metadata. Results are
+	 * cached in a site transient. This is the metadata that supports API
+	 * methods like {@see FontAwesome::latest_version()}, {@see FontAwesome::available_versions()}
+	 * and all other metadata required to enqueue Font Awesome when configured
+	 * to use the standard CDN (non-kits).
+	 * 
+	 * @since 4.0.0
+	 * @return WP_Error|1 error on failure or 1 otherwise
+	 */
+	public function refresh_releases() {
+		return $this->release_provider()->load_releases();
+	}
+
+	/**
+	 * Returns the time when releases metadata was last
+	 * refreshed, such as by invoking {@see FontAwesome::refresh_releases}.
+	 * 
+	 * @since 4.0.0
+	 * @return integer|null the time in unix epoch seconds or null if never
+	 * 
+	 */
+	public function releases_refreshed_at() {
+		return $this->release_provider()->refreshed_at();
+	}
+
+	/**
 	 * Returns all available versions of Font Awesome as an array of strings in descending version order.
 	 *
 	 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
