@@ -180,6 +180,17 @@ class FontAwesome {
 	const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 	/**
+	 * Refresh the ReleaseProvider automatically no more often than this
+	 * number of seconds.
+	 * 
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	const RELEASES_REFRESH_INTERNAL = 10 * 60;
+
+	/**
 	 * We will not use a default for version, since we want the version stored in the options
 	 * to always be resolved to an actual version number, which requires that the release
 	 * provider successfully runs at least once. We'll do that upon plugin activation.
@@ -509,6 +520,25 @@ class FontAwesome {
 	}
 
 	/**
+	 * Refreshes releases only if it's a been a while.
+	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return WP_Error|1 error if there was a problem, otherwise 1.
+	 */
+	protected function maybe_refresh_releases() {
+		$refreshed_at = $this->releases_refreshed_at();
+
+		if ( is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERNAL ) {
+			return $this->refresh_releases();
+		} else {
+			return 1;
+		}
+	}
+
+	/**
 	 * Returns all available versions of Font Awesome as an array of strings in descending version order.
 	 *
 	 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
@@ -555,10 +585,10 @@ class FontAwesome {
 	}
 
 	/**
-	 * This function is not part of this plugin's public API.
-	 *
 	 * Initalizes everything about the admin environment except the React app
 	 * bundle, which is handled in maybe_enqueue_js_bundle().
+	 * 
+	 * Internal use only. This function is not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
@@ -1009,6 +1039,8 @@ class FontAwesome {
 				}
 
 				if ( $hook === $this->screen_id ) {
+					$this->maybe_refresh_releases();
+
 					if ( FONTAWESOME_ENV !== 'development' ) {
 						wp_enqueue_style(
 							self::ADMIN_RESOURCE_HANDLE . '-css',
