@@ -19,7 +19,6 @@ use \InvalidArgumentException, \WP_Error;
  * @group api
  */
 class ReleaseProviderTest extends \WP_UnitTestCase {
-	// Known at the time of capturing the "releases_api" vcr fixture on Oct 18, 2018.
 	protected $known_versions_sorted_desc = [
 		'5.4.1',
 		'5.3.1',
