@@ -8,6 +8,7 @@ namespace FortAwesome;
 // phpcs:ignoreFile Squiz.Commenting.ClassComment.Missing
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
+require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-release-provider.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
@@ -301,6 +302,9 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	}
 
 	public function test_refresh_releases() {
+		FontAwesome_Release_Provider::reset();
+		Mock_FontAwesome_Releases::mock();
+
 		// Before, these would be null
 		$this->assertNull( fa()->latest_version() );
 		$this->assertNull( fa()->releases_refreshed_at() );
