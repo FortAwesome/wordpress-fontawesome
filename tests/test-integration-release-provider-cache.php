@@ -42,8 +42,6 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 
 		$this->release_provider = $mocked_release_provider;
 
-		$mocked_release_provider->load_releases();
-
 		$this->fa = mock_singleton_method(
 			$this,
 			FontAwesome::class,
