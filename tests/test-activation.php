@@ -91,7 +91,8 @@ class ActivationTest extends \WP_UnitTestCase {
 			$initial_unregistered_clients_options
 		);
 
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->latest_version() ] );
+		// 5.4.1 is the latest in the mock
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.4.1' ] );
 
 		FontAwesome_Activator::initialize(TRUE);
 		$actual_options = get_option( FontAwesome::OPTIONS_KEY );
