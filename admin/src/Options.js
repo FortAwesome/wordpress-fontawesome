@@ -51,13 +51,11 @@ export default function Options(props) {
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
 
   const versionOptions = useSelector(state => {
-    const { releases: { available, latest_version, previous_version } } = state
+    const { releases: { available, latest_version } } = state
 
     return available.reduce((acc, version) => {
       if( latest_version === version ) {
         acc[version] = `${ version } (latest)`
-      } else if ( previous_version === version ) {
-        acc[version] = `${ version } (previous minor release)`
       } else {
         acc[version] = version
       }
