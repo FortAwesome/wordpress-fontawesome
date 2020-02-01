@@ -53,6 +53,9 @@ class FontAwesome_Activator {
 	}
 
 	private static function initialize_user_options() {
+		if ( 1 !== fa()->refresh_releases() ) {
+			throw new FontAwesome_NoReleasesException("Sorry, we could not contact the Font Awesome API server.");
+		}
 		$version = fa()->latest_version();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => $version ] );
 		update_option( FontAwesome::OPTIONS_KEY, $options );

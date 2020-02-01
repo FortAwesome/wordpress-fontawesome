@@ -202,6 +202,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			try {
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
+			} catch ( FontAwesome_NoReleasesException $e ) {	
+				error_log($e->getMessage());
+				echo '<div class="error"><p>Sorry, Font Awesome could not be activated because your WordPress server could not contact the Font Awesome API server.</p></div>';
+				exit;
 			} catch ( Exception $e ) {
 				error_log($e->getMessage());
 				echo '<div class="error"><p>Sorry, Font Awesome could not be activated.</p></div>';
