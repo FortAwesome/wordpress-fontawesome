@@ -453,7 +453,7 @@ EOD;
 	/**
 	 * Returns a version number corresponding to the most recent minor release.
 	 * 
-	 * Internal use only. Clients should use the FontAwesome::get_latest_version()
+	 * Internal use only. Clients should use the FontAwesome::latest_version()
 	 * public API method instead.
 	 *
 	 * @internal
