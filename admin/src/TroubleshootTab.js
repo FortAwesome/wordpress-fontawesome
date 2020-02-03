@@ -2,9 +2,7 @@ import React from 'react'
 import ManageFontAwesomeVersionsSection from './ManageFontAwesomeVersionsSection'
 import UnregisteredClientsView from './UnregisteredClientsView'
 import V3DeprecationWarning from './V3DeprecationWarning'
-import ReleaseProviderWarning from './ReleaseProviderWarning'
 import ConflictDetectionScannerSection from './ConflictDetectionScannerSection'
-import get from 'lodash/get'
 import { useSelector } from 'react-redux'
 
 export default function TroubleshootTab() {
