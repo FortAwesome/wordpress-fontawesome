@@ -189,17 +189,30 @@ class FontAwesome_Metadata_Provider {
 				return WP_Error;
 			} elseif (
 				isset( $refresh_response['response']['code'] ) && 
-				200 === $refresh_response['response']['code'] &&
-				isset( $refresh_response['body']['access_token'] ) && 
-				isset( $refresh_response['body']['expires_in'] ) && 
-				is_int( $refresh_response['body']['expires_in'] ) ) {
-					fa_api_settings()->set_access_token( $refresh_response['body']['access_token'] );
-					fa_api_settings()->set_access_token_expiration_time( time() + $refresh_response['body']['expires_in'] );
-					fa_api_settings()->write();
-					return fa_api_settings()->access_token();
+				200 === $refresh_response['response']['code']
+			) {
+				$body = json_decode( $refresh_response['body'], true );
+
+				if ( ! isset( $body['access_token'] ) ||
+					! is_string( $body['access_token'] ) ||
+					! isset( $body['expires_in'] ) ||
+					! is_int( $body['expires_in'] )
+				) {
+					return new WP_Error(
+						'access_token',
+						'Oh no! It looks like your API Token was valid, but the Font Awesome API server failed anyway.',
+						array( 'status' => 403 )
+					);
+				}
+
+				fa_api_settings()->set_access_token( $body['access_token'] );
+				fa_api_settings()->set_access_token_expiration_time( time() + $body['expires_in'] );
+				fa_api_settings()->write();
+				return fa_api_settings()->access_token();
 			} else {
 				return new WP_Error(
-					'fontawesome_api_access_token_refresh'
+					'fontawesome_api_access_token_refresh',
+					'An error occurred while refreshing your access to the Font Awesome API server.'
 				);
 			}
 		}
