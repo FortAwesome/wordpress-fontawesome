@@ -180,7 +180,7 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
           dispatch({
             type: 'CONFLICT_DETECTION_SUBMIT_END',
             success: false,
-            message: 'Sorry, we failed to submit those conflicts to your WordPress server. Try again?'
+            message: 'Sorry, we failed to submit those conflicts to your WordPress server. Try reloading the page?'
           })
         }
       })

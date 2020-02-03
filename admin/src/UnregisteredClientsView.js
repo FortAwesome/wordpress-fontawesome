@@ -8,11 +8,12 @@ import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
+  faCheckSquare,
   faSkull,
   faSpinner,
-  faCheckSquare,
-  faSquare,
   faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import {
+    faSquare } from '@fortawesome/free-regular-svg-icons'
 import get from 'lodash/get'
 import size from 'lodash/size'
 import has from 'lodash/has'
@@ -64,7 +65,7 @@ export default function UnregisteredClientsView(props) {
   }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
-    <h2>Other themes or plugins</h2>
+    <h3 className={ sharedStyles['section-title'] }>Other themes or plugins</h3>
     {detectedUnregisteredClients
       ? <div>
           <p className={sharedStyles['explanation']}>
@@ -150,7 +151,7 @@ export default function UnregisteredClientsView(props) {
             }
             </tbody>
           </table>
-          <div className="submit">
+          <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
             <input
               type="submit"
               name="submit"
@@ -191,7 +192,7 @@ export default function UnregisteredClientsView(props) {
             <FontAwesomeIcon icon={ faThumbsUp } size='lg'/>
           </div>
           <div className={ sharedStyles['space-left'] }>
-            We detected no other plugins or themes loading other versions of Font Awesome.
+            We haven't detected any plugins or themes trying to load Font Awesome.
           </div>
       </div>
     }

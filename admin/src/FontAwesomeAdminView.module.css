@@ -19,7 +19,7 @@
 
 .tab-header button:disabled {
     cursor: default;
-    border-bottom: 4px solid darkgray;
+    border-bottom: 4px solid #008DED;
     color: unset;
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
+import sharedStyles from './App.module.css'
 import padStart from 'lodash/padStart'
 import dropWhile from 'lodash/dropWhile'
 
@@ -56,7 +57,7 @@ export default function ConflictDetectionTimer({ addDescription }) {
     return () => timeoutId && clearTimeout( timeoutId )
   }, [detectConflictsUntil, timeRemaining])
 
-  return timeRemaining <= 0 ? null : <span className="conflict-detection-timer">
+  return timeRemaining <= 0 ? null : <span className={ sharedStyles['conflict-detection-timer'] }>
     { timerString( timeRemaining ) }
     {
       !!addDescription &&
