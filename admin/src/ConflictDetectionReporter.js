@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setConflictDetectionScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCheck, faSkull, faThumbsUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faCog, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import size from 'lodash/size'
 import has from 'lodash/has'
@@ -26,36 +26,80 @@ const STATUS = {
 const STYLES = {
   container: {
     position: 'fixed',
-    fontFamily: 'sans-serif',
+    fontFamily:'"Helvetica Neue",Helvetica,Arial,sans-serif',
     right: '10px',
     bottom: '10px',
-    width: '30%',
-    minWidth: '325px',
-    maxWidth: '80%',
+    width: '450px',
     height: 'auto',
     maxHeight: '60%',
-    border: '1px solid lightgrey',
-    background: 'white',
+    border: '1px solid #CDD4DB',
+    borderRadius: '3px',
+    boxShadow: '1px 1px 5px 0 rgba(132,142,151,.3)',
+    background: '#008DED',
     zIndex: '99',
     overflowY: 'scroll',
-    fontSize: '13px',
+    fontSize: '14px',
     lineHeight: '1.4em',
-    color: '#444'
+    color: '#fff'
   },
-  h1: {
-    fontSize: '1.5em'
-  },
-  p: {
-    marginBlockStart: '1em',
-    marginBlockEnd: '1em'
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '5px 20px', 
+    color: '#CAECFF'
   },
   content: {
     width: '100%',
-    padding: '1em',
+    padding: '0 20px 10px 20px',
     boxSizing: 'border-box'
   },
   adminEyesOnly: {
-    fontStyle: 'italic'
+    margin: '0',
+    fontSize: '12px'
+  },
+  h1: {
+    margin: '.3em 0',
+    fontSize: '14px'
+  },
+  h2: {
+    margin: '.3em 0',
+    fontSize: '18px'
+  },
+  p: {
+    margin: '.5em 0'
+  },
+  link: {
+    color: '#fff'
+  },
+  tally: {
+    display: 'flex', 
+    alignItems: 'center',
+    margin: '.5em 0', 
+    textAlign: 'center'
+  },
+  count: {
+    flexBasis: '1em',
+    marginRight: '5px',
+    fontWeight: '600', 
+    fontSize: '20px'
+  },
+  timerRow: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#0064B1',
+    padding: '10px 20px',
+    color: '#fff', 
+    fontWeight: '600'
+  },
+  button: {
+    margin: '0 0 0 10px',
+    border: '0',
+    padding: '5px',
+    backgroundColor: 'transparent',
+    color: '#fff', 
+    opacity: '.7',
+    cursor: 'pointer'
   }
 }
 
@@ -115,64 +159,58 @@ export default function ConflictDetectionReporter() {
 
   return (
     <div style={ STYLES.container }>
-      <div style={ STYLES.content }>
-        <ConflictDetectionTimer addDescription />
-        {
-          runStatus === STATUS.expired
-          ? null
-          :
-            <button onClick={() => dispatch(setConflictDetectionScanner({ enable: false }))}>
-              <FontAwesomeIcon icon={ faTimes } />
-            </button>
-        }
+      <div style={ STYLES.header }>
         <h1 style={ STYLES.h1 }>Font Awesome Conflict Scanner</h1>
+        <p style={ STYLES.adminEyesOnly }>only admins can see this box</p>
+      </div>
+      <div style={ STYLES.content }>
+
         {
           {
             None:
               <div>
-                <div>
-                  <FontAwesomeIcon icon={ faThumbsUp } />
+                <div style={ STYLES.status }>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faGrin } size="sm" /> <span>All clear!</span></h2>
+                  <p style={ STYLES.p }>No new conflicts found on this page.</p>
                 </div>
-                <p>
-                  No conflicts found on this page!
-                </p>
               </div>,
             Running:
               <div>
-                <div>
-                  <FontAwesomeIcon icon={ faSpinner } spin /> <span>{ runStatus }</span>
+                <div style={ STYLES.status }>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>Scanning...</span></h2>
                 </div>
               </div>,
             Ready:
               <div>
                 <div>
-                  <FontAwesomeIcon icon={ faThumbsUp } /> <span>Ready to detect conflicts. Just start navigating to various pages on your web site and this scanner will show you its progress along the way.</span>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faThumbsUp } size="sm" /> Proton pack charged!</h2>
+                  <p style={ STYLES.p }>Wander through the pages of your web site and this scanner will track progress.</p>
                 </div>
               </div>,
             Submitting:
               <div>
-                <div>
-                  <FontAwesomeIcon icon={ faSpinner } spin /> <span>{ runStatus }</span>
+                <div style={ STYLES.status }>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus }</span></h2>
                 </div>
               </div>,
             Done:
               <div>
-                <div>
-                    <FontAwesomeIcon icon={ faCheck } /> <span>{ runStatus }</span>
+                <div style={ STYLES.status }>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCheckCircle } size="sm" /> <span>Page scan complete</span></h2>
                 </div>
-                <p>Total conflicts ever detected: { size( unregisteredClients ) }</p>
-                <p>Conflicts found on this page: { size( recentConflictsDetected ) }</p>
-                <p>New conflicts found on this page: { size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</p>
+                <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</span> <span>new conflicts found on this page</span></p>
+                <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( unregisteredClients ) }</span> <span>total found</span>
                 {
                   window.location.href === settingsPageUrl ?
-                  <p>Manage conflict removal right here on the plugin settings page.</p>
-                  : <p><a href={ settingsPageUrl }>Go manage</a> conflict removal on the plugin settings page.</p>
+                  <span>&nbsp;(manage conflicts here on the Troubleshoot tab)</span>
+                  : <span>&nbsp;(<a href={ settingsPageUrl } style={ STYLES.link }>manage</a>)</span>
                 }
+                </p>
               </div>,
             Expired:
               <div>
-                <p>
-                  The scanner is no longer active. If you need more time, just re-enable it 
+                  <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;Results to Review</span></h2>
+                  <p style={ STYLES.p }>Manage results or restart the scanner
                   {
                     window.location.href === settingsPageUrl
                     ? ' here on the '
@@ -180,27 +218,32 @@ export default function ConflictDetectionReporter() {
                   }
                   {
                     window.location.href === settingsPageUrl
-                    ? <span> settings </span>
-                    : <span> <a href={ settingsPageUrl }>settings</a> </span>
+                    ? <span> Troubleshoot </span>
+                    : <span> <a href={ settingsPageUrl } style={ STYLES.link }>Troubleshoot</a> </span>
                   }
-                  page.
+                  tab
                 </p>
               </div>,
             Error:
               <div>
-                <div>
-                    <FontAwesomeIcon icon={ faSkull } /> <span>{ runStatus }</span>
-                </div>
-                <p>
+                <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faSkull } /> <span>Don’t cross the streams! It would be bad.</span></h2>
+                <p style={ STYLES.p }>
                   { errorMessage }
-                </p>
-                <p>
-                  Maybe try reloading the page?
                 </p>
               </div>
           }[runStatus]
         }
-        <p style={ STYLES.adminEyesOnly }>only you can see this box</p>
+      </div>
+      <div style={ STYLES.timerRow }>
+        <span><ConflictDetectionTimer addDescription /> more minutes to browse your site for trouble</span>
+        {
+          runStatus === STATUS.expired
+          ? null
+          :
+            <button style={ STYLES.button } title="Stop timer" onClick={() => dispatch(setConflictDetectionScanner({ enable: false }))}>
+              <FontAwesomeIcon icon={ faTimesCircle } size="lg" />
+            </button>
+        }
       </div>
     </div>
   )

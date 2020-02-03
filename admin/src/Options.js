@@ -108,8 +108,8 @@ export default function Options(props) {
   }
 
   return <div className={ classnames(styles['options-setter']) }>
+    <div className={ sharedStyles['wrapper-div'] }>
       <form onSubmit={ e => e.preventDefault() }>
-        <hr className={ styles['option-divider'] }/>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
           <div className={ styles['option-header'] }>Icons</div>
           <div className={ styles['option-choice-container'] }>
@@ -399,9 +399,9 @@ export default function Options(props) {
             { getDetectionStatusForOption('v4compat') }
           </div>
         </div>
-        <hr className={ styles['option-divider'] }/>
       </form>
-    <div className="submit">
+    </div>
+    <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
       <input
         type="submit"
         name="submit"

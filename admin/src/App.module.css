@@ -1,3 +1,20 @@
+.wrapper-div {
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+@media only screen and (min-width: 1024px) {
+  .wrapper-div {
+    width: 66%;
+  }
+}
+
+.submit-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .submit-status {
   padding-left: 1em;
 }
@@ -11,12 +28,12 @@ div.submit-status.fail {
 	padding: 1em;
 }
 
-div.submit-status.fail .fail-icon-container{
+div.submit-status.fail .fail-icon-container {
   margin-top: auto;
   margin-bottom: auto;
 }
 
-div.submit-status.fail .explanation{
+div.submit-status.fail .explanation {
   max-width: 400px;
 }
 
@@ -28,8 +45,22 @@ div.submit-status.fail .explanation{
   color: green;
 }
 
+h2.section-title {
+  font-size: 18px;
+  margin-top: 0;
+}
+
+h3.section-title {
+  font-size: 16px;
+}
+
+.section-divider {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .explanation {
-  max-width: 500px;
+  max-width: 750px;
 }
 
 .table-header th {
@@ -39,6 +70,41 @@ div.submit-status.fail .explanation{
 button.more-less {
   border: 0;
   background: none;
+}
+
+.scanner-actions {
+  display: flex;
+  align-items: center;
+}
+
+.scanner-runstatus {
+  margin: 1rem;
+}
+
+button.faPrimary {
+  border: 1px solid #0064B1;
+  border-bottom: 4px solid #0064B1;
+  border-radius: 3px;
+  padding: .7em 1.5em;
+  background: #008DED;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4em;
+  color: #fff;
+  cursor: pointer;
+}
+
+button.faPrimary[disabled] {
+  border: 1px solid #F8F9FA;
+  background: #F8F9FA;
+  color: #008DED;
+  cursor: default;
+}
+
+button .conflict-detection-timer {
+  display: inline-block;
+  min-width: 3.2em;
+  text-align: left;
 }
 
 .warning {
