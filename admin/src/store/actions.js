@@ -297,13 +297,15 @@ export function submitPendingOptions() {
 
       const submitMessage = (code => { 
         switch(code) {
-          case 'cant_update':
-            return message
           case 'rest_no_route':
           case 'rest_cookie_invalid_nonce':
-            return "Sorry, we couldn't reach the server"
+            return "Oh no! Your web browser could not reach your WordPress server."
           default:
-            return "Update failed"
+            if ( message && '' !== message ) {
+              return message
+            } else {
+              return "Update failed for some unknown reason"
+            }
         }
       })(code)
 
