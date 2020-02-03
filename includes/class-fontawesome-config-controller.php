@@ -260,7 +260,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			 */
 			if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) && $version_is_symbolic_latest ) {
 				// We're using a kit, so the possibility of using 'latest' as a version applies. 
-				$item['version'] = fa()->get_latest_version();
+				$item['version'] = fa()->latest_version();
 			} elseif ( $version_is_concrete ) {
 				/**
 				 * If it's not a kit with 'latest', then it must be concrete like '5.4.1'.
