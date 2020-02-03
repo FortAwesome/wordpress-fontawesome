@@ -215,7 +215,6 @@ export function queryKits() {
             version
             technologySelected
             licenseSelected
-            domains
             minified
             token
             shimEnabled
