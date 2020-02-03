@@ -272,8 +272,7 @@ export function submitPendingOptions() {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      if (200 === status) {
+      const { data } = response
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
           data,
@@ -285,13 +284,6 @@ export function submitPendingOptions() {
         if ( data.apiToken ) {
           dispatch(queryKits())
         }
-    } else {
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        success: false,
-        message: "Failed to save changes"
-      })
-    }
     }).catch(error => {
       const { response: { data: { code, message }}} = error
 
