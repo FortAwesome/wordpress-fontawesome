@@ -72,6 +72,8 @@ services:
        - db-latest
      image: wordpress-fontawesome-dev-latest
      <<: *dev_volumes
+     env_file:
+       - ".env.local"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
