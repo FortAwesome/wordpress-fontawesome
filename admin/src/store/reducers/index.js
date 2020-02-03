@@ -244,7 +244,7 @@ function kits( state = [], action = {} ) {
   switch(type) {
     case 'KITS_QUERY_END':
       if(success) {
-        return get(data, 'data.me.kits', [])
+        return get(data, 'me.kits', [])
       } else {
         return state
       }
