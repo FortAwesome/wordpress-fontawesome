@@ -208,6 +208,8 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 				'technology' => 'svg',
 				'svgPseudoElements' => true,
 				'version' => 'latest',
+				'kitToken' => null,
+				'apiToken' => false
 			),
 			fa()->options()
 		);
