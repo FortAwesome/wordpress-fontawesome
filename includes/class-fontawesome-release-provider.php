@@ -283,7 +283,7 @@ EOD;
 	 * @return WP_Error | array
 	 */
 	protected function query( $query ) {
-		return fa_metadata_provider()->metadata_query( $query );
+		return fa_metadata_provider()->metadata_query( $query, TRUE );
 	}
 
 	/**
