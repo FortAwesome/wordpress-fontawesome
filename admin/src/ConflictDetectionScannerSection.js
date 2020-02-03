@@ -27,16 +27,18 @@ export default function ConflictDetectionScannerSection() {
   }, [showConflictDetectionReporter])
 
   return <div>
-    <h2 className={ sharedStyles['section-title'] }>Conflict Detection Scanner</h2>
+    <h2 className={ sharedStyles['section-title'] }>Detect Conflicts with Other Versions of Font Awesome</h2>
     <div className={sharedStyles['explanation']}>
-      <p>If you are having trouble loading Font Awesome icons on your site, use this
-      conflict scanner to detect possible conflicts coming from themes or other plugins
-      that are loading other versions of Font Awesome.</p>
+      <p>If you are having trouble loading Font Awesome icons on your WordPress
+      site, one of the main causes can be other themes or plugins loading
+      conflicting versions of Font Awesome. <b>Use our conflict scanner to
+      detect other versions of Font Awesome running on your site.</b></p>
 
       <p>Enable the scanner below and a box will appear in the bottom corner
       of your window (that only you can see) while it runs for 10 minutes. Then browse
       your site, especially to the pages having trouble, to
-      catch any <span style={{ whiteSpace: "nowrap" }}>Slimers - *ahem* - conflicts</span> in the scanner. Then come back here to review and
+      catch any <span style={{ whiteSpace: "nowrap" }}>Slimers - *ahem* - 
+      conflicts</span> in the scanner. Then come back here to review and
       manage Font Awesome versions found.</p>
     </div>
     <div className={sharedStyles['scanner-actions']}>
@@ -45,7 +47,7 @@ export default function ConflictDetectionScannerSection() {
         ? <button className={sharedStyles['faPrimary']} disabled >
             Scanner running: <ConflictDetectionTimer />
           </button>
-        : <button className={sharedStyles['faPrimary']} disabled={ isSubmitting } onClick={() => dispatch(setConflictDetectionScanner({ enable: true }))}>
+        : <button class="button-primary" disabled={ isSubmitting } onClick={() => dispatch(setConflictDetectionScanner({ enable: true }))}>
             Enable scanner for <span>{ CONFLICT_DETECTION_SCANNER_DURATION_MIN } minutes</span>
           </button>
       }

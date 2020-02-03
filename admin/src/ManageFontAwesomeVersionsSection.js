@@ -6,9 +6,8 @@ import classnames from 'classnames'
 
 export default function ManageFontAwesomeVersionsSection() {
   return <div className={ classnames(sharedStyles['explanation'], styles['font-awesome-versions-section']) }>
-    <h2 className={ sharedStyles['section-title'] }>Manage Font Awesome versions</h2>
+    <h2 className={ sharedStyles['section-title'] }>Font Awesome Versions Found on Your Site</h2>
     <p>
-    Below is information about the Font Awesome versions we found on your site.
     <b> Registered plugins and themes</b> have opted to share information about the
     Font Awesome settings they are expecting, and are therefore easier to fix.
     For the <b>unregistered plugins and themes</b>, which are more unpredictable, we
