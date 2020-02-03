@@ -119,13 +119,13 @@ the Font Awesome, Font Awesome API, and kit edge apps.
 1. make sure the `devenv` is up to date
 1. in the `devenv` repo, run `bin/dev-wordpress`
 1. add entries for the following to your `.env.local` (replacing the URLs with the appropriate ones if they change)
+    ```bash
+    FONTAWESOME_API_URL=http://dockerhost:4543
+    FONTAWESOME_KIT_LOADER_BASE_URL=https://dockerhost:4243
+    ```
 
-```bash
-FONTAWESOME_API_URL=http://dockerhost:4543
-FONTAWESOME_KIT_LOADER_BASE_URL=https://dockerhost:4243
-```
-
-(This probably implies replacing `fa.test` with `dockerhost` in those URLs.)
+    (Heads Up! make sure to replace `fa.test` with `dockerhost` in those URLs.)
+1. run `bin/dev` in the `fontawesome` repo if you need to do things with kit configs or API Tokens
 
 ## 4. Run an environment (one at a time)
 
