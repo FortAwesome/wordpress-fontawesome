@@ -235,7 +235,7 @@ export default function ConflictDetectionReporter() {
         }
       </div>
       <div style={ STYLES.timerRow }>
-        <span><ConflictDetectionTimer addDescription /> more minutes to browse your site for trouble</span>
+        <span><ConflictDetectionTimer addDescription /></span>
         {
           runStatus === STATUS.expired
           ? null
