@@ -231,26 +231,18 @@ export function queryKits() {
         }
       }
     ).then(response => {
-      const { status, data } = response
+      const { data } = response
 
-      if ( 200 === status ) {
-        dispatch({
-          type: 'KITS_QUERY_END',
-          data,
-          success: true
-        })
-      } else {
-        dispatch({
-          type: 'KITS_QUERY_END',
-          success: false,
-          message: 'Failed to fetch kits'
-        })
-      }
+      dispatch({
+        type: 'KITS_QUERY_END',
+        data,
+        success: true
+      })
     }).catch(error => {
         dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message: 'Failed to fetch kits'
+          message: get(error, 'response.data.message', 'Failed to fetch kits')
         })
     })
   }
