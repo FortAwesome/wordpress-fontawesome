@@ -199,6 +199,24 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
+	public function handle_pre_http_request_for_noauth_request( $preempt, $parsed_args, $url ) {
+		if ( preg_match( '/token$/', $url ) ) {
+			return new WP_Error(
+				'unexpected_request',
+			);
+		}
+
+		if (
+			isset( $parsed_args['headers']['authorization'] )
+		) {
+			return new WP_Error(
+				'unexpected_request',
+			);
+		} else {
+			return self::build_success_response();
+		}
+	}
+
 	public function test_authorized_request_with_valid_access_token() {
 		add_filter(
 			'pre_http_request',
@@ -247,5 +265,33 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		FontAwesome_API_Settings::reset();
 		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
 		$this->assertEqualsWithDelta( time() + 3600, fa_api_settings()->access_token_expiration_time(), 2.0 );
+	}
+
+	public function test_noauth_request() {
+		add_filter(
+			'pre_http_request',
+			[$this, 'handle_pre_http_request_for_noauth_request'],
+			1, // filter priority
+			3  // num args accepted
+		);
+
+		/**
+		 * We'll have an apiToken present, to exercise the decision making of
+		 * the module under test. We want that, even though an apiToken may be
+		 * present, it's not used, so as to avoid any errors that might come up
+		 * with an expired access token, or inactive apiToken, when we know that
+		 * a public/noauth request wouldn't require that anyway.
+		 */
+
+		fa_api_settings()->remove();
+		fa_api_settings()->set_api_token('abc');
+		fa_api_settings()->set_access_token('xyz');
+		fa_api_settings()->set_access_token_expiration_time(time() + 3600);
+
+		$result = fa_metadata_provider()->metadata_query( 'query {versions}', true );
+
+		fa_api_settings()->remove();
+
+		$this->assertFalse( $result instanceof WP_Error );
 	}
 }

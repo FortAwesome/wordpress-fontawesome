@@ -87,10 +87,12 @@ class FontAwesome_Metadata_Provider {
 	 * Internal use only. Not part of this plugin's public API.
 	 * Use the query() method on FortAwesome\FontAwesome instead.
 	 *
+	 * @param $ignore_auth when TRUE this will omit an authorization header on
+	 *     the network request, even if an apiToken is present.
 	 * @ignore
 	 * @return WP_Error | array
 	 */
-	public function metadata_query( $query_string ) {
+	public function metadata_query( $query_string, $ignore_auth = FALSE ) {
 		$args = array(
 			'method'  => 'POST',
 			'headers' => array(
@@ -99,11 +101,13 @@ class FontAwesome_Metadata_Provider {
 			'body'    => '{"query": ' . json_encode( $query_string ) . '}',
 		);
 
-		$access_token = $this->current_access_token();
-		if ( $access_token instanceof WP_Error ) {
-			return $access_token;
-		} elseif ( is_string( $access_token ) ) {
-			$args['headers']['authorization'] = "Bearer $access_token";
+		if( ! $ignore_auth ) {
+			$access_token = $this->current_access_token();
+			if ( $access_token instanceof WP_Error ) {
+				return $access_token;
+			} elseif ( is_string( $access_token ) ) {
+				$args['headers']['authorization'] = "Bearer $access_token";
+			}
 		}
 
 		try {

@@ -28,7 +28,7 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 						public function __construct() {
 							/* noop */
 						}
-						public function metadata_query( $args ) {
+						public function metadata_query( $args, $ignore_auth = FALSE ) {
 							error_log('DEBUG: mocking with MockMetaDataProvider');
 
 							// An error response
