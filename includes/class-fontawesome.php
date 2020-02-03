@@ -200,16 +200,6 @@ class FontAwesome {
    */
 	const RELEASES_REFRESH_INTERNAL = 10 * 60;
 
-  /**
-	 * Base URL for kit loading.
-   *
-	 * Not part of this plugin's public API.
-	 *
-	 * @ignore
-	 * @internal
-	 */
-	const KIT_LOADER_BASE_URL = 'https://kit.fontawesome.com';
-
 	/**
 	 * We will not use a default for version, since we want the version stored in the options
 	 * to always be resolved to an actual version number, which requires that the release
@@ -1386,7 +1376,7 @@ class FontAwesome {
 			function () use( $kit_token ) {
 				wp_enqueue_script(
 					self::RESOURCE_HANDLE,
-					trailingslashit( self::KIT_LOADER_BASE_URL ) . $kit_token . '.js',
+					trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 					[],
 					null,
 					false

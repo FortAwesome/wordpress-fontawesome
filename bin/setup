@@ -4,13 +4,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/../.env
 source $DIR/.common.bash
 
-if [ ! -f .env.email ]; then
-  echo "Missing email config file: .env.email"
-  echo "\tIt must exist and set env var WP_ADMIN_EMAIL to some email address."
+if [ ! -f .env.local ]; then
+  echo "Missing local env file: .env.local"
+  echo "\tIt must exist and set env var WP_ADMIN_EMAIL to some real email address."
+  echo "\tThis is the address WordPress will use for its admin email."
   echo "\tIt's not checked in to git. It's .gitignore'd."
   exit 1
 else
-  . .env.email
+  . .env.local
 fi
 
 rc=`curl \

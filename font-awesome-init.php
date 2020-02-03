@@ -34,7 +34,7 @@ if ( ! function_exists( 'FortAwesome\font_awesome_handle_fatal_error' ) ) {
 	}
 }
 
-if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
+if ( ! defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
 	register_deactivation_hook(
 		FONTAWESOME_DIR_PATH . 'index.php',
 		function() {
@@ -56,7 +56,7 @@ if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
 	try {
 		require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
 
-		define( 'FONT_AWESOME_OFFICIAL_LOADED', 1 );
+		define( 'FONTAWESOME_OFFICIAL_LOADED', 1 );
 		fa()->run();
 	} catch ( Exception $e ) {
 		font_awesome_handle_fatal_error( $e->getMessage() );

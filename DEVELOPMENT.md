@@ -97,7 +97,37 @@ and the DockerHub "latest" version are temporarily out of sync, you could be in 
 the WordPress `5.0.0` (in our example) is running, but with tests tagged for WordPress `5.0.1` are 
 installed. Probably this won't cause a real problem, but beware.
 
-## 3. Run an environment (one at a time)
+## 3. set up .env.local
+
+In the top-level of this repo, create a plain text file called `.env.local` that has at least
+the following in it:
+
+```bash
+WP_ADMIN_EMAIL=foo@example.com
+```
+
+Replace `foo@example.com` with a real email address where you can receive admin messages
+from this local install of WordPress, if it sends any (it tends not to). 
+
+This file is not checked into git. It's listed in `.gitignore`.
+
+### Font Awesome Internal Extra steps
+
+Designers and developers internal to Font Awesome can also run local instances of
+the Font Awesome, Font Awesome API, and kit edge apps.
+
+1. make sure the `devenv` is up to date
+1. in the `devenv` repo, run `bin/dev-wordpress`
+1. add entries for the following to your `.env.local` (replacing the URLs with the appropriate ones if they change)
+
+```bash
+FONTAWESOME_API_URL=http://dockerhost:4543
+FONTAWESOME_KIT_LOADER_BASE_URL=https://dockerhost:4243
+```
+
+(This probably implies replacing `fa.test` with `dockerhost` in those URLs.)
+
+## 4. Run an environment (one at a time)
 
 `latest` is the default, so these two are equivalent:
 
@@ -149,12 +179,6 @@ $ docker-compose down
 
 You could also be a little more ninja-ish and use `docker ps` to find the running containers you know
 you want to stop, find the container ID for each, and then for each one do `docker container stop <container_id>`.
-
-## 4. create a .env.email file in the root of the repository with an admin email address WordPress can use
-
-```
-WP_ADMIN_EMAIL=some_real_address@example.com
-```
 
 ## 5. install composer (PHP package manager)
 

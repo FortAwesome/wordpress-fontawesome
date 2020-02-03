@@ -23,83 +23,6 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 
-// TODO: remove this hack
-					class MockMetaDataProvider extends FontAwesome_Metadata_Provider {
-						public function __construct() {
-							/* noop */
-						}
-						public function metadata_query( $args, $ignore_auth = FALSE ) {
-							error_log('DEBUG: mocking with MockMetaDataProvider');
-
-							// An error response
-							/*
-							return new WP_Error(
-								'fontawesome_api_failed_request',
-								'mocked bad request',
-								array( 'status' => 400 )
-							);
-							*/
-
-							// An empty kits query result
-							/*
-							return json_decode(<<<EOD
-								{
-									"data": {
-									  "me": {
-										"kits": []
-									  }
-									}
-								}								
-EOD, true
-							);
-							*/
-
-							return json_decode(<<<EOD
-								{
-									"data": {
-									  "me": {
-										"kits": [
-										  {
-											"autoAccessibilityEnabled": true,
-											"domains": [
-											  "*.*"
-											],
-											"integrityHash": "sha384-wPybhX+N4JKW9PJklK8cC+QNngu6rJv5lwuPRhqJgQM6hApd6s8hq9mJnb5IbeKM",
-											"licenseSelected": "pro",
-											"minified": true,
-											"name": "Alpha Kit",
-											"shimEnabled": true,
-											"status": "publishing",
-											"technologySelected": "webfonts",
-											"token": "778ccf8260",
-											"useIntegrityHash": false,
-											"version": "5.4.1"
-										  },
-										  {
-											"autoAccessibilityEnabled": false,
-											"domains": [
-											  "*.*"
-											],
-											"integrityHash": "sha384-ijo1t4DZohc965vcv1pXrIpQEz9Lij8s0/xDPK1Iz+IVfSBvgKY+kK1PXTuZ0lAZ",
-											"licenseSelected": "free",
-											"minified": true,
-											"name": "Beta Kit",
-											"shimEnabled": false,
-											"status": "publishing",
-											"technologySelected": "svg",
-											"token": "7cf0c88c97",
-											"useIntegrityHash": false,
-											"version": "latest"
-										  }
-										]
-									  }
-									}
-								  }								
-EOD, true
-							);
-						}
-					}
-
 if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 
 	/**
@@ -128,9 +51,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 		public function __construct( $plugin_slug, $namespace ) {
 			$this->plugin_slug = $plugin_slug;
 			$this->namespace   = $namespace;
-
-			// TODO: get rid of this mock hack
-			$this->_metadata_provider = new MockMetaDataProvider();
+			$this->_metadata_provider = fa_metadata_provider();
 		}
 
 		/**

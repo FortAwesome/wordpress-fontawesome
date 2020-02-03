@@ -51,18 +51,42 @@ if(! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
 }
 
-if(! defined( 'FONTAWESOME_API_URL' ) ) {
-	/**
-	 * @internal
-	 * @ignore
-	 */
-	define( 'FONTAWESOME_API_URL', 'https://api.fontawesome.com' );
-}
-
 if(! defined( 'FONTAWESOME_ENV' ) ) {
 	/**
 	 * @internal
 	 * @ignore
 	 */
 	define( 'FONTAWESOME_ENV', getenv( 'FONTAWESOME_ENV' ) );
+}
+
+if(! defined( 'FONTAWESOME_API_URL' ) ) {
+	if ( 'development' === getenv( 'FONTAWESOME_ENV' )  && boolval( getenv( 'FONTAWESOME_API_URL' ) ) ) {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_API_URL', untrailingslashit( getenv( 'FONTAWESOME_API_URL' ) ) );
+	} else {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_API_URL', 'https://api.fontawesome.com' );
+	}
+}
+
+if(! defined( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) {
+	if ( 'development' === getenv( 'FONTAWESOME_ENV' )  && boolval( getenv( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) ) {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_KIT_LOADER_BASE_URL', untrailingslashit( getenv( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) );
+	} else {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_KIT_LOADER_BASE_URL', 'https://kit.fontawesome.com' );
+	}
 }

@@ -19,12 +19,6 @@ class FontAwesome_API_Settings {
 	const FILENAME = 'font-awesome-api.ini';
 
 	/**
-	 * TODO: remove either this one or the one that has been defined
-	 * in the new Metadata API module.
-	 */
-	const FONTAWESOME_API_URL = 'https://api.fontawesome.com';
-
-	/**
 	 * Current access token.
 	 *
 	 * @internal
@@ -365,7 +359,7 @@ EOD;
 	 * @return WP_Error | array just like wp_remote_post()
 	 */
 	protected function post( $args ) {
-		return wp_remote_post( self::FONTAWESOME_API_URL . '/token', $args );
+		return wp_remote_post( FONTAWESOME_API_URL . '/token', $args );
 	}
 }
 
