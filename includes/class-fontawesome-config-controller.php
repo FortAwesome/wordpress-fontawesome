@@ -62,13 +62,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				'/' . $route_base,
 				array(
 					array(
-						'methods'             => 'GET',
-						'callback'            => array( $this, 'get_item' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-					array(
 						'methods'             => 'PUT',
 						'callback'            => array( $this, 'update_item' ),
 						'permission_callback' => function() {
@@ -88,29 +81,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				'options'   => $fa->options(),
 				'conflicts' => $fa->conflicts_by_option(),
 			);
-		}
-
-		/**
-		 * Get the config, a singleton resource.
-		 *
-		 * @param WP_REST_Request $request Full data about the request.
-		 * @return WP_Error|WP_REST_Response
-		 */
-		public function get_item( $request ) {
-			try {
-				$data = $this->build_item( fa() );
-
-				return new WP_REST_Response( $data, 200 );
-			} catch ( Exception $e ) {
-				return new WP_Error(
-					'cant_fetch',
-					$e->getMessage(),
-					array(
-						'status' => 500,
-						'trace'  => $e->getTraceAsString(),
-					)
-				);
-			}
 		}
 
 		/**

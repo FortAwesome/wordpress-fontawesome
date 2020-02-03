@@ -126,23 +126,4 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 			}
 		}
 	}
-
-	public function test_default_get() {
-		$this->prepare([
-			$this->build_shorter_success_response(),
-		]);
-
-		$request  = new \WP_REST_Request( 'GET', $this->namespaced_route );
-		$response = $this->server->dispatch( $request );
-		$this->assertEquals( 200, $response->get_status() );
-		$data = $response->get_data();
-
-		$this->assertArrayHasKey( 'options', $data );
-		$this->assertEquals( FontAwesome::DEFAULT_USER_OPTIONS['usePro'], $data['options']['usePro'] );
-		$this->assertEquals( '5.3.1', $data['options']['version'] );
-
-		$this->assertArrayHasKey( 'conflicts', $data );
-		// No client conflicts in the default scenario
-		$this->assertEquals( [], $data['conflicts'] );
-	}
 }
