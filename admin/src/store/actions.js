@@ -2,6 +2,7 @@ import axios from 'axios'
 import toPairs from 'lodash/toPairs'
 import size from 'lodash/size'
 import get from 'lodash/get'
+import find from 'lodash/find'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -202,7 +203,9 @@ export function chooseIntoKitConfig() {
 
 export function queryKits() {
   return function(dispatch, getState) {
-    const { apiNonce, apiUrl } = getState()
+    const { apiNonce, apiUrl, options } = getState()
+
+    const initialKitToken = get(options, 'kitToken', null)
 
     dispatch({ type: 'KITS_QUERY_START' })
 
@@ -238,12 +241,71 @@ export function queryKits() {
         data,
         success: true
       })
-    }).catch(error => {
+
+      const refreshedKits = get( data, 'me.kits', [] )
+      const currentKitRefreshed = find( refreshedKits, { token: initialKitToken } )
+      const optionsUpdate = {}
+
+      // Inspect each relevant kit option for the current kit to see if it's
+      // been changed since our last query.
+      if( options.usePro && currentKitRefreshed.licenseSelected !== 'pro' ) {
+        optionsUpdate.usePro = false
+      } else if ( !options.usePro && currentKitRefreshed.licenseSelected === 'pro' ) {
+        optionsUpdate.usePro = true
+      }
+
+      if( options.technology === 'svg' && currentKitRefreshed.technologySelected !== 'svg' ) {
+        optionsUpdate.technology = 'webfont'
+      } else if( options.technology !== 'svg' && currentKitRefreshed.technologySelected === 'svg' ) {
+        optionsUpdate.technology = 'svg'
+      }
+
+      if( options.version !== currentKitRefreshed.version) {
+        optionsUpdate.version = currentKitRefreshed.version
+      }
+
+      if( options.v4compat && !currentKitRefreshed.shimEnabled ) {
+        optionsUpdate.v4compat = false
+      } else if( !options.v4compat && currentKitRefreshed.shimEnabled ) {
+        optionsUpdate.v4compat = true
+      }
+
+      dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
+
+      axios.put(
+        `${apiUrl}/config`,
+        { 
+          options: {
+            ...options, ...optionsUpdate
+          }
+        },
+        {
+          headers: {
+            'X-WP-Nonce': apiNonce
+          }
+        }
+      ).then(response => {
+        const { data } = response
+
         dispatch({
-          type: 'KITS_QUERY_END',
-          success: false,
-          message: get(error, 'response.data.message', 'Failed to fetch kits')
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          data,
+          success: true,
+          message: 'Kit changes saved'
         })
+      }).catch(error => {
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          success: false,
+          message: get(error, 'response.data.message', 'Failed saving kit changes')
+        })
+      })
+    }).catch(error => {
+      dispatch({
+        type: 'KITS_QUERY_END',
+        success: false,
+        message: get(error, 'response.data.message', 'Failed to fetch kits')
+      })
     })
   }
 }
