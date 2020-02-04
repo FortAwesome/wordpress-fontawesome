@@ -227,7 +227,7 @@ function conflictDetectionScannerStatus(
   switch(type) {
     case 'ENABLE_CONFLICT_DETECTION_SCANNER_START':
     case 'DISABLE_CONFLICT_DETECTION_SCANNER_START':
-      return { ...state, isSubmitting: true }
+      return { ...state, hasSubmitted: false, success: false, isSubmitting: true }
     case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
     case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
       return { ...state, hasSubmitted: true, isSubmitting: false, success, message }
@@ -285,6 +285,20 @@ function showConflictDetectionReporter(state = false, action = {}) {
   }
 }
 
+function userAttemptedToStopScanner(state = false, action = {}) {
+  const { type } = action
+
+  switch(type) {
+    case 'USER_STOP_SCANNER':
+      return true
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_START':
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
+      return false
+    default:
+      return state
+  }
+}
+
 function activeAdminTab(state = ADMIN_TAB_SETTINGS, action = {}) {
   const { type, tab } = action
 
@@ -319,6 +333,7 @@ export default combineReducers({
   showConflictDetectionReporter,
   unregisteredClientDetectionStatus,
   unregisteredClients,
+  userAttemptedToStopScanner,
   v3DeprecationWarning,
   v3DeprecationWarningStatus
 })

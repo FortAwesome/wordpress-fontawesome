@@ -5,7 +5,7 @@ import { setConflictDetectionScanner, CONFLICT_DETECTION_SCANNER_DURATION_MIN } 
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
-import mountConflictDetectionReporter from './mountConflictDetectionReporter'
+import { mountConflictDetectionReporter, isConflictDetectionReporterMounted } from './mountConflictDetectionReporter'
 
 export default function ConflictDetectionScannerSection() {
   const dispatch = useDispatch()
@@ -17,12 +17,12 @@ export default function ConflictDetectionScannerSection() {
   const store = useStore()
 
   useEffect(() => {
-    if(showConflictDetectionReporter) {
-      mountConflictDetectionReporter(
-        () => {},
+    if(showConflictDetectionReporter && !isConflictDetectionReporterMounted()) {
+      mountConflictDetectionReporter({
+        report: () => {},
         store,
-        true
-      )
+        now: true
+      })
     }
   }, [showConflictDetectionReporter])
 

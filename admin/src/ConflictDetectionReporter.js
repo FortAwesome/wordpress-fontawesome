@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setConflictDetectionScanner } from './store/actions'
+import { setConflictDetectionScanner, userAttemptToStopScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faCog, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
@@ -113,7 +113,7 @@ export default function ConflictDetectionReporter() {
   const activeAdminTab = useSelector(state => state.activeAdminTab )
   const currentlyOnPluginAdminPage = window.location.href.startsWith(settingsPageUrl)
   const currentlyOnTroubleshootTab = currentlyOnPluginAdminPage && activeAdminTab === ADMIN_TAB_TROUBLESHOOT
-  const [ userAttemptedToStopScanner, setUserAttemptedToStopScanner ] = useState(false)
+  const userAttemptedToStopScanner = useSelector(state => state.userAttemptedToStopScanner)
 
   const unregisteredClients = useSelector(
     state => state.unregisteredClients
@@ -158,10 +158,10 @@ export default function ConflictDetectionReporter() {
         // Probably a fluke in the communication between the browser and the WordPress server.
         return STATUS.error
       }
-    } else if ( expired ) {
-      return STATUS.expired
     } else if (scannerReady) {
       return STATUS.ready
+    } else if ( expired ) {
+      return STATUS.expired
     } else if ( success && 0 === size( unregisteredClients ) ) {
       return STATUS.none
     } else if ( success ) {
@@ -180,7 +180,7 @@ export default function ConflictDetectionReporter() {
   )
 
   function stopScanner() {
-    setUserAttemptedToStopScanner(true)
+    dispatch(userAttemptToStopScanner())
     dispatch(setConflictDetectionScanner({ enable: false }))
   }
 
@@ -268,16 +268,18 @@ export default function ConflictDetectionReporter() {
         }
       </div>
       <div style={ STYLES.timerRow }>
-        <span><ConflictDetectionTimer addDescription /></span>
+        <span>
+          <ConflictDetectionTimer addDescription>
+            <button style={ STYLES.button } title="Stop timer" onClick={() => stopScanner()}>
+              <FontAwesomeIcon icon={ faTimesCircle } size="lg" />
+            </button>
+          </ConflictDetectionTimer>
+        </span>
         {
-          runStatus === STATUS.expired
-          ? "Timer expired"
-          : runStatus === STATUS.stopped
-            ? "Timer stopped"
-            :
-              <button style={ STYLES.button } title="Stop timer" onClick={() => stopScanner()}>
-                <FontAwesomeIcon icon={ faTimesCircle } size="lg" />
-              </button>
+          {
+            Expired: "Timer expired",
+            Stopped: "Timer stopped"
+          }[runStatus]
         }
       </div>
     </div>

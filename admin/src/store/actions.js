@@ -142,6 +142,12 @@ export function submitPendingOptions() {
   }
 }
 
+export function userAttemptToStopScanner() {
+  return {
+    type: 'USER_STOP_SCANNER'
+  }
+}
+
 export function reportDetectedConflicts({ nodesTested = {} }) {
   return (dispatch, getState) => {
     const { apiNonce, apiUrl, unregisteredClients, showConflictDetectionReporter } = getState()

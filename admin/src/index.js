@@ -5,7 +5,7 @@ import FontAwesomeAdminView from './FontAwesomeAdminView'
 import { Provider } from 'react-redux'
 import { createStore } from './store'
 import { reportDetectedConflicts } from './store/actions'
-import mountConflictDetectionReporter from './mountConflictDetectionReporter'
+import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
 
@@ -31,9 +31,9 @@ if( showAdmin ) {
 }
 
 if( showConflictDetectionReporter ) {
-  mountConflictDetectionReporter(
-    params => store.dispatch(reportDetectedConflicts(params)),
+  mountConflictDetectionReporter({
+    report: params => store.dispatch(reportDetectedConflicts(params)),
     store,
-    false
-  )
+    now: false
+  })
 }
