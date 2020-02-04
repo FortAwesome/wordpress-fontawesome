@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setConflictDetectionScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faCog, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import size from 'lodash/size'
 import has from 'lodash/has'
@@ -106,6 +107,10 @@ const STYLES = {
 export default function ConflictDetectionReporter() {
   const dispatch = useDispatch()
   const settingsPageUrl = useSelector(state => state.settingsPageUrl)
+  const troubleshootTabUrl = `${settingsPageUrl}&tab=ts`
+  const activeAdminTab = useSelector(state => state.activeAdminTab )
+  const currentlyOnPluginAdminPage = window.location.href.startsWith(settingsPageUrl)
+  const currentlyOnTroubleshootTab = currentlyOnPluginAdminPage && activeAdminTab === ADMIN_TAB_TROUBLESHOOT
 
   const unregisteredClients = useSelector(
     state => state.unregisteredClients
@@ -201,9 +206,9 @@ export default function ConflictDetectionReporter() {
                 <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</span> <span>new conflicts found on this page</span></p>
                 <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( unregisteredClients ) }</span> <span>total found</span>
                 {
-                  window.location.href === settingsPageUrl ?
+                  currentlyOnTroubleshootTab ?
                   <span>&nbsp;(manage conflicts here on the Troubleshoot tab)</span>
-                  : <span>&nbsp;(<a href={ settingsPageUrl } style={ STYLES.link }>manage</a>)</span>
+                  : <span>&nbsp;(<a href={ troubleshootTabUrl } style={ STYLES.link }>manage</a>)</span>
                 }
                 </p>
               </div>,
@@ -212,14 +217,14 @@ export default function ConflictDetectionReporter() {
                   <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;Results to Review</span></h2>
                   <p style={ STYLES.p }>Manage results or restart the scanner
                   {
-                    window.location.href === settingsPageUrl
+                    currentlyOnTroubleshootTab
                     ? ' here on the '
                     : ' on the '
                   }
                   {
-                    window.location.href === settingsPageUrl
+                    currentlyOnTroubleshootTab
                     ? <span> Troubleshoot </span>
-                    : <span> <a href={ settingsPageUrl } style={ STYLES.link }>Troubleshoot</a> </span>
+                    : <span> <a href={ troubleshootTabUrl } style={ STYLES.link }>Troubleshoot</a> </span>
                   }
                   tab
                 </p>
