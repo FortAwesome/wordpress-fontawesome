@@ -113,6 +113,14 @@ class FontAwesome {
 	 * @since 4.0.0
 	 */
 	const OPTIONS_PAGE = 'font-awesome';
+
+	/**
+	 * GET param used for linking to a particular starting tab in the admin UI.
+	 *
+	 * @since 4.0.0
+	 */
+	const ADMIN_TAB_QUERY_VAR = 'tab';
+
 	/**
 	 * The handle used when enqueuing this plugin's resulting resource.
 	 * Used when this plugin calls either `wp_enqueue_script` or `wp_enqueue_style` to enqueue Font Awesome assets.
@@ -564,12 +572,42 @@ class FontAwesome {
 		return $this->release_provider()->versions();
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * URL for this plugin's admin settings page.
+	 *
 	 * @ignore
+	 * @internal
 	 */
 	private function settings_page_url() {
 		return admin_url( 'options-general.php?page=' . self::OPTIONS_PAGE );
+	}
+
+	/**
+	 * The value of the ts GET param given for this page request, or null if none.
+	 *
+	 * We'll be super-strict validating what values we'll accept, insead of passing
+	 * through whatever is on the query string.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return string|null
+	 */
+	private function active_admin_tab() {
+		if ( ! isset( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) || empty( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) ) {
+			return null;
+		}
+
+		$value = $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ];
+
+		// These values are defined in the Redux reducer module of the admin JS React app.
+		switch ( $value ) {
+			case 'ts':
+				return 'ADMIN_TAB_TROUBLESHOOT';
+			case 's':
+				return 'ADMIN_TAB_SETTINGS';
+			default:
+				return null;
+		}
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -1187,6 +1225,7 @@ class FontAwesome {
 			'unregisteredClients'           => $this->unregistered_clients(),
 			'showConflictDetectionReporter' => $this->detecting_conflicts(),
 			'settingsPageUrl'			    => $this->settings_page_url(),
+			'activeAdminTab'				=> $this->active_admin_tab(),
 			'options'						=> $this->options(),
 		);
 	}

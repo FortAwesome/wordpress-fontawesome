@@ -8,7 +8,7 @@ import { ADMIN_TAB_SETTINGS, ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import { setActiveAdminTab } from './store/actions'
 
 export default function FontAwesomeAdminView() {
-  const activeAdminTab = useSelector(state => state.activeAdminTab )
+  const activeAdminTab = useSelector(state => state.activeAdminTab || ADMIN_TAB_SETTINGS )
   const dispatch = useDispatch()
 
   return ( 
