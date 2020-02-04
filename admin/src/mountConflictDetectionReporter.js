@@ -14,6 +14,7 @@ export default function (report = () => {}, store, now = false) {
   // This needs to be set earlier than DOMContentLoaded, as soon as this script is enqueued,
   // because it needs to add global configuration that the conflict detector will use.
   window.FontAwesomeDetection = {
+    ...(window.FontAwesomeDetection || {}),
     report
   }
 
