@@ -8,10 +8,7 @@ import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCheck,
   faCheckSquare,
-  faSkull,
-  faSpinner,
   faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import {
     faSquare } from '@fortawesome/free-regular-svg-icons'
@@ -31,12 +28,6 @@ export default function UnregisteredClientsView(props) {
   const allDetectedConflictsSelectedForBlocking = 
               isEqual(Object.keys(props.clients).sort(), [...(blocklist || [])].sort())
   const allDetectedConflicts = Object.keys(props.clients)
-
-  function handleSubmitClick(e) {
-    e.preventDefault()
-
-    dispatch(submitPendingOptions())
-  }
 
   function handleBlockSelection(change = {}) {
     dispatch(addPendingOption(change))
@@ -145,41 +136,6 @@ export default function UnregisteredClientsView(props) {
             }
             </tbody>
           </table>
-          <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
-            <input
-              type="submit"
-              name="submit"
-              id="submit"
-              className="button button-primary"
-              value="Save Changes"
-              disabled={ size(pendingOptions) === 0 }
-              onClick={ handleSubmitClick }
-            />
-            { hasSubmitted 
-              ? submitSuccess
-                ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
-                  </span>
-                : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-                    <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                      <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-                    </div>
-                    <div className={ sharedStyles['explanation'] }>
-                      { submitMessage }
-                    </div>
-                  </div>
-              : null
-            }
-            {
-              isSubmitting
-              ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
-                </span>
-              : size(pendingOptions) > 0
-                ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
-                : null
-            }
-          </div>
         </div>
       : <div className={ classnames(sharedStyles['explanation'], sharedStyles['flex'], sharedStyles['flex-row'] )}>
           <div>
