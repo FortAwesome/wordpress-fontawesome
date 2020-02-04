@@ -184,6 +184,31 @@ export default function ConflictDetectionReporter() {
     dispatch(setConflictDetectionScanner({ enable: false }))
   }
 
+  const expiredOrStoppedDiv = 
+    <div>
+        <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;Results to Review</span></h2>
+        <p style={ STYLES.p }>Manage results or restart the scanner
+        {
+          currentlyOnTroubleshootTab
+          ? ' here on the '
+          : ' on the '
+        }
+        {
+          currentlyOnTroubleshootTab
+          ? <span> Troubleshoot </span>
+          : <span> <a href={ troubleshootTabUrl } style={ STYLES.link }>Troubleshoot</a> </span>
+        }
+        tab
+      </p>
+    </div>
+
+  const stoppingOrSubmittingDiv =
+    <div>
+      <div style={ STYLES.status }>
+        <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus }</span></h2>
+      </div>
+    </div>
+
   return (
     <div style={ STYLES.container }>
       <div style={ STYLES.header }>
@@ -214,12 +239,8 @@ export default function ConflictDetectionReporter() {
                   <p style={ STYLES.p }>Wander through the pages of your web site and this scanner will track progress.</p>
                 </div>
               </div>,
-            Submitting:
-              <div>
-                <div style={ STYLES.status }>
-                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus }</span></h2>
-                </div>
-              </div>,
+            Submitting: stoppingOrSubmittingDiv,
+            Stopping: stoppingOrSubmittingDiv,
             Done:
               <div>
                 <div style={ STYLES.status }>
@@ -234,23 +255,8 @@ export default function ConflictDetectionReporter() {
                 }
                 </p>
               </div>,
-            Expired:
-              <div>
-                  <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;Results to Review</span></h2>
-                  <p style={ STYLES.p }>Manage results or restart the scanner
-                  {
-                    currentlyOnTroubleshootTab
-                    ? ' here on the '
-                    : ' on the '
-                  }
-                  {
-                    currentlyOnTroubleshootTab
-                    ? <span> Troubleshoot </span>
-                    : <span> <a href={ troubleshootTabUrl } style={ STYLES.link }>Troubleshoot</a> </span>
-                  }
-                  tab
-                </p>
-              </div>,
+            Expired: expiredOrStoppedDiv,
+            Stopped: expiredOrStoppedDiv,
             Error:
               <div>
                 <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faSkull } /> <span>Don’t cross the streams! It would be bad.</span></h2>
