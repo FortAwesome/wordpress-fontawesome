@@ -1,7 +1,7 @@
 *.swp
 .DS_Store
 .idea
-.env.email
+.env.local
 vendor
 wp-dist
 *.zip
