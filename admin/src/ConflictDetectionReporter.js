@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setConflictDetectionScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -21,7 +21,9 @@ const STATUS = {
   none: 'None',
   error: 'Error',
   expired: 'Expired',
-  ready: 'Ready'
+  ready: 'Ready',
+  stopped: 'Stopped',
+  stopping: 'Stopping'
 }
 
 const STYLES = {
@@ -111,6 +113,7 @@ export default function ConflictDetectionReporter() {
   const activeAdminTab = useSelector(state => state.activeAdminTab )
   const currentlyOnPluginAdminPage = window.location.href.startsWith(settingsPageUrl)
   const currentlyOnTroubleshootTab = currentlyOnPluginAdminPage && activeAdminTab === ADMIN_TAB_TROUBLESHOOT
+  const [ userAttemptedToStopScanner, setUserAttemptedToStopScanner ] = useState(false)
 
   const unregisteredClients = useSelector(
     state => state.unregisteredClients
@@ -124,26 +127,39 @@ export default function ConflictDetectionReporter() {
     state => state.unregisteredClientDetectionStatus.recentConflictsDetected
   )
 
-  const showConflictDetectionReporter = useSelector(
-    state => state.showConflictDetectionReporter
+  const expired = useSelector(
+    state => !state.showConflictDetectionReporter
   )
 
   const scannerReady = useSelector(
     state => state.conflictDetectionScannerStatus.hasSubmitted && state.conflictDetectionScannerStatus.success
   )
 
-  const scannerDisableFailed = useSelector(
-    state => state.conflictDetectionScannerStatus.hasSubmitted
-      && !state.conflictDetectionScannerStatus.success
-      && state.showConflictDetectionReporter
+  const scannerIsStopping = useSelector(
+    state => userAttemptedToStopScanner
+      && !state.conflictDetectionScannerStatus.hasSubmitted
+  )
+
+  const userStoppedScannerSuccessfully = useSelector(
+    state => userAttemptedToStopScanner
+      && !scannerIsStopping
+      && state.conflictDetectionScannerStatus.success
   )
 
   const runStatus = useSelector(state => {
     const { isSubmitting, hasSubmitted, success } = state.unregisteredClientDetectionStatus
-    if ( !showConflictDetectionReporter ) {
+    if (userAttemptedToStopScanner) {
+      if ( scannerIsStopping ) {
+        return STATUS.stopping
+      } else if (userStoppedScannerSuccessfully) {
+        return STATUS.stopped
+      } else {
+        // The user clicked to disable the scanner, and that action failed somehow.
+        // Probably a fluke in the communication between the browser and the WordPress server.
+        return STATUS.error
+      }
+    } else if ( expired ) {
       return STATUS.expired
-    } else if ( scannerDisableFailed ) {
-      return STATUS.error
     } else if (scannerReady) {
       return STATUS.ready
     } else if ( success && 0 === size( unregisteredClients ) ) {
@@ -158,9 +174,15 @@ export default function ConflictDetectionReporter() {
       return STATUS.error
     }
   })
+
   const errorMessage = useSelector(
     state => state.unregisteredClientDetectionStatus.message
   )
+
+  function stopScanner() {
+    setUserAttemptedToStopScanner(true)
+    dispatch(setConflictDetectionScanner({ enable: false }))
+  }
 
   return (
     <div style={ STYLES.container }>
@@ -243,11 +265,13 @@ export default function ConflictDetectionReporter() {
         <span><ConflictDetectionTimer addDescription /></span>
         {
           runStatus === STATUS.expired
-          ? null
-          :
-            <button style={ STYLES.button } title="Stop timer" onClick={() => dispatch(setConflictDetectionScanner({ enable: false }))}>
-              <FontAwesomeIcon icon={ faTimesCircle } size="lg" />
-            </button>
+          ? "Timer expired"
+          : runStatus === STATUS.stopped
+            ? "Timer stopped"
+            :
+              <button style={ STYLES.button } title="Stop timer" onClick={() => stopScanner()}>
+                <FontAwesomeIcon icon={ faTimesCircle } size="lg" />
+              </button>
         }
       </div>
     </div>
