@@ -144,7 +144,16 @@ export function submitPendingOptions() {
 
 export function reportDetectedConflicts({ nodesTested = {} }) {
   return (dispatch, getState) => {
-    const { apiNonce, apiUrl, unregisteredClients } = getState()
+    const { apiNonce, apiUrl, unregisteredClients, showConflictDetectionReporter } = getState()
+
+    // This should be a noop if by the time we get here the conflict detection reporter
+    // is already gone. That would indicate that the user stopped the scanner before
+    // the current page's scan was complete and report submitted. In that case,
+    // we just ignore the report. Otherwise, this action would try to post results
+    // to a REST route that will no longer be registered and listening, resulting a 404.
+    if( !showConflictDetectionReporter ) {
+      return
+    }
 
     if( size(nodesTested.conflict) > 0 ) {
       const payload = Object.keys(nodesTested.conflict).reduce(function(acc, md5){
