@@ -146,14 +146,14 @@ export default function ConflictDetectionReporter() {
       return STATUS.error
     } else if (scannerReady) {
       return STATUS.ready
-    } else if ( success && 0 === size( recentConflictsDetected ) ) {
+    } else if ( success && 0 === size( unregisteredClients ) ) {
       return STATUS.none
+    } else if ( success ) {
+      return STATUS.done
     } else if( isSubmitting ) {
       return STATUS.submitting
     } else if( !hasSubmitted ){
       return STATUS.running
-    } else if ( success ) {
-      return STATUS.done
     } else {
       return STATUS.error
     }
