@@ -163,12 +163,12 @@ export default function ConflictDetectionReporter() {
         // Probably a fluke in the communication between the browser and the WordPress server.
         return STATUS.error
       }
+    } else if ( expired ) {
+      return STATUS.expired
     } else if (scannerReady) {
       return STATUS.ready
     } else if (restarting) {
       return STATUS.restarting
-    } else if ( expired ) {
-      return STATUS.expired
     } else if ( success && 0 === size( unregisteredClients ) ) {
       return STATUS.none
     } else if ( success ) {
