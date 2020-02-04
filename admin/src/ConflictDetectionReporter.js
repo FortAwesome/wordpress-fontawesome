@@ -23,7 +23,8 @@ const STATUS = {
   expired: 'Expired',
   ready: 'Ready',
   stopped: 'Stopped',
-  stopping: 'Stopping'
+  stopping: 'Stopping',
+  restarting: 'Restarting'
 }
 
 const STYLES = {
@@ -131,6 +132,10 @@ export default function ConflictDetectionReporter() {
     state => !state.showConflictDetectionReporter
   )
 
+  const restarting = useSelector(
+    state => expired && state.conflictDetectionScannerStatus.isSubmitting
+  )
+
   const scannerReady = useSelector(
     state => state.conflictDetectionScannerStatus.hasSubmitted && state.conflictDetectionScannerStatus.success
   )
@@ -160,6 +165,8 @@ export default function ConflictDetectionReporter() {
       }
     } else if (scannerReady) {
       return STATUS.ready
+    } else if (restarting) {
+      return STATUS.restarting
     } else if ( expired ) {
       return STATUS.expired
     } else if ( success && 0 === size( unregisteredClients ) ) {
@@ -232,6 +239,12 @@ export default function ConflictDetectionReporter() {
                   <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>Scanning...</span></h2>
                 </div>
               </div>,
+            Restarting:
+              <div>
+                <div style={ STYLES.status }>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>Restarting...</span></h2>
+                </div>
+              </div>,
             Ready:
               <div>
                 <div>
@@ -278,7 +291,8 @@ export default function ConflictDetectionReporter() {
         {
           {
             Expired: "Timer expired",
-            Stopped: "Timer stopped"
+            Stopped: "Timer stopped",
+            Restarting: null
           }[runStatus]
         }
       </div>
