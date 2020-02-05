@@ -24,6 +24,6 @@ class FontAwesome_Deactivator {
 	 */
 	public static function uninstall() {
 		delete_option( FontAwesome::OPTIONS_KEY );
-		delete_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 	}
 }

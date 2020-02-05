@@ -13,7 +13,7 @@ class DeactivationTest extends \WP_UnitTestCase {
 		set_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT, $foobar );
 		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, $foobar );
 		update_option( FontAwesome::OPTIONS_KEY, $foobar );
-		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, $foobar );
+		update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $foobar );
 
 		FontAwesome_Deactivator::deactivate();
 
@@ -23,7 +23,7 @@ class DeactivationTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY ),
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ),
 			$foobar
 		);
 
@@ -39,14 +39,14 @@ class DeactivationTest extends \WP_UnitTestCase {
 	public function test_uninstall_removes_options_data() {
 		$foobar = array( 'foo' => 'bar' );
 		update_option( FontAwesome::OPTIONS_KEY, $foobar );
-		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, $foobar );
+		update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $foobar );
 
 		FontAwesome_Deactivator::uninstall();
 
 		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
 
 		$this->assertFalse(
-			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
 	}
 }
