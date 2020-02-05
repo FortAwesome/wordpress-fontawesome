@@ -72,11 +72,11 @@ class FontAwesome {
 	 */
 	const OPTIONS_KEY = 'font-awesome';
 	/**
-	 * Key where this plugin stores metadata about detected unregistered clients in the WordPress options table.
+	 * Key where this plugin stores conflict detection data in the WordPress options table.
 	 *
 	 * @since 4.0.0
 	 */
-	const UNREGISTERED_CLIENTS_OPTIONS_KEY = 'font-awesome-unregistered-clients';
+	const CONFLICT_DETECTION_OPTIONS_KEY = 'font-awesome-conflict-detection';
 	/**
 	 * The unique WordPress plugin slug for this plugin.
 	 *
@@ -206,6 +206,17 @@ class FontAwesome {
 		'svgPseudoElements'    => FALSE,
 		'detectConflictsUntil' => 0,
 		'blocklist'            => array()
+	);
+
+	/**
+	 * Default conflict detection options.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	const DEFAULT_CONFLICT_DETECTION_OPTIONS = array(
+		'detectConflictsUntil' => 0,
+		'conflicts'            => array()
 	);
 
 	/**
@@ -416,17 +427,18 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns boolean indicating whether the plugin's options are currently set
-	 * to detect conflicts.
+	 * Returns boolean indicating whether the plugin is currently configured
+	 * to run the client-side conflict detection scanner.
 	 *
 	 * @since 4.0.0
 	 *
 	 * @return bool
 	 */
 	public function detecting_conflicts() {
-		$until = $this->options()['detectConflictsUntil'];
-		if( is_integer($until) ) {
-			return time() < $until;
+		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
+
+		if( isset( $conflict_detection['detectConflictsUntil'] ) && is_integer( $conflict_detection['detectConflictsUntil'] ) ) {
+			return time() < $conflict_detection['detectConflictsUntil'];
 		} else {
 			return FALSE;
 		}
@@ -916,7 +928,7 @@ class FontAwesome {
 	 * @return array
 	 */
 	public function unregistered_clients() {
-		$unregistered_clients = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+		$unregistered_clients = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
 		return is_array( $unregistered_clients ) ? $unregistered_clients : array();
 	}
 
@@ -1499,10 +1511,10 @@ EOT;
 		}
 
 		if( count($inferred_unregistered_clients) > 0 ) {
-			$prev_unreg_clients_option = get_option( self::UNREGISTERED_CLIENTS_OPTIONS_KEY, array() );
+			$prev_unreg_clients_option = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY, array() );
 
 			update_option(
-				self::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+				self::CONFLICT_DETECTION_OPTIONS_KEY,
 				array_merge(
 					$prev_unreg_clients_option,
 					$inferred_unregistered_clients
