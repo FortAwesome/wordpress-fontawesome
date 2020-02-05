@@ -928,8 +928,12 @@ class FontAwesome {
 	 * @return array
 	 */
 	public function unregistered_clients() {
-		$unregistered_clients = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
-		return is_array( $unregistered_clients ) ? $unregistered_clients : array();
+		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
+		if( isset( $conflict_detection['unregistered_clients'] ) && is_array( $conflict_detection['unregistered_clients'] ) ) {
+			return $conflict_detection['unregistered_clients'];
+		} else {
+			return array();
+		}
 	}
 
 	/**
