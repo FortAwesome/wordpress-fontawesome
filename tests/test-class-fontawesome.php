@@ -191,25 +191,27 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->unregistered_clients()
 		);
 
-		$unregistered_clients = array(
-			'abc123' => array(
-				'type' => 'style',
-				'src' => "http://example.com"
-			),
-			'XYZ456' => array(
-				'type' => 'script',
-				'excerpt' => "some bit of inline script"
+		$conflict_detection = array(
+			'unregistered_clients' => array(
+				'abc123' => array(
+					'type' => 'style',
+					'src' => "http://example.com"
+				),
+				'XYZ456' => array(
+					'type' => 'script',
+					'excerpt' => "some bit of inline script"
+				)
 			)
 		);
 
 		update_option(
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
-			$unregistered_clients,
+			$conflict_detection,
 			false
 		);
 
 		$this->assertEquals(
-			$unregistered_clients,
+			$conflict_detection['unregistered_clients'],
 			fa()->unregistered_clients()
 		);
 	}
