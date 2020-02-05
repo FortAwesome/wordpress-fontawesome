@@ -319,93 +319,56 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 	}
 
-  public function test_change_detection() {
+	public function test_update_detect_conflicts_until() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
 
+		$initial_unregistered_clients = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+		);
+
 		update_option(
-			FontAwesome::OPTIONS_KEY,
-			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
-				array(
-					'detectConflictsUntil' => $later
-				)
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array(
+				'detectConflictsUntil' => 0,
+				'unregisteredClients'  => $initial_unregistered_clients
 			)
 		);
 
-    update_option(
-			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/fake.js'
-        ),
-      )
-		);
+		$this->assertFalse( fa()->detecting_conflicts() );
 
-    // No change
-    $body = array(
-      'a9a9aa2d454f77cd623d6755c902c408' => array(
-        'type' => 'script',
-        'src'  => 'http://example.com/fake.js'
-      ),
-    );
-
-		$request  = new \WP_REST_Request(
+		$request = new \WP_REST_Request(
 			'POST',
-			$this->namespaced_route
+			$this->namespaced_detect_until_route
 		);
 
-    $request->add_header('Content-Type', 'application/json');
+		$request->add_header('Content-Type', 'application/json');
 
-    $request->set_body( wp_json_encode( $body ) );
-
-    $response = $this->server->dispatch( $request );
-
-    // The controller should just return a successful response, making no change
-    $this->assertEquals( 200, $response->get_status() );
-    
-    $this->assertEquals(
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/fake.js'
-        ),
-      ),
-      fa()->unregistered_clients()
-    );
-
-    // Change only in the value of a sub-array
-    $body = array(
-      'a9a9aa2d454f77cd623d6755c902c408' => array(
-        'type' => 'style',
-        'src'  => 'http://example.com/fake.js'
-      ),
-    );
-
-		$request  = new \WP_REST_Request(
-			'POST',
-			$this->namespaced_route
+		$body = array(
+			'detectConflictsUntil' => $later
 		);
 
-    $request->add_header('Content-Type', 'application/json');
+		$request->set_body( wp_json_encode( $body ) );
 
-    $request->set_body( wp_json_encode( $body ) );
+		$response = $this->server->dispatch( $request );
 
-    $response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
 
-    $this->assertEquals( 200, $response->get_status() );
-    
-    // Expect that an update was successfully applied
-    $this->assertEquals(
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'style',
-          'src'  => 'http://example.com/fake.js'
-        ),
-      ),
-      fa()->unregistered_clients()
-    );
-  }
+		$this->assertEquals(
+			array( 'detectConflictsUntil' => $later ),
+			$response->get_data()
+		);
+
+		$this->assertTrue( fa()->detecting_conflicts() );
+
+		// There should have been no change in this.
+		$this->assertEquals(
+			$initial_unregistered_clients,
+			fa()->unregistered_clients()
+		);
+	}
 }
