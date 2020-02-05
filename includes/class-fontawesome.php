@@ -204,8 +204,6 @@ class FontAwesome {
 		'v4compat'             => TRUE,
 		'technology'           => 'webfont',
 		'svgPseudoElements'    => FALSE,
-		'detectConflictsUntil' => 0,
-		'blocklist'            => array()
 	);
 
 	/**
@@ -1531,7 +1529,8 @@ EOT;
 
 					$inferred_unregistered_clients[$md5] = array(
 						'src' => $details->src,
-						'type' => $key
+						'type' => $key,
+						'blocked' => TRUE
 					);
 				}
 			}
@@ -1540,22 +1539,16 @@ EOT;
 		if( count($inferred_unregistered_clients) > 0 ) {
 			$prev_unreg_clients_option = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY, array() );
 
-			update_option(
-				self::CONFLICT_DETECTION_OPTIONS_KEY,
-				array_merge(
-					$prev_unreg_clients_option,
-					$inferred_unregistered_clients
+			$new_option = array_merge(
+				$prev_unreg_clients_option,
+				array(
+					'unregisteredClients' => $inferred_unregistered_clients
 				)
 			);
 
 			update_option(
-				self::OPTIONS_KEY,
-				array_merge(
-					$this->options(),
-					array(
-						'blocklist' => array_keys($inferred_unregistered_clients)
-					)
-				)
+				self::CONFLICT_DETECTION_OPTIONS_KEY,
+				$new_option
 			);
 		}
 	}
