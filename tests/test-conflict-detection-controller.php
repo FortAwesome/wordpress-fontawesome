@@ -473,4 +473,189 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			fa()->unregistered_clients()
 		);
 	}
+
+	public function test_delete_conflicts() {
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
+			),
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/deadbeef42.js'
+			),
+		);
+
+		$expected_after_deletion = array(
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/deadbeef42.js'
+			),
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array(
+					// Should not matter whether conflict detection is enabled.
+					'detectConflictsUntil' => 42,
+					'unregisteredClients' => $initial_data
+				)
+			)
+		);
+
+		// Two that exist and should be deleted. One that does not exist and should be ignored.
+		$ids = [ 'a9a9aa2d454f77cd623d6755c902c408', '83c869f6fa4c3138019f564a3358e877', 'abcabcabcabcabcabcabcabc3358e877' ];
+
+		$request  = new \WP_REST_Request(
+			'DELETE',
+			$this->namespaced_conflicts_route
+		);
+
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $ids ) );
+
+		$response = $this->server->dispatch( $request );
+    
+		$this->assertEquals( 200, $response->get_status() );
+
+		$this->assertEquals(
+			fa()->unregistered_clients(),
+			$response->get_data()
+		);
+
+		$this->assertEquals(
+			$expected_after_deletion,
+			fa()->unregistered_clients()
+		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			42,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
+
+	public function test_delete_conflicts_when_no_change() {
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
+			),
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/deadbeef42.js'
+			),
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array(
+					// Should not matter whether conflict detection is enabled.
+					'detectConflictsUntil' => 42,
+					'unregisteredClients' => $initial_data
+				)
+			)
+		);
+
+		// One md5 that does not exist.
+		$ids = [ 'abcabcabcabcabcabcabcabc3358e877' ];
+
+		$request  = new \WP_REST_Request(
+			'DELETE',
+			$this->namespaced_conflicts_route
+		);
+
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $ids ) );
+
+		$response = $this->server->dispatch( $request );
+    
+		$this->assertEquals( 204, $response->get_status() );
+
+		$this->assertEquals(
+			$initial_data,
+			fa()->unregistered_clients()
+		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			42,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
+
+	public function test_delete_conflicts_when_invalid_input() {
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
+			),
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/deadbeef42.js'
+			),
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array(
+					// Should not matter whether conflict detection is enabled.
+					'detectConflictsUntil' => 42,
+					'unregisteredClients' => $initial_data
+				)
+			)
+		);
+
+		// One invliad md5.
+		$ids = [ 'foo' ];
+
+		$request  = new \WP_REST_Request(
+			'DELETE',
+			$this->namespaced_conflicts_route
+		);
+
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $ids ) );
+
+		$response = $this->server->dispatch( $request );
+    
+		$this->assertEquals( 400, $response->get_status() );
+
+		$this->assertEquals(
+			$initial_data,
+			fa()->unregistered_clients()
+		);
+
+		$this->assertEquals(
+			'fontawesome_delete_conflicts_schema',
+			$response->as_error()->get_error_code()
+		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			42,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
 }
