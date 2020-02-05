@@ -223,20 +223,37 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->blocklist()
 		);
 
-		$blocklist = array('abc123', 'xyz456');
-
-		update_option(
-			FontAwesome::OPTIONS_KEY,
-			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
-				array(
-					'blocklist' => $blocklist
-				)
+		$conflict_detection = array(
+			'unregistered_clients' => array(
+				'abc123' => array(
+					'type' => 'style',
+					'src' => "http://example.com",
+					'blocked' => true
+				),
+				'XYZ456' => array(
+					'type' => 'script',
+					'excerpt' => "some bit of inline script",
+				),
+				'baz123' => array(
+					'type' => 'script',
+					'src' => 'http://foo.example.com',
+					'blocked' => false
+				),
+				'foo123' => array(
+					'type' => 'script',
+					'src' => "http://example.com/all.js",
+					'blocked' => true
+				),
 			)
 		);
 
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			$conflict_detection
+		);
+
 		$this->assertEquals(
-			$blocklist,
+			['abc123', 'foo123'],
 			fa()->blocklist()
 		);
 	}
