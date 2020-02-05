@@ -85,9 +85,9 @@ function reset_db() {
 		}
 	}
 
-	if ( ! delete_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY ) ) {
+	if ( ! delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY ) ) {
+		if ( get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) ) {
 			throw new Exception( 'Unsuccessful clearing the Font Awesome option key in the db.' );
 		}
 	}
