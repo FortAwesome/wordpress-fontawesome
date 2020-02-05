@@ -732,10 +732,10 @@ class FontAwesome {
 		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
 
 		$unregistered_clients = (
-			isset( $conflict_detection['unregistered_clients'] )
-			&& is_array( $conflict_detection['unregistered_clients'] )
+			isset( $conflict_detection['unregisteredClients'] )
+			&& is_array( $conflict_detection['unregisteredClients'] )
 		)
-			? $conflict_detection['unregistered_clients']
+			? $conflict_detection['unregisteredClients']
 			: array();
 
 		$blocklist = array_reduce(
@@ -952,8 +952,8 @@ class FontAwesome {
 	 */
 	public function unregistered_clients() {
 		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
-		if( isset( $conflict_detection['unregistered_clients'] ) && is_array( $conflict_detection['unregistered_clients'] ) ) {
-			return $conflict_detection['unregistered_clients'];
+		if( isset( $conflict_detection['unregisteredClients'] ) && is_array( $conflict_detection['unregisteredClients'] ) ) {
+			return $conflict_detection['unregisteredClients'];
 		} else {
 			return array();
 		}

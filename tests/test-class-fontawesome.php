@@ -192,7 +192,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		$conflict_detection = array(
-			'unregistered_clients' => array(
+			'unregisteredClients' => array(
 				'abc123' => array(
 					'type' => 'style',
 					'src' => "http://example.com"
@@ -211,7 +211,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			$conflict_detection['unregistered_clients'],
+			$conflict_detection['unregisteredClients'],
 			fa()->unregistered_clients()
 		);
 	}
@@ -224,7 +224,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		$conflict_detection = array(
-			'unregistered_clients' => array(
+			'unregisteredClients' => array(
 				'abc123' => array(
 					'type' => 'style',
 					'src' => "http://example.com",

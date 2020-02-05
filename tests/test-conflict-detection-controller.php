@@ -138,7 +138,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $later,
-					'unregistered_clients' => $initial_data
+					'unregisteredClients' => $initial_data
 				)
 			)
 		);
@@ -173,7 +173,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array(
 				'detectConflictsUntil' => 0,
-				'unregistered_clients' => array()
+				'unregisteredClients' => array()
 			)
 		);
 
@@ -232,7 +232,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $later,
-					'unregistered_clients' => $initial_data
+					'unregisteredClients' => $initial_data
 				)
 			)
 		);
@@ -286,7 +286,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array(
 				'detectConflictsUntil' => $later,
-				'unregistered_clients' => $initial_data
+				'unregisteredClients' => $initial_data
 			)
 		);
 

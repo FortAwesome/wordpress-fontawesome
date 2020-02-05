@@ -100,7 +100,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 			/**
 			 * The given blocklist, an array of md5s, will become the new blocklist,
 			 * for each md5 in the given array that already exists as a key in
-			 * the unregistered_clients array.
+			 * the unregisteredClients array.
 			 */
 			register_rest_route(
 				$this->namespace,
@@ -118,12 +118,12 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		}
 
 		/**
-		 * Report conflicts. Adds and/or updates unregistered_clients
+		 * Report conflicts. Adds and/or updates unregisteredClients
 		 *
 		 * The response will have an HTTP 204 status if the request results in no changes.
 		 * If changes are made, the response will have an HTTP 200 status, and
 		 * the response body will include just the new status of the
-		 * unregistered_clients (not the entire conflict-detection option data).
+		 * unregisteredClients (not the entire conflict-detection option data).
 		 *
 		 * If the plugin is not currently in conflict detection mode, this
 		 * returns an HTTP 404 status.
@@ -150,10 +150,10 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 				$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
 				$prev_option_unregistered_clients = (
-					isset( $prev_option['unregistered_clients'] )
-					&& is_array( $prev_option['unregistered_clients'] )
+					isset( $prev_option['unregisteredClients'] )
+					&& is_array( $prev_option['unregisteredClients'] )
 				)
-					? $prev_option['unregistered_clients']
+					? $prev_option['unregisteredClients']
 					: array();
 
 				$new_option_unregistered_clients = array_merge(
@@ -162,11 +162,11 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 				);
 
 				if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
-					// Update only the unregistered_clients key, leaving any other keys unchanged.
+					// Update only the unregisteredClients key, leaving any other keys unchanged.
 					$new_option_value = array_merge(
 						$prev_option,
 						array(
-							'unregistered_clients' => $new_option_unregistered_clients
+							'unregisteredClients' => $new_option_unregistered_clients
 						)
 					);
 
@@ -192,7 +192,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 
 		/**
 		 * Reads a json body of the given Request, validates it, and turns it
-		 * into a valid value for the unregistered_clients key of the conflict detection
+		 * into a valid value for the unregisteredClients key of the conflict detection
 		 * option.
 		 *
 		 * @internal
