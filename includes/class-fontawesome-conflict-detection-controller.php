@@ -61,7 +61,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 				array(
 					array(
 						'methods'             => 'PUT',
-						'callback'            => array( $this, 'detect_conflicts_until' ),
+						'callback'            => array( $this, 'update_detect_conflicts_until' ),
 						'permission_callback' => function() {
 							return current_user_can( 'manage_options' ); },
 						'args'                => array(),
@@ -183,7 +183,60 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 					return new WP_REST_Response( null, 204 );
 				}
 			} catch ( Exception $e ) {
-				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
+				return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
+			} catch ( Error $error ) {
+				return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+			}
+		}
+
+		/**
+		 * Update the value of detectConflictsUntil to start/stop conflict detection.
+		 *
+		 * @param WP_REST_Request $request the request.
+		 * @return WP_Error|WP_REST_Response
+		 */
+		public function update_detect_conflicts_until( $request ) {
+			try {
+				$body = $request->get_json_params();
+
+				if( ! \is_array( $body ) || count( $body ) === 0 || !isset( $body['detectConflictsUntil'] ) || !is_integer( $body['detectConflictsUntil'] ) ) {
+					return new WP_Error(
+						'fontawesome_detect_conflicts_until_schema',
+						null,
+						array( 'status' => 400 )
+					);
+				}
+
+				$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+
+				$prev_option_detect_conflicts_until = (
+					isset( $prev_option['detectConflictsUntil'] )
+					&& is_integer( $prev_option['detectConflictsUntil'] )
+				)
+					? $prev_option['detectConflictsUntil']
+					: null;
+
+				if( $prev_option_detect_conflicts_until !== $body['detectConflictsUntil'] ) {
+					$new_detect_conflicts_until = array(
+						'detectConflictsUntil' => $body['detectConflictsUntil']
+					);
+
+					// Update only the detectConflictsUntil key, leaving any other keys unchanged.
+					$new_option_value = array_merge(
+						$prev_option,
+						$new_detect_conflicts_until
+					);
+
+					if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
+						return new WP_REST_Response( $new_detect_conflicts_until, 200 );
+					} else {
+						return new WP_Error(
+							'fontawesome_detect_conflicts_until_update',
+							array( 'status' => 400 )
+						);
+					}
+				}
+			} catch ( Exception $e ) {
 				return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
 			} catch ( Error $error ) {
 				return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
