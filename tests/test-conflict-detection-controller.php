@@ -342,7 +342,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		$this->assertFalse( fa()->detecting_conflicts() );
 
 		$request = new \WP_REST_Request(
-			'POST',
+			'PUT',
 			$this->namespaced_detect_until_route
 		);
 
