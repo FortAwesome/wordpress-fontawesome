@@ -4,281 +4,272 @@ namespace FortAwesome;
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
 
 /**
- * Module for this plugin's Conflict Detection controller
+ * REST Controller for managing data on the FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY.
  *
- * @noinspection PhpIncludeInspection
- */
-
-// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-/**
+ * Internal use only, not part of this plugin's public API.
+ *
  * @ignore
+ * @internal
  */
+class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	private $plugin_slug = null;
 
-if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected $namespace = null;
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected $valid_attrs = ['type', 'technology', 'href', 'src', 'innerText', 'tagName'];
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	public function __construct( $plugin_slug, $namespace ) {
+		$this->plugin_slug = $plugin_slug;
+		$this->namespace   = $namespace;
+	}
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	public function register_routes() {
+		$route_base = 'conflict-detection';
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $route_base . '/until',
+			array(
+				array(
+					'methods'             => 'PUT',
+					'callback'            => array( $this, 'update_detect_conflicts_until' ),
+					'permission_callback' => function() {
+						return current_user_can( 'manage_options' ); },
+					'args'                => array(),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $route_base . '/conflicts',
+			array(
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'report_conflicts' ),
+					'permission_callback' => function() {
+						return current_user_can( 'manage_options' ); },
+					'args'                => array(),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $route_base . '/conflicts',
+			array(
+				array(
+					'methods'             => 'DELETE',
+					'callback'            => array( $this, 'delete_conflicts' ),
+					'permission_callback' => function() {
+						return current_user_can( 'manage_options' ); },
+					'args'                => array(),
+				),
+			)
+		);
+
+		/**
+		 * The given blocklist, an array of md5s, will become the new blocklist,
+		 * for each md5 in the given array that already exists as a key in
+		 * the unregisteredClients array.
+		 */
+		register_rest_route(
+			$this->namespace,
+			'/' . $route_base . '/conflicts/blocklist',
+			array(
+				array(
+					'methods'             => 'PUT',
+					'callback'            => array( $this, 'update_blocklist' ),
+					'permission_callback' => function() {
+						return current_user_can( 'manage_options' ); },
+					'args'                => array(),
+				),
+			)
+		);
+	}
 
 	/**
-	 * Controller class for REST endpoint
+	 * Report conflicts. Adds and/or updates unregisteredClients
+	 *
+	 * The response will have an HTTP 204 status if the request results in no changes.
+	 * If changes are made, the response will have an HTTP 200 status, and
+	 * the response body will include just the new status of the
+	 * unregisteredClients (not the entire conflict-detection option data).
+	 *
+	 * If the plugin is not currently in conflict detection mode, this
+	 * returns an HTTP 404 status.
+	 *
+	 * @param WP_REST_Request $request the request.
+	 * @return WP_Error|WP_REST_Response
 	 */
-	class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
+	public function report_conflicts( $request ) {
+		try {
+			if ( ! fa()->detecting_conflicts() ) {
+				return new WP_REST_Response( null, 404 );
+			}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		private $plugin_slug = null;
+			$item = $this->prepare_unregistered_clients_for_database( $request );
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected $namespace = null;
+			if ( is_null( $item ) ) {
+				return new WP_Error(
+					'fontawesome_unregistered_clients_schema',
+					null,
+					array( 'status' => 400 )
+				);
+			}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected $valid_attrs = ['type', 'technology', 'href', 'src', 'innerText', 'tagName'];
+			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		public function __construct( $plugin_slug, $namespace ) {
-			$this->plugin_slug = $plugin_slug;
-			$this->namespace   = $namespace;
-		}
+			$prev_option_unregistered_clients = (
+				isset( $prev_option['unregisteredClients'] )
+				&& is_array( $prev_option['unregisteredClients'] )
+			)
+				? $prev_option['unregisteredClients']
+				: array();
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		public function register_routes() {
-			$route_base = 'conflict-detection';
-
-			register_rest_route(
-				$this->namespace,
-				'/' . $route_base . '/until',
-				array(
-					array(
-						'methods'             => 'PUT',
-						'callback'            => array( $this, 'update_detect_conflicts_until' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-				)
+			$new_option_unregistered_clients = array_merge(
+					$prev_option_unregistered_clients,
+					$item
 			);
 
-			register_rest_route(
-				$this->namespace,
-				'/' . $route_base . '/conflicts',
-				array(
+			if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
+				// Update only the unregisteredClients key, leaving any other keys unchanged.
+				$new_option_value = array_merge(
+					$prev_option,
 					array(
-						'methods'             => 'POST',
-						'callback'            => array( $this, 'report_conflicts' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-				)
-			);
-
-			register_rest_route(
-				$this->namespace,
-				'/' . $route_base . '/conflicts',
-				array(
-					array(
-						'methods'             => 'DELETE',
-						'callback'            => array( $this, 'delete_conflicts' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-				)
-			);
-
-			/**
-			 * The given blocklist, an array of md5s, will become the new blocklist,
-			 * for each md5 in the given array that already exists as a key in
-			 * the unregisteredClients array.
-			 */
-			register_rest_route(
-				$this->namespace,
-				'/' . $route_base . '/conflicts/blocklist',
-				array(
-					array(
-						'methods'             => 'PUT',
-						'callback'            => array( $this, 'update_blocklist' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-				)
-			);
-		}
-
-		/**
-		 * Report conflicts. Adds and/or updates unregisteredClients
-		 *
-		 * The response will have an HTTP 204 status if the request results in no changes.
-		 * If changes are made, the response will have an HTTP 200 status, and
-		 * the response body will include just the new status of the
-		 * unregisteredClients (not the entire conflict-detection option data).
-		 *
-		 * If the plugin is not currently in conflict detection mode, this
-		 * returns an HTTP 404 status.
-		 *
-		 * @param WP_REST_Request $request the request.
-		 * @return WP_Error|WP_REST_Response
-		 */
-		public function report_conflicts( $request ) {
-			try {
-				if ( ! fa()->detecting_conflicts() ) {
-					return new WP_REST_Response( null, 404 );
-				}
-
-				$item = $this->prepare_unregistered_clients_for_database( $request );
-
-				if ( is_null( $item ) ) {
-					return new WP_Error(
-						'fontawesome_unregistered_clients_schema',
-						null,
-						array( 'status' => 400 )
-					);
-				}
-
-				$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
-
-				$prev_option_unregistered_clients = (
-					isset( $prev_option['unregisteredClients'] )
-					&& is_array( $prev_option['unregisteredClients'] )
-				)
-					? $prev_option['unregisteredClients']
-					: array();
-
-				$new_option_unregistered_clients = array_merge(
-						$prev_option_unregistered_clients,
-						$item
+						'unregisteredClients' => $new_option_unregistered_clients
+					)
 				);
 
-				if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
-					// Update only the unregisteredClients key, leaving any other keys unchanged.
-					$new_option_value = array_merge(
-						$prev_option,
-						array(
-							'unregisteredClients' => $new_option_unregistered_clients
-						)
-					);
-
-					if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-						return new WP_REST_Response( $new_option_unregistered_clients, 200 );
-					} else {
-						return new WP_Error(
-							'fontawesome_unregistered_clients_update',
-							array( 'status' => 400 )
-						);
-					}
+				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
+					return new WP_REST_Response( $new_option_unregistered_clients, 200 );
 				} else {
-					// No change.
-					return new WP_REST_Response( null, 204 );
-				}
-			} catch ( Exception $e ) {
-				return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
-			} catch ( Error $error ) {
-				return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
-			}
-		}
-
-		/**
-		 * Update the value of detectConflictsUntil to start/stop conflict detection.
-		 *
-		 * @param WP_REST_Request $request the request.
-		 * @return WP_Error|WP_REST_Response
-		 */
-		public function update_detect_conflicts_until( $request ) {
-			try {
-				$body = $request->get_json_params();
-
-				if( ! \is_array( $body ) || count( $body ) === 0 || !isset( $body['detectConflictsUntil'] ) || !is_integer( $body['detectConflictsUntil'] ) ) {
 					return new WP_Error(
-						'fontawesome_detect_conflicts_until_schema',
-						null,
+						'fontawesome_unregistered_clients_update',
 						array( 'status' => 400 )
 					);
 				}
-
-				$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
-
-				$prev_option_detect_conflicts_until = (
-					isset( $prev_option['detectConflictsUntil'] )
-					&& is_integer( $prev_option['detectConflictsUntil'] )
-				)
-					? $prev_option['detectConflictsUntil']
-					: null;
-
-				if( $prev_option_detect_conflicts_until !== $body['detectConflictsUntil'] ) {
-					$new_detect_conflicts_until = array(
-						'detectConflictsUntil' => $body['detectConflictsUntil']
-					);
-
-					// Update only the detectConflictsUntil key, leaving any other keys unchanged.
-					$new_option_value = array_merge(
-						$prev_option,
-						$new_detect_conflicts_until
-					);
-
-					if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-						return new WP_REST_Response( $new_detect_conflicts_until, 200 );
-					} else {
-						return new WP_Error(
-							'fontawesome_detect_conflicts_until_update',
-							array( 'status' => 400 )
-						);
-					}
-				}
-			} catch ( Exception $e ) {
-				return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
-			} catch ( Error $error ) {
-				return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+			} else {
+				// No change.
+				return new WP_REST_Response( null, 204 );
 			}
+		} catch ( Exception $e ) {
+			return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
+		} catch ( Error $error ) {
+			return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
 		}
+	}
 
-		/**
-		 * Reads a json body of the given Request, validates it, and turns it
-		 * into a valid value for the unregisteredClients key of the conflict detection
-		 * option.
-		 *
-		 * @internal
-		 * @ignore
-		 */
-		protected function prepare_unregistered_clients_for_database( $request ) {
+	/**
+	 * Update the value of detectConflictsUntil to start/stop conflict detection.
+	 *
+	 * @param WP_REST_Request $request the request.
+	 * @return WP_Error|WP_REST_Response
+	 */
+	public function update_detect_conflicts_until( $request ) {
+		try {
 			$body = $request->get_json_params();
 
-			if( ! \is_array( $body ) || count( $body ) === 0 ) {
+			if( ! \is_array( $body ) || count( $body ) === 0 || !isset( $body['detectConflictsUntil'] ) || !is_integer( $body['detectConflictsUntil'] ) ) {
+				return new WP_Error(
+					'fontawesome_detect_conflicts_until_schema',
+					null,
+					array( 'status' => 400 )
+				);
+			}
+
+			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+
+			$prev_option_detect_conflicts_until = (
+				isset( $prev_option['detectConflictsUntil'] )
+				&& is_integer( $prev_option['detectConflictsUntil'] )
+			)
+				? $prev_option['detectConflictsUntil']
+				: null;
+
+			if( $prev_option_detect_conflicts_until !== $body['detectConflictsUntil'] ) {
+				$new_detect_conflicts_until = array(
+					'detectConflictsUntil' => $body['detectConflictsUntil']
+				);
+
+				// Update only the detectConflictsUntil key, leaving any other keys unchanged.
+				$new_option_value = array_merge(
+					$prev_option,
+					$new_detect_conflicts_until
+				);
+
+				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
+					return new WP_REST_Response( $new_detect_conflicts_until, 200 );
+				} else {
+					return new WP_Error(
+						'fontawesome_detect_conflicts_until_update',
+						array( 'status' => 400 )
+					);
+				}
+			}
+		} catch ( Exception $e ) {
+			return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
+		} catch ( Error $error ) {
+			return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+		}
+	}
+
+	/**
+	 * Reads a json body of the given Request, validates it, and turns it
+	 * into a valid value for the unregisteredClients key of the conflict detection
+	 * option.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	protected function prepare_unregistered_clients_for_database( $request ) {
+		$body = $request->get_json_params();
+
+		if( ! \is_array( $body ) || count( $body ) === 0 ) {
+			return null;
+		}
+
+		$validated = array();
+
+		foreach( $body as $md5 => $attrs) {
+			if(! is_string( $md5 ) || ! strlen( $md5 ) === 32 ) {
 				return null;
 			}
 
-			$validated = array();
-
-			foreach( $body as $md5 => $attrs) {
-				if(! is_string( $md5 ) || ! strlen( $md5 ) === 32 ) {
-					return null;
-				}
-
-				if(! is_array( $attrs ) ) {
-					return null;
-				}
-
-				$validated[$md5] = array();
-
-				foreach( $attrs as $key => $value) {
-					if( in_array( $key, $this->valid_attrs, true ) ) {
-						$validated[$md5][$key] = $value;
-					}
-				}
+			if(! is_array( $attrs ) ) {
+				return null;
 			}
 
-			return $validated;
+			$validated[$md5] = array();
+
+			foreach( $attrs as $key => $value) {
+				if( in_array( $key, $this->valid_attrs, true ) ) {
+					$validated[$md5][$key] = $value;
+				}
+			}
+		}
+
+		return $validated;
     }
     
 	protected function unregistered_clients_array_has_changes($old, $new) {
@@ -298,5 +289,3 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		}
 	}
 }
-
-endif; // end class_exists.
