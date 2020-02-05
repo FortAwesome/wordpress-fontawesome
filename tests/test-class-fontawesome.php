@@ -203,7 +203,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		update_option(
-			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			$unregistered_clients,
 			false
 		);
@@ -245,9 +245,9 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		$later = $now + (10 * 60);
 
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $later
 				)
@@ -271,9 +271,9 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		$past = time() - (60 * 10);
 
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $past
 				)
@@ -287,9 +287,9 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 
 	public function test_detecting_conflicts_when_invalid_date_string() {
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => 'foo'
 				)
