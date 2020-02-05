@@ -47,8 +47,8 @@ class FontAwesome_Activator {
 			self::initialize_user_options();
 		}
 
-		if( $force || ! get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY ) ) {
-			self::initialize_unregistered_clients_options();
+		if( $force || ! get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) ) {
+			self::initialize_conflict_detection_options();
 		}
 	}
 
@@ -61,8 +61,8 @@ class FontAwesome_Activator {
 		update_option( FontAwesome::OPTIONS_KEY, $options );
 	}
 
-	private static function initialize_unregistered_clients_options() {
-		update_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY, array() );
+	private static function initialize_conflict_detection_options() {
+		update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS );
 	}
 }
 

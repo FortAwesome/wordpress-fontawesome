@@ -15,14 +15,14 @@ class ActivationTest extends \WP_UnitTestCase {
 	 */
 	protected function reset() {
 		delete_option( FontAwesome::OPTIONS_KEY );
-		delete_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
 	}
 
 	public function test_before_activation() {
-		$options = get_option( FontAwesome::OPTIONS_KEY );
-		$this->assertFalse( $options );
+		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
+		$this->assertFalse( get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) );
 	}
 
 	public function test_activation_creates_default_config() {
@@ -32,8 +32,8 @@ class ActivationTest extends \WP_UnitTestCase {
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
-			array(),
-			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
 	}
 
@@ -44,8 +44,8 @@ class ActivationTest extends \WP_UnitTestCase {
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
-			array(),
-			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
 	}
 
@@ -53,26 +53,30 @@ class ActivationTest extends \WP_UnitTestCase {
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.11.1', 'usePro' => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'] ] );
 		update_option( FontAwesome::OPTIONS_KEY, $expected_options );
 
-		$expected_unregistered_clients_options = array(
-			'a9a9aa2d454f77cd623d6755c902c408' => array(
-			'type' => 'script',
-			'src'  => 'http://example.com/fake.js'
-			),
+		$expected_conflict_detection_option = array(
+			'detectConflictsUntil' => 0,
+			'unregisteredClients' => array(
+				'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+				),
+			)
 		);
+
     	update_option(
-			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
-			$expected_unregistered_clients_options
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			$expected_conflict_detection_option
 		);
 
 		FontAwesome_Activator::initialize();
 		$actual_options = get_option( FontAwesome::OPTIONS_KEY );
-		$actual_unregistered_clients_options = get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+		$actual_conflict_detection_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
-			$expected_unregistered_clients_options,
-			$actual_unregistered_clients_options
+			$expected_conflict_detection_option,
+			$actual_conflict_detection_option
 		);
 	}
 
@@ -80,15 +84,19 @@ class ActivationTest extends \WP_UnitTestCase {
 		$initial_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.11.1', 'usePro' => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'] ] );
 		update_option( FontAwesome::OPTIONS_KEY, $initial_options );
 
-		$initial_unregistered_clients_options = array(
-			'a9a9aa2d454f77cd623d6755c902c408' => array(
-			'type' => 'script',
-			'src'  => 'http://example.com/fake.js'
-			),
+		$initial_conflict_detection_option = array(
+			'detectConflictsUntil' => 0,
+			'unregisteredClients' => array(
+				'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+				),
+			)
 		);
+
     	update_option(
-			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
-			$initial_unregistered_clients_options
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			$initial_conflict_detection_option
 		);
 
 		// 5.4.1 is the latest in the mock
@@ -96,13 +104,13 @@ class ActivationTest extends \WP_UnitTestCase {
 
 		FontAwesome_Activator::initialize(TRUE);
 		$actual_options = get_option( FontAwesome::OPTIONS_KEY );
-		$actual_unregistered_clients_options = get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+		$actual_conflict_detection_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
-			array(),
-			get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY )
+			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
 	}
 }
