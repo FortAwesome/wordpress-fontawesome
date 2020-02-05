@@ -53,11 +53,25 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		 * @ignore
 		 */
 		public function register_routes() {
-			$route_base = 'report-conflicts';
+			$route_base = 'conflict-detection';
 
 			register_rest_route(
 				$this->namespace,
-				'/' . $route_base,
+				'/' . $route_base . '/until',
+				array(
+					array(
+						'methods'             => 'PUT',
+						'callback'            => array( $this, 'detect_conflicts_until' ),
+						'permission_callback' => function() {
+							return current_user_can( 'manage_options' ); },
+						'args'                => array(),
+					),
+				)
+			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $route_base . '/conflicts',
 				array(
 					array(
 						'methods'             => 'POST',
@@ -68,12 +82,53 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 					),
 				)
 			);
+
+			register_rest_route(
+				$this->namespace,
+				'/' . $route_base . '/conflicts',
+				array(
+					array(
+						'methods'             => 'DELETE',
+						'callback'            => array( $this, 'delete_conflicts' ),
+						'permission_callback' => function() {
+							return current_user_can( 'manage_options' ); },
+						'args'                => array(),
+					),
+				)
+			);
+
+			/**
+			 * The given blocklist, an array of md5s, will become the new blocklist,
+			 * for each md5 in the given array that already exists as a key in
+			 * the unregistered_clients array.
+			 */
+			register_rest_route(
+				$this->namespace,
+				'/' . $route_base . '/conflicts/blocklist',
+				array(
+					array(
+						'methods'             => 'PUT',
+						'callback'            => array( $this, 'update_blocklist' ),
+						'permission_callback' => function() {
+							return current_user_can( 'manage_options' ); },
+						'args'                => array(),
+					),
+				)
+			);
 		}
 
 		/**
-		 * Get conflicts.
+		 * Report conflicts. Adds and/or updates unregistered_clients
 		 *
-		 * @param WP_REST_Request $request Full data about the request.
+		 * The response will have an HTTP 204 status if the request results in no changes.
+		 * If changes are made, the response will have an HTTP 200 status, and
+		 * the response body will include just the new status of the
+		 * unregistered_clients (not the entire conflict-detection option data).
+		 *
+		 * If the plugin is not currently in conflict detection mode, this
+		 * returns an HTTP 404 status.
+		 *
+		 * @param WP_REST_Request $request the request.
 		 * @return WP_Error|WP_REST_Response
 		 */
 		public function report_conflicts( $request ) {
@@ -82,36 +137,50 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 					return new WP_REST_Response( null, 404 );
 				}
 
-				$item = $this->prepare_item_for_database( $request );
+				$item = $this->prepare_unregistered_clients_for_database( $request );
 
 				if ( is_null( $item ) ) {
-					return new WP_Error( 'bad_request', "incorrect data schema", array( 'status' => 400 ) );
+					return new WP_Error(
+						'fontawesome_unregistered_clients_schema',
+						null,
+						array( 'status' => 400 )
+					);
 				}
 
-				$prev_option = get_option( FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY );
+				$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
-				$new_option_value = null;
+				$prev_option_unregistered_clients = (
+					isset( $prev_option['unregistered_clients'] )
+					&& is_array( $prev_option['unregistered_clients'] )
+				)
+					? $prev_option['unregistered_clients']
+					: array();
 
-				if( $prev_option ) {
+				$new_option_unregistered_clients = array_merge(
+						$prev_option_unregistered_clients,
+						$item
+				);
+
+				if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
+					// Update only the unregistered_clients key, leaving any other keys unchanged.
 					$new_option_value = array_merge(
 						$prev_option,
-						$item
+						array(
+							'unregistered_clients' => $new_option_unregistered_clients
+						)
 					);
-				} else {
-					$new_option_value = $item;
-				}
 
-				if( $this->option_has_changes( $prev_option, $new_option_value ) ) {
-					if ( update_option(
-						FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
-						$new_option_value
-					) ) {
-						return new WP_REST_Response( $new_option_value, 200 );
+					if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
+						return new WP_REST_Response( $new_option_unregistered_clients, 200 );
 					} else {
-						return new WP_Error( 'update_failed', "We weren't able to update the unregistered clients data.", array( 'status' => 400 ) );
+						return new WP_Error(
+							'fontawesome_unregistered_clients_update',
+							array( 'status' => 400 )
+						);
 					}
 				} else {
-					return new WP_REST_Response( $prev_option, 200 );
+					// No change.
+					return new WP_REST_Response( null, 204 );
 				}
 			} catch ( Exception $e ) {
 				// TODO: distinguish between problems that happen with the Font Awesome plugin versus those that happen in client plugins.
@@ -122,10 +191,14 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 		}
 
 		/**
+		 * Reads a json body of the given Request, validates it, and turns it
+		 * into a valid value for the unregistered_clients key of the conflict detection
+		 * option.
+		 *
 		 * @internal
 		 * @ignore
 		 */
-		protected function prepare_item_for_database( $request ) {
+		protected function prepare_unregistered_clients_for_database( $request ) {
 			$body = $request->get_json_params();
 
 			if( ! \is_array( $body ) || count( $body ) === 0 ) {
@@ -155,7 +228,7 @@ if ( ! class_exists( 'FontAwesome_Conflict_Detection_Controller' ) ) :
 			return $validated;
     }
     
-	protected function option_has_changes($old, $new) {
+	protected function unregistered_clients_array_has_changes($old, $new) {
 		if( ! is_array( $old ) ) {
  			return TRUE;
 		}
