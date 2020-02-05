@@ -18,7 +18,9 @@ use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
 class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 	protected $server;
 	protected $admin_user;
-	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/report-conflicts';
+	protected $namespaced_conflicts_route = "/" . FontAwesome::REST_API_NAMESPACE . '/conflict-detection/conflicts';
+	protected $namespaced_detect_until_route = "/" . FontAwesome::REST_API_NAMESPACE . '/conflict-detection/until';
+	protected $namespaced_blocklist_route = "/" . FontAwesome::REST_API_NAMESPACE . '/conflict-detection/conflicts/blocklist';
 	protected $fa;
 
 	public function setUp() {
@@ -59,213 +61,263 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 	public function test_register_route() {
 		$routes = $this->server->get_routes();
-		$this->assertArrayHasKey( $this->namespaced_route, $routes );
+		$this->assertArrayHasKey( $this->namespaced_conflicts_route, $routes );
+		$this->assertArrayHasKey( $this->namespaced_detect_until_route, $routes );
+		$this->assertArrayHasKey( $this->namespaced_blocklist_route, $routes );
   }
 
-  public function test_when_detecting_conflicts() {
+	public function test_post_conflicts_when_detecting_conflicts() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
 
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $later
 				)
 			)
 		);
 
-    $body = array(
-      'a9a9aa2d454f77cd623d6755c902c408' => array(
-        'type' => 'script',
-        'src'  => 'http://example.com/fake.js'
-      ),
-      '83c869f6fa4c3138019f564a3358e877' => array(
-        'type' => 'style',
-        'src'  => 'http://example.com/fake.css'
-      )
-    );
-
-		$request  = new \WP_REST_Request(
-			'POST',
-			$this->namespaced_route
-		);
-
-    $request->add_header('Content-Type', 'application/json');
-
-    $request->set_body( wp_json_encode( $body ) );
-
-    $response = $this->server->dispatch( $request );
-    
-    $this->assertEquals( 200, $response->get_status() );
-    
-    $this->assertEquals(
-      $body,
-      fa()->unregistered_clients()
-    );
-  }
-
-  public function test_when_not_detecting_conflicts() {
-		update_option(
-			FontAwesome::OPTIONS_KEY,
-			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
-				array(
-					'detectConflictsUntil' => 0
-				)
+		$body = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
 			)
 		);
 
-    $body = array(
-      'a9a9aa2d454f77cd623d6755c902c408' => array(
-        'type' => 'script',
-        'src'  => 'http://example.com/fake.js'
-      ),
-    );
-
 		$request  = new \WP_REST_Request(
 			'POST',
-			$this->namespaced_route
+			$this->namespaced_conflicts_route
 		);
 
-    $request->add_header('Content-Type', 'application/json');
+		$request->add_header('Content-Type', 'application/json');
 
-    $request->set_body( wp_json_encode( $body ) );
+		$request->set_body( wp_json_encode( $body ) );
 
-    $response = $this->server->dispatch( $request );
+		$response = $this->server->dispatch( $request );
+		
+		$this->assertEquals( 200, $response->get_status() );
+
+		$this->assertEquals(
+			fa()->unregistered_clients(),
+			$response->get_data()
+		);
     
-    $this->assertEquals( 404, $response->get_status() );
-    
-    $this->assertEquals(
-      array(),
-      fa()->unregistered_clients()
-    );
-  }
+		$this->assertEquals(
+			$body,
+			fa()->unregistered_clients()
+		);
+	}
 
-  public function test_when_adding_additional_conflicts() {
+	public function test_post_conflicts_when_no_change() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
 
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
+			)
+		);
+
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later
+					'detectConflictsUntil' => $later,
+					'unregistered_clients' => $initial_data
 				)
 			)
 		);
 
-    update_option(
-			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/fake.js'
-        ),
-      )
+		$request  = new \WP_REST_Request(
+			'POST',
+			$this->namespaced_conflicts_route
 		);
 
-    $body = array(
-      '83c869f6fa4c3138019f564a3358e877' => array(
-        'type' => 'style',
-        'src'  => 'http://example.com/fake.css'
-      ),
-      'e64490b52100428131b395c57951bfb0' => array(
-        'type' => 'script',
-        'src'  => 'http://example.com/12345.js'
-      )
-    );
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $initial_data ) );
+
+		$response = $this->server->dispatch( $request );
+		
+		$this->assertEquals( 204, $response->get_status() );
+    
+		$this->assertEquals(
+			$initial_data,
+			fa()->unregistered_clients()
+		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			$later,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
+
+	public function test_when_not_detecting_conflicts() {
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array(
+				'detectConflictsUntil' => 0,
+				'unregistered_clients' => array()
+			)
+		);
+
+		$body = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+		);
 
 		$request  = new \WP_REST_Request(
 			'POST',
-			$this->namespaced_route
+			$this->namespaced_conflicts_route
 		);
 
-    $request->add_header('Content-Type', 'application/json');
+		$request->add_header('Content-Type', 'application/json');
 
-    $request->set_body( wp_json_encode( $body ) );
+		$request->set_body( wp_json_encode( $body ) );
 
-    $response = $this->server->dispatch( $request );
-    
-    $this->assertEquals( 200, $response->get_status() );
+		$response = $this->server->dispatch( $request );
 
-    $this->assertEquals(
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/fake.js'
-        ),
-        '83c869f6fa4c3138019f564a3358e877' => array(
-          'type' => 'style',
-          'src'  => 'http://example.com/fake.css'
-        ),
-        'e64490b52100428131b395c57951bfb0' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/12345.js'
-        ),
-      ),
-      fa()->unregistered_clients()
-    );
-  }
+		$this->assertEquals( 404, $response->get_status() );
+ 
+ 		$this->assertEquals(
+			array(),
+			fa()->unregistered_clients()
+		);
+	}
 
-  public function test_when_adding_with_bad_schema() {
+	public function test_when_adding_additional_conflicts() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
 
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
+			)
+		);
+
+		$new_data = array(
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/deadbeef42.js'
+			),
+		);
+
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
-					'detectConflictsUntil' => $later
+					'detectConflictsUntil' => $later,
+					'unregistered_clients' => $initial_data
 				)
 			)
 		);
 
-    update_option(
-			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/fake.js'
-        ),
-      )
+		$request  = new \WP_REST_Request(
+			'POST',
+			$this->namespaced_conflicts_route
 		);
 
-    $body = array(
-      'type' => 'style',
-      'src'  => 'http://example.com/fake.css',
-      'md5'  => '83c869f6fa4c3138019f564a3358e877',
-    );
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $new_data ) );
+
+		$response = $this->server->dispatch( $request );
+    
+		$this->assertEquals( 200, $response->get_status() );
+
+		$this->assertEquals(
+			fa()->unregistered_clients(),
+			$response->get_data()
+		);
+
+		$this->assertEquals(
+ 			array_merge(
+				$initial_data,
+				$new_data
+			),
+			fa()->unregistered_clients()
+		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			$later,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
+
+	public function test_when_adding_with_bad_schema() {
+		$now = time();
+		// ten minutes later
+		$later = $now + (10 * 60);
+
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			)
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array(
+				'detectConflictsUntil' => $later,
+				'unregistered_clients' => $initial_data
+			)
+		);
+
+		$body = array(
+			'type' => 'style',
+			'src'  => 'http://example.com/fake.css',
+			'md5'  => '83c869f6fa4c3138019f564a3358e877',
+		);
 
 		$request  = new \WP_REST_Request(
 			'POST',
-			$this->namespaced_route
+			$this->namespaced_conflicts_route
 		);
 
-    $request->add_header('Content-Type', 'application/json');
+		$request->add_header('Content-Type', 'application/json');
 
-    $request->set_body( wp_json_encode( $body ) );
+		$request->set_body( wp_json_encode( $body ) );
 
-    $response = $this->server->dispatch( $request );
-    
-    $this->assertEquals( 400, $response->get_status() );
+		$response = $this->server->dispatch( $request );
+ 
+		$this->assertEquals( 400, $response->get_status() );
 
-    $this->assertEquals(
-      array(
-        'a9a9aa2d454f77cd623d6755c902c408' => array(
-          'type' => 'script',
-          'src'  => 'http://example.com/fake.js'
-        ),
-      ),
-      fa()->unregistered_clients()
-    );
-  }
+		$error = $response->as_error();
+
+ 		$this->assertEquals( 'fontawesome_unregistered_clients_schema', $error->get_error_code() );
+
+		$this->assertEquals(
+			$initial_data,
+			fa()->unregistered_clients()
+		);
+	}
 
   public function test_change_detection() {
 		$now = time();
@@ -283,7 +335,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 
     update_option(
-			FontAwesome::UNREGISTERED_CLIENTS_OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
       array(
         'a9a9aa2d454f77cd623d6755c902c408' => array(
           'type' => 'script',
