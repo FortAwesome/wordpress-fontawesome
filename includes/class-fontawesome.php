@@ -729,7 +729,30 @@ class FontAwesome {
 	 * @return array
 	 */
 	public function blocklist() {
-		return $this->options()['blocklist'];
+		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
+
+		$unregistered_clients = (
+			isset( $conflict_detection['unregistered_clients'] )
+			&& is_array( $conflict_detection['unregistered_clients'] )
+		)
+			? $conflict_detection['unregistered_clients']
+			: array();
+
+		$blocklist = array_reduce(
+			array_keys( $unregistered_clients ),
+			function( $carry, $md5 ) use( $unregistered_clients ) {
+				if(
+					isset( $unregistered_clients[$md5]['blocked'] )
+					&& boolval( $unregistered_clients[$md5]['blocked'] )
+				) {
+					array_push( $carry, $md5 );
+				}
+				return $carry;
+			},
+			array()
+		);
+
+		return $blocklist;
 	}
 
 	/**
