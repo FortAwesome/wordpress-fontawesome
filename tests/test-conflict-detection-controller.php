@@ -372,6 +372,55 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 	}
 
+	public function test_update_detect_conflicts_until_when_no_change() {
+		$initial_unregistered_clients = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array(
+				'detectConflictsUntil' => 1234,
+				'unregisteredClients'  => $initial_unregistered_clients
+			)
+		);
+
+		$this->assertFalse( fa()->detecting_conflicts() );
+
+		$request = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_detect_until_route
+		);
+
+		$request->add_header('Content-Type', 'application/json');
+
+		$body = array(
+			'detectConflictsUntil' => 1234
+		);
+
+		$request->set_body( wp_json_encode( $body ) );
+
+		$response = $this->server->dispatch( $request );
+
+		$this->assertEquals( 204, $response->get_status() );
+
+		$this->assertFalse( fa()->detecting_conflicts() );
+
+		$this->assertEquals(
+			1234,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+
+		// There should have been no change in this.
+		$this->assertEquals(
+			$initial_unregistered_clients,
+			fa()->unregistered_clients()
+		);
+	}
+
 	public function test_update_detect_conflicts_until_when_bad_schema() {
 		$now = time();
 		// ten minutes later
