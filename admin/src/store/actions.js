@@ -159,7 +159,7 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
       })
 
       axios.post(
-        `${apiUrl}/report-conflicts`,
+        `${apiUrl}/conflict-detection/conflicts`,
         payload,
         {
           headers: {
@@ -236,7 +236,7 @@ export function setActiveAdminTab(tab) {
 
 export function setConflictDetectionScanner({ enable = true }) {
   return function(dispatch, getState) {
-    const { apiNonce, apiUrl, options } = getState()
+    const { apiNonce, apiUrl } = getState()
 
     const actionStartType = enable
       ? 'ENABLE_CONFLICT_DETECTION_SCANNER_START'
@@ -249,16 +249,10 @@ export function setConflictDetectionScanner({ enable = true }) {
     dispatch({type: actionStartType})
 
     axios.put(
-      `${apiUrl}/config`,
-      {
-        options: {
-          ...options,
-          detectConflictsUntil:
-            enable
-              ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)
-              : Math.floor((new Date())/1000) - CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS
-        }
-      },
+      `${apiUrl}/conflict-detection/until`,
+      enable
+        ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)
+        : Math.floor((new Date())/1000) - CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS,
       {
         headers: {
           'X-WP-Nonce': apiNonce

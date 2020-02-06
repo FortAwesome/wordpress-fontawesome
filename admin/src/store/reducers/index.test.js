@@ -21,9 +21,7 @@ describe('options', () => {
           usePro: true,
           v4compat: false,
           svgPseudoElements: true,
-          detectConflictsUntil: 0,
           version: '5.11.2',
-          blocklist: []
         }
       }
 

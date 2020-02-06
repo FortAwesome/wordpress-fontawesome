@@ -26,31 +26,17 @@ export function options(state = {}, action = {}) {
             usePro,
             v4compat,
             svgPseudoElements,
-            detectConflictsUntil,
             version,
-            blocklist
           }
         } = data
 
         return {
           technology,
           version,
-          blocklist,
-          detectConflictsUntil,
           usePro: coerceBool(usePro),
           v4compat: coerceBool(v4compat),
           svgPseudoElements: coerceBool(svgPseudoElements)
         }
-      }
-    case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
-    case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
-      if(action.success) {
-        return {
-          ...state,
-          detectConflictsUntil: data.options.detectConflictsUntil
-        }
-      } else {
-        return state
       }
     default:
       return state
@@ -148,12 +134,30 @@ function pendingOptionConflicts(state = {}, action = {}) {
   }
 }
 
-function unregisteredClients(state = {}, action = {}) {
-  const { type, unregisteredClients = {} } = action
+function detectConflictsUntil( state = 0, action = {} ) {
+  const { type, data = 0 } = action
+  const intValue = parseInt( data )
+
+  switch(type) {
+    case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
+    case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
+      if(action.success) {
+        return isNaN(intValue) ? 0 : intValue
+      } else {
+        return state
+      }
+    default:
+      const initialIntValue = parseInt( state )
+      return isNaN(initialIntValue) ? 0 : initialIntValue
+  }
+}
+
+function unregisteredClients( state = {}, action = {} ) {
+  const { type, data = {} } = action
 
   switch(type) {
     case 'CONFLICT_DETECTION_SUBMIT_END':
-      return { ...state, ...coerceEmptyArrayToEmptyObject(unregisteredClients)}
+      return coerceEmptyArrayToEmptyObject(data)
     default:
       return coerceEmptyArrayToEmptyObject(state)
   }
@@ -285,6 +289,7 @@ export default combineReducers({
   apiUrl: simple,
   clientPreferences: coerceEmptyArrayToEmptyObject,
   conflictDetectionScannerStatus,
+  detectConflictsUntil,
   onSettingsPage: coerceBool,
   options,
   optionsFormState,

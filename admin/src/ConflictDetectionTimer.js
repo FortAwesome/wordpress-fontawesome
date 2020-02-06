@@ -36,7 +36,7 @@ function secondsRemaining(endTime) {
 }
 
 export default function ConflictDetectionTimer({ addDescription }) {
-  const detectConflictsUntil = useSelector(state => state.options.detectConflictsUntil)
+  const detectConflictsUntil = useSelector(state => state.detectConflictsUntil)
   const [timeRemaining, setTimer] = useState(secondsRemaining(detectConflictsUntil))
   const dispatch = useDispatch()
 
