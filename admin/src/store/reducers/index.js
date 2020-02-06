@@ -152,7 +152,7 @@ function detectConflictsUntil( state = 0, action = {} ) {
   switch(type) {
     case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
     case 'DISABLE_CONFLICT_DETECTION_SCANNER_END':
-      if(action.success) {
+      if(action.success && null !== data ) {
         return isNaN(intValue) ? 0 : intValue
       } else {
         return state
@@ -164,11 +164,15 @@ function detectConflictsUntil( state = 0, action = {} ) {
 }
 
 function unregisteredClients( state = {}, action = {} ) {
-  const { type, data = {} } = action
+  const { type, data } = action
 
   switch(type) {
     case 'CONFLICT_DETECTION_SUBMIT_END':
-      return coerceEmptyArrayToEmptyObject(data)
+      if( action.success && null !== data ) {
+        return coerceEmptyArrayToEmptyObject(data)
+      } else {
+        return coerceEmptyArrayToEmptyObject(state)
+      }
     default:
       return coerceEmptyArrayToEmptyObject(state)
   }

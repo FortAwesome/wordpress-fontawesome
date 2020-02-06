@@ -170,19 +170,11 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
       .then(response => {
         const { status, data } = response
 
-        if( 200 === status) {
-          dispatch({
-            type: 'CONFLICT_DETECTION_SUBMIT_END',
-            success: true,
-            unregisteredClients: data
-          })
-        } else {
-          dispatch({
-            type: 'CONFLICT_DETECTION_SUBMIT_END',
-            success: false,
-            message: 'Sorry, we failed to submit those conflicts to your WordPress server. Try reloading the page?'
-          })
-        }
+        dispatch({
+          type: 'CONFLICT_DETECTION_SUBMIT_END',
+          success: true,
+          data: 204 === status ? null : data
+        })
       })
       .catch(function(error){
         console.error('Font Awesome Conflict Detection Reporting Error: ', error)
@@ -259,21 +251,12 @@ export function setConflictDetectionScanner({ enable = true }) {
         }
       }
     ).then(response => {
-    const { status, data } = response
-      if (200 === status) {
-        dispatch({
-          type: actionEndType,
-          data,
-          success: true,
-          message: ''
-        })
-      } else {
-        dispatch({
-          type: actionEndType,
-          success: false,
-          message: "Failed to save changes"
-        })
-      }
+      const { status, data } = response
+      dispatch({
+        type: actionEndType,
+        data: 204 === status ? null : data,
+        success: true
+      })
     }).catch(error => {
       const { response: { data: { code, message }}} = error
 
