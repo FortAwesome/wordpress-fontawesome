@@ -138,7 +138,10 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 			}
 
-			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+			$prev_option = get_option(
+				FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS
+			);
 
 			$prev_option_unregistered_clients = (
 				isset( $prev_option['unregisteredClients'] )
@@ -207,7 +210,10 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 			}
 
-			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+			$prev_option = get_option(
+				FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS
+			);
 
 			$prev_option_unregistered_clients = (
 				isset( $prev_option['unregisteredClients'] )
@@ -274,11 +280,14 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 			}
 
-			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+			$prev_option = get_option(
+				FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS
+			);
 
 			$prev_option_detect_conflicts_until = (
-				isset( $prev_option['detectConflictsUntil'] )
-				&& is_integer( $prev_option['detectConflictsUntil'] )
+				isset( $prev_option['detectConflictsUntil'] ) &&
+				is_integer( $prev_option['detectConflictsUntil'] )
 			)
 				? $prev_option['detectConflictsUntil']
 				: null;
@@ -333,7 +342,10 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 			}
 
-			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+			$prev_option = get_option(
+				FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS
+			);
 
 			$prev_option_unregistered_clients = (
 				isset( $prev_option['unregisteredClients'] )

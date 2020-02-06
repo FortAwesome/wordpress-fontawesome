@@ -768,10 +768,11 @@ class FontAwesome {
 	protected function detect_conflicts_until() {
 		$conflict_detection = get_option(
 			self::CONFLICT_DETECTION_OPTIONS_KEY,
-			array( 'detectConflictsUntil' => 0 )
+			self::DEFAULT_CONFLICT_DETECTION_OPTIONS
 		);
 
-		return intval( $conflict_detection['detectConflictsUntil'] );
+		return isset( $conflict_detection['detectConflictsUntil'] )
+			? $conflict_detection['detectConflictsUntil'] : 0;
 	}
 
 	/**
