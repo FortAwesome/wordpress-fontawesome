@@ -214,7 +214,7 @@ class FontAwesome {
 	 */
 	const DEFAULT_CONFLICT_DETECTION_OPTIONS = array(
 		'detectConflictsUntil' => 0,
-		'conflicts'            => array()
+		'unregisteredClients'  => array()
 	);
 
 	/**
@@ -1159,7 +1159,7 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
-			'unregisteredClients'           => $this->unregistered_clients(),
+			'conflictDetection'           	=> get_option( self::CONFLICT_DETECTION_OPTIONS_KEY, array() ),
 			'showConflictDetectionReporter' => $this->detecting_conflicts(),
 			'settingsPageUrl'			    => $this->settings_page_url(),
 			'options'						=> $this->options(),
