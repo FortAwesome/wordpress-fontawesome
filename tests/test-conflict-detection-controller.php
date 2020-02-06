@@ -711,5 +711,69 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			$ids,
 			fa()->blocklist()
 		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			42,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
+
+	public function test_update_blocklist_when_no_change() {
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type'    => 'script',
+				'src'     => 'http://example.com/fake.js',
+				'blocked' => TRUE
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type'    => 'style',
+				'src'     => 'http://example.com/fake.css',
+				'blocked' => TRUE
+			),
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type'    => 'script',
+				'src'     => 'http://example.com/deadbeef42.js',
+				'blocked' => FALSE
+			),
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array(
+					// Should not matter whether conflict detection is enabled.
+					'detectConflictsUntil' => 42,
+					'unregisteredClients' => $initial_data
+				)
+			)
+		);
+
+		$ids = [ 'a9a9aa2d454f77cd623d6755c902c408', '83c869f6fa4c3138019f564a3358e877' ];
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_blocklist_route
+		);
+
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $ids ) );
+
+		$response = $this->server->dispatch( $request );
+    
+		$this->assertEquals( 204, $response->get_status() );
+
+		$this->assertEquals(
+			$ids,
+			fa()->blocklist()
+		);
+
+		// This should have remained unchanged.
+		$this->assertEquals(
+			42,
+			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
 	}
 }
