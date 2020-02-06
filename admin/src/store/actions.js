@@ -35,6 +35,20 @@ export function addPendingOption(change) {
   }
 }
 
+export function updatePendingUnregisteredClientsForDeletion(data = []) {
+  return {
+    type: 'UPDATE_PENDING_UNREGISTERED_CLIENTS_FOR_DELETION',
+    data
+  }
+}
+
+export function updatePendingBlocklist(data = []) {
+  return {
+    type: 'UPDATE_PENDING_BLOCKLIST',
+    data
+  }
+}
+
 export function checkPreferenceConflicts() {
   return function(dispatch, getState){
     dispatch({type: 'PREFERENCE_CHECK_START'})
