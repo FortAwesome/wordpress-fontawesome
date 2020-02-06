@@ -754,6 +754,27 @@ class FontAwesome {
 	}
 
 	/**
+	 * Gets the current value of detectConflictsUntil from the conflict detection
+	 * option key in the database.
+	 * 
+	 * Returns 0 if that value is unset in the db.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return integer
+	 */
+	protected function detect_conflicts_until() {
+		$conflict_detection = get_option(
+			self::CONFLICT_DETECTION_OPTIONS_KEY,
+			array( 'detectConflictsUntil' => 0 )
+		);
+
+		return intval( $conflict_detection['detectConflictsUntil'] );
+	}
+
+	/**
 	 * Converts a given options array with a v1 schema to one with a v2 schema.
 	 * There are significant changes from the schema used by 4.0.0-rc9 and before.
 	 *
@@ -1159,7 +1180,8 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
-			'conflictDetection'           	=> get_option( self::CONFLICT_DETECTION_OPTIONS_KEY, array() ),
+			'detectConflictsUntil'			=> $this->detect_conflicts_until(),
+			'unregisteredClients'           => $this->unregistered_clients(),
 			'showConflictDetectionReporter' => $this->detecting_conflicts(),
 			'settingsPageUrl'			    => $this->settings_page_url(),
 			'options'						=> $this->options(),

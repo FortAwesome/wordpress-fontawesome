@@ -9,7 +9,7 @@ import mountConflictDetectionReporter from './mountConflictDetectionReporter'
 
 export default function ConflictDetectionScannerSection() {
   const dispatch = useDispatch()
-  const detectConflictsUntil = useSelector(state => state.options.detectConflictsUntil)
+  const detectConflictsUntil = useSelector(state => state.detectConflictsUntil)
   const nowMs = (new Date()).valueOf()
   const detectingConflicts = (new Date(detectConflictsUntil * 1000)) > nowMs
   const { isSubmitting, hasSubmitted, message, success } = useSelector(state => state.conflictDetectionScannerStatus)

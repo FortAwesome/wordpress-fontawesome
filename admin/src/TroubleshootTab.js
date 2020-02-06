@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 
 export default function TroubleshootTab() {
   const hasV3DeprecationWarning = useSelector(state => !!state.v3DeprecationWarning)
-  const unregisteredClients = useSelector(state => state.conflictDetection.unregisteredClients)
+  const unregisteredClients = useSelector(state => state.unregisteredClients)
 
   return <div className={ sharedStyles['wrapper-div'] }>
     { hasV3DeprecationWarning && <V3DeprecationWarning /> }
