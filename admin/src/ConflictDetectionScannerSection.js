@@ -47,7 +47,7 @@ export default function ConflictDetectionScannerSection() {
         ? <button className={sharedStyles['faPrimary']} disabled >
             Scanner running: <ConflictDetectionTimer />
           </button>
-        : <button class="button-primary" disabled={ isSubmitting } onClick={() => dispatch(setConflictDetectionScanner({ enable: true }))}>
+        : <button className="button-primary" disabled={ isSubmitting } onClick={() => dispatch(setConflictDetectionScanner({ enable: true }))}>
             Enable scanner for <span>{ CONFLICT_DETECTION_SCANNER_DURATION_MIN } minutes</span>
           </button>
       }
