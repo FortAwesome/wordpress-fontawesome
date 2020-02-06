@@ -66,7 +66,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		$this->assertArrayHasKey( $this->namespaced_blocklist_route, $routes );
   }
 
-	public function test_post_conflicts_when_detecting_conflicts() {
+	public function test_report_conflicts_when_detecting_conflicts() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
@@ -116,7 +116,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_post_conflicts_when_no_change() {
+	public function test_report_conflicts_when_no_change() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
@@ -168,7 +168,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_when_not_detecting_conflicts() {
+	public function test_report_conflicts_when_not_detecting_conflicts() {
 		update_option(
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array(
@@ -203,7 +203,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_when_adding_additional_conflicts() {
+	public function test_report_conflicts_when_adding_additional_conflicts() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
@@ -270,7 +270,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_when_adding_with_bad_schema() {
+	public function test_report_conflicts_when_adding_with_bad_schema() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
@@ -626,7 +626,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			)
 		);
 
-		// One invliad md5.
+		// One invalid md5.
 		$ids = [ 'foo' ];
 
 		$request  = new \WP_REST_Request(
@@ -656,6 +656,60 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			42,
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['detectConflictsUntil']
+		);
+	}
+
+	public function test_update_blocklist() {
+		$initial_data = array(
+			'a9a9aa2d454f77cd623d6755c902c408' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/fake.js'
+			),
+			'83c869f6fa4c3138019f564a3358e877' => array(
+				'type' => 'style',
+				'src'  => 'http://example.com/fake.css'
+			),
+			'deadbeefdeadbeefdeadbeefdeadbeef' => array(
+				'type' => 'script',
+				'src'  => 'http://example.com/deadbeef42.js'
+			),
+		);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array(
+					// Should not matter whether conflict detection is enabled.
+					'detectConflictsUntil' => 42,
+					'unregisteredClients' => $initial_data
+				)
+			)
+		);
+
+		$ids = [ 'a9a9aa2d454f77cd623d6755c902c408', '83c869f6fa4c3138019f564a3358e877' ];
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_blocklist_route
+		);
+
+		$request->add_header('Content-Type', 'application/json');
+
+		$request->set_body( wp_json_encode( $ids ) );
+
+		$response = $this->server->dispatch( $request );
+    
+		$this->assertEquals( 200, $response->get_status() );
+
+		$this->assertEquals(
+			$ids,
+			$response->get_data()
+		);
+
+		$this->assertEquals(
+			$ids,
+			fa()->blocklist()
 		);
 	}
 }
