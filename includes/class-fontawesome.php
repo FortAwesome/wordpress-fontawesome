@@ -959,14 +959,16 @@ class FontAwesome {
 	/**
 	 * Return unregistered clients that have been detected and stored in the WordPress db.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * Unregistered clients are those for which the in-browser conflict detector
 	 * detects the presence of a Font Awesome version that is not being loaded by
 	 * this plugin, and therefore is likely causing a conflict.
 	 *
 	 * Client-side conflict detection is enabled in this plugin's setting page in WP admin.
 	 *
-	 * @since 4.0.0
-	 *
+	 * @ignore
+	 * @internal
 	 * @return array
 	 */
 	public function unregistered_clients() {
