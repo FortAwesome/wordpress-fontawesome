@@ -337,9 +337,9 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$later = $now + (10 * 60);
 
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $later
 				)
@@ -370,9 +370,9 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$later = $now + (10 * 60);
 
 		update_option(
-			FontAwesome::OPTIONS_KEY,
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array_merge(
-				FontAwesome::DEFAULT_USER_OPTIONS,
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 				array(
 					'detectConflictsUntil' => $later
 				)
