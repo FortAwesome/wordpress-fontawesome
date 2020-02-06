@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { addPendingOption, submitPendingOptions } from './store/actions'
+import { addPendingOption } from './store/actions'
 import { blocklistSelector } from './store/reducers'
 import PropTypes from 'prop-types'
 import styles from './UnregisteredClientsView.module.css'
@@ -19,11 +19,6 @@ import isEqual from 'lodash/isEqual'
 export default function UnregisteredClientsView(props) {
   const dispatch = useDispatch()
   const blocklist = useSelector(state => blocklistSelector(state))
-  const pendingOptions = useSelector(state => state.pendingOptions)
-  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
-  const submitSuccess = useSelector(state => state.optionsFormState.success)
-  const submitMessage = useSelector(state => state.optionsFormState.message)
-  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
   const allDetectedConflictsSelectedForBlocking = 
               isEqual(Object.keys(props.clients).sort(), [...(blocklist || [])].sort())
