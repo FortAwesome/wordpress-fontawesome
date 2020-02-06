@@ -36,8 +36,6 @@ class OptionsTest extends \WP_UnitTestCase {
 				'technology' => 'svg',
 				'usePro' => true,
 				'v4compat' => true,
-				'blocklist' => array(),
-				'detectConflictsUntil' => null,
 			),
 			fa()->convert_options(
 				array (
