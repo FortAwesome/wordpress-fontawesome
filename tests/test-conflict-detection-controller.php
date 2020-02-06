@@ -348,10 +348,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 		$request->add_header('Content-Type', 'application/json');
 
-		$body = array(
-			'detectConflictsUntil' => $later
-		);
-
+		$body = $later;
 		$request->set_body( wp_json_encode( $body ) );
 
 		$response = $this->server->dispatch( $request );
@@ -359,7 +356,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 200, $response->get_status() );
 
 		$this->assertEquals(
-			array( 'detectConflictsUntil' => $later ),
+			$later,
 			$response->get_data()
 		);
 
@@ -397,9 +394,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 		$request->add_header('Content-Type', 'application/json');
 
-		$body = array(
-			'detectConflictsUntil' => 1234
-		);
+		$body = 1234;
 
 		$request->set_body( wp_json_encode( $body ) );
 

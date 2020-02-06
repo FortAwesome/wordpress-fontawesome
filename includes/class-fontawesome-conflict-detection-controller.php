@@ -262,9 +262,11 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 */
 	public function update_detect_conflicts_until( $request ) {
 		try {
-			$body = $request->get_json_params();
+			$body = $request->get_body();
 
-			if( ! \is_array( $body ) || count( $body ) === 0 || !isset( $body['detectConflictsUntil'] ) || !is_integer( $body['detectConflictsUntil'] ) ) {
+			$new_value = intval( $body );
+
+			if( 0 === $new_value && '0' !== $body ) {
 				return new WP_Error(
 					'fontawesome_detect_conflicts_until_schema',
 					null,
@@ -281,19 +283,15 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				? $prev_option['detectConflictsUntil']
 				: null;
 
-			if( $prev_option_detect_conflicts_until !== $body['detectConflictsUntil'] ) {
-				$new_detect_conflicts_until = array(
-					'detectConflictsUntil' => $body['detectConflictsUntil']
-				);
-
+			if( $prev_option_detect_conflicts_until !== $new_value ) {
 				// Update only the detectConflictsUntil key, leaving any other keys unchanged.
 				$new_option_value = array_merge(
 					$prev_option,
-					$new_detect_conflicts_until
+					array( 'detectConflictsUntil' => $new_value )
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( $new_detect_conflicts_until, 200 );
+					return new WP_REST_Response( $new_value, 200 );
 				} else {
 					return new WP_Error(
 						'fontawesome_detect_conflicts_until_update',
