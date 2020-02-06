@@ -186,7 +186,8 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 * The request body should contain an array of md5 values to be
 	 * deleted. Any unrecognized md5s are ignored.
 	 *
-	 * The response will have an HTTP 204 status if the request results in no changes.
+	 * The response will have an HTTP 204 status if the request results in no changes,
+	 * otherwise it will include the new set of unregistered clients.
 	 *
 	 * If the plugin is not currently in conflict detection mode, this
 	 * returns an HTTP 404 status.
@@ -235,7 +236,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( fa()-blocklist(), 200 );
+					return new WP_REST_Response( $new_option_unregistered_clients, 200 );
 				} else {
 					return new WP_Error(
 						'fontawesome_unregistered_clients_delete',
