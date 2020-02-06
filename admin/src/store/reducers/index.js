@@ -12,6 +12,17 @@ const coerceEmptyArrayToEmptyObject = val => size(val) === 0 ? {} : val
 
 // TODO: add reducer for the clientPreferences that coerces their boolean options
 
+export function blocklistSelector(state = {}) {
+  const unregisteredClients = state.unregisteredClients || {}
+
+  return Object.keys( unregisteredClients ).reduce( (acc, md5) => {
+    if( get( unregisteredClients, 'md5.blocked', false ) ) {
+      acc.push(md5)
+    }
+    return acc
+  }, [])
+}
+
 export function options(state = {}, action = {}) {
   const { type, data } = action
 

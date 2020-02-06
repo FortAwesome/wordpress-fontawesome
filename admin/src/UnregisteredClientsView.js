@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { addPendingOption, submitPendingOptions } from './store/actions'
+import { blocklistSelector } from './store/reducers'
 import PropTypes from 'prop-types'
 import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
@@ -16,18 +17,11 @@ import {
     faSquare } from '@fortawesome/free-regular-svg-icons'
 import get from 'lodash/get'
 import size from 'lodash/size'
-import has from 'lodash/has'
 import isEqual from 'lodash/isEqual'
 
 export default function UnregisteredClientsView(props) {
   const dispatch = useDispatch()
-
-  const optionSelector = option => useSelector(state => 
-    has(state.pendingOptions, option)
-    ? state.pendingOptions[option]
-    : state.options[option]
-  )
-  const blocklist = optionSelector('blocklist')
+  const blocklist = useSelector(state => blocklistSelector(state))
   const pendingOptions = useSelector(state => state.pendingOptions)
   const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
   const submitSuccess = useSelector(state => state.optionsFormState.success)
