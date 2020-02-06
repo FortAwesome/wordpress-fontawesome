@@ -75,6 +75,58 @@ function optionsFormState(
   }
 }
 
+function blocklistUpdateStatus(
+  state = {
+    hasSubmitted: false,
+    isSubmitting: false,
+    success: false,
+    pending: [],
+    message: ''
+  }, action = {}) {
+  const { type, success, message } = action
+  
+  switch(type) {
+    case 'BLOCKLIST_UPDATE_START':
+      return { ...state, isSubmitting: true }
+    case 'BLOCKLIST_UPDATE_END':
+      return { ...state, isSubmitting: false, pending: [], hasSubmitted: true, success, message }
+    case 'UPDATE_PENDING_BLOCKLIST':
+      if(Array.isArray(action.data)) {
+        return { ...state, hasSubmitted: false, pending: action.data, success: false, message: '' }
+      } else {
+        return state
+      }
+    default:
+      return state
+  }
+}
+
+function unregisteredClientsDeletionStatus(
+  state = {
+    hasSubmitted: false,
+    isSubmitting: false,
+    pending: [],
+    success: false,
+    message: ''
+  }, action = {}) {
+  const { type, success, message } = action
+  
+  switch(type) {
+    case 'DELETE_UNREGISTERED_CLIENTS_START':
+      return { ...state, isSubmitting: true }
+    case 'DELETE_UNREGISTERED_CLIENTS_END':
+      return { ...state, isSubmitting: false, pending: [], hasSubmitted: true, success, message }
+    case 'UPDATE_PENDING_UNREGISTERED_CLIENTS_FOR_DELETION':
+      if( Array.isArray(action.data) ) {
+        return { ...state, hasSubmitted: false, pending: action.data, success: false, message: '' }
+      } else {
+        return state
+      }
+    default:
+      return state
+  }
+}
+
 function pendingOptions(state = {}, action = {}) {
   const { type, change } = action
 
@@ -316,6 +368,7 @@ export default combineReducers({
   activeAdminTab,
   apiNonce: simple,
   apiUrl: simple,
+  blocklistUpdateStatus,
   clientPreferences: coerceEmptyArrayToEmptyObject,
   conflictDetectionScannerStatus,
   detectConflictsUntil,
@@ -333,6 +386,7 @@ export default combineReducers({
   showConflictDetectionReporter,
   unregisteredClientDetectionStatus,
   unregisteredClients,
+  unregisteredClientsDeletionStatus, 
   userAttemptedToStopScanner,
   v3DeprecationWarning,
   v3DeprecationWarningStatus
