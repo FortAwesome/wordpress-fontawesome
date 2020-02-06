@@ -181,9 +181,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Remove (forget) any previously detected conflicts.
+	 * Remove (forget) some specified previously detected conflicts.
 	 *
-	 * The body is an object with key ids whose value is an array of md5s to be
+	 * The request body should contain an array of md5 values to be
 	 * deleted. Any unrecognized md5s are ignored.
 	 *
 	 * The response will have an HTTP 204 status if the request results in no changes.
@@ -198,20 +198,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 		try {
 			$body = $request->get_json_params();
 
-			if(
-				! \is_array( $body ) ||
-				count( $body ) === 0 ||
-				(
-					0 !== count(
-						array_filter(
-							$body,
-							function( $md5 ) {
-								return !is_string( $md5 ) || strlen( $md5 ) !== 32;
-							}
-						)
-					)
-				)
-			) {
+			if( ! $this->is_array_of_md5( $body )) {
 				return new WP_Error(
 					'fontawesome_delete_conflicts_schema',
 					null,
@@ -248,7 +235,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( $new_option_unregistered_clients, 200 );
+					return new WP_REST_Response( fa()-blocklist(), 200 );
 				} else {
 					return new WP_Error(
 						'fontawesome_unregistered_clients_delete',
@@ -324,6 +311,81 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	}
 
 	/**
+	 * Updates which unregistered will be blocked.
+	 *
+	 * The body of the request is an array of md5 values identifying those
+	 * unregistered clients that will be blocked as a result of this request.
+	 * Any unrecognized md5s will be ignored.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function update_blocklist( $request ) {
+		try {
+			$body = $request->get_json_params();
+
+			if( ! $this->is_array_of_md5( $body )) {
+				return new WP_Error(
+					'fontawesome_update_blocklist_schema',
+					null,
+					array( 'status' => 400 )
+				);
+			}
+
+			$prev_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+
+			$prev_option_unregistered_clients = (
+				isset( $prev_option['unregisteredClients'] )
+				&& is_array( $prev_option['unregisteredClients'] )
+			)
+				? $prev_option['unregisteredClients']
+				: array();
+
+			// Make a copy.
+			$new_option_unregistered_clients = array_merge(
+				array(),
+				$prev_option_unregistered_clients
+			);
+			
+			foreach( array_keys( $new_option_unregistered_clients ) as $md5 ) {
+				if( in_array( $md5, $body ) ) {
+					$new_option_unregistered_clients[ $md5 ]['blocked'] = TRUE;
+				} else {
+					$new_option_unregistered_clients[ $md5 ]['blocked'] = FALSE;
+				}
+			}
+
+			if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
+				// Update only the unregisteredClients key, leaving any other keys unchanged.
+				$new_option_value = array_merge(
+					$prev_option,
+					array(
+						'unregisteredClients' => $new_option_unregistered_clients
+					)
+				);
+
+				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
+					return new WP_REST_Response( fa()->blocklist(), 200 );
+				} else {
+					return new WP_Error(
+						'fontawesome_update_blocklist',
+						array( 'status' => 400 )
+					);
+				}
+			} else {
+				// No change.
+				return new WP_REST_Response( null, 204 );
+			}
+		} catch ( Exception $e ) {
+			return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
+		} catch ( Error $error ) {
+			return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+		}
+	}
+
+	/**
 	 * Reads a json body of the given Request, validates it, and turns it
 	 * into a valid value for the unregisteredClients key of the conflict detection
 	 * option.
@@ -374,7 +436,27 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 					return TRUE;
 				}
 			}
+ 			foreach( $new as $key => $value )  {
+				if( count( array_diff_assoc( $new[$key], $old[$key] ) ) > 0 ) {
+					return TRUE;
+				}
+			}
 			return FALSE;
 		}
+	}
+
+	protected function is_array_of_md5( $data ) {
+		return \is_array( $data ) &&
+			count( $data ) > 0 &&
+			(
+				0 === count(
+					array_filter(
+						$data,
+						function( $md5 ) {
+							return !is_string( $md5 ) || strlen( $md5 ) !== 32;
+						}
+					)
+				)
+			);
 	}
 }
