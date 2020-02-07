@@ -94,8 +94,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'v4compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
-					'detectConflictsUntil' => 0,
-					'blocklist' => [],
 					'kitToken' => '778ccf8260',
 					'apiToken' => true,
 					'version' => '5.4.1',
