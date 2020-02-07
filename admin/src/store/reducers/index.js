@@ -238,6 +238,12 @@ function unregisteredClients( state = {}, action = {} ) {
       } else {
         return coerceEmptyArrayToEmptyObject(state)
       }
+    case 'DELETE_UNREGISTERED_CLIENTS_END':
+      if(action.success && !!data) {
+        return data
+      } else {
+        return coerceEmptyArrayToEmptyObject(state)
+      }
     default:
       return coerceEmptyArrayToEmptyObject(state)
   }
