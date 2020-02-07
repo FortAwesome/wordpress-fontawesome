@@ -17,15 +17,18 @@ import {
 import get from 'lodash/get'
 import size from 'lodash/size'
 import isEqual from 'lodash/isEqual'
+import sortedUnique from 'lodash/sortedUniq'
+import difference from 'lodash/difference'
 
 export default function UnregisteredClientsView() {
   const dispatch = useDispatch()
   const unregisteredClients = useSelector(state => state.unregisteredClients)
+  const savedBlocklist = useSelector(state => blocklistSelector(state))
   const blocklist = useSelector(state => {
     if( null !== state.blocklistUpdateStatus.pending ) {
       return state.blocklistUpdateStatus.pending
     } else {
-      return blocklistSelector(state) 
+      return savedBlocklist
     }
   })
   const deleteList = useSelector( state => state.unregisteredClientsDeletionStatus.pending)
@@ -64,8 +67,19 @@ export default function UnregisteredClientsView() {
       : isCheckedForBlocking(md5)
         ? blocklist.filter(x => x !== md5)
         : [...blocklist, md5]
-    
-    dispatch(updatePendingBlocklist(size( newBlocklist ) > 0 ? newBlocklist : null))
+
+    const orig = sortedUnique( savedBlocklist )
+    const updated = sortedUnique( newBlocklist )
+
+    if(
+      orig.length === updated.length &&
+      0 === size( difference(orig, updated) ) &&
+      0 === size( difference(updated, orig) )
+    ) {
+      dispatch(updatePendingBlocklist(null))
+    } else {
+      dispatch(updatePendingBlocklist(newBlocklist))
+    }
   }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
