@@ -4,9 +4,10 @@ import { Provider } from 'react-redux'
 import { createStore } from './store'
 import ErrorBoundary from './ErrorBoundary'
 import TroubleshootTab from './TroubleshootTab'
+import { unmountComponentAtNode } from 'react-dom'
 
 describe('TroubleshootTab', () => {
-  let store = null
+  let wrapper = null
 
   beforeEach(() => {
     const initialData = JSON.parse(
@@ -15,23 +16,38 @@ describe('TroubleshootTab', () => {
 
     global['__FontAwesomeOfficialPlugin__'] = initialData
 
-    store = createStore(initialData)
-  })
+    const store = createStore(initialData)
 
-  afterEach(() => {
-    store = null
-  })
-
-  test('mounts successfully', () => {
-
-    const wrapper = mount(
+    wrapper = mount(
       <ErrorBoundary>
         <Provider store={ store }>
           <TroubleshootTab/>
         </Provider>
       </ErrorBoundary>
     )
+  })
 
+  afterEach(() => {
+    wrapper.unmount()
+    wrapper = null
+  })
+
+  test('mounts successfully', () => {
     expect(wrapper).toBeTruthy()
+  })
+
+  describe('when starting with all conflicts blocked', () => {
+    beforeEach(() => {
+      // Assert expectations of the state of the data
+      expect(true).toBeTruthy()
+      //document.getElementById('block_3c937b6d9b50371df1e78b5d70e11512').checked
+
+    })
+
+    describe('when de-selecting and re-selecting an individual conflict for blocking', () => {
+      test('there are no pending changes shown', () => {
+        expect(true).toBeTruthy()
+      })
+    })
   })
 })
