@@ -5,3 +5,17 @@
 .checkbox-label {
     display: flex;
 }
+
+.select-all-controls-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.block-all-container {
+    display: flex;
+}
+
+.remove-all-container {
+    display: flex;
+}

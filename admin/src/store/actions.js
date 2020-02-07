@@ -45,6 +45,7 @@ export function updatePendingUnregisteredClientsForDeletion(data = []) {
 
 export function submitPendingUnregisteredClientDeletions() {
   return function(dispatch){
+    console.log('DEBUG: submitPendingUnregisteredClientDeletions')
   }
 }
 
