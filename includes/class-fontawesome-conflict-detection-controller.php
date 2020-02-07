@@ -458,7 +458,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 
 	protected function is_array_of_md5( $data ) {
 		return \is_array( $data ) &&
-			count( $data ) > 0 &&
+			count( $data ) === 0 ||
 			(
 				0 === count(
 					array_filter(
