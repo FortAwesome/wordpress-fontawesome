@@ -5,7 +5,6 @@ import {
   updatePendingUnregisteredClientsForDeletion
 } from './store/actions'
 import { blocklistSelector } from './store/reducers'
-import PropTypes from 'prop-types'
 import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -19,8 +18,9 @@ import get from 'lodash/get'
 import size from 'lodash/size'
 import isEqual from 'lodash/isEqual'
 
-export default function UnregisteredClientsView(props) {
+export default function UnregisteredClientsView() {
   const dispatch = useDispatch()
+  const unregisteredClients = useSelector(state => state.unregisteredClients)
   const blocklist = useSelector(state => {
     if( null !== state.blocklistUpdateStatus.pending ) {
       return state.blocklistUpdateStatus.pending
@@ -29,12 +29,12 @@ export default function UnregisteredClientsView(props) {
     }
   })
   const deleteList = useSelector( state => state.unregisteredClientsDeletionStatus.pending)
-  const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
+  const detectedUnregisteredClients = size(Object.keys(unregisteredClients)) > 0
   const allDetectedConflictsSelectedForBlocking = 
-              isEqual(Object.keys(props.clients).sort(), [...(blocklist || [])].sort())
+              isEqual(Object.keys(unregisteredClients).sort(), [...(blocklist || [])].sort())
   const allDetectedConflictsSelectedForRemoval = 
-              isEqual(Object.keys(props.clients).sort(), [...(deleteList || [])].sort())
-  const allDetectedConflicts = Object.keys(props.clients)
+              isEqual(Object.keys(unregisteredClients).sort(), [...(deleteList || [])].sort())
+  const allDetectedConflicts = Object.keys(unregisteredClients)
 
   function isCheckedForBlocking(md5) {
     return !! blocklist.find(x => x === md5)
@@ -194,10 +194,10 @@ export default function UnregisteredClientsView(props) {
                     </label>
                   </td>
                   <td>
-                    {get(props.clients[md5], 'tagName', 'unknown').toLowerCase()}
+                    {get(unregisteredClients[md5], 'tagName', 'unknown').toLowerCase()}
                   </td>
                   <td>
-                    {props.clients[md5].src || props.clients[md5].href || get(props.clients[md5], 'excerpt') || <em>in page source</em>}
+                    {unregisteredClients[md5].src || unregisteredClients[md5].href || get(unregisteredClients[md5], 'excerpt') || <em>in page source</em>}
                   </td>
                   <td>
                     <input
@@ -242,8 +242,4 @@ export default function UnregisteredClientsView(props) {
       </div>
     }
   </div>
-}
-
-UnregisteredClientsView.propTypes = {
-  clients: PropTypes.object.isRequired
 }
