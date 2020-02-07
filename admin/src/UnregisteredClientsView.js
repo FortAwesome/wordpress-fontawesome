@@ -22,7 +22,7 @@ import isEqual from 'lodash/isEqual'
 export default function UnregisteredClientsView(props) {
   const dispatch = useDispatch()
   const blocklist = useSelector(state => {
-    if( size(state.blocklistUpdateStatus.pending) > 0 ) {
+    if( null !== state.blocklistUpdateStatus.pending ) {
       return state.blocklistUpdateStatus.pending
     } else {
       return blocklistSelector(state) 
