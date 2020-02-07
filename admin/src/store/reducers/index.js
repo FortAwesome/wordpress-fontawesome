@@ -91,8 +91,14 @@ function blocklistUpdateStatus(
     case 'BLOCKLIST_UPDATE_END':
       return { ...state, isSubmitting: false, pending: null, hasSubmitted: true, success, message }
     case 'UPDATE_PENDING_BLOCKLIST':
-      if(Array.isArray(action.data)) {
-        return { ...state, hasSubmitted: false, pending: action.data, success: false, message: '' }
+      if(Array.isArray(action.data) || null === action.data) {
+        return {
+          ...state,
+          hasSubmitted: false,
+          pending: action.data,
+          success: false,
+          message: ''
+        }
       } else {
         return state
       }
