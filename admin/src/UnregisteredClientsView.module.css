@@ -2,20 +2,18 @@
     width: unset;
 }
 
+.unregistered-clients th {
+    vertical-align: bottom;
+}
+
+.unregistered-clients th .column-label {
+    font-weight: bold;
+}
+
+.block-all-container, .remove-all-container {
+    margin-bottom: 1em;
+}
+
 .checkbox-label {
-    display: flex;
-}
-
-.select-all-controls-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.block-all-container {
-    display: flex;
-}
-
-.remove-all-container {
     display: flex;
 }

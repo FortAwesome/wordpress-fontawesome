@@ -79,71 +79,83 @@ export default function UnregisteredClientsView(props) {
             conflicting version of Font Awesome and doesn't affect the other
             functions of the plugin, but you should verify your site works as expected.
           </p>
-          <div className={ styles['select-all-controls-container'] }>
-            <div className={ styles['block-all-container'] }>
-              <input
-                id='block_all_detected_conflicts'
-                name='block_all_detected_conflicts'
-                type="checkbox"
-                value='all'
-                checked={ allDetectedConflictsSelectedForBlocking }
-                onChange={ () => changeCheckForBlocking('all', allDetectedConflicts) }
-                className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
-              />
-              <label htmlFor='block_all_detected_conflicts' className={ styles['checkbox-label'] }>
-                <span className={ sharedStyles['relative'] }>
-                  <FontAwesomeIcon
-                    icon={ faCheckSquare }
-                    className={ sharedStyles['checked-icon'] }
-                    size="lg"
-                    fixedWidth
-                  />
-                  <FontAwesomeIcon
-                    icon={ faSquare }
-                    className={ sharedStyles['unchecked-icon'] }
-                    size="lg"
-                    fixedWidth
-                  />
-                </span>
-                All
-              </label>
-            </div>
-            <div className={ styles['remove-all-container'] }>
-              <input
-                id='remove_all_detected_conflicts'
-                name='remove_all_detected_conflicts'
-                type="checkbox"
-                value='all'
-                checked={ allDetectedConflictsSelectedForRemoval }
-                onChange={ () => changeCheckForRemoval('all', allDetectedConflicts) }
-                className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
-              />
-              <label htmlFor='remove_all_detected_conflicts' className={ styles['checkbox-label'] }>
-                <span className={ sharedStyles['relative'] }>
-                  <FontAwesomeIcon
-                    icon={ faCheckSquare }
-                    className={ sharedStyles['checked-icon'] }
-                    size="lg"
-                    fixedWidth
-                  />
-                  <FontAwesomeIcon
-                    icon={ faSquare }
-                    className={ sharedStyles['unchecked-icon'] }
-                    size="lg"
-                    fixedWidth
-                  />
-                </span>
-                All
-              </label>
-            </div>
-          </div>
           <table className={classnames('widefat', 'striped')}>
             <tbody>
             <tr className={sharedStyles['table-header']}>
-              <th>Block</th>
-              <th>Type</th>
-              <th>URL</th>
-              <th>Remove</th>
+              <th>
+                <div className={ styles['block-all-container'] }>
+                  <input
+                    id='block_all_detected_conflicts'
+                    name='block_all_detected_conflicts'
+                    type="checkbox"
+                    value='all'
+                    checked={ allDetectedConflictsSelectedForBlocking }
+                    onChange={ () => changeCheckForBlocking('all', allDetectedConflicts) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                  />
+                  <label htmlFor='block_all_detected_conflicts' className={ styles['checkbox-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faCheckSquare }
+                        className={ sharedStyles['checked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                      <FontAwesomeIcon
+                        icon={ faSquare }
+                        className={ sharedStyles['unchecked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                    </span>
+                    All
+                  </label>
+                </div>
+                <div className={ styles['column-label'] }>Block</div>
+              </th>
+              <th>
+                <span className={ styles['column-label'] }>
+                  Type
+                </span>
+              </th>
+              <th>
+                <span className={ styles['column-label'] }>
+                  URL
+                </span>
+              </th>
+              <th>
+                <div className={ styles['remove-all-container'] }>
+                  <input
+                    id='remove_all_detected_conflicts'
+                    name='remove_all_detected_conflicts'
+                    type="checkbox"
+                    value='all'
+                    checked={ allDetectedConflictsSelectedForRemoval }
+                    onChange={ () => changeCheckForRemoval('all', allDetectedConflicts) }
+                    className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                  />
+                  <label htmlFor='remove_all_detected_conflicts' className={ styles['checkbox-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faCheckSquare }
+                        className={ sharedStyles['checked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                      <FontAwesomeIcon
+                        icon={ faSquare }
+                        className={ sharedStyles['unchecked-icon'] }
+                        size="lg"
+                        fixedWidth
+                      />
+                    </span>
+                    All
+                  </label>
+                </div>
+                <div className={ styles['column-label'] }>
+                  Remove
+                </div>
+              </th>
             </tr>
             {
               allDetectedConflicts.map(md5 => (
