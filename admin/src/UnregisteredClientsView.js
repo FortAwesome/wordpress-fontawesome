@@ -65,7 +65,7 @@ export default function UnregisteredClientsView() {
         ? blocklist.filter(x => x !== md5)
         : [...blocklist, md5]
     
-    dispatch(updatePendingBlocklist(newBlocklist))
+    dispatch(updatePendingBlocklist(size( newBlocklist ) > 0 ? newBlocklist : null))
   }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
