@@ -6,7 +6,7 @@ import ConflictDetectionScannerSection from './ConflictDetectionScannerSection'
 import sharedStyles from './App.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSelector, useDispatch } from 'react-redux'
-import { submitPendingOptions } from './store/actions'
+import { submitPendingBlocklist } from './store/actions'
 import {
   faCheck,
   faSkull,
@@ -18,17 +18,24 @@ export default function TroubleshootTab() {
   const dispatch = useDispatch()
   const hasV3DeprecationWarning = useSelector(state => !!state.v3DeprecationWarning)
   const unregisteredClients = useSelector(state => state.unregisteredClients)
-  const pendingOptions = useSelector(state => state.pendingOptions)
-  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
-  const submitSuccess = useSelector(state => state.optionsFormState.success)
-  const submitMessage = useSelector(state => state.optionsFormState.message)
-  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
+
+  const blocklistUpdateStatus = useSelector(state => state.blocklistUpdateStatus)
+  const unregisteredClientsDeletionStatus = useSelector(state => state.unregisteredClientsDeletionStatus)
+
   const showSubmitButton = size( unregisteredClients ) > 0
+  const hasPendingChanges = null !== blocklistUpdateStatus.pending || size( unregisteredClientsDeletionStatus.pending ) > 0
+  const hasSubmitted = unregisteredClientsDeletionStatus.hasSubmitted || blocklistUpdateStatus.hasSubmitted
+  const isSubmitting = unregisteredClientsDeletionStatus.isSubmitting || blocklistUpdateStatus.isSubmitting
+
+  const submitSuccess =
+    (unregisteredClientsDeletionStatus.hasSubmitted || blocklistUpdateStatus.hasSubmitted) &&
+    (unregisteredClientsDeletionStatus.success || !unregisteredClientsDeletionStatus.hasSubmitted) &&
+    (blocklistUpdateStatus.success || !blocklistUpdateStatus.hasSubmitted)
 
   function handleSubmitClick(e) {
     e.preventDefault()
 
-    dispatch(submitPendingOptions())
+    dispatch(submitPendingBlocklist())
   }
 
   return <>
@@ -47,7 +54,7 @@ export default function TroubleshootTab() {
             id="submit"
             className="button button-primary"
             value="Save Changes"
-            disabled={ size(pendingOptions) === 0 }
+            disabled={ !hasPendingChanges }
             onClick={ handleSubmitClick }
           />
           { hasSubmitted 
@@ -60,7 +67,12 @@ export default function TroubleshootTab() {
                     <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
                   </div>
                   <div className={ sharedStyles['explanation'] }>
-                    { submitMessage }
+                    {
+                      !!blocklistUpdateStatus.submitMessage && <p> { blocklistUpdateStatus.submitMessage } </p>
+                    }
+                    {
+                      !!unregisteredClientsDeletionStatus.submitMessage && <p> { unregisteredClientsDeletionStatus.submitMessage } </p>
+                    }
                   </div>
                 </div>
             : null
@@ -70,7 +82,7 @@ export default function TroubleshootTab() {
             ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
                 <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
               </span>
-            : size(pendingOptions) > 0
+            : hasPendingChanges
               ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
               : null
           }

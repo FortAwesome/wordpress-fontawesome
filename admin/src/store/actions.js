@@ -1,6 +1,7 @@
 import axios from 'axios'
 import toPairs from 'lodash/toPairs'
 import size from 'lodash/size'
+import get from 'lodash/get'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -42,10 +43,63 @@ export function updatePendingUnregisteredClientsForDeletion(data = []) {
   }
 }
 
+export function submitPendingUnregisteredClientDeletions() {
+  return function(dispatch){
+  }
+}
+
 export function updatePendingBlocklist(data = []) {
   return {
     type: 'UPDATE_PENDING_BLOCKLIST',
     data
+  }
+}
+
+export function submitPendingBlocklist() {
+  return function(dispatch, getState){
+    const { apiNonce, apiUrl, blocklistUpdateStatus } = getState()
+    const blocklist = get( blocklistUpdateStatus, 'pending', null )
+
+    if (!blocklist) return
+
+    dispatch({type: 'BLOCKLIST_UPDATE_START'})
+
+    axios.put(
+      `${apiUrl}/conflict-detection/conflicts/blocklist`,
+      blocklist,
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    ).then(response => {
+      const { status, data } = response
+      dispatch({
+        type: 'BLOCKLIST_UPDATE_END',
+        success: true,
+        data: 204 === status ? null : data,
+        message: ''
+      })
+    }).catch(error => {
+      const { response: { data: { code, message }}} = error
+
+      const uiMessage = (code => { 
+        switch(code) {
+          case 'rest_no_route':
+          case 'rest_cookie_invalid_nonce':
+            return "Sorry, we couldn't reach your WordPress server"
+          default:
+            console.error(`Font Awesome Plugin Error:\ncode: ${code}\nmessage:${message}`)
+            return "Update failed"
+        }
+      })(code)
+
+      dispatch({
+        type: 'BLOCKLIST_UPDATE_END',
+        success: false,
+        message: uiMessage
+      })
+    })
   }
 }
 

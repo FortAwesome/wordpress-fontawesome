@@ -80,7 +80,7 @@ function blocklistUpdateStatus(
     hasSubmitted: false,
     isSubmitting: false,
     success: false,
-    pending: [],
+    pending: null,
     message: ''
   }, action = {}) {
   const { type, success, message } = action
@@ -89,7 +89,7 @@ function blocklistUpdateStatus(
     case 'BLOCKLIST_UPDATE_START':
       return { ...state, isSubmitting: true }
     case 'BLOCKLIST_UPDATE_END':
-      return { ...state, isSubmitting: false, pending: [], hasSubmitted: true, success, message }
+      return { ...state, isSubmitting: false, pending: null, hasSubmitted: true, success, message }
     case 'UPDATE_PENDING_BLOCKLIST':
       if(Array.isArray(action.data)) {
         return { ...state, hasSubmitted: false, pending: action.data, success: false, message: '' }
@@ -222,6 +222,19 @@ function unregisteredClients( state = {}, action = {} ) {
     case 'CONFLICT_DETECTION_SUBMIT_END':
       if( action.success && null !== data ) {
         return coerceEmptyArrayToEmptyObject(data)
+      } else {
+        return coerceEmptyArrayToEmptyObject(state)
+      }
+    case 'BLOCKLIST_UPDATE_END':
+      if(action.success && Array.isArray(data)) {
+        const updatedState = Object.keys(state).reduce(
+          (acc, md5) => {
+            acc[md5].blocked = !!~data.indexOf(md5)
+            return acc
+          },
+          Object.assign({}, state) // operate on a copy
+        )
+        return coerceEmptyArrayToEmptyObject(updatedState)
       } else {
         return coerceEmptyArrayToEmptyObject(state)
       }
