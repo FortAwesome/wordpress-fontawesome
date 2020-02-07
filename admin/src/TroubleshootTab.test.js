@@ -39,14 +39,80 @@ describe('TroubleshootTab', () => {
   describe('when starting with all conflicts blocked', () => {
     beforeEach(() => {
       // Assert expectations of the state of the data
-      expect(true).toBeTruthy()
-      //document.getElementById('block_3c937b6d9b50371df1e78b5d70e11512').checked
+      const inputs = [
+        'block_all_detected_conflicts',
+        'block_3c937b6d9b50371df1e78b5d70e11512',
+        'block_c604f60e1488e3c3493a19a43709b4ca'
+      ]
 
+      inputs.forEach(id => {
+        expect(
+          wrapper
+            .find(`#${id}`)
+            .first()
+            .props()
+            .checked
+        ).toBe(true)
+      })
+
+      expect(
+        wrapper.find('#submit').props().disabled
+      ).toBe(true)
     })
 
     describe('when de-selecting and re-selecting an individual conflict for blocking', () => {
       test('there are no pending changes shown', () => {
-        expect(true).toBeTruthy()
+        // change/click one of the conflicts
+        wrapper.find('#block_c604f60e1488e3c3493a19a43709b4ca').simulate('change')
+
+        // That one should now be unchecked
+        expect(
+          wrapper
+            .find('#block_c604f60e1488e3c3493a19a43709b4ca')
+            .first()
+            .props()
+            .checked
+        ).toBe(false)
+
+        // The All select should no longer be checked
+        expect(
+          wrapper
+            .find('#block_all_detected_conflicts')
+            .first()
+            .props()
+            .checked
+        ).toBe(false)
+
+        // And there should be pending changes
+        expect(
+          wrapper.find('#submit').props().disabled
+        ).toBe(false)
+
+        // Now, just click/change that same one again
+        wrapper.find('#block_c604f60e1488e3c3493a19a43709b4ca').simulate('change')
+
+        // That one should now be checked
+        expect(
+          wrapper
+            .find('#block_c604f60e1488e3c3493a19a43709b4ca')
+            .first()
+            .props()
+            .checked
+        ).toBe(true)
+
+        // The All select should be checked again
+        expect(
+          wrapper
+            .find('#block_all_detected_conflicts')
+            .first()
+            .props()
+            .checked
+        ).toBe(true)
+
+        // And the submit button should again be disabled, for lack of pending changes
+        expect(
+          wrapper.find('#submit').props().disabled
+        ).toBe(true)
       })
     })
   })
