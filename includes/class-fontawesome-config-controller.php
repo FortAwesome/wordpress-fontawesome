@@ -177,7 +177,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			 * to store the actual API Token appropriately.
 			 */
 			$api_token = isset( $given_options['apiToken'] ) && boolval( $given_options['apiToken'] );
-			$item['apiToken'] = boolval( $given_options['apiToken'] );
+			$item['apiToken'] = $api_token;
 
 			/**
 			 * kitToken is handled specially.
