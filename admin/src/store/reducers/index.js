@@ -16,7 +16,7 @@ export function blocklistSelector(state = {}) {
   const unregisteredClients = state.unregisteredClients || {}
 
   return Object.keys( unregisteredClients ).reduce( (acc, md5) => {
-    if( get( unregisteredClients, 'md5.blocked', false ) ) {
+    if( get( unregisteredClients, [md5, 'blocked'], false ) ) {
       acc.push(md5)
     }
     return acc
