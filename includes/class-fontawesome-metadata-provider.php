@@ -191,7 +191,7 @@ class FontAwesome_Metadata_Provider {
 				isset( $refresh_response['response']['code'] ) && 
 				200 === $refresh_response['response']['code']
 			) {
-				$body = json_decode( $refresh_response['body'], true );
+				$body = $refresh_response['body'];
 
 				if ( ! isset( $body['access_token'] ) ||
 					! is_string( $body['access_token'] ) ||
