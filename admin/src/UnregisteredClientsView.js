@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   updatePendingBlocklist,
-  // updatePendingUnregisteredClientsForDeletion
+  updatePendingUnregisteredClientsForDeletion
 } from './store/actions'
 import { blocklistSelector } from './store/reducers'
 import PropTypes from 'prop-types'
@@ -28,13 +28,32 @@ export default function UnregisteredClientsView(props) {
       return blocklistSelector(state) 
     }
   })
+  const deleteList = useSelector( state => state.unregisteredClientsDeletionStatus.pending)
   const detectedUnregisteredClients = size(Object.keys(props.clients)) > 0
   const allDetectedConflictsSelectedForBlocking = 
               isEqual(Object.keys(props.clients).sort(), [...(blocklist || [])].sort())
+  const allDetectedConflictsSelectedForRemoval = 
+              isEqual(Object.keys(props.clients).sort(), [...(deleteList || [])].sort())
   const allDetectedConflicts = Object.keys(props.clients)
 
   function isCheckedForBlocking(md5) {
     return !! blocklist.find(x => x === md5)
+  }
+
+  function isCheckedForRemoval(md5) {
+    return !! deleteList.find(x => x === md5)
+  }
+
+  function changeCheckForRemoval(md5, allDetectedConflicts) {
+    const newDeleteList = 'all' === md5
+      ? allDetectedConflictsSelectedForRemoval
+        ? [] // uncheck them all
+        : allDetectedConflicts // check them all
+      : isCheckedForRemoval(md5)
+        ? deleteList.filter(x => x !== md5)
+        : [...deleteList, md5]
+    
+    dispatch(updatePendingUnregisteredClientsForDeletion(newDeleteList))
   }
 
   function changeCheckForBlocking(md5, allDetectedConflicts) {
@@ -60,33 +79,63 @@ export default function UnregisteredClientsView(props) {
             conflicting version of Font Awesome and doesn't affect the other
             functions of the plugin, but you should verify your site works as expected.
           </p>
-          <div>
-            <input
-              id='block_all_detected_conflicts'
-              name='block_all_detected_conflicts'
-              type="checkbox"
-              value='all'
-              checked={ allDetectedConflictsSelectedForBlocking }
-              onChange={ () => changeCheckForBlocking('all', allDetectedConflicts) }
-              className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
-            />
-            <label htmlFor='block_all_detected_conflicts' className={ styles['checkbox-label'] }>
-              <span className={ sharedStyles['relative'] }>
-                <FontAwesomeIcon
-                  icon={ faCheckSquare }
-                  className={ sharedStyles['checked-icon'] }
-                  size="lg"
-                  fixedWidth
-                />
-                <FontAwesomeIcon
-                  icon={ faSquare }
-                  className={ sharedStyles['unchecked-icon'] }
-                  size="lg"
-                  fixedWidth
-                />
-              </span>
-              All
-            </label>
+          <div className={ styles['select-all-controls-container'] }>
+            <div className={ styles['block-all-container'] }>
+              <input
+                id='block_all_detected_conflicts'
+                name='block_all_detected_conflicts'
+                type="checkbox"
+                value='all'
+                checked={ allDetectedConflictsSelectedForBlocking }
+                onChange={ () => changeCheckForBlocking('all', allDetectedConflicts) }
+                className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+              />
+              <label htmlFor='block_all_detected_conflicts' className={ styles['checkbox-label'] }>
+                <span className={ sharedStyles['relative'] }>
+                  <FontAwesomeIcon
+                    icon={ faCheckSquare }
+                    className={ sharedStyles['checked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
+                  <FontAwesomeIcon
+                    icon={ faSquare }
+                    className={ sharedStyles['unchecked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
+                </span>
+                All
+              </label>
+            </div>
+            <div className={ styles['remove-all-container'] }>
+              <input
+                id='remove_all_detected_conflicts'
+                name='remove_all_detected_conflicts'
+                type="checkbox"
+                value='all'
+                checked={ allDetectedConflictsSelectedForRemoval }
+                onChange={ () => changeCheckForRemoval('all', allDetectedConflicts) }
+                className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+              />
+              <label htmlFor='remove_all_detected_conflicts' className={ styles['checkbox-label'] }>
+                <span className={ sharedStyles['relative'] }>
+                  <FontAwesomeIcon
+                    icon={ faCheckSquare }
+                    className={ sharedStyles['checked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
+                  <FontAwesomeIcon
+                    icon={ faSquare }
+                    className={ sharedStyles['unchecked-icon'] }
+                    size="lg"
+                    fixedWidth
+                  />
+                </span>
+                All
+              </label>
+            </div>
           </div>
           <table className={classnames('widefat', 'striped')}>
             <tbody>
@@ -94,6 +143,7 @@ export default function UnregisteredClientsView(props) {
               <th>Block</th>
               <th>Type</th>
               <th>URL</th>
+              <th>Remove</th>
             </tr>
             {
               allDetectedConflicts.map(md5 => (
@@ -130,6 +180,33 @@ export default function UnregisteredClientsView(props) {
                   </td>
                   <td>
                     {props.clients[md5].src || props.clients[md5].href || get(props.clients[md5], 'excerpt') || <em>in page source</em>}
+                  </td>
+                  <td>
+                    <input
+                      id={`remove_${md5}`}
+                      name={`remove_${md5}`}
+                      type="checkbox"
+                      value={ md5 }
+                      checked={ isCheckedForRemoval(md5) }
+                      onChange={ () => changeCheckForRemoval(md5) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                    />
+                    <label htmlFor={`remove_${md5}`} className={ styles['checkbox-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faCheckSquare }
+                          className={ sharedStyles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faSquare }
+                          className={ sharedStyles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                    </label>
                   </td>
                 </tr>
               ))

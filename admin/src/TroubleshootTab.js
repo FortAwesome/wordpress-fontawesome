@@ -6,7 +6,7 @@ import ConflictDetectionScannerSection from './ConflictDetectionScannerSection'
 import sharedStyles from './App.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSelector, useDispatch } from 'react-redux'
-import { submitPendingBlocklist } from './store/actions'
+import { submitPendingBlocklist, submitPendingUnregisteredClientDeletions } from './store/actions'
 import {
   faCheck,
   faSkull,
@@ -36,6 +36,7 @@ export default function TroubleshootTab() {
     e.preventDefault()
 
     dispatch(submitPendingBlocklist())
+    dispatch(submitPendingUnregisteredClientDeletions())
   }
 
   return <>
