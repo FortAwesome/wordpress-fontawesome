@@ -291,8 +291,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'v4compat' => true,
 					'technology' => 'svg',
 					'svgPseudoElements' => true,
-					'detectConflictsUntil' => $detect_conflicts_until,
-					'blocklist' => ['abc', 'efg'],
 					'kitToken' => null,
 					'apiToken' => false,
 					'version' => '5.4.1',
@@ -327,12 +325,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertTrue( $data['options']['svgPseudoElements'] );
 		$this->assertTrue( fa()->svg_pseudo_elements() );
 
-		$this->assertEquals( $detect_conflicts_until, $data['options']['detectConflictsUntil'] );
-		$this->assertTrue( fa()->detecting_conflicts() );
-
-		$this->assertEquals( ['abc', 'efg'], fa()->blocklist() );
-		$this->assertEquals( ['abc', 'efg'], $data['options']['blocklist'] );
-
 		$this->assertEquals( null, $data['options']['kitToken'] );
 		$this->assertEquals( 'svg', fa()->technology() );
 
@@ -352,8 +344,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'v4compat' => true,
 					'technology' => 'svg',
 					'svgPseudoElements' => true,
-					'detectConflictsUntil' => $detect_conflicts_until,
-					'blocklist' => ['abc', 'efg'],
 					'kitToken' => 'abc123',
 					'apiToken' => true,
 					'version' => '5.4.1',
@@ -387,12 +377,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 
 		$this->assertTrue( $data['options']['svgPseudoElements'] );
 		$this->assertTrue( fa()->svg_pseudo_elements() );
-
-		$this->assertEquals( $detect_conflicts_until, $data['options']['detectConflictsUntil'] );
-		$this->assertTrue( fa()->detecting_conflicts() );
-
-		$this->assertEquals( ['abc', 'efg'], fa()->blocklist() );
-		$this->assertEquals( ['abc', 'efg'], $data['options']['blocklist'] );
 
 		$this->assertEquals( 'abc123', $data['options']['kitToken'] );
 		$this->assertEquals( 'abc123', $data['options']['kitToken'] );
