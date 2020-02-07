@@ -168,7 +168,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		protected function prepare_item_for_database( $given_options ) {
 			// start with a copy of the defaults and just override them indivually.
 			$item = array_merge( array(), FontAwesome::DEFAULT_USER_OPTIONS );
-			$given_options = isset( $body['options'] ) ? $body['options'] : [];
 
 			/**
 			 * The apiToken is handled specially.
