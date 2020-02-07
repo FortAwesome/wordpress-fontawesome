@@ -44,8 +44,50 @@ export function updatePendingUnregisteredClientsForDeletion(data = []) {
 }
 
 export function submitPendingUnregisteredClientDeletions() {
-  return function(dispatch){
-    console.log('DEBUG: submitPendingUnregisteredClientDeletions')
+  return function(dispatch, getState){
+    const { apiNonce, apiUrl, unregisteredClientsDeletionStatus } = getState()
+    const deleteList = get( unregisteredClientsDeletionStatus, 'pending', null )
+
+    if (!deleteList || size( deleteList ) === 0) return
+
+    dispatch({ type: 'DELETE_UNREGISTERED_CLIENTS_START' })
+
+    axios.delete(
+      `${apiUrl}/conflict-detection/conflicts`,
+      {
+        data: deleteList,
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    ).then(response => {
+      const { status, data } = response
+      dispatch({
+        type: 'DELETE_UNREGISTERED_CLIENTS_END',
+        success: true,
+        data: 204 === status ? null : data,
+        message: ''
+      })
+    }).catch(error => {
+      const { response: { data: { code, message }}} = error
+
+      const uiMessage = (code => { 
+        switch(code) {
+          case 'rest_no_route':
+          case 'rest_cookie_invalid_nonce':
+            return "Sorry, we couldn't reach your WordPress server"
+          default:
+            console.error(`Font Awesome Plugin Error:\ncode: ${code}\nmessage: ${message}`)
+            return "Update failed"
+        }
+      })(code)
+
+      dispatch({
+        type: 'DELETE_UNREGISTERED_CLIENTS_END',
+        success: false,
+        message: uiMessage
+      })
+    })
   }
 }
 
@@ -90,7 +132,7 @@ export function submitPendingBlocklist() {
           case 'rest_cookie_invalid_nonce':
             return "Sorry, we couldn't reach your WordPress server"
           default:
-            console.error(`Font Awesome Plugin Error:\ncode: ${code}\nmessage:${message}`)
+            console.error(`Font Awesome Plugin Error:\ncode: ${code}\nmessage: ${message}`)
             return "Update failed"
         }
       })(code)
