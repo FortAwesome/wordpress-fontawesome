@@ -44,7 +44,7 @@ export default function TroubleshootTab() {
       { hasV3DeprecationWarning && <V3DeprecationWarning /> }
       <ConflictDetectionScannerSection />
       <ManageFontAwesomeVersionsSection />
-      <UnregisteredClientsView clients={ unregisteredClients }/>
+      <UnregisteredClientsView />
     </div>
     {
       showSubmitButton &&
