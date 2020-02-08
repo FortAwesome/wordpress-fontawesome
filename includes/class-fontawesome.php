@@ -1392,7 +1392,7 @@ class FontAwesome {
 					 * Kits Conflict Detection expects this value to be in milliseconds
 					 * since the unix epoch.
 					 */
-					$detect_conflicts_until = $this->options()['detectConflictsUntil'] * 1000;
+					$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
 
 					wp_add_inline_script(
 						self::RESOURCE_HANDLE,
