@@ -1451,6 +1451,8 @@ EOD,
 			11,
 			2
 		);
+
+		$this->common_enqueue_actions();
 	}
 
 	/**
@@ -1733,7 +1735,16 @@ EOT;
 			}
 		}
 
-		$obj = $this;
+		$this->common_enqueue_actions();
+	}
+
+	/**
+	 * Things that are done whether we are configured to enqueue Kit or CDN resources.
+	 * 
+	 * @ignore
+	 * @internal
+	 */
+	private function common_enqueue_actions() {
 		/**
 		 * If we're upgrading from the v1 option schema and the previous
 		 * removeUnregisteredClients feature had been enabled, then we will
@@ -1744,13 +1755,14 @@ EOT;
 			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 				add_action(
 					$action,
-					function() use ( $obj ) {
-						$obj->infer_unregistered_clients_by_resource_url();
+					function() {
+						fa()->infer_unregistered_clients_by_resource_url();
 					},
 					PHP_INT_MAX - 1
 				);
 			}
 		}
+
 		/**
 		 * We need to remove unregistered clients *after* they would have been
 		 * enqueued, if they used the recommended mechanism of wp_enqueue_style
@@ -1762,8 +1774,8 @@ EOT;
 		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 			add_action(
 				$action,
-				function() use ( $obj ) {
-					$obj->remove_blocklist();
+				function() {
+					fa()->remove_blocklist();
 				},
 				PHP_INT_MAX
 			);
