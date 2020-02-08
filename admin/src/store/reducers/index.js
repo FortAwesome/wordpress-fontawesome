@@ -24,7 +24,7 @@ export function blocklistSelector(state = {}) {
 }
 
 export function options(state = {}, action = {}) {
-  const { type, data, success } = action
+  const { type, data } = action
 
   switch(type) {
     case 'OPTIONS_FORM_SUBMIT_END':
