@@ -242,8 +242,16 @@ export function queryKits() {
         success: true
       })
 
+      // If we didn't start out with a saved kitToken, we're done.
+      // Otherwise, we'll move on to update any config on that kit which
+      // might have changed since we saved it in WordPress.
+      if(! initialKitToken) return
+
       const refreshedKits = get( data, 'me.kits', [] )
       const currentKitRefreshed = find( refreshedKits, { token: initialKitToken } )
+
+      if(! currentKitRefreshed) return
+
       const optionsUpdate = {}
 
       // Inspect each relevant kit option for the current kit to see if it's
