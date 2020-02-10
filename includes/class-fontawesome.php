@@ -1444,11 +1444,9 @@ class FontAwesome {
 					 */
 					$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
 
-					wp_add_inline_script(
-						self::RESOURCE_HANDLE,
-						<<<EOD
+					$script_content = <<< EOT
 window.__FontAwesome__WP__KitConfig__ = {
-	detectConflictsUntil: $detect_conflicts_until
+	detectConflictsUntil: ${detect_conflicts_until}
 }
 
 Object.defineProperty(window, 'FontAwesomeKitConfig', {
@@ -1460,7 +1458,11 @@ Object.defineProperty(window, 'FontAwesomeKitConfig', {
 		window.__FontAwesome__WP__KitConfig__ = Object.assign(newValueCopy, window.__FontAwesome__WP__KitConfig__)
 	}
 })
-EOD,
+EOT;
+
+					wp_add_inline_script(
+						self::RESOURCE_HANDLE,
+						$script_content,
 						'before'
 					);
 				}
