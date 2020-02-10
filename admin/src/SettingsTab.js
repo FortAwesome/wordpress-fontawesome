@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import OptionsView from './OptionsView'
 import KitSelectView from './KitSelectView'
+import KitConfigView from './KitConfigView'
 import sharedStyles from './App.module.css'
 import optionStyles from './OptionsView.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -122,11 +123,13 @@ export default function SettingsTab() {
       </div>
     </div>
     <>
-      { useKit && <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/> }
       {
-        (!useKit || !!kitToken)
-        ? <OptionsView useKit={ useKit } optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
-        : null
+        useKit
+          ? <>
+            <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
+            { !!kitToken && <KitConfigView /> }
+          </>
+          : <OptionsView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
     </>
   </div>
