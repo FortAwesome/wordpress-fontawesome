@@ -56,7 +56,7 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
       kitToken,
       technology: 'svg' === selectedKit.technologySelected ? 'svg' : 'webfont',
       usePro: 'pro' === selectedKit.licenseSelected,
-      v4compat: selectedKit.shimEnabled,
+      v4Compat: selectedKit.shimEnabled,
       version: selectedKit.version,
       // At the time this is being implemented, kits don't yet support
       // toggling svgPseudoElement support. But if that support is added
