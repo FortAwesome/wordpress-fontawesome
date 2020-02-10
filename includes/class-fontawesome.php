@@ -1203,7 +1203,7 @@ class FontAwesome {
 	 *     server.
 	 * 
 	 * Therefore, if releases have been refreshed recently enough for your
-	 * purposes, you can use version returned by `fa()->latest_version()`.
+	 * purposes, you can rely on the version returned by `fa()->latest_version()`.
 	 * Or, you could refresh the releases metadata and then call
 	 * `fa()->latest_version()`.
 	 *
