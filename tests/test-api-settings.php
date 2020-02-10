@@ -134,7 +134,8 @@ EOD;
 		$this->assertTrue( $result );
 		$this->assertEquals( '123', $api_settings->access_token() );
 		$this->assertEquals( 'xyz', $api_settings->api_token() );
-		$this->assertEqualsWithDelta( time() + 3600, $api_settings->access_token_expiration_time(), 2.0 );
+		$delta = abs( ( time() + 3600 ) - $api_settings->access_token_expiration_time() );
+		$this->assertLessThanOrEqual( 2.0, $delta );
 
 		// Force re-read
 		$api_settings = FontAwesome_API_Settings::reset();
@@ -142,7 +143,8 @@ EOD;
 		// Everything should have remained the same through the write/read round trip
 		$this->assertEquals( '123', $api_settings->access_token() );
 		$this->assertEquals( 'xyz', $api_settings->api_token() );
-		$this->assertEqualsWithDelta( time() + 3600, $api_settings->access_token_expiration_time(), 2.0 );
+		$delta = abs( ( time() + 3600 ) - $api_settings->access_token_expiration_time() );
+		$this->assertLessThanOrEqual( 2.0, $delta );
 	}
 
 	public function test_request_access_token_without_api_token() {
