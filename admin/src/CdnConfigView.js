@@ -13,7 +13,7 @@ import {
   faSkull,
   faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
-import styles from './OptionsView.module.css'
+import styles from './CdnConfigView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import has from 'lodash/has'
@@ -24,7 +24,7 @@ import PropTypes from 'prop-types'
 
 const UNSPECIFIED = ''
 
-export default function OptionsView({ optionSelector, handleSubmit }) {
+export default function CdnConfigView({ optionSelector, handleSubmit }) {
   const usePro = optionSelector('usePro')
   const technology = optionSelector('technology')
   const version = optionSelector('version')
@@ -423,7 +423,7 @@ export default function OptionsView({ optionSelector, handleSubmit }) {
   </div>
 }
 
-OptionsView.propTypes = {
+CdnConfigView.propTypes = {
   optionSelector: PropTypes.func.isRequired,
   handleOptionChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired
