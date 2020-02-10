@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import OptionsView from './OptionsView'
+import CdnConfigView from './CdnConfigView'
 import KitSelectView from './KitSelectView'
 import KitConfigView from './KitConfigView'
 import sharedStyles from './App.module.css'
-import optionStyles from './OptionsView.module.css'
+import optionStyles from './CdnConfigView.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
@@ -129,7 +129,7 @@ export default function SettingsTab() {
             <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
             { !!kitToken && <KitConfigView /> }
           </>
-          : <OptionsView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
+          : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
     </>
   </div>

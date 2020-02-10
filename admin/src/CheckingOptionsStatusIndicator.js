@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './OptionsView.module.css'
+import styles from './CdnConfigView.module.css'
 import sharedStyles from './App.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
