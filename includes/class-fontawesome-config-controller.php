@@ -210,14 +210,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			if ( isset( $given_options['svgPseudoElements'] ) ) {
 				$item['svgPseudoElements'] = $given_options['svgPseudoElements'];
 			}
-			if ( isset( $given_options['detectConflictsUntil'] ) ) {
-				$item['detectConflictsUntil'] = $given_options['detectConflictsUntil'];
-			}
 			if ( isset( $given_options['usePro'] ) ) {
 				$item['usePro'] = $given_options['usePro'];
-			}
-			if ( isset( $given_options['blocklist'] ) ) {
-				$item['blocklist'] = $given_options['blocklist'];
 			}
 
 			$version_is_symbolic_latest = isset( $given_options['version'] )
@@ -229,22 +223,20 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			/**
 			 * The version is handled specially.
 			 *
-			 * An valid concrete version number must be used, if any version is present at all.
-			 * The string 'latest' is not valid here. It's need to be something like 5.12.0.
+			 * If this is a non-kit config, then the version must be concrete,
+			 * a major.minor.patch version like 5.12.0.
+			 *
+			 * If this is a kit-based config, then the version must either be
+			 * concrete or the exact, case-sensitive, string 'latest'.
 			 */
 			if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) && $version_is_symbolic_latest ) {
-				// We're using a kit, so the possibility of using 'latest' as a version applies. 
-				$item['version'] = fa()->latest_version();
+				$item['version'] = 'latest';
 			} elseif ( $version_is_concrete ) {
-				/**
-				 * If it's not a kit with 'latest', then it must be concrete like '5.4.1'.
-				 * It may not be symbolic like 'latest'.
-				 */
 				$item['version'] = $given_options['version'];
 			} else {
 				return new WP_Error(
 					'fontawesome_config',
-					'A version number in the form major.minor.patch expected but not given',
+					'A Font Awesome version number was expected but not given',
 					array( 'status' => 400 )
 				);
 			}
