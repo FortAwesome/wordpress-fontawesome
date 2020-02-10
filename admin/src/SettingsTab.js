@@ -127,7 +127,7 @@ export default function SettingsTab() {
         useKit
           ? <>
             <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
-            { !!kitToken && <KitConfigView /> }
+            { !!kitToken && <KitConfigView kitToken={ kitToken } /> }
           </>
           : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
