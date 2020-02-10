@@ -178,9 +178,11 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 					'response' => array(
 						'code' => 200
 					),
-					'body' => array(
-						'access_token' => 'new_access_token',
-						'expires_in' => 3600
+					'body' => json_encode(
+						array(
+							'access_token' => 'new_access_token',
+							'expires_in' => 3600
+						)
 					)
 				);
 			}
