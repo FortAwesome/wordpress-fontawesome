@@ -7,10 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDotCircle,
-  faSpinner,
   faCheckSquare,
-  faCheck,
-  faSkull,
   faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './CdnConfigView.module.css'
@@ -19,7 +16,6 @@ import classnames from 'classnames'
 import has from 'lodash/has'
 import size from 'lodash/size'
 import Alert from './Alert'
-import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
 import PropTypes from 'prop-types'
 
 const UNSPECIFIED = ''
@@ -33,7 +29,6 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
 
   const pendingOptions = useSelector(state => state.pendingOptions)
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
-  const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
   const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
@@ -50,11 +45,6 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
       return acc
     }, {})
   })
-
-  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
-  const submitSuccess = useSelector(state => state.optionsFormState.success)
-  const submitMessage = useSelector(state => state.optionsFormState.message)
-  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
 
   const dispatch = useDispatch()
 
@@ -382,43 +372,6 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
           </div>
         </div>
       </form>
-    </div>
-    <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
-      <input
-        type="submit"
-        name="submit"
-        id="submit"
-        className="button button-primary"
-        value="Save Changes"
-        disabled={ size(pendingOptions) === 0 }
-        onClick={ handleSubmit }
-      />
-      { hasSubmitted 
-        ? submitSuccess
-          ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-              <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
-            </span>
-          : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-              <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-              </div>
-              <div className={ sharedStyles['explanation'] }>
-                { submitMessage }
-              </div>
-            </div>
-        : null
-      }
-      {
-        isSubmitting
-        ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
-          </span>
-        : isChecking
-          ? <CheckingOptionStatusIndicator/>
-          : size(pendingOptions) > 0
-            ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
-            : null
-      }
     </div>
   </div>
 }

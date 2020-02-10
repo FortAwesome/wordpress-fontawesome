@@ -6,17 +6,30 @@ import KitConfigView from './KitConfigView'
 import sharedStyles from './App.module.css'
 import optionStyles from './CdnConfigView.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDotCircle } from '@fortawesome/free-solid-svg-icons'
+import {
+  faDotCircle,
+  faSpinner,
+  faCheck,
+  faSkull,
+} from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
 import has from 'lodash/has'
 import { addPendingOption, submitPendingOptions, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
+import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
+import size from 'lodash/size'
 
 export default function SettingsTab() {
   const dispatch = useDispatch()
   const alreadyUsingKit = useSelector( state => !!state.options.kitToken )
   const [useKit, setUseKit] = useState(alreadyUsingKit)
+  const isChecking = useSelector(state => state.preferenceConflictDetection.isChecking)
+  const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
+  const submitSuccess = useSelector(state => state.optionsFormState.success)
+  const submitMessage = useSelector(state => state.optionsFormState.message)
+  const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
+  const pendingOptions = useSelector(state => state.pendingOptions)
 
   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
@@ -132,5 +145,42 @@ export default function SettingsTab() {
           : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
     </>
+    <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
+      <input
+        type="submit"
+        name="submit"
+        id="submit"
+        className="button button-primary"
+        value="Save Changes"
+        disabled={ size(pendingOptions) === 0 }
+        onClick={ handleSubmit }
+      />
+      { hasSubmitted 
+        ? submitSuccess
+          ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
+              <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
+            </span>
+          : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+              <div className={ classnames(sharedStyles['fail-icon-container']) }>
+                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
+              </div>
+              <div className={ sharedStyles['explanation'] }>
+                { submitMessage }
+              </div>
+            </div>
+        : null
+      }
+      {
+        isSubmitting
+        ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+          </span>
+        : isChecking
+          ? <CheckingOptionStatusIndicator/>
+          : size(pendingOptions) > 0
+            ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
+            : null
+      }
+    </div>
   </div>
 }
