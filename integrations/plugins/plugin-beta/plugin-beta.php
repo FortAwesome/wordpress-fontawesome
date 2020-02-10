@@ -22,7 +22,7 @@ add_action(
 		fa()->register(
 			array(
 				'name'     => BETA_PLUGIN_LOG_PREFIX,
-				'v4compat' => true,
+				'v4Compat' => true,
 				'version' => [ [ '5.1.0', '>=' ] ]
 			)
 		);

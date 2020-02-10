@@ -34,7 +34,7 @@ class RegisterTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'technology' => 'svg',
-				'v4compat' => true
+				'v4Compat' => true
 			)
 		);
 	}
@@ -44,14 +44,14 @@ class RegisterTest extends \WP_UnitTestCase {
 			array(
 				'name'   => 'test',
 				'technology' => 'svg',
-				'v4compat' => true,
+				'v4Compat' => true,
 			)
 		);
 		fa()->register(
 			array(
 				'name'   => 'test',
 				'technology' => 'svg',
-				'v4compat' => true,
+				'v4Compat' => true,
 			)
 		);
 

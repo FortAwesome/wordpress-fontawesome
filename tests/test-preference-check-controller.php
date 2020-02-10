@@ -84,7 +84,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'v4compat' => false,
+					'v4Compat' => false,
 					'version' => '53.1.3'
 				)
 			);
@@ -111,7 +111,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name'              => 'beta',
-				'v4compat' => ! FontAwesome::DEFAULT_USER_OPTIONS['v4compat']
+				'v4Compat' => ! FontAwesome::DEFAULT_USER_OPTIONS['v4Compat']
 			)
 		);
 
@@ -135,7 +135,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'version'  => [ 'alpha' ],
-				'v4compat' => [ 'beta' ]
+				'v4Compat' => [ 'beta' ]
 			),
 			$data
 		);
