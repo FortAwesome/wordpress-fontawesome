@@ -258,7 +258,8 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		$this->assertFalse( $result instanceof WP_Error );
 		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
-		$this->assertEqualsWithDelta( time() + 3600, fa_api_settings()->access_token_expiration_time(), 2.0 );
+		$delta = abs( ( time() + 3600 ) - fa_api_settings()->access_token_expiration_time() );
+		$this->assertLessThanOrEqual( 2.0, $delta );
 
 		// Make sure that the api_settings can be re-read from disk and still be correct.
 		// That is, the refreshed access_token and expiration time should have
@@ -266,7 +267,8 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		FontAwesome_API_Settings::reset();
 		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
-		$this->assertEqualsWithDelta( time() + 3600, fa_api_settings()->access_token_expiration_time(), 2.0 );
+		$delta = abs( ( time() + 3600 ) - fa_api_settings()->access_token_expiration_time() );
+		$this->assertLessThanOrEqual( 2.0, $delta );
 	}
 
 	public function test_noauth_request() {

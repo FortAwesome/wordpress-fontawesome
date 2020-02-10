@@ -344,7 +344,8 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	public function test_releases_refreshed_at() {
 		fa()->refresh_releases();
 
-		$this->assertEqualsWithDelta( time(), fa()->releases_refreshed_at(), 1 );
+		$delta = time() - fa()->releases_refreshed_at();
+		$this->assertLessThanOrEqual(1, $delta );
   }
 
 	public function test_using_kits_when_default() {
