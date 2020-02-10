@@ -117,6 +117,39 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( '5.4.1', fa()->version() );
 	}
 
+	public function test_update_with_kit_using_symbolic_latest_version() {
+		// Start with the version being something else.
+		$this->set_version( '5.3.1' );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => true,
+					'v4compat' => true,
+					'technology' => 'webfont',
+					'svgPseudoElements' => false,
+					'kitToken' => '778ccf8260',
+					'apiToken' => true,
+					'version' => 'latest',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+    	$request->set_body( wp_json_encode( $request_body ) );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'conflicts', $data );
+		$this->assertArrayHasKey( 'options', $data );
+		$this->assertEquals( 'latest', $data['options']['version']);
+		$this->assertEquals( 'latest', fa()->version() );
+	}
+
 	public function test_update_with_kit_invalid_version() {
 		// Start with the version being something else.
 		$this->set_version( '5.3.1' );
@@ -197,8 +230,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'v4compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
-					'detectConflictsUntil' => 0,
-					'blocklist' => [],
 					'kitToken' => null,
 					'apiToken' => false,
 					'version' => 'latest',

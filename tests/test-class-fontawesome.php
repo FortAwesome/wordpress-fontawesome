@@ -406,4 +406,25 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->using_kit()
 		);
 	}
+
+	/**
+	 * This simply verifies that when 'latest' is stored in the db as the
+	 * version under the options key, it is returned by our accessor method,
+	 * instead of prior revisions of this code which would not have allowed that.
+	 */
+	public function test_version_as_symbolic_latest() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'kitToken' => 'abc123',
+					'apiToken' => true,
+					'version'  => 'latest'
+				)
+			)
+		);
+
+		$this->assertEquals( 'latest', fa()->version() );
+	}
 }
