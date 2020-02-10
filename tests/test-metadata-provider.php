@@ -163,7 +163,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		}
 
 		return new WP_Error(
-			'unexpected_request_lacking_authorization',
+			'unexpected_request_lacking_authorization'
 		);
 	}
 
@@ -197,14 +197,14 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		}
 
 		return new WP_Error(
-			'unexpected_request',
+			'unexpected_request'
 		);
 	}
 
 	public function handle_pre_http_request_for_noauth_request( $preempt, $parsed_args, $url ) {
 		if ( preg_match( '/token$/', $url ) ) {
 			return new WP_Error(
-				'unexpected_request',
+				'unexpected_request'
 			);
 		}
 
@@ -212,7 +212,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 			isset( $parsed_args['headers']['authorization'] )
 		) {
 			return new WP_Error(
-				'unexpected_request',
+				'unexpected_request'
 			);
 		} else {
 			return self::build_success_response();
