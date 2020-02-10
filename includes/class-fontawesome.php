@@ -383,8 +383,10 @@ class FontAwesome {
 
 	/**
 	 * Reports whether the given version satisfies the given constraints.
+	 * 
+	 * Internal use only, not part of this plugin's public API.
 	 *
-	 * It's really just a generalized utility function, instead of incorporating a full-blown semver library.
+	 * This is really just a generalized utility function, instead of incorporating a full-blown semver library.
 	 *
 	 * The constraints array should contain one element per constraint, where each individual constraint is itself
 	 * an array of arguments that can be passed as the second and third arguments to the standard `version_compare`
@@ -410,6 +412,8 @@ class FontAwesome {
 	 * @link http://php.net/manual/en/function.version-compare.php
 	 * @param string $version
 	 * @param array $constraints
+	 * @ignore
+	 * @internal
 	 * @return bool
 	 * @throws InvalidArgumentException
 	 */
