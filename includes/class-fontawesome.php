@@ -1170,20 +1170,70 @@ class FontAwesome {
 	}
 
 	/**
-	 * Reports the version of Font Awesome assets being loaded.
+	 * Reports the version of Font Awesome assets being loaded, which may be "latest".
 	 *
-	 * Your theme or plugin should probably query this in order to determine whether all of the icons used in your
-	 * templates will be available, especially if you tend to use newer icons. It should be really easy
-	 * for site owners to update to a new Font Awesome version to accommodate your templates--just a simple dropdown
-	 * selection on the Font Awesome plugin options page. But you might need to show an admin notice to nudge
-	 * them to do so if you detect that the current version of Font Awesome being loaded is older than you'd like.
+	 * Your theme or plugin can call this method in order to determine
+	 * whether all of the icons used in your templates will be available,
+	 * especially if you tend to use newer icons.
+	 *
+	 * It should be really easy for site owners to update to a new Font Awesome
+	 * version to accommodate your templates--just a simple dropdown selection
+	 * on the Font Awesome plugin settings page. You might need to show an admin
+	 * notice to nudge them to do so if you detect that the current version of
+	 * Font Awesome being loaded is older than you'd like.
+	 *
+	 * When Font Awesome is configured to use a kit, that kit may be configured
+	 * to load the "latest" version. The resolution of that symoblic "latest"
+	 * version happens internal to the kit's own loading logic, which is
+	 * outside the scope of this plugin.
+	 *
+	 * If your code needs to resolve what that concrete version will _probably_
+	 * be at runtime, you can take some extra steps after invoking this method
+	 * and seeing that it returns "latest".
+	 *
+	 * - `fa()->latest_version()` will only ever return the latest known
+	 *     concrete version of Font Awesome, as recently as the last time the
+	 *     releases metadata was queried from the Font Awesome API server.
+	 *
+	 * - `fa()->releases_refreshed_at()` will return the time when releases
+	 *     metadata was last refreshed.
+	 * 
+	 * - `fa->refresh_releases()` will refresh the releases metadata. This will
+	 *     run a synchronous (blocking) network query to the Font Awesome API
+	 *     server.
+	 * 
+	 * Therefore, if releases have been refreshed recently enough for your
+	 * purposes, you can use version returned by `fa()->latest_version()`.
+	 * Or, you could refresh the releases metadata and then call
+	 * `fa()->latest_version()`.
+	 *
+	 * It is still possible that by the time the page loads in the browser,
+	 * a new release of Font Awesome will have become available since your
+	 * refresh of releases metadata, and will have been loaded as the "latest"
+	 * version for the kit. There's no way to guarantee that the latest version
+	 * you resolve by this method will be the one loaded at runtime. The race
+	 * condition is always possible. However, it is very unlikely, since these
+	 * are sub-second windows of time, and new versions of Font Awesome tend to
+	 * be released only approximately once per month.
 	 *
 	 * @since 4.0.0
-	 *
-	 * @return string
+	 * @see FontAwesome::latest_version()
+	 * @see FontAwesome::releases_refreshed_at()
+	 * @see FontAwesome::refresh_releases()
+	 * @return string|null null if no version has yet been saved in the options
+	 * in the db. Otherwise, a valid version string, which may be either a
+	 * concrete version like "5.12.0" or the string "latest".
 	 */
 	public function version() {
-		return $this->options()['version'];
+		$options = $this->options();
+
+		return (
+			boolval( $options ) &&
+			isset( $options['version'] ) &&
+			is_string( $options['version'] )
+		)
+			? $options['version']
+			: null;
 	}
 
 	/**
