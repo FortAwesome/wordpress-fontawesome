@@ -91,7 +91,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
 					'kitToken' => '778ccf8260',
@@ -124,7 +124,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
 					'kitToken' => '778ccf8260',
@@ -157,7 +157,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
 					'detectConflictsUntil' => 0,
@@ -192,7 +192,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
 					'detectConflictsUntil' => 0,
@@ -227,7 +227,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
 					'kitToken' => null,
@@ -260,7 +260,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'webfont',
 					'svgPseudoElements' => false,
 					'detectConflictsUntil' => 0,
@@ -319,7 +319,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'svg',
 					'svgPseudoElements' => true,
 					'kitToken' => null,
@@ -347,7 +347,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertTrue( $data['options']['usePro'] );
 		$this->assertTrue( fa()->pro() );
 		
-		$this->assertTrue( $data['options']['v4compat'] );
+		$this->assertTrue( $data['options']['v4Compat'] );
 		$this->assertTrue( fa()->v4_compatibility() );
 
 		$this->assertEquals( 'svg', $data['options']['technology'] );
@@ -372,7 +372,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'svg',
 					'svgPseudoElements' => true,
 					'kitToken' => 'abc123',
@@ -400,7 +400,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertTrue( $data['options']['usePro'] );
 		$this->assertTrue( fa()->pro() );
 
-		$this->assertTrue( $data['options']['v4compat'] );
+		$this->assertTrue( $data['options']['v4Compat'] );
 		$this->assertTrue( fa()->v4_compatibility() );
 
 		$this->assertEquals( 'svg', $data['options']['technology'] );
@@ -427,7 +427,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4compat' => true,
+					'v4Compat' => true,
 					'technology' => 'svg',
 					'svgPseudoElements' => true,
 					'detectConflictsUntil' => $detect_conflicts_until,

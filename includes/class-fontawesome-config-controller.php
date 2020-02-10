@@ -201,8 +201,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			if ( isset( $given_options['usePro'] ) ) {
 				$item['usePro'] = $given_options['usePro'];
 			}
-			if ( isset( $given_options['v4compat'] ) ) {
-				$item['v4compat'] = $given_options['v4compat'];
+			if ( isset( $given_options['v4Compat'] ) ) {
+				$item['v4Compat'] = $given_options['v4Compat'];
 			}
 			if ( isset( $given_options['technology'] ) ) {
 				$item['technology'] = $given_options['technology'];
