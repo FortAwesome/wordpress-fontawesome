@@ -7,13 +7,13 @@ import {
   faExternalLinkAlt,
   faCheck,
   faSkull } from '@fortawesome/free-solid-svg-icons'
-import styles from './KitsConfigView.module.css'
+import styles from './KitSelectView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import size from 'lodash/size'
 
-export default function KitsConfigView({ optionSelector, handleOptionChange, handleSubmit }) {
+export default function KitSelectView({ optionSelector, handleOptionChange, handleSubmit }) {
   const dispatch = useDispatch()
   const kitToken = optionSelector('kitToken')
   const kits = useSelector( state => state.kits ) || []
@@ -222,7 +222,7 @@ export default function KitsConfigView({ optionSelector, handleOptionChange, han
   </div>
 }
 
-KitsConfigView.propTypes = {
+KitSelectView.propTypes = {
   optionSelector: PropTypes.func.isRequired,
   handleOptionChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired
