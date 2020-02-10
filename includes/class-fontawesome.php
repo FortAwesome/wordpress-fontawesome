@@ -208,8 +208,7 @@ class FontAwesome {
 	 */
 	const DEFAULT_USER_OPTIONS = array(
 		'usePro'               => FALSE,
-		// TODO: maybe fix the camelCasing on this to capitalize the "C"
-		'v4compat'             => TRUE,
+		'v4Compat'             => TRUE,
 		'technology'           => 'webfont',
 		'svgPseudoElements'    => FALSE,
 	);
@@ -843,14 +842,14 @@ class FontAwesome {
 			$converted_options['svgPseudoElements'] = 'svg' === $options['lockedLoadSpec']['method']
 				&& $options['lockedLoadSpec']['pseudoElements'];
 
-			$converted_options['v4compat'] = $options['lockedLoadSpec']['v4shim'];
+			$converted_options['v4Compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
 			$converted_options['technology'] = $options['adminClientLoadSpec']['method'];
 
 			$converted_options['svgPseudoElements'] = 'svg' === $options['adminClientLoadSpec']['method']
 				&& $options['adminClientLoadSpec']['pseudoElements'];
 
-			$converted_options['v4compat'] = $options['adminClientLoadSpec']['v4shim'];
+			$converted_options['v4Compat'] = $options['adminClientLoadSpec']['v4shim'];
 		}
 
 		return $converted_options;
@@ -1082,7 +1081,7 @@ class FontAwesome {
 	 */
 	public function v4_compatibility() {
 		$options = $this->options();
-		return isset( $options['v4compat'] ) ? boolval( $options['v4compat'] ) : self::DEFAULT_USER_OPTIONS['v4compat'];
+		return isset( $options['v4Compat'] ) ? boolval( $options['v4Compat'] ) : self::DEFAULT_USER_OPTIONS['v4Compat'];
 	}
 
 	/**
@@ -1348,13 +1347,13 @@ class FontAwesome {
 				2
 			);
 
-			if ( ! array_key_exists( 'v4compat', $options ) ) {
-				throw new InvalidArgumentException( 'missing required options key: v4compat' );
+			if ( ! array_key_exists( 'v4Compat', $options ) ) {
+				throw new InvalidArgumentException( 'missing required options key: v4Compat' );
 			}
 
 			$version = $resource_collection->version();
 
-			if ( $options['v4compat'] ) {
+			if ( $options['v4Compat'] ) {
 				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
@@ -1477,7 +1476,7 @@ EOT;
 				2
 			);
 
-			if ( $options['v4compat'] ) {
+			if ( $options['v4Compat'] ) {
 				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 					add_action(
 						$action,
@@ -1715,7 +1714,7 @@ EOT;
 	 * ```php
 	 *   array(
 	 *     'technology'        => 'svg', // "svg" or "webfont"
-	 *     'v4compat'          => true, // true or false
+	 *     'v4Compat'          => true, // true or false
 	 *     'svgPseudoElements' => false, // true or false
 	 *     'name'              => 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
 	 *   )
@@ -1766,7 +1765,7 @@ EOT;
 	 *
 	 * <h3>Additional Notes on Specific Preferences</h3>
 	 *
-	 * - `v4compat`
+	 * - `v4Compat`
 	 *
 	 *   There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
 	 *   It's best to upgrade name references to the version 5 names,
@@ -1778,7 +1777,7 @@ EOT;
 	 *   Another common pattern out there on the web (not a recommended practice these days, though) is to place
 	 *   icons as pseudo-elements where the unicode is specific in CSS as `content` and `"FontAwesome"` is specified
 	 *   as the `font-family`. The main problem here is that the `font-family` name has changed for Font Awesome 5,
-	 *   and there are multiple `font-family` names. So the v4compat feature of this plugin also "shims" those
+	 *   and there are multiple `font-family` names. So the v4Compat feature of this plugin also "shims" those
 	 *   hardcoded version 4 `font-family` names so that they will use the corresponding Font Awesome 5 webfont files.
 	 *
 	 * - `svgPseudoElements`

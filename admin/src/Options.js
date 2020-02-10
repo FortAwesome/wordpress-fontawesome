@@ -40,7 +40,7 @@ export default function Options(props) {
   const usePro = optionSelector('usePro')
   const technology = optionSelector('technology')
   const version = optionSelector('version')
-  const v4compat = optionSelector('v4compat')
+  const v4Compat = optionSelector('v4Compat')
   const svgPseudoElements = optionSelector('svgPseudoElements')
 
   const pendingOptions = useSelector(state => state.pendingOptions)
@@ -340,9 +340,9 @@ export default function Options(props) {
                   id="code_edit_v4compat_on"
                   name="code_edit_v4compat_on"
                   type="radio"
-                  value={ v4compat }
-                  checked={ v4compat }
-                  onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
+                  value={ v4Compat }
+                  checked={ v4Compat }
+                  onChange={ () => handleOptionChange({ v4Compat: ! v4Compat }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_v4compat_on" className={ styles['option-label'] }>
@@ -370,9 +370,9 @@ export default function Options(props) {
                   id="code_edit_v4_compat_off"
                   name="code_edit_v4_compat_off"
                   type="radio"
-                  value={ ! v4compat }
-                  checked={ ! v4compat }
-                  onChange={ () => handleOptionChange({ v4compat: ! v4compat }) }
+                  value={ ! v4Compat }
+                  checked={ ! v4Compat }
+                  onChange={ () => handleOptionChange({ v4Compat: ! v4Compat }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_v4_compat_off" className={ styles['option-label'] }>
@@ -396,7 +396,7 @@ export default function Options(props) {
                 </label>
               </div>
             </div>
-            { getDetectionStatusForOption('v4compat') }
+            { getDetectionStatusForOption('v4Compat') }
           </div>
         </div>
       </form>

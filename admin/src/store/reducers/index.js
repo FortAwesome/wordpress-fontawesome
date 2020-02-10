@@ -35,7 +35,7 @@ export function options(state = {}, action = {}) {
           options: {
             technology,
             usePro,
-            v4compat,
+            v4Compat,
             svgPseudoElements,
             version,
           }
@@ -45,7 +45,7 @@ export function options(state = {}, action = {}) {
           technology,
           version,
           usePro: coerceBool(usePro),
-          v4compat: coerceBool(v4compat),
+          v4Compat: coerceBool(v4Compat),
           svgPseudoElements: coerceBool(svgPseudoElements)
         }
       }

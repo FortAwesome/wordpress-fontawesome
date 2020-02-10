@@ -13,7 +13,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 	public function test_when_all_prefs_match() {
 		$options = array(
 			'technology'        => 'webfont',
-			'v4compat'          => false,
+			'v4Compat'          => false,
 			'usePro'            => false,
 			'removeConflicts'   => false,
 			'svgPseudoElements' => false,
@@ -22,7 +22,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 
 		$client_preferences = array(
 			'technology'        => 'webfont',
-			'v4compat'          => false,
+			'v4Compat'          => false,
 			'usePro'            => false,
 			'removeConflicts'   => false,
 			'svgPseudoElements' => false,
@@ -35,12 +35,12 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 	public function test_when_something_does_not_match() {
 		$options = array(
 			'method'   => 'svg',
-			'v4compat' => false,
+			'v4Compat' => false,
 		);
 
 		$client_preferences = array(
 			'method'   => 'webfont',
-			'v4compat' => false,
+			'v4Compat' => false,
 		);
 
 		$this->assertEquals( [ 'method' ], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
@@ -61,7 +61,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 	public function test_with_empty_preference() {
 		$options = array(
 			'method'   => 'svg',
-			'v4compat' => false,
+			'v4Compat' => false,
 		);
 
 		$client_preferences = array();

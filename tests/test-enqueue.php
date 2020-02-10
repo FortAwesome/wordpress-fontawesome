@@ -64,7 +64,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 			)
 		];
 
-		if( boolval( $options['v4compat'] ) ) {
+		if( boolval( $options['v4Compat'] ) ) {
 			array_push(
 				$resources,
 				new FontAwesome_Resource(
@@ -220,7 +220,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function test_webfont_without_v4_compat() {
-		$options = wp_parse_args( ['v4compat' => false], fa()->options() );
+		$options = wp_parse_args( ['v4Compat' => false], fa()->options() );
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
 
@@ -287,7 +287,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	public function test_svg_pro_no_v4_compat_non_default_version() {
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'usePro' => true, 'v4compat' => false, 'version' => '5.1.1' ],
+			[ 'technology' => 'svg', 'usePro' => true, 'v4Compat' => false, 'version' => '5.1.1' ],
 			fa()->options()
 		);
 
@@ -310,7 +310,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	public function test_svg_with_pseudo_elements() {
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'usePro' => true, 'v4compat' => false, 'svgPseudoElements' => true ],
+			[ 'technology' => 'svg', 'usePro' => true, 'v4Compat' => false, 'svgPseudoElements' => true ],
 			fa()->options()
 		);
 
@@ -347,7 +347,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		);
 
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'version' => '5.1.1', 'v4compat' => true, 'svgPseudoElements' => true ],
+			[ 'technology' => 'svg', 'version' => '5.1.1', 'v4Compat' => true, 'svgPseudoElements' => true ],
 			fa()->options()
 		);
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -380,7 +380,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		);
 
 		$options = wp_parse_args(
-			[ 'version' => '5.1.1', 'v4compat' => true ],
+			[ 'version' => '5.1.1', 'v4Compat' => true ],
 			fa()->options()
 		);
 		$resource_collection = $this->build_mock_resource_collection( $options );

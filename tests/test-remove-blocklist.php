@@ -204,7 +204,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'usePro' => false,
-				'v4compat' => true,
+				'v4Compat' => true,
 				'technology' => 'svg',
 				'svgPseudoElements' => true,
 				'version' => 'latest',

@@ -35,7 +35,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				'svgPseudoElements' => true,
 				'technology' => 'svg',
 				'usePro' => true,
-				'v4compat' => true,
+				'v4Compat' => true,
 			),
 			fa()->convert_options(
 				array (
