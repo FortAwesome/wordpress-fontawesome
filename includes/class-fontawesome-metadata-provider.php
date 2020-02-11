@@ -127,8 +127,6 @@ class FontAwesome_Metadata_Provider {
 
 			$body = json_decode( $response['body'], true );
 
-			$export = var_export($body, true);
-
 			if ( isset( $body['errors'] ) ) {
 				return new WP_Error(
 					'fontawesome_api_query_error',
