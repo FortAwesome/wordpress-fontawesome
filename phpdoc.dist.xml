@@ -10,6 +10,7 @@
         <file>font-awesome.php</file>
         <file>defines.php</file>
         <file>includes/class-fontawesome.php</file>
+        <file>includes/class-fontawesome-api-controller.php</file>
         <ignore>admin/*</ignore>
         <ignore>tests/*</ignore>
         <ignore>bin/*</ignore>
