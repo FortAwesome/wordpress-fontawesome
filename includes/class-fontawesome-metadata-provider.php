@@ -81,16 +81,18 @@ class FontAwesome_Metadata_Provider {
 	}
 
 	/**
-	 * Provides a way to query the API and return the data as parsed json
-	 * based on the passed in query string.
+	 * Queries the GraphQL API and returns the response body when the HTTP status
+	 * of the response is 200.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
-	 * Use the query() method on FortAwesome\FontAwesome instead.
+	 *
+	 * External code should use {@see FontAwesome::query()} instead.
 	 *
 	 * @param $ignore_auth when TRUE this will omit an authorization header on
 	 *     the network request, even if an apiToken is present.
 	 * @ignore
-	 * @return WP_Error|array
+	 * @internal
+	 * @return string json encoded query response body
 	 */
 	public function metadata_query( $query_string, $ignore_auth = FALSE ) {
 		$args = array(
@@ -117,25 +119,15 @@ class FontAwesome_Metadata_Provider {
 				return $response;
 			}
 
-			if ( 200 !== $response['response']['code'] ) {
+			if ( 200 === $response['response']['code'] ) {
+				return $response['body'];
+			} else {
 				return new WP_Error(
 					'fontawesome_api_failed_request',
 					$response['response']['message'],
 					array( 'status' => $response['response']['code'] )
 				);
 			}
-
-			$body = json_decode( $response['body'], true );
-
-			if ( isset( $body['errors'] ) ) {
-				return new WP_Error(
-					'fontawesome_api_query_error',
-					$this->query_errors( $body['errors'] ),
-					array( 'status' => $response['response']['code'] )
-				);
-			}
-
-			return $body['data'];
 		} catch ( Exception $e ) {
 			return new WP_Error(
 				'fontawesome_exception',
