@@ -118,7 +118,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 						array ( 'status' => 400 )
 					);
 				} else {
-					return new WP_REST_Response( $result, 200 );
+					return new WP_REST_Response( json_decode( $result, true ), 200 );
 				}
 			} catch ( Exception $e ) {
 				return new WP_Error(

@@ -127,24 +127,19 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_query_error_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$result = $famp->metadata_query( 'queryversions' );
+		$result = json_decode( $famp->metadata_query( 'queryversions' ), true );
 
-		$this->assertEquals( "fontawesome_api_query_error", $result->get_error_code() );
-		$this->assertArraySubset( ["status" => 200], $result->get_error_data() );
-		$this->assertEquals('syntax error before: "queryversions"', $result->get_error_message() );
+		$this->assertEquals('syntax error before: "queryversions"', $result['errors'][0]['message'] );
 	}
 
 	public function test_metadata_query_success() {
-		/**
-		 * metadata_query() returns json decoded PHP objects in an array
-		 */
 		$mock_response = self::build_success_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$result = $famp->metadata_query( 'query {versions}' );
+		$result = json_decode( $famp->metadata_query( 'query {versions}' ), true );
 
 		$this->assertFalse( $result instanceof WP_Error );
-		$this->assertEquals("5.0.1", $result['versions'][0]);
+		$this->assertEquals("5.0.1", $result['data']['versions'][0]);
 	}
 
 	public function handle_pre_http_request_for_valid_current_access_token( $preempt, $parsed_args, $url ) {

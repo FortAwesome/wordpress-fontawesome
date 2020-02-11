@@ -234,7 +234,7 @@ export function queryKits() {
         }
       }
     ).then(response => {
-      const { data } = response
+      const data = get(response, 'data.data')
 
       dispatch({
         type: 'KITS_QUERY_END',

@@ -178,15 +178,16 @@ query {
 }
 EOD;
 			$result = $this->query( $query );
-			//print_r($result);
 
 			if ( $result instanceof WP_Error ) {
 				return $result;
+			} else {
+				$body = json_decode( $result, true );
 			}
 
 			$releases = array();
 
-			foreach ( $result['releases'] as $release ) {
+			foreach ( $body['data']['releases'] as $release ) {
 				$sris = array();
 
 				foreach ( $release['srisByLicense'] as $license => $sri_set ) {
