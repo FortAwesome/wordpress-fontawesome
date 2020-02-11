@@ -101,13 +101,19 @@ class FontAwesome {
 	/**
 	 * Key where this plugin's saved options data are stored in the WordPress options table.
 	 *
-	 * @since 4.0.0
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
 	 */
 	const OPTIONS_KEY = 'font-awesome';
 	/**
 	 * Key where this plugin stores conflict detection data in the WordPress options table.
 	 *
-	 * @since 4.0.0
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
 	 */
 	const CONFLICT_DETECTION_OPTIONS_KEY = 'font-awesome-conflict-detection';
 	/**
@@ -118,28 +124,18 @@ class FontAwesome {
 	const PLUGIN_NAME = 'font-awesome';
 	/**
 	 * The version of this WordPress plugin.
+	 *
+	 * @since 4.0.0
 	 */
 	const PLUGIN_VERSION = '4.0.0-rc13';
 	/**
-	 * The version of this plugin's REST API.
-	 *
-	 * The REST API is being deprecated and replaced by the GraphQL API.
-	 *
-	 * @internal
-	 * @deprecated
-	 * @ignore
-	 */
-	const REST_API_VERSION = '1';
-	/**
 	 * The namespace for this plugin's REST API.
 	 *
-	 * The REST API is being deprecated and replaced by the GraphQL API.
-	 *
 	 * @internal
 	 * @deprecated
 	 * @ignore
 	 */
-	const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v' . self::REST_API_VERSION;
+	const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v1';
 	/**
 	 * The name of this plugin's options page, or WordPress admin dashboard page.
 	 *
@@ -150,7 +146,8 @@ class FontAwesome {
 	/**
 	 * GET param used for linking to a particular starting tab in the admin UI.
 	 *
-	 * @since 4.0.0
+	 * @ignore
+	 * @internal
 	 */
 	const ADMIN_TAB_QUERY_VAR = 'tab';
 
@@ -171,14 +168,16 @@ class FontAwesome {
 	/**
 	 * The handle used when enqueuing the conflict detector.
 	 *
-	 * @since 4.0.0
+	 * @ignore
+	 * @internal
 	 */
 	const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
 
 	/**
 	 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
 	 *
-	 * @since 4.0.0
+	 * @ignore
+	 * @internal
 	 */
 	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.11.2/js/conflict-detection.js';
 
@@ -187,7 +186,8 @@ class FontAwesome {
 	 * by this plugin when conflict detection is enabled, in order for them to be
 	 * ignored by the conflict detector.
 	 *
-	 * @since 4.0.0
+	 * @internal
+	 * @ignore
 	 */
 	const CONFLICT_DETECTION_IGNORE_ATTR = "data-fa-detection-ignore";
 
@@ -195,7 +195,8 @@ class FontAwesome {
 	 * The base name of the handle used for enqueuing this plugin's admin assets, those required for running
 	 * the admin settings page.
 	 *
-	 * @since 4.0.0
+	 * @ignore
+	 * @internal
 	 */
 	const ADMIN_RESOURCE_HANDLE = self::RESOURCE_HANDLE . '-admin';
 
@@ -225,10 +226,10 @@ class FontAwesome {
 	 * number of seconds.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
-   *
-   * @ignore
-   * @internal
-   */
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	const RELEASES_REFRESH_INTERNAL = 10 * 60;
 
 	/**
@@ -290,6 +291,8 @@ class FontAwesome {
 	 * removeUnregisteredClients option was set. If so we use some automatic
 	 * conflict detection and resolution, like that old feature worked.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @deprecated
 	 * @internal
 	 * @ignore
@@ -312,6 +315,9 @@ class FontAwesome {
 	}
 
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	private function __construct() {
@@ -321,7 +327,10 @@ class FontAwesome {
 	/**
 	 * Returns this plugin's admin page's screen_id. Only valid after the admin_menu hook has run.
 	 *
-	 * @since 4.0.0
+	 * Internal only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
 	 */
 	public function admin_screen_id() {
 		return $this->screen_id;
@@ -330,11 +339,10 @@ class FontAwesome {
 	/**
 	 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
 	 *
-	 * Internal only. Clients should not invoke it directly.
+	 * Internal only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
-	 * @since 4.0.0
 	 */
 	public function run() {
 		add_action(
@@ -453,8 +461,6 @@ class FontAwesome {
 	 *
 	 * To express OR conditions, make multiple calls to this function and OR the results together in your own code.
 	 *
-	 * @since 4.0.0
-	 *
 	 * @link http://php.net/manual/en/function.version-compare.php
 	 * @param string $version
 	 * @param array $constraints
@@ -487,7 +493,6 @@ class FontAwesome {
 	 * to run the client-side conflict detection scanner.
 	 *
 	 * @since 4.0.0
-	 *
 	 * @return bool
 	 */
 	public function detecting_conflicts() {
@@ -518,8 +523,10 @@ class FontAwesome {
 			&& is_string( $options['kitToken'] );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	protected function stringify_constraints( $constraints ) {
@@ -532,8 +539,10 @@ class FontAwesome {
 		return implode( ' and ', $flipped_concat_each );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	private function initialize_rest_api() {
@@ -606,7 +615,6 @@ class FontAwesome {
 	 * 
 	 * @since 4.0.0
 	 * @return integer|null the time in unix epoch seconds or null if never
-	 * 
 	 */
 	public function releases_refreshed_at() {
 		return $this->release_provider()->refreshed_at();
@@ -615,7 +623,7 @@ class FontAwesome {
 	/**
 	 * Refreshes releases only if it's a been a while.
 	 *
-	 * Internal use only. Not part of this plugin's public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
@@ -634,12 +642,14 @@ class FontAwesome {
 	/**
 	 * Returns all available versions of Font Awesome as an array of strings in descending version order.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
 	 * this function returns [ "5.5.1", "5.4.1", "5.4.0", "5.3.0"].
 	 *
-	 * @since 4.0.0
-	 *
 	 * @throws FontAwesome_NoReleasesException
+	 * @ignore
+	 * @internal
 	 * @see FontAwesome_Release_Provider::versions()
 	 * @return array
 	 */
@@ -650,6 +660,8 @@ class FontAwesome {
 	/**
 	 * URL for this plugin's admin settings page.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -658,7 +670,9 @@ class FontAwesome {
 	}
 
 	/**
-	 * The value of the ts GET param given for this page request, or null if none.
+	 * The value of the "ts" GET param given for this page request, or null if none.
+	 *
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * We'll be super-strict validating what values we'll accept, insead of passing
 	 * through whatever is on the query string.
@@ -685,8 +699,10 @@ class FontAwesome {
 		}
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	private function emit_v3_deprecation_admin_notice( $data ) {
@@ -711,7 +727,7 @@ class FontAwesome {
 	 * Initalizes everything about the admin environment except the React app
 	 * bundle, which is handled in maybe_enqueue_js_bundle().
 	 *
-	 * Internal use only. This function is not part of this plugin's public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
@@ -793,10 +809,9 @@ class FontAwesome {
 
 	/**
 	 * Returns current options as stored in the database, after converting
-	 * from previous schema versions.
+	 * from any previous schema versions.
 	 *
-	 * Default options should have already been set in the database at plugin
-	 * activation time.
+	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -811,6 +826,8 @@ class FontAwesome {
 
 	/**
 	 * Converts options array from a previous schema version to the current one.
+	 *
+	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -834,13 +851,13 @@ class FontAwesome {
 	/**
 	 * Validates options.
 	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 *
 	 * This doesn't necessarily validate every single thing that could be validated.
 	 * Maybe only the most crucial, high-level issues. This validation is expected
 	 * to be run early in the lifecycle of loading the plugin.
 	 * More validations could be added here over time, if helpful.
 	 *
-	 * Internal use only. Not part of this plugin's public API.
-	 * 
 	 * @ignore
 	 * @internal
 	 * @throws FontAwesome_ConfigurationException with a message describing the reason if options are invalid
@@ -896,19 +913,14 @@ class FontAwesome {
 			}
 		}
 
-		/**
-		 * TODO: maybe add a general validation just asserting all in one fell swoop
-		 * that the various other options at least _exist_, like $options['blocklist'],
-		 * so we don't have a runtime exception later.
-		 */
-
 		return TRUE;
 	}
 
 	/**
-	 * md5 hashes that represent detections of conflicting loads of Font Awesome
-	 * that the administrator has chosen to block, causing the styles and
-	 * scripts associated with these md5 hashes to be dequeued by this plugin.
+	 * md5 hashes that identify detected conflicting versions of Font Awesome
+	 * that the site owner has chosen to block from being enqueued.
+	 *
+	 * It is managed through the plugin's settings page.
 	 *
 	 * @since 4.0.0
 	 * @return array
@@ -966,6 +978,8 @@ class FontAwesome {
 	 * Converts a given options array with a v1 schema to one with a v2 schema.
 	 * There are significant changes from the schema used by 4.0.0-rc9 and before.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @internal
 	 * @ignore
 	 * @param $options
@@ -1004,7 +1018,10 @@ class FontAwesome {
 	/**
 	 * Callback function for creating the plugin's admin page.
 	 *
-	 * @since 4.0.0
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
 	 */
 	public function create_admin_page() {
 		include_once FONTAWESOME_DIR_PATH . 'admin/views/main.php';
@@ -1013,10 +1030,10 @@ class FontAwesome {
 	/**
 	 * Resets the singleton instance referenced by this class.
 	 *
-	 * All releases metadata and computed load specification are abandoned.
+	 * Internal use only, not part of this plugin's public API.
 	 *
-	 * @since 4.0.0
-	 *
+	 * @ignore
+	 * @internal
 	 * @return FontAwesome
 	 */
 	public static function reset() {
@@ -1027,8 +1044,11 @@ class FontAwesome {
 	/**
 	 * Triggers the font_awesome_preferences action to gather preferences from clients.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
 	 * @throws FontAwesome_PreferenceRegistrationException
-	 * @since 4.0.0
 	 */
 	public function gather_preferences() {
 		/**
@@ -1045,6 +1065,8 @@ class FontAwesome {
 
 	/**
 	 * Returns current preferences conflicts, keyed by option name.
+	 * 
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
 	 * client preferences have been registered and processed.
@@ -1056,8 +1078,8 @@ class FontAwesome {
 	 * configured options, but they will be presented to the site owner in the plugin's admin settings page to
 	 * aid in troubleshooting.
 	 *
-	 * @since 4.0.0
-	 *
+	 * @ignore
+	 * @internal
 	 * @param $options options to use for comparison. Uses $this->options() by default.
 	 * @see FontAwesome::register() register() documents all client preference keys
 	 * @return array
@@ -1085,6 +1107,8 @@ class FontAwesome {
 	/**
 	 * Returns current preferences conflicts, keyed by client name.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
 	 * client preferences have been registered and processed.
 	 *
@@ -1095,8 +1119,8 @@ class FontAwesome {
 	 * configured options, but they will be presented to the site owner in the plugin's admin settings page to
 	 * aid in troubleshooting.
 	 *
-	 * @since 4.0.0
-	 *
+	 * @ignore
+	 * @internal
 	 * @param $options options to use for comparison. Uses $this->options() by default.
 	 * @see FontAwesome::register() register() documents all client preference keys
 	 * @return array
@@ -1129,6 +1153,8 @@ class FontAwesome {
 	/**
 	 * Return current client preferences for all registered clients.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * The website owner (i.e. the one who uses the WordPress admin dashboard) is considered a registered client.
 	 * So that owner's preferences will be represented here. But note that these preferences do not include
 	 * the `options`, as returned by {@see FortAwesome\FontAwesome::options()} which also help determine the
@@ -1136,8 +1162,8 @@ class FontAwesome {
 	 *
 	 * Each element of the array has the same shape as the preferences given to {@see FortAwesome\FontAwesome::register()}.
 	 *
-	 * @since 4.0.0
-	 *
+	 * @ignore
+	 * @internal
 	 * @see FortAwesome\FontAwesome::register()
 	 * @return array
 	 */
@@ -1303,8 +1329,10 @@ class FontAwesome {
 				: self::DEFAULT_USER_OPTIONS['svgPseudoElements'];
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	protected function specified_preference_or_default( $preference, $default ) {
@@ -1312,13 +1340,14 @@ class FontAwesome {
 	}
 
 	/**
-	 * Not part of the public API.
-	 *
 	 * Enqueues the JavaScript bundle that is the React app for the admin
-	 * settings page as well as the conflict detection reporter. The same
-	 * bundle will be enqueued for both purposes. When enqueued, it must be
-	 * configured to indicate which React components to mount in the DOM, which
-	 * may be either, both, or neither.
+	 * settings page as well as the conflict detection reporter.
+	 * 
+	 * The same bundle will be enqueued for both purposes. When enqueued, it
+	 * must be configured to indicate which React components to mount in the DOM,
+	 * which may be either, both, or neither.
+	 *
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -1412,7 +1441,7 @@ class FontAwesome {
 	}
 
 	/**
-	 * Not part of the public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
@@ -1433,13 +1462,13 @@ class FontAwesome {
 	/**
 	 * Enqueues a kit loader <script>.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * A proper kit loader <script>  looks like this:
 	 *
 	 * <script src="https://kit.fontawesome.com/deadbeef00.js" crossorigin="anonymous"></script>
-	 * 
-	 * where deadbeef00 is the kitToken
 	 *
-	 * Internal use only. Not part of this plugin's public API.
+	 * where deadbeef00 is the kitToken
 	 *
 	 * @ignore
 	 * @internal
@@ -1540,6 +1569,8 @@ EOT;
 
 	/**
 	 * Enqueues <script> or <link> resources to load from Font Awesome 5 free or pro cdn.
+	 *
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -1823,7 +1854,9 @@ EOT;
 
 	/**
 	 * Things that are done whether we are configured to enqueue Kit or CDN resources.
-	 * 
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -1877,7 +1910,7 @@ EOT;
 	 * Updates the unregistered clients option and blocklist with any enqueued
 	 * styles or scripts whose src matches 'fontawesome' or 'font-awesome'.
 	 *
-	 * This is for internal use only. Not part of this plugin's public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -1936,20 +1969,28 @@ EOT;
 	}
 
 	/**
-	 * This function is not part of this plugin's public API.
+	 * Reports whether the given url should be blocked based on an
+	 * md5 hash of its value.
+	 *
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
+	 * @return bool
 	 */
 	public function is_url_blocked($url) {
 		return FALSE !== array_search( md5($url), $this->blocklist() );
 	}
 
 	/**
-	 * This function is not part of this plugin's public API.
+	 * Reports whether the given inline data should be blocked based on an
+	 * md5 hash of its contents.
+	 *
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @ignore
 	 * @internal
+	 * @return bool
 	 */
 	public function is_inline_data_blocked($data) {
 		/**
@@ -1973,6 +2014,10 @@ EOT;
 	}
 
 	/**
+	 * Removes detect conflicts marked for blocking.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * For each handle, we need to check whether there's a conflict for the base resource itself,
 	 * on its "src" attribute (the URL of an external script or stylesheet).
 	 * We also need to check the 'before' and 'after' data for every resource to see if it has
@@ -1991,6 +2036,7 @@ EOT;
 	 * or scripts are always added to some other "main" asset which has its own resource handle.
 	 *
 	 * @ignore
+	 * @internal
 	 */
 	protected function remove_blocklist() {
 		if( count( $this->blocklist() ) == 0 ) {
@@ -2126,9 +2172,36 @@ EOT;
 
 	/**
 	 * Allows direct querying of the Font Awesome GraphQL metadata API.
-	 * It accepts a GraphQL query string like 'query {versions}'.
+	 *
+	 * It accepts a GraphQL query string like 'query { versions }'.
+	 * 
+	 * The following example queries for the list of icons in the latest
+	 * version of Font Awesome, with various metadata properties, including an
+	 * icon's membership in Font Awesome Pro and/or Font Awesome Free.
+	 *
+	 * ```
+	 * query {
+	 *   release(version:"latest") {
+	 *     icons {
+	 *       id
+	 *       label
+	 *       membership {
+	 *         free
+	 *         pro
+	 *       }
+	 *       shim {
+	 *         id
+	 *         name
+	 *         prefix
+	 *       }
+	 *       styles
+	 *       unicode
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 *
 	 * More information about using GraphQL queries can be found {@link https://graphql.org/learn/ here}.
-	 * TODO: Put Font Awesome specific documentation here.
 	 *
 	 * @param string $query_string
 	 * @since 4.0.0
@@ -2138,34 +2211,10 @@ EOT;
 	}
 
 	/**
-	 * Returns the list of icons for a given version as an array of PHP objects.
+	 * Process a shortode.
 	 *
-	 * @param string $version
-	 * @since 4.0.0
-	 */
-	public function icons_metadata( $version ) {
-		$query_string = 'query { release(version:' .
-			"\"{$version}\"" .
-			') {icons {
-				id
-				label
-				membership {
-					free
-					pro
-				}
-				shim {
-					id
-					name
-					prefix
-				}
-				styles
-				unicode
-			}}}';
-		return $this->query( $query_string );
-	}
-
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -2212,8 +2261,11 @@ EOT;
 	/**
 	 * Sets a v3 deprecation warning.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @deprecated Only for temporary internal plugin use while deprecating
 	 * @ignore
+	 * @internal
 	 * @param array $data
 	 * @return void
 	 */
@@ -2224,9 +2276,12 @@ EOT;
 	/**
 	 * Retrieves transient warning data for v3 icon name usage.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @deprecated Only for temporary internal plugin use while deprecating
 	 * @return array
 	 * @ignore
+	 * @internal
 	 */
 	public function get_v3deprecation_warning_data() {
 		return get_transient( self::V3DEPRECATION_TRANSIENT );
@@ -2235,46 +2290,55 @@ EOT;
 	/**
 	 * Dismisses the v3 deprecation warning for a while.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @deprecated Only for temporary internal plugin use while deprecating
 	 * @ignore
+	 * @internal
 	 */
 	public function snooze_v3deprecation_warning() {
 		delete_transient( self::V3DEPRECATION_TRANSIENT );
 		set_transient( self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * Allows a test subclass to mock the release provider.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @ignore
+	 * @internal
 	 */
 	protected function release_provider() {
 		return fa_release_provider();
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * Allows a test subclass to mock the release provider.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @ignore
+	 * @internal
 	 */
 	protected function metadata_provider() {
 		return fa_metadata_provider();
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
 	 * Allows a test subclass to mock the version.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
 	 * @ignore
+	 * @internal
 	 */
 	protected function plugin_version() {
 		return self::PLUGIN_VERSION;
 	}
 
 	/**
-	 * Not public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -2314,7 +2378,7 @@ EOT;
 	}
 
 	/**
-	 * Not public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
@@ -2332,7 +2396,7 @@ EOT;
 	}
 
 	/**
-	 * Not public API.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore

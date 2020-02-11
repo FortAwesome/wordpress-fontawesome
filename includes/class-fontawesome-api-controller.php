@@ -24,7 +24,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 	 *
 	 * <h3>Body</h3>
 	 *
-	 * The request body should contain a GraphQL query document, encoded as json.
+	 * The request body should contain a GraphQL query document as a string.
 	 *
 	 * For example, when the site owner as configured an API Token, the following
 	 * query would retrieve the name and version properites for each kit in that
