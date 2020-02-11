@@ -51,6 +51,37 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
  *     - {@see FontAwesome::pro()} to discover whether a version with Pro icons is being loaded
  *     - {@see FontAwesome::svg_pseudo_elements()} to discover whether Font Awesome is being loaded with support for svg pseudo-elements
  *
+ * <h3>Internal Use vs. Public API</h3>
+ *
+ * Developers should take care to notice which functions, methods, classes,
+ * constants, defines, REST routes, or data structures are indicated as part of
+ * this plugin's public API and which are not.
+ *
+ * A method, for example, being declared in PHP with `public` visibility does not
+ * indicate its inclusion in the plugin's _public API_.
+ *
+ * A method may be declared with public visibility in PHP in order to satisfy
+ * the language's requirements for access across code modules, or for callbacks.
+ * Yet this does not mean it can be relied upon as a stable interface by client
+ * code.
+ * 
+ * A method that is part of _this plugin's public API_ can be relied upon to
+ * change, or not change, according to [semantic versioning best practices](https://semver.org/).
+ * No such conventions apply to a method that is for internal use only, even
+ * if it is declared `public` in PHP.
+ *
+ * Generally, public API members are accessed only from this `FontAwesome` class.
+ *
+ * For example, the {@see FontAwesome::refresh_releases()} method provides a way
+ * to re-query available releases metadata from `api.fontawesome.com`. It delegates
+ * to another class internally. But that other class and its methods are not part
+ * of this plugin's public API. They may change significantly from one patch
+ * release to another, but no breaking changes would be made to
+ * {@see FontAwesome::refresh_releases()} without a major version change.
+ *
+ * References to "API" in this section refer to this plugin's PHP code or REST
+ * routes, not to the Font Awesome GraphQL API at `api.fontawesome.com`.
+ * 
  * @since 4.0.0
  */
 class FontAwesome {
