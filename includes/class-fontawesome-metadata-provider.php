@@ -90,7 +90,7 @@ class FontAwesome_Metadata_Provider {
 	 * @param $ignore_auth when TRUE this will omit an authorization header on
 	 *     the network request, even if an apiToken is present.
 	 * @ignore
-	 * @return WP_Error | array
+	 * @return WP_Error|array
 	 */
 	public function metadata_query( $query_string, $ignore_auth = FALSE ) {
 		$args = array(

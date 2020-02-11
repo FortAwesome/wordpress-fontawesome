@@ -2171,13 +2171,25 @@ EOT;
 	}
 
 	/**
-	 * Allows direct querying of the Font Awesome GraphQL metadata API.
+	 * Runs a GraphQL query against the Font Awesome GraphQL API.
 	 *
-	 * It accepts a GraphQL query string like 'query { versions }'.
+	 * It accepts a GraphQL query string like 'query { versions }' and returns
+	 * the json encoded body of response from the API server when the response
+	 * as an HTTP status of 200. Otherwise, it return WP_Error.
 	 * 
-	 * The following example queries for the list of icons in the latest
+	 * Requests to the Font Awesome API server will automatically be authorized
+	 * by the site owner's API Token, if they have added one through the
+	 * plugin's settings page. Access token refresh is handled automatically,
+	 * when necessary.
+	 *
+	 * Each API Token has any number of authorization scopes on it. Most fields
+	 * in the GraphQL schema have a `public` scope, and so do not require an
+	 * API Token at all.
+	 *
+	 * For example, the following query lists all icons in the latest
 	 * version of Font Awesome, with various metadata properties, including an
-	 * icon's membership in Font Awesome Pro and/or Font Awesome Free.
+	 * icon's membership in Font Awesome Pro and/or Font Awesome Free. All fields
+	 * in this query are in the `public` scope.
 	 *
 	 * ```
 	 * query {
@@ -2201,10 +2213,139 @@ EOT;
 	 * }
 	 * ```
 	 *
-	 * More information about using GraphQL queries can be found {@link https://graphql.org/learn/ here}.
+	 * When the site owner has configured an API Token that includes
+	 * the `kits_read` scope, the following query would retrieve the name and
+	 * version properites for each kit in that authenticated account:
 	 *
-	 * @param string $query_string
+	 * ```
+	 * query {
+     *   me {
+     *     kits {
+     *       name
+     *       version
+     *     }
+     *   }
+     * }
+	 * ```
+	 *
+	 * <h3>Error Handling</h3>
+	 * 
+	 * On error an `WP_Error` object with one of the following sets of properties
+	 * might be returned, having the indicated meaning:
+	 *
+	 * <table>
+	 *   <thead>
+	 *     <tr>
+	 *       <th>code</th>
+	 *       <th>meaning</th>
+	 *       <th>message</th>
+	 *       <th>data</th>
+	 *     </tr>
+	 *   </thead>
+	 *   <tbody>
+	 *     <tr>
+	 *       <td>
+	 *         <code>fontawesome_api_failed_request</code>
+	 *       </td>
+	 *       <td>
+	 *         when the HTTP status from the GraphQL API server is not 200
+	 *       </td>
+	 *       <td>
+	 *         the message from the original response
+	 *       </td>
+	 *       <td>
+	 *         original HTTP status code
+	 *       </td>
+	 *     </tr>
+	 *     <tr>
+	 *       <td>
+	 *         <code>api_token</code>
+	 *       </td>
+	 *       <td>
+	 *         When we try to refresh an access_token, and for some reason,
+	 *         by the time we do, there is no API Token available. This would probably
+	 *         indicate a race condition where a previously added API Token happened
+	 *         to be removed right about the same time as the access_token refresh
+	 *         logic kicks in. This is a very unlikely scenario.
+	 *       </td>
+	 *       <td>
+	 *         a message appropriate for displaying to a WordPress admin user
+	 *       </td>
+	 *       <td>
+	 *         <code>[ 'status' => 403 ]</code>
+	 *       </td>
+	 *     </tr>
+	 *   </tbody>
+	 * </table>
+	 *
+	 * If the site owner has not added an API Token, then requests to the API
+	 * will only have `public` scope. In that case, any GraphQL schema fields
+	 * that would require some higher privilege will be resolved as `null`, and
+	 * the response body will include errors indicating the resolution failure.
+	 *
+	 * For example, if the above kits query were made, without an API Token having
+	 * the `kits_read` scope, then the following response would be returned:
+	 * 
+	 * ```json
+	 * {
+	 *   "data":{
+	 *     "me":null
+	 *   },
+	 *   "errors":[
+	 *     {
+	 *       "locations":[
+	 *         {"column":0,"line":1}
+	 *       ],
+	 *       "message":"unauthorized",
+	 *       "path":["me"]
+	 *     }
+	 *   ]
+	 * } 
+	 * ```
+	 *
+	 * This function would not return `WP_Error`, because the GraphQL API will
+	 * have return this response with HTTP status 200.
+	 *
+	 * It is possible that a query could select both authorized and unauthorized
+	 * fields. The `data` property in the response will include all of those
+	 * field resolutions, and the `error` property--if present--will include
+	 * an errors during resolution, such as attempting to resolve fields without
+	 * proper authorization.
+	 *
+	 * An invalid query, such as one that has typo in a field name, may return
+	 * an HTTP 200 result from the GraphQL API, but its response body will
+	 * include an `errors` property with details about the validation error.
+	 * 
+	 * Or a query that includes a mix of successful and unsuccessful field
+	 * authorizations, may return results in the response's `data` for the
+	 * portions of the schema that are authorized, null for unauthorized portions,
+	 * with explanation on the `errors` property.
+	 * 
+	 * See documentation about [GraphQL validation](https://graphql.org/learn/validation/)
+	 * for more on error handling.
+	 * 
+	 * <h3>Adding Authorization</h3>
+	 *
+	 * If you know that you need access to some part of the schema that requires some
+	 * additional authorization scope, the way to get that is to instruct the site owner
+	 * to copy an API Token from their fontawesome.com account and add it to this
+	 * plugin's configuration the plugin's settings page.
+	 * 
+	 * As of version 4.0.0 of this plugin, the only non-public portions of the
+	 * GraphQL schema that are relevant to usage in WordPress involve querying
+	 * the user's kits, which requires the `kits_read` scope, as shown above.
+	 * 
+	 * <h3>Additional Resources</h3>
+	 *
+	 * For more on how to construct GraphQL queries, [see here](https://graphql.org/learn/queries/).
+	 * 
+	 * You can explore the Font Awesome GraphQL API using an app like [GraphiQL](https://www.electronjs.org/apps/graphiql).
+	 * Point it at `https://api.fontawesome.com`.
+	 *
 	 * @since 4.0.0
+	 * @param string $query_string a GraphQL query document
+	 * @return WP_Error|string json encoded response body when the API response
+	 *     body has HTTP 200 status, otherwise WP_Error.
 	 */
 	public function query( $query_string ) {
 		return $this->metadata_provider()->metadata_query( $query_string );
