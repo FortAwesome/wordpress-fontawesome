@@ -210,7 +210,11 @@ EOD;
 			}
 
 			$refreshed_at = time();
-			$latest_version = isset( $result['latest']['version'] ) ? $result['latest']['version'] : null;
+			$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
+
+			// TODO: probably throw an exception right here of $latest_version remains null.
+			// Other code depends upon there being a latest_version, as long as we've done
+			// a releases metadata query. This would indicate an error on Font Awesome's API server.
 
 			$transient_value = array(
 				'refreshed_at' => $refreshed_at,
