@@ -3,6 +3,7 @@ import toPairs from 'lodash/toPairs'
 import size from 'lodash/size'
 import get from 'lodash/get'
 import find from 'lodash/find'
+import reportRequestError from '../util/reportRequestError'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -316,6 +317,8 @@ export function queryKits() {
           message: 'Kit changes saved'
         })
       }).catch(error => {
+        reportRequestError(error)
+
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
           success: false,
@@ -323,6 +326,8 @@ export function queryKits() {
         })
       })
     }).catch(error => {
+      reportRequestError(error)
+
       dispatch({
         type: 'KITS_QUERY_END',
         success: false,
@@ -408,6 +413,7 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
         dispatch(queryKits())
       }
     }).catch(error => {
+      reportRequestError(error)
       const code = get(error, 'response.data.code')
       const message = get(error, 'response.data.message')
 
