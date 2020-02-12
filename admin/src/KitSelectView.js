@@ -126,7 +126,7 @@ export default function KitSelectView({ optionSelector }) {
           className="button button-primary"
           value="Save API Token"
           disabled={ !pendingApiToken }
-          onMouseDown={ () => dispatch(updateApiToken({ apiToken: pendingApiToken, queryKits: true })) }
+          onMouseDown={ () => dispatch(updateApiToken({ apiToken: pendingApiToken, runQueryKits: true })) }
         />
         { 
           (hasSubmitted && ! submitSuccess) &&

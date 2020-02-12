@@ -380,7 +380,7 @@ export function submitPendingOptions() {
   }
 }
 
-export function updateApiToken({ apiToken = false, queryKits = false }) {
+export function updateApiToken({ apiToken = false, runQueryKits = false }) {
   return function(dispatch, getState) {
     const { apiNonce, apiUrl, options } = getState()
 
@@ -396,18 +396,20 @@ export function updateApiToken({ apiToken = false, queryKits = false }) {
       }
     ).then(response => {
       const { data } = response
-        dispatch({
-          type: 'OPTIONS_FORM_SUBMIT_END',
-          data,
-          success: true,
-          message: 'API Token saved'
-        })
 
-        if( queryKits ) {
-          dispatch(queryKits())
-        }
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        data,
+        success: true,
+        message: 'API Token saved'
+      })
+
+      if( runQueryKits ) {
+        dispatch(queryKits())
+      }
     }).catch(error => {
-      const { response: { data: { code, message }}} = error
+      const code = get(error, 'response.data.code')
+      const message = get(error, 'response.data.message')
 
       const submitMessage = (code => { 
         switch(code) {
