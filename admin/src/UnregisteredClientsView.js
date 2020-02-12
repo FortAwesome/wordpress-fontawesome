@@ -91,12 +91,15 @@ export default function UnregisteredClientsView() {
             plugins or themes that are loading on your site. Check off any that
             you would like to block from loading. Normally this just blocks the
             conflicting version of Font Awesome and doesn't affect the other
-            functions of the plugin, but you should verify your site works as expected.
+            functions of the plugin, but you should verify your site works as
+            expected. If you think you've fixed a found conflict, you can clear it
+            from the table.
           </p>
           <table className={classnames('widefat', 'striped')}>
-            <tbody>
+            <thead>
             <tr className={sharedStyles['table-header']}>
               <th>
+              <div className={ styles['column-label'] }>Block</div>
                 {
                   size( allDetectedConflicts ) > 1 &&
                   <div className={ styles['block-all-container'] }>
@@ -128,7 +131,6 @@ export default function UnregisteredClientsView() {
                     </label>
                   </div>
                 }
-                <div className={ styles['column-label'] }>Block</div>
               </th>
               <th>
                 <span className={ styles['column-label'] }>
@@ -141,6 +143,7 @@ export default function UnregisteredClientsView() {
                 </span>
               </th>
               <th>
+                <div className={ styles['column-label'] }>Clear</div>
                 {
                   size( allDetectedConflicts ) > 1 &&
                   <div className={ styles['remove-all-container'] }>
@@ -172,11 +175,10 @@ export default function UnregisteredClientsView() {
                     </label>
                   </div>
                 }
-                <div className={ styles['column-label'] }>
-                  Remove
-                </div>
               </th>
             </tr>
+            </thead>
+            <tbody>
             {
               allDetectedConflicts.map(md5 => (
                 <tr key={md5}>
