@@ -15,13 +15,15 @@ export default function KitConfigView({ kitToken }) {
   const technology = useSelector(state =>
     kitTokenIsActive
       ? state.options.technology
-      : kitTokenApiData.technologySelected
+      : kitTokenApiData.technologySelected === 'svg'
+        ? 'svg'
+        : 'webfont'
   )
 
   const usePro = useSelector(state =>
     kitTokenIsActive
       ? state.options.usePro
-      : kitTokenApiData.technologySelected === 'pro'
+      : kitTokenApiData.licenseSelected === 'pro'
   )
 
   const v4Compat = useSelector(state =>

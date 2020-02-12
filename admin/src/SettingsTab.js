@@ -30,6 +30,7 @@ export default function SettingsTab() {
   const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const pendingOptions = useSelector(state => state.pendingOptions)
+  const apiToken = useSelector(state => state.options.apiToken)
 
   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
@@ -145,42 +146,45 @@ export default function SettingsTab() {
           : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
     </>
-    <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
-      <input
-        type="submit"
-        name="submit"
-        id="submit"
-        className="button button-primary"
-        value="Save Changes"
-        disabled={ size(pendingOptions) === 0 }
-        onClick={ handleSubmit }
-      />
-      { hasSubmitted 
-        ? submitSuccess
-          ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-              <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
+    {
+      (!useKit || apiToken) &&
+      <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
+        <input
+          type="submit"
+          name="submit"
+          id="submit"
+          className="button button-primary"
+          value="Save Changes"
+          disabled={ size(pendingOptions) === 0 }
+          onClick={ handleSubmit }
+        />
+        { hasSubmitted 
+          ? submitSuccess
+            ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
+                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
+              </span>
+            : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+                <div className={ classnames(sharedStyles['fail-icon-container']) }>
+                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
+                </div>
+                <div className={ sharedStyles['explanation'] }>
+                  { submitMessage }
+                </div>
+              </div>
+          : null
+        }
+        {
+          isSubmitting
+          ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+              <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
             </span>
-          : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-              <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-              </div>
-              <div className={ sharedStyles['explanation'] }>
-                { submitMessage }
-              </div>
-            </div>
-        : null
-      }
-      {
-        isSubmitting
-        ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
-          </span>
-        : isChecking
-          ? <CheckingOptionStatusIndicator/>
-          : size(pendingOptions) > 0
-            ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
-            : null
-      }
-    </div>
+          : isChecking
+            ? <CheckingOptionStatusIndicator/>
+            : size(pendingOptions) > 0
+              ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
+              : null
+        }
+      </div>
+    }
   </div>
 }
