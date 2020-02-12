@@ -20,7 +20,11 @@ class Mock_FontAwesome_Releases extends TestCase {
 			'query',
 			function( $method ) {
 				$method->willReturn(
-					graphql_releases_query_fixture()
+					json_encode(
+						array(
+							'data' => graphql_releases_query_fixture()
+						)
+					)
 				);
 			}
 		);
