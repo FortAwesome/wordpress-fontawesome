@@ -53,8 +53,6 @@ export function options(state = {}, action = {}) {
           svgPseudoElements: coerceBool(svgPseudoElements)
         }
       }
-    case 'CHOOSE_AWAY_FROM_KIT_CONFIG':
-      return { ...state, kitToken: null }
     default:
       return state
   }
