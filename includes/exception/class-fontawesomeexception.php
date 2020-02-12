@@ -3,7 +3,7 @@ namespace FortAwesome\Exception;
 
 use \Exception;
 
-abstract class AbstractException extends Exception {
+abstract class FontAwesomeException extends Exception {
 
 	/**
 	 * A message appropriate for display to a user.
