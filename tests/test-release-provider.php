@@ -47,7 +47,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	}
 
 	protected static function build_success_response() {
-		return graphql_releases_query_fixture();
+		return json_encode(
+			array(
+				'data' => graphql_releases_query_fixture()
+			)
+		);
 	}
 
 	protected static function build_error_response() {
