@@ -104,8 +104,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					}
 				} elseif ( boolval( fa_api_settings()->api_token() ) && ! boolval( $api_token ) ) {
 					// We're removing an existing API Token
-
 					fa_api_settings()->remove();
+
+					/**
+					 * We also need to change the version to one that would be
+					 * valid for a CDN configuration.
+					 */
+					$given_options['version'] = fa()->latest_version();
 				}
 
 				$db_item = $this->prepare_item_for_database( $given_options );
