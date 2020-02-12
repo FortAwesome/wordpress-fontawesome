@@ -2,37 +2,45 @@ import React from 'react'
 import styles from './KitSelectView.module.css'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import get from 'lodash/get'
 
 export default function KitConfigView({ kitToken }) {
-  const kit = useSelector(state => (state.kits || []).find(k => k.token === kitToken))
+  const kitTokenIsActive = useSelector(state => get(state, 'options.kitToken') === kitToken)
+  const kitTokenApiData = useSelector(state => (state.kits || []).find(k => k.token === kitToken))
 
-  if(!kit) {
-    throw new Error('We could not find a kit for the given kitToken. Try reloading this page.')
+  if(!kitTokenIsActive && !kitTokenApiData) {
+    throw new Error('Oh no! We could not find the kit data for the selected kit token. Try reloading this page.')
   }
 
-  const {
-    licenseSelected,
-    name,
-    shimEnabled,
-    technologySelected,
-    version
-    // The following kit properties are also available, though they do not
-    // have corollaries to the CDN-based configuration alternative.
+  const technology = useSelector(state =>
+    kitTokenIsActive
+      ? state.options.technology
+      : kitTokenApiData.technologySelected
+  )
 
-    /*
-    useIntegrityHash,
-    autoAccessibilityEnabled,
-    integrityHash,
-    minified,
-    */
-  } = kit
+  const usePro = useSelector(state =>
+    kitTokenIsActive
+      ? state.options.usePro
+      : kitTokenApiData.technologySelected === 'pro'
+  )
+
+  const v4Compat = useSelector(state =>
+    kitTokenIsActive
+      ? state.options.v4Compat
+      : kitTokenApiData.shimEnabled
+  )
+
+  const version = useSelector(state =>
+    kitTokenIsActive
+      ? state.options.version
+      : kitTokenApiData.version
+  )
 
   return <div className={ styles['kit-config-view-container'] }>
-    <p>name: { name }</p>
     <p>version: { version }</p>
-    <p>licenseSelected: { licenseSelected }</p>
-    <p>technologySelected: { technologySelected }</p>
-    <p>shimEnabled (V4 Compatibility): { shimEnabled ? 'true' : 'false' }</p>
+    <p>usePro: { usePro ? 'true' : 'false' }</p>
+    <p>technology: { technology }</p>
+    <p>v4Compat: { v4Compat ? 'true' : 'false' }</p>
   </div>
 }
 
