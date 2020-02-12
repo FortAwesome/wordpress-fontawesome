@@ -278,8 +278,12 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		);
 
     	$request->add_header('Content-Type', 'application/json');
-    	$request->set_body( wp_json_encode( $request_body ) );
+		$request->set_body( wp_json_encode( $request_body ) );
+		
+		fa()->refresh_releases();
+
 		$response = $this->server->dispatch( $request );
+		$this->assertNotNull( fa()->latest_version() );
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
 		$this->assertArrayHasKey( 'conflicts', $data );
