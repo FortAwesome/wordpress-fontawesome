@@ -4,7 +4,9 @@
  */
 namespace FortAwesome;
 
-use \WP_Error, \InvalidArgumentException;
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/exception/class-apitokenmissingexception.php';
+
+use \WP_Error, \InvalidArgumentException, FortAwesome\Exception\ApiTokenMissingException;
 
 /**
  * Provides read/write access to the Font Awesome API settings.
@@ -280,15 +282,12 @@ EOD;
 	 *
 	 * @ignore
 	 * @internal
-	 * @return WP_Error | TRUE if the request was successful and we have an access_token; otherwise, WP_Error
+	 * @throws ApiTokenMissingException
+	 * @return void
 	 */
 	public function request_access_token() {
 		if ( ! is_string( $this->api_token() ) ) {
-			return new WP_Error(
-				'api_token',
-				'Whoops, it looks like you have not provided a Font Awesome API Token. Enter one on the Font Awesome plugin settings page.',
-				array( 'status' => 403 )
-			);
+			throw new ApiTokenMissingException();
 		}
 
 		$response = $this->post(
@@ -300,7 +299,7 @@ EOD;
 			)
 		);
 
-		if ( $response instanceof WP_Error ) {
+		if ( is_wp_error( $response ) ) {
 			return new WP_Error(
 				'access_token',
 				'Sorry, our attempt to authenticate with the Font Awesome API server failed. Reload and try again?',
