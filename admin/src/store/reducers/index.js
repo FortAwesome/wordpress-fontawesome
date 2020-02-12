@@ -140,7 +140,7 @@ function unregisteredClientsDeletionStatus(
 }
 
 function pendingOptions(state = {}, action = {}) {
-  const { type, change, activeKitToken } = action
+  const { type, change, activeKitToken, concreteVersion } = action
 
   switch(type) {
     case 'ADD_PENDING_OPTION':
@@ -149,7 +149,7 @@ function pendingOptions(state = {}, action = {}) {
       const option = Object.keys(change)[0]
       return omit(state, option)
     case 'CHOOSE_AWAY_FROM_KIT_CONFIG':
-      const newPartialState = !!activeKitToken ? { kitToken: null } : {}
+      return !!activeKitToken ? { kitToken: null, version: concreteVersion } : {}
     case 'CHOOSE_INTO_KIT_CONFIG':
     case 'RESET_PENDING_OPTIONS':
     case 'OPTIONS_FORM_SUBMIT_END':

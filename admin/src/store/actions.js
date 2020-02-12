@@ -14,6 +14,12 @@ export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
 // (which would just be exactly "now").
 const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
 
+export function resetPendingOptions() {
+  return {
+    type: 'RESET_PENDING_OPTIONS'
+  }
+}
+
 export function addPendingOption(change) {
   return function(dispatch, getState) {
     const { options } = getState()
@@ -194,7 +200,15 @@ export function checkPreferenceConflicts() {
 }
 
 export function chooseAwayFromKitConfig({ activeKitToken }) {
-  return { type: 'CHOOSE_AWAY_FROM_KIT_CONFIG', activeKitToken }
+  return function(dispatch, getState) {
+    const { releases } = getState()
+
+    dispatch({
+      type: 'CHOOSE_AWAY_FROM_KIT_CONFIG',
+      activeKitToken,
+      concreteVersion: get(releases, 'latest_version')
+    })
+  }
 }
 
 export function chooseIntoKitConfig() {
@@ -340,9 +354,56 @@ export function submitPendingOptions() {
           success: true,
           message: 'Changes saved'
         })
+    }).catch(error => {
+      const { response: { data: { code, message }}} = error
 
-        // Now, if we have an API key, we should fetch or re-fetch kits
-        if ( data.apiToken ) {
+      const submitMessage = (code => { 
+        switch(code) {
+          case 'rest_no_route':
+          case 'rest_cookie_invalid_nonce':
+            return "Oh no! Your web browser could not reach your WordPress server."
+          default:
+            if ( message && '' !== message ) {
+              return message
+            } else {
+              return "Update failed for some unknown reason"
+            }
+        }
+      })(code)
+
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: submitMessage
+      })
+    })
+  }
+}
+
+export function updateApiToken({ apiToken = false, queryKits = false }) {
+  return function(dispatch, getState) {
+    const { apiNonce, apiUrl, options } = getState()
+
+    dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
+
+    axios.put(
+      `${apiUrl}/config`,
+      { options: { ...options, apiToken }},
+      {
+        headers: {
+          'X-WP-Nonce': apiNonce
+        }
+      }
+    ).then(response => {
+      const { data } = response
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          data,
+          success: true,
+          message: 'API Token saved'
+        })
+
+        if( queryKits ) {
           dispatch(queryKits())
         }
     }).catch(error => {

@@ -1,6 +1,12 @@
 import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { submitPendingOptions, queryKits, addPendingOption, checkPreferenceConflicts } from './store/actions'
+import {
+  resetPendingOptions,
+  queryKits,
+  addPendingOption,
+  checkPreferenceConflicts,
+  updateApiToken
+ } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
@@ -13,23 +19,22 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import size from 'lodash/size'
 
-export default function KitSelectView({ optionSelector, handleOptionChange, handleSubmit }) {
+export default function KitSelectView({ optionSelector }) {
   const dispatch = useDispatch()
+  const kitTokenActive = useSelector(state => state.options.kitToken)
   const kitToken = optionSelector('kitToken')
+  const [ pendingApiToken, setPendingApiToken ] = useState(null)
+  const apiToken = useSelector(state => {
+    if( null !== pendingApiToken ) return pendingApiToken
+
+    return state.options.apiToken
+  })
   const kits = useSelector( state => state.kits ) || []
   const hasSubmitted = useSelector(state => state.optionsFormState.hasSubmitted)
   const submitSuccess = useSelector(state => state.optionsFormState.success)
   const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
 
-  function removeApiToken() {
-    handleOptionChange({ apiToken: false })
-    // TODO: validate the assumption that at the time we do this submission,
-    // the only pending option is the apiToken. We're not trying to set any
-    // other options at this point
-    dispatch(submitPendingOptions())
-  }
-  
   /**
    * When selecting a kit, we go through each of its configuration options
    * and add them as pending options. We don't set those options in this system:
@@ -52,16 +57,21 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
       throw new Error(`When selecting to use kit ${ kitToken }, somehow the information we needed was missing. Try reloading the page.`)
     }
 
-    dispatch(addPendingOption({
-      kitToken,
-      technology: 'svg' === selectedKit.technologySelected ? 'svg' : 'webfont',
-      usePro: 'pro' === selectedKit.licenseSelected,
-      v4Compat: selectedKit.shimEnabled,
-      version: selectedKit.version,
-      // At the time this is being implemented, kits don't yet support
-      // toggling svgPseudoElement support. But if that support is added
-      svgPseudoElements: false
-    }))
+    if( kitTokenActive === kitToken ) {
+      // We're just resetting back to the state we were in
+      dispatch(resetPendingOptions())
+    } else {
+      dispatch(addPendingOption({
+        kitToken,
+        technology: 'svg' === selectedKit.technologySelected ? 'svg' : 'webfont',
+        usePro: 'pro' === selectedKit.licenseSelected,
+        v4Compat: selectedKit.shimEnabled,
+        version: selectedKit.version,
+        // At the time this is being implemented, kits don't yet support
+        // toggling svgPseudoElement support. But if that support is added
+        svgPseudoElements: false
+      }))
+    }
 
     dispatch(checkPreferenceConflicts())
   }
@@ -89,15 +99,6 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
   })
 
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
-  const pendingApiToken = useSelector(state => state.pendingOptions['apiToken'])
-
-  // Kits query effect: when we first load the page, if we havent' already loaded
-  // any kits, load them.
-  useEffect(() => {
-    if ( (hasSavedApiToken || !!pendingApiToken) && !kitsQueryStatus.hasSubmitted ) {
-      dispatch( queryKits() )
-    }
-  }, [ kitsQueryStatus.hasSubmitted, pendingApiToken, hasSavedApiToken ])
 
   function ApiTokenInput() {
     return <>
@@ -110,11 +111,11 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
         type="text"
         ref={ apiTokenInputRef }
         placeholder="paste API Token here"
-        value={ pendingApiToken }
+        value={ pendingApiToken || '' }
         size="20"
         onChange={ e => {
           setApiTokenInputHasFocus( true )
-          handleOptionChange({ apiToken: e.target.value }) 
+          setPendingApiToken(e.target.value) 
         }}
       />
       <div className="submit">
@@ -123,9 +124,9 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
           name="submit"
           id="submit"
           className="button button-primary"
-          value="Save Changes"
+          value="Save API Token"
           disabled={ !pendingApiToken }
-          onMouseDown={ handleSubmit }
+          onMouseDown={ () => dispatch(updateApiToken({ apiToken: pendingApiToken, queryKits: true })) }
         />
         { 
           (hasSubmitted && ! submitSuccess) &&
@@ -155,55 +156,110 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
         <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
       </span>
       {
-        !!kitToken ||
-        <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button">remove</button>
+        !!apiToken &&
+        <button onClick={ () => dispatch(updateApiToken({ apiToken: false })) } className={ styles['remove'] } type="button">remove</button>
       }
     </div>
   }
 
+  const STATUS = {
+    querying: 'querying',
+    showingOnlyActiveKit: 'showingOnlyActiveKit',
+    noKitsFoundAfterQuery: 'noKitsFoundAfterQuery',
+    networkError: 'networkError',
+    kitSelection: 'kitSelection',
+    noApiToken: 'noApiToken',
+    apiTokenReadyNoKitsYet: 'apiTokenReadyNoKitsYet'
+  }
+
   function KitSelector() {
-      return <div className={ styles['kit-selector-container'] }>
-        {
-          kitsQueryStatus.isSubmitting
-          ? <div>
-              <span>
-                Loading your kits...
-              </span>
-              <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
-              </span>
-            </div>
+    const status =
+      apiToken
+        ? kitsQueryStatus.isSubmitting
+          ? STATUS.querying
           : kitsQueryStatus.hasSubmitted
             ? kitsQueryStatus.success
-              ? size( kits ) > 0
-                ? <select
-                  className={ styles['version-select'] }
-                  name="kit"
-                  onChange={ e => handleKitChange({ kitToken: e.target.value }) }
-                  value={ kitToken || '' }
-                  >
-                    <option key='empty' value=''>Select a kit</option>
-                  {
-                    kits.map((kit, index) => {
-                      return <option key={ index } value={ kit.token }>
-                        { `${ kit.name } (${ kit.token })` }
-                      </option>
-                    })
-                  }
-                  </select>
-                : <>
-                  <p>Oh no! You don't have any kits set up.</p>
-                  <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits"><FontAwesomeIcon icon={faExternalLinkAlt} />Font Awesome account</a> to create one. Then come back here and reload this page.</p>
-                </>
-              : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-                  <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-                  </div>
-                  <div className={ sharedStyles['explanation'] }>
-                    { kitsQueryStatus.message }
-                  </div>
+              ? size(kits) > 0
+                ? STATUS.kitSelection
+                : STATUS.noKitsFoundAfterQuery
+              : STATUS.networkError
+            : kitTokenActive
+              ? STATUS.showingOnlyActiveKit
+              : STATUS.apiTokenReadyNoKitsYet
+        : STATUS.noApiToken
+    
+    if(null === status) {
+      // TODO: use a utility reporting method for this
+      console.group('Font Awesome WordPress Plugin')
+      console.log('There is no active kitToken, yet KitSelector has not queried')
+      throw new Error('Something went wrong. Try reloading the page.')
+    }
+
+    const kitRefreshButton = <button onClick={ () => dispatch(queryKits()) }>
+      {
+        0 === size(kits)
+        ? 'query kits'
+        : 'refresh kits'
+      }
+    </button>
+
+      return <div className={ styles['kit-selector-container'] }>
+        {
+          {
+            noApiToken: 'noApiToken',
+            apiTokenReadyNoKitsYet: kitRefreshButton,
+            querying:
+              <div>
+                <span>
+                  Loading your kits...
+                </span>
+                <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+                </span>
+              </div>,
+            
+            networkError:
+              <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+                <div className={ classnames(sharedStyles['fail-icon-container']) }>
+                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
                 </div>
-          : null
+                <div className={ sharedStyles['explanation'] }>
+                  { kitsQueryStatus.message }
+                </div>
+              </div>,
+            
+            noKitsFoundAfterQuery:
+              <>
+                <p>Oh no! You don't have any kits set up.</p>
+                <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits"><FontAwesomeIcon icon={faExternalLinkAlt} />Font Awesome account</a> to create one. Then come back here and reload this page.</p>
+              </>,
+
+            kitSelection:
+              <>
+                { kitRefreshButton }
+                <select
+                className={ styles['version-select'] }
+                name="kit"
+                onChange={ e => handleKitChange({ kitToken: e.target.value }) }
+                value={ kitToken || '' }
+                >
+                  <option key='empty' value=''>Select a kit</option>
+                {
+                  kits.map((kit, index) => {
+                    return <option key={ index } value={ kit.token }>
+                      { `${ kit.name } (${ kit.token })` }
+                    </option>
+                  })
+                }
+                </select>
+              </>,
+            
+            showingOnlyActiveKit:
+              <>
+                { kitRefreshButton }
+                <span>showingOnlyActiveKit</span>
+              </>
+          }[status]
         }
       </div>
   }
@@ -224,6 +280,5 @@ export default function KitSelectView({ optionSelector, handleOptionChange, hand
 
 KitSelectView.propTypes = {
   optionSelector: PropTypes.func.isRequired,
-  handleOptionChange: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired
+  handleOptionChange: PropTypes.func.isRequired
 }
