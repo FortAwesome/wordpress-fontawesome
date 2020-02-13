@@ -17,6 +17,11 @@ abstract class FontAwesomeException extends Exception {
 	 */
 	protected $wp_error = null;
 
+	/**
+	 * A WP_Response object that was the occassion for this exception.
+	 */
+	protected $wp_response = null;
+
 	public function __construct( $message = "", $code = 0, $previous = NULL ) {
 		parent::__construct( $message, $code, $previous );
 
@@ -38,8 +43,23 @@ abstract class FontAwesomeException extends Exception {
 		return $obj;
 	}
 
+	public static function with_wp_http_response( $wp_response ) {
+		// This is how we invoke the derived class's constructor from an inherited static method.
+		$obj = new static();
+
+		if( ! is_null( $wp_response ) && is_a( $wp_response, 'WP_HTTP_Response' ) ) {
+			$obj->wp_response = $wp_response;
+		}
+
+		return $obj;
+	}
+
 	public function get_wp_error() {
 		return $this->wp_error;
+	}
+
+	public function get_wp_response() {
+		return $this->wp_response;
 	}
 }
 
