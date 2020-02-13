@@ -2,9 +2,11 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/exception/class-abstractexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/exception/class-fontawesomeexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/exception/error-util.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
+use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+use FortAwesome\Exception\{ FontAwesomeException, function wp_error_500 };
 
 if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 
@@ -113,26 +115,19 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 				$result = $this->metadata_provider()->metadata_query( $request->get_body() );
 
 				return new WP_REST_Response( json_decode( $result, true ), 200 );
+			} catch( FontAwesomeException $e ) {
+				return new WP_Error(
+					'fontawesome_exception',
+					$e->getMessage(),
+					array(
+						'status' => 400,
+						'trace'  => $e->getTraceAsString(),
+					)
+				);
 			} catch ( Exception $e ) {
-				if( is_a( $e, 'FortAwesome\Exception\AbstractException' ) ) {
-					return new WP_Error(
-						'fontawesome_exception',
-						$e->getMessage(),
-						array(
-							'status' => 400,
-							'trace'  => $e->getTraceAsString(),
-						)
-					);
-				} else {
-					return new WP_Error(
-						'unknown_exception',
-						$e->getMessage(),
-						array(
-							'status' => 500,
-							'trace'  => $e->getTraceAsString(),
-						)
-					);
-				}
+				return wp_error_500($e);
+			} catch ( Error $e ) {
+				return wp_error_500($e);
 			}
 		}
 

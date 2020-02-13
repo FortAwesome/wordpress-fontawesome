@@ -77,23 +77,15 @@ export function submitPendingUnregisteredClientDeletions() {
         message: ''
       })
     }).catch(error => {
-      const { response: { data: { code, message }}} = error
-
-      const uiMessage = (code => { 
-        switch(code) {
-          case 'rest_no_route':
-          case 'rest_cookie_invalid_nonce':
-            return "Sorry, we couldn't reach your WordPress server"
-          default:
-            console.error(`Font Awesome Plugin Error:\ncode: ${code}\nmessage: ${message}`)
-            return "Update failed"
-        }
-      })(code)
+      const message = reportRequestError({
+        error,
+        uiMessageDefault: 'Update failed'
+      })
 
       dispatch({
         type: 'DELETE_UNREGISTERED_CLIENTS_END',
         success: false,
-        message: uiMessage
+        message
       })
     })
   }
@@ -132,23 +124,15 @@ export function submitPendingBlocklist() {
         message: ''
       })
     }).catch(error => {
-      const { response: { data: { code, message }}} = error
-
-      const uiMessage = (code => { 
-        switch(code) {
-          case 'rest_no_route':
-          case 'rest_cookie_invalid_nonce':
-            return "Sorry, we couldn't reach your WordPress server"
-          default:
-            console.error(`Font Awesome Plugin Error:\ncode: ${code}\nmessage: ${message}`)
-            return "Update failed"
-        }
-      })(code)
+      const message = reportRequestError({
+        error,
+        uiMessageDefault: 'Update failed'
+      })
 
       dispatch({
         type: 'BLOCKLIST_UPDATE_END',
         success: false,
-        message: uiMessage
+        message
       })
     })
   }
@@ -177,24 +161,15 @@ export function checkPreferenceConflicts() {
         detectedConflicts: data
       })
     }).catch(error => {
-      const { response: { data: { code, message }}} = error
-
-      const checkMessage = (code => { 
-        switch(code) {
-          case 'cant_update':
-            return message
-          case 'rest_no_route':
-          case 'rest_cookie_invalid_nonce':
-            return "Sorry, we couldn't reach the server"
-          default:
-            return "Update failed"
-        }
-      })(code)
+      const message = reportRequestError({
+        error,
+        uiMessageDefault: 'Update failed'
+      })
 
       dispatch({
         type: 'PREFERENCE_CHECK_END',
         success: false,
-        message: checkMessage
+        message
       })
     })
   }
@@ -317,21 +292,27 @@ export function queryKits() {
           message: 'Kit changes saved'
         })
       }).catch(error => {
-        reportRequestError(error)
+        const message = reportRequestError({
+          error,
+          uiMessageDefault: 'Failed saving kit changes'
+        })
 
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
           success: false,
-          message: get(error, 'response.data.message', 'Failed saving kit changes')
+          message
         })
       })
     }).catch(error => {
-      reportRequestError(error)
+      const message = reportRequestError({
+        error,
+        uiMessageDefault: 'Failed to fetch kits'
+      })
 
       dispatch({
         type: 'KITS_QUERY_END',
         success: false,
-        message: get(error, 'response.data.message', 'Failed to fetch kits')
+        message
       })
     })
   }
@@ -360,26 +341,14 @@ export function submitPendingOptions() {
           message: 'Changes saved'
         })
     }).catch(error => {
-      const { response: { data: { code, message }}} = error
-
-      const submitMessage = (code => { 
-        switch(code) {
-          case 'rest_no_route':
-          case 'rest_cookie_invalid_nonce':
-            return "Oh no! Your web browser could not reach your WordPress server."
-          default:
-            if ( message && '' !== message ) {
-              return message
-            } else {
-              return "Update failed for some unknown reason"
-            }
-        }
-      })(code)
+      const message = reportRequestError({
+        error
+      })
 
       dispatch({
         type: 'OPTIONS_FORM_SUBMIT_END',
         success: false,
-        message: submitMessage
+        message
       })
     })
   }
@@ -413,28 +382,14 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
         dispatch(queryKits())
       }
     }).catch(error => {
-      reportRequestError(error)
-      const code = get(error, 'response.data.code')
-      const message = get(error, 'response.data.message')
-
-      const submitMessage = (code => { 
-        switch(code) {
-          case 'rest_no_route':
-          case 'rest_cookie_invalid_nonce':
-            return "Oh no! Your web browser could not reach your WordPress server."
-          default:
-            if ( message && '' !== message ) {
-              return message
-            } else {
-              return "Update failed for some unknown reason"
-            }
-        }
-      })(code)
+      const message = reportRequestError({
+        error
+      })
 
       dispatch({
         type: 'OPTIONS_FORM_SUBMIT_END',
         success: false,
-        message: submitMessage
+        message
       })
     })
   }
@@ -490,11 +445,14 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         })
       })
       .catch(function(error){
-        console.error('Font Awesome Conflict Detection Reporting Error: ', error)
+        const message = reportRequestError({
+          error
+        })
+
         dispatch({
           type: 'CONFLICT_DETECTION_SUBMIT_END',
           success: false,
-          message: `Submitting results to the WordPress server failed, and this might indicate a bug. Could you report this on the plugin's support forum? There maybe additional diagnostic output in the JavaScript console.\n\n${error}`
+          message
         })
       })
     } else {
@@ -522,11 +480,14 @@ export function snoozeV3DeprecationWarning() {
       dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_END', success: true, snooze: true })
     })
     .catch(function(error){
-      console.error('Font Awesome Plugin Error:', error)
+      const message = reportRequestError({
+        error
+      })
+
       dispatch({
         type: 'SNOOZE_V3DEPRECATION_WARNING_END',
         success: false,
-        message: `Snoozing failed. This might indicate a bug. Could you report this on the plugin's support forum? There maybe additional diagnostic output in the JavaScript console.\n\n${error}`
+        message
       })
     })
   }
@@ -571,24 +532,15 @@ export function setConflictDetectionScanner({ enable = true }) {
         success: true
       })
     }).catch(error => {
-      const { response: { data: { code, message }}} = error
-
-      const submitMessage = (code => { 
-        switch(code) {
-          case 'cant_update':
-            return message
-          case 'rest_no_route':
-          case 'rest_cookie_invalid_nonce':
-            return "Sorry, we couldn't reach the server"
-          default:
-            return "Update failed"
-        }
-      })(code)
+      const message = reportRequestError({
+        error,
+        uiMessageDefault: 'Update failed'
+      })
 
       dispatch({
         type: actionEndType,
         success: false,
-        message: submitMessage
+        message
       })
     })
   }
