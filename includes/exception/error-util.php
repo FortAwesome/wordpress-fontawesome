@@ -3,7 +3,7 @@ namespace FortAwesome\Exception;
 
 use \WP_Error, \Exception;
 
-function wp_error_500($e, $code = 'fa_unknown_error') {
+function unknown_error_500($e, $code = 'fa_unknown_error') {
 	if( is_a($e, 'Error') || is_a($e, 'Exception') ) {
 		return new WP_Error(
 			$code,
