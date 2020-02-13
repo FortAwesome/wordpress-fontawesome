@@ -73,9 +73,10 @@ export default function SettingsTab() {
     dispatch( chooseIntoKitConfig() )
   }
 
-  return <div>
+  return <div className={ sharedStyles['wrapper-div'] }>
+    <h3>How are you using Font Awesome?</h3>
     <div className={ styles['select-config-container'] }>
-      <div>
+      <span>
         <input
           id="select_use_kits"
           name="select_use_kits"
@@ -104,8 +105,8 @@ export default function SettingsTab() {
           Use A Kit
           </span>
         </label>
-      </div>
-      <div>
+      </span>
+      <span>
         <input
           id="select_use_cdn"
           name="select_use_cdn"
@@ -134,7 +135,7 @@ export default function SettingsTab() {
           Use CDN
           </span>
         </label>
-      </div>
+      </span>
     </div>
     <>
       {

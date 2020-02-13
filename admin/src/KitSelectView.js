@@ -12,7 +12,8 @@ import {
   faSpinner,
   faExternalLinkAlt,
   faCheck,
-  faSkull } from '@fortawesome/free-solid-svg-icons'
+  faSkull, 
+  faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import styles from './KitSelectView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -102,22 +103,26 @@ export default function KitSelectView({ optionSelector }) {
 
   function ApiTokenInput() {
     return <>
-      <label htmlFor="api_token" className={ styles['option-label'] }>
-        API Token
-      </label>
-      <input
-        id="api_token"
-        name="api_token"
-        type="text"
-        ref={ apiTokenInputRef }
-        placeholder="paste API Token here"
-        value={ pendingApiToken || '' }
-        size="20"
-        onChange={ e => {
-          setApiTokenInputHasFocus( true )
-          setPendingApiToken(e.target.value) 
-        }}
-      />
+      <div className={ styles['field-stacked'] }>
+        <label htmlFor="api_token">
+          Enter Your API Token
+        </label>
+        <input
+          id="api_token"
+          name="api_token"
+          type="text"
+          ref={ apiTokenInputRef }
+          value={ pendingApiToken || '' }
+          size="20"
+          onChange={ e => {
+            setApiTokenInputHasFocus( true )
+            setPendingApiToken(e.target.value) 
+          }}
+        />
+        <span className={ styles['option-label-explanation'] }>
+          Get your secure and unique API token from your <a target="_blank" href="https://fontawesome.com/account">Font Awesome Account page</a>
+        </span>
+      </div>
       <div className="submit">
         <input
           type="submit"
@@ -155,13 +160,15 @@ export default function KitSelectView({ optionSelector }) {
 
   function ApiTokenControl() {
     return <div className={ styles['api-token-control'] }>
-      <span>API Token</span>
-      <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-        <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
-      </span>
+      <p className={ styles['token-saved'] }> 
+        <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
+          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
+        </span>
+        API Token Saved
+      </p>
       {
         !!apiToken &&
-        <button onClick={ () => dispatch(updateApiToken({ apiToken: false })) } className={ styles['remove'] } type="button">remove</button>
+        <button onClick={ () => dispatch(updateApiToken({ apiToken: false })) } className={ styles['remove'] } type="button"><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faTrashAlt } title="remove" alt="remove" /></button>
       }
     </div>
   }
@@ -234,8 +241,8 @@ export default function KitSelectView({ optionSelector }) {
             
             noKitsFoundAfterQuery:
               <>
-                <p>Oh no! You don't have any kits set up.</p>
-                <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits"><FontAwesomeIcon icon={faExternalLinkAlt} />Font Awesome account</a> to create one. Then come back here and reload this page.</p>
+                <p>Zoinks! Looks like you don't have any kits set up yet.</p>
+                <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits"><FontAwesomeIcon icon={faExternalLinkAlt} />Font Awesome account</a> to create one. Then come back here and refresh your kits.</p>
               </>,
 
             kitSelection:
