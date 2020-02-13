@@ -16,7 +16,7 @@ RUN pecl install xdebug
 COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
 
 # Install phpunit
-RUN curl -L -s  https://phar.phpunit.de/phpunit-7.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
+RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 
 COPY ./install-wp-tests-docker.sh /tmp
 
@@ -34,4 +34,4 @@ RUN a2enconf proxy-webpack-dev
 # See: https://github.com/docker-library/wordpress/issues/205
 COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
 
-CMD ["apache2-foreground"]
+CMD ["docker-entrypoint.sh"]
