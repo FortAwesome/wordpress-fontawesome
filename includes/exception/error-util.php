@@ -3,13 +3,13 @@ namespace FortAwesome\Exception;
 
 use \WP_Error, \Exception;
 
-function unknown_error_500($e, $code = 'fa_unknown_error') {
+function build_wp_error($e, $code, $status) {
 	if( is_a($e, 'Error') || is_a($e, 'Exception') ) {
 		return new WP_Error(
 			$code,
 			$e->getMessage(),
 			array(
-				'status' => 500,
+				'status' => $status,
 				'trace'  => $e->getTraceAsString(),
 			)
 		);
@@ -21,10 +21,19 @@ function unknown_error_500($e, $code = 'fa_unknown_error') {
 				$code,
 				$e->getMessage(),
 				array(
-					'status' => 500,
+					'status' => $status,
 					'trace'  => $e->getTraceAsString()
 				)
 			);
 		}
 	}
+
+}
+
+function unknown_error_500( $e ) {
+	return build_wp_error( $e, 'fa_unknown_error', 500 );
+}
+
+function fa_400( $e ) {
+	return build_wp_error( $e, 'fontawesome_exception', 400 );
 }
