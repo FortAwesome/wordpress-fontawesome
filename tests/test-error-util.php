@@ -1,9 +1,9 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/exception/error-util.php';
+require_once dirname( __FILE__ ) . '/../includes/error-util.php';
 
-use FortAwesome\Exception\{ function unknown_error_500, function fa_400 };
+use FortAwesome\{ function unknown_error_500, function fa_400 };
 use \Exception, \Error;
 
 /**

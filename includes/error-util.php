@@ -1,5 +1,5 @@
 <?php
-namespace FortAwesome\Exception;
+namespace FortAwesome;
 
 use \WP_Error, \Exception;
 
