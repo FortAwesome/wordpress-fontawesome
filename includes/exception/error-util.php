@@ -15,7 +15,21 @@ function build_wp_error($e, $code, $status) {
 		);
 	} else {
 		try {
-			throw new Exception('Unexpected Thing, neither Error or Exception: ' . strval( $e ));
+			$as_string = (
+				method_exists( $e, '__toString' ) ||
+				is_string( $e ) ||
+				is_numeric( $e ) 
+			) ? strval( $e ) : null;
+
+			$message = 'Unexpected Thing, neither Error or Exception';
+
+			if( is_null( $as_string ) ) {
+				$message .= ', which cannot be stringified.';
+			} else {
+				$message .= ", stringified: $as_string";
+			}
+
+			throw new Exception( $message );
 		} catch( Exception $e ) {
 			return new WP_Error(
 				$code,
