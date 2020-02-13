@@ -169,6 +169,7 @@ button .conflict-detection-timer {
 .input-radio-custom:checked ~ label .checked-icon, .input-checkbox-custom:checked ~ label .checked-icon{
     display:block;
     opacity:1.0;
+    color: #228be6;
 }
 
 .input-radio-custom:checked ~ label .unchecked-icon, .input-checkbox-custom:checked ~ label .unchecked-icon{

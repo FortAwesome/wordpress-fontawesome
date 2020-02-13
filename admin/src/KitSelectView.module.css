@@ -4,10 +4,11 @@
 
 .api-token-control p {
   display: inline-block;
-  font-weight: 600;
-  background: #eee;
-  padding: .7rem;
+  margin: 0 0 1rem 0;
   border-radius: 3px;
+  background: #E4F6FF;
+  padding: .5rem .75rem;
+  font-weight: 600;
 }
 
 .api-token-control p span {
@@ -37,6 +38,14 @@
     color: #868e96;
 }
 
+.option-label-explanation a {
+  color: #868e96;
+}
+
+.option-label-explanation a:hover {
+  color: #228be6;
+}
+
 button.remove {
   transition: background .1s ease-in;
   transition: 0.1s ease-in;
@@ -45,12 +54,78 @@ button.remove {
   border: none;
   border-radius: 0 3px 3px 0;
   background-color: transparent;
-  padding: 1em 1.25em;
+  padding: .75em 1.25em;
   color: #999;
   cursor: pointer;
+}
+
+.selected-kit-settings {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.selected-kit-settings .label, 
+.selected-kit-settings .value {
+  padding: .5rem .5rem .5rem 0;
+  text-align: left;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.selected-kit-settings .label {
+  font-weight: 600;
+  width: 30%;
 }
 
 button.remove:hover {
   background-color: #DA001D;
   color: #fff;
+}
+
+button.refresh {
+  transition: background .1s ease-in;
+  transition: 0.1s ease-in;
+  display: inline-block;
+  margin: .5rem 0;
+  border: none;
+  border-radius: 3px;
+  background-color: #fff;
+  padding: .75em;
+  color: #228be6;
+  cursor: pointer;
+}
+
+button.refresh:hover {
+  background-color: #1c7ed6;
+  color: #fff;
+}
+
+button.refresh span {
+  padding-left: .5em;
+}
+
+.active-kit {
+  margin: 1rem 0 .5rem 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.active-kit svg {
+  color: #00C346;
+}
+
+.kit-selector-container .kit-select {
+  display: inline-block;
+  height: auto;
+  vertical-align: top;
+  margin: .5rem 1rem .5rem 0;
+  padding: .4rem;
+}
+
+.alert {
+  font-size: .8rem;
 }

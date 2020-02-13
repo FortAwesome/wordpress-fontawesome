@@ -12,6 +12,8 @@ import {
   faSpinner,
   faExternalLinkAlt,
   faCheck,
+  faCircle,
+  faRedo,
   faSkull, 
   faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import styles from './KitSelectView.module.css'
@@ -120,7 +122,7 @@ export default function KitSelectView({ optionSelector }) {
           }}
         />
         <span className={ styles['option-label-explanation'] }>
-          Get your secure and unique API token from your <a target="_blank" href="https://fontawesome.com/account">Font Awesome Account page</a>
+          Get your secure and unique API token from your <a target="_blank" href="https://fontawesome.com/account">Font Awesome account page <FontAwesomeIcon icon={faExternalLinkAlt} /></a>
         </span>
       </div>
       <div className="submit">
@@ -206,19 +208,25 @@ export default function KitSelectView({ optionSelector }) {
       throw new Error('Something went wrong. Try reloading the page.')
     }
 
-    const kitRefreshButton = <button onClick={ () => dispatch(queryKits()) }>
+    const kitRefreshButton = <button onClick={ () => dispatch(queryKits()) } className={ styles['refresh'] }>
+      <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faRedo } title="refresh" alt="refresh" />
+      <span>
       {
         0 === size(kits)
-        ? 'query kits'
-        : 'refresh kits'
+        ? 'Get latest kits data'
+        : 'Refresh kits data'
       }
+      </span>
     </button>
+
+    const activeKitNotice = kitTokenActive ? <h4 className={ styles['active-kit'] }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCircle } /> { kitTokenActive } Kit is Currently Active</h4> : <h4 className={ styles['active-kit'] }>No active kit</h4>
+
 
       return <div className={ styles['kit-selector-container'] }>
         {
           {
             noApiToken: 'noApiToken',
-            apiTokenReadyNoKitsYet: kitRefreshButton,
+            apiTokenReadyNoKitsYet: <>{ activeKitNotice } { kitRefreshButton }</>,
             querying:
               <div>
                 <span>
@@ -242,14 +250,17 @@ export default function KitSelectView({ optionSelector }) {
             noKitsFoundAfterQuery:
               <>
                 <p>Zoinks! Looks like you don't have any kits set up yet.</p>
-                <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits"><FontAwesomeIcon icon={faExternalLinkAlt} />Font Awesome account</a> to create one. Then come back here and refresh your kits.</p>
+                <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Font Awesome account <FontAwesomeIcon icon={faExternalLinkAlt} /></a> to create one. Then come back here and refresh your kits.</p>
               </>,
 
             kitSelection:
               <>
-                { kitRefreshButton }
+              { activeKitNotice }
+              <div className={ styles['field-stacked'] }>
+                <label htmlFor="kits" className={ styles['label'] }>Your Kits:</label>
                 <select
-                className={ styles['version-select'] }
+                className={ styles['kit-select'] }
+                id="kits"
                 name="kit"
                 onChange={ e => handleKitChange({ kitToken: e.target.value }) }
                 value={ kitToken || '' }
@@ -263,12 +274,14 @@ export default function KitSelectView({ optionSelector }) {
                   })
                 }
                 </select>
+                { kitRefreshButton }
+                </div>
               </>,
             
             showingOnlyActiveKit:
               <>
+                { activeKitNotice }
                 { kitRefreshButton }
-                <span>showingOnlyActiveKit</span>
               </>
           }[status]
         }

@@ -73,7 +73,7 @@ export default function SettingsTab() {
     dispatch( chooseIntoKitConfig() )
   }
 
-  return <div className={ sharedStyles['wrapper-div'] }>
+  return <div><div className={ sharedStyles['wrapper-div'] }>
     <h3>How are you using Font Awesome?</h3>
     <div className={ styles['select-config-container'] }>
       <span>
@@ -147,6 +147,7 @@ export default function SettingsTab() {
           : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
     </>
+    </div>
     {
       (!useKit || apiToken) &&
       <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
