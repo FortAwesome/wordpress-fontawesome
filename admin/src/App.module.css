@@ -1,6 +1,6 @@
 .wrapper-div {
   margin-right: 20px;
-  padding: 20px;
+  padding: 1rem 2rem 2rem 2rem;
   background-color: #fff;
 }
 
@@ -47,7 +47,6 @@ div.submit-status.fail .explanation {
 
 h2.section-title {
   font-size: 18px;
-  margin-top: 0;
 }
 
 h3.section-title {

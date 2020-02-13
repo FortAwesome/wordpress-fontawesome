@@ -80,7 +80,6 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
   }
 
   return <div className={ classnames(styles['options-setter']) }>
-    <div className={ sharedStyles['wrapper-div'] }>
       <form onSubmit={ e => e.preventDefault() }>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
           <div className={ styles['option-header'] }>Icons</div>
@@ -372,7 +371,6 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
           </div>
         </div>
       </form>
-    </div>
   </div>
 }
 

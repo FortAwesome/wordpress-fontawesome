@@ -1,21 +1,56 @@
-/*
 .kit-selector-container {
   
 }
 
-.api-token-control {
+.api-token-control p {
+  display: inline-block;
+  font-weight: 600;
+  background: #eee;
+  padding: .7rem;
+  border-radius: 3px;
+}
 
+.api-token-control p span {
+  padding: 0 .5em 0 0;
 }
-*/
+
+
+.field-stacked label {
+  font-weight: 600;
+}
+
+.field-stacked input {
+  margin: .2rem 0;
+}
+
+.field-stacked label,
+.field-stacked input,
+.field-stacked .label-help {
+  display: block;
+}
+
+.option-label-explanation {
+    display: block;
+    font-weight: normal;
+    line-height: 1.5;
+    margin-top: .25rem;
+    color: #868e96;
+}
+
 button.remove {
-  border: none;  
-  cursor: pointer;
-  background-color: transparent;
-  text-decoration: underline;
-  text-decoration-color: rgba(0,0,0,0.15);
-  color: #535353;
+  transition: background .1s ease-in;
   transition: 0.1s ease-in;
+  display: inline-block;
+  margin-left: -.1em;
+  border: none;
+  border-radius: 0 3px 3px 0;
+  background-color: transparent;
+  padding: 1em 1.25em;
+  color: #999;
+  cursor: pointer;
 }
+
 button.remove:hover {
-  text-decoration-color: initial;
+  background-color: #DA001D;
+  color: #fff;
 }
