@@ -6,6 +6,8 @@
  * @noinspection PhpCSValidationInspection
  */
 
+define( 'FONTAWESOME_ENV', 'test' );
+
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 // phpcs:ignore WordPress.PHP.DevelopmentFunctions
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
