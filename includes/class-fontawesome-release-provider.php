@@ -20,10 +20,10 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
  */
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -70,12 +70,6 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $status = null;
-
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
-	 * @ignore
-	 */
 	protected $api_client = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -108,30 +102,6 @@ class FontAwesome_Release_Provider {
 	}
 
 	/**
-	 * Returns an associative array indicating the status of the status of the last network
-	 * request that attempted to retrieve releases metadata, or null if no network request has
-	 * been issued during the life time of the current Singleton instance.
-	 *
-	 * The shape of an array return looks like this:
-	 * ```php
-	 * array(
-	 *   'code' => 403,
-	 *   'message' => 'some message',
-	 * )
-	 * ```
-	 *
-	 * The value of the `code` key is one of:
-	 * - `200` if successful,
-	 * - `0` if there was some code error that prevented the network request from completing
-	 * - otherwise some HTTP error code as returned by `wp_remote_get()`
-	 *
-	 * @return array|null
-	 */
-	public function get_status() {
-		return $this->status;
-	}
-
-	/**
 	 * Private constructor.
 	 *
 	 * @ignore
@@ -153,11 +123,13 @@ class FontAwesome_Release_Provider {
 	 *
 	 * @internal
 	 * @ignore
-	 * @return WP_Error | 1
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 * @return void
 	 */
 	public function load_releases() {
-		try {
-			$query = <<< EOD
+		$query = <<< EOD
 query {
 	latest: release(version: "latest") {
 		version
@@ -177,82 +149,68 @@ query {
 	}
 }
 EOD;
-			$result = $this->query( $query );
 
-			if ( $result instanceof WP_Error ) {
-				return $result;
-			} else {
-				$body = json_decode( $result, true );
-			}
+		$body = json_decode( $this->query( $query ), true );
 
-			$releases = array();
+		$releases = array();
 
-			foreach ( $body['data']['releases'] as $release ) {
-				$sris = array();
+		foreach ( $body['data']['releases'] as $release ) {
+			$sris = array();
 
-				foreach ( $release['srisByLicense'] as $license => $sri_set ) {
-					$sris[$license] = array();
-					foreach ( $sri_set as $sri ) {
-						$sris[$license][$sri['path']] = $sri['value'];
-					}
+			foreach ( $release['srisByLicense'] as $license => $sri_set ) {
+				$sris[$license] = array();
+				foreach ( $sri_set as $sri ) {
+					$sris[$license][$sri['path']] = $sri['value'];
 				}
-
-				$releases[ $release['version'] ] = array(
-					'sri' => $sris
-				);
 			}
 
-			$previous_transient = get_site_transient( self::RELEASES_TRANSIENT );
-
-			if ( $previous_transient ) {
-				// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
-				delete_site_transient( self::RELEASES_TRANSIENT );
-			}
-
-			$refreshed_at = time();
-			$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
-
-			// TODO: probably throw an exception right here of $latest_version remains null.
-			// Other code depends upon there being a latest_version, as long as we've done
-			// a releases metadata query. This would indicate an error on Font Awesome's API server.
-
-			$transient_value = array(
-				'refreshed_at' => $refreshed_at,
-				'data' => array (
-					'latest' => $latest_version,
-					'releases' => $releases
-				)
-			);
-
-			$ret = set_site_transient( self::RELEASES_TRANSIENT, $transient_value, self::RELEASES_TRANSIENT_EXPIRY );
-
-			if ( ! $ret ) {
-				return new WP_Error(
-					'fontawesome_release_provider_transient',
-					'Failed to store releases transient'
-				);
-			}
-
-			$this->releases = $releases;
-			$this->refreshed_at = $refreshed_at;
-			$this->latest_version = $latest_version;
-
-			return 1;
-		} catch ( Exception $e ) {
-			return new WP_Error(
-				'fontawesome_release_provider_exception',
-				$e->getMessage()
-			);
-		} catch ( Error $e ) {
-			return new WP_Error(
-				'fontawesome_release_provider_error',
-				$e->getMessage()
+			$releases[ $release['version'] ] = array(
+				'sri' => $sris
 			);
 		}
+
+		$previous_transient = get_site_transient( self::RELEASES_TRANSIENT );
+
+		if ( $previous_transient ) {
+			// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
+			delete_site_transient( self::RELEASES_TRANSIENT );
+		}
+
+		$refreshed_at = time();
+		$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
+
+		if( is_null( $latest_version ) ) {
+			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version' ) );
+		}
+
+		$transient_value = array(
+			'refreshed_at' => $refreshed_at,
+			'data' => array (
+				'latest' => $latest_version,
+				'releases' => $releases
+			)
+		);
+
+		$ret = set_site_transient( self::RELEASES_TRANSIENT, $transient_value, self::RELEASES_TRANSIENT_EXPIRY );
+
+		if ( ! $ret ) {
+			throw new ReleaseProviderStorageException();
+		}
+
+		$this->releases = $releases;
+		$this->refreshed_at = $refreshed_at;
+		$this->latest_version = $latest_version;
 	}
 
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 */
 	private function build_resource( $version, $file_basename, $flags = array(
 		'use_svg' => false,
@@ -285,7 +243,14 @@ EOD;
 	 *
 	 * @ignore
 	 * @internal
-	 * @return WP_Error | array
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @return array
 	 */
 	protected function query( $query ) {
 		return fa_metadata_provider()->metadata_query( $query, TRUE );
@@ -304,7 +269,10 @@ EOD;
 	 *
 	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT()
 	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT_EXPIRY()
-	 * @throws FontAwesome_NoReleasesException
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 * @return array
 	 */
 	protected function releases() {
@@ -318,9 +286,8 @@ EOD;
 			} elseif ( is_null( $this->releases ) ) {
 				$result = $this->load_releases();
 
-				// TODO: probably stop throwing this exception and just return WP_Error.
-				if ( $result instanceof WP_Error || is_null( $this->releases ) ) {
-					throw new FontAwesome_NoReleasesException();
+				if ( is_null( $this->releases ) ) {
+					throw new ReleaseMetadataMissingException();
 				} else {
 					return $this->releases;
 				}
@@ -348,7 +315,10 @@ EOD;
 	/**
 	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending version order.
 	 *
-	 * @throws FontAwesome_NoReleasesException
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 * @return array
 	 */
 	public function versions() {

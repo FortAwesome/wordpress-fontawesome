@@ -8,6 +8,7 @@ namespace FortAwesome;
  */
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesomeexception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
 
@@ -54,8 +55,15 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-	protected static function build_error_response() {
-		return new WP_Error();
+	protected static function build_500_response() {
+		return array(
+			'response' => array(
+				'code'    => 500,
+				'message' => 'Internal Server Error',
+			),
+			'body'     => '',
+			'headers'  => []
+		);
 	}
 
 	protected function create_release_provider_with_mocked_response( $response ) {
@@ -71,31 +79,48 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_versions_no_releases_exception() {
+	protected function create_release_provider_that_throws( $exception ) {
+		return mock_singleton_method(
+			$this,
+			FontAwesome_Release_Provider::class,
+			'query',
+			function( $method ) use ( $exception ) {
+				$method->will( $this->throwException( $exception ) );
+			}
+		);
+	}
+
+	public function test_versions_exception() {
 		/**
 		 * When the GET for releases does not return successfully and we have no version metadata available,
 		 * we expect an exception to be thrown.
 		 */
-
-		$mock_response = self::build_error_response();
 		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$farp = $this->create_release_provider_that_throws( new ApiResponseException() );
+		$caught = false;
 
-		$this->expectException( FontAwesome_NoReleasesException::class );
-		$farp->versions();
-		// END: Since this tests an exception, make sure there are no assertions after this point, because
-		// they don't seem to get a chance to run once this expected exception is handled.
+		try {
+			$farp->versions();
+		} catch ( ApiResponseException $e ) {
+			$caught = true;
+		}
+
+		$this->assertTrue( $caught );
 	}
 
 	public function test_error_response() {
-		$mock_response = self::build_error_response();
+		$farp = $this->create_release_provider_that_throws( new ApiRequestException() );
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
+		$caught = false;
 
-		$result = $farp->load_releases();
+		try {
+			$farp->load_releases();
+		} catch( ApiRequestException $e ) {
+			$caught = true;
+		}
 
-		$this->assertTrue( $result instanceof WP_Error );
+		$this->assertTrue( $caught );
 	}
 
 	public function test_versions_success() {
