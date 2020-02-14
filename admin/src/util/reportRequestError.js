@@ -31,7 +31,7 @@ export default function({ error, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMessag
           case 'rest_cookie_invalid_nonce':
             uiMessage = 'It looks like your web browser session expired. Trying logging out and log back in to WordPress admin.'
             break
-          case 'fa_unknown_error':
+          case 'fontawesome_unknown_error':
             uiMessage = UI_MESSAGE_DEFAULT
             break
           default:
