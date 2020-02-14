@@ -94,7 +94,6 @@ class ApiTokenInvalidException extends FontAwesomeClientException {
 	public $ui_message = 'Whoops, it looks like that API Token is not valid. Try another one?';
 }
 
-
 class ApiTokenEndpointResponseException extends FontAwesomeServerException {
 	public $ui_message = 'Oh no! It looks like your API Token was valid, ' .
 		'but the Font Awesome API server still returned an invalid response.';
@@ -103,4 +102,23 @@ class ApiTokenEndpointResponseException extends FontAwesomeServerException {
 class AccessTokenStorageException extends FontAwesomeServerException {
 	public $ui_message = 'There was a problem trying to store API credentials. Your API Token ' .
 		' was valid, but storage failed.';
+}
+
+class ConfigException extends FontAwesomeClientException {
+	public function __construct( $code = NULL ) {
+		switch( $code ) {
+			case 'kit_token_no_api_token':
+				return parent::__construct(
+					'A kitToken was given without a valid apiToken'
+				);
+			case 'concrete_version_expected':
+				return parent::__construct(
+					'A Font Awesome version number was expected but not given',
+				);
+			default:
+				return parent::__construct(
+					'Invalid options were given'
+				);
+		}
+	}
 }
