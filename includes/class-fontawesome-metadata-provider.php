@@ -92,6 +92,13 @@ class FontAwesome_Metadata_Provider {
 	 *     the network request, even if an apiToken is present.
 	 * @ignore
 	 * @internal
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
 	 * @return string json encoded query response body
 	 */
 	public function metadata_query( $query_string, $ignore_auth = FALSE ) {
@@ -105,39 +112,19 @@ class FontAwesome_Metadata_Provider {
 
 		if( ! $ignore_auth ) {
 			$access_token = $this->current_access_token();
-			if ( $access_token instanceof WP_Error ) {
-				return $access_token;
-			} elseif ( is_string( $access_token ) ) {
-				$args['headers']['authorization'] = "Bearer $access_token";
-			}
+			$args['headers']['authorization'] = "Bearer $access_token";
 		}
 
-		try {
-			$response = $this->post( FONTAWESOME_API_URL, $args );
+		$response = $this->post( FONTAWESOME_API_URL, $args );
 
-			if ( $response instanceof WP_Error ) {
-				return $response;
-			}
+		if ( $response instanceof WP_Error ) {
+			throw ApiRequestException::with_wp_error( $response );
+		}
 
-			if ( 200 === $response['response']['code'] ) {
-				return $response['body'];
-			} else {
-				return new WP_Error(
-					'fontawesome_api_failed_request',
-					$response['response']['message'],
-					array( 'status' => $response['response']['code'] )
-				);
-			}
-		} catch ( Exception $e ) {
-			return new WP_Error(
-				'fontawesome_exception',
-				$e->getMessage()
-			);
-		} catch ( Error $e ) {
-			return new WP_Error(
-				'fontawesome_error',
-				$e->getMessage()
-			);
+		if ( 200 === $response['response']['code'] ) {
+			return $response['body'];
+		} else {
+			throw ApiResponseException::with_wp_response( $response );
 		}
 	}
 
@@ -150,8 +137,12 @@ class FontAwesome_Metadata_Provider {
 	 * Returns null when there is no api_token.
 	 * Otherwise, returns the current access_token as a string.
 	 * 
-	 * @return WP_Error|string|null access_token if available; null if unavailable,
-	 *    or WP_Error if there is an error while refreshing the access_token.
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @return string|null access_token if available; null if unavailable
 	 */
 	protected function current_access_token() {
 		if ( ! boolval( fa_api_settings()->api_token() ) ) {
@@ -165,13 +156,8 @@ class FontAwesome_Metadata_Provider {
 			return $access_token;
 		} else {
 			// refresh the access token
-			$result = fa_api_settings()->request_access_token();
-
-			if( $result instanceof WP_Error ) {
-				return $result;
-			} else {
-				return fa_api_settings()->access_token();
-			}
+			fa_api_settings()->request_access_token();
+			return fa_api_settings()->access_token();
 		}
 	}
 }
