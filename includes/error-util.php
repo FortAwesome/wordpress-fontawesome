@@ -11,7 +11,11 @@ use \WP_Error, \Exception;
  */
 function build_wp_error($e, $code, $status) {
 	if( is_a($e, 'Error') || is_a($e, 'Exception') ) {
-		return new WP_Error(
+		$previous = boolval( $e->getPrevious() )
+			? build_wp_error( $e->getPrevious(), 'previous_exception', 500 )
+			: null;
+
+		$current = new WP_Error(
 			$code,
 			$e->getMessage(),
 			array(
@@ -19,6 +23,16 @@ function build_wp_error($e, $code, $status) {
 				'trace'  => $e->getTraceAsString(),
 			)
 		);
+
+		if( ! is_null( $previous ) ) {
+			$current->add(
+				$previous->get_error_code(),
+				$previous->get_error_message(),
+				$previous->get_error_data()
+			);
+		}
+
+		return $current;
 	} else {
 		try {
 			$as_string = (

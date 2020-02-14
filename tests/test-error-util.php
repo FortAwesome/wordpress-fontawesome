@@ -101,4 +101,13 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$this->assertEquals( 500, $result->get_error_data( $code )['status'] );
 		$this->assertTrue( isset( $result->get_error_data( $code )['trace'] ) );
 	}
+
+	public function test_build_wp_error_with_a_previous() {
+		$prev = new Exception( 'some previous' );
+		$e = PreferenceRegistrationException::with_thrown( $prev );
+
+		$result = fa_500( $e );
+
+		$this->assertEquals( ['fontawesome_server_exception', 'previous_exception'], $result->get_error_codes() );
+	}
 }

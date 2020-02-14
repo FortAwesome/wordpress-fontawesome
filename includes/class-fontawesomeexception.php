@@ -67,6 +67,17 @@ abstract class FontAwesomeException extends Exception {
 		return $obj;
 	}
 
+	/**
+	 * Construct an exception with a previously thrown Error or Exception.
+	 * 
+	 * (The Throwable interface is not available until PHP 7, and we support back to 5.6.)
+	 *
+	 * @param $e Error or Exception
+	 */
+	public static function with_thrown( $e ) {
+		return new static( null, 0, $e );
+	}
+
 	public function get_wp_error() {
 		return $this->wp_error;
 	}
@@ -121,4 +132,8 @@ class ConfigException extends FontAwesomeClientException {
 				);
 		}
 	}
+}
+
+class PreferenceRegistrationException extends FontAwesomeServerException {
+	public $ui_message = 'A theme or plugin registered with Font Awesome threw an exception.';
 }
