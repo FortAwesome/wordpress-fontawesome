@@ -298,7 +298,7 @@ EOD;
 			array(
 				'body'    => '',
 				'headers' => array(
-					'authorization' => 'Bearerx ' . $this->api_token(),
+					'authorization' => 'Bearer ' . $this->api_token(),
 				),
 			)
 		);
