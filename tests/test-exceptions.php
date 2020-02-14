@@ -42,4 +42,18 @@ class ExceptionsTest extends \WP_UnitTestCase {
 		$this->assertTrue( is_array( $wpr ) );
 		$this->assertEquals( 403, $wpr['response']['code'] );
 	}
+
+	public function test_config_exception_with_code() {
+		$e = new ConfigException('kit_token_no_api_token');
+
+		$this->assertStringStartsWith('A kitToken', $e->getMessage() );
+	}
+
+	public function test_config_exception_with_no_code_or_unknown_code() {
+		$e1 = new ConfigException();
+		$e2 = new ConfigException('foo');
+
+		$this->assertStringStartsWith('Invalid options', $e1->getMessage() );
+		$this->assertStringStartsWith('Invalid options', $e2->getMessage() );
+	}
 }

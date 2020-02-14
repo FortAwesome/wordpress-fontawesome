@@ -8,6 +8,7 @@ namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 
@@ -97,11 +98,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 					// We're adding an api_token
 					$api_settings = FontAwesome_API_Settings::reset();
 					$api_settings->set_api_token( $api_token );
-					$result = $api_settings->request_access_token();
-
-					if ( $result instanceof WP_Error ) {
-						return $result;
-					}
+					$api_settings->request_access_token();
 				} elseif ( boolval( fa_api_settings()->api_token() ) && ! boolval( $api_token ) ) {
 					// We're removing an existing API Token
 					fa_api_settings()->remove();
@@ -148,15 +145,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$return_data = $this->build_item( fa() );
 				return new WP_REST_Response( $return_data, 200 );
+			} catch( FontAwesomeServerException $e ) {
+				return fa_500( $e );
+			} catch( FontAwesomeException $e ) {
+				return fa_400( $e );
 			} catch ( Exception $e ) {
-				return new WP_Error(
-					'cant_update',
-					$e->getMessage(),
-					array(
-						'status' => 500,
-						'trace'  => $e->getTraceAsString(),
-					)
-				);
+				return unknown_error_500( $e );
+			} catch ( Error $e ) {
+				return unknown_error_500( $e );
 			}
 		}
 
@@ -167,8 +163,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @internal
 		 * @ignore
 		 * @param array $given_options the options from the request body
-		 * @return WP_Error|array The item to store on the options key or WP_Error
-		 *     if there is some error.
+		 * @throws ConfigException
+		 * @return array The item to store on the options key
 		 */
 		protected function prepare_item_for_database( $given_options ) {
 			// start with a copy of the defaults and just override them indivually.
@@ -191,11 +187,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				if ( $api_token ) {
 					$item['kitToken'] = $given_options['kitToken'];
 				} else {
-					return new WP_Error(
-						'fontawesome_config',
-						'A kitToken was given without a valid apiToken',
-						array( 'status' => 400 )
-					);
+					throw new ConfigException('kit_token_no_api_token');
 				}
 			}
 
@@ -239,11 +231,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			} elseif ( $version_is_concrete ) {
 				$item['version'] = $given_options['version'];
 			} else {
-				return new WP_Error(
-					'fontawesome_config',
-					'A Font Awesome version number was expected but not given',
-					array( 'status' => 400 )
-				);
+				throw new ConfigException('concrete_version_expected');
 			}
 
 			return $item;
