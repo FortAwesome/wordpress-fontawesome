@@ -1,6 +1,6 @@
 .select-config-container {
   display: flex;
-  margin-bottom: 1.5rem;
+  margin-bottom: .5rem;
   border-bottom: 2px solid #008DED;
   padding-bottom: 1rem;
 }

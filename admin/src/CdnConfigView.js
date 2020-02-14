@@ -150,7 +150,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
               <Alert title='Pro requires a Font Awesome subscription' type='info'>
                 <ul>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more</a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Get Pro</a>
                   </li>
                   <li>
                     <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>

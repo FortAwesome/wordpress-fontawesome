@@ -12,10 +12,10 @@ import {
   faSpinner,
   faExternalLinkAlt,
   faCheck,
-  faCircle,
   faRedo,
   faSkull, 
   faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faQuestionCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons'
 import styles from './KitSelectView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
@@ -105,25 +105,27 @@ export default function KitSelectView({ optionSelector }) {
 
   function ApiTokenInput() {
     return <>
-      <div className={ styles['field-stacked'] }>
+      <div className={ styles['field-apitoken'] }>
         <label htmlFor="api_token">
-          Enter Your API Token
+          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faQuestionCircle } size="lg" />
+          API Token
         </label>
-        <input
-          id="api_token"
-          name="api_token"
-          type="text"
-          ref={ apiTokenInputRef }
-          value={ pendingApiToken || '' }
-          size="20"
-          onChange={ e => {
-            setApiTokenInputHasFocus( true )
-            setPendingApiToken(e.target.value) 
-          }}
-        />
-        <span className={ styles['option-label-explanation'] }>
-          Get your secure and unique API token from your <a target="_blank" href="https://fontawesome.com/account">Font Awesome account page <FontAwesomeIcon icon={faExternalLinkAlt} /></a>
-        </span>
+        <div>
+          <input
+            id="api_token"
+            name="api_token"
+            type="text"
+            ref={ apiTokenInputRef }
+            value={ pendingApiToken || '' }
+            size="20"
+            onChange={ e => {
+              setApiTokenInputHasFocus( true )
+              setPendingApiToken(e.target.value)
+            }}
+          />
+          <p>Grab your secure and unique API token from your <a target="_blank" href="https://fontawesome.com/account">Font Awesome account page <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and enter it here so we can securely fetch your kits.</p>
+
+        </div>
       </div>
       <div className="submit">
         <input
@@ -163,8 +165,8 @@ export default function KitSelectView({ optionSelector }) {
   function ApiTokenControl() {
     return <div className={ styles['api-token-control'] }>
       <p className={ styles['token-saved'] }> 
-        <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
+        <span>
+          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
         </span>
         API Token Saved
       </p>
@@ -219,77 +221,86 @@ export default function KitSelectView({ optionSelector }) {
       </span>
     </button>
 
-    const activeKitNotice = kitTokenActive ? <h4 className={ styles['active-kit'] }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCircle } /> { kitTokenActive } Kit is Currently Active</h4> : <h4 className={ styles['active-kit'] }>No active kit</h4>
+    const activeKitNotice = kitTokenActive ? <div className={ styles['wrap-active-kit'] }><p className={ classnames(styles['active-kit'], styles['set']) }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" /> { kitTokenActive } Kit is Currently Active</p></div> : null
 
 
       return <div className={ styles['kit-selector-container'] }>
-        {
-          {
-            noApiToken: 'noApiToken',
-            apiTokenReadyNoKitsYet: <>{ activeKitNotice } { kitRefreshButton }</>,
-            querying:
-              <div>
-                <span>
-                  Loading your kits...
-                </span>
-                <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
-                </span>
-              </div>,
-            
-            networkError:
-              <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-                <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-                </div>
-                <div className={ sharedStyles['explanation'] }>
-                  { kitsQueryStatus.message }
-                </div>
-              </div>,
-            
-            noKitsFoundAfterQuery:
-              <>
-                <p>Zoinks! Looks like you don't have any kits set up yet.</p>
-                <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Font Awesome account <FontAwesomeIcon icon={faExternalLinkAlt} /></a> to create one. Then come back here and refresh your kits.</p>
-              </>,
 
-            kitSelection:
-              <>
-              { activeKitNotice }
-              <div className={ styles['field-stacked'] }>
-                <label htmlFor="kits" className={ styles['label'] }>Your Kits:</label>
-                <select
-                className={ styles['kit-select'] }
-                id="kits"
-                name="kit"
-                onChange={ e => handleKitChange({ kitToken: e.target.value }) }
-                value={ kitToken || '' }
-                >
-                  <option key='empty' value=''>Select a kit</option>
-                {
-                  kits.map((kit, index) => {
-                    return <option key={ index } value={ kit.token }>
-                      { `${ kit.name } (${ kit.token })` }
-                    </option>
-                  })
-                }
-                </select>
-                { kitRefreshButton }
-                </div>
-              </>,
-            
-            showingOnlyActiveKit:
-              <>
-                { activeKitNotice }
-                { kitRefreshButton }
-              </>
-          }[status]
-        }
+        { activeKitNotice }
+
+        <div className={ styles['wrap-selectkit'] }>
+          <h3 className={ styles['title-selectkit'] }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faQuestionCircle } size="lg" />
+            Pick a Kit to Use or Check Settings
+          </h3>
+          <div className={ styles['selectkit'] }>
+            <p>Refresh your kits data to get the latest kit settings, then select the kit you would like to use. Remember to save when you're ready to use it.</p>
+          {
+            {
+              noApiToken: 'noApiToken',
+              apiTokenReadyNoKitsYet: <>{ activeKitNotice } { kitRefreshButton }</>,
+              querying:
+                <div>
+                  <span>
+                    Loading your kits...
+                  </span>
+                  <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
+                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+                  </span>
+                </div>,
+
+              networkError:
+                <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
+                  <div className={ classnames(sharedStyles['fail-icon-container']) }>
+                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
+                  </div>
+                  <div className={ sharedStyles['explanation'] }>
+                    { kitsQueryStatus.message }
+                  </div>
+                </div>,
+
+              noKitsFoundAfterQuery:
+                <>
+                  <h3>Zoinks! Looks like you don't have any kits set up yet.</h3>
+                  <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Kits on Font Awesome <FontAwesomeIcon icon={faExternalLinkAlt} /></a> to create one. Then come back here and refresh your kits.</p>
+                  { kitRefreshButton }
+                </>,
+
+              kitSelection:
+                <>
+                <div className={ styles['field-kitselect'] }>
+                  <select
+                  className={ styles['kit-select'] }
+                  id="kits"
+                  name="kit"
+                  onChange={ e => handleKitChange({ kitToken: e.target.value }) }
+                  value={ kitToken || '' }
+                  >
+                    <option key='empty' value=''>Select a kit</option>
+                  {
+                    kits.map((kit, index) => {
+                      return <option key={ index } value={ kit.token }>
+                        { `${ kit.name } (${ kit.token })` }
+                      </option>
+                    })
+                  }
+                  </select>
+                  { kitRefreshButton }
+                  </div>
+                </>,
+
+              showingOnlyActiveKit:
+                <>
+                  { kitRefreshButton }
+                </>
+            }[status]
+          }
+          </div>
+        </div>
       </div>
-  }
+    }
 
   return <div>
-    <div>
+    <div className={ styles['kit-tab-content'] }>
       {
         hasSavedApiToken
         ? <>

@@ -11,32 +11,36 @@
 }
 
 .alert-icon {
-  background-color: #5AC1FF;
   color: #008BED;
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
-  padding: .75rem .5rem;
-  font-size: 1.25rem;
+  padding: .55rem .25rem .5rem .75rem;
+  font-size: 1rem;
+}
+
+.alert-title {
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .alert-message {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: .5rem 1rem .75rem 1rem;
-  line-height: 1.5;
-}
-
-.alert-title {
-  margin-top: 0;
-  margin-bottom: 0.2rem;
-  font-size: .9rem;
-  font-weight: 600;
+  padding: .5rem 1rem .75rem .25rem;
+  font-size: .8rem;
 }
 
 .alert-message p {
   margin-top: 0;
   margin-bottom: .5rem;
+}
+
+.alert-message svg {
+  font-size: .7rem;
 }
 
 .alert-message ul {
@@ -67,6 +71,5 @@
 }
 
 .alert-warning .alert-icon {
-  background: rgb(255, 224, 102);
   color: rgb(250, 176, 7);
 }

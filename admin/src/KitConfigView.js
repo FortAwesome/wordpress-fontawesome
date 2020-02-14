@@ -46,7 +46,6 @@ export default function KitConfigView({ kitToken }) {
   )
 
   return <div className={ styles['kit-config-view-container'] }>
-  <p>Settings for [selected kit name or token] kit at last refresh</p>
     <table className={ styles['selected-kit-settings'] }>
       <tr>
         <th className={ styles['label'] }>Icons</th>
@@ -67,7 +66,7 @@ export default function KitConfigView({ kitToken }) {
         <td className={ styles['value'] }>{ v4Compat ? 'On' : 'Off' }</td>
       </tr>
     </table>
-    <p className={ styles['option-label-explanation'] }>Make changes on <a target="_blank" href="https://fontawesome.com/kits">fontawesome.com <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and then refresh.</p>
+    <p className={ styles['tip-text'] }>Make changes on <a target="_blank" href="https://fontawesome.com/kits">fontawesome.com <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and then refresh.</p>
   </div>
 }
 

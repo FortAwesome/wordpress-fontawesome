@@ -15,7 +15,7 @@
 .option-header {
     width: 30%;
     font-weight: bold;
-    font-size: larger;
+    font-size: .9rem;
 }
 
 .option-status {
@@ -61,6 +61,10 @@
 .option-divider {
     margin-top: 1rem;
     margin-bottom: 1rem;
+}
+
+.options-setter {
+  margin-top: 1rem;
 }
 
 .options-setter button {
