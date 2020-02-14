@@ -11,7 +11,7 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-release-provider.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
-use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone, \Exception;
 
 class FontAwesomeTest extends \WP_UnitTestCase {
 
@@ -427,5 +427,26 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertEquals( 'latest', fa()->version() );
+	}
+
+	public function test_gather_preferences_exception() {
+		add_action(
+			'font_awesome_preferences',
+			function() {
+				throw new Exception( 'fake exception' );
+			}
+		);
+
+		try {
+			fa()->gather_preferences();
+		} catch( PreferenceRegistrationException $e ) {
+			$this->assertStringStartsWith( 'A theme or plugin', $e->getMessage() );
+			$this->assertNotNull( $e->getPrevious() );
+			$prev = $e->getPrevious();
+			$this->assertEquals( 'fake exception', $prev->getMessage() );
+		}
+
+		$this->expectException( PreferenceRegistrationException::class );
+		fa()->gather_preferences();
 	}
 }
