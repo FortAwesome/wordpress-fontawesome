@@ -3,7 +3,7 @@ namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/error-util.php';
 
-use FortAwesome\{ function unknown_error_500, function fa_400 };
+use FortAwesome\{ function unknown_error_500, function fa_400, function fa_500 };
 use \Exception, \Error;
 
 /**
@@ -12,7 +12,7 @@ use \Exception, \Error;
 class ErrorUtilTest extends \WP_UnitTestCase {
 	public function test_unknown_error_500_with_exception() {
 		$message = 'foo';
-		$code = 'fa_unknown_error';
+		$code = 'fontawesome_unknown_error';
 		$e = new Exception($message);
 		$result = unknown_error_500($e);
 
@@ -25,7 +25,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 
 	public function test_unknown_error_500_with_error() {
 		$message = 'foo';
-		$code = 'fa_unknown_error';
+		$code = 'fontawesome_unknown_error';
 		$e = new Error($message);
 		$result = unknown_error_500($e);
 
@@ -38,7 +38,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 
 	public function test_unknown_error_500_with_array() {
 		$message = 'foo';
-		$code = 'fa_unknown_error';
+		$code = 'fontawesome_unknown_error';
 		$e = array('alpha' => 42);
 		$result = unknown_error_500($e);
 
@@ -51,7 +51,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 
 	public function test_unknown_error_500_with_string() {
 		$message = 'foo';
-		$code = 'fa_unknown_error';
+		$code = 'fontawesome_unknown_error';
 		$e = $message;
 		$result = unknown_error_500($e);
 
@@ -65,7 +65,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 
 	public function test_fa_400_with_exception() {
 		$message = 'foo';
-		$code = 'fontawesome_exception';
+		$code = 'fontawesome_client_exception';
 		$e = new Exception($message);
 		$result = fa_400($e);
 
@@ -78,7 +78,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 
 	public function test_fa_400_with_error() {
 		$message = 'foo';
-		$code = 'fontawesome_exception';
+		$code = 'fontawesome_client_exception';
 		$e = new Error($message);
 		$result = fa_400($e);
 
@@ -86,6 +86,19 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$this->assertEquals( $code, $result->get_error_code() );
 		$this->assertEquals( $message, $result->get_error_message( $code ) );
 		$this->assertEquals( 400, $result->get_error_data( $code )['status'] );
+		$this->assertTrue( isset( $result->get_error_data( $code )['trace'] ) );
+	}
+
+	public function test_fa_500_with_exception() {
+		$message = 'foo';
+		$code = 'fontawesome_server_exception';
+		$e = new Exception($message);
+		$result = fa_500($e);
+
+		$this->assertTrue( is_a($result, 'WP_Error') );
+		$this->assertEquals( $code, $result->get_error_code() );
+		$this->assertEquals( $message, $result->get_error_message( $code ) );
+		$this->assertEquals( 500, $result->get_error_data( $code )['status'] );
 		$this->assertTrue( isset( $result->get_error_data( $code )['trace'] ) );
 	}
 }
