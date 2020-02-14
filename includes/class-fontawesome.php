@@ -360,7 +360,16 @@ class FontAwesome {
 				try {
 					$this->validate_options();
 
-					$this->gather_preferences();
+					try {
+						$this->gather_preferences();
+					} catch ( PreferenceRegistrationException $e ) {
+						/**
+						 * Ignore this on normal page loads.
+						 * If something seems amiss, the site owner may try to look
+						 * into it on the plugin settings page where some additional
+						 * diagnostic information may be found.
+						 */
+					}
 
 					$this->maybe_enqueue_admin_js_bundle();
 
@@ -381,13 +390,6 @@ class FontAwesome {
 
 						$this->enqueue_cdn( $this->options(), $resource_collection );
 					}
-				} catch ( PreferenceRegistrationException $e ) {
-					/**
-					 * Ignore this on normal page loads.
-					 * If something seems amiss, the site owner may try to look
-					 * into it on the plugin settings page where some additional
-					 * diagnostic information may be found.
-					 */
 				} catch ( FontAwesome_ConfigurationException $e ) {
 					font_awesome_handle_fatal_error(
 						'Sorry, somehow your Font Awesome plugin configuration got corrupted. The options as currently configured ' .
