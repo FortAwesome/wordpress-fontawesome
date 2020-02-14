@@ -60,7 +60,13 @@ if(! defined( 'FONTAWESOME_ENV' ) ) {
 }
 
 if(! defined( 'FONTAWESOME_API_URL' ) ) {
-	if ( 'development' === getenv( 'FONTAWESOME_ENV' )  && boolval( getenv( 'FONTAWESOME_API_URL' ) ) ) {
+	if ( 'test' === FONTAWESOME_ENV ) {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_API_URL', 'no_network_in_test_env' );
+	} else if ( 'development' === getenv( 'FONTAWESOME_ENV' ) && boolval( getenv( 'FONTAWESOME_API_URL' ) ) ) {
 		/**
 		 * @internal
 		 * @ignore
