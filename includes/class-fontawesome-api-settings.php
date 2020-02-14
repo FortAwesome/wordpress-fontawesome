@@ -4,9 +4,9 @@
  */
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/exception/class-apitokenmissingexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
 
-use \WP_Error, \InvalidArgumentException, FortAwesome\Exception\ApiTokenMissingException;
+use \WP_Error, \InvalidArgumentException;
 
 /**
  * Provides read/write access to the Font Awesome API settings.
@@ -258,7 +258,7 @@ EOD;
 		if ( 0 !== $int_val ) {
 			$this->_access_token_expiration_time = $access_token_expiration_time;
 		} else {
-			throw new InvalidArgumentException( 'value must be a non-zero integer' );
+			throw new InvalidArgumentException( 'access_token_expiration_time must be a non-zero integer' );
 		}
 	}
 
@@ -283,6 +283,9 @@ EOD;
 	 * @ignore
 	 * @internal
 	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws AccessTokenStorageException
 	 * @return void
 	 */
 	public function request_access_token() {
@@ -294,25 +297,17 @@ EOD;
 			array(
 				'body'    => '',
 				'headers' => array(
-					'authorization' => 'Bearer ' . $this->api_token(),
+					'authorization' => 'Bearerx ' . $this->api_token(),
 				),
 			)
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return new WP_Error(
-				'access_token',
-				'Sorry, our attempt to authenticate with the Font Awesome API server failed. Reload and try again?',
-				array( 'status' => 403 )
-			);
+			throw ApiTokenEndpointRequestException::with_wp_error( $response );
 		}
 
 		if ( 200 !== $response['response']['code'] ) {
-			return new WP_Error(
-				'access_token',
-				'Whoops, it looks like that API Token is not valid. Try another one?',
-				array( 'status' => 403 )
-			);
+			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 
 		$body = json_decode( $response['body'], true );
@@ -323,10 +318,9 @@ EOD;
 			! isset( $body['expires_in'] ) ||
 			! is_int( $body['expires_in'] )
 		) {
-			return new WP_Error(
-				'access_token',
-				'Oh no! It looks like your API Token was valid, but the Font Awesome API server failed anyway.',
-				array( 'status' => 403 )
+			throw ApiTokenEndpointResponseException::with_wp_response(
+				$response,
+				'schema'
 			);
 		}
 
@@ -336,11 +330,7 @@ EOD;
 		$result = $this->write();
 
 		if ( ! boolval( $result ) ) {
-			return new WP_Error(
-				'access_token',
-				'Ouch. Your API Token was valid, but when we tried to save it on your WordPress server, it failed.',
-				array( 'status' => 403 )
-			);
+			throw new AccessTokenStorageException();
 		} else {
 			return true;
 		}
