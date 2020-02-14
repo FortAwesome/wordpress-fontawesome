@@ -145,3 +145,12 @@ class ApiRequestException extends FontAwesomeServerException {
 class ApiResponseException extends FontAwesomeServerException {
 	public $ui_message = 'An unexpected response was received from the Font Awesome API server.';
 }
+
+class ReleaseProviderStorageException extends FontAwesomeServerException {
+	public $ui_message = 'Failed to store releases transient';
+}
+
+class ReleaseMetadataMissingException extends FontAwesomeServerException {
+	public $ui_message = "Somehow, we're missing metadata about available Font Awesome releaes, which should have " .
+		"already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.";
+}
