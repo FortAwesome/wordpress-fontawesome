@@ -18,7 +18,8 @@ abstract class FontAwesomeException extends Exception {
 	protected $wp_error = null;
 
 	/**
-	 * A WP_Response object that was the occassion for this exception.
+	 * An HTTP response array that is the occassion for this exception.
+	 * Array keys should be like an array that would be returned from wp_remote_post().
 	 */
 	protected $wp_response = null;
 
@@ -42,12 +43,24 @@ abstract class FontAwesomeException extends Exception {
 
 		return $obj;
 	}
-
-	public static function with_wp_http_response( $wp_response ) {
+	
+	/**
+	 * Construct an exception with an associated HTTP response.
+	 *
+	 * @param $wp_reponse a response array as would be returned by wp_remote_post()
+	 *   with keys like: 'headers', 'body', 'response'
+	 */
+	public static function with_wp_response( $wp_response ) {
 		// This is how we invoke the derived class's constructor from an inherited static method.
 		$obj = new static();
 
-		if( ! is_null( $wp_response ) && is_a( $wp_response, 'WP_HTTP_Response' ) ) {
+		if(
+			!is_null( $wp_response ) &&
+			is_array( $wp_response ) &&
+			isset( $wp_response['headers'] ) &&
+			isset( $wp_response['body'] ) &&
+			isset( $wp_response['response'] )
+		) {
 			$obj->wp_response = $wp_response;
 		}
 
@@ -71,4 +84,26 @@ class ApiTokenMissingException extends FontAwesomeException {
 class ApiTokenEndpointRequestException extends FontAwesomeException {
 	public $ui_message = 'Your WordPress server failed when trying to communicate ' .
 		'with the Font Awesome API token endpoint.';
+}
+
+class ApiTokenEndpointResponseException extends FontAwesomeException {
+	public $ui_message = 'Whoops, it looks like that API Token is not valid. Try another one?';
+
+	const BAD_RESPONSE_SCHEMA_MESSAGE = 'Oh no! It looks like your API Token was valid, ' .
+		'but the Font Awesome API server still returned an invalid response.';
+
+	public static function with_wp_response( $wp_response, $extra_code = NULL ) {
+		$e = parent::with_wp_response( $wp_response );
+
+		if('schema' === $extra_code) {
+			$e->message = $e->ui_message = self::BAD_RESPONSE_SCHEMA_MESSAGE;
+		}
+
+		return $e;
+	}
+}
+
+class AccessTokenStorageException extends FontAwesomeException {
+	public $ui_message = 'There was a problem trying to store API credentials. Your API Token ' .
+		' was valid, but storage failed.';
 }
