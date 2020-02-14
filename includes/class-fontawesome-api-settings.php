@@ -285,6 +285,7 @@ EOD;
 	 * @throws ApiTokenMissingException
 	 * @throws ApiTokenEndpointRequestException
 	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
 	 * @throws AccessTokenStorageException
 	 * @return void
 	 */
@@ -307,7 +308,7 @@ EOD;
 		}
 
 		if ( 200 !== $response['response']['code'] ) {
-			throw ApiTokenEndpointResponseException::with_wp_response( $response );
+			throw ApiTokenInvalidException::with_wp_response( $response );
 		}
 
 		$body = json_decode( $response['body'], true );
@@ -318,10 +319,7 @@ EOD;
 			! isset( $body['expires_in'] ) ||
 			! is_int( $body['expires_in'] )
 		) {
-			throw ApiTokenEndpointResponseException::with_wp_response(
-				$response,
-				'schema'
-			);
+			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 
 		$this->set_access_token( $body['access_token'] );

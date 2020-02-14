@@ -6,7 +6,12 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
-use FortAwesome\{ FontAwesomeException, function unknown_error_500, function fa_400 };
+use FortAwesome\{
+	FontAwesomeException,
+	FontAwesomeServerException,
+	function unknown_error_500,
+	function fa_400
+};
 
 if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 
@@ -115,6 +120,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 				$result = $this->metadata_provider()->metadata_query( $request->get_body() );
 
 				return new WP_REST_Response( json_decode( $result, true ), 200 );
+			} catch( FontAwesomeServerException $e ) {
+				return fa_500( $e );
 			} catch( FontAwesomeException $e ) {
 				return fa_400( $e );
 			} catch ( Exception $e ) {

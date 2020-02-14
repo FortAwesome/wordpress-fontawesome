@@ -3,6 +3,12 @@ namespace FortAwesome;
 
 use \WP_Error, \Exception;
 
+/**
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @internal
+ * @ignore
+ */
 function build_wp_error($e, $code, $status) {
 	if( is_a($e, 'Error') || is_a($e, 'Exception') ) {
 		return new WP_Error(
@@ -44,10 +50,32 @@ function build_wp_error($e, $code, $status) {
 
 }
 
+/**
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @internal
+ * @ignore
+ */
 function unknown_error_500( $e ) {
-	return build_wp_error( $e, 'fa_unknown_error', 500 );
+	return build_wp_error( $e, 'fontawesome_unknown_error', 500 );
 }
 
+/**
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @internal
+ * @ignore
+ */
 function fa_400( $e ) {
-	return build_wp_error( $e, 'fontawesome_exception', 400 );
+	return build_wp_error( $e, 'fontawesome_client_exception', 400 );
+}
+
+/**
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @internal
+ * @ignore
+ */
+function fa_500( $e ) {
+	return build_wp_error( $e, 'fontawesome_server_exception', 500 );
 }

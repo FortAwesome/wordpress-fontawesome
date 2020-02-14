@@ -76,34 +76,31 @@ abstract class FontAwesomeException extends Exception {
 	}
 }
 
-class ApiTokenMissingException extends FontAwesomeException {
+abstract class FontAwesomeServerException extends FontAwesomeException {}
+
+abstract class FontAwesomeClientException extends FontAwesomeException {}
+
+class ApiTokenMissingException extends FontAwesomeClientException {
 	public $ui_message = 'Whoops, it looks like you have not provided a ' .
 		'Font Awesome API Token. Enter one on the Font Awesome plugin settings page.';
 }
 
-class ApiTokenEndpointRequestException extends FontAwesomeException {
+class ApiTokenEndpointRequestException extends FontAwesomeServerException {
 	public $ui_message = 'Your WordPress server failed when trying to communicate ' .
 		'with the Font Awesome API token endpoint.';
 }
 
-class ApiTokenEndpointResponseException extends FontAwesomeException {
+class ApiTokenInvalidException extends FontAwesomeClientException {
 	public $ui_message = 'Whoops, it looks like that API Token is not valid. Try another one?';
-
-	const BAD_RESPONSE_SCHEMA_MESSAGE = 'Oh no! It looks like your API Token was valid, ' .
-		'but the Font Awesome API server still returned an invalid response.';
-
-	public static function with_wp_response( $wp_response, $extra_code = NULL ) {
-		$e = parent::with_wp_response( $wp_response );
-
-		if('schema' === $extra_code) {
-			$e->message = $e->ui_message = self::BAD_RESPONSE_SCHEMA_MESSAGE;
-		}
-
-		return $e;
-	}
 }
 
-class AccessTokenStorageException extends FontAwesomeException {
+
+class ApiTokenEndpointResponseException extends FontAwesomeServerException {
+	public $ui_message = 'Oh no! It looks like your API Token was valid, ' .
+		'but the Font Awesome API server still returned an invalid response.';
+}
+
+class AccessTokenStorageException extends FontAwesomeServerException {
 	public $ui_message = 'There was a problem trying to store API credentials. Your API Token ' .
 		' was valid, but storage failed.';
 }

@@ -9,7 +9,8 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
 
-use \WP_Error, \InvalidArgumentException, FortAwesome\ApiTokenMissingException;
+use \WP_Error, \InvalidArgumentException;
+use FortAwesome\{ ApiTokenMissingException, ApiTokenInvalidException };
 
 class ApiSettingsTest extends \WP_UnitTestCase {
 
@@ -206,7 +207,7 @@ EOD;
 			$this->assertEquals( 403, $e->get_wp_response()['response']['code'] );
 		}
 
-		$this->expectException( ApiTokenEndpointResponseException::class );
+		$this->expectException( ApiTokenInvalidException::class );
 		$result = $api_settings->request_access_token();
 	}
 
