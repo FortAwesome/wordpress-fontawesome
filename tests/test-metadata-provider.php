@@ -58,6 +58,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 				'message' => 'Internal Server Error',
 			),
 			'body'      => '',
+			'headers'   => []
 		);
 	}
 
@@ -68,6 +69,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 				'message' => 'Forbidden',
 			),
 			'body'      => '',
+			'headers'   => '',
 		);
 	}
 
@@ -96,13 +98,35 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_500_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$result = $famp->metadata_query( 'query {versions}' );
+		$caught = false;
 
-		$this->assertTrue( $result instanceof WP_Error);
- 		$this->assertEquals( "Internal Server Error", $result->get_error_message() );
-		$this->assertArraySubset( ["status" => 500], $result->get_error_data() );
-		$this->assertEquals( "fontawesome_api_failed_request", $result->get_error_code() );
-	 }
+		try {
+			$result = $famp->metadata_query( 'query {versions}' );
+		} catch( ApiResponseException $e ) {
+			$caught = true;
+			$this->assertNotNull( $e->get_wp_response() );
+			$this->assertNull( $e->get_wp_error() );
+		}
+
+		$this->assertTrue( $caught );
+	}
+
+	public function test_metadata_query_wp_error() {
+		$mock_response = new WP_Error('fake error');
+		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
+
+		$caught = false;
+
+		try {
+			$result = $famp->metadata_query( 'query {versions}' );
+		} catch( ApiRequestException $e ) {
+			$caught = true;
+			$this->assertNull( $e->get_wp_response() );
+			$this->assertNotNull( $e->get_wp_error() );
+		}
+
+		$this->assertTrue( $caught );
+	}
 
 	public function test_metadata_query_403_error() {
 		/**
@@ -111,12 +135,17 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_403_response();
 		$famp = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$result = $famp->metadata_query( 'query {versions}' );
+		$caught = false;
 
-		$this->assertTrue( $result instanceof WP_Error);
-		$this->assertArraySubset( ["status" => 403], $result->get_error_data() );
-		$this->assertEquals( "Forbidden", $result->get_error_message() );
-		$this->assertEquals( "fontawesome_api_failed_request", $result->get_error_code() );
+		try {
+			$result = $famp->metadata_query( 'query {versions}' );
+		} catch( ApiResponseException $e ) {
+			$caught = true;
+			$this->assertNotNull( $e->get_wp_response() );
+			$this->assertNull( $e->get_wp_error() );
+		}
+
+		$this->assertTrue( $caught );
 	}
 
 	public function test_metadata_query_error_on_query() {
@@ -138,7 +167,6 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		$result = json_decode( $famp->metadata_query( 'query {versions}' ), true );
 
-		$this->assertFalse( $result instanceof WP_Error );
 		$this->assertEquals("5.0.1", $result['data']['versions'][0]);
 	}
 
@@ -231,7 +259,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		fa_api_settings()->remove();
 
-		$this->assertFalse( $result instanceof WP_Error );
+		$this->assertTrue( boolval( $result ) );
 	}
 
 	public function test_authorized_request_with_expired_access_token() {
@@ -251,7 +279,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
 
-		$this->assertFalse( $result instanceof WP_Error );
+		$this->assertTrue( boolval( $result ) );
 		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
 		$delta = abs( ( time() + 3600 ) - fa_api_settings()->access_token_expiration_time() );
 		$this->assertLessThanOrEqual( 2.0, $delta );
@@ -291,6 +319,6 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 
 		fa_api_settings()->remove();
 
-		$this->assertFalse( $result instanceof WP_Error );
+		$this->assertTrue( boolval( $result ) );
 	}
 }

@@ -137,3 +137,11 @@ class ConfigException extends FontAwesomeClientException {
 class PreferenceRegistrationException extends FontAwesomeServerException {
 	public $ui_message = 'A theme or plugin registered with Font Awesome threw an exception.';
 }
+
+class ApiRequestException extends FontAwesomeServerException {
+	public $ui_message = 'Your WordPress server failed trying to send a request to the Font Awesome API server.';
+}
+
+class ApiResponseException extends FontAwesomeServerException {
+	public $ui_message = 'An unexpected response was received from the Font Awesome API server.';
+}
