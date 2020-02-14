@@ -25,12 +25,21 @@ class ExceptionsTest extends \WP_UnitTestCase {
 	}
 
 	public function test_api_token_missing_exception_with_wp_http_response() {
-		$e1 = ApiTokenMissingException::with_wp_http_response( new WP_HTTP_Response( null, 403 ) );
+		$e1 = ApiTokenMissingException::with_wp_response(
+			array(
+				'response' => array(
+					'code'    => 403,
+					'message' => 'Forbidden',
+				),
+				'body'     => '',
+				'headers' => []
+			)
+		);
 
 		$this->assertStringStartsWith( 'Whoops', $e1->getMessage() );
 		$this->assertNull( $e1->get_wp_error() );
 		$wpr = $e1->get_wp_response();
-		$this->assertTrue( is_a( $wpr, 'WP_HTTP_Response' ) );
-		$this->assertEquals( 403, $wpr->get_status() );
+		$this->assertTrue( is_array( $wpr ) );
+		$this->assertEquals( 403, $wpr['response']['code'] );
 	}
 }
