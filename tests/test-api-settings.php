@@ -7,9 +7,9 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/exception/class-apitokenmissingexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
 
-use \WP_Error, \InvalidArgumentException, FortAwesome\Exception\ApiTokenMissingException;
+use \WP_Error, \InvalidArgumentException, FortAwesome\ApiTokenMissingException;
 
 class ApiSettingsTest extends \WP_UnitTestCase {
 
@@ -175,11 +175,14 @@ EOD;
 
 		$api_settings->set_api_token( 'xyz' );
 
-		$result = $api_settings->request_access_token();
+		try {
+			$api_settings->request_access_token();
+		} catch( FontAwesomeException $e ) {
+			$this->assertNotNull( $e->get_wp_error() );
+		}
 
-		$this->assertTrue( $result instanceof WP_Error );
-		$this->assertEquals( 'access_token', $result->get_error_code() );
-		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+		$this->expectException( ApiTokenEndpointRequestException::class );
+		$api_settings->request_access_token();
 	}
 
 	public function test_request_access_token_when_request_returns_non_200_response() {
@@ -190,64 +193,81 @@ EOD;
 					'message' => 'Forbidden',
 				),
 				'body'     => '',
+				'headers'  => []
 			)
 		);
 
 		$api_settings->set_api_token( 'xyz' );
 
-		$result = $api_settings->request_access_token();
+		try {
+			$api_settings->request_access_token();
+		} catch( FontAwesomeException $e ) {
+			$this->assertNotNull( $e->get_wp_response() );
+			$this->assertEquals( 403, $e->get_wp_response()['response']['code'] );
+		}
 
-		$this->assertTrue( $result instanceof WP_Error );
-		$this->assertEquals( 'access_token', $result->get_error_code() );
-		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+		$this->expectException( ApiTokenEndpointResponseException::class );
+		$result = $api_settings->request_access_token();
 	}
 
 	public function test_request_access_token_when_request_body_lacks_access_token() {
 		$api_settings = $this->create_api_settings_with_mocked_response(
 			array(
 				'response' => array(
-					'code'    => 403,
-					'message' => 'Forbidden',
+					'code'    => 200,
+					'message' => 'OK',
 				),
 				'body'     => json_encode(
 					array(
 						'expires_in' => 3600,
 					)
 				),
+				'headers' => []
 			)
 		);
 
 		$api_settings->set_api_token( 'xyz' );
 
-		$result = $api_settings->request_access_token();
+		try {
+			$api_settings->request_access_token();
+		} catch( FontAwesomeException $e ) {
+			$this->assertNotNull( $e->get_wp_response() );
+			$this->assertEquals( 200, $e->get_wp_response()['response']['code'] );
+			$this->assertStringEndsWith( 'an invalid response.', $e->getMessage() );
+		}
 
-		$this->assertTrue( $result instanceof WP_Error );
-		$this->assertEquals( 'access_token', $result->get_error_code() );
-		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+		$this->expectException( ApiTokenEndpointResponseException::class );
+		$result = $api_settings->request_access_token();
 	}
 
 	public function test_request_access_token_when_request_body_lacks_expires_in() {
 		$api_settings = $this->create_api_settings_with_mocked_response(
 			array(
 				'response' => array(
-					'code'    => 403,
-					'message' => 'Forbidden',
+					'code'    => 200,
+					'message' => 'OK',
 				),
 				'body'     => json_encode(
 					array(
 						'access_token' => 'abc',
 					)
 				),
+				'headers' => []
 			)
 		);
 
 		$api_settings->set_api_token( 'xyz' );
 
-		$result = $api_settings->request_access_token();
+		try {
+			$api_settings->request_access_token();
+		} catch( FontAwesomeException $e ) {
+			$this->assertNotNull( $e->get_wp_response() );
+			$this->assertEquals( 200, $e->get_wp_response()['response']['code'] );
+			$this->assertStringEndsWith( 'an invalid response.', $e->getMessage() );
+		}
 
-		$this->assertTrue( $result instanceof WP_Error );
-		$this->assertEquals( 'access_token', $result->get_error_code() );
-		$this->assertArraySubset( [ 'status' => 403 ], $result->get_error_data() );
+		$this->expectException( ApiTokenEndpointResponseException::class );
+		$result = $api_settings->request_access_token();
 	}
 
 	public function test_set_access_token_expiration_time_non_integer() {
