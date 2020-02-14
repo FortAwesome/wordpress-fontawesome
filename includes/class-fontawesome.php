@@ -20,7 +20,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preferenceregistrationexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -381,20 +381,13 @@ class FontAwesome {
 
 						$this->enqueue_cdn( $this->options(), $resource_collection );
 					}
-				} catch ( FontAwesome_PreferenceRegistrationException $e ) {
+				} catch ( PreferenceRegistrationException $e ) {
 					/**
-					 * MAYBE: we could make this a non-fatal error. We should be able to record it
-					 * as an error and report it in the admin settings UI to alert the site owner
-					 * of the situation. But this kind of error need not undermine the functionality
-					 * of this plugin otherwise.
+					 * Ignore this on normal page loads.
+					 * If something seems amiss, the site owner may try to look
+					 * into it on the plugin settings page where some additional
+					 * diagnostic information may be found.
 					 */
-					font_awesome_handle_fatal_error(
-						'A theme or plugin experienced an error while registering its preferences with the Font Awesome plugin. ' .
-						'That probably means it has a bug. If you want Font Awesome to continue working, you\'ll probably need to disable ' .
-						'that other theme or plugin until it\'s bug is resolved. To help you track down which theme or plugin has the bug, here\'s ' .
-						'the name of the code file where the error occurred: ' .
-						$e->getOriginalException()->getFile()
-					);
 				} catch ( FontAwesome_ConfigurationException $e ) {
 					font_awesome_handle_fatal_error(
 						'Sorry, somehow your Font Awesome plugin configuration got corrupted. The options as currently configured ' .
@@ -1048,7 +1041,7 @@ class FontAwesome {
 	 *
 	 * @internal
 	 * @ignore
-	 * @throws FontAwesome_PreferenceRegistrationException
+	 * @throws PreferenceRegistrationException
 	 */
 	public function gather_preferences() {
 		/**
@@ -1058,8 +1051,10 @@ class FontAwesome {
 		 */
 		try {
 			do_action( 'font_awesome_preferences' );
-		} catch(Exception $e) {
-			throw new FontAwesome_PreferenceRegistrationException($e);
+		} catch( Exception $e ) {
+			throw PreferenceRegistrationException::with_thrown( $e );
+		} catch( Error $e ) {
+			throw PreferenceRegistrationException::with_thrown( $e );
 		}
 	}
 
