@@ -1,60 +1,143 @@
 import get from 'lodash/get'
+import size from 'lodash/size'
 
-const ERROR_MESSAGE_PREFIX = 'Font Awesome WordPress Plugin Error Report'
+const ERROR_REPORT_PREAMBLE = 'Font Awesome WordPress Plugin Error Report'
 const UI_MESSAGE_DEFAULT = "D'oh! That failed big time."
+const ERROR_REPORTING_ERROR = "There was an error attempting to report the error."
+const REST_NO_ROUTE_ERROR = 'Oh no! Your web browser could not reach your WordPress server.'
+const REST_COOKIE_INVALID_NONCE_ERROR = 'It looks like your web browser session expired. Try logging out and log back in to WordPress admin.'
+const OK_ERROR_PREAMBLE = 'The last request was successful, but it also returned the following error(s), which might be helpful for troubleshooting.'
+const ONE_OF_MANY_ERRORS_GROUP_LABEL = 'Error'
 
-export default function({ error, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMessageOverride = null }) {
-  let uiMessage = null
-  console.group(ERROR_MESSAGE_PREFIX)
-  const response = get(error, 'response')
-
-  if(response) {
-    const data = get(response, 'data')
-
-    if(data) {
-      let output = ''
-
-      const message = get(data, 'message')
-      if(message) {
-        output = output.concat(`message: ${message}\n`)
-        uiMessage = message
-      }
-
-      const code = get(data, 'code')
-      if(code) {
-        output = output.concat(`code: ${code}\n`)
-
-        switch(code) {
-          case 'rest_no_route':
-            uiMessage = 'Oh no! Your web browser could not reach your WordPress server. '
-            break
-          case 'rest_cookie_invalid_nonce':
-            uiMessage = 'It looks like your web browser session expired. Trying logging out and log back in to WordPress admin.'
-            break
-          case 'fontawesome_unknown_error':
-            uiMessage = UI_MESSAGE_DEFAULT
-            break
-          default:
-        }
-      }
-
-      const status = get(data, 'data.status')
-      if(status) output = output.concat(`status: ${status}\n`)
-
-      const trace = get(data, 'data.trace')
-      if(trace) output = output.concat(`trace:\n${trace}\n`)
-
-      if('' === output) {
-        console.info(data)
-      } else {
-        console.info(output)
-      }
-    } else {
-      console.info(response)
-    }
-  } else {
-    console.info(error)
+/**
+ * This both sends appropriately formatted output to the console via console.info,
+ * and returns a uiMessage that would be appropriate to display to an admin user.
+ */
+function handleSingleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride }) {
+  if( ! get(wpError, 'code') ) {
+    console.info(ERROR_REPORTING_ERROR)
+    return UI_MESSAGE_DEFAULT
   }
+
+  let uiMessage = null
+  let output = ''
+
+  const message = get(wpError, 'message')
+  if(message) {
+    output = output.concat(`message: ${message}\n`)
+    uiMessage = message
+  }
+
+  const code = get(wpError, 'code')
+  if(code) {
+    output = output.concat(`code: ${code}\n`)
+
+    switch(code) {
+      case 'rest_no_route':
+        uiMessage = REST_NO_ROUTE_ERROR
+        break
+      case 'rest_cookie_invalid_nonce':
+        uiMessage = REST_COOKIE_INVALID_NONCE_ERROR
+        break
+      case 'fontawesome_unknown_error':
+        uiMessage = UI_MESSAGE_DEFAULT
+        break
+      default:
+    }
+  }
+
+  const status = get(wpError, 'data.status')
+  if(status) output = output.concat(`status: ${status}\n`)
+
+  const trace = get(wpError, 'data.trace')
+  if(trace) output = output.concat(`trace:\n${trace}\n`)
+
+  if( output && '' !== output ) {
+    console.info(output)
+  } else {
+    console.info(wpError)
+  }
+
+  return uiMessageOverride || uiMessage || uiMessageDefault
+}
+
+function handleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride }) {
+  if( get(wpError, 'code') ) {
+    return handleSingleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride })
+  } else if( size( get(wpError, 'errors') ) > 0 ) {
+    // Multiple errors
+    const wpErrors = Object.keys(wpError.errors).map(code => {
+      // get the first error message available for this code
+      const message = get(wpError, `errors.${code}.0`)
+      const data = get(wpError, `error_data.${code}`)
+
+      return {
+        code,
+        message,
+        data
+      }
+    })
+
+    const uiMessage = wpErrors.reduce((acc, error) => {
+      console.group(ONE_OF_MANY_ERRORS_GROUP_LABEL)
+
+      const msg = handleSingleWpErrorOutput({
+        wpError: error,
+        uiMessageDefault,
+        uiMessageOverride
+      })
+
+      console.groupEnd()
+
+      // The uiMessage we should return will be the first error message that isn't
+      // from a 'previous_exception'
+      return (!acc && wpError.code !== 'previous_exception')
+        ? msg
+        : acc
+    }, null)
+
+    return uiMessage
+  } else {
+    // We don't recognize this schema
+    return handleSingleWpErrorOutput({
+      wpError: {
+        code: 'fontawesome_unknown_error',
+        message: ERROR_REPORTING_ERROR
+      }
+    })
+  }
+}
+
+export default function({ response, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMessageOverride = null }) {
+  // We might get back a successful response that still has errors on it, as in
+  // the case of a PreferenceRegistrationException.
+  const status = get(response, 'status')
+  const isOK = status >= 200 && status < 300
+  const okError = isOK
+    ? get(response, 'data.error', null)
+    : null
+
+  // This could be a serialized WP_Error object representing either a single
+  // or multiple errors.
+  const wpError = isOK
+    ? !!okError
+      ? okError
+      : null
+    : ( get(response, 'response.data.code') || get(response, 'data.errors') )
+      ? get(response, 'response.data')
+      : {} // pass through an error object that has a bad schema to produce a bad schema report
+
+  // If the status is OK and we have no wpError at this point, then there's nothing to report.
+  if(isOK && !wpError) return
+
+  console.group(ERROR_REPORT_PREAMBLE)
+
+  if( !!okError ) {
+    console.info(OK_ERROR_PREAMBLE)
+  }
+
+  const uiMessage = handleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride })
+
   console.groupEnd()
 
   return uiMessageOverride || uiMessage || uiMessageDefault

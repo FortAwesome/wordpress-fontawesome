@@ -78,7 +78,7 @@ export function submitPendingUnregisteredClientDeletions() {
       })
     }).catch(error => {
       const message = reportRequestError({
-        error,
+        response: error,
         uiMessageDefault: 'Update failed'
       })
 
@@ -125,7 +125,7 @@ export function submitPendingBlocklist() {
       })
     }).catch(error => {
       const message = reportRequestError({
-        error,
+        response: error,
         uiMessageDefault: 'Update failed'
       })
 
@@ -162,7 +162,7 @@ export function checkPreferenceConflicts() {
       })
     }).catch(error => {
       const message = reportRequestError({
-        error,
+        response: error,
         uiMessageDefault: 'Update failed'
       })
 
@@ -293,7 +293,7 @@ export function queryKits() {
         })
       }).catch(error => {
         const message = reportRequestError({
-          error,
+          response: error,
           uiMessageDefault: 'Failed saving kit changes'
         })
 
@@ -305,7 +305,7 @@ export function queryKits() {
       })
     }).catch(error => {
       const message = reportRequestError({
-        error,
+        response: error,
         uiMessageDefault: 'Failed to fetch kits'
       })
 
@@ -334,15 +334,24 @@ export function submitPendingOptions() {
       }
     ).then(response => {
       const { data } = response
-        dispatch({
-          type: 'OPTIONS_FORM_SUBMIT_END',
-          data,
-          success: true,
-          message: 'Changes saved'
+
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        data,
+        success: true,
+        message: 'Changes saved'
+      })
+
+      // We may receive errors back with a 200 response, such as when
+      // there PreferenceRegistrationExceptions.
+      if( get(response, 'data.error') ) {
+        reportRequestError({
+          response
         })
+      }
     }).catch(error => {
       const message = reportRequestError({
-        error
+        response: error
       })
 
       dispatch({
@@ -383,7 +392,7 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
       }
     }).catch(error => {
       const message = reportRequestError({
-        error
+        response: error
       })
 
       dispatch({
@@ -446,7 +455,7 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
       })
       .catch(function(error){
         const message = reportRequestError({
-          error
+          response: error
         })
 
         dispatch({
@@ -481,7 +490,7 @@ export function snoozeV3DeprecationWarning() {
     })
     .catch(function(error){
       const message = reportRequestError({
-        error
+        response: error
       })
 
       dispatch({
@@ -533,7 +542,7 @@ export function setConflictDetectionScanner({ enable = true }) {
       })
     }).catch(error => {
       const message = reportRequestError({
-        error,
+        response: error,
         uiMessageDefault: 'Update failed'
       })
 
