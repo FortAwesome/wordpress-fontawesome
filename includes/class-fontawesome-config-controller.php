@@ -74,10 +74,24 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @ignore
 		 */
 		protected function build_item( $fa ) {
-			return array(
+			$preference_registration_error = null;
+
+			try {
+				fa()->gather_preferences();
+			} catch ( PreferenceRegistrationException $e ) {
+				$preference_registration_error = fa_500( $e );
+			}
+
+			$item = array(
 				'options'   => $fa->options(),
 				'conflicts' => $fa->conflicts_by_option(),
 			);
+
+			if( ! is_null( $preference_registration_error ) ) {
+				$item['error'] = $preference_registration_error;
+			}
+
+			return $item;
 		}
 
 		/**
@@ -112,36 +126,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$db_item = $this->prepare_item_for_database( $given_options );
 
-				if ( $db_item instanceof WP_Error ) {
-					return $db_item;
-				}
-
 				update_option(
 					FontAwesome::OPTIONS_KEY,
 					$db_item
 				);
-
-				// Re-gather preferences after updating options. Preference conflicts may have changed.
-				try {
-					fa()->gather_preferences();
-				} catch ( Exception $e ) {
-					/**
-					 * TODO: determine whether to report anything about this error
-					 * case.
-					 * 
-					 * After successfully saving changes to options, we have tried
-					 * to update the preference conflict report by re-gathering
-					 * preferences from registered themes or plugins.
-					 * 
-					 * Since this involves triggering an action hook that invokes
-					 * callbacks in those clients, it's possible that bugs in *their* 
-					 * code could result in an exception being thrown.
-					 * 
-					 * For now, we're going to swallow this exception so that
-					 * we return successfully with the saved options, and at worst,
-					 * the previous state of the preference conflicts.
-					 */
-				}
 
 				$return_data = $this->build_item( fa() );
 				return new WP_REST_Response( $return_data, 200 );
