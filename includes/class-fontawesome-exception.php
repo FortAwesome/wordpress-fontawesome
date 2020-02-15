@@ -5,7 +5,7 @@ use \Exception;
 
 // phpcs:disable Generic.Files.OneClassPerFile.MultipleFound
 
-abstract class FontAwesomeException extends Exception {
+abstract class FontAwesome_Exception extends Exception {
 
 	/**
 	 * A message appropriate for display to a user.
@@ -87,9 +87,9 @@ abstract class FontAwesomeException extends Exception {
 	}
 }
 
-abstract class FontAwesomeServerException extends FontAwesomeException {}
+abstract class FontAwesomeServerException extends FontAwesome_Exception {}
 
-abstract class FontAwesomeClientException extends FontAwesomeException {}
+abstract class FontAwesomeClientException extends FontAwesome_Exception {}
 
 class ApiTokenMissingException extends FontAwesomeClientException {
 	public $ui_message = 'Whoops, it looks like you have not provided a ' .

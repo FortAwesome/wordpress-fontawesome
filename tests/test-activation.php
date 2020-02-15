@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesomeexception.php';
+require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**

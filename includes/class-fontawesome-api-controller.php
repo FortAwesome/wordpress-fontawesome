@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
@@ -116,7 +116,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 				return new WP_REST_Response( json_decode( $result, true ), 200 );
 			} catch( FontAwesomeServerException $e ) {
 				return fa_500( $e );
-			} catch( FontAwesomeException $e ) {
+			} catch( FontAwesome_Exception $e ) {
 				return fa_400( $e );
 			} catch ( Exception $e ) {
 				return unknown_error_500($e);

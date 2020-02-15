@@ -22,7 +22,7 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
