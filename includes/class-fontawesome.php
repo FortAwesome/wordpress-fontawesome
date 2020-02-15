@@ -596,12 +596,14 @@ class FontAwesome {
 	 * methods like {@see FontAwesome::latest_version()}, {@see FontAwesome::available_versions()}
 	 * and all other metadata required to enqueue Font Awesome when configured
 	 * to use the standard CDN (non-kits).
-	 * 
+	 *
 	 * @since 4.0.0
-	 * @return WP_Error|1 error on failure or 1 otherwise
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 */
 	public function refresh_releases() {
-		return $this->release_provider()->load_releases();
+		$this->release_provider()->load_releases();
 	}
 
 	/**
