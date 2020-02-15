@@ -10,14 +10,8 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
  */
 class ActivationTest extends \WP_UnitTestCase {
 
-	/**
-	 * Reset test data.
-	 *
-	 * @before
-	 */
-	protected function reset() {
-		delete_option( FontAwesome::OPTIONS_KEY );
-		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+	public function setUp() {
+		reset_db();
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
 	}
