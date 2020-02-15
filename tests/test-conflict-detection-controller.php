@@ -644,7 +644,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			'fontawesome_delete_conflicts_schema',
+			'fontawesome_client_exception',
 			$response->as_error()->get_error_code()
 		);
 
