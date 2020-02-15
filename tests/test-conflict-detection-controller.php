@@ -312,7 +312,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 		$error = $response->as_error();
 
- 		$this->assertEquals( 'fontawesome_unregistered_clients_schema', $error->get_error_code() );
+ 		$this->assertEquals( 'fontawesome_client_exception', $error->get_error_code() );
 
 		$this->assertEquals(
 			$initial_data,

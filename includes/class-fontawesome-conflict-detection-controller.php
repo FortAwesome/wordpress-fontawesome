@@ -1,6 +1,8 @@
 <?php
 namespace FortAwesome;
 
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
 
 /**
@@ -130,14 +132,6 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 
 			$item = $this->prepare_unregistered_clients_for_database( $request );
 
-			if ( is_null( $item ) ) {
-				return new WP_Error(
-					'fontawesome_unregistered_clients_schema',
-					null,
-					array( 'status' => 400 )
-				);
-			}
-
 			$prev_option = get_option(
 				FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS
@@ -176,10 +170,14 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
+		} catch( FontAwesomeServerException $e ) {
+			return fa_500( $e );
+		} catch( FontAwesome_Exception $e ) {
+			return fa_400( $e );
 		} catch ( Exception $e ) {
-			return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
-		} catch ( Error $error ) {
-			return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+			return unknown_error_500( $e );
+		} catch ( Error $e ) {
+			return unknown_error_500( $e );
 		}
 	}
 
@@ -403,23 +401,25 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 *
 	 * @internal
 	 * @ignore
+	 * @throws ConflictDetectionSchemaException
+	 * @return array
 	 */
 	protected function prepare_unregistered_clients_for_database( $request ) {
 		$body = $request->get_json_params();
 
 		if( ! \is_array( $body ) || count( $body ) === 0 ) {
-			return null;
+			throw new ConflictDetectionSchemaException();
 		}
 
 		$validated = array();
 
 		foreach( $body as $md5 => $attrs) {
 			if(! is_string( $md5 ) || ! strlen( $md5 ) === 32 ) {
-				return null;
+				throw new ConflictDetectionSchemaException();
 			}
 
 			if(! is_array( $attrs ) ) {
-				return null;
+				throw new ConflictDetectionSchemaException();
 			}
 
 			$validated[$md5] = array();
