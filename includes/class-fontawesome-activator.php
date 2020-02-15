@@ -7,22 +7,18 @@ require_once trailingslashit( dirname(__FILE__) ) . 'class-fontawesome.php';
 /**
  * Plugin activation logic.
  * 
- * The methods defined in this class should normally not be invoked directly,
- * but only by FontAwesome_Loader, which handles cases
- * where multiple installations of this plugin are present.
- * 
- * Most client code that depends upon this plugin should limit its invocations
- * to the corresponding Loader methods, such as FontAwesome_Loader::initialize().
+ * Client code that depends upon this plugin should use {@see FontAwesome_Loader::initialize()}.
  * 
  * @since 4.0.0
  */
 class FontAwesome_Activator {
-
 	/**
 	 * Initializes plugin options only if they are empty.
 	 *
 	 * @since 4.0.0
-	 * @throws FontAwesome_NoReleasesException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 */
 	public static function activate() {
 		self::initialize();
@@ -30,6 +26,8 @@ class FontAwesome_Activator {
 
 	/**
 	 * Initializes plugin options with defaults only if they are empty.
+	 *
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * Otherwise, it leaves alone options that are already present.
 	 * 
@@ -39,8 +37,11 @@ class FontAwesome_Activator {
 	 * 
 	 * @param bool $force if true, overwrite any existing options with defaults
 	 *
-	 * @since 4.0.0
-	 * @throws FontAwesome_NoReleasesException
+	 * @ignore
+	 * @internal
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize($force = FALSE) {
 		if( $force || ! get_option( FontAwesome::OPTIONS_KEY ) ) {
@@ -52,10 +53,17 @@ class FontAwesome_Activator {
 		}
 	}
 
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 */
 	private static function initialize_user_options() {
-		if ( 1 !== fa()->refresh_releases() ) {
-			throw new FontAwesome_NoReleasesException("Sorry, we could not contact the Font Awesome API server.");
-		}
+		fa()->refresh_releases();
 		$version = fa()->latest_version();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => $version ] );
 		update_option( FontAwesome::OPTIONS_KEY, $options );

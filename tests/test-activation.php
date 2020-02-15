@@ -2,6 +2,8 @@
 namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
+require_once dirname( __FILE__ ) . '/../includes/class-fontawesomeexception.php';
+require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**
  * Class ActivationTest
@@ -18,6 +20,17 @@ class ActivationTest extends \WP_UnitTestCase {
 		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
+	}
+
+	protected function create_release_provider_that_throws( $exception ) {
+		return mock_singleton_method(
+			$this,
+			FontAwesome_Release_Provider::class,
+			'query',
+			function( $method ) use ( $exception ) {
+				$method->will( $this->throwException( $exception ) );
+			}
+		);
 	}
 
 	public function test_before_activation() {
@@ -112,5 +125,13 @@ class ActivationTest extends \WP_UnitTestCase {
 			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
+	}
+
+	public function test_activate_when_release_provider_throws() {
+		$this->create_release_provider_that_throws( new ApiResponseException() );
+
+		$this->expectException( ApiResponseException::class );
+
+		FontAwesome_Activator::activate();
 	}
 }
