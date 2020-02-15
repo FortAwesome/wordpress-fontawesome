@@ -76,24 +76,31 @@ export default function KitConfigView({ kitToken }) {
       <tbody>
         <tr>
           <th className={ styles['label'] }>Icons</th>
-          <td className={ styles['value'] }>{ usePro ? 'Pro' : 'Free' }
+          <td className={ styles['value'] }>
+            { usePro ? 'Pro' : 'Free' }
+            { getDetectionStatusForOption('usePro') }
           </td>
-          { getDetectionStatusForOption('usePro') }
         </tr>
         <tr>
           <th className={ styles['label'] }>Technology</th>
-          <td className={ styles['value'] }>{ technology }</td>
-          { getDetectionStatusForOption('technology') }
+          <td className={ styles['value'] }>
+            { technology }
+            { getDetectionStatusForOption('technology') }
+          </td>
         </tr>
         <tr>
           <th className={ styles['label'] }>Version</th>
-          <td className={ styles['value'] }>{ version }</td>
-          { getDetectionStatusForOption('version') }
+          <td className={ styles['value'] }>
+            { version }
+            { getDetectionStatusForOption('version') }
+          </td>
         </tr>
         <tr>
           <th className={ styles['label'] }>Version 4 Compatability</th>
-          <td className={ styles['value'] }>{ v4Compat ? 'On' : 'Off' }</td>
-          { getDetectionStatusForOption('v4Compat') }
+          <td className={ styles['value'] }>
+            { v4Compat ? 'On' : 'Off' }
+            { getDetectionStatusForOption('v4Compat') }
+          </td>
         </tr>
       </tbody>
     </table>
