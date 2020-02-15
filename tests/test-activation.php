@@ -12,6 +12,7 @@ class ActivationTest extends \WP_UnitTestCase {
 
 	public function setUp() {
 		reset_db();
+		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
 	}

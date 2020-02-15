@@ -40,6 +40,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 	public function setUp() {
 		reset_db();
+		remove_all_actions( 'font_awesome_preferences' );
 	}
 
 	public function test_can_load_and_instantiate() {

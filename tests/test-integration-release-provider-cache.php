@@ -25,6 +25,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 
 	public function setUp() {
 		reset_db();
+		remove_all_actions( 'font_awesome_preferences' );
 	}
 
 	// Pass an array of responses, in the shape returned by wp_remote_get().
