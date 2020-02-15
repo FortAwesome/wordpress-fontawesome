@@ -192,7 +192,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 		$farp->load_releases();
 
-		$this->expectException( ConfigException::class );
+		$this->expectException( ConfigSchemaException::class );
 
 		$farp->get_resource_collection(
 			'5.0.13', // version.

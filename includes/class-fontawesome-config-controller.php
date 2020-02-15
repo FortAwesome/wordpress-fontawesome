@@ -150,7 +150,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 		 * @internal
 		 * @ignore
 		 * @param array $given_options the options from the request body
-		 * @throws ConfigException
+		 * @throws ConfigSchemaException
 		 * @return array The item to store on the options key
 		 */
 		protected function prepare_item_for_database( $given_options ) {
@@ -174,7 +174,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				if ( $api_token ) {
 					$item['kitToken'] = $given_options['kitToken'];
 				} else {
-					throw new ConfigException('kit_token_no_api_token');
+					throw new ConfigSchemaException('kit_token_no_api_token');
 				}
 			}
 
@@ -218,7 +218,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 			} elseif ( $version_is_concrete ) {
 				$item['version'] = $given_options['version'];
 			} else {
-				throw new ConfigException('concrete_version_expected');
+				throw new ConfigSchemaException('concrete_version_expected');
 			}
 
 			if (
@@ -227,7 +227,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				boolval( $item['v4Compat'] ) &&
 				'webfont' === $item['technology']
 			) {
-				throw new ConfigException('webfont_v4compat_introduced_later');
+				throw new ConfigSchemaException('webfont_v4compat_introduced_later');
 			}
 
 			return $item;
