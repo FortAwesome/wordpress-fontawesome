@@ -332,8 +332,6 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 
 		// If it works, we'd be able to get a non-null latest_version
 		$this->assertNotNull( fa()->latest_version() );
-
-		$this->assertEquals(1, $result);
 	}
 
 	public function test_latest_version() {
