@@ -112,7 +112,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 
 		fa()->gather_preferences();
 
-		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all' );
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0' );
 		fa()->enqueue_cdn( fa()->options(), $resource_collection );
 
 		ob_start();
@@ -172,7 +172,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 
 		fa()->gather_preferences();
 
-		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all' );
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0' );
 		fa()->enqueue_cdn( fa()->options(), $resource_collection );
 
 		ob_start();
@@ -269,7 +269,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 
 		fa()->gather_preferences();
 
-		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0', 'all' );
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0' );
 		fa()->enqueue_cdn( fa()->options(), $resource_collection );
 
 		ob_start();
