@@ -15,9 +15,10 @@ use FortAwesome\{ ApiTokenMissingException, ApiTokenInvalidException };
 class ApiSettingsTest extends \WP_UnitTestCase {
 
 	public function setUp() {
+		reset_db();
 		wp_delete_file( FontAwesome_API_Settings::ini_path() );
-		Mock_FontAwesome_Releases::mock();
-		FontAwesome_Activator::activate();
+		FontAwesome_API_Settings::reset();
+		FontAwesome::reset();
 	}
 
 	protected function create_api_settings_with_mocked_response( $response ) {
