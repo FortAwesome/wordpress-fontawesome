@@ -1,13 +1,6 @@
 <?php
 namespace FortAwesome;
 
-/**
- * Class PreferenceCheckControllerTest
- *
- * @noinspection PhpCSValidationInspection
- */
-// phpcs:ignoreFile Squiz.Commenting.ClassComment.Missing
-// phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 /**
