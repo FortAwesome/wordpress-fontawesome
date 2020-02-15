@@ -68,9 +68,6 @@ export default function KitConfigView({ kitToken }) {
     }
   }
 
-  // TODO: wire up preference conflict markup like this.
-  // <div class="Alert_alert__9rB-8 Alert_alert-warning__a4JcD" role="alert"><div class="Alert_alert-icon__33P-T"><FontAwesomeIcon icon={ faExclamationTriangle } title='warning' fixedWidth /></div><div class="Alert_alert-message__1QY5M"><h2 class="Alert_alert-title__p2H1b">Preference Conflict</h2><div><div>This setting might cause problems for the theme or plugin: eta-plugin.</div></div></div></div>
-
   return <div className={ styles['kit-config-view-container'] }>
     <table className={ styles['selected-kit-settings'] }>
       <tbody>
