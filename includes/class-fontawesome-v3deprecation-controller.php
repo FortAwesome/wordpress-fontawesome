@@ -5,6 +5,11 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
 
 /**
  * Controller class for REST endpoint
+ *
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @ignore
+ * @internal
  */
 class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 
@@ -75,6 +80,10 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	/**
 	 * Get the deprecation data, a singleton resource.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
@@ -97,6 +106,10 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	/**
 	 * Update the singleton resource.
 	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
