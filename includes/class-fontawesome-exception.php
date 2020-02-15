@@ -115,7 +115,7 @@ class AccessTokenStorageException extends FontAwesomeServerException {
 		' was valid, but storage failed.';
 }
 
-class ConfigException extends FontAwesomeClientException {
+class ConfigSchemaException extends FontAwesomeClientException {
 	public function __construct( $code = NULL ) {
 		switch( $code ) {
 			case 'kit_token_no_api_token':
@@ -161,7 +161,13 @@ class ReleaseMetadataMissingException extends FontAwesomeServerException {
 		"already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.";
 }
 
-class CorruptConfigException extends FontAwesomeServerException {
+class ConfigCorruptionException extends FontAwesomeServerException {
 	public $ui_message = "When trying to load Font Awesome, the plugin's configuration was invalid. " .
 		"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.";
+}
+
+class ConflictDetectionSchemaException extends FontAwesomeClientException {
+	public $ui_message = "When trying to load Font Awesome, the plugin's configuration was invalid. " .
+		"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.";
+
 }

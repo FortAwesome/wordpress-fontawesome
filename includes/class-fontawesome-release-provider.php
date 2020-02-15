@@ -348,7 +348,7 @@ EOD;
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
-	 * @throws CorruptConfigException
+	 * @throws ConfigCorruptionException
 	 * @return array
 	 */
 	public function get_resource_collection( $version, $flags = array(
@@ -359,11 +359,11 @@ EOD;
 		$resources = array();
 
 		if ( ! is_string($version) || 0 == strlen( $version ) ) {
-			throw new CorruptConfigException();
+			throw new ConfigCorruptionException();
 		}
 
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
-			throw new ConfigException('webfont_v4compat_introduced_later');
+			throw new ConfigSchemaException('webfont_v4compat_introduced_later');
 		}
 
 		if ( ! array_key_exists( $version, $this->releases() ) ) {
