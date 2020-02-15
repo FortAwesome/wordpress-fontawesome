@@ -191,7 +191,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 		$farp->load_releases();
 
-		$this->expectException( FontAwesome_ConfigurationException::class );
+		$this->expectException( ConfigException::class );
 
 		$farp->get_resource_collection(
 			'5.0.13', // version.
@@ -276,7 +276,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 		$farp->load_releases();
 
-		$this->expectException( InvalidArgumentException::class );
+		$this->expectException( ReleaseMetadataMissingException::class );
 
 		$resource_collection = $farp->get_resource_collection(
 			'4.0.13', // invalid version.
