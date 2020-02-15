@@ -7,7 +7,7 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
 use \WP_Error, \InvalidArgumentException;
 use FortAwesome\{ ApiTokenMissingException, ApiTokenInvalidException };
@@ -178,7 +178,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesomeException $e ) {
+		} catch( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_error() );
 		}
 
@@ -202,7 +202,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesomeException $e ) {
+		} catch( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_response() );
 			$this->assertEquals( 403, $e->get_wp_response()['response']['code'] );
 		}
@@ -231,7 +231,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesomeException $e ) {
+		} catch( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_response() );
 			$this->assertEquals( 200, $e->get_wp_response()['response']['code'] );
 			$this->assertStringEndsWith( 'an invalid response.', $e->getMessage() );
@@ -261,7 +261,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesomeException $e ) {
+		} catch( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_response() );
 			$this->assertEquals( 200, $e->get_wp_response()['response']['code'] );
 			$this->assertStringEndsWith( 'an invalid response.', $e->getMessage() );

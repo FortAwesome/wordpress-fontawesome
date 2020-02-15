@@ -8,7 +8,7 @@ namespace FortAwesome;
  */
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
-require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesomeexception.php';
+require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
 

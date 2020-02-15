@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 use \WP_Error, \WP_HTTP_Response;
 
 class ExceptionsTest extends \WP_UnitTestCase {
