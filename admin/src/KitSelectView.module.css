@@ -23,15 +23,20 @@
   color: #DDE2E6;
 }
 
-.api-token-control {
+.api-token-control-wrapper {
   display: flex;
-  justify-content: space-between;
   margin-bottom: .75rem;
   padding: .5rem 1rem 1rem 0;
   border-bottom: 1px solid #DDE2E6;
+  flex-direction: column;
 }
 
-.api-token-control p {
+.api-token-control {
+  display: flex;
+  justify-content: space-between;
+}
+
+.api-token-control-wrapper p {
   margin: 0;
   padding: .5rem 0;
   font-size: .9rem;
