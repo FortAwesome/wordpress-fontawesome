@@ -220,6 +220,39 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
 	}
 
+	public function test_update_with_nonkit_v4_compat_old_webfont() {
+		// Start with the version being something else.
+		$this->set_version( '5.3.1' );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => true,
+					'v4Compat' => true,
+					'technology' => 'webfont',
+					'svgPseudoElements' => false,
+					'kitToken' => null,
+					'apiToken' => false,
+					'version' => '5.0.13',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+    	$request->set_body( wp_json_encode( $request_body ) );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 400, $response->get_status() );
+		// Version unchanged
+		$this->assertEquals( '5.3.1', fa()->version() );
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+	}
+
 	public function test_update_with_nonkit_symbolic_latest_version() {
 		// Start with the version being something else.
 		$this->set_version( '5.3.1' );

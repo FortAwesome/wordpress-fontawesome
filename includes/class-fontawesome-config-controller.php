@@ -222,6 +222,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 				throw new ConfigException('concrete_version_expected');
 			}
 
+			if (
+				$version_is_concrete &&
+				version_compare( '5.1.0', $item['version'], '>' ) &&
+				boolval( $item['v4Compat'] ) &&
+				'webfont' === $item['technology']
+			) {
+				throw new ConfigException('webfont_v4compat_introduced_later');
+			}
+
 			return $item;
 		}
 
