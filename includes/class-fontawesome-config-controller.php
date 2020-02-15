@@ -132,7 +132,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
 
 				$return_data = $this->build_item( fa() );
 				return new WP_REST_Response( $return_data, 200 );
-			} catch( FontAwesomeServerException $e ) {
+			} catch( FontAwesome_ServerException $e ) {
 				return fa_500( $e );
 			} catch( FontAwesome_Exception $e ) {
 				return fa_400( $e );
