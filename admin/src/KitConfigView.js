@@ -7,11 +7,18 @@ import {
 import styles from './KitSelectView.module.css'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import Alert from './Alert'
 import get from 'lodash/get'
+import has from 'lodash/has'
+import size from 'lodash/size'
 
 export default function KitConfigView({ kitToken }) {
   const kitTokenIsActive = useSelector(state => get(state, 'options.kitToken') === kitToken)
   const kitTokenApiData = useSelector(state => (state.kits || []).find(k => k.token === kitToken))
+  const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
+  const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
+  const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
+  const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
 
   if(!kitTokenIsActive && !kitTokenApiData) {
     throw new Error('Oh no! We could not find the kit data for the selected kit token. Try reloading this page.')
@@ -43,6 +50,24 @@ export default function KitConfigView({ kitToken }) {
       : kitTokenApiData.version
   )
 
+  function getDetectionStatusForOption(option) {
+    if ( hasChecked && preferenceCheckSuccess && has(pendingOptionConflicts, option) ) {
+      return <Alert title="Preference Conflict" type='warning'>
+        {
+          size(pendingOptionConflicts[option]) > 1
+          ? <div>
+            This change might cause problems for these themes or plugins: { pendingOptionConflicts[option].join(', ') }.
+          </div>
+          : <div>
+            This change might cause problems for the theme or plugin: { pendingOptionConflicts[option][0] }.
+            </div>
+        }
+      </Alert>
+    } else {
+      return null
+    }
+  }
+
   // TODO: wire up preference conflict markup like this.
   // <div class="Alert_alert__9rB-8 Alert_alert-warning__a4JcD" role="alert"><div class="Alert_alert-icon__33P-T"><FontAwesomeIcon icon={ faExclamationTriangle } title='warning' fixedWidth /></div><div class="Alert_alert-message__1QY5M"><h2 class="Alert_alert-title__p2H1b">Preference Conflict</h2><div><div>This setting might cause problems for the theme or plugin: eta-plugin.</div></div></div></div>
 
@@ -53,18 +78,22 @@ export default function KitConfigView({ kitToken }) {
           <th className={ styles['label'] }>Icons</th>
           <td className={ styles['value'] }>{ usePro ? 'Pro' : 'Free' }
           </td>
+          { getDetectionStatusForOption('usePro') }
         </tr>
         <tr>
           <th className={ styles['label'] }>Technology</th>
           <td className={ styles['value'] }>{ technology }</td>
+          { getDetectionStatusForOption('technology') }
         </tr>
         <tr>
           <th className={ styles['label'] }>Version</th>
           <td className={ styles['value'] }>{ version }</td>
+          { getDetectionStatusForOption('version') }
         </tr>
         <tr>
           <th className={ styles['label'] }>Version 4 Compatability</th>
           <td className={ styles['value'] }>{ v4Compat ? 'On' : 'Off' }</td>
+          { getDetectionStatusForOption('v4Compat') }
         </tr>
       </tbody>
     </table>
