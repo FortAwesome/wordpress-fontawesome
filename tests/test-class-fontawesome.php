@@ -17,6 +17,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 
 	public function setUp() {
 		reset_db();
+		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );

@@ -16,6 +16,7 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 
 	public function setUp() {
 		reset_db();
+		remove_all_actions( 'font_awesome_preferences' );
 		wp_delete_file( FontAwesome_API_Settings::ini_path() );
 		FontAwesome_API_Settings::reset();
 		FontAwesome::reset();

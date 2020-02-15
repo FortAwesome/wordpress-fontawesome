@@ -25,6 +25,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		fa_api_settings()->remove();
 		FontAwesome_Metadata_Provider::reset();
 		remove_all_filters( 'pre_http_request' );
+		remove_all_actions( 'font_awesome_preferences' );
 	}
 
 	protected static function build_success_response() {
