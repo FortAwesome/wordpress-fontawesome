@@ -170,7 +170,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
-		} catch( FontAwesomeServerException $e ) {
+		} catch( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
 		} catch( FontAwesome_Exception $e ) {
 			return fa_400( $e );

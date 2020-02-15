@@ -87,35 +87,35 @@ abstract class FontAwesome_Exception extends Exception {
 	}
 }
 
-abstract class FontAwesomeServerException extends FontAwesome_Exception {}
+abstract class FontAwesome_ServerException extends FontAwesome_Exception {}
 
-abstract class FontAwesomeClientException extends FontAwesome_Exception {}
+abstract class FontAwesome_ClientException extends FontAwesome_Exception {}
 
-class ApiTokenMissingException extends FontAwesomeClientException {
+class ApiTokenMissingException extends FontAwesome_ClientException {
 	public $ui_message = 'Whoops, it looks like you have not provided a ' .
 		'Font Awesome API Token. Enter one on the Font Awesome plugin settings page.';
 }
 
-class ApiTokenEndpointRequestException extends FontAwesomeServerException {
+class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
 	public $ui_message = 'Your WordPress server failed when trying to communicate ' .
 		'with the Font Awesome API token endpoint.';
 }
 
-class ApiTokenInvalidException extends FontAwesomeClientException {
+class ApiTokenInvalidException extends FontAwesome_ClientException {
 	public $ui_message = 'Whoops, it looks like that API Token is not valid. Try another one?';
 }
 
-class ApiTokenEndpointResponseException extends FontAwesomeServerException {
+class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
 	public $ui_message = 'Oh no! It looks like your API Token was valid, ' .
 		'but the Font Awesome API server still returned an invalid response.';
 }
 
-class AccessTokenStorageException extends FontAwesomeServerException {
+class AccessTokenStorageException extends FontAwesome_ServerException {
 	public $ui_message = 'There was a problem trying to store API credentials. Your API Token ' .
 		' was valid, but storage failed.';
 }
 
-class ConfigSchemaException extends FontAwesomeClientException {
+class ConfigSchemaException extends FontAwesome_ClientException {
 	public function __construct( $code = NULL ) {
 		switch( $code ) {
 			case 'kit_token_no_api_token':
@@ -140,33 +140,33 @@ class ConfigSchemaException extends FontAwesomeClientException {
 	}
 }
 
-class PreferenceRegistrationException extends FontAwesomeServerException {
+class PreferenceRegistrationException extends FontAwesome_ServerException {
 	public $ui_message = 'A theme or plugin registered with Font Awesome threw an exception.';
 }
 
-class ApiRequestException extends FontAwesomeServerException {
+class ApiRequestException extends FontAwesome_ServerException {
 	public $ui_message = 'Your WordPress server failed trying to send a request to the Font Awesome API server.';
 }
 
-class ApiResponseException extends FontAwesomeServerException {
+class ApiResponseException extends FontAwesome_ServerException {
 	public $ui_message = 'An unexpected response was received from the Font Awesome API server.';
 }
 
-class ReleaseProviderStorageException extends FontAwesomeServerException {
+class ReleaseProviderStorageException extends FontAwesome_ServerException {
 	public $ui_message = 'Failed to store releases transient';
 }
 
-class ReleaseMetadataMissingException extends FontAwesomeServerException {
+class ReleaseMetadataMissingException extends FontAwesome_ServerException {
 	public $ui_message = "Somehow, we're missing metadata about available Font Awesome releaes, which should have " .
 		"already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.";
 }
 
-class ConfigCorruptionException extends FontAwesomeServerException {
+class ConfigCorruptionException extends FontAwesome_ServerException {
 	public $ui_message = "When trying to load Font Awesome, the plugin's configuration was invalid. " .
 		"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.";
 }
 
-class ConflictDetectionSchemaException extends FontAwesomeClientException {
+class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 	public $ui_message = "When trying to load Font Awesome, the plugin's configuration was invalid. " .
 		"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.";
 

@@ -114,7 +114,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_API_Controller' ) ) :
 				$result = $this->metadata_provider()->metadata_query( $request->get_body() );
 
 				return new WP_REST_Response( json_decode( $result, true ), 200 );
-			} catch( FontAwesomeServerException $e ) {
+			} catch( FontAwesome_ServerException $e ) {
 				return fa_500( $e );
 			} catch( FontAwesome_Exception $e ) {
 				return fa_400( $e );
