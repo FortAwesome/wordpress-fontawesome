@@ -16,6 +16,7 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 
 	public function setUp() {
 		wp_delete_file( FontAwesome_API_Settings::ini_path() );
+		Mock_FontAwesome_Releases::mock();
 		FontAwesome_Activator::activate();
 	}
 
