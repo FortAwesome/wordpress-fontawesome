@@ -380,7 +380,6 @@ class FontAwesome {
 							->release_provider()
 							->get_resource_collection(
 								$this->options()['version'],
-								'all',
 								array(
 									'use_pro'  => $this->pro(),
 									'use_svg'  => 'svg' === $this->technology(),
