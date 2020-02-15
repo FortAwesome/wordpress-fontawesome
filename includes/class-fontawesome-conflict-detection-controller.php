@@ -161,10 +161,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
 					return new WP_REST_Response( $new_option_unregistered_clients, 200 );
 				} else {
-					return new WP_Error(
-						'fontawesome_unregistered_clients_update',
-						array( 'status' => 400 )
-					);
+					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
