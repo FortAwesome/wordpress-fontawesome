@@ -255,6 +255,8 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	/**
 	 * Update the value of detectConflictsUntil to start/stop conflict detection.
 	 *
+	 * @throws ConflictDetectionSchemaException
+	 * @throws ConflictDetectionStorageException
 	 * @param WP_REST_Request $request the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
@@ -316,6 +318,8 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 *
 	 * Internal use only, not part of this plugin's public API.
 	 *
+	 * @throws ConflictDetectionSchemaException
+	 * @throws ConflictDetectionStorageException
 	 * @ignore
 	 * @internal
 	 */
@@ -324,11 +328,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 			$body = $request->get_json_params();
 
 			if( ! $this->is_array_of_md5( $body )) {
-				return new WP_Error(
-					'fontawesome_update_blocklist_schema',
-					null,
-					array( 'status' => 400 )
-				);
+				throw new ConflictDetectionSchemaException();
 			}
 
 			$prev_option = get_option(
@@ -369,19 +369,20 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
 					return new WP_REST_Response( fa()->blocklist(), 200 );
 				} else {
-					return new WP_Error(
-						'fontawesome_update_blocklist',
-						array( 'status' => 400 )
-					);
+					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
+		} catch( FontAwesome_ServerException $e ) {
+			return fa_500( $e );
+		} catch( FontAwesome_Exception $e ) {
+			return fa_400( $e );
 		} catch ( Exception $e ) {
-			return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
-		} catch ( Error $error ) {
-			return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+			return unknown_error_500( $e );
+		} catch ( Error $e ) {
+			return unknown_error_500( $e );
 		}
 	}
 
