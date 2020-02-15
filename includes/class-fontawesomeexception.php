@@ -126,6 +126,12 @@ class ConfigException extends FontAwesomeClientException {
 				return parent::__construct(
 					'A Font Awesome version number was expected but not given',
 				);
+			case 'webfont_v4compat_introduced_later':
+				return parent::__construct(
+					'Whoops! You found a corner case here. ' .
+					'Version 4 compatibility for our webfont technology was not introduced until Font Awesome 5.1.0. ' .
+					'Try using a newer version, disabling version 4 compatibility, or switch to SVG.'
+				);
 			default:
 				return parent::__construct(
 					'Invalid options were given'
@@ -153,4 +159,9 @@ class ReleaseProviderStorageException extends FontAwesomeServerException {
 class ReleaseMetadataMissingException extends FontAwesomeServerException {
 	public $ui_message = "Somehow, we're missing metadata about available Font Awesome releaes, which should have " .
 		"already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.";
+}
+
+class CorruptConfigException extends FontAwesomeServerException {
+	public $ui_message = "When trying to load Font Awesome, the plugin's configuration was invalid. " .
+		"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.";
 }
