@@ -1,5 +1,6 @@
 import React, { createRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import Alert from './Alert'
 import {
   resetPendingOptions,
   queryKits,
@@ -27,6 +28,7 @@ export default function KitSelectView({ optionSelector }) {
   const kitTokenActive = useSelector(state => state.options.kitToken)
   const kitToken = optionSelector('kitToken')
   const [ pendingApiToken, setPendingApiToken ] = useState(null)
+  const [ showingRemoveApiTokenAlert, setShowRemoveApiTokenAlert ] = useState(false)
   const apiToken = useSelector(state => {
     if( null !== pendingApiToken ) return pendingApiToken
 
@@ -38,6 +40,16 @@ export default function KitSelectView({ optionSelector }) {
   const submitMessage = useSelector(state => state.optionsFormState.message)
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
 
+  function removeApiToken() {
+    if( !!kitTokenActive ) {
+      setShowRemoveApiTokenAlert(true)
+      setTimeout(() => {
+        setShowRemoveApiTokenAlert(false)
+      }, 4000)
+    } else {
+      dispatch(updateApiToken({ apiToken: false }))
+    }
+  }
   /**
    * When selecting a kit, we go through each of its configuration options
    * and add them as pending options. We don't set those options in this system:
@@ -163,16 +175,26 @@ export default function KitSelectView({ optionSelector }) {
   }
 
   function ApiTokenControl() {
-    return <div className={ styles['api-token-control'] }>
-      <p className={ styles['token-saved'] }> 
-        <span>
-          <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
-        </span>
-        API Token Saved
-      </p>
+    return <div className={ styles['api-token-control-wrapper'] }>
+      <div className={ styles['api-token-control'] }>
+        <p className={ styles['token-saved'] }> 
+          <span>
+            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
+          </span>
+          API Token Saved
+        </p>
+        {
+          !!apiToken &&
+          <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button"><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faTrashAlt } title="remove" alt="remove" /></button>
+        }
+      </div>
       {
-        !!apiToken &&
-        <button onClick={ () => dispatch(updateApiToken({ apiToken: false })) } className={ styles['remove'] } type="button"><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faTrashAlt } title="remove" alt="remove" /></button>
+        showingRemoveApiTokenAlert &&
+        <div className={ styles['api-token-control-alert-wrapper'] }>
+          <Alert title="API Token Removal" type='warning'>
+          You can't remove your API token when Use a Kit is active. Switch to Use CDN first.
+          </Alert>
+        </div>
       }
     </div>
   }
