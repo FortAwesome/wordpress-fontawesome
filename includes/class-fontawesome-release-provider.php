@@ -344,14 +344,12 @@ EOD;
 	 * Throws FontAwesome_NoReleasesException when no releases metadata could be loaded.
 	 *
 	 * @param string $version
-	 * @param mixed  $style_opt either the string 'all' or an array containing any of the following:
-	 *         ['solid', 'regular', 'light', 'brands']
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
 	 * @throws InvalidArgumentException | FontAwesome_NoReleasesException
 	 * @throws FontAwesome_ConfigurationException
 	 * @return array
 	 */
-	public function get_resource_collection( $version, $style_opt, $flags = array(
+	public function get_resource_collection( $version, $flags = array(
 		'use_pro'  => false,
 		'use_svg'  => false,
 		'use_shim' => true,
@@ -374,52 +372,9 @@ EOD;
 			throw new InvalidArgumentException( "Font Awesome version \"$version\" is not one of the available versions." );
 		}
 
-		if ( gettype( $style_opt ) === 'string' && 'all' === $style_opt ) {
-			array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
-			if ( $flags['use_shim'] ) {
-				array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
-			}
-		} elseif ( is_array( $style_opt ) ) {
-			// These can be added to the collection in any order.
-			// Silently ignore any invalid ones, but if there are no styles, then we should die.
-			$load_styles = array();
-			foreach ( $style_opt as $style ) {
-				switch ( $style ) {
-					case 'solid':
-					case 'regular':
-					case 'light':
-					case 'brands':
-						$load_styles[ $style ] = true;
-						break;
-					default:
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-						error_log( 'WARNING: ignorning an unrecognized style specifier: ' . $style );
-				}
-			}
-			$styles = array_keys( $load_styles );
-			if ( count( $styles ) === 0 ) {
-				throw new InvalidArgumentException(
-					'No icon styles were specified to Font Awesome, so none would be loaded.' .
-					"If that's what you intend, then you should probably just disable the Font Awesome plugin."
-				);
-			}
-
-			// Add the main library first.
-			array_push( $resources, $this->build_resource( $version, 'fontawesome', $flags ) );
-
-			// create a new FontAwesome_Resource for each style, in any order.
-			foreach ( $styles as $style ) {
-				array_push( $resources, $this->build_resource( $version, $style, $flags ) );
-			}
-
-			if ( $flags['use_shim'] ) {
-				array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
-			}
-		} else {
-			throw new InvalidArgumentException(
-				'$style_opt must be either the string "all" or a collection of ' .
-				'style specifiers: solid, regular, light, brands.'
-			);
+		array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
+		if ( $flags['use_shim'] ) {
+			array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
 		}
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
