@@ -1,9 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faExternalLinkAlt, 
-  faExclamationTriangle
- } from '@fortawesome/free-solid-svg-icons'
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import styles from './KitSelectView.module.css'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
@@ -18,7 +15,6 @@ export default function KitConfigView({ kitToken }) {
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
   const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
-  const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
 
   if(!kitTokenIsActive && !kitTokenApiData) {
     throw new Error('Oh no! We could not find the kit data for the selected kit token. Try reloading this page.')
@@ -101,7 +97,7 @@ export default function KitConfigView({ kitToken }) {
         </tr>
       </tbody>
     </table>
-    <p className={ styles['tip-text'] }>Make changes on <a target="_blank" href="https://fontawesome.com/kits">fontawesome.com <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and then refresh.</p>
+    <p className={ styles['tip-text'] }>Make changes on <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/kits">fontawesome.com <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and then refresh.</p>
   </div>
 }
 

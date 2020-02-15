@@ -12,7 +12,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
   faExternalLinkAlt,
-  faCheck,
   faRedo,
   faSkull, 
   faTrashAlt } from '@fortawesome/free-solid-svg-icons'
@@ -43,9 +42,6 @@ export default function KitSelectView({ optionSelector }) {
   function removeApiToken() {
     if( !!kitTokenActive ) {
       setShowRemoveApiTokenAlert(true)
-      setTimeout(() => {
-        setShowRemoveApiTokenAlert(false)
-      }, 4000)
     } else {
       dispatch(updateApiToken({ apiToken: false }))
     }
@@ -113,6 +109,7 @@ export default function KitSelectView({ optionSelector }) {
     }
   })
 
+
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
 
   function ApiTokenInput() {
@@ -135,7 +132,7 @@ export default function KitSelectView({ optionSelector }) {
               setPendingApiToken(e.target.value)
             }}
           />
-          <p>Grab your secure and unique API token from your <a target="_blank" href="https://fontawesome.com/account">Font Awesome account page <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and enter it here so we can securely fetch your kits.</p>
+          <p>Grab your secure and unique API token from your <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/account">Font Awesome account page <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and enter it here so we can securely fetch your kits.</p>
 
         </div>
       </div>
