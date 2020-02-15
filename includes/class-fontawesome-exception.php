@@ -169,5 +169,8 @@ class ConfigCorruptionException extends FontAwesome_ServerException {
 class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 	public $ui_message = "When trying to load Font Awesome, the plugin's configuration was invalid. " .
 		"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.";
+}
 
+class ConflictDetectionStorageException extends FontAwesome_ServerException {
+	public $ui_message = "We were not able to save conflict detection data to your WordPress database.";
 }
