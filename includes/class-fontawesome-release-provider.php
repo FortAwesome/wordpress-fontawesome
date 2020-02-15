@@ -20,7 +20,6 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
  */
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesomeexception.php';
@@ -345,8 +344,11 @@ EOD;
 	 *
 	 * @param string $version
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
-	 * @throws InvalidArgumentException | FontAwesome_NoReleasesException
-	 * @throws FontAwesome_ConfigurationException
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 * @throws CorruptConfigException
 	 * @return array
 	 */
 	public function get_resource_collection( $version, $flags = array(
@@ -357,19 +359,15 @@ EOD;
 		$resources = array();
 
 		if ( ! is_string($version) || 0 == strlen( $version ) ) {
-			throw new InvalidArgumentException( "A valid Font Awesome version has not been provided. This might be caused by your WordPress server being unable to contact the Font Awesome API server, such as when you're using WordPress in offline mode." );
+			throw new CorruptConfigException();
 		}
 
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
-			throw new FontAwesome_ConfigurationException(
-				'Whoops! You found a corner case here. ' .
-				'Version 4 compatibility for our webfont method was not introduced until Font Awesome 5.1.0. ' .
-				'Try using a newer version, disabling version 4 compatibility, or switch your method to SVG.'
-			);
+			throw new ConfigException('webfont_v4compat_introduced_later');
 		}
 
 		if ( ! array_key_exists( $version, $this->releases() ) ) {
-			throw new InvalidArgumentException( "Font Awesome version \"$version\" is not one of the available versions." );
+			throw new ReleaseMetadataMissingException();
 		}
 
 		array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
