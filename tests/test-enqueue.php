@@ -11,6 +11,7 @@ namespace FortAwesome;
  * @preserveGlobalState disabled
  * @runTestsInSeparateProcesses
  * @noinspection PhpCSValidationInspection
+ * @group output
  */
 // phpcs:ignoreFile Squiz.Commenting.ClassComment.Missing
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
@@ -37,6 +38,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
+		delete_option( FontAwesome::OPTIONS_KEY );
 		FontAwesome_Activator::activate();
 	}
 
