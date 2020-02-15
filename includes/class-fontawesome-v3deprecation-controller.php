@@ -27,7 +27,8 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 */
 	public function __construct( $plugin_slug, $namespace ) {
 		$this->plugin_slug = $plugin_slug;
-		$this->namespace   = $namespace;
+
+		$this->namespace = $namespace;
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -59,13 +60,15 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 		);
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only.
+	 *
+	 * @internal
 	 * @ignore
 	 */
-	protected function build_item( $fa ) {
+	protected function build_item() {
 		return array(
-			'v3DeprecationWarning' => $fa->get_v3deprecation_warning_data(),
+			'v3DeprecationWarning' => fa()->get_v3deprecation_warning_data(),
 		);
 	}
 
@@ -76,29 +79,18 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function get_item( $request ) {
-		// TODO: consider alternatives to using ini_set() to ensure that display_errors is disabled.
-		// Without this, when a client plugin of Font Awesome throws an error (like our plugin-epsilon
-		// in this repo), instead of this REST controller returning an HTTP status of 500, indicating
-		// the server error, it sends back a status of 200, setting the data property in the response
-		// object equal to an HTML document that describes the error. This confuses the client.
-		// Ideally, we'd be able to detect which plugin results in such an error by catching it and then
-		// reporting to the client which plugin caused the error. But at a minimum, we need to make sure
-		// that we return 500 instead of 200 in these cases.
 		try {
-			$fa = fa();
-
-			$data = $this->build_item( $fa );
+			$data = $this->build_item();
 
 			return new WP_REST_Response( $data, 200 );
+		} catch( FontAwesome_ServerException $e ) {
+			return fa_500( $e );
+		} catch( FontAwesome_Exception $e ) {
+			return fa_400( $e );
 		} catch ( Exception $e ) {
-			return new WP_Error(
-				'cant_fetch',
-				$e->getMessage(),
-				array(
-					'status' => 500,
-					'trace'  => $e->getTraceAsString(),
-				)
-			);
+			return unknown_error_500( $e );
+		} catch ( Error $e ) {
+			return unknown_error_500( $e );
 		}
 	}
 
@@ -110,31 +102,30 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 */
 	public function update_item( $request ) {
 		try {
-			$fa = fa();
-
 			$item = $this->prepare_item_for_database( $request );
 
 			if ( isset( $item['snooze'] ) && $item['snooze'] ) {
-				$fa->snooze_v3deprecation_warning();
+				fa()->snooze_v3deprecation_warning();
 			}
 
-			$return_data = $this->build_item( $fa );
+			$return_data = $this->build_item( fa() );
 
 			return new WP_REST_Response( $return_data, 200 );
+		} catch( FontAwesome_ServerException $e ) {
+			return fa_500( $e );
+		} catch( FontAwesome_Exception $e ) {
+			return fa_400( $e );
 		} catch ( Exception $e ) {
-			return new WP_Error(
-				'cant_update',
-				$e->getMessage(),
-				array(
-					'status' => 500,
-					'trace'  => $e->getTraceAsString(),
-				)
-			);
+			return unknown_error_500( $e );
+		} catch ( Error $e ) {
+			return unknown_error_500( $e );
 		}
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only.
+	 *
+	 * @internal
 	 * @ignore
 	 */
 	protected function prepare_item_for_database( $request ) {
