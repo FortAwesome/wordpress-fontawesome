@@ -265,11 +265,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 			$new_value = intval( $body );
 
 			if( 0 === $new_value && '0' !== $body ) {
-				return new WP_Error(
-					'fontawesome_detect_conflicts_until_schema',
-					null,
-					array( 'status' => 400 )
-				);
+				throw new ConflictDetectionSchemaException();
 			}
 
 			$prev_option = get_option(
@@ -294,19 +290,20 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
 					return new WP_REST_Response( $new_value, 200 );
 				} else {
-					return new WP_Error(
-						'fontawesome_detect_conflicts_until_update',
-						array( 'status' => 400 )
-					);
+					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
+		} catch( FontAwesome_ServerException $e ) {
+			return fa_500( $e );
+		} catch( FontAwesome_Exception $e ) {
+			return fa_400( $e );
 		} catch ( Exception $e ) {
-			return new WP_Error( 'caught_exception', 'Whoops, there was a critical exception with Font Awesome.', array( 'status' => 500 ) );
-		} catch ( Error $error ) {
-			return new WP_Error( 'caught_error', 'Whoops, there was a critical error with Font Awesome.', array( 'status' => 500 ) );
+			return unknown_error_500( $e );
+		} catch ( Error $e ) {
+			return unknown_error_500( $e );
 		}
 	}
 
