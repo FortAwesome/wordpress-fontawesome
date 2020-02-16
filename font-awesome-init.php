@@ -37,8 +37,8 @@ if ( ! defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
 		define( 'FONTAWESOME_OFFICIAL_LOADED', 1 );
 		fa()->run();
 	} catch ( Exception $e ) {
-		font_awesome_handle_fatal_error( $e->getMessage() );
+		notify_admin_fatal_error( $e->getMessage() );
 	} catch ( Error $e ) {
-		font_awesome_handle_fatal_error( $e->getMessage() );
+		notify_admin_fatal_error( $e->getMessage() );
 	}
 }
