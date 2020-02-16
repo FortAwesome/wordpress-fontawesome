@@ -1163,17 +1163,12 @@ class FontAwesome {
 	 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
 	 *
 	 * @since 4.0.0
-	 * @throws FontAwesome_NoReleasesException
 	 *
 	 * @return boolean
 	 */
 	public function pro() {
-		try {
-			$options = $this->options();
-			return( wp_validate_boolean( $options['usePro'] ) );
-		} catch ( FontAwesome_NoReleasesException $e ) {
-			return self::DEFAULT_USER_OPTIONS['usePro'];
-		}
+		$options = $this->options();
+		return( wp_validate_boolean( $options['usePro'] ) );
 	}
 
 	/**
