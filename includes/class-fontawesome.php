@@ -1531,23 +1531,23 @@ EOT;
 	 * @ignore
 	 * @param $options
 	 * @param FontAwesome_ResourceCollection $resource_collection
-	 * @throws InvalidArgumentException
+	 * @throws ConfigCorruptionException
 	 */
 	public function enqueue_cdn( $options, $resource_collection ) {
 		if ( ! array_key_exists( 'svgPseudoElements', $options ) ) {
-			throw new InvalidArgumentException( 'missing required options key: svgPseudoElements' );
+			throw new ConfigCorruptionException( 'missing required options key: svgPseudoElements' );
 		}
 
 		if ( ! array_key_exists( 'usePro', $options ) ) {
-			throw new InvalidArgumentException( 'missing required options key: usePro' );
+			throw new ConfigCorruptionException( 'missing required options key: usePro' );
 		}
 
 		if ( ! array_key_exists( 'version', $options ) ) {
-			throw new InvalidArgumentException( 'missing required options key: version' );
+			throw new ConfigCorruptionException( 'missing required options key: version' );
 		}
 
 		if ( ! ( array_key_exists( 'technology', $options ) && ( 'svg' === $options['technology'] || 'webfont' === $options['technology'] ) ) ) {
-			throw new InvalidArgumentException( 'missing required options key: technology, which must equal either svg or webfont' );
+			throw new ConfigCorruptionException( 'missing required options key: technology, which must equal either svg or webfont' );
 		}
 
 		$resources = $resource_collection->resources();
@@ -1639,7 +1639,7 @@ EOT;
 			);
 
 			if ( ! array_key_exists( 'v4Compat', $options ) ) {
-				throw new InvalidArgumentException( 'missing required options key: v4Compat' );
+				throw new ConfigCorruptionException( 'missing required options key: v4Compat' );
 			}
 
 			$version = $resource_collection->version();
