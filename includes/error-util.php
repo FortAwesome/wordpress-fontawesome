@@ -4,6 +4,28 @@ namespace FortAwesome;
 use \WP_Error, \Exception;
 
 /**
+ * Handle fatal errors
+ *
+ * @ignore
+ */
+function font_awesome_handle_fatal_error( $message = null ) {
+	add_action(
+		'admin_notices',
+		function () use ( $message ) {
+			?>
+			<div class="error"><p>The Font Awesome plugin has experienced a fatal error
+				<?php
+				if ( ! is_null( $message ) ) {
+					echo esc_html( ": $message" );
+				}
+				?>
+			</p></div>
+			<?php
+		}
+	);
+}
+
+/**
  * Internal use only, not part of this plugin's public API.
  *
  * @internal

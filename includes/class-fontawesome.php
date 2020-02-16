@@ -387,24 +387,6 @@ class FontAwesome {
 
 						$this->enqueue_cdn( $this->options(), $resource_collection );
 					}
-				} catch ( FontAwesome_ConfigurationException $e ) {
-					font_awesome_handle_fatal_error(
-						'Sorry, somehow your Font Awesome plugin configuration got corrupted. The options as currently configured ' .
-						'are invalid so we can\'t load Font Awesome. To completely start from scratch, you could deactivate, un-install, ' .
-						're-install, and re-activate this plugin. Some additional details on this error: ' .
-						$e->getMessage()
-					);
-				} catch ( FontAwesome_NoReleasesException $e ) {
-					$current_screen = get_current_screen();
-					if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-						// Don't put up an admin notice on our plugin's admin screen, since it will be redundant.
-						font_awesome_handle_fatal_error(
-							'Sorry, your WordPress server was unable to contact the Font Awesome server to retrieve available ' .
-							'releases data. Most likely, just re-loading this page to get it try again should work. But if you\'re running ' .
-							'WordPress offline, from an airplane, or in some other way that blocks your WordPress server from reaching ' .
-							'fontawesome.com, then that will block you from proceeding until you can connect successfully.'
-						);
-					}
 				} catch ( Exception $e ) {
 					font_awesome_handle_fatal_error( $e->getMessage() );
 				} catch ( Error $e ) {

@@ -9,30 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once trailingslashit( __DIR__ ) . 'defines.php';
-
-if ( ! function_exists( 'FortAwesome\font_awesome_handle_fatal_error' ) ) {
-	/**
-	 * Handle fatal errors
-	 *
-	 * @ignore
-	 */
-	function font_awesome_handle_fatal_error( $message = null ) {
-		add_action(
-			'admin_notices',
-			function () use ( $message ) {
-				?>
-				<div class="error"><p>The Font Awesome plugin has experienced a fatal error
-					<?php
-					if ( ! is_null( $message ) ) {
-						echo esc_html( ": $message" );
-					}
-					?>
-				</p></div>
-				<?php
-			}
-		);
-	}
-}
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
 if ( ! defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
 	register_deactivation_hook(
@@ -54,7 +32,7 @@ if ( ! defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
 	);
 
 	try {
-		require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
+		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome.php';
 
 		define( 'FONTAWESOME_OFFICIAL_LOADED', 1 );
 		fa()->run();
