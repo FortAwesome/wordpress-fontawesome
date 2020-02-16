@@ -836,7 +836,7 @@ class FontAwesome {
 	 *
 	 * @ignore
 	 * @internal
-	 * @throws FontAwesome_ConfigurationException with a message describing the reason if options are invalid
+	 * @throws ConfigCorruptionException if options are invalid
 	 * @return TRUE if options are valid; otherwise it throws
 	 */
 	public function validate_options() {
@@ -848,26 +848,15 @@ class FontAwesome {
 
 		if ( $using_kit ) {
 			if ( ! boolval( $api_token ) ) {
-				throw new FontAwesome_ConfigurationException(
-					'Font Awesome is configured to use a kit but no API Token has been provided. ' .
-					'Add a valid API Token on the Font Awesome plugin settings page.'
-				);
+				throw new ConfigCorruptionException();
 			}
 
 			if ( ! is_string( $kit_token ) ) {
-				throw new FontAwesome_ConfigurationException(
-					'Font Awesome is configured to use a kit but no valid kit token has been provided. ' .
-					'Try again to select one of your kits on the Font Awesome plugin settings page and save your changes.'
-				);
+				throw new ConfigCorruptionException();
 			}
 
 			if ( ! is_string( $version ) ) {
-				throw new FontAwesome_ConfigurationException(
-					'Font Awesome is configured to use a kit but somehow does not know what version that kit is loading. ' .
-					'Consider uninstalling and reinstalling the Font Awesome plugin and trying again to set up your kit. ' .
-					'If that doesn\'t work, report the issue in the plugin\'s support forum. Font Awesome Pro subscribers can ' .
-					'also get support by emailing hello@fontawesome.com.'
-				);
+				throw new ConfigCorruptionException();
 			}
 		} else {
 			/**
@@ -880,12 +869,7 @@ class FontAwesome {
 				&& 1 === preg_match('/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
 
 			if ( ! $version_is_concrete ) {
-				throw new FontAwesome_ConfigurationException(
-					'Font Awesome is configured with an invalid version number. ' .
-					'Consider uninstalling and reinstalling the Font Awesome plugin and trying again to set up your kit. ' .
-					'If that doesn\'t work, report the issue in the plugin\'s support forum. Font Awesome Pro subscribers can ' .
-					'also get support by emailing hello@fontawesome.com.'
-				);
+				throw new ConfigCorruptionException();
 			}
 		}
 
