@@ -8,7 +8,13 @@ use \WP_Error, \Exception;
  *
  * @ignore
  */
-function notify_admin_fatal_error( $message = null ) {
+function notify_admin_fatal_error( $e ) {
+	if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error') ) {
+		$message = 'Unknown error';
+	} else {
+		$message = $e->getMessage();
+	}
+
 	add_action(
 		'admin_notices',
 		function () use ( $message ) {
