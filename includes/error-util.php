@@ -8,7 +8,7 @@ use \WP_Error, \Exception;
  *
  * @ignore
  */
-function font_awesome_handle_fatal_error( $message = null ) {
+function notify_admin_fatal_error( $message = null ) {
 	add_action(
 		'admin_notices',
 		function () use ( $message ) {

@@ -388,9 +388,9 @@ class FontAwesome {
 						$this->enqueue_cdn( $this->options(), $resource_collection );
 					}
 				} catch ( Exception $e ) {
-					font_awesome_handle_fatal_error( $e->getMessage() );
+					notify_admin_fatal_error( $e->getMessage() );
 				} catch ( Error $e ) {
-					font_awesome_handle_fatal_error( $e->getMessage() );
+					notify_admin_fatal_error( $e->getMessage() );
 				}
 			},
 			10,
