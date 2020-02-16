@@ -243,6 +243,21 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			echo '<p>' . $ui_message . '</p>';
 			echo '<p>' . $e->getMessage() . '</p>';
 			'</div>';
+			self::console_emit_stack_trace( $e );
+		}
+
+		/**
+		 * Internal use only.
+		 *
+		 * @ignore
+		 * @internal
+		 * @param Error|Exception
+		 */
+		public static function console_emit_stack_trace( $e ) {
+			if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error' ) ) {
+				return;
+			}
+
 			echo '<script>';
 			echo "console.group('" . __( self::CONSOLE_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN ) . "');";
 			echo "console.info('" . self::escape_stack_trace( $e->getTraceAsString() ) . "');";
