@@ -1434,13 +1434,11 @@ class FontAwesome {
 	 *
 	 * @ignore
 	 * @internal
-	 * @throws FontAwesome_ConfigurationException if the kit_token is not a string
+	 * @throws ConfigCorruptionException if the kit_token is not a string
 	 */
 	public function enqueue_kit( $kit_token ) {
 		if ( ! is_string( $kit_token ) ) {
-			throw new FontAwesome_ConfigurationException(
-				'Font Awesome is configured to use a kit, but no valid kit token was provided.'
-			);
+			throw new ConfigCorruptionException();
 		}
 
 		add_action(
