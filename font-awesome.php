@@ -21,6 +21,15 @@ if(! defined( 'FONTAWESOME_PLUGIN_FILE' ) ) {
 	define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
 }
 
+if(! defined( 'FONTAWESOME_TEXT_DOMAIN' ) ) {
+	/**
+	 * Name of this plugin's text domain.
+	 * 
+	 * @since 4.0.0
+	 */
+	define( 'FONTAWESOME_TEXT_DOMAIN', 'font-awesome-official' );
+}
+
 if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	/**
 	 * Loader class, a Singleton. Coordinates potentially multiple installations of
@@ -81,6 +90,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 * @since 4.0.0
 	 */
 	final class FontAwesome_Loader {
+		const LOAD_FAIL_MSG = 'Unable To Load Font Awesome Plugin.';
+		const PHP_VERSION_INCOMPATIBLE_MSG = 'The Font Awesome plugin require a PHP Version of at least 5.6.';
+		const PHP_CURRENT_VERSION_MSG = 'Your current version of PHP is';
+		const ACTIVATION_FAILED_MSG = 'Font Awesome could not be activated.';
+		const INITIALIZATION_FAILED_MSG = 'Font Awesome could not be initialized.';
+		const CONSOLE_ERROR_PREAMBLE = 'Font Awesome Plugin Error Details';
+
 		/**
 		 * Stores Loader Instance.
 		 *
@@ -145,13 +161,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
 
 			if ( empty( $info ) ) {
-				$ms = __( 'Unable To Load Font Awesome Plugin. Please Contact The Author', 'fontawesome' );
-				wp_die( $ms . '<p style="word-break: break-all;"> <strong>' . __( 'ERROR ID : ', 'wponion' ) . '</strong>' . base64_encode( wp_json_encode( self::$data ) ) . '</p>' );
+				$ms = __( self::LOAD_FAIL_MSG, FONTAWESOME_TEXT_DOMAIN );
+				wp_die( $ms . '<p style="word-break: break-all;">' . base64_encode( wp_json_encode( self::$data ) ) . '</p>' );
 			}
 
 			if ( ! version_compare( PHP_VERSION, '5.6', '>=' ) ) {
-				$msg = sprintf( __( 'Font Awesome plugin incompatible with PHP Version %2$s. Please Install/Upgrade PHP To %1$s or Higher ', 'fontawesome' ), '<strong>5.6</strong>', '<code>' . PHP_VERSION . '</code>' );
-				wp_die( $msg );
+				wp_die(
+					__( self::PHP_CURRENT_VERSION_MSG, FONTAWESOME_TEXT_DOMAIN )
+					. ' '
+					. __( self::PHP_CURRENT_VERSION_MSG, FONTAWESOME_TEXT_DOMAIN )
+					. ': '
+					. PHP_VERSION
+				);
 			}
 
 			self::$_loaded = array(
@@ -202,19 +223,45 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			try {
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
-			} catch ( FontAwesome_NoReleasesException $e ) {	
-				error_log($e->getMessage());
-				echo '<div class="error"><p>Sorry, Font Awesome could not be activated because your WordPress server could not contact the Font Awesome API server.</p></div>';
-				exit;
 			} catch ( Exception $e ) {
-				error_log($e->getMessage());
-				echo '<div class="error"><p>Sorry, Font Awesome could not be activated.</p></div>';
+				self::emit_error_output( __( self::ACTIVATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
 				exit;
 			} catch ( Error $e ) {
-				error_log($e->getMessage());
-				echo '<div class="error"><p>Sorry, Font Awesome could not be activated.</p></div>';
+				self::emit_error_output( __( self::ACTIVATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
 				exit;
 			}
+		}
+
+		/**
+		 * Internal use only, not part of this plugin's public API.
+		 *
+		 * @internal
+		 * @ignore
+		 */
+		private static function emit_error_output( $ui_message, $e ) {
+			echo '<div class="error">';
+			echo '<p>' . $ui_message . '</p>';
+			echo '<p>' . $e->getMessage() . '</p>';
+			'</div>';
+			echo '<script>';
+			echo "console.group('" . __( self::CONSOLE_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN ) . "');";
+			echo "console.info('" . self::escape_stack_trace( $e->getTraceAsString() ) . "');";
+			echo 'console.groupEnd()';
+			echo '</script>';
+		}
+
+		/**
+		 * Internal use only, not part of this plugin's public API.
+		 *
+		 * @internal
+		 * @ignore
+		 */
+		public static function escape_stack_trace( $trace ) {
+			$result = preg_replace( '/\'/', "\\'", $trace );
+			$result = preg_replace( '/\"/', '\\"', $result );
+			$result = preg_replace( '/\n/', '\\n', $result );
+
+			return $result;
 		}
 
 		/**
@@ -255,10 +302,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::initialize();
 			} catch ( Exception $e ) {
-				echo '<div class="error"><p>Sorry, Font Awesome could not be initialized.</p></div>';
+				self::emit_error_output( __( self::INITIALIZATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
 				exit;
 			} catch ( Error $e ) {
-				echo '<div class="error"><p>Sorry, Font Awesome could not be initialized.</p></div>';
+				self::emit_error_output( __( self::INITIALIZATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
 				exit;
 			}
 		}
