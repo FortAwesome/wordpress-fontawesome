@@ -2130,12 +2130,17 @@ EOT;
 	 *
 	 * It accepts a GraphQL query string like 'query { versions }' and returns
 	 * the json encoded body of response from the API server when the response
-	 * as an HTTP status of 200. Otherwise, it return WP_Error.
+	 * has an HTTP status of 200. Otherwise, it throws an exception whose
+	 * message is appropriate for displaying in the WordPress admin ui
+	 * to an admin user.
 	 * 
 	 * Requests to the Font Awesome API server will automatically be authorized
-	 * by the site owner's API Token, if they have added one through the
-	 * plugin's settings page. Access token refresh is handled automatically,
-	 * when necessary.
+	 * by the WordPress site owner's API Token if they have added one through the
+	 * plugin's settings page. The API Token is used to retrieve a short-lived
+	 * access_token, and that that access_token is used for subsequent API requests.
+	 * 
+	 * Refreshing an expired access_token using the API Token is also handled
+	 * automatically, when necessary.
 	 *
 	 * Each API Token has any number of authorization scopes on it. Most fields
 	 * in the GraphQL schema have a `public` scope, and so do not require an
@@ -2185,60 +2190,18 @@ EOT;
 	 *
 	 * <h3>Error Handling</h3>
 	 * 
-	 * On error an `WP_Error` object with one of the following sets of properties
-	 * might be returned, having the indicated meaning:
+	 * Errors that prevent the API server from handling the query will result
+	 * in thrown exceptions.
 	 *
-	 * <table>
-	 *   <thead>
-	 *     <tr>
-	 *       <th>code</th>
-	 *       <th>meaning</th>
-	 *       <th>message</th>
-	 *       <th>data</th>
-	 *     </tr>
-	 *   </thead>
-	 *   <tbody>
-	 *     <tr>
-	 *       <td>
-	 *         <code>fontawesome_api_failed_request</code>
-	 *       </td>
-	 *       <td>
-	 *         when the HTTP status from the GraphQL API server is not 200
-	 *       </td>
-	 *       <td>
-	 *         the message from the original response
-	 *       </td>
-	 *       <td>
-	 *         original HTTP status code
-	 *       </td>
-	 *     </tr>
-	 *     <tr>
-	 *       <td>
-	 *         <code>api_token</code>
-	 *       </td>
-	 *       <td>
-	 *         When we try to refresh an access_token, and for some reason,
-	 *         by the time we do, there is no API Token available. This would probably
-	 *         indicate a race condition where a previously added API Token happened
-	 *         to be removed right about the same time as the access_token refresh
-	 *         logic kicks in. This is a very unlikely scenario.
-	 *       </td>
-	 *       <td>
-	 *         a message appropriate for displaying to a WordPress admin user
-	 *       </td>
-	 *       <td>
-	 *         <code>[ 'status' => 403 ]</code>
-	 *       </td>
-	 *     </tr>
-	 *   </tbody>
-	 * </table>
-	 *
-	 * If the site owner has not added an API Token, then requests to the API
-	 * will only have `public` scope. In that case, any GraphQL schema fields
+	 * If the query is resolved and the request returns with an HTTP 200 status,
+	 * there may still be GraphQL errors encoded in the response.
+	 * 
+	 * For example, if the site owner has not added an API Token, then requests
+	 * to the API will only have `public` scope. In that case, any GraphQL schema fields
 	 * that would require some higher privilege will be resolved as `null`, and
 	 * the response body will include errors indicating the resolution failure.
 	 *
-	 * For example, if the above kits query were made, without an API Token having
+	 * For example, if the above kits query were made without an API Token having
 	 * the `kits_read` scope, then the following response would be returned:
 	 * 
 	 * ```json
@@ -2258,24 +2221,14 @@ EOT;
 	 * } 
 	 * ```
 	 *
-	 * This function would not return `WP_Error`, because the GraphQL API will
-	 * have return this response with HTTP status 200.
-	 *
 	 * It is possible that a query could select both authorized and unauthorized
 	 * fields. The `data` property in the response will include all of those
 	 * field resolutions, and the `error` property--if present--will include
-	 * an errors during resolution, such as attempting to resolve fields without
-	 * proper authorization.
+	 * any errors during resolution, such as attempting to resolve fields without
+	 * proper authorization. This is all standard GraphQL: this plugin just passes
+	 * through the GraphQL query and passes back the GraphQL response without
+	 * modification.
 	 *
-	 * An invalid query, such as one that has typo in a field name, may return
-	 * an HTTP 200 result from the GraphQL API, but its response body will
-	 * include an `errors` property with details about the validation error.
-	 * 
-	 * Or a query that includes a mix of successful and unsuccessful field
-	 * authorizations, may return results in the response's `data` for the
-	 * portions of the schema that are authorized, null for unauthorized portions,
-	 * with explanation on the `errors` property.
-	 * 
 	 * See documentation about [GraphQL validation](https://graphql.org/learn/validation/)
 	 * for more on error handling.
 	 * 
@@ -2284,7 +2237,7 @@ EOT;
 	 * If you know that you need access to some part of the schema that requires some
 	 * additional authorization scope, the way to get that is to instruct the site owner
 	 * to copy an API Token from their fontawesome.com account and add it to this
-	 * plugin's configuration the plugin's settings page.
+	 * plugin's configuration on the plugin's settings page.
 	 * 
 	 * As of version 4.0.0 of this plugin, the only non-public portions of the
 	 * GraphQL schema that are relevant to usage in WordPress involve querying
@@ -2293,14 +2246,22 @@ EOT;
 	 * <h3>Additional Resources</h3>
 	 *
 	 * For more on how to construct GraphQL queries, [see here](https://graphql.org/learn/queries/).
+	 *
+	 * A reference on the Font Awesome GraphQL API is [available here](https://fontawesome.com/how-to-use/with-the-api).
 	 * 
 	 * You can explore the Font Awesome GraphQL API using an app like [GraphiQL](https://www.electronjs.org/apps/graphiql).
 	 * Point it at `https://api.fontawesome.com`.
 	 *
 	 * @since 4.0.0
 	 * @param string $query_string a GraphQL query document
-	 * @return WP_Error|string json encoded response body when the API response
-	 *     body has HTTP 200 status, otherwise WP_Error.
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @throws ApiRequestException
+	 * @return string json encoded response body when the API server response
+	 *     has a HTTP 200 status.
 	 */
 	public function query( $query_string ) {
 		return $this->metadata_provider()->metadata_query( $query_string );

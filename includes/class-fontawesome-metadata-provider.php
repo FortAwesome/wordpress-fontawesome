@@ -99,7 +99,8 @@ class FontAwesome_Metadata_Provider {
 	 * @throws AccessTokenStorageException
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
-	 * @return string json encoded query response body
+	 * @return string json encoded response body when the API server response
+	 *     has a HTTP 200 status.
 	 */
 	public function metadata_query( $query_string, $ignore_auth = FALSE ) {
 		$args = array(
