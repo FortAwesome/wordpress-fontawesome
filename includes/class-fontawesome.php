@@ -4,7 +4,7 @@
  */
 namespace FortAwesome;
 
-use \Exception, \Error, \InvalidArgumentException, \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+use \Exception, \Error, \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
@@ -2125,7 +2125,7 @@ EOT;
 	 *
 	 * @see FontAwesome::pro()
 	 * @param array $client_preferences
-	 * @throws InvalidArgumentException
+	 * @throws ClientPreferencesSchemaException
 	 */
 	public function register( $client_preferences ) {
 		// TODO: consider using a mechanism other than debug_backtrace() to track the calling module, since phpcs complains.
@@ -2133,7 +2133,7 @@ EOT;
 		$bt     = debug_backtrace( 1 );
 		$caller = array_shift( $bt );
 		if ( ! array_key_exists( 'name', $client_preferences ) ) {
-			throw new InvalidArgumentException( 'missing required key: name' );
+			throw new ClientPreferencesSchemaException();
 		}
 		$client_preferences['clientCallSite'] = array(
 			'file' => $caller['file'],
