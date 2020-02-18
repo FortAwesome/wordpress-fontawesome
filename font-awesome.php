@@ -358,25 +358,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function initialize() {
-			self::instance()->initialize_plugin();
-		}
-
-		/**
-		 * Runs initialize() for the plugin installation that has been selected for loading.
-		 * 
-		 * @ignore
-		 * @internal
-		 */
-		private function initialize_plugin() {
-			$this->select_latest_version_plugin_installation();
 			try {
+				self::instance()->select_latest_version_plugin_installation();
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::initialize();
 			} catch ( Exception $e ) {
-				self::emit_error_output( __( self::INITIALIZATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
+				self::emit_admin_error_output( $e, self::INITIALIZATION_FAILED_MSG );
 				exit;
 			} catch ( Error $e ) {
-				self::emit_error_output( __( self::INITIALIZATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
+				self::emit_admin_error_output( $e, self::INITIALIZATION_FAILED_MSG );
 				exit;
 			}
 		}
