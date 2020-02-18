@@ -27,7 +27,7 @@ if(! defined( 'FONTAWESOME_TEXT_DOMAIN' ) ) {
 	 * 
 	 * @since 4.0.0
 	 */
-	define( 'FONTAWESOME_TEXT_DOMAIN', 'font-awesome-official' );
+	define( 'FONTAWESOME_TEXT_DOMAIN', 'font-awesome' );
 }
 
 if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
