@@ -1,8 +1,6 @@
 <?php
 namespace FortAwesome;
 
-use \InvalidArgumentException;
-
 /**
  * Class FontAwesome_Preference_Conflict_Detector
  */

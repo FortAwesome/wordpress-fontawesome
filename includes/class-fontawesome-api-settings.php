@@ -258,7 +258,7 @@ EOD;
 		if ( 0 !== $int_val ) {
 			$this->_access_token_expiration_time = $access_token_expiration_time;
 		} else {
-			throw new InvalidArgumentException( 'access_token_expiration_time must be a non-zero integer' );
+			throw new InvalidArgumentException();
 		}
 	}
 
@@ -323,7 +323,12 @@ EOD;
 		}
 
 		$this->set_access_token( $body['access_token'] );
-		$this->set_access_token_expiration_time( $body['expires_in'] + time() );
+
+		try {
+			$this->set_access_token_expiration_time( $body['expires_in'] + time() );
+		} catch( InvalidArgumentException $e ) {
+			throw ApiTokenEndpointResponseException::with_wp_response( $response );
+		}
 
 		$result = $this->write();
 
