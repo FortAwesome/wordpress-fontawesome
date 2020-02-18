@@ -96,6 +96,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		const ACTIVATION_FAILED_MSG = 'Font Awesome could not be activated.';
 		const INITIALIZATION_FAILED_MSG = 'Font Awesome could not be initialized.';
 		const CONSOLE_ERROR_PREAMBLE = 'Font Awesome Plugin Error Details';
+		const ADMIN_NOTICE_FATAL_ERROR_PREAMBLE = 'The Font Awesome plugin caught a fatal error';
 
 		/**
 		 * Stores Loader Instance.
@@ -195,8 +196,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @ignore
 		 */
 		public function load_plugin() {
-			$this->select_latest_version_plugin_installation();
-			require self::$_loaded['path'] . 'font-awesome-init.php';
+			try {
+				$this->select_latest_version_plugin_installation();
+				require self::$_loaded['path'] . 'font-awesome-init.php';
+			} catch ( Exception $e ) {
+				self::emit_error_output( __( self::INITIALIZATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
+			} catch ( Error $e ) {
+				self::emit_error_output( __( self::INITIALIZATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ), $e );
+			}
 		}
 
 		/**
@@ -239,11 +246,18 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @ignore
 		 */
 		private static function emit_error_output( $ui_message, $e ) {
-			echo '<div class="error">';
-			echo '<p>' . $ui_message . '</p>';
-			echo '<p>' . $e->getMessage() . '</p>';
-			'</div>';
-			self::console_emit_stack_trace( $e );
+			if( is_admin() ) {
+				add_action(
+					'admin_notices',
+					function () use ( $e ) {
+						echo '<div class="error">';
+						echo '<p>' . __( self::ADMIN_NOTICE_FATAL_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN ) .
+							": " . $e->getMessage() . '</p>';
+						echo '</div>';
+						self::emit_error_output_to_console( $e );
+					}
+				);
+			}
 		}
 
 		/**
@@ -253,14 +267,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 * @param Error|Exception
 		 */
-		public static function console_emit_stack_trace( $e ) {
+		public static function emit_error_output_to_console( $e ) {
 			if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error' ) ) {
 				return;
 			}
 
 			echo '<script>';
 			echo "console.group('" . __( self::CONSOLE_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN ) . "');";
-			echo "console.info('" . self::escape_stack_trace( $e->getTraceAsString() ) . "');";
+			echo "console.info('message: " . self::escape_error_output( $e->getMessage() ) . "');";
+			echo "console.info('stack trace:\\n" . self::escape_error_output( $e->getTraceAsString() ) . "');";
 			echo 'console.groupEnd()';
 			echo '</script>';
 		}
@@ -271,7 +286,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 * @ignore
 		 */
-		public static function escape_stack_trace( $trace ) {
+		public static function escape_error_output( $trace ) {
 			$result = preg_replace( '/\'/', "\\'", $trace );
 			$result = preg_replace( '/\"/', '\\"', $result );
 			$result = preg_replace( '/\n/', '\\n', $result );
