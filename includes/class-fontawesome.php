@@ -2106,22 +2106,13 @@ EOT;
 	 *
 	 * @since 4.0.0
 	 *
-	 * @see FontAwesome::pro()
 	 * @param array $client_preferences
 	 * @throws ClientPreferencesSchemaException
 	 */
 	public function register( $client_preferences ) {
-		// TODO: consider using a mechanism other than debug_backtrace() to track the calling module, since phpcs complains.
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		$bt     = debug_backtrace( 1 );
-		$caller = array_shift( $bt );
 		if ( ! array_key_exists( 'name', $client_preferences ) ) {
 			throw new ClientPreferencesSchemaException();
 		}
-		$client_preferences['clientCallSite'] = array(
-			'file' => $caller['file'],
-			'line' => $caller['line'],
-		);
 
 		$this->client_preferences[ $client_preferences['name'] ] = $client_preferences;
 	}
