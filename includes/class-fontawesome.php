@@ -346,16 +346,16 @@ class FontAwesome {
 		add_action(
 			'init',
 			function () {
-				add_shortcode(
-					self::SHORTCODE_TAG,
-					function( $params ) {
-						return $this->process_shortcode( $params );
-					}
-				);
-
-				add_filter( 'widget_text', 'do_shortcode' );
-
 				try {
+					add_shortcode(
+						self::SHORTCODE_TAG,
+						function( $params ) {
+							return $this->process_shortcode( $params );
+						}
+					);
+
+					add_filter( 'widget_text', 'do_shortcode' );
+
 					$this->validate_options();
 
 					try {

@@ -9,26 +9,14 @@ use \WP_Error, \Exception;
  * @ignore
  */
 function notify_admin_fatal_error( $e ) {
-	if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error') ) {
-		$message = 'Unknown error';
-	} else {
-		$message = $e->getMessage();
+	if ( method_exists( 'FortAwesome\FontAwesome_Loader', 'emit_admin_error_output' ) ) {
+		add_action(
+			'admin_notices',
+			function() use( $e ) {
+				FontAwesome_Loader::emit_admin_error_output( $e );
+			}
+		);
 	}
-
-	add_action(
-		'admin_notices',
-		function () use ( $message ) {
-			?>
-			<div class="error"><p>The Font Awesome plugin has experienced a fatal error
-				<?php
-				if ( ! is_null( $message ) ) {
-					echo esc_html( ": $message" );
-				}
-				?>
-			</p></div>
-			<?php
-		}
-	);
 }
 
 /**
