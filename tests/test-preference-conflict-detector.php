@@ -105,7 +105,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 	}
 
 	public function test_satisfies_bad_operator () {
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( ClientPreferencesSchemaException::class );
 
 		$this->assertTrue(
 			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.2', 'xyz']])
@@ -113,7 +113,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 	}
 
 	public function test_satisfies_bad_argument_1 () {
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( ClientPreferencesSchemaException::class );
 
 		$this->assertTrue(
 			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', ['42.1.2', 'xyz'])

@@ -173,3 +173,9 @@ class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 class ConflictDetectionStorageException extends FontAwesome_ServerException {
 	public $ui_message = "We were not able to save conflict detection data to your WordPress database.";
 }
+
+/**
+ * Indicates that an incorrect array schema has been provided as the client perferences
+ * parameter to {@see FontAwesome::register()}.
+ */
+class ClientPreferencesSchemaException extends FontAwesome_ServerException {}
