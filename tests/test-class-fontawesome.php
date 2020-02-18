@@ -38,40 +38,6 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_satisfies () {
-		$this->assertTrue(
-			FontAwesome::satisfies('42.1.3', [['42.1.3', '=']])
-		);
-		$this->assertTrue(
-			FontAwesome::satisfies('42.1.3', [['42.1.2', '>='], ['43', '<']])
-		);
-	}
-
-	public function test_satisfies_bad_operator () {
-		$this->expectException( \InvalidArgumentException::class );
-
-		$this->assertTrue(
-			FontAwesome::satisfies('42.1.3', [['42.1.2', 'xyz']])
-		);
-	}
-
-	public function test_satisfies_bad_argument_1 () {
-		$this->expectException( \InvalidArgumentException::class );
-
-		$this->assertTrue(
-			FontAwesome::satisfies('42.1.3', ['42.1.2', 'xyz'])
-		);
-	}
-
-	public function test_satisfies_bad_argument_2 () {
-		$this->expectException( \InvalidArgumentException::class );
-
-		$this->assertTrue(
-			$this->mock_with_plugin_version( '42.1.3' )
-			     ->satisfies('42.1.2', '>')
-		);
-	}
-
 	public function test_conflicts_by_client_when_no_conflicts() {
 		fa()->register(
 			array(

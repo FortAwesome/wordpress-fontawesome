@@ -1,6 +1,8 @@
 <?php
 namespace FortAwesome;
 
+use \InvalidArgumentException;
+
 /**
  * Class FontAwesome_Preference_Conflict_Detector
  */
@@ -15,7 +17,7 @@ class FontAwesome_Preference_Conflict_Detector {
 			? $latest_version
 			: $configured_option;
 
-		return FontAwesome::satisfies( $resolved_version, $current_preference );
+		return self::satisfies( $resolved_version, $current_preference );
 	}
 
 	/**
@@ -61,6 +63,58 @@ class FontAwesome_Preference_Conflict_Detector {
 			},
 			[]
 		);
+	}
+
+	/**
+	 * Reports whether the given version satisfies the given constraints.
+	 * 
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * This is really just a generalized utility function, instead of incorporating a full-blown semver library.
+	 *
+	 * The constraints array should contain one element per constraint, where each individual constraint is itself
+	 * an array of arguments that can be passed as the second and third arguments to the standard `version_compare`
+	 * function.
+	 *
+	 * The constraints will be ANDed together.
+	 *
+	 * For example the following constraints...
+	 *
+	 * ```php
+	 *   array(
+	 *     [ '1.0.0', '>='],
+	 *     [ '2.0.0', '<']
+	 *   )
+	 * ```
+	 *
+	 * ...mean: "assert that the given $version is greater than or equal 1.0.0 AND strictly less than 2.0.0"
+	 *
+	 * To express OR conditions, make multiple calls to this function and OR the results together in your own code.
+	 *
+	 * @link http://php.net/manual/en/function.version-compare.php
+	 * @param string $version
+	 * @param array $constraints
+	 * @ignore
+	 * @internal
+	 * @return bool
+	 */
+	public static function satisfies( $version, $constraints ) {
+		$valid_operators = [ '<', 'lt', '<=', 'le', '>', 'gt', '>=', 'ge', '==', '=', 'eq', '!=', '<>', 'ne' ];
+
+		if ( ! is_array( $constraints ) ) {
+			throw new InvalidArgumentException( 'constraints argument must be an array of constraints' );
+		}
+		$result_so_far = true;
+		foreach ( $constraints as $constraint ) {
+			if ( ! is_array( $constraint ) || 2 !== count( $constraint ) || false === array_search( $constraint[1], $valid_operators, true ) ) {
+				throw new InvalidArgumentException( 'each constraint must be an array of [ version, operator ] compatible with PHP\'s version_compare' );
+			}
+			if ( ! version_compare( $version, $constraint[0], $constraint[1] ) ) {
+				$result_so_far = false;
+				break;
+			}
+		}
+		return $result_so_far;
 	}
 }
 
