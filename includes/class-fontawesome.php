@@ -1276,7 +1276,7 @@ class FontAwesome {
 								'onSettingsPage'								=> TRUE,
 								'clientPreferences'     				=> $this->client_preferences(),
 								'releases'              				=> array(
-									'available'        						=> $this->get_available_versions(),
+									'available'        						=> $this->release_provider()->versions(),
 									'latest_version'   						=> $this->latest_version(),
 								),
 								'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
