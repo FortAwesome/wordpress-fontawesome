@@ -262,10 +262,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
 			} catch ( Exception $e ) {
-				self::emit_admin_error_output( $e, __( self::ACTIVATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ) );
+				self::emit_admin_error_output( $e, self::ACTIVATION_FAILED_MSG );
 				exit;
 			} catch ( Error $e ) {
-				self::emit_admin_error_output( $e, __( self::ACTIVATION_FAILED_MSG, FONTAWESOME_TEXT_DOMAIN ) );
+				self::emit_admin_error_output( $e, self::ACTIVATION_FAILED_MSG );
 				exit;
 			}
 		}
@@ -279,21 +279,21 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		public static function emit_admin_error_output( $e, $context_message = '' ) {
 			if( is_admin() && current_user_can( 'manage_options' ) ) {
 				echo '<div class="error">';
-				echo '<p>' . __( self::ADMIN_NOTICE_FATAL_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN );
+				echo '<p>' . esc_html__( self::ADMIN_NOTICE_FATAL_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN );
 				if( is_string( $context_message ) && '' !== $context_message ) {
-					echo ': ' . esc_html( $context_message );
+					echo ': ' . esc_html__( $context_message, FONTAWESOME_TEXT_DOMAIN );
 				} else {
 					echo '.';
 				}
 				echo '</p><p>';
 
 				if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error' ) ) {
-					echo __( self::NO_ERROR_MESSAGE, FONT_AWESOME_TEXT_DOMAIN );
+					esc_html_e( self::NO_ERROR_MESSAGE, FONTAWESOME_TEXT_DOMAIN );
 				} else {
 					self::emit_error_output_to_console( $e );
 
 					if( boolval( $e->getMessage() ) ) {
-						echo esc_html( $e->getMessage() );
+						esc_html_e( $e->getMessage() );
 					}
 				}
 
