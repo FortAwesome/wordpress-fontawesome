@@ -615,30 +615,32 @@ class FontAwesome {
 		?>
 		<div class="notice notice-warning is-dismissible">
 			<p>
-				<?php _e( 'Hey there, from the Font Awesome plugin!', FONTAWESOME_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Hey there, from the Font Awesome plugin!', FONTAWESOME_TEXT_DOMAIN ); ?>
 				
 			</p>
 			<p>
 				<?php
 					printf(
-						__(
-							'Looks like you\'re using an <code>[icon]</code> shortcode with an old Font Awesome 3 icon name: <code>%1$s</code>. ' .
+						esc_html__(
+							'Looks like you\'re using an %2$s shortcode with an old Font Awesome 3 icon name: %1$s. ' .
 							'We\'re phasing those out, so it will stop working on your site soon.',
 							FONTAWESOME_TEXT_DOMAIN
 						),
-						$data['atts']['name']
+						'<code>' . $data['atts']['name'] . '</code>',
+						'<code>[icon]</code>'
 					);
 				?>
 			</p>
 			<p>
 				<?php
 					printf(
-						__(
-							'Head over to the <a href="%1$s">Font Awesome Settings</a> page to see how you can fix it up, ' .
+						esc_html__(
+							'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, ' .
 							'or snooze this warning for a while.',
 							FONTAWESOME_TEXT_DOMAIN
 						),
-						$this->settings_page_url()
+						'<a href="' . $this->settings_page_url() . '">',
+						'</a>'
 					);
 				?>
 			</p>
