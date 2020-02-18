@@ -708,19 +708,29 @@ class FontAwesome {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
 					echo '<tr><td>&nbsp;</td><td colspan="2" class="notice notice-info notice-alt">';
 					?>
-						<p><b>Great Scott!</b>
-							You've got more than one version of the Font Awesome
-							plugin installed.
-						</p>
-						<p>The active version of the Font Awesome plugin
-							is being loaded by this plugin or theme:
-							<code><?php  echo $loader_version; ?></code> since it's the
-							newest (<b>ver. <?php echo FontAwesome::PLUGIN_VERSION; ?></b>).
-							We recommend you update the plugin above to the latest version.
-							In the meantime, we'll use that newer version for editing your
-							Font Awesome settings so you'll be sure to hit 88mph with those 
-							icons.
-						</p>
+					<p>
+						<b><?php _e( 'Great Scott!', FONTAWESOME_TEXT_DOMAIN ); ?></b>
+						<?php
+						_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', FONTAWESOME_TEXT_DOMAIN );
+						?>
+					</p>
+					<p>
+						<?php
+							printf(
+								__(
+									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: <code>%1$s</code> ' .
+									'since it\'s the newest (<b>ver. %2$s</b>). ' .
+									'We recommend you update the plugin above to the latest version. ' .
+									'In the meantime, we\'ll use that newer version for editing your ' .
+									'Font Awesome settings so you\'ll be sure to hit 88mph with those ' .
+									'icons',
+									FONTAWESOME_TEXT_DOMAIN
+								),
+								$loader_version,
+								FontAwesome::PLUGIN_VERSION
+							);
+						?>
+					</p>
 					<?php
 					echo '</td></tr>';
 				}
