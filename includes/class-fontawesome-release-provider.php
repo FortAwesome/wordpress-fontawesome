@@ -6,7 +6,7 @@
  */
 namespace FortAwesome;
 
-use \WP_Error, \Error, \Exception, \InvalidArgumentException;
+use \WP_Error, \Error, \Exception;
 
 /**
  * Provides metadata about Font Awesome releases.
