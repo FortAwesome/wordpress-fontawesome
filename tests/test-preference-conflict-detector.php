@@ -97,10 +97,10 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 
 	public function test_satisfies () {
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::satisfies('42.1.3', [['42.1.3', '=']])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.3', '=']])
 		);
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::satisfies('42.1.3', [['42.1.2', '>='], ['43', '<']])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.2', '>='], ['43', '<']])
 		);
 	}
 
@@ -108,7 +108,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		$this->expectException( \InvalidArgumentException::class );
 
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::satisfies('42.1.3', [['42.1.2', 'xyz']])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.2', 'xyz']])
 		);
 	}
 
@@ -116,7 +116,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		$this->expectException( \InvalidArgumentException::class );
 
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::satisfies('42.1.3', ['42.1.2', 'xyz'])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', ['42.1.2', 'xyz'])
 		);
 	}
 }

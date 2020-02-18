@@ -17,7 +17,7 @@ class FontAwesome_Preference_Conflict_Detector {
 			? $latest_version
 			: $configured_option;
 
-		return self::satisfies( $resolved_version, $current_preference );
+		return self::version_satisfies( $resolved_version, $current_preference );
 	}
 
 	/**
@@ -98,7 +98,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @internal
 	 * @return bool
 	 */
-	public static function satisfies( $version, $constraints ) {
+	public static function version_satisfies( $version, $constraints ) {
 		$valid_operators = [ '<', 'lt', '<=', 'le', '>', 'gt', '>=', 'ge', '==', '=', 'eq', '!=', '<>', 'ne' ];
 
 		if ( ! is_array( $constraints ) ) {
