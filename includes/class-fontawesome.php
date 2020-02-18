@@ -1970,8 +1970,9 @@ EOT;
 	}
 
 	/**
-	 * Registers client preferences. This is the "front door" for registered clients—themes or plugins—that depend
-	 * upon this Font Awesome plugin to load a compatible version of Font Awesome.
+	 * Registers client preferences. This is the "front door" for registered clients,
+	 * themes or plugins, that depend upon this Font Awesome plugin to load a
+	 * compatible version of Font Awesome.
 	 *
 	 * The shape of the `$client_preferences` array parameter looks like this:
 	 * ```php
@@ -1979,33 +1980,77 @@ EOT;
 	 *     'technology'        => 'svg', // "svg" or "webfont"
 	 *     'v4Compat'          => true, // true or false
 	 *     'svgPseudoElements' => false, // true or false
-	 *     'name'              => 'Foo Plugin', // (required, but the name in @see FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL is reserved)
+	 *     'name'              => 'Foo Plugin', // (required)
+	 *     'version'           => [
+	 *                              [ '5.10.0', '>=']
+	 *                            ]
 	 *   )
 	 * ```
 	 *
-	 * We use camelCase instead of snake_case for these keys, because they end up being passed via json
-	 * to the JavaScript admin UI client and camelCase is preferred for object properties in JavaScript.
+	 * We use camelCase instead of snake_case for these keys, because they end up
+	 * being passed to the JavaScript admin UI client encoded as json and camelCase
+	 * is preferred for object properties in JavaScript.
 	 *
-	 * All preference specifications are optional, except `name`. Any that are not specified will allow defaults,
-	 * or the preferences of other registered clients to take precedence.
-	 * Only the WordPress site owner can *determine* the Font Awesome configuration, using the plugin's admin
-	 * settings page. But plugin or theme developers can provide hints to the site owner as to their preferred
-	 * configurations by setting those preferences during registration. When site owners selection configuration
-	 * options that conflict with those preferences, they'll be shown a warning. Hopefully, they'll be able to
-	 * set a configuration that satisfies their theme and any plugins that rely upon this plugin for loading
-	 * Font Awesome. However, similar to writing mobile responsive code where you don't control the size
-	 * of display, but can detect the screen size and adapt, here too, theme and plugin developers do not
-	 * control the Font Awesome environment but should be prepared to adapt.
+	 * All preference specifications are optional, except `name`. The name provided
+	 * here is how your theme or plugin will be identified in the Troubleshoot
+	 * tab on the plugin settings page.
+	 * 
+	 * Only the WordPress site owner can *determine* the Font Awesome configuration,
+	 * using the plugin's admin settings page. This registration mechanism only
+	 * allows plugin or theme developers to provide hints to the site owner as
+	 * to their preferred configurations. These preferences are automatically checked
+	 * any time the user makes configuration changes, providing immediate visual
+	 * feedback before saving changes that might cause problems for your theme or
+	 * plugin.
 	 *
-	 * This plugin gives you a structured API for discovering with those configured options are so you can
-	 * be sure that Font Awesome is loaded, and can adapt to any configuration differences, or possibly issue
-	 * your own admin notices to the site owner as may be appropriate.
+	 * Because this plugin also gives you an API for discovering those
+	 * configured options at page load time, you can adapt to any configuration
+	 * differences, or possibly issue your own admin notices to the site owner
+	 * as may be appropriate.
+	 * 
+	 * Hopefully, the site owner will be able to set a configuration that satisfies
+	 * any preferences registered by their theme and any plugins that rely upon
+	 * this Font Awesome plugin. However, similar to writing mobile responsive
+	 * code where you don't control the size of display but can detect the screen
+	 * size and adapt, here too, theme and plugin developers do not control the
+	 * Font Awesome environment but should be prepared to adapt.
+	 *
+	 * The reason is that when any one theme or plugin *controls* or *determines*
+	 * the Font Awesome configuration, it is very likely to produce conflicts for
+	 * others. This plugin provides a coordination service to significantly increase
+	 * the likelihood that everyone has a reliable Font Awesome environment.
 	 *
 	 * <h3>Adapting Your Code to the given Font Awesome environment</h3>
 	 *
-	 * Here's a quick adaptability checklist:
+	 * Here is a checklist for maximizing compatibility.
 	 *
-	 * - Make sure your plugin or theme works just as well with either webfont or svg methods.
+	 * - Write your plugin or theme to works just as well with either Webfont or
+	 *   SVG technology.
+	 *
+	 *     There may be a good reason that you need to insist on SVG. For example,
+	 *     you might be building a page designer that includes a feature for
+	 *     for visually composing icons with Power Transforms, Layering, or Text,
+	 *     all features that are only avaialble in SVG. For that feature to work
+	 *     in your theme or plugin, the site owner must configure SVG, not Webfont.
+	 *
+	 *     That may be a good use case for registering a preference for SVG. It
+	 *     will aid your communication with the site owner, increasingly the
+	 *     likelihood that they'll avoid mis-configuring Font Awesome.
+	 *
+	 *     However, a tradeoff will be that using your theme or plugin is that much
+	 *     less compatible with others. For example, some themes or plugins reference
+	 *     icons as CSS pseudo-elements (not recommended, but it's common).
+	 *     Pseudo-elements can be enabled under the SVG technology, but there can
+	 *     be some significant performance problems with SVG Pseudo-elements.
+	 *
+	 *     Summary: you may have a good reason to try and insist on SVG over Webfont,
+	 *     but your code might be running on a WordPress site where some other theme
+	 *     or plugin assumes a similar good reason for insisting on Webfont over
+	 *     SVG. We're trying to work together here to make it more delightful for
+	 *     the site owner to get our code up and running painlessly. Consider the
+	 *     tradeoffs carefully any time you think it's necessary to insist on
+	 *     a particular Font Awesome configuration.
+	 *     
 	 * - Update your icon references to use version 5 names so no {@link https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4 v4 shim} is required.
 	 * - Don't use {@link https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements pseudo-elements}
 	 * - Be mindful of which {@link https://fontawesome.com/icons icons you use and in which versions of Font Awesome they're available}.
@@ -2025,6 +2070,32 @@ EOT;
 	 * and either turn off or replace newer icons that are not available in older releases, or warn the
 	 * site owner in your own WordPress admin UI that they'll need to update to a new version in order for icons
 	 * to work as expected in your templates.
+	 *
+	 * The `version` key in the $client_preferences array should contain one element
+	 * per version constraint, where each individual constraint is itself an array
+	 * of arguments that can be passed as the second and third arguments to the
+	 * standard PHP `version_compare` function. The constraints will be ANDed together.
+	 *
+	 * For example, the following means "prefer a Font Awesome version greater than
+	 * or equal to 5.10.0."
+	 *
+	 * ```php
+	 *   [
+	 *     [ '5.10.0', '>=']
+	 *   ]
+	 * ```
+	 *
+	 * Your theme may add this if you prefer to use Duotone
+	 * style icons, since Duotone was first released in Font Awesome 5.10.0.
+	 *
+	 * The following means "greater than or equal to 5.10.0 AND strictly less than 6.0.0".
+	 *
+	 * ```php
+	 *   [
+	 *     [ '5.10.0', '>='],
+	 *     [ '6.0.0', '<']
+	 *   ]
+	 * ```
 	 *
 	 * <h3>Additional Notes on Specific Preferences</h3>
 	 *
