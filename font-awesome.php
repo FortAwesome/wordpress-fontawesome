@@ -30,6 +30,15 @@ if(! defined( 'FONTAWESOME_TEXT_DOMAIN' ) ) {
 	define( 'FONTAWESOME_TEXT_DOMAIN', 'font-awesome' );
 }
 
+if(! defined( 'FONTAWESOME_MIN_PHP_VERSION' ) ) {
+	/**
+	 * Minimum PHP VERSION required
+	 * 
+	 * @since 4.0.0
+	 */
+	define( 'FONTAWESOME_MIN_PHP_VERSION', '5.6' );
+}
+
 if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	/**
 	 * Loader class, a Singleton. Coordinates potentially multiple installations of
@@ -91,8 +100,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 */
 	final class FontAwesome_Loader {
 		const LOAD_FAIL_MSG = 'Unable To Load Font Awesome Plugin.';
-		const PHP_VERSION_INCOMPATIBLE_MSG = 'The Font Awesome plugin require a PHP Version of at least 5.6.';
-		const PHP_CURRENT_VERSION_MSG = 'Your current version of PHP is';
 		const ACTIVATION_FAILED_MSG = 'Font Awesome could not be activated.';
 		const INITIALIZATION_FAILED_MSG = 'Font Awesome could not be initialized.';
 		const CONSOLE_ERROR_PREAMBLE = 'Font Awesome Plugin Error Details';
@@ -163,17 +170,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
 
 			if ( empty( $info ) ) {
-				$ms = __( self::LOAD_FAIL_MSG, FONTAWESOME_TEXT_DOMAIN );
+				$ms = esc_html__( self::LOAD_FAIL_MSG, FONTAWESOME_TEXT_DOMAIN );
 				wp_die( $ms . '<p style="word-break: break-all;">' . base64_encode( wp_json_encode( self::$data ) ) . '</p>' );
 			}
 
-			if ( ! version_compare( PHP_VERSION, '5.6', '>=' ) ) {
-				wp_die(
-					__( self::PHP_CURRENT_VERSION_MSG, FONTAWESOME_TEXT_DOMAIN )
-					. ' '
-					. __( self::PHP_CURRENT_VERSION_MSG, FONTAWESOME_TEXT_DOMAIN )
-					. ': '
-					. PHP_VERSION
+			if ( ! version_compare( PHP_VERSION, FONTAWESOME_MIN_PHP_VERSION, '>=' ) ) {
+				throw(
+					new Exception(
+						sprintf(
+							esc_html__(
+								'The Font Awesome plugin require a PHP Version of at least %1$s. ' .
+								'Your current version of PHP is %2$s.',
+								FONTAWESOME_TEXT_DOMAIN
+							),
+							FONTAWESOME_MIN_PHP_VERSION,
+							PHP_VERSION
+						)
+					)
 				);
 			}
 
