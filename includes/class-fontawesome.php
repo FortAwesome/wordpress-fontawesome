@@ -2078,7 +2078,7 @@ EOT;
 	 * It accepts a GraphQL query string like 'query { versions }' and returns
 	 * the json encoded body of response from the API server when the response
 	 * has an HTTP status of 200. Otherwise, it throws an exception whose
-	 * message is appropriate for displaying in the WordPress admin ui
+	 * message, if non-null, is appropriate for displaying in the WordPress admin ui
 	 * to an admin user.
 	 * 
 	 * Requests to the Font Awesome API server will automatically be authorized
