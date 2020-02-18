@@ -335,20 +335,13 @@ EOD;
 	 * Returns an array containing version, shim, source URLs and integrity keys for given params.
 	 * They should be loaded in the order they appear in this collection.
 	 *
-	 * Throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
-	 * Shims were not introduced for webfonts until 5.1.0.
-	 *
-	 * Throws InvalidArgumentException when called with an array for $style_opt that contains no known style specifiers.
-	 *
-	 * Throws FontAwesome_NoReleasesException when no releases metadata could be loaded.
-	 *
 	 * @param string $version
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
 	 * @throws ReleaseMetadataMissingException
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
-	 * @throws ConfigCorruptionException
+	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return array
 	 */
 	public function get_resource_collection( $version, $flags = array(

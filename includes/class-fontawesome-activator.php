@@ -32,8 +32,8 @@ class FontAwesome_Activator {
 	 * Otherwise, it leaves alone options that are already present.
 	 * 
 	 * Sets default user options. Will attempt to get the latest available version,
-	 * which requires access to the Font Awesome API server. Throws FontAwesome_NoReleasesException
-	 * when that request fails.
+	 * which requires access to the Font Awesome API server. Throws an exception
+	 * if that request fails.
 	 * 
 	 * @param bool $force if true, overwrite any existing options with defaults
 	 *
