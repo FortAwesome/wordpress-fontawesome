@@ -29,7 +29,7 @@ class RegisterTest extends \WP_UnitTestCase {
 	}
 
 	public function test_register_without_name() {
-		$this->expectException( \InvalidArgumentException::class );
+		$this->expectException( ClientPreferencesSchemaException::class );
 
 		fa()->register(
 			array(
