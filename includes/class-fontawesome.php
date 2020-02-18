@@ -711,25 +711,26 @@ class FontAwesome {
 					echo '<tr><td>&nbsp;</td><td colspan="2" class="notice notice-info notice-alt">';
 					?>
 					<p>
-						<b><?php _e( 'Great Scott!', FONTAWESOME_TEXT_DOMAIN ); ?></b>
+						<b><?php esc_html_e( 'Great Scott!', FONTAWESOME_TEXT_DOMAIN ); ?></b>
 						<?php
-						_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', FONTAWESOME_TEXT_DOMAIN );
+						esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', FONTAWESOME_TEXT_DOMAIN );
 						?>
 					</p>
 					<p>
 						<?php
 							printf(
-								__(
-									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: <code>%1$s</code> ' .
-									'since it\'s the newest (<b>ver. %2$s</b>). ' .
+								esc_html__(
+									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s ' .
+									'since it\'s the newest (%2$s). ' .
 									'We recommend you update the plugin above to the latest version. ' .
 									'In the meantime, we\'ll use that newer version for editing your ' .
 									'Font Awesome settings so you\'ll be sure to hit 88mph with those ' .
 									'icons',
 									FONTAWESOME_TEXT_DOMAIN
 								),
-								$loader_version,
-								FontAwesome::PLUGIN_VERSION
+								'<code>' . $loader_version . '</code>',
+								'<b>ver. ' . FontAwesome::PLUGIN_VERSION . '</b>',
+								
 							);
 						?>
 					</p>
