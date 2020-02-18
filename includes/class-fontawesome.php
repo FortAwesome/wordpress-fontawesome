@@ -564,24 +564,6 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns all available versions of Font Awesome as an array of strings in descending version order.
-	 *
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * Example: if the most recent available versions of Font Awesome were "5.3.0", "5.4.0", "5.4.1" and "5.5.1",
-	 * this function returns [ "5.5.1", "5.4.1", "5.4.0", "5.3.0"].
-	 *
-	 * @throws FontAwesome_NoReleasesException
-	 * @ignore
-	 * @internal
-	 * @see FontAwesome_Release_Provider::versions()
-	 * @return array
-	 */
-	public function get_available_versions() {
-		return $this->release_provider()->versions();
-	}
-
-	/**
 	 * URL for this plugin's admin settings page.
 	 *
 	 * Internal use only, not part of this plugin's public API.
