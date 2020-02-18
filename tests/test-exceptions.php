@@ -44,16 +44,12 @@ class ExceptionsTest extends \WP_UnitTestCase {
 	}
 
 	public function test_config_exception_with_code() {
-		$e = new ConfigSchemaException('kit_token_no_api_token');
+		$e = ConfigSchemaException::kit_token_no_api_token();
 
 		$this->assertStringStartsWith('A kitToken', $e->getMessage() );
 	}
 
-	public function test_config_exception_with_no_code_or_unknown_code() {
-		$e1 = new ConfigSchemaException();
-		$e2 = new ConfigSchemaException('foo');
-
-		$this->assertStringStartsWith('Invalid options', $e1->getMessage() );
-		$this->assertStringStartsWith('Invalid options', $e2->getMessage() );
+	public function test_config_exception_default() {
+		$this->assertEquals('', ( new ConfigSchemaException() )->getMessage() );
 	}
 }
