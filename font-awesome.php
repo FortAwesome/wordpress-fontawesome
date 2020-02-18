@@ -170,8 +170,15 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
 
 			if ( empty( $info ) ) {
-				$ms = esc_html__( self::LOAD_FAIL_MSG, FONTAWESOME_TEXT_DOMAIN );
-				wp_die( $ms . '<p style="word-break: break-all;">' . base64_encode( wp_json_encode( self::$data ) ) . '</p>' );
+				throw new Exception(
+					sprintf(
+						esc_html__(
+							self::LOAD_FAIL_MSG . ' Data: %1$s',
+							FONTAWESOME_TEXT_DOMAIN 
+						),
+						base64_encode( wp_json_encode( self::$data ) )
+					)
+				);
 			}
 
 			if ( ! version_compare( PHP_VERSION, FONTAWESOME_MIN_PHP_VERSION, '>=' ) ) {
