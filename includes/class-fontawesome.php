@@ -505,11 +505,12 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns the latest available version of Font Awesome as a string.
+	 * Returns the latest available version of Font Awesome as a string, or null
+	 * if the releases metadata has not yet been successfully retrieved from the
+	 * API server.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @throws FontAwesome_NoReleasesException
 	 * @return null|string
 	 */
 	public function latest_version() {
