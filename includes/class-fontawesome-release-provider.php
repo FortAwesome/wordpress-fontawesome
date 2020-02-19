@@ -356,7 +356,7 @@ EOD;
 		}
 
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
-			throw new ConfigSchemaException('webfont_v4compat_introduced_later');
+			throw ConfigSchemaException::webfont_v4compat_introduced_later();
 		}
 
 		if ( ! array_key_exists( $version, $this->releases() ) ) {
