@@ -33,7 +33,7 @@ x-integration_volumes: &integration_volumes
 
 x-wordpress-defaults: &wordpress_defaults
   ports:
-    - "8080:80"
+    - "8765:80"
   extra_hosts:
     - "dockerhost:169.254.254.254"
   command:

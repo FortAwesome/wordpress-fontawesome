@@ -120,11 +120,14 @@ the Font Awesome, Font Awesome API, and kit edge apps.
 1. in the `devenv` repo, run `bin/dev-wordpress`
 1. add entries for the following to your `.env.local` (replacing the URLs with the appropriate ones if they change)
     ```bash
-    FONTAWESOME_API_URL=http://dockerhost:4543
+    FONTAWESOME_API_URL=http://host.docker.internal:4543
     FONTAWESOME_KIT_LOADER_BASE_URL=https://fa.test:4243
     ```
 
-    (Heads Up! make sure to replace `fa.test` with `dockerhost` in that API URL--but not the kits one.)
+    *Heads Up!* make sure to use `host.docker.internal` in that API URL, because
+    the WordPress server needs to be able to reach the API server from inside the docker container.
+    That KIT_LOADER_BASE one needs to be `fa.test` because this is a URL that the
+    browser (running in the host) will need to reach. 
 1. run `bin/dev` in the `fontawesome` repo if you need to do things with kit configs or API Tokens
 
 ## 4. Run an environment (one at a time)
@@ -203,38 +206,31 @@ In one terminal window, `cd admin`, and then:
       This will start up another web server that serves up the assets for the React app separately from
       the WordPress site, so leave it running while you develop.
 
-## 8. OPTIONAL: Configure a loopback network address so the docker container can talk to your docker host
+## 8. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
 
-You'll need this for the `development` environment option.
+The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
 
-With our current configuration, the docker container in which the wordpress server runs may need to access
-your host OS for a couple of things:
+It's what allows processes running inside the container to access services running
+on ports in the host environment.
 
-- PHP debugging port
-- Webpack dev server port for React hot module reloading
-
-One way to set that up on your host is (on Mac OS):
+If you don't have `host.docker.internal` support for some reason, you could set up
+a loopback address with the following IP from your host OS.
+On Mac OS the command might look like this:
 
 `sudo ifconfig lo0 alias 169.254.254.254`
 
-### Caveat
+The `docker-compose.yml` adds a hostname called `dockerhost` that resolves to that
+IP address.
 
-The normal paradigm for Docker is not to allow the containers to access the host's network. That's generally
-appropriate, given Docker's goals to create a clean, isolated, and secure environment.
-However, we kinda know what we're doing here, and it's only for development purposes on our local development
-machines, so it's reasonable to set up a loopback address on the host that will allow the containers to
-reach the host network for the purposes listed above. (I know, there are less [hacky ways](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) to do this,
-and we need to clean up this part of the environment setup at some point. But this works on Mac OS where
-some of the simpler methods do not. NOTE: on non-Mac host OSes the command line comparable to
-the `ifconfig` command above may be different. Read your man pages or something.)
+Now search through the various config and source files in this repo where
+`host.docker.internal` appears and change them to `dockerhost`. Don't commit that
+change, since it's just a temporary change for your local development environment.
 
-The result will be a line is added to the `/etc/hosts` in the container that assigns the hostname `dockerhost`
-to that IP Address, and that's the address used by the Apache config, for example, for proxying some requests
-over to the webpack dev server running on `http://dockerhost:3030`.
+Here are some of the operations that require the container to talk back to the host:
 
-If you need to change which loopback IP address is used for some reason, it's configured in `docker-compose.yml`.
-
-(TODO: change configuration to use [`host.docker.internal`](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) for Mac OS and the equivalent for other host OSes)
+- PHP debugging port via remote xdebug
+- Webpack dev server port for React hot module reloading
+- Font Awesome GraphQL API (when running that service locally)
 
 ## 9. run `bin/setup`
 
@@ -247,9 +243,9 @@ By default, it will use the container named `com.fontawesome.wordpress-latest-de
 
 You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
 
-After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://localhost:8080](http://localhost:8080).
+After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://localhost:8765](http://localhost:8765).
 
-You can login to the admin dashboard at [http://localhost:8080/wp-admin](http://localhost:8080/wp-admin) with admin username and password as found in `.env`.
+You can login to the admin dashboard at [http://localhost:8765/wp-admin](http://localhost:8765/wp-admin) with admin username and password as found in `.env`.
 
 ## 10. OPTIONAL: configure debugging
 
@@ -273,7 +269,7 @@ If you're running the `bin/integration` environment, install via zip archive upl
 from the WordPress plugins directory. [See above](#development) for more details. 
 
 After activating the plugin you can access the Font Awesome admin page here:
-`http://localhost:8080/wp-admin/options-general.php?page=font-awesome`
+`http://localhost:8765/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
 

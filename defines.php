@@ -38,13 +38,13 @@ if(! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	 * in this repo were installed, activated, and its copy of the Font Awesome
 	 * plugin were the one selected for execution, then the value of this
 	 * constant would be something like this:
-	 * `http://localhost:8080/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/`
+	 * `http://localhost:8765/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/`
 	 *
 	 * However, suppose that a second copy of the Font Awesome plugin were installed
 	 * from the WordPress plugins directory, and that copy had a later semantic
 	 * version than the one bundled by plugin-sigma. In that case, the value
 	 * of this constant would look more like this:
-	 * `http://localhost:8080/wp-content/plugins/font-awesome/`
+	 * `http://localhost:8765/wp-content/plugins/font-awesome/`
 	 *
 	 * @since 4.0.0
 	*/

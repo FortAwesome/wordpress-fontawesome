@@ -2448,7 +2448,7 @@ EOT;
 	 */
 	private function get_webpack_asset_manifest() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://dockerhost:3030/asset-manifest.json' );
+			$response = wp_remote_get( 'http://host.docker.internal:3030/asset-manifest.json' );
 
 			if ( is_wp_error( $response ) ) {
 				wp_die(
