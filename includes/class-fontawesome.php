@@ -1462,22 +1462,15 @@ EOT;
 					);
 				}
 
-				/**
-				 * If we're detecting conflicts, ignore the admin js bundle.
-				 */
-				if ( self::ADMIN_RESOURCE_HANDLE === $handle && $this->detecting_conflicts() ) {
-					$revised_html = preg_replace(
-						'/<script[\s]+(.*?)>/',
-						'<script ' . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
-						$revised_html
-					);
-				}
-
 				return $revised_html;
 			},
 			11,
 			2
 		);
+
+		if( $this->detecting_conflicts() ) {
+			$this->apply_detection_ignore_attr();
+		}
 
 		$this->common_enqueue_actions();
 	}
@@ -1513,8 +1506,6 @@ EOT;
 		$resources = $resource_collection->resources();
 
 		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
-			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/ignored-handles.php';
-
 			// Enqueue the conflict detector
 			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 				add_action(
@@ -1533,63 +1524,7 @@ EOT;
 				);
 			}
 
-			add_filter(
-				'style_loader_tag',
-				function( $html, $handle ) {
-					if (
-						in_array(
-							$handle,
-							array_merge(
-								[ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ],
-								handles_ignored_for_conflict_detection()
-							),
-							true
-						)
-					) {
-						return preg_replace(
-							'/<link[\s]+(.*?)>/',
-							"<link " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
-							$html,
-							1
-						);
-					} else {
-						return $html;
-					}
-				},
-				11, // later than the integrity and crossorigin attr filter.
-				2
-			);
-
-			add_filter(
-				'script_loader_tag',
-				function ( $html, $handle ) {
-					if (
-						in_array(
-							$handle,
-							array_merge(
-								[
-									self::RESOURCE_HANDLE,
-									self::RESOURCE_HANDLE_V4SHIM,
-									self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
-									self::ADMIN_RESOURCE_HANDLE
-								],
-								handles_ignored_for_conflict_detection()
-							),
-							true
-						)
-					) {
-						return preg_replace(
-							'/<script[\s]+(.*?)>/',
-							"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
-							$html
-						);
-					} else {
-						return $html;
-					}
-				},
-				11, // later than the integrity and crossorigin attr filter.
-				2
-			);
+			$this->apply_detection_ignore_attr();
 		}
 
 		if ( 'webfont' === $options['technology'] ) {
@@ -1790,6 +1725,68 @@ EOT;
 		}
 
 		$this->common_enqueue_actions();
+	}
+
+	private function apply_detection_ignore_attr() {
+		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/ignored-handles.php';
+
+		add_filter(
+			'style_loader_tag',
+			function( $html, $handle ) {
+				if (
+					in_array(
+						$handle,
+						array_merge(
+							[ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ],
+							handles_ignored_for_conflict_detection()
+						),
+						true
+					)
+				) {
+					return preg_replace(
+						'/<link[\s]+(.*?)>/',
+						"<link " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+						$html,
+						1
+					);
+				} else {
+					return $html;
+				}
+			},
+			11, // later than the integrity and crossorigin attr filter.
+			2
+		);
+
+		add_filter(
+			'script_loader_tag',
+			function ( $html, $handle ) {
+				if (
+					in_array(
+						$handle,
+						array_merge(
+							[
+								self::RESOURCE_HANDLE,
+								self::RESOURCE_HANDLE_V4SHIM,
+								self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
+								self::ADMIN_RESOURCE_HANDLE
+							],
+							handles_ignored_for_conflict_detection()
+						),
+						true
+					)
+				) {
+					return preg_replace(
+						'/<script[\s]+(.*?)>/',
+						"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+						$html
+					);
+				} else {
+					return $html;
+				}
+			},
+			11, // later than the integrity and crossorigin attr filter.
+			2
+		);
 	}
 
 	/**
