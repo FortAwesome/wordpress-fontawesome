@@ -177,7 +177,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.11.2/js/conflict-detection.js';
+	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.12.1/js/conflict-detection.js';
 
 	/**
 	 * The custom data attribute added to script, link, and style elements enqueued
