@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Eta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client with preferences: technology: true, svgPseudoElements: true. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
+ * Description:       Registered Client with preferences: technology: svg, svgPseudoElements: true. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
