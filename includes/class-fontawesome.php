@@ -1513,6 +1513,8 @@ EOT;
 		$resources = $resource_collection->resources();
 
 		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
+			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/ignored-handles.php';
+
 			// Enqueue the conflict detector
 			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 				add_action(
@@ -1534,7 +1536,16 @@ EOT;
 			add_filter(
 				'style_loader_tag',
 				function( $html, $handle ) {
-					if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
+					if (
+						in_array(
+							$handle,
+							array_merge(
+								[ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ],
+								handles_ignored_for_conflict_detection()
+							),
+							true
+						)
+					) {
 						return preg_replace(
 							'/<link[\s]+(.*?)>/',
 							"<link " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
@@ -1552,7 +1563,21 @@ EOT;
 			add_filter(
 				'script_loader_tag',
 				function ( $html, $handle ) {
-					if ( in_array( $handle, [ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_CONFLICT_DETECTOR, self::ADMIN_RESOURCE_HANDLE ], true ) ) {
+					if (
+						in_array(
+							$handle,
+							array_merge(
+								[
+									self::RESOURCE_HANDLE,
+									self::RESOURCE_HANDLE_V4SHIM,
+									self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
+									self::ADMIN_RESOURCE_HANDLE
+								],
+								handles_ignored_for_conflict_detection()
+							),
+							true
+						)
+					) {
 						return preg_replace(
 							'/<script[\s]+(.*?)>/',
 							"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
