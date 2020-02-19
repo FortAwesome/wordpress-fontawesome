@@ -62,7 +62,7 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
  * the language's requirements for access across code modules, or for callbacks.
  * Yet this does not mean it can be relied upon as a stable interface by client
  * code.
- * 
+ *
  * A method that is part of _this plugin's public API_ can be relied upon to
  * change, or not change, according to [semantic versioning best practices](https://semver.org/).
  * No such conventions apply to a method that is for internal use only, even
@@ -79,7 +79,7 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
  *
  * References to "API" in this section refer to this plugin's PHP code or REST
  * routes, not to the Font Awesome GraphQL API at `api.fontawesome.com`.
- * 
+ *
  * @since 4.0.0
  */
 class FontAwesome {
@@ -187,7 +187,7 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	const CONFLICT_DETECTION_IGNORE_ATTR = "data-fa-detection-ignore";
+	const CONFLICT_DETECTION_IGNORE_ATTR = 'data-fa-detection-ignore';
 
 	/**
 	 * The base name of the handle used for enqueuing this plugin's admin assets, those required for running
@@ -239,13 +239,13 @@ class FontAwesome {
 	 * @internal
 	 */
 	const DEFAULT_USER_OPTIONS = array(
-		'usePro'               => FALSE,
-		'v4Compat'             => TRUE,
-		'technology'           => 'webfont',
-		'svgPseudoElements'    => FALSE,
-		'kitToken'             => NULL,	
-		// whether the token is present, not the token's value
-		'apiToken'             => false,
+		'usePro'            => false,
+		'v4Compat'          => true,
+		'technology'        => 'webfont',
+		'svgPseudoElements' => false,
+		'kitToken'          => null,
+		// whether the token is present, not the token's value.
+		'apiToken'          => false,
 	);
 
 	/**
@@ -256,7 +256,7 @@ class FontAwesome {
 	 */
 	const DEFAULT_CONFLICT_DETECTION_OPTIONS = array(
 		'detectConflictsUntil' => 0,
-		'unregisteredClients'  => array()
+		'unregisteredClients'  => array(),
 	);
 
 	/**
@@ -360,6 +360,7 @@ class FontAwesome {
 
 					try {
 						$this->gather_preferences();
+					// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 					} catch ( PreferenceRegistrationException $e ) {
 						/**
 						 * Ignore this on normal page loads.
@@ -419,16 +420,16 @@ class FontAwesome {
 	public function detecting_conflicts() {
 		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
 
-		if( isset( $conflict_detection['detectConflictsUntil'] ) && is_integer( $conflict_detection['detectConflictsUntil'] ) ) {
+		if ( isset( $conflict_detection['detectConflictsUntil'] ) && is_integer( $conflict_detection['detectConflictsUntil'] ) ) {
 			return time() < $conflict_detection['detectConflictsUntil'];
 		} else {
-			return FALSE;
+			return false;
 		}
 	}
 
 	/**
 	 * Returns boolean indicating whether a kit is configured.
-	 * 
+	 *
 	 * It normally shouldn't make a difference to other theme's or plugins
 	 * as to whether Font Awesome is configured to use the standard CDN or a kit.
 	 * Yet this is a valid way to determine that.
@@ -536,7 +537,7 @@ class FontAwesome {
 	/**
 	 * Returns the time when releases metadata was last
 	 * refreshed, such as by invoking {@see FontAwesome::refresh_releases}.
-	 * 
+	 *
 	 * @since 4.0.0
 	 * @return integer|null the time in unix epoch seconds or null if never
 	 */
@@ -588,10 +589,12 @@ class FontAwesome {
 	 * @return string|null
 	 */
 	private function active_admin_tab() {
+		// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		if ( ! isset( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) || empty( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) ) {
 			return null;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$value = $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ];
 
 		// These values are defined in the Redux reducer module of the admin JS React app.
@@ -615,18 +618,17 @@ class FontAwesome {
 		?>
 		<div class="notice notice-warning is-dismissible">
 			<p>
-				<?php esc_html_e( 'Hey there, from the Font Awesome plugin!', FONTAWESOME_TEXT_DOMAIN ); ?>
-				
+				<?php esc_html_e( 'Hey there, from the Font Awesome plugin!', 'font-awesome' ); ?>
 			</p>
 			<p>
 				<?php
 					printf(
+						/* translators: 1: detected icon name 2: literal icon shortcode */
 						esc_html__(
-							'Looks like you\'re using an %2$s shortcode with an old Font Awesome 3 icon name: %1$s. ' .
-							'We\'re phasing those out, so it will stop working on your site soon.',
-							FONTAWESOME_TEXT_DOMAIN
+							'Looks like you\'re using an %2$s shortcode with an old Font Awesome 3 icon name: %1$s. We\'re phasing those out, so it will stop working on your site soon.',
+							'font-awesome'
 						),
-						'<code>' . $data['atts']['name'] . '</code>',
+						'<code>' . esc_html( $data['atts']['name'] ) . '</code>',
 						'<code>[icon]</code>'
 					);
 				?>
@@ -634,12 +636,12 @@ class FontAwesome {
 			<p>
 				<?php
 					printf(
+						/* translators: 1: opening anchor tag with url 2: closing anchor tag */
 						esc_html__(
-							'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, ' .
-							'or snooze this warning for a while.',
-							FONTAWESOME_TEXT_DOMAIN
+							'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, or snooze this warning for a while.',
+							'font-awesome'
 						),
-						'<a href="' . $this->settings_page_url() . '">',
+						'<a href="' . esc_html( $this->settings_page_url() ) . '">',
 						'</a>'
 					);
 				?>
@@ -681,7 +683,7 @@ class FontAwesome {
 
 		add_action(
 			'admin_menu',
-			function() use ($icon_data) {
+			function() use ( $icon_data ) {
 				$this->screen_id = add_menu_page(
 					'Font Awesome Settings',
 					'Font Awesome',
@@ -697,40 +699,35 @@ class FontAwesome {
 			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
 			function( $links ) {
 				$mylinks = array(
-					'<a href="' . $this->settings_page_url() . '">Settings</a>'
+					'<a href="' . $this->settings_page_url() . '">Settings</a>',
 				);
 				return array_merge( $links, $mylinks );
 			}
 		);
 
 		add_action(
-			"after_plugin_row_" . FONTAWESOME_PLUGIN_FILE,
-			function($plugin_file, $plugin_data, $status) {
+			'after_plugin_row_' . FONTAWESOME_PLUGIN_FILE,
+			function( $plugin_file, $plugin_data, $status ) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
 					echo '<tr><td>&nbsp;</td><td colspan="2" class="notice notice-info notice-alt">';
 					?>
 					<p>
-						<b><?php esc_html_e( 'Great Scott!', FONTAWESOME_TEXT_DOMAIN ); ?></b>
+						<b><?php esc_html_e( 'Great Scott!', 'font-awesome' ); ?></b>
 						<?php
-						esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', FONTAWESOME_TEXT_DOMAIN );
+						esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', 'font-awesome' );
 						?>
 					</p>
 					<p>
 						<?php
 							printf(
+								/* translators: 1: path to plugin or theme code file 2: current Font Awesome plugin version number */
 								esc_html__(
-									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s ' .
-									'since it\'s the newest (%2$s). ' .
-									'We recommend you update the plugin above to the latest version. ' .
-									'In the meantime, we\'ll use that newer version for editing your ' .
-									'Font Awesome settings so you\'ll be sure to hit 88mph with those ' .
-									'icons',
-									FONTAWESOME_TEXT_DOMAIN
+									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s since it\'s the newest (%2$s). We recommend you update the plugin above to the latest version. In the meantime, we\'ll use that newer version for editing your Font Awesome settings so you\'ll be sure to hit 88mph with those icons.',
+									'font-awesome'
 								),
-								'<code>' . $loader_version . '</code>',
-								'<b>ver. ' . FontAwesome::PLUGIN_VERSION . '</b>',
-								
+								'<code>' . esc_html( $loader_version ) . '</code>',
+								'<b>ver. ' . esc_html( FontAwesome::PLUGIN_VERSION ) . '</b>',
 							);
 						?>
 					</p>
@@ -801,10 +798,10 @@ class FontAwesome {
 	 */
 	public function validate_options() {
 		$using_kit = $this->using_kit();
-		$options = $this->options();
+		$options   = $this->options();
 		$kit_token = isset( $options['kitToken'] ) ? $options['kitToken'] : null;
 		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
-		$version = isset( $options['version'] ) ? $options['version'] : null;
+		$version   = isset( $options['version'] ) ? $options['version'] : null;
 
 		if ( $using_kit ) {
 			if ( ! boolval( $api_token ) ) {
@@ -824,21 +821,21 @@ class FontAwesome {
 			 * open the possibility of a pre-release version, which means it would have
 			 * something like -rc42 on the end.
 			 * For example, 5.12.0-rc42.
-			 */ 
+			 */
 			$version_is_concrete = is_string( $version )
-				&& 1 === preg_match('/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+				&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
 
 			if ( ! $version_is_concrete ) {
 				throw new ConfigCorruptionException();
 			}
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
-	 * md5 hashes that identify detected conflicting versions of Font Awesome
-	 * that the site owner has chosen to block from being enqueued.
+	 * An array of md5 hashes that identify detected conflicting versions of
+	 * Font Awesome that the site owner has chosen to block from being enqueued.
 	 *
 	 * It is managed through the plugin's settings page.
 	 *
@@ -857,10 +854,10 @@ class FontAwesome {
 
 		$blocklist = array_reduce(
 			array_keys( $unregistered_clients ),
-			function( $carry, $md5 ) use( $unregistered_clients ) {
-				if(
-					isset( $unregistered_clients[$md5]['blocked'] )
-					&& boolval( $unregistered_clients[$md5]['blocked'] )
+			function( $carry, $md5 ) use ( $unregistered_clients ) {
+				if (
+					isset( $unregistered_clients[ $md5 ]['blocked'] )
+					&& boolval( $unregistered_clients[ $md5 ]['blocked'] )
 				) {
 					array_push( $carry, $md5 );
 				}
@@ -875,7 +872,7 @@ class FontAwesome {
 	/**
 	 * Gets the current value of detectConflictsUntil from the conflict detection
 	 * option key in the database.
-	 * 
+	 *
 	 * Returns 0 if that value is unset in the db.
 	 *
 	 * Internal use only, not part of this plugin's public API.
@@ -978,16 +975,16 @@ class FontAwesome {
 		 */
 		try {
 			do_action( 'font_awesome_preferences' );
-		} catch( Exception $e ) {
+		} catch ( Exception $e ) {
 			throw PreferenceRegistrationException::with_thrown( $e );
-		} catch( Error $e ) {
+		} catch ( Error $e ) {
 			throw PreferenceRegistrationException::with_thrown( $e );
 		}
 	}
 
 	/**
 	 * Returns current preferences conflicts, keyed by option name.
-	 * 
+	 *
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * Should normally only be called after the `font_awesome_enqueued` action has triggered, indicating that all
@@ -1110,7 +1107,7 @@ class FontAwesome {
 	 */
 	public function unregistered_clients() {
 		$conflict_detection = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY );
-		if( isset( $conflict_detection['unregisteredClients'] ) && is_array( $conflict_detection['unregisteredClients'] ) ) {
+		if ( isset( $conflict_detection['unregisteredClients'] ) && is_array( $conflict_detection['unregisteredClients'] ) ) {
 			return $conflict_detection['unregisteredClients'];
 		} else {
 			return array();
@@ -1171,11 +1168,11 @@ class FontAwesome {
 	 *
 	 * - `fa()->releases_refreshed_at()` will return the time when releases
 	 *     metadata was last refreshed.
-	 * 
+	 *
 	 * - `fa->refresh_releases()` will refresh the releases metadata. This will
 	 *     run a synchronous (blocking) network query to the Font Awesome API
 	 *     server.
-	 * 
+	 *
 	 * Therefore, if releases have been refreshed recently enough for your
 	 * purposes, you can rely on the version returned by `fa()->latest_version()`.
 	 * Or, you could refresh the releases metadata and then call
@@ -1259,7 +1256,7 @@ class FontAwesome {
 	/**
 	 * Enqueues the JavaScript bundle that is the React app for the admin
 	 * settings page as well as the conflict detection reporter.
-	 * 
+	 *
 	 * The same bundle will be enqueued for both purposes. When enqueued, it
 	 * must be configured to indicate which React components to mount in the DOM,
 	 * which may be either, both, or neither.
@@ -1269,14 +1266,15 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	public function maybe_enqueue_admin_js_bundle( ) {
+	public function maybe_enqueue_admin_js_bundle() {
 		add_action(
 			'admin_enqueue_scripts',
 			function( $hook ) {
 				if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 					wp_enqueue_script(
 						self::ADMIN_RESOURCE_HANDLE,
-						$this->get_webpack_asset_url('main.js'),
+						$this->get_webpack_asset_url( 'main.js' ),
 						[],
 						null,
 						true
@@ -1287,9 +1285,10 @@ class FontAwesome {
 					$this->maybe_refresh_releases();
 
 					if ( FONTAWESOME_ENV !== 'development' ) {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_style(
 							self::ADMIN_RESOURCE_HANDLE . '-css',
-							$this->get_webpack_asset_url('main.css'),
+							$this->get_webpack_asset_url( 'main.css' ),
 							[],
 							null,
 							'all'
@@ -1302,16 +1301,16 @@ class FontAwesome {
 						array_merge(
 							$this->common_data_for_js_bundle(),
 							array(
-								'showAdmin'                     => TRUE,
-								'onSettingsPage'								=> TRUE,
-								'clientPreferences'     				=> $this->client_preferences(),
-								'releases'              				=> array(
-									'available'        						=> $this->release_provider()->versions(),
-									'latest_version'   						=> $this->latest_version(),
+								'showAdmin'            => true,
+								'onSettingsPage'       => true,
+								'clientPreferences'    => $this->client_preferences(),
+								'releases'             => array(
+									'available'      => $this->release_provider()->versions(),
+									'latest_version' => $this->latest_version(),
 								),
-								'pluginVersion'         				=> FontAwesome::PLUGIN_VERSION,
-								'preferenceConflicts'           => $this->conflicts_by_option(),
-								'v3DeprecationWarning'          => $this->get_v3deprecation_warning_data(),
+								'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
+								'preferenceConflicts'  => $this->conflicts_by_option(),
+								'v3DeprecationWarning' => $this->get_v3deprecation_warning_data(),
 							)
 						)
 					);
@@ -1333,7 +1332,7 @@ class FontAwesome {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 						wp_enqueue_script(
 							self::ADMIN_RESOURCE_HANDLE,
-							$this->get_webpack_asset_url('main.js'),
+							$this->get_webpack_asset_url( 'main.js' ),
 							null,
 							null,
 							false
@@ -1345,9 +1344,9 @@ class FontAwesome {
 							array_merge(
 								$this->common_data_for_js_bundle(),
 								array(
-									'onSettingsPage'				=> FALSE,
-									'showAdmin'                     => FALSE,
-									'showConflictDetectionReporter' => TRUE,
+									'onSettingsPage' => false,
+									'showAdmin'      => false,
+									'showConflictDetectionReporter' => true,
 								)
 							)
 						);
@@ -1367,12 +1366,12 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
-			'detectConflictsUntil'			=> $this->detect_conflicts_until(),
+			'detectConflictsUntil'          => $this->detect_conflicts_until(),
 			'unregisteredClients'           => $this->unregistered_clients(),
 			'showConflictDetectionReporter' => $this->detecting_conflicts(),
-			'settingsPageUrl'			    => $this->settings_page_url(),
-			'activeAdminTab'				=> $this->active_admin_tab(),
-			'options'						=> $this->options(),
+			'settingsPageUrl'               => $this->settings_page_url(),
+			'activeAdminTab'                => $this->active_admin_tab(),
+			'options'                       => $this->options(),
 		);
 	}
 
@@ -1399,7 +1398,8 @@ class FontAwesome {
 		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 			add_action(
 				$action,
-				function () use( $kit_token ) {
+				function () use ( $kit_token ) {
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 					wp_enqueue_script(
 						self::RESOURCE_HANDLE,
 						trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
@@ -1470,7 +1470,7 @@ EOT;
 			2
 		);
 
-		if( $this->detecting_conflicts() ) {
+		if ( $this->detecting_conflicts() ) {
 			$this->apply_detection_ignore_attr();
 		}
 
@@ -1508,7 +1508,7 @@ EOT;
 		$resources = $resource_collection->resources();
 
 		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
-			// Enqueue the conflict detector
+			// Enqueue the conflict detector.
 			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 				add_action(
 					$action,
@@ -1747,7 +1747,7 @@ EOT;
 				) {
 					return preg_replace(
 						'/<link[\s]+(.*?)>/',
-						"<link " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+						'<link ' . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
 						$html,
 						1
 					);
@@ -1770,7 +1770,7 @@ EOT;
 								self::RESOURCE_HANDLE,
 								self::RESOURCE_HANDLE_V4SHIM,
 								self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
-								self::ADMIN_RESOURCE_HANDLE
+								self::ADMIN_RESOURCE_HANDLE,
 							],
 							handles_ignored_for_conflict_detection()
 						),
@@ -1779,7 +1779,7 @@ EOT;
 				) {
 					return preg_replace(
 						'/<script[\s]+(.*?)>/',
-						"<script " . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
+						'<script ' . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
 						$html
 					);
 				} else {
@@ -1806,7 +1806,7 @@ EOT;
 		 * run some server-side detection like that old feature worked and
 		 * add what we find to the new-style blocklist.
 		 */
-		if( $this->_old_remove_unregistered_clients ) {
+		if ( $this->_old_remove_unregistered_clients ) {
 			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 				add_action(
 					$action,
@@ -1879,24 +1879,24 @@ EOT;
 					 * We'll accumulate those matches in these data structures,
 					 * and then call update_option() once for each option at the end.
 					 */
-					$md5 = md5($details->src);
+					$md5 = md5( $details->src );
 
-					$inferred_unregistered_clients[$md5] = array(
-						'src' => $details->src,
-						'type' => $key,
-						'blocked' => TRUE
+					$inferred_unregistered_clients[ $md5 ] = array(
+						'src'     => $details->src,
+						'type'    => $key,
+						'blocked' => true,
 					);
 				}
 			}
 		}
 
-		if( count($inferred_unregistered_clients) > 0 ) {
+		if ( count( $inferred_unregistered_clients ) > 0 ) {
 			$prev_unreg_clients_option = get_option( self::CONFLICT_DETECTION_OPTIONS_KEY, array() );
 
 			$new_option = array_merge(
 				$prev_unreg_clients_option,
 				array(
-					'unregisteredClients' => $inferred_unregistered_clients
+					'unregisteredClients' => $inferred_unregistered_clients,
 				)
 			);
 
@@ -1917,8 +1917,8 @@ EOT;
 	 * @internal
 	 * @return bool
 	 */
-	public function is_url_blocked($url) {
-		return FALSE !== array_search( md5($url), $this->blocklist() );
+	public function is_url_blocked( $url ) {
+		return false !== array_search( md5( $url ), $this->blocklist(), true );
 	}
 
 	/**
@@ -1931,7 +1931,7 @@ EOT;
 	 * @internal
 	 * @return bool
 	 */
-	public function is_inline_data_blocked($data) {
+	public function is_inline_data_blocked( $data ) {
 		/**
 		 * As of WordPress 5.2.2, both WP_Styles::print_inline_style and WP_Scripts::print_inline_script
 		 * join (implode) the set of 'before' or 'after' resources with a newline, and then wrap the whole
@@ -1945,10 +1945,10 @@ EOT;
 		 * Nothing will crash, but a conflict that we'd intended to catch will
 		 * have slipped through. Our automated test suite should catch this, though.
 		 */
-		if ( $data && is_array($data) && count($data) > 0 ) {
-			return FALSE !== array_search( md5("\n" . implode("\n", $data) . "\n"), $this->blocklist() );
+		if ( $data && is_array( $data ) && count( $data ) > 0 ) {
+			return false !== array_search( md5( "\n" . implode( "\n", $data ) . "\n" ), $this->blocklist(), true );
 		} else {
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -1978,7 +1978,7 @@ EOT;
 	 * @internal
 	 */
 	protected function remove_blocklist() {
-		if( count( $this->blocklist() ) == 0 ) {
+		if ( count( $this->blocklist() ) === 0 ) {
 			return;
 		}
 
@@ -1993,14 +1993,14 @@ EOT;
 		foreach ( $collections as $type => $collection ) {
 			foreach ( $collection->registered as $handle => $details ) {
 				foreach ( [ 'before', 'after' ] as $position ) {
-					$data = $collection->get_data($handle, $position);
-					if( $this->is_inline_data_blocked($data) ) {
-						unset( $collection->registered[$handle]->extra[$position] );
+					$data = $collection->get_data( $handle, $position );
+					if ( $this->is_inline_data_blocked( $data ) ) {
+						unset( $collection->registered[ $handle ]->extra[ $position ] );
 					}
 				}
 
-				if ( $this->is_url_blocked($details->src) ) {
-					call_user_func("wp_dequeue_$type", $handle );
+				if ( $this->is_url_blocked( $details->src ) ) {
+					call_user_func( "wp_dequeue_$type", $handle );
 				}
 			}
 		}
@@ -2031,7 +2031,7 @@ EOT;
 	 * All preference specifications are optional, except `name`. The name provided
 	 * here is how your theme or plugin will be identified in the Troubleshoot
 	 * tab on the plugin settings page.
-	 * 
+	 *
 	 * Only the WordPress site owner can *determine* the Font Awesome configuration,
 	 * using the plugin's admin settings page. This registration mechanism only
 	 * allows plugin or theme developers to provide hints to the site owner as
@@ -2044,7 +2044,7 @@ EOT;
 	 * configured options at page load time, you can adapt to any configuration
 	 * differences, or possibly issue your own admin notices to the site owner
 	 * as may be appropriate.
-	 * 
+	 *
 	 * Hopefully, the site owner will be able to set a configuration that satisfies
 	 * any preferences registered by their theme and any plugins that rely upon
 	 * this Font Awesome plugin. However, similar to writing mobile responsive
@@ -2087,7 +2087,7 @@ EOT;
 	 *     the site owner to get our code up and running painlessly. Consider the
 	 *     tradeoffs carefully any time you think it's necessary to insist on
 	 *     a particular Font Awesome configuration.
-	 *     
+	 *
 	 * - Update your icon references to use version 5 names so no {@link https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4 v4 shim} is required.
 	 * - Don't use {@link https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements pseudo-elements}
 	 * - Be mindful of which {@link https://fontawesome.com/icons icons you use and in which versions of Font Awesome they're available}.
@@ -2179,12 +2179,12 @@ EOT;
 	 * has an HTTP status of 200. Otherwise, it throws an exception whose
 	 * message, if non-null, is appropriate for displaying in the WordPress admin ui
 	 * to an admin user.
-	 * 
+	 *
 	 * Requests to the Font Awesome API server will automatically be authorized
 	 * by the WordPress site owner's API Token if they have added one through the
 	 * plugin's settings page. The API Token is used to retrieve a short-lived
 	 * access_token, and that that access_token is used for subsequent API requests.
-	 * 
+	 *
 	 * Refreshing an expired access_token using the API Token is also handled
 	 * automatically, when necessary.
 	 *
@@ -2225,23 +2225,23 @@ EOT;
 	 *
 	 * ```
 	 * query {
-     *   me {
-     *     kits {
-     *       name
-     *       version
-     *     }
-     *   }
-     * }
+	 *   me {
+	 *     kits {
+	 *       name
+	 *       version
+	 *     }
+	 *   }
+	 * }
 	 * ```
 	 *
 	 * <h3>Error Handling</h3>
-	 * 
+	 *
 	 * Errors that prevent the API server from handling the query will result
 	 * in thrown exceptions.
 	 *
 	 * If the query is resolved and the request returns with an HTTP 200 status,
 	 * there may still be GraphQL errors encoded in the response.
-	 * 
+	 *
 	 * For example, if the site owner has not added an API Token, then requests
 	 * to the API will only have `public` scope. In that case, any GraphQL schema fields
 	 * that would require some higher privilege will be resolved as `null`, and
@@ -2249,7 +2249,7 @@ EOT;
 	 *
 	 * For example, if the above kits query were made without an API Token having
 	 * the `kits_read` scope, then the following response would be returned:
-	 * 
+	 *
 	 * ```json
 	 * {
 	 *   "data":{
@@ -2264,7 +2264,7 @@ EOT;
 	 *       "path":["me"]
 	 *     }
 	 *   ]
-	 * } 
+	 * }
 	 * ```
 	 *
 	 * It is possible that a query could select both authorized and unauthorized
@@ -2277,24 +2277,24 @@ EOT;
 	 *
 	 * See documentation about [GraphQL validation](https://graphql.org/learn/validation/)
 	 * for more on error handling.
-	 * 
+	 *
 	 * <h3>Adding Authorization</h3>
 	 *
 	 * If you know that you need access to some part of the schema that requires some
 	 * additional authorization scope, the way to get that is to instruct the site owner
 	 * to copy an API Token from their fontawesome.com account and add it to this
 	 * plugin's configuration on the plugin's settings page.
-	 * 
+	 *
 	 * As of version 4.0.0 of this plugin, the only non-public portions of the
 	 * GraphQL schema that are relevant to usage in WordPress involve querying
 	 * the user's kits, which requires the `kits_read` scope, as shown above.
-	 * 
+	 *
 	 * <h3>Additional Resources</h3>
 	 *
 	 * For more on how to construct GraphQL queries, [see here](https://graphql.org/learn/queries/).
 	 *
 	 * A reference on the Font Awesome GraphQL API is [available here](https://fontawesome.com/how-to-use/with-the-api).
-	 * 
+	 *
 	 * You can explore the Font Awesome GraphQL API using an app like [GraphiQL](https://www.electronjs.org/apps/graphiql).
 	 * Point it at `https://api.fontawesome.com`.
 	 *
@@ -2486,7 +2486,7 @@ EOT;
 	 * @internal
 	 * @ignore
 	 */
-	private function get_webpack_asset_url($asset = '') {
+	private function get_webpack_asset_url( $asset = '' ) {
 		$asset_manifest = $this->get_webpack_asset_manifest();
 
 		if ( FONTAWESOME_ENV === 'development' ) {
@@ -2495,7 +2495,7 @@ EOT;
 			$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
 		}
 
-		return $asset_url_base . $asset_manifest[$asset];
+		return $asset_url_base . $asset_manifest[ $asset ];
 	}
 
 	/**
@@ -2505,7 +2505,7 @@ EOT;
 	 * @ignore
 	 */
 	private function get_admin_icon_color() {
-		// Adapted from wp_color_scheme_settings in WP Core:
+		// Adapted from wp_color_scheme_settings in WP Core.
 		global $_wp_admin_css_colors;
 
 		$color_scheme = get_user_option( 'admin_color' );

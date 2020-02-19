@@ -12,20 +12,20 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
  */
 class RemoveBlocklistTest extends \WP_UnitTestCase {
 
-	// TODO: add testing for removal of blocked inline scripts and styles
+	// TODO: add testing for removal of blocked inline scripts and styles.
 	protected $fake_unregistered_clients = array(
 		'3c937b6d9b50371df1e78b5d70e11512' => array(
-			'handle'	 => 'conflicting-fa-webfont',
+			'handle'     => 'conflicting-fa-webfont',
 			'href'       => 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
 			'technology' => 'webfont',
-			'blocked'    => TRUE
+			'blocked'    => true,
 		),
 		'f975719c4e7654191a03e5f111418585' => array(
 			'handle'     => 'conflicting-fa-js',
 			'src'        => 'https://use.fontawesome.com/releases/v5.0.13/js/all.js',
 			'technology' => 'js',
-			'blocked'  	 => TRUE
-		)
+			'blocked'    => true,
+		),
 	);
 
 	protected function fake_md5s() {
@@ -58,7 +58,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array(
 				'detectConflictsUntil' => 0,
-				'unregisteredClients' => $this->fake_unregistered_clients
+				'unregisteredClients'  => $this->fake_unregistered_clients,
 			)
 		);
 	}
@@ -70,9 +70,11 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			function () {
 				// Add some unregistered clients, both styles and scripts.
 				foreach ( $this->fake_unregistered_clients as $md5 => $client ) {
-					if( 'js' === $client['technology'] ) {
+					if ( 'js' === $client['technology'] ) {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_script( $client['handle'], $client['src'], array(), null, 'all' );
 					} else {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_style( $client['handle'], $client['href'], array(), null, 'all' );
 					}
 				}
@@ -89,7 +91,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			function( $method ) {
 				$opts = wp_parse_args(
 					array(
-						'version'   => '5.0.13',
+						'version' => '5.0.13',
 					),
 					FontAwesome::DEFAULT_USER_OPTIONS
 				);
@@ -124,31 +126,31 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			count( $this->fake_unregistered_clients ),
 			fa()->blocklist()
 		);
-		/*
+
 		foreach ( $this->fake_unregistered_clients as $key => $client ) {
 			switch ( $client['technology'] ) {
 				case 'webfont':
-					$this->assertTrue( wp_style_is( $item['handle'], 'registered' ) ); // is *was* there.
-					$this->assertFalse( wp_style_is( $item['handle'], 'enqueued' ) ); // now it's gone.
+					$this->assertTrue( wp_style_is( $client['handle'], 'registered' ) ); // is *was* there.
+					$this->assertFalse( wp_style_is( $client['handle'], 'enqueued' ) ); // now it's gone.
 					break;
 				case 'js':
-					$this->assertTrue( wp_script_is( $item['handle'], 'registered' ) ); // is *was* there.
-					$this->assertFalse( wp_script_is( $item['handle'], 'enqueued' ) ); // now it's gone.
+					$this->assertTrue( wp_script_is( $client['handle'], 'registered' ) ); // is *was* there.
+					$this->assertFalse( wp_script_is( $client['handle'], 'enqueued' ) ); // now it's gone.
 					break;
 			}
 		}
-		*/
+
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) ); // and our plugin's style *is* there.
 	}
 
 	public function test_unregistered_conflict_cleaned_automatically_when_old_feature_detected() {
 		$options_v1_schema = array(
-			'adminClientLoadSpec' => array(
-				'name'          => 'admin-user',
-				'clientVersion' => 0,
-				'method'		=> 'svg',
+			'adminClientLoadSpec'       => array(
+				'name'           => 'admin-user',
+				'clientVersion'  => 0,
+				'method'         => 'svg',
 				'pseudoElements' => true,
-				'v4shim'		=> true
+				'v4shim'         => true,
 			),
 			'usePro'                    => false,
 			'removeUnregisteredClients' => true,
@@ -181,7 +183,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 
 		// make sure that the fake unregistered clients are no longer enqueued and that our plugin succeeded otherwise.
 		$this->assertCount(
-			count( $this->fake_unregistered_clients),
+			count( $this->fake_unregistered_clients ),
 			fa()->blocklist()
 		);
 		foreach ( $this->fake_unregistered_clients as $md5 => $client ) {
@@ -203,13 +205,13 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 		// 1. the options should have been updated as a result of the plugin upgrade.
 		$this->assertEquals(
 			array(
-				'usePro' => false,
-				'v4Compat' => true,
-				'technology' => 'svg',
+				'usePro'            => false,
+				'v4Compat'          => true,
+				'technology'        => 'svg',
 				'svgPseudoElements' => true,
-				'version' => 'latest',
-				'kitToken' => null,
-				'apiToken' => false
+				'version'           => 'latest',
+				'kitToken'          => null,
+				'apiToken'          => false,
 			),
 			fa()->options()
 		);
@@ -223,15 +225,15 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'3c937b6d9b50371df1e78b5d70e11512' => array(
-					'src' => 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
-					'type' => 'style',
-					'blocked' => TRUE
+					'src'     => 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
+					'type'    => 'style',
+					'blocked' => true,
 				),
 				'f975719c4e7654191a03e5f111418585' => array(
-					'src' => 'https://use.fontawesome.com/releases/v5.0.13/js/all.js',
-					'type' => 'script',
-					'blocked' => TRUE
-				)
+					'src'     => 'https://use.fontawesome.com/releases/v5.0.13/js/all.js',
+					'type'    => 'script',
+					'blocked' => true,
+				),
 			),
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )['unregisteredClients']
 		);
@@ -242,15 +244,15 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 
 		$unregistered_clients = $this->fake_unregistered_clients;
 
-		foreach( $unregistered_clients as $md5 => $client ) {
-			unset( $unregistered_clients[$md5]['blocked'] );
+		foreach ( $unregistered_clients as $md5 => $client ) {
+			unset( $unregistered_clients[ $md5 ]['blocked'] );
 		}
 
 		update_option(
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			array(
 				'detectConflictsUntil' => 0,
-				'unregisteredClients' => $unregistered_clients
+				'unregisteredClients'  => $unregistered_clients,
 			)
 		);
 

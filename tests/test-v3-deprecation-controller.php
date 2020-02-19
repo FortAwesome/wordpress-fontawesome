@@ -9,7 +9,7 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 class V3DeprecationControllerTest extends \WP_UnitTestCase {
 	protected $server;
 	protected $admin_user;
-	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/v3deprecation';
+	protected $namespaced_route = '/' . FontAwesome::REST_API_NAMESPACE . '/v3deprecation';
 	protected $fa;
 
 	public function setUp() {
@@ -22,14 +22,17 @@ class V3DeprecationControllerTest extends \WP_UnitTestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				[
-					'version' => '5.4.1'
+					'version' => '5.4.1',
 				]
 			)
 		);
 
 		global $wp_rest_server;
 
-		$this->server = $wp_rest_server = new \WP_REST_Server;
+		$wp_rest_server = new \WP_REST_Server();
+
+		$this->server = $wp_rest_server;
+
 		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
 
 		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
@@ -54,18 +57,18 @@ class V3DeprecationControllerTest extends \WP_UnitTestCase {
 	}
 
 	public function test_update_item() {
-		$this->assertFalse( boolval( fa()->get_v3deprecation_warning_data() )  );
-		$request  = new \WP_REST_Request(
+		$this->assertFalse( boolval( fa()->get_v3deprecation_warning_data() ) );
+		$request = new \WP_REST_Request(
 			'PUT',
 			$this->namespaced_route
 		);
 
-		$request->add_header('Content-Type', 'application/json');
+		$request->add_header( 'Content-Type', 'application/json' );
 
 		$request->set_body(
 			wp_json_encode(
 				[
-					'snooze' => true
+					'snooze' => true,
 				]
 			)
 		);
@@ -83,7 +86,7 @@ class V3DeprecationControllerTest extends \WP_UnitTestCase {
 	public function test_get_item() {
 		fa()->snooze_v3deprecation_warning();
 
-		$request  = new \WP_REST_Request(
+		$request = new \WP_REST_Request(
 			'GET',
 			$this->namespaced_route
 		);

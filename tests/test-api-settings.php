@@ -12,6 +12,9 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 use \WP_Error, \InvalidArgumentException;
 use FortAwesome\{ ApiTokenMissingException, ApiTokenInvalidException };
 
+/**
+ * ApiSettingsTest class
+ */
 class ApiSettingsTest extends \WP_UnitTestCase {
 
 	public function setUp() {
@@ -48,7 +51,7 @@ EOD;
 
 		$this->assertGreaterThan( 0, $write_result, 'writing ini file failed' );
 
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertEquals( 'abc123', $api_settings->api_token() );
@@ -58,7 +61,7 @@ EOD;
 	}
 
 	public function test_read_from_file_when_no_file_exists() {
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertNull( $api_settings->api_token() );
@@ -67,8 +70,7 @@ EOD;
 	}
 
 	public function test_write() {
-		// Start with nothing
-		// Force re-read
+		// Start with nothing and force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$api_settings->set_api_token( 'foo' );
@@ -78,7 +80,7 @@ EOD;
 		$result = $api_settings->write();
 		$this->assertTrue( $result, 'writing ini file failed' );
 
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertEquals( 'foo', $api_settings->api_token() );
@@ -86,9 +88,9 @@ EOD;
 		$this->assertEquals( 42, $api_settings->access_token_expiration_time() );
 		$this->assertTrue( is_int( $api_settings->access_token_expiration_time() ) );
 
-		// Round-trip it again
+		// Round-trip it again.
 		$result = $api_settings->write();
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertEquals( 'foo', $api_settings->api_token() );
@@ -97,11 +99,12 @@ EOD;
 		$this->assertTrue( is_int( $api_settings->access_token_expiration_time() ) );
 	}
 
-	// What if we only write an api token, leave the others null, and the
-	// read it back in?
+	/**
+	 * What if we only write an api token, leave the others null, and then
+	 * read it back in?
+	 */
 	public function test_round_trip_only_api_token() {
-		// Start with nothing
-		// Force re-read
+		// Start with nothing and force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$api_settings->set_api_token( 'foo' );
@@ -109,7 +112,7 @@ EOD;
 		$result = $api_settings->write();
 		$this->assertTrue( $result, 'writing ini file failed' );
 
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertEquals( 'foo', $api_settings->api_token() );
@@ -124,7 +127,7 @@ EOD;
 					'code'    => 200,
 					'message' => 'OK',
 				),
-				'body'     => json_encode(
+				'body'     => wp_json_encode(
 					array(
 						'access_token' => '123',
 						'expires_in'   => 3600,
@@ -142,10 +145,10 @@ EOD;
 		$delta = abs( ( time() + 3600 ) - $api_settings->access_token_expiration_time() );
 		$this->assertLessThanOrEqual( 2.0, $delta );
 
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
-		// Everything should have remained the same through the write/read round trip
+		// Everything should have remained the same through the write/read round trip.
 		$this->assertEquals( '123', $api_settings->access_token() );
 		$this->assertEquals( 'xyz', $api_settings->api_token() );
 		$delta = abs( ( time() + 3600 ) - $api_settings->access_token_expiration_time() );
@@ -159,7 +162,7 @@ EOD;
 					'code'    => 200,
 					'message' => 'OK',
 				),
-				'body'     => json_encode(
+				'body'     => wp_json_encode(
 					array(
 						'access_token' => '123',
 						'expires_in'   => 3600,
@@ -181,7 +184,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_error() );
 		}
 
@@ -197,7 +200,7 @@ EOD;
 					'message' => 'Forbidden',
 				),
 				'body'     => '',
-				'headers'  => []
+				'headers'  => [],
 			)
 		);
 
@@ -205,7 +208,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_response() );
 			$this->assertEquals( 403, $e->get_wp_response()['response']['code'] );
 		}
@@ -221,12 +224,12 @@ EOD;
 					'code'    => 200,
 					'message' => 'OK',
 				),
-				'body'     => json_encode(
+				'body'     => wp_json_encode(
 					array(
 						'expires_in' => 3600,
 					)
 				),
-				'headers' => []
+				'headers'  => [],
 			)
 		);
 
@@ -234,7 +237,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_response() );
 			$this->assertEquals( 200, $e->get_wp_response()['response']['code'] );
 			$this->assertStringEndsWith( 'an invalid response.', $e->getMessage() );
@@ -251,12 +254,12 @@ EOD;
 					'code'    => 200,
 					'message' => 'OK',
 				),
-				'body'     => json_encode(
+				'body'     => wp_json_encode(
 					array(
 						'access_token' => 'abc',
 					)
 				),
-				'headers' => []
+				'headers'  => [],
 			)
 		);
 
@@ -264,7 +267,7 @@ EOD;
 
 		try {
 			$api_settings->request_access_token();
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			$this->assertNotNull( $e->get_wp_response() );
 			$this->assertEquals( 200, $e->get_wp_response()['response']['code'] );
 			$this->assertStringEndsWith( 'an invalid response.', $e->getMessage() );
@@ -303,7 +306,7 @@ EOD;
 
 		$this->assertGreaterThan( 0, $write_result, 'writing ini file failed' );
 
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertEquals( 'abc123', $api_settings->api_token() );
@@ -325,7 +328,7 @@ EOD;
 
 		$this->assertTrue( file_exists( FontAwesome_API_Settings::ini_path() ) );
 
-		// Force re-read
+		// Force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
 		$this->assertEquals( 'abc123', $api_settings->api_token() );
@@ -335,7 +338,7 @@ EOD;
 		// Now remove it, expecting both the in-memory and on-disk data to be cleared.
 		$api_settings->remove();
 
-		// Force re-read again
+		// Force re-read again.
 		$api_settings = FontAwesome_API_Settings::reset();
 		$this->assertNull( $api_settings->api_token() );
 		$this->assertNull( $api_settings->access_token() );

@@ -81,7 +81,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			'conflicts' => $fa->conflicts_by_option(),
 		);
 
-		if( ! is_null( $preference_registration_error ) ) {
+		if ( ! is_null( $preference_registration_error ) ) {
 			$item['error'] = $preference_registration_error;
 		}
 
@@ -103,12 +103,12 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			$api_token = isset( $given_options['apiToken'] ) ? $given_options['apiToken'] : null;
 
 			if ( is_string( $api_token ) ) {
-				// We're adding an api_token
+				// We're adding an api_token.
 				$api_settings = FontAwesome_API_Settings::reset();
 				$api_settings->set_api_token( $api_token );
 				$api_settings->request_access_token();
 			} elseif ( boolval( fa_api_settings()->api_token() ) && ! boolval( $api_token ) ) {
-				// We're removing an existing API Token
+				// We're removing an existing API Token.
 				fa_api_settings()->remove();
 
 				/**
@@ -127,9 +127,9 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 
 			$return_data = $this->build_item( fa() );
 			return new WP_REST_Response( $return_data, 200 );
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );
@@ -158,11 +158,11 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		 * has been stored. It's the responsibility of the calling code
 		 * to store the actual API Token appropriately.
 		 */
-		$api_token = isset( $given_options['apiToken'] ) && boolval( $given_options['apiToken'] );
+		$api_token        = isset( $given_options['apiToken'] ) && boolval( $given_options['apiToken'] );
 		$item['apiToken'] = $api_token;
 
 		/**
-		 * kitToken is handled specially.
+		 * A kitToken is handled specially.
 		 * If one is provided, but there's no API token, then that is invalid.
 		 */
 		if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) ) {
@@ -197,7 +197,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			&& 'latest' === $given_options['version'];
 
 		$version_is_concrete = isset( $given_options['version'] )
-			&& 1 === preg_match('/[0-9]+\.[0-9]+/', $given_options['version'] );
+			&& 1 === preg_match( '/[0-9]+\.[0-9]+/', $given_options['version'] );
 
 		/**
 		 * The version is handled specially.

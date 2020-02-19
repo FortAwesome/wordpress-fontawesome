@@ -20,9 +20,9 @@ class Mock_FontAwesome_Releases extends TestCase {
 			'query',
 			function( $method ) {
 				$method->willReturn(
-					json_encode(
+					wp_json_encode(
 						array(
-							'data' => graphql_releases_query_fixture()
+							'data' => graphql_releases_query_fixture(),
 						)
 					)
 				);

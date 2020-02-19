@@ -1,6 +1,9 @@
 <?php
 namespace FortAwesome;
 
+/**
+ * FontAwesomeLoaderTest class
+ */
 class FontAwesomeLoaderTest extends \WP_UnitTestCase {
 	// It should choose the latest *semantic* version.
 	public function test_select_latest_plugin_installation() {
@@ -10,12 +13,12 @@ class FontAwesomeLoaderTest extends \WP_UnitTestCase {
 		);
 		$this->assertEquals(
 			FontAwesome_Loader::instance()->loaded_path(),
-			trailingslashit(__DIR__) . 'mock_installations/ver_a/'
+			trailingslashit( __DIR__ ) . 'mock_installations/ver_a/'
 		);
 	}
 
 	public function test_escape_stack_trace() {
-		$input = <<<EOD
+		$input    = <<<EOD
 line 1
 line "2"
 line '3'

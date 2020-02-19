@@ -95,28 +95,28 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		$this->assertEquals( [], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
 	}
 
-	public function test_satisfies () {
+	public function test_satisfies() {
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.3', '=']])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ [ '42.1.3', '=' ] ] )
 		);
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.2', '>='], ['43', '<']])
-		);
-	}
-
-	public function test_satisfies_bad_operator () {
-		$this->expectException( ClientPreferencesSchemaException::class );
-
-		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', [['42.1.2', 'xyz']])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ [ '42.1.2', '>=' ], [ '43', '<' ] ] )
 		);
 	}
 
-	public function test_satisfies_bad_argument_1 () {
+	public function test_satisfies_bad_operator() {
 		$this->expectException( ClientPreferencesSchemaException::class );
 
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies('42.1.3', ['42.1.2', 'xyz'])
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ [ '42.1.2', 'xyz' ] ] )
+		);
+	}
+
+	public function test_satisfies_bad_argument_1() {
+		$this->expectException( ClientPreferencesSchemaException::class );
+
+		$this->assertTrue(
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ '42.1.2', 'xyz' ] )
 		);
 	}
 }

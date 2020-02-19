@@ -47,9 +47,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	}
 
 	protected static function build_success_response() {
-		return json_encode(
+		return wp_json_encode(
 			array(
-				'data' => graphql_releases_query_fixture()
+				'data' => graphql_releases_query_fixture(),
 			)
 		);
 	}
@@ -61,7 +61,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 				'message' => 'Internal Server Error',
 			),
 			'body'     => '',
-			'headers'  => []
+			'headers'  => [],
 		);
 	}
 
@@ -96,7 +96,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		 */
 		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 
-		$farp = $this->create_release_provider_that_throws( new ApiResponseException() );
+		$farp   = $this->create_release_provider_that_throws( new ApiResponseException() );
 		$caught = false;
 
 		try {
@@ -115,7 +115,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		try {
 			$farp->load_releases();
-		} catch( ApiRequestException $e ) {
+		} catch ( ApiRequestException $e ) {
 			$caught = true;
 		}
 
@@ -295,6 +295,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
 		$farp->load_releases();
 
-		$this->assertEquals( '5.4.1', $farp->latest_version() ); 
+		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
 }

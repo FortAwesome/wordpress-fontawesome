@@ -326,7 +326,7 @@ EOD;
 
 		try {
 			$this->set_access_token_expiration_time( $body['expires_in'] + time() );
-		} catch( InvalidArgumentException $e ) {
+		} catch ( InvalidArgumentException $e ) {
 			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 

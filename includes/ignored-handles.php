@@ -3,7 +3,7 @@
 namespace FortAwesome;
 
 function handles_ignored_for_conflict_detection() {
-	return array (
+	return array(
 		'colors',
 		'common',
 		'forms',

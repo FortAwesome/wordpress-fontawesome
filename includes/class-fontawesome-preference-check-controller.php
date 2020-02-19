@@ -73,9 +73,9 @@ class FontAwesome_Preference_Check_Controller extends WP_REST_Controller {
 			$conflicts = fa()->conflicts_by_option( $request->get_json_params() );
 
 			return new WP_REST_Response( $conflicts, 200 );
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );

@@ -102,17 +102,17 @@ class FontAwesome_Metadata_Provider {
 	 * @return string json encoded response body when the API server response
 	 *     has a HTTP 200 status.
 	 */
-	public function metadata_query( $query_string, $ignore_auth = FALSE ) {
+	public function metadata_query( $query_string, $ignore_auth = false ) {
 		$args = array(
 			'method'  => 'POST',
 			'headers' => array(
 				'Content-Type' => 'application/json',
 			),
-			'body'    => '{"query": ' . json_encode( $query_string ) . '}',
+			'body'    => '{"query": ' . wp_json_encode( $query_string ) . '}',
 		);
 
-		if( ! $ignore_auth ) {
-			$access_token = $this->current_access_token();
+		if ( ! $ignore_auth ) {
+			$access_token                     = $this->current_access_token();
 			$args['headers']['authorization'] = "Bearer $access_token";
 		}
 
@@ -133,11 +133,11 @@ class FontAwesome_Metadata_Provider {
 	 * Returns a current access_token, if available. Attempts to refresh an
 	 * access_token if the one we have is near or past expiration and an api_token
 	 * is present.
-	 * 
+	 *
 	 * Returns WP_Error indicating any error when trying to refresh an access_token.
 	 * Returns null when there is no api_token.
 	 * Otherwise, returns the current access_token as a string.
-	 * 
+	 *
 	 * @throws ApiTokenMissingException
 	 * @throws ApiTokenEndpointRequestException
 	 * @throws ApiTokenEndpointResponseException
@@ -149,14 +149,14 @@ class FontAwesome_Metadata_Provider {
 		if ( ! boolval( fa_api_settings()->api_token() ) ) {
 			return null;
 		}
-		
-		$exp = fa_api_settings()->access_token_expiration_time();
+
+		$exp          = fa_api_settings()->access_token_expiration_time();
 		$access_token = fa_api_settings()->access_token();
 
 		if ( is_string( $access_token ) && $exp > ( time() - 5 ) ) {
 			return $access_token;
 		} else {
-			// refresh the access token
+			// refresh the access token.
 			fa_api_settings()->request_access_token();
 			return fa_api_settings()->access_token();
 		}

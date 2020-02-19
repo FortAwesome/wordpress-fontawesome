@@ -18,7 +18,7 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
  * Requests to this REST route should have the following headers and body:
  *
  * <h3>Headers</h3>
- * 
+ *
  * `X-WP-Nonce`: include an appropriate nonce from WordPress.
  *
  * <h3>Body</h3>
@@ -33,10 +33,10 @@ use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
  * ```
  *
  * <h3>Internal Use vs. Public API</h3>
- * 
+ *
  * The PHP methods in this controller class are not part of this plugin's
  * public API, but the REST route it exposes is.
- * 
+ *
  * If you need to issue a query from server-side PHP code to the
  * Font Awesome API server, use the {@see FontAwesome::query()} method.
  *
@@ -68,8 +68,8 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 */
 	public function __construct( $plugin_slug, $namespace ) {
-		$this->plugin_slug = $plugin_slug;
-		$this->namespace   = $namespace;
+		$this->plugin_slug        = $plugin_slug;
+		$this->namespace          = $namespace;
 		$this->_metadata_provider = fa_metadata_provider();
 	}
 
@@ -99,7 +99,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 
 	/**
 	 * Run the query by delegating to {@see FontAwesome_Metadata_Provider}.
-	 * 
+	 *
 	 * Internal use only. This method is not part of this plugin's public API.
 	 *
 	 * @ignore
@@ -112,14 +112,14 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 			$result = $this->metadata_provider()->metadata_query( $request->get_body() );
 
 			return new WP_REST_Response( json_decode( $result, true ), 200 );
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
-			return unknown_error_500($e);
+			return unknown_error_500( $e );
 		} catch ( Error $e ) {
-			return unknown_error_500($e);
+			return unknown_error_500( $e );
 		}
 	}
 

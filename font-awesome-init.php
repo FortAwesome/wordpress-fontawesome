@@ -3,7 +3,6 @@ namespace FortAwesome;
 
 // Loader pattern follows that of wponion.
 // Thanks to Varun Sridharan <varunsridharan23@gmail.com>.
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

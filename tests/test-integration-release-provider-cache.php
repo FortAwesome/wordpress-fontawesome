@@ -56,9 +56,9 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	}
 
 	protected static function build_success_response() {
-		return json_encode(
+		return wp_json_encode(
 			array(
-				'data' => graphql_releases_query_fixture()
+				'data' => graphql_releases_query_fixture(),
 			)
 		);
 	}

@@ -31,7 +31,7 @@ class FontAwesome_V3Mapper {
 
 	/**
 	 * Returns the singleton instance of this class.
-	 * 
+	 *
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
@@ -54,7 +54,7 @@ class FontAwesome_V3Mapper {
 	}
 
 	/**
-	 * load_map
+	 * Loads the map.
 	 *
 	 * @deprecated Provided temporarily for an upgrade path for previous font-awesome plugin users.
 	 * @internal

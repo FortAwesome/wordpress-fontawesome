@@ -92,9 +92,9 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 			$data = $this->build_item();
 
 			return new WP_REST_Response( $data, 200 );
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );
@@ -124,9 +124,9 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 			$return_data = $this->build_item( fa() );
 
 			return new WP_REST_Response( $return_data, 200 );
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );

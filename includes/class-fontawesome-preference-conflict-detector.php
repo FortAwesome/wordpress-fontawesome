@@ -10,8 +10,7 @@ class FontAwesome_Preference_Conflict_Detector {
 		// If the version given as configured_option is 'latest', as it may be for
 		// a kit, then we'll resolve that 'latest' into whatever actual version
 		// is known as the latest right now.
-
-		$resolved_version = ('latest' === $configured_option && is_string( $latest_version ) )
+		$resolved_version = ( 'latest' === $configured_option && is_string( $latest_version ) )
 			? $latest_version
 			: $configured_option;
 
@@ -24,7 +23,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * Use function_exists to see if something like resolve_$option exists, if not, assume equality.
 	 * If it does, then delegate to it. We would need to delegate to it for the version option, because
 	 * clients should be able to specify an expression to represent version compatibility.
-	 * 
+	 *
 	 * The $latest_version param will be passed as the third argument to any resolver
 	 * functions, and should be set to the actual version number of the latest version known,
 	 * like '5.12.0', not the word 'latest'. It is the value that can be used
@@ -37,7 +36,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @ignore
 	 * @since 4.0.0
 	 */
-	public static function detect( $configured_options = [], $client_preferences = [], $latest_version = NULL ) {
+	public static function detect( $configured_options = [], $client_preferences = [], $latest_version = null ) {
 		return array_reduce(
 			array_keys( $configured_options ),
 			function( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version ) {
@@ -65,7 +64,7 @@ class FontAwesome_Preference_Conflict_Detector {
 
 	/**
 	 * Reports whether the given version satisfies the given constraints.
-	 * 
+	 *
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * This is really just a generalized utility function, instead of incorporating a full-blown semver library.

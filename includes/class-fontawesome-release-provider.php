@@ -109,15 +109,15 @@ class FontAwesome_Release_Provider {
 		$transient_value = get_site_transient( self::RELEASES_TRANSIENT );
 
 		if ( $transient_value ) {
-			$this->releases = $transient_value['data']['releases'];
-			$this->refreshed_at = $transient_value['refreshed_at'];
+			$this->releases       = $transient_value['data']['releases'];
+			$this->refreshed_at   = $transient_value['refreshed_at'];
 			$this->latest_version = $transient_value['data']['latest'];
 		}
 	}
 
 	/**
 	 * Loads release metadata and saves to a transient.
-	 * 
+	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
 	 * @internal
@@ -157,14 +157,14 @@ EOD;
 			$sris = array();
 
 			foreach ( $release['srisByLicense'] as $license => $sri_set ) {
-				$sris[$license] = array();
+				$sris[ $license ] = array();
 				foreach ( $sri_set as $sri ) {
-					$sris[$license][$sri['path']] = $sri['value'];
+					$sris[ $license ][ $sri['path'] ] = $sri['value'];
 				}
 			}
 
 			$releases[ $release['version'] ] = array(
-				'sri' => $sris
+				'sri' => $sris,
 			);
 		}
 
@@ -175,19 +175,19 @@ EOD;
 			delete_site_transient( self::RELEASES_TRANSIENT );
 		}
 
-		$refreshed_at = time();
+		$refreshed_at   = time();
 		$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
 
-		if( is_null( $latest_version ) ) {
+		if ( is_null( $latest_version ) ) {
 			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version' ) );
 		}
 
 		$transient_value = array(
 			'refreshed_at' => $refreshed_at,
-			'data' => array (
-				'latest' => $latest_version,
-				'releases' => $releases
-			)
+			'data'         => array(
+				'latest'   => $latest_version,
+				'releases' => $releases,
+			),
 		);
 
 		$ret = set_site_transient( self::RELEASES_TRANSIENT, $transient_value, self::RELEASES_TRANSIENT_EXPIRY );
@@ -196,8 +196,8 @@ EOD;
 			throw new ReleaseProviderStorageException();
 		}
 
-		$this->releases = $releases;
-		$this->refreshed_at = $refreshed_at;
+		$this->releases       = $releases;
+		$this->refreshed_at   = $refreshed_at;
 		$this->latest_version = $latest_version;
 	}
 
@@ -252,7 +252,7 @@ EOD;
 	 * @return array
 	 */
 	protected function query( $query ) {
-		return fa_metadata_provider()->metadata_query( $query, TRUE );
+		return fa_metadata_provider()->metadata_query( $query, true );
 	}
 
 	/**
@@ -299,10 +299,10 @@ EOD;
 	/**
 	 * Returns the time, in unix epoch seconds when the releases metadata were
 	 * last refreshed, or null for never.
-	 * 
+	 *
 	 * Internal use only. Clients should use the public API method on the
 	 * FontAwesome object.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 * @return null|int
@@ -351,7 +351,7 @@ EOD;
 	) ) {
 		$resources = array();
 
-		if ( ! is_string($version) || 0 == strlen( $version ) ) {
+		if ( ! is_string( $version ) || 0 === strlen( $version ) ) {
 			throw new ConfigCorruptionException();
 		}
 
@@ -373,7 +373,7 @@ EOD;
 
 	/**
 	 * Returns a version number corresponding to the most recent minor release.
-	 * 
+	 *
 	 * Internal use only. Clients should use the FontAwesome::latest_version()
 	 * public API method instead.
 	 *

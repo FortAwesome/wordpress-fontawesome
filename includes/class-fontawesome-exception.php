@@ -5,6 +5,9 @@ use \Exception;
 
 // phpcs:disable Generic.Files.OneClassPerFile.MultipleFound
 
+/**
+ * An abstract class defining behavior for most exceptions thrown by this plugin.
+ */
 abstract class FontAwesome_Exception extends Exception {
 	/**
 	 * A WP_Error object that was the occassion for this exception.
@@ -21,13 +24,13 @@ abstract class FontAwesome_Exception extends Exception {
 		// This is how we invoke the derived class's constructor from an inherited static method.
 		$obj = new static();
 
-		if( ! is_null( $wp_error ) && is_a( $wp_error, 'WP_Error' ) ) {
+		if ( ! is_null( $wp_error ) && is_a( $wp_error, 'WP_Error' ) ) {
 			$obj->wp_error = $wp_error;
 		}
 
 		return $obj;
 	}
-	
+
 	/**
 	 * Construct an exception with an associated HTTP response.
 	 *
@@ -38,8 +41,8 @@ abstract class FontAwesome_Exception extends Exception {
 		// This is how we invoke the derived class's constructor from an inherited static method.
 		$obj = new static();
 
-		if(
-			!is_null( $wp_response ) &&
+		if (
+			! is_null( $wp_response ) &&
 			is_array( $wp_response ) &&
 			isset( $wp_response['headers'] ) &&
 			isset( $wp_response['body'] ) &&
@@ -53,7 +56,7 @@ abstract class FontAwesome_Exception extends Exception {
 
 	/**
 	 * Construct an exception with a previously thrown Error or Exception.
-	 * 
+	 *
 	 * (The Throwable interface is not available until PHP 7, and we support back to 5.6.)
 	 *
 	 * @param $e Error or Exception
@@ -71,17 +74,25 @@ abstract class FontAwesome_Exception extends Exception {
 	}
 }
 
+/**
+ * An abstract parent class for exceptions that should result in an HTTP 500 status.
+ */
 abstract class FontAwesome_ServerException extends FontAwesome_Exception {}
 
+/**
+ * An abstract parent class for exceptions that should result in an HTTP 400 status.
+ */
 abstract class FontAwesome_ClientException extends FontAwesome_Exception {}
 
+/**
+ * Thrown when no API Token is found.
+ */
 class ApiTokenMissingException extends FontAwesome_ClientException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Whoops, it looks like you have not provided a ' .
-				'Font Awesome API Token. Enter one on the Font Awesome plugin settings page.',
-				FONTAWESOME_TEXT_DOMAIN
+				'Whoops, it looks like you have not provided a Font Awesome API Token. Enter one on the Font Awesome plugin settings page.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -89,13 +100,16 @@ class ApiTokenMissingException extends FontAwesome_ClientException {
 	}
 }
 
+/**
+ * Thrown when the WordPress server fails to issue a request to the token endpoint
+ * on Font Awesome API server.
+ */
 class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Your WordPress server failed when trying to communicate ' .
-				'with the Font Awesome API token endpoint.',
-				FONTAWESOME_TEXT_DOMAIN
+				'Your WordPress server failed when trying to communicate with the Font Awesome API token endpoint.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -103,12 +117,17 @@ class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when the token endpoint on the Font Awesome API server returns an
+ * non-200 status when trying to use the configured API Token to get an access_token
+ * to use for subsequent API query requests.
+ */
 class ApiTokenInvalidException extends FontAwesome_ClientException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
 				'Whoops, it looks like that API Token is not valid. Try another one?',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -116,13 +135,17 @@ class ApiTokenInvalidException extends FontAwesome_ClientException {
 	}
 }
 
+/**
+ * Thrown when the Font Awesome API server returns a response with an unexpected schema.
+ * This would probably indicate either a programming error in the API server, or a change
+ * in the schema such that the Font Awesome plugin's expectations are unmet.
+ */
 class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Oh no! It looks like your API Token was valid, ' .
-				'but the Font Awesome API server still returned an invalid response.',
-				FONTAWESOME_TEXT_DOMAIN
+				'Oh no! It looks like your API Token was valid, but the Font Awesome API server still returned an invalid response.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -130,13 +153,16 @@ class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when there is a failure to write a file on the WordPress server filesystem
+ * to store the access_token.
+ */
 class AccessTokenStorageException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'There was a problem trying to store API credentials. Your API Token ' .
-				'was valid, but storage failed.',
-				FONTAWESOME_TEXT_DOMAIN
+				'There was a problem trying to store API credentials. Your API Token was valid, but storage failed.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -144,13 +170,16 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when a an options configuration is attempted that does not pass validation.
+ */
 class ConfigSchemaException extends FontAwesome_ClientException {
 
 	public static function kit_token_no_api_token() {
 		return new static(
 			esc_html__(
 				'A kitToken was given without a valid apiToken',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			)
 		);
 	}
@@ -159,7 +188,7 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 		return new static(
 			esc_html__(
 				'A Font Awesome version number was expected but not given',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			)
 		);
 	}
@@ -167,21 +196,22 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 	public static function webfont_v4compat_introduced_later() {
 		return new static(
 			esc_html__(
-				'Whoops! You found a corner case here. ' .
-				'Version 4 compatibility for our webfont technology was not introduced until Font Awesome 5.1.0. ' .
-				'Try using a newer version, disabling version 4 compatibility, or switch to SVG.',
-				FONTAWESOME_TEXT_DOMAIN
+				'Whoops! You found a corner case here. Version 4 compatibility for our webfont technology was not introduced until Font Awesome 5.1.0. Try using a newer version, disabling version 4 compatibility, or switch to SVG.',
+				'font-awesome'
 			)
 		);
 	}
 }
 
+/**
+ * Thrown when catching an Error or Exception from a registered theme or plugin.
+ */
 class PreferenceRegistrationException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
 				'A theme or plugin registered with Font Awesome threw an exception.',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -189,12 +219,16 @@ class PreferenceRegistrationException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when the WordPress server fails to issue a request to the main query
+ * endpoint on Font Awesome API server.
+ */
 class ApiRequestException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
 				'Your WordPress server failed trying to send a request to the Font Awesome API server.',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -202,12 +236,17 @@ class ApiRequestException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when the query endpoint on the Font Awesome API server responds with
+ * an unexpected schema. This probably indicates either a programming error
+ * in the API server, or a breaking change and this plugin code is out of date.
+ */
 class ApiResponseException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
 				'An unexpected response was received from the Font Awesome API server.',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -215,12 +254,16 @@ class ApiResponseException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when there's a failure to write a transient for storing the Font Awesome
+ * releases metadata.
+ */
 class ReleaseProviderStorageException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
 				'Failed to store Font Awesome releases metadata in your WordPress datbase.',
-				FONTAWESOME_TEXT_DOMAIN
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -228,13 +271,15 @@ class ReleaseProviderStorageException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when the plugin expects release metadata to be present but isn't for some reason.
+ */
 class ReleaseMetadataMissingException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				"Somehow, we're missing metadata about available Font Awesome releaes, which should have " .
-				"already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.",
-				FONTAWESOME_TEXT_DOMAIN
+				'Somehow, we\'re missing metadata about available Font Awesome releaes, which should have already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -242,13 +287,20 @@ class ReleaseMetadataMissingException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when attempting front-end page load logic and the options configuration
+ * is invalid. This should never happen, since only valid options configurations
+ * should ever be stored. If it is thrown it probably means that either there's
+ * a programming error in this plugin, or that the state of database has been
+ * changed between the time that options would have been valid upon saving and
+ * the time that the page load occurs and those options are found to be invalid.
+ */
 class ConfigCorruptionException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				"When trying to load Font Awesome, the plugin's configuration was invalid. " .
-				"Try deactivating, uninstalling, and re-activating the Font Awesome plugin.",
-				FONTAWESOME_TEXT_DOMAIN
+				'When trying to load Font Awesome, the plugin\'s configuration was invalid. Try deactivating, uninstalling, and re-activating the Font Awesome plugin.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -256,12 +308,17 @@ class ConfigCorruptionException extends FontAwesome_ServerException {
 	}
 }
 
+/**
+ * Thrown when the conflict detection scanner posts data to a REST endpoint and
+ * the data has an invalid schema. This would probably indicate a programming
+ * error in this plugin.
+ */
 class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				"The conflict detection data sent to your WordPress server was invalid.",
-				FONTAWESOME_TEXT_DOMAIN
+				'The conflict detection information submitted to your WordPress server was invalid.',
+				'font-awesome'
 			),
 			$code,
 			$previous
@@ -269,12 +326,15 @@ class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 	}
 }
 
+/**
+ * Thrown when there's a failure to store conflict detection data as a transient.
+ */
 class ConflictDetectionStorageException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				"We were not able to save conflict detection data to your WordPress database.",
-				FONTAWESOME_TEXT_DOMAIN
+				'We were not able to save conflict detection data to your WordPress database.',
+				'font-awesome'
 			),
 			$code,
 			$previous

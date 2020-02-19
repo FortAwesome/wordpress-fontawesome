@@ -58,26 +58,32 @@ class ActivationTest extends \WP_UnitTestCase {
 	}
 
 	public function test_initialize_preserves_existing_options() {
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.11.1', 'usePro' => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'] ] );
+		$expected_options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.11.1',
+				'usePro'  => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'],
+			]
+		);
 		update_option( FontAwesome::OPTIONS_KEY, $expected_options );
 
 		$expected_conflict_detection_option = array(
 			'detectConflictsUntil' => 0,
-			'unregisteredClients' => array(
+			'unregisteredClients'  => array(
 				'a9a9aa2d454f77cd623d6755c902c408' => array(
-				'type' => 'script',
-				'src'  => 'http://example.com/fake.js'
+					'type' => 'script',
+					'src'  => 'http://example.com/fake.js',
 				),
-			)
+			),
 		);
 
-    	update_option(
+		update_option(
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			$expected_conflict_detection_option
 		);
 
 		FontAwesome_Activator::initialize();
-		$actual_options = get_option( FontAwesome::OPTIONS_KEY );
+		$actual_options                   = get_option( FontAwesome::OPTIONS_KEY );
 		$actual_conflict_detection_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
 		$this->assertEquals( $expected_options, $actual_options );
@@ -89,20 +95,26 @@ class ActivationTest extends \WP_UnitTestCase {
 	}
 
 	public function test_initialize_force_overwrites_with_defaults() {
-		$initial_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.11.1', 'usePro' => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'] ] );
+		$initial_options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.11.1',
+				'usePro'  => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'],
+			]
+		);
 		update_option( FontAwesome::OPTIONS_KEY, $initial_options );
 
 		$initial_conflict_detection_option = array(
 			'detectConflictsUntil' => 0,
-			'unregisteredClients' => array(
+			'unregisteredClients'  => array(
 				'a9a9aa2d454f77cd623d6755c902c408' => array(
-				'type' => 'script',
-				'src'  => 'http://example.com/fake.js'
+					'type' => 'script',
+					'src'  => 'http://example.com/fake.js',
 				),
-			)
+			),
 		);
 
-    	update_option(
+		update_option(
 			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
 			$initial_conflict_detection_option
 		);
@@ -110,8 +122,8 @@ class ActivationTest extends \WP_UnitTestCase {
 		// 5.4.1 is the latest in the mock
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.4.1' ] );
 
-		FontAwesome_Activator::initialize(TRUE);
-		$actual_options = get_option( FontAwesome::OPTIONS_KEY );
+		FontAwesome_Activator::initialize( true );
+		$actual_options                   = get_option( FontAwesome::OPTIONS_KEY );
 		$actual_conflict_detection_option = get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 
 		$this->assertEquals( $expected_options, $actual_options );

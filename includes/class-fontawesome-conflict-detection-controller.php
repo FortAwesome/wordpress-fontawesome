@@ -30,7 +30,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	/**
 	 * @ignore
 	 */
-	protected $valid_attrs = ['type', 'technology', 'href', 'src', 'innerText', 'tagName'];
+	protected $valid_attrs = [ 'type', 'technology', 'href', 'src', 'innerText', 'tagName' ];
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -124,6 +124,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	public function report_conflicts( $request ) {
 		try {
 			if ( ! fa()->detecting_conflicts() ) {
@@ -145,16 +146,16 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				: array();
 
 			$new_option_unregistered_clients = array_merge(
-					$prev_option_unregistered_clients,
-					$item
+				$prev_option_unregistered_clients,
+				$item
 			);
 
-			if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
+			if ( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
 				// Update only the unregisteredClients key, leaving any other keys unchanged.
 				$new_option_value = array_merge(
 					$prev_option,
 					array(
-						'unregisteredClients' => $new_option_unregistered_clients
+						'unregisteredClients' => $new_option_unregistered_clients,
 					)
 				);
 
@@ -167,9 +168,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );
@@ -193,11 +194,12 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request the request.
 	 * @return WP_Error|WP_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	public function delete_conflicts( $request ) {
 		try {
 			$body = $request->get_json_params();
 
-			if( ! $this->is_array_of_md5( $body )) {
+			if ( ! $this->is_array_of_md5( $body ) ) {
 				throw new ConflictDetectionSchemaException();
 			}
 
@@ -219,16 +221,16 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				$prev_option_unregistered_clients
 			);
 
-			foreach( $body as $md5 ) {
+			foreach ( $body as $md5 ) {
 				unset( $new_option_unregistered_clients[ $md5 ] );
 			}
 
-			if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
+			if ( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
 				// Update only the unregisteredClients key, leaving any other keys unchanged.
 				$new_option_value = array_merge(
 					$prev_option,
 					array(
-						'unregisteredClients' => $new_option_unregistered_clients
+						'unregisteredClients' => $new_option_unregistered_clients,
 					)
 				);
 
@@ -241,9 +243,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );
@@ -266,7 +268,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 
 			$new_value = intval( $body );
 
-			if( 0 === $new_value && '0' !== $body ) {
+			if ( 0 === $new_value && '0' !== $body ) {
 				throw new ConflictDetectionSchemaException();
 			}
 
@@ -282,7 +284,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				? $prev_option['detectConflictsUntil']
 				: null;
 
-			if( $prev_option_detect_conflicts_until !== $new_value ) {
+			if ( $prev_option_detect_conflicts_until !== $new_value ) {
 				// Update only the detectConflictsUntil key, leaving any other keys unchanged.
 				$new_option_value = array_merge(
 					$prev_option,
@@ -298,9 +300,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );
@@ -327,7 +329,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 		try {
 			$body = $request->get_json_params();
 
-			if( ! $this->is_array_of_md5( $body )) {
+			if ( ! $this->is_array_of_md5( $body ) ) {
 				throw new ConflictDetectionSchemaException();
 			}
 
@@ -348,21 +350,21 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(),
 				$prev_option_unregistered_clients
 			);
-			
-			foreach( array_keys( $new_option_unregistered_clients ) as $md5 ) {
-				if( in_array( $md5, $body ) ) {
-					$new_option_unregistered_clients[ $md5 ]['blocked'] = TRUE;
+
+			foreach ( array_keys( $new_option_unregistered_clients ) as $md5 ) {
+				if ( in_array( $md5, $body, true ) ) {
+					$new_option_unregistered_clients[ $md5 ]['blocked'] = true;
 				} else {
-					$new_option_unregistered_clients[ $md5 ]['blocked'] = FALSE;
+					$new_option_unregistered_clients[ $md5 ]['blocked'] = false;
 				}
 			}
 
-			if( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
+			if ( $this->unregistered_clients_array_has_changes( $prev_option_unregistered_clients, $new_option_unregistered_clients ) ) {
 				// Update only the unregisteredClients key, leaving any other keys unchanged.
 				$new_option_value = array_merge(
 					$prev_option,
 					array(
-						'unregisteredClients' => $new_option_unregistered_clients
+						'unregisteredClients' => $new_option_unregistered_clients,
 					)
 				);
 
@@ -375,9 +377,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				// No change.
 				return new WP_REST_Response( null, 204 );
 			}
-		} catch( FontAwesome_ServerException $e ) {
+		} catch ( FontAwesome_ServerException $e ) {
 			return fa_500( $e );
-		} catch( FontAwesome_Exception $e ) {
+		} catch ( FontAwesome_Exception $e ) {
 			return fa_400( $e );
 		} catch ( Exception $e ) {
 			return unknown_error_500( $e );
@@ -399,52 +401,52 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	protected function prepare_unregistered_clients_for_database( $request ) {
 		$body = $request->get_json_params();
 
-		if( ! \is_array( $body ) || count( $body ) === 0 ) {
+		if ( ! \is_array( $body ) || count( $body ) === 0 ) {
 			throw new ConflictDetectionSchemaException();
 		}
 
 		$validated = array();
 
-		foreach( $body as $md5 => $attrs) {
-			if(! is_string( $md5 ) || ! strlen( $md5 ) === 32 ) {
+		foreach ( $body as $md5 => $attrs ) {
+			if ( ! is_string( $md5 ) || ! strlen( $md5 ) === 32 ) {
 				throw new ConflictDetectionSchemaException();
 			}
 
-			if(! is_array( $attrs ) ) {
+			if ( ! is_array( $attrs ) ) {
 				throw new ConflictDetectionSchemaException();
 			}
 
-			$validated[$md5] = array();
+			$validated[ $md5 ] = array();
 
-			foreach( $attrs as $key => $value) {
-				if( in_array( $key, $this->valid_attrs, true ) ) {
-					$validated[$md5][$key] = $value;
+			foreach ( $attrs as $key => $value ) {
+				if ( in_array( $key, $this->valid_attrs, true ) ) {
+					$validated[ $md5 ][ $key ] = $value;
 				}
 			}
 		}
 
 		return $validated;
-    }
-    
-	protected function unregistered_clients_array_has_changes($old, $new) {
-		if( ! is_array( $old ) ) {
- 			return TRUE;
+	}
+
+	protected function unregistered_clients_array_has_changes( $old, $new ) {
+		if ( ! is_array( $old ) ) {
+			return true;
 		}
 
-		if( count( array_diff_key( $old, $new ) ) > 0  || count( array_diff_key( $new, $old ) ) > 0 ) {
-			return TRUE;
+		if ( count( array_diff_key( $old, $new ) ) > 0 || count( array_diff_key( $new, $old ) ) > 0 ) {
+			return true;
 		} else {
- 			foreach( $old as $key => $value )  {
-				if( count( array_diff_assoc( $old[$key], $new[$key] ) ) > 0 ) {
-					return TRUE;
+			foreach ( $old as $key => $value ) {
+				if ( count( array_diff_assoc( $old[ $key ], $new[ $key ] ) ) > 0 ) {
+					return true;
 				}
 			}
- 			foreach( $new as $key => $value )  {
-				if( count( array_diff_assoc( $new[$key], $old[$key] ) ) > 0 ) {
-					return TRUE;
+			foreach ( $new as $key => $value ) {
+				if ( count( array_diff_assoc( $new[ $key ], $old[ $key ] ) ) > 0 ) {
+					return true;
 				}
 			}
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -456,7 +458,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 					array_filter(
 						$data,
 						function( $md5 ) {
-							return !is_string( $md5 ) || strlen( $md5 ) !== 32;
+							return ! is_string( $md5 ) || strlen( $md5 ) !== 32;
 						}
 					)
 				)

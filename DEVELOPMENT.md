@@ -587,7 +587,7 @@ $ svn ci -m 'Release 42.1.2'
 - `docs/`
 - `admin/build`
 - `font-awesome.php`
-- `includes/font-awesome.php`
+- `includes/class-fontawesome.php`
 - `admin/package.json`
 - `readme.txt`
 

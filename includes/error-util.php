@@ -12,7 +12,7 @@ function notify_admin_fatal_error( $e ) {
 	if ( method_exists( 'FortAwesome\FontAwesome_Loader', 'emit_admin_error_output' ) ) {
 		add_action(
 			'admin_notices',
-			function() use( $e ) {
+			function() use ( $e ) {
 				FontAwesome_Loader::emit_admin_error_output( $e );
 			}
 		);
@@ -25,8 +25,9 @@ function notify_admin_fatal_error( $e ) {
  * @internal
  * @ignore
  */
-function build_wp_error($e, $code, $status) {
-	if( is_a($e, 'Error') || is_a($e, 'Exception') ) {
+// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
+function build_wp_error( $e, $code, $status ) {
+	if ( is_a( $e, 'Error' ) || is_a( $e, 'Exception' ) ) {
 		$previous = boolval( $e->getPrevious() )
 			? build_wp_error( $e->getPrevious(), 'previous_exception', 500 )
 			: null;
@@ -40,7 +41,7 @@ function build_wp_error($e, $code, $status) {
 			)
 		);
 
-		if( ! is_null( $previous ) ) {
+		if ( ! is_null( $previous ) ) {
 			$current->add(
 				$previous->get_error_code(),
 				$previous->get_error_message(),
@@ -54,25 +55,25 @@ function build_wp_error($e, $code, $status) {
 			$as_string = (
 				method_exists( $e, '__toString' ) ||
 				is_string( $e ) ||
-				is_numeric( $e ) 
+				is_numeric( $e )
 			) ? strval( $e ) : null;
 
 			$message = 'Unexpected Thing, neither Error or Exception';
 
-			if( is_null( $as_string ) ) {
+			if ( is_null( $as_string ) ) {
 				$message .= ', which cannot be stringified.';
 			} else {
 				$message .= ", stringified: $as_string";
 			}
 
 			throw new Exception( $message );
-		} catch( Exception $e ) {
+		} catch ( Exception $e ) {
 			return new WP_Error(
 				$code,
 				$e->getMessage(),
 				array(
 					'status' => $status,
-					'trace'  => $e->getTraceAsString()
+					'trace'  => $e->getTraceAsString(),
 				)
 			);
 		}

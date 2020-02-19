@@ -8,32 +8,23 @@ use \Exception, \Error;
 
 defined( 'WPINC' ) || die;
 
-if(! defined( 'FONTAWESOME_PLUGIN_FILE' ) ) {
+if ( ! defined( 'FONTAWESOME_PLUGIN_FILE' ) ) {
 	/**
 	 * Name of this plugin's entrypoint file.
-	 * 
+	 *
 	 * Relative to the WordPress plugins directory, as would
 	 * be used for `$plugin` in the
 	 * [`activate_{$plugin}`](https://developer.wordpress.org/reference/hooks/activate_plugin/) action hook.
-	 * 
+	 *
 	 * @since 4.0.0
 	 */
 	define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
 }
 
-if(! defined( 'FONTAWESOME_TEXT_DOMAIN' ) ) {
-	/**
-	 * Name of this plugin's text domain.
-	 * 
-	 * @since 4.0.0
-	 */
-	define( 'FONTAWESOME_TEXT_DOMAIN', 'font-awesome' );
-}
-
-if(! defined( 'FONTAWESOME_MIN_PHP_VERSION' ) ) {
+if ( ! defined( 'FONTAWESOME_MIN_PHP_VERSION' ) ) {
 	/**
 	 * Minimum PHP VERSION required
-	 * 
+	 *
 	 * @since 4.0.0
 	 */
 	define( 'FONTAWESOME_MIN_PHP_VERSION', '5.6' );
@@ -50,9 +41,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 * Font Awesome plugin installations may be installed either directly
 	 * as a plugin appearing in the plugins table, or as a composer dependency
 	 * of any number of themes or other plugins.
-	 * 
+	 *
 	 * We only have in mind various installations of this code base,
-	 * of course. Not other non-official Font Awesome plugins. We don't try 
+	 * of course. Not other non-official Font Awesome plugins. We don't try
 	 * to anticipate what _other_ potentially conflicting plugins might be installed.
 	 *
 	 * All Font Awesome plugin installations should attempt to load themselves via this loader,
@@ -60,14 +51,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 * semantic version is what actually runs. It also ensures appropriate
 	 * handling of initialization, deactivation and uninstallation, so that the
 	 * actions of one plugin installation don't interfere with another's.
-	 * 
-	 * Refer to `integrations/plugins/plugin-sigma` 
+	 *
+	 * Refer to `integrations/plugins/plugin-sigma`
 	 * in this repo for an example of how to load the Font Awesome plugin code
 	 * via this Loader when including it as a composer dependency.
-	 * 
+	 *
 	 * The client code should `require_once` the `index.php` found
 	 * in the root of this code base:
-	 * 
+	 *
 	 * ```php
 	 * require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
 	 * ```
@@ -82,9 +73,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 * The page builder plugin should work just as expected, even though it would
 	 * be running against a newer version of the Font Awesome plugin code than it
 	 * had shipped in its own vendor bundle.
-	 * 
+	 *
 	 * Now suppose that the site owner deactivates and deletes the plugin that
-	 * appears in the plugins table, the one that had been installed from the 
+	 * appears in the plugins table, the one that had been installed from the
 	 * WordPress plugins directory. Because this loader knows that the page builder
 	 * plugin's installation is still present, that deactivation and uninstallation
 	 * will not cause the Font Awesome plugin's options and transients to be removed from the
@@ -92,20 +83,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 	 * the Font Awesome plugin installation included in the page builder plugin's
 	 * composer vendor bundle is automatically promoted and runs as expected with
 	 * no change to the plugin's state in the database.
-	 * 
+	 *
 	 * This loader pattern follows that of [wponion](https://github.com/wponion/wponion/blob/master/wponion.php).
 	 * Thanks to Varun Sridharan.
 	 *
 	 * @since 4.0.0
 	 */
 	final class FontAwesome_Loader {
-		const LOAD_FAIL_MSG = 'Unable To Load Font Awesome Plugin.';
-		const ACTIVATION_FAILED_MSG = 'Font Awesome could not be activated.';
-		const INITIALIZATION_FAILED_MSG = 'Font Awesome could not be initialized.';
-		const CONSOLE_ERROR_PREAMBLE = 'Font Awesome Plugin Error Details';
-		const ADMIN_NOTICE_FATAL_ERROR_PREAMBLE = 'The Font Awesome plugin caught a fatal error';
-		const NO_ERROR_MESSAGE = 'No error message available.';
-
 		/**
 		 * Stores Loader Instance.
 		 *
@@ -140,7 +124,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 */
 		private function __construct() {
 			add_action( 'plugins_loaded', [ &$this, 'load_plugin' ], -1 );
-			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1);
+			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1 );
 		}
 
 		/**
@@ -150,21 +134,28 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 *
 		 * @ignore
 		 * @internal
+		 * @throws Exception
 		 */
+		// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 		private function select_latest_version_plugin_installation() {
-			if ( count(self::$_loaded) > 0 ) return;
+			if ( count( self::$_loaded ) > 0 ) {
+				return;
+			}
 
 			$versions = array_keys( self::$data );
 
-			usort($versions, function($a, $b) {
-				if(version_compare($a, $b, '=')){
-				  return 0;
-				} elseif(version_compare($a, $b, 'gt')) {
-				  return -1;
-				} else {
-				  return 1;
+			usort(
+				$versions,
+				function( $a, $b ) {
+					if ( version_compare( $a, $b, '=' ) ) {
+						return 0;
+					} elseif ( version_compare( $a, $b, 'gt' ) ) {
+						return -1;
+					} else {
+						return 1;
+					}
 				}
-			});
+			);
 
 			$latest_version = $versions[0];
 			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
@@ -173,11 +164,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				throw new Exception(
 					sprintf(
 						esc_html__(
-							self::LOAD_FAIL_MSG . ' Data: %1$s',
-							FONTAWESOME_TEXT_DOMAIN 
-						),
-						base64_encode( wp_json_encode( self::$data ) )
-					)
+							'Unable To Load Font Awesome Plugin.',
+							'font-awesome'
+						)
+					) .
+					' Data: ' . base64_encode( wp_json_encode( self::$data ) )
 				);
 			}
 
@@ -185,10 +176,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				throw(
 					new Exception(
 						sprintf(
+							/* translators: 1: minimum required php version 2: current php version */
 							esc_html__(
-								'The Font Awesome plugin require a PHP Version of at least %1$s. ' .
-								'Your current version of PHP is %2$s.',
-								FONTAWESOME_TEXT_DOMAIN
+								'Font Awesome requires a PHP Version of at least %1$s. Your current version of PHP is %2$s.',
+								'font-awesome'
 							),
 							FONTAWESOME_MIN_PHP_VERSION,
 							PHP_VERSION
@@ -205,14 +196,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 		/**
 		 * Loads the plugin installation that has been selected for loading.
-		 * 
+		 *
 		 * This is public because it's a callback, but should not be considered
 		 * part of this plugin's API.
-		 * 
+		 *
 		 * For an example of how to use this loader when importing this plugin
 		 * as a composer dependency, see `integrations/plugins/plugin-sigma.php`
 		 * in this repo.
-		 * 
+		 *
 		 * @internal
 		 * @ignore
 		 */
@@ -223,14 +214,14 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			} catch ( Exception $e ) {
 				add_action(
 					'admin_notices',
-					function() use( $e ) {
+					function() use ( $e ) {
 						self::emit_admin_error_output( $e );
 					}
 				);
 			} catch ( Error $e ) {
 				add_action(
 					'admin_notices',
-					function() use( $e ) {
+					function() use ( $e ) {
 						self::emit_admin_error_output( $e );
 					}
 				);
@@ -239,7 +230,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 		/**
 		 * Returns the path to the plugin installation that is actively loaded.
-		 * 
+		 *
 		 * @since 4.0.0
 		 */
 		public function loaded_path() {
@@ -252,20 +243,22 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 *
 		 * This is public because it's a callback, but should not be considered
 		 * part of this plugin's API.
-		 * 
+		 *
 		 * @internal
-		 * @ignore 
+		 * @ignore
 		 */
 		public function activate_plugin() {
+			$activation_failed_message = __( 'Font Awesome could not be activated.', 'font-awesome' );
+
 			try {
 				$this->select_latest_version_plugin_installation();
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
 			} catch ( Exception $e ) {
-				self::emit_admin_error_output( $e, self::ACTIVATION_FAILED_MSG );
+				self::emit_admin_error_output( $e, $activation_failed_message );
 				exit;
 			} catch ( Error $e ) {
-				self::emit_admin_error_output( $e, self::ACTIVATION_FAILED_MSG );
+				self::emit_admin_error_output( $e, $activation_failed_message );
 				exit;
 			}
 		}
@@ -277,23 +270,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @ignore
 		 */
 		public static function emit_admin_error_output( $e, $context_message = '' ) {
-			if( is_admin() && current_user_can( 'manage_options' ) ) {
+			if ( is_admin() && current_user_can( 'manage_options' ) ) {
 				echo '<div class="error">';
-				echo '<p>' . esc_html__( self::ADMIN_NOTICE_FATAL_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN );
-				if( is_string( $context_message ) && '' !== $context_message ) {
-					echo ': ' . esc_html__( $context_message, FONTAWESOME_TEXT_DOMAIN );
+				echo '<p>' . esc_html__( 'The Font Awesome plugin caught a fatal error', 'font-awesome' );
+				if ( is_string( $context_message ) && '' !== $context_message ) {
+					echo ': ' . esc_html( $context_message );
 				} else {
 					echo '.';
 				}
 				echo '</p><p>';
 
 				if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error' ) ) {
-					esc_html_e( self::NO_ERROR_MESSAGE, FONTAWESOME_TEXT_DOMAIN );
+					esc_html_e( 'No error message available.', 'font-awesome' );
 				} else {
 					self::emit_error_output_to_console( $e );
 
-					if( boolval( $e->getMessage() ) ) {
-						esc_html_e( $e->getMessage() );
+					if ( boolval( $e->getMessage() ) ) {
+						echo esc_html( $e->getMessage() );
 					}
 				}
 
@@ -314,9 +307,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			}
 
 			echo '<script>';
-			echo "console.group('" . __( self::CONSOLE_ERROR_PREAMBLE, FONTAWESOME_TEXT_DOMAIN ) . "');";
-			echo "console.info('message: " . self::escape_error_output( $e->getMessage() ) . "');";
-			echo "console.info('stack trace:\\n" . self::escape_error_output( $e->getTraceAsString() ) . "');";
+			echo "console.group('" . esc_html__( 'Font Awesome Plugin Error Details', 'font-awesome' ) . "');";
+			echo "console.info('message: " . esc_html( self::escape_error_output( $e->getMessage() ) ) . "');";
+			echo "console.info('stack trace:\\n" . esc_html( self::escape_error_output( $e->getTraceAsString() ) ) . "');";
 			echo 'console.groupEnd()';
 			echo '</script>';
 		}
@@ -337,17 +330,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 		/**
 		 * Initializes the Font Awesome plugin's options.
-		 * 
+		 *
 		 * If multiple installations of the plugin are installed, such as by
 		 * composer dependencies in multiple plugins, this will ensure that the
 		 * plugin is not re-initialized.
-		 * 
+		 *
 		 * If the plugin's options are empty, this will initialize with defaults.
 		 * Otherwise, it will leave them alone.
-		 * 
+		 *
 		 * Any theme or plugin that uses this plugin as a composer dependency
 		 * should call this method from its own activation hook. For example:
-		 * 
+		 *
 		 * ```php
 		 * register_activation_hook(
 		 *     __FILE__,
@@ -358,15 +351,17 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function initialize() {
+			$initialization_failed_msg = __( 'Font Awesome could not be initialized.', 'font-awesome' );
+
 			try {
 				self::instance()->select_latest_version_plugin_installation();
 				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::initialize();
 			} catch ( Exception $e ) {
-				self::emit_admin_error_output( $e, self::INITIALIZATION_FAILED_MSG );
+				self::emit_admin_error_output( $e, $initialization_failed_msg );
 				exit;
 			} catch ( Error $e ) {
-				self::emit_admin_error_output( $e, self::INITIALIZATION_FAILED_MSG );
+				self::emit_admin_error_output( $e, $initialization_failed_msg );
 				exit;
 			}
 		}
@@ -380,27 +375,27 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * If there would be other remaining installations previously added to this
 		 * loader via {@link \FortAwesome\font_awesome_load()}, it does not delete the plugin options,
 		 * since one of those others will end up becoming active and relying on the options data.
-		 * 
+		 *
 		 * Any theme or plugin that includes this Font Awesome plugin as a library
 		 * dependency should call this from its own uninstall hook. For example:
-		 * 
+		 *
 		 * ```php
-		 *	register_uninstall_hook(
-		 *		__FILE__,
-		 *		'FortAwesome\FontAwesome_Loader::maybe_uninstall'
-		 *	);
+		 *  register_uninstall_hook(
+		 *      __FILE__,
+		 *      'FortAwesome\FontAwesome_Loader::maybe_uninstall'
+		 *  );
 		 * ```
 		 *
 		 * @since 4.0.0
 		 */
 		public static function maybe_uninstall() {
-			if( count( self::$data ) == 1 ) {
+			if ( count( self::$data ) === 1 ) {
 				// If there's only installation in the list, then it's
 				// the one that has invoked this function and is is about to
 				// go away, so it's safe to clean up.
 				$version_key = array_keys( self::$data )[0];
 
-				require_once trailingslashit( self::$data[$version_key] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[ $version_key ] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::uninstall();
 			}
 		}
@@ -412,23 +407,24 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * However, if this loader is aware of any remaining installations, it does
 		 * not clean up temporary data, since one of those other Font Awesome plugin
 		 * installations, if active, will be promoted and end up relying on the data.
-		 * 
+		 *
 		 * Any theme or plugin that includes this Font Awesome plugin as a library
 		 * dependency should call this from its own uninstall hook. For example:
-		 * 
+		 *
 		 * ```php
 		 *  register_deactivation_hook(
-		 *  	__FILE__,
-		 *  	'FortAwesome\FontAwesome_Loader::maybe_deactivate'
+		 *      __FILE__,
+		 *      'FortAwesome\FontAwesome_Loader::maybe_deactivate'
 		 *  );
 		 * ```
+		 *
 		 * @since 4.0.0
 		 */
 		public static function maybe_deactivate() {
-			if( count( self::$data ) == 1 ) {
+			if ( count( self::$data ) === 1 ) {
 				$version_key = array_keys( self::$data )[0];
 
-				require_once trailingslashit( self::$data[$version_key] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[ $version_key ] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::deactivate();
 			}
 		}
@@ -482,7 +478,7 @@ endif; // ! class_exists
 if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
 	/**
 	 * Adds plugin installation path to be managed by this loader.
-	 * 
+	 *
 	 * @param string $plugin_installation_path
 	 * @param bool   $version
 	 * @ignore
