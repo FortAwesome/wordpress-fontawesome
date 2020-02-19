@@ -169,7 +169,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			if ( $api_token ) {
 				$item['kitToken'] = $given_options['kitToken'];
 			} else {
-				throw new ConfigSchemaException('kit_token_no_api_token');
+				throw ConfigSchemaException::kit_token_no_api_token();
 			}
 		}
 
@@ -213,7 +213,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		} elseif ( $version_is_concrete ) {
 			$item['version'] = $given_options['version'];
 		} else {
-			throw new ConfigSchemaException('concrete_version_expected');
+			throw ConfigSchemaException::concrete_version_expected();
 		}
 
 		if (
@@ -222,7 +222,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			boolval( $item['v4Compat'] ) &&
 			'webfont' === $item['technology']
 		) {
-			throw new ConfigSchemaException('webfont_v4compat_introduced_later');
+			throw ConfigSchemaException::webfont_v4compat_introduced_later();
 		}
 
 		return $item;
