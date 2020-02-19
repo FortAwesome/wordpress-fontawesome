@@ -1396,30 +1396,31 @@ class FontAwesome {
 			throw new ConfigCorruptionException();
 		}
 
-		add_action(
-			'wp_enqueue_scripts',
-			function () use( $kit_token ) {
-				wp_enqueue_script(
-					self::RESOURCE_HANDLE,
-					trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
-					[],
-					null,
-					false
-				);
+		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+			add_action(
+				$action,
+				function () use( $kit_token ) {
+					wp_enqueue_script(
+						self::RESOURCE_HANDLE,
+						trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
+						[],
+						null,
+						false
+					);
 
-				/**
-				 * Kits have built-in support for detecting conflicts, but we need to
-				 * inject some configuration to turn it on. We will do that by manipulating
-				 * the FontAwesomeKitConfig global property.
-				 */
-				if ( $this->detecting_conflicts() ) {
 					/**
-					 * Kits Conflict Detection expects this value to be in milliseconds
-					 * since the unix epoch.
+					 * Kits have built-in support for detecting conflicts, but we need to
+					 * inject some configuration to turn it on. We will do that by manipulating
+					 * the FontAwesomeKitConfig global property.
 					 */
-					$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
+					if ( $this->detecting_conflicts() ) {
+						/**
+						 * Kits Conflict Detection expects this value to be in milliseconds
+						 * since the unix epoch.
+						 */
+						$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
 
-					$script_content = <<< EOT
+						$script_content = <<< EOT
 window.__FontAwesome__WP__KitConfig__ = {
 	detectConflictsUntil: ${detect_conflicts_until}
 }
@@ -1435,14 +1436,15 @@ Object.defineProperty(window, 'FontAwesomeKitConfig', {
 })
 EOT;
 
-					wp_add_inline_script(
-						self::RESOURCE_HANDLE,
-						$script_content,
-						'before'
-					);
+						wp_add_inline_script(
+							self::RESOURCE_HANDLE,
+							$script_content,
+							'before'
+						);
+					}
 				}
-			}
-		);
+			);
+		}
 
 		add_filter(
 			'script_loader_tag',
