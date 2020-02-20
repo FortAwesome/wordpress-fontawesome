@@ -1,4 +1,7 @@
 <?php
+/**
+ * Exceptions.
+ */
 namespace FortAwesome;
 
 use \Exception;
@@ -11,15 +14,33 @@ use \Exception;
 abstract class FontAwesome_Exception extends Exception {
 	/**
 	 * A WP_Error object that was the occassion for this exception.
+	 *
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
 	 */
 	protected $wp_error = null;
 
 	/**
 	 * An HTTP response array that is the occassion for this exception.
 	 * Array keys should be like an array that would be returned from wp_remote_post().
+	 *
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
 	 */
 	protected $wp_response = null;
 
+	/**
+	 * Construct an exception that includes a WP_Error that is the cause of the exception.
+	 *
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public static function with_wp_error( $wp_error ) {
 		// This is how we invoke the derived class's constructor from an inherited static method.
 		$obj = new static();
@@ -32,8 +53,12 @@ abstract class FontAwesome_Exception extends Exception {
 	}
 
 	/**
-	 * Construct an exception with an associated HTTP response.
+	 * Construct an exception with an associated HTTP response, the cause of the exception.
 	 *
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
 	 * @param $wp_reponse a response array as would be returned by wp_remote_post()
 	 *   with keys like: 'headers', 'body', 'response'
 	 */
@@ -57,18 +82,35 @@ abstract class FontAwesome_Exception extends Exception {
 	/**
 	 * Construct an exception with a previously thrown Error or Exception.
 	 *
+	 * Internal use only.
+	 *
 	 * (The Throwable interface is not available until PHP 7, and we support back to 5.6.)
 	 *
+	 * @ignore
+	 * @internal
 	 * @param $e Error or Exception
 	 */
 	public static function with_thrown( $e ) {
 		return new static( null, 0, $e );
 	}
 
+	/**
+	 * The WP_Error associated with this exception, if any.
+	 *
+	 * @since 4.0.0
+	 * @return null|WP_Error
+	 */
 	public function get_wp_error() {
 		return $this->wp_error;
 	}
 
+	/**
+	 * The response object associated with this exception, if any.
+	 *
+	 * @since 4.0.0
+	 * @return null|array a response array as would be returned by wp_remote_post()
+	 *   with keys like: 'headers', 'body', 'response'.
+	 */
 	public function get_wp_response() {
 		return $this->wp_response;
 	}
@@ -76,18 +118,30 @@ abstract class FontAwesome_Exception extends Exception {
 
 /**
  * An abstract parent class for exceptions that should result in an HTTP 500 status.
+ *
+ * @since 4.0.0
  */
 abstract class FontAwesome_ServerException extends FontAwesome_Exception {}
 
 /**
  * An abstract parent class for exceptions that should result in an HTTP 400 status.
+ *
+ * @since 4.0.0
  */
 abstract class FontAwesome_ClientException extends FontAwesome_Exception {}
 
 /**
- * Thrown when no API Token is found.
+ * Thrown when an API Token is required but not found.
+ *
+ * @since 4.0.0
  */
 class ApiTokenMissingException extends FontAwesome_ClientException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -103,8 +157,16 @@ class ApiTokenMissingException extends FontAwesome_ClientException {
 /**
  * Thrown when the WordPress server fails to issue a request to the token endpoint
  * on Font Awesome API server.
+ *
+ * @since 4.0.0
  */
 class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -123,6 +185,12 @@ class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
  * to use for subsequent API query requests.
  */
 class ApiTokenInvalidException extends FontAwesome_ClientException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -139,8 +207,16 @@ class ApiTokenInvalidException extends FontAwesome_ClientException {
  * Thrown when the Font Awesome API server returns a response with an unexpected schema.
  * This would probably indicate either a programming error in the API server, or a change
  * in the schema such that the Font Awesome plugin's expectations are unmet.
+ *
+ * @since 4.0.0
  */
 class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -156,8 +232,16 @@ class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
 /**
  * Thrown when there is a failure to write a file on the WordPress server filesystem
  * to store the access_token.
+ *
+ * @since 4.0.0
  */
 class AccessTokenStorageException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -172,9 +256,17 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
 
 /**
  * Thrown when a an options configuration is attempted that does not pass validation.
+ *
+ * @since 4.0.0
  */
 class ConfigSchemaException extends FontAwesome_ClientException {
 
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
 	public static function kit_token_no_api_token() {
 		return new static(
 			esc_html__(
@@ -184,6 +276,12 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 		);
 	}
 
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
 	public static function concrete_version_expected() {
 		return new static(
 			esc_html__(
@@ -193,6 +291,12 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 		);
 	}
 
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
 	public static function webfont_v4compat_introduced_later() {
 		return new static(
 			esc_html__(
@@ -205,8 +309,16 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 
 /**
  * Thrown when catching an Error or Exception from a registered theme or plugin.
+ *
+ * @since 4.0.0
  */
 class PreferenceRegistrationException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -222,8 +334,16 @@ class PreferenceRegistrationException extends FontAwesome_ServerException {
 /**
  * Thrown when the WordPress server fails to issue a request to the main query
  * endpoint on Font Awesome API server.
+ *
+ * @since 4.0.0
  */
 class ApiRequestException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -240,8 +360,16 @@ class ApiRequestException extends FontAwesome_ServerException {
  * Thrown when the query endpoint on the Font Awesome API server responds with
  * an unexpected schema. This probably indicates either a programming error
  * in the API server, or a breaking change and this plugin code is out of date.
+ *
+ * @since 4.0.0
  */
 class ApiResponseException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -257,8 +385,16 @@ class ApiResponseException extends FontAwesome_ServerException {
 /**
  * Thrown when there's a failure to write a transient for storing the Font Awesome
  * releases metadata.
+ *
+ * @since 4.0.0
  */
 class ReleaseProviderStorageException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -273,8 +409,16 @@ class ReleaseProviderStorageException extends FontAwesome_ServerException {
 
 /**
  * Thrown when the plugin expects release metadata to be present but isn't for some reason.
+ *
+ * @since 4.0.0
  */
 class ReleaseMetadataMissingException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -294,8 +438,16 @@ class ReleaseMetadataMissingException extends FontAwesome_ServerException {
  * a programming error in this plugin, or that the state of database has been
  * changed between the time that options would have been valid upon saving and
  * the time that the page load occurs and those options are found to be invalid.
+ *
+ * @since 4.0.0
  */
 class ConfigCorruptionException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -312,8 +464,16 @@ class ConfigCorruptionException extends FontAwesome_ServerException {
  * Thrown when the conflict detection scanner posts data to a REST endpoint and
  * the data has an invalid schema. This would probably indicate a programming
  * error in this plugin.
+ *
+ * @since 4.0.0
  */
 class ConflictDetectionSchemaException extends FontAwesome_ClientException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -328,8 +488,16 @@ class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 
 /**
  * Thrown when there's a failure to store conflict detection data as a transient.
+ *
+ * @since 4.0.0
  */
 class ConflictDetectionStorageException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
@@ -343,7 +511,10 @@ class ConflictDetectionStorageException extends FontAwesome_ServerException {
 }
 
 /**
- * Indicates that an incorrect array schema has been provided as the client perferences
- * parameter to {@see FontAwesome::register()}.
+ * Indicates that an incorrect array schema has been provided by a registerd client.
+ *
+ * See the `$client preferences` parameter schema for {@see FontAwesome::register()}.
+ *
+ * @since 4.0.0
  */
 class ClientPreferencesSchemaException extends FontAwesome_ServerException {}

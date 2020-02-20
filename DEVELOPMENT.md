@@ -434,6 +434,13 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
  
   See also: [Run a Local Docs Server](#run-a-local-docs-server)
 
+  *WARNING*: look at the output from this docs command and make sure there are no
+  instances of parse errors. Also manually inspect the output in `docs/` to ensure
+  that the expected classes are documented there, especially the main class with API
+  documentation: `FontAwesome`.
+  
+  For reasons not yet understood, sometimes the phpdocumentor parser chokes.
+
 - `git add docs` to stage them for commit (and eventually commit them) 
 
 7. Build production admin app and WordPress distribution layout into `wp-dist` 

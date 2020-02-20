@@ -136,7 +136,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 * @throws Exception
 		 */
-		// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 		private function select_latest_version_plugin_installation() {
 			if ( count( self::$_loaded ) > 0 ) {
 				return;

@@ -520,8 +520,10 @@ class FontAwesome {
 
 	/**
 	 * Queries the Font Awesome API to load releases metadata. Results are
-	 * cached in a site transient. This is the metadata that supports API
-	 * methods like {@see FontAwesome::latest_version()}, {@see FontAwesome::available_versions()}
+	 * cached in a site transient.
+	 *
+	 * This is the metadata that supports API
+	 * methods like {@see FontAwesome::latest_version()}
 	 * and all other metadata required to enqueue Font Awesome when configured
 	 * to use the standard CDN (non-kits).
 	 *
@@ -536,8 +538,9 @@ class FontAwesome {
 
 	/**
 	 * Returns the time when releases metadata was last
-	 * refreshed, such as by invoking {@see FontAwesome::refresh_releases}.
+	 * refreshed.
 	 *
+	 * @see FontAwesome::refresh_releases
 	 * @since 4.0.0
 	 * @return integer|null the time in unix epoch seconds or null if never
 	 */
@@ -710,29 +713,32 @@ class FontAwesome {
 			function( $plugin_file, $plugin_data, $status ) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
-					echo '<tr><td>&nbsp;</td><td colspan="2" class="notice notice-info notice-alt">';
 					?>
-					<p>
-						<b><?php esc_html_e( 'Great Scott!', 'font-awesome' ); ?></b>
-						<?php
-						esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', 'font-awesome' );
-						?>
-					</p>
-					<p>
-						<?php
-							printf(
-								/* translators: 1: path to plugin or theme code file 2: current Font Awesome plugin version number */
-								esc_html__(
-									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s since it\'s the newest (%2$s). We recommend you update the plugin above to the latest version. In the meantime, we\'ll use that newer version for editing your Font Awesome settings so you\'ll be sure to hit 88mph with those icons.',
-									'font-awesome'
-								),
-								'<code>' . esc_html( $loader_version ) . '</code>',
-								'<b>ver. ' . esc_html( FontAwesome::PLUGIN_VERSION ) . '</b>',
-							);
-						?>
-					</p>
+					<tr>
+						<td>&nbsp;</td>
+						<td colspan="2" class="notice notice-info notice-alt">
+							<p>
+								<b><?php esc_html_e( 'Great Scott!', 'font-awesome' ); ?></b>
+								<?php
+									printf(
+										/* translators: 1: path to plugin or theme code file 2: current Font Awesome plugin version number */
+										esc_html__(
+											'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s since it\'s the newest (%2$s). We recommend you update the plugin above to the latest version. In the meantime, we\'ll use that newer version for editing your Font Awesome settings so you\'ll be sure to hit 88mph with those icons.',
+											'font-awesome'
+										),
+										'<code>' . esc_html( $loader_version ) . '</code>',
+										'<b>ver. ' . esc_html( FontAwesome::PLUGIN_VERSION ) . '</b>'
+									);
+								?>
+							</p>
+							<p>
+								<?php
+									esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', 'font-awesome' );
+								?>
+							</p>
+						</td>
+					</tr>
 					<?php
-					echo '</td></tr>';
 				}
 			},
 			10,
@@ -1729,6 +1735,12 @@ EOT;
 		$this->common_enqueue_actions();
 	}
 
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	private function apply_detection_ignore_attr() {
 		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/ignored-handles.php';
 
@@ -2057,7 +2069,7 @@ EOT;
 	 * others. This plugin provides a coordination service to significantly increase
 	 * the likelihood that everyone has a reliable Font Awesome environment.
 	 *
-	 * <h3>Adapting Your Code to the given Font Awesome environment</h3>
+	 * <h3>Maximize Compatibility</h3>
 	 *
 	 * Here is a checklist for maximizing compatibility.
 	 *
