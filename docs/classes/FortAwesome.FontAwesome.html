@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2102395755"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1077681707"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-2102395755" class="accordion-body collapse in">
+            <div id="namespace-1077681707" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-75974727"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1140652637"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-75974727" class="accordion-body collapse ">
+            <div id="namespace-1140652637" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -229,7 +229,7 @@ plugin's metadata using methods such as:</p>
 <ul>
 <li><a href="../classes/FortAwesome.FontAwesome.html#method_version">\FortAwesome\FontAwesome::version()</a> to discover the version of Font Awesome being loaded</li>
 <li><a href="../classes/FortAwesome.FontAwesome.html#method_pro">\FortAwesome\FontAwesome::pro()</a> to discover whether a version with Pro icons is being loaded</li>
-<li><a href="../classes/FortAwesome.FontAwesome.html#method_svg_pseudo_elements">\FortAwesome\FontAwesome::svg_pseudo_elements()</a> to discover whether Font Awesome is being loaded with support for svg pseudo-elements</li>
+<li><a href="../classes/FortAwesome.FontAwesome.html#method_pseudo_elements">\FortAwesome\FontAwesome::pseudo_elements()</a> to discover whether Font Awesome is being loaded with support for svg pseudo-elements</li>
 </ul>
 </li>
 </ul>
@@ -284,7 +284,7 @@ routes, not to the Font Awesome GraphQL API at <code>api.fontawesome.com</code>.
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_technology" class="">technology()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_version" class="">version()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_v4_compatibility" class="">v4_compatibility()</a><br />
-                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_svg_pseudo_elements" class="">svg_pseudo_elements()</a><br />
+                                                                    <a href="../classes/FortAwesome.FontAwesome.html#method_pseudo_elements" class="">pseudo_elements()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_register" class="">register()</a><br />
                                                                     <a href="../classes/FortAwesome.FontAwesome.html#method_query" class="">query()</a><br />
                                                             </section>
@@ -1051,17 +1051,17 @@ concrete version like &quot;5.12.0&quot; or the string &quot;latest&quot;.</p>
 
                                     <div class="row-fluid">
         <div class="span8 content class">
-            <a id="method_svg_pseudo_elements" name="method_svg_pseudo_elements" class="anchor"></a>
+            <a id="method_pseudo_elements" name="method_pseudo_elements" class="anchor"></a>
             <article class="method">
-                <h3 class="public ">svg_pseudo_elements()</h3>
+                <h3 class="public ">pseudo_elements()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">svg_pseudo_elements() : boolean</pre>
-                <p><em>Indicates whether Font Awesome is being loaded with support for SVG pseudo-elements.</em></p>
-                <p>Its results are only valid after the <code>font_awesome_enqueued</code> action has been triggered.
-Its value is irrelevant if technology() === 'webfont'.</p>
-<p>There are known performance problems with this combination, but it is provided for added
-compatibility where pseudo-elements must be used.</p>
-<p>Pseudo-elements are always inherently supported by the webfont technology.</p>
+                <pre class="signature" style="margin-right: 54px;">pseudo_elements() : boolean</pre>
+                <p><em>Indicates whether Font Awesome is being loaded with support for pseudo-elements.</em></p>
+                <p>Its results are only valid after the <code>font_awesome_enqueued</code> action has been triggered.</p>
+<p>There are known performance problems with this SVG and pseudo-elements,
+but it is provided for added compatibility where pseudo-elements must be used.</p>
+<p>Always returns true if technology() === 'webfont', because pseudo-elements
+are always inherently supported by the CSS/Webfont technology.</p>
 
                 
                 
@@ -1075,7 +1075,9 @@ compatibility where pseudo-elements must be used.</p>
                                                             <dl>
                                                     <dt>Inherited from</dt>
                     <dd><a href="../classes/FortAwesome.FontAwesome.html"><div class="path-wrapper">\FortAwesome\FontAwesome</div></a></dd>
-                                                            </dl>
+                                                                            <dt>See also</dt>
+                                                                <dd><a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements"><span class="namespace-wrapper">CSS Pseudo-Elements and Font Awesome</span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -1104,7 +1106,7 @@ compatible version of Font Awesome.</em></p>
 <pre><code class="language-php">  array(
     'technology'        =&gt; 'svg', // "svg" or "webfont"
     'v4Compat'          =&gt; true, // true or false
-    'svgPseudoElements' =&gt; false, // true or false
+    'pseudoElements' =&gt; false, // true or false
     'name'              =&gt; 'Foo Plugin', // (required)
     'version'           =&gt; [
                              [ '5.10.0', '&gt;=']
@@ -1221,7 +1223,7 @@ and there are multiple <code>font-family</code> names. So the v4Compat feature o
 hardcoded version 4 <code>font-family</code> names so that they will use the corresponding Font Awesome 5 webfont files.</p>
 </li>
 <li>
-<p><code>svgPseudoElements</code></p>
+<p><code>pseudoElements</code></p>
 <p><a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">Pseudo-elements</a>
 are always intrinsically available when using the Web Font with CSS method.
 However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
@@ -1473,7 +1475,7 @@ has a HTTP 200 status.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on February 20th, 2020 at 19:51.
+                    on February 20th, 2020 at 22:58.
                 </section>
             </section>
         </section>
