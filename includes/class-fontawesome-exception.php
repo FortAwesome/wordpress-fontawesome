@@ -260,6 +260,20 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
  * @since 4.0.0
  */
 class ConfigSchemaException extends FontAwesome_ClientException {
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function webfont_always_enables_pseudo_elements() {
+		return new static(
+			esc_html__(
+				'Pseudo-elements support cannot be disabled with webfont technology.',
+				'font-awesome'
+			)
+		);
+	}
 
 	/**
 	 * Internal use only.

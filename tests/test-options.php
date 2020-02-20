@@ -32,7 +32,7 @@ class OptionsTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			array(
 				'version' => '5.8.1',
-				'svgPseudoElements' => true,
+				'pseudoElements' => true,
 				'technology' => 'svg',
 				'usePro' => true,
 				'v4Compat' => true,

@@ -20,7 +20,7 @@ describe('options', () => {
           technology: 'svg',
           usePro: true,
           v4Compat: false,
-          svgPseudoElements: true,
+          pseudoElements: true,
           version: '5.11.2',
         }
       }

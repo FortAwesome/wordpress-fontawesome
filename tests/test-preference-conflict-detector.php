@@ -12,21 +12,21 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 
 	public function test_when_all_prefs_match() {
 		$options = array(
-			'technology'        => 'webfont',
-			'v4Compat'          => false,
-			'usePro'            => false,
-			'removeConflicts'   => false,
-			'svgPseudoElements' => false,
-			'version'           => '5.8.2',
+			'technology'      => 'webfont',
+			'v4Compat'        => false,
+			'usePro'          => false,
+			'removeConflicts' => false,
+			'pseudoElements'  => false,
+			'version'         => '5.8.2',
 		);
 
 		$client_preferences = array(
-			'technology'        => 'webfont',
-			'v4Compat'          => false,
-			'usePro'            => false,
-			'removeConflicts'   => false,
-			'svgPseudoElements' => false,
-			'version'           => [ [ '5.8.2', '=' ] ],
+			'technology'      => 'webfont',
+			'v4Compat'        => false,
+			'usePro'          => false,
+			'removeConflicts' => false,
+			'pseudoElements'  => false,
+			'version'         => [ [ '5.8.2', '=' ] ],
 		);
 
 		$this->assertEquals( [], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );

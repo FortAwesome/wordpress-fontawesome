@@ -47,7 +47,7 @@ export default function ClientPreferencesView() {
                 <th className={ classnames({ [styles.conflicted]: !! conflicts['technology'] }) }>Technology</th>
                 <th className={ classnames({ [styles.conflicted]: !! conflicts['version'] }) }>Version</th>
                 <th className={ classnames({ [styles.conflicted]: !! conflicts['v4Compat'] }) }>V4 Compat</th>
-                <th className={ classnames({ [styles.conflicted]: !! conflicts['svgPseudoElements'] }) }>SVG Pseudo-elements</th>
+                <th className={ classnames({ [styles.conflicted]: !! conflicts['pseudoElements'] }) }>CSS Pseudo-elements</th>
               </tr>
             </thead>
             <tbody>
@@ -88,9 +88,9 @@ export default function ClientPreferencesView() {
                     }
                   </td>
                   <td
-                    className={ classnames({ [styles.conflicted]: clientHasConflict('svgPseudoElements') }) }>
-                    { has(client, 'svgPseudoElements')
-                      ? client.svgPseudoElements ? 'true' : 'false'
+                    className={ classnames({ [styles.conflicted]: clientHasConflict('pseudoElements') }) }>
+                    { has(client, 'pseudoElements')
+                      ? client.pseudoElements ? 'true' : 'false'
                       : UNSPECIFIED_INDICATOR
                     }
                   </td>

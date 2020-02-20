@@ -185,7 +185,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function assert_svg_pseudo_elements($output, $refute = false){
+	public function assert_pseudo_elements($output, $refute = false){
 		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
 		$this->assertEquals(
 			$refute ? 0 : 1,
@@ -197,8 +197,8 @@ class EnqueueTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function refute_svg_pseudo_elements($output) {
-		$this->assert_svg_pseudo_elements($output,  true);
+	public function refute_pseudo_elements($output) {
+		$this->assert_pseudo_elements($output,  true);
 	}
 
 	public function test_default_options() {
@@ -285,7 +285,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont( $output, 'use', $version );
 		$this->assert_svg( $output, 'use', $version );
 		$this->assert_svg_v4shim( $output, 'use', $version );
-		$this->refute_svg_pseudo_elements( $output );
+		$this->refute_pseudo_elements( $output );
 	}
 
 	public function test_svg_pro_no_v4_compat_non_default_version() {
@@ -308,12 +308,12 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont( $output, 'pro', $version );
 		$this->assert_svg( $output, 'pro', $version );
 		$this->refute_svg_v4shim( $output, 'pro', $version );
-		$this->refute_svg_pseudo_elements( $output );
+		$this->refute_pseudo_elements( $output );
 	}
 
 	public function test_svg_with_pseudo_elements() {
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'usePro' => true, 'v4Compat' => false, 'svgPseudoElements' => true ],
+			[ 'technology' => 'svg', 'usePro' => true, 'v4Compat' => false, 'pseudoElements' => true ],
 			fa()->options()
 		);
 
@@ -331,7 +331,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont( $output, 'pro', $version );
 		$this->assert_svg( $output, 'pro', $version );
 		$this->refute_svg_v4shim( $output, 'pro', $version );
-		$this->assert_svg_pseudo_elements( $output );
+		$this->assert_pseudo_elements( $output );
 	}
 
 	public function test_conflict_detector_enqueued_when_enabled_svg() {
@@ -350,7 +350,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		);
 
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'version' => '5.1.1', 'v4Compat' => true, 'svgPseudoElements' => true ],
+			[ 'technology' => 'svg', 'version' => '5.1.1', 'v4Compat' => true, 'pseudoElements' => true ],
 			fa()->options()
 		);
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -363,7 +363,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR, 'enqueued' ) );
 
 		$this->assert_svg( $output, 'use', $version );
-		$this->assert_svg_pseudo_elements( $output );
+		$this->assert_pseudo_elements( $output );
 		$this->assert_svg_v4shim( $output, 'use', $version );
 	}
 

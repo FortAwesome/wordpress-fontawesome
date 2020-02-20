@@ -94,7 +94,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => true,
 					'kitToken' => '778ccf8260',
 					'apiToken' => true,
 					'version' => '5.4.1',
@@ -127,7 +127,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => true,
 					'kitToken' => '778ccf8260',
 					'apiToken' => true,
 					'version' => 'latest',
@@ -160,12 +160,45 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => false,
 					'detectConflictsUntil' => 0,
 					'blocklist' => [],
 					'kitToken' => '778ccf8260',
 					'apiToken' => true,
 					'version' => 'cat.dog',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+    	$request->set_body( wp_json_encode( $request_body ) );
+		$response = $this->server->dispatch( $request );
+		$this->assertEquals( 400, $response->get_status() );
+		// Version unchanged
+		$this->assertEquals( '5.3.1', fa()->version() );
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+	}
+
+	public function test_update_with_webfont_pseudo_elements_false() {
+		// Start with the version being something else.
+		$this->set_version( '5.3.1' );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => false,
+					'v4Compat' => false,
+					'technology' => 'webfont',
+					'pseudoElements' => false,
+					'kitToken' 	=> null,
+					'apiToken' => false,
+					'version' => '5.12.1'
 				),
 				'conflicts' => array()
 			);
@@ -195,7 +228,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => false,
 					'detectConflictsUntil' => 0,
 					'blocklist' => [],
 					'kitToken' => null,
@@ -230,7 +263,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => false,
 					'kitToken' => null,
 					'apiToken' => false,
 					'version' => '5.0.13',
@@ -263,7 +296,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => false,
 					'kitToken' => null,
 					'apiToken' => false,
 					'version' => 'latest',
@@ -280,7 +313,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
     	$request->set_body( wp_json_encode( $request_body ) );
 		$response = $this->server->dispatch( $request );
 		$this->assertEquals( 400, $response->get_status() );
-		// Version unchanged
+		// Version unchanged.
 		$this->assertEquals( '5.3.1', fa()->version() );
 		$data = $response->get_data();
 		$this->assertArrayHasKey( 'code', $data );
@@ -296,7 +329,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'webfont',
-					'svgPseudoElements' => false,
+					'pseudoElements' => true,
 					'detectConflictsUntil' => 0,
 					'blocklist' => [],
 					'kitToken' => null,
@@ -359,7 +392,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'svg',
-					'svgPseudoElements' => true,
+					'pseudoElements' => true,
 					'kitToken' => null,
 					'apiToken' => false,
 					'version' => '5.4.1',
@@ -391,8 +424,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 'svg', $data['options']['technology'] );
 		$this->assertEquals( 'svg', fa()->technology() );
 
-		$this->assertTrue( $data['options']['svgPseudoElements'] );
-		$this->assertTrue( fa()->svg_pseudo_elements() );
+		$this->assertTrue( $data['options']['pseudoElements'] );
+		$this->assertTrue( fa()->pseudo_elements() );
 
 		$this->assertEquals( null, $data['options']['kitToken'] );
 		$this->assertEquals( 'svg', fa()->technology() );
@@ -412,7 +445,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'svg',
-					'svgPseudoElements' => true,
+					'pseudoElements' => true,
 					'kitToken' => 'abc123',
 					'apiToken' => true,
 					'version' => '5.4.1',
@@ -444,8 +477,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 'svg', $data['options']['technology'] );
 		$this->assertEquals( 'svg', fa()->technology() );
 
-		$this->assertTrue( $data['options']['svgPseudoElements'] );
-		$this->assertTrue( fa()->svg_pseudo_elements() );
+		$this->assertTrue( $data['options']['pseudoElements'] );
+		$this->assertTrue( fa()->pseudo_elements() );
 
 		$this->assertEquals( 'abc123', $data['options']['kitToken'] );
 		$this->assertEquals( 'abc123', $data['options']['kitToken'] );
@@ -467,7 +500,7 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 					'usePro' => true,
 					'v4Compat' => true,
 					'technology' => 'svg',
-					'svgPseudoElements' => true,
+					'pseudoElements' => true,
 					'detectConflictsUntil' => $detect_conflicts_until,
 					'blocklist' => [],
 					'kitToken' => 'abc123',

@@ -79,8 +79,8 @@ export default function KitSelectView({ optionSelector }) {
         v4Compat: selectedKit.shimEnabled,
         version: selectedKit.version,
         // At the time this is being implemented, kits don't yet support
-        // toggling svgPseudoElement support. But if that support is added
-        svgPseudoElements: false
+        // toggling pseudoElement support for SVG, but it's implicitly supported for webfont.
+        pseudoElements: 'svg' !== selectedKit.technologySelected
       }))
     }
 

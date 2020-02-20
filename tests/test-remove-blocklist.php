@@ -205,13 +205,13 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 		// 1. the options should have been updated as a result of the plugin upgrade.
 		$this->assertEquals(
 			array(
-				'usePro'            => false,
-				'v4Compat'          => true,
-				'technology'        => 'svg',
-				'svgPseudoElements' => true,
-				'version'           => 'latest',
-				'kitToken'          => null,
-				'apiToken'          => false,
+				'usePro'         => false,
+				'v4Compat'       => true,
+				'technology'     => 'svg',
+				'pseudoElements' => true,
+				'version'        => 'latest',
+				'kitToken'       => null,
+				'apiToken'       => false,
 			),
 			fa()->options()
 		);

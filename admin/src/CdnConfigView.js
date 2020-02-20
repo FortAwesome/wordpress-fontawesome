@@ -17,6 +17,7 @@ import has from 'lodash/has'
 import size from 'lodash/size'
 import Alert from './Alert'
 import PropTypes from 'prop-types'
+import get from 'lodash/get'
 
 const UNSPECIFIED = ''
 
@@ -25,7 +26,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
   const technology = optionSelector('technology')
   const version = optionSelector('version')
   const v4Compat = optionSelector('v4Compat')
-  const svgPseudoElements = optionSelector('svgPseudoElements')
+  const pseudoElements = optionSelector('pseudoElements')
 
   const pendingOptions = useSelector(state => state.pendingOptions)
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
@@ -49,7 +50,15 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
   const dispatch = useDispatch()
 
   function handleOptionChange(change = {}, check = true) {
-    dispatch(addPendingOption(change))
+    const pendingTechnology = get( change, 'technology' )
+
+    const adjustedChange = pendingTechnology
+      ? 'webfont' === pendingTechnology
+        ? { ...change, pseudoElements: true }
+        : { ...change, pseudoElements: false }
+      : change
+
+    dispatch(addPendingOption(adjustedChange))
     check && dispatch(checkPreferenceConflicts())
   }
 
@@ -205,7 +214,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                   checked={ technology === 'webfont' }
                   onChange={ () => handleOptionChange({
                     technology: 'webfont',
-                    svgPseudoElements: false
+                    pseudoElements: false
                   }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
@@ -239,15 +248,15 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
             { technology === 'svg' &&
               <>
                 <input
-                  id="code_edit_features_svg_pseudo_elements"
+                  id="code_edit_features_pseudo_elements"
                   name="code_edit_features"
                   type="checkbox"
-                  value="svg_pseudo_elements"
-                  checked={ svgPseudoElements }
-                  onChange={() => handleOptionChange({ svgPseudoElements: !svgPseudoElements })}
+                  value="pseudo_elements"
+                  checked={ pseudoElements }
+                  onChange={() => handleOptionChange({ pseudoElements: !pseudoElements })}
                   className={classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom'])}
                 />
-                <label htmlFor="code_edit_features_svg_pseudo_elements" className={styles['option-label']}>
+                <label htmlFor="code_edit_features_pseudo_elements" className={styles['option-label']}>
                 <span className={sharedStyles['relative']}>
                   <FontAwesomeIcon
                     icon={faCheckSquare}
@@ -263,7 +272,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                   />
                 </span>
                   <span className={styles['option-label-text']}>
-                  Enable SVG Pseudo-elements
+                  Enable CSS Pseudo-elements with SVG
                   <span className={styles['option-label-explanation']}>
                     Can be tricky and may be slower than other methods.
                     <br/>
@@ -273,7 +282,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                   </span>
                 </span>
                 </label>
-                { getDetectionStatusForOption('svgPseudoElements') }
+                { getDetectionStatusForOption('pseudoElements') }
               </>
             }
           </div>

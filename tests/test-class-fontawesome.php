@@ -58,7 +58,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name'              => 'beta',
-				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+				'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements']
 			)
 		);
 
@@ -70,7 +70,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			array( 'beta' => ['svgPseudoElements'], 'gamma' => ['version'] ),
+			array( 'beta' => ['pseudoElements'], 'gamma' => ['version'] ),
 			fa()->conflicts_by_client()
 		);
 	}
@@ -96,7 +96,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name'              => 'beta',
-				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+				'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements']
 			)
 		);
 
@@ -108,7 +108,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			array( 'version' => ['alpha', 'gamma'], 'svgPseudoElements' => ['beta'] ),
+			array( 'version' => ['alpha', 'gamma'], 'pseudoElements' => ['beta'] ),
 			fa()->conflicts_by_option()
 		);
 	}
@@ -117,7 +117,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name'              => 'beta',
-				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+				'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements']
 			)
 		);
 
@@ -126,7 +126,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->conflicts_by_option(
 				array_merge(
 					FontAwesome::DEFAULT_USER_OPTIONS,
-					[ 'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements'] ]
+					[ 'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements'] ]
 				)
 			)
 		);
@@ -136,7 +136,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name'              => 'beta',
-				'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements']
+				'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements']
 			)
 		);
 
@@ -145,7 +145,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			fa()->conflicts_by_option(
 				array_merge(
 					FontAwesome::DEFAULT_USER_OPTIONS,
-					[ 'svgPseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements'] ]
+					[ 'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements'] ]
 				)
 			)
 		);

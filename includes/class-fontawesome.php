@@ -47,7 +47,7 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
  *   plugin's metadata using methods such as:
  *     - {@see FontAwesome::version()} to discover the version of Font Awesome being loaded
  *     - {@see FontAwesome::pro()} to discover whether a version with Pro icons is being loaded
- *     - {@see FontAwesome::svg_pseudo_elements()} to discover whether Font Awesome is being loaded with support for svg pseudo-elements
+ *     - {@see FontAwesome::pseudo_elements()} to discover whether Font Awesome is being loaded with support for svg pseudo-elements
  *
  * <h3>Internal Use vs. Public API</h3>
  *
@@ -239,13 +239,13 @@ class FontAwesome {
 	 * @internal
 	 */
 	const DEFAULT_USER_OPTIONS = array(
-		'usePro'            => false,
-		'v4Compat'          => true,
-		'technology'        => 'webfont',
-		'svgPseudoElements' => false,
-		'kitToken'          => null,
+		'usePro'         => false,
+		'v4Compat'       => true,
+		'technology'     => 'webfont',
+		'pseudoElements' => false,
+		'kitToken'       => null,
 		// whether the token is present, not the token's value.
-		'apiToken'          => false,
+		'apiToken'       => false,
 	);
 
 	/**
@@ -922,14 +922,14 @@ class FontAwesome {
 		if ( isset( $options['lockedLoadSpec'] ) ) {
 			$converted_options['technology'] = $options['lockedLoadSpec']['method'];
 
-			$converted_options['svgPseudoElements'] = 'svg' === $options['lockedLoadSpec']['method']
+			$converted_options['pseudoElements'] = 'svg' === $options['lockedLoadSpec']['method']
 				&& $options['lockedLoadSpec']['pseudoElements'];
 
 			$converted_options['v4Compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
 			$converted_options['technology'] = $options['adminClientLoadSpec']['method'];
 
-			$converted_options['svgPseudoElements'] = 'svg' === $options['adminClientLoadSpec']['method']
+			$converted_options['pseudoElements'] = 'svg' === $options['adminClientLoadSpec']['method']
 				&& $options['adminClientLoadSpec']['pseudoElements'];
 
 			$converted_options['v4Compat'] = $options['adminClientLoadSpec']['v4shim'];
@@ -1228,25 +1228,25 @@ class FontAwesome {
 	}
 
 	/**
-	 * Indicates whether Font Awesome is being loaded with support for SVG pseudo-elements.
+	 * Indicates whether Font Awesome is being loaded with support for pseudo-elements.
 	 *
 	 * Its results are only valid after the `font_awesome_enqueued` action has been triggered.
-	 * Its value is irrelevant if technology() === 'webfont'.
 	 *
-	 * There are known performance problems with this combination, but it is provided for added
-	 * compatibility where pseudo-elements must be used.
+	 * There are known performance problems with this SVG and pseudo-elements,
+	 * but it is provided for added compatibility where pseudo-elements must be used.
 	 *
-	 * Pseudo-elements are always inherently supported by the webfont technology.
+	 * Always returns true if technology() === 'webfont', because pseudo-elements
+	 * are always inherently supported by the CSS/Webfont technology.
 	 *
 	 * @since 4.0.0
-	 *
+	 * @link https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements CSS Pseudo-Elements and Font Awesome
 	 * @return boolean
 	 */
-	public function svg_pseudo_elements() {
+	public function pseudo_elements() {
 		$options = $this->options();
-		return isset( $options['svgPseudoElements'] )
-				? boolval( $options['svgPseudoElements'] )
-				: self::DEFAULT_USER_OPTIONS['svgPseudoElements'];
+		return isset( $options['pseudoElements'] )
+				? boolval( $options['pseudoElements'] )
+				: self::DEFAULT_USER_OPTIONS['pseudoElements'];
 	}
 
 	/**
@@ -1495,7 +1495,7 @@ EOT;
 	 * @throws ConfigCorruptionException
 	 */
 	public function enqueue_cdn( $options, $resource_collection ) {
-		if ( ! array_key_exists( 'svgPseudoElements', $options ) ) {
+		if ( ! array_key_exists( 'pseudoElements', $options ) ) {
 			throw new ConfigCorruptionException();
 		}
 
@@ -1662,7 +1662,7 @@ EOT;
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 						wp_enqueue_script( self::RESOURCE_HANDLE, $resources[0]->source(), null, null, false );
 
-						if ( $options['svgPseudoElements'] ) {
+						if ( $options['pseudoElements'] ) {
 							wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
 						}
 					}
@@ -2028,7 +2028,7 @@ EOT;
 	 *   array(
 	 *     'technology'        => 'svg', // "svg" or "webfont"
 	 *     'v4Compat'          => true, // true or false
-	 *     'svgPseudoElements' => false, // true or false
+	 *     'pseudoElements' => false, // true or false
 	 *     'name'              => 'Foo Plugin', // (required)
 	 *     'version'           => [
 	 *                              [ '5.10.0', '>=']
@@ -2163,7 +2163,7 @@ EOT;
 	 *   and there are multiple `font-family` names. So the v4Compat feature of this plugin also "shims" those
 	 *   hardcoded version 4 `font-family` names so that they will use the corresponding Font Awesome 5 webfont files.
 	 *
-	 * - `svgPseudoElements`
+	 * - `pseudoElements`
 	 *
 	 *   [Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements)
 	 *   are always intrinsically available when using the Web Font with CSS method.

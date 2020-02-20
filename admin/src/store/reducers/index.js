@@ -36,7 +36,7 @@ export function options(state = {}, action = {}) {
             technology,
             usePro,
             v4Compat,
-            svgPseudoElements,
+            pseudoElements,
             version,
             kitToken,
             apiToken
@@ -50,7 +50,7 @@ export function options(state = {}, action = {}) {
           apiToken,
           usePro: coerceBool(usePro),
           v4Compat: coerceBool(v4Compat),
-          svgPseudoElements: coerceBool(svgPseudoElements)
+          pseudoElements: coerceBool(pseudoElements)
         }
       }
     default:

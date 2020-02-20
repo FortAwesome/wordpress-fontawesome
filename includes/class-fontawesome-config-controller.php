@@ -186,8 +186,8 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		if ( isset( $given_options['technology'] ) ) {
 			$item['technology'] = $given_options['technology'];
 		}
-		if ( isset( $given_options['svgPseudoElements'] ) ) {
-			$item['svgPseudoElements'] = $given_options['svgPseudoElements'];
+		if ( isset( $given_options['pseudoElements'] ) ) {
+			$item['pseudoElements'] = $given_options['pseudoElements'];
 		}
 		if ( isset( $given_options['usePro'] ) ) {
 			$item['usePro'] = $given_options['usePro'];
@@ -198,6 +198,14 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 
 		$version_is_concrete = isset( $given_options['version'] )
 			&& 1 === preg_match( '/[0-9]+\.[0-9]+/', $given_options['version'] );
+
+		/**
+		 * The pseudoElements option is handled specially. If technology
+		 * is webfont, pseudoElements must be true.
+		 */
+		if ( 'webfont' === $item['technology'] && ! $item['pseudoElements'] ) {
+			throw ConfigSchemaException::webfont_always_enables_pseudo_elements();
+		}
 
 		/**
 		 * The version is handled specially.

@@ -67,8 +67,8 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 
 		fa()->register(
 			array(
-				'name'              => 'beta',
-				'svgPseudoElements' => FontAwesome::DEFAULT_USER_OPTIONS['svgPseudoElements'],
+				'name'           => 'beta',
+				'pseudoElements' => FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements'],
 			)
 		);
 
