@@ -45,6 +45,7 @@
         "wp-coding-standards/wpcs": "^1.2",
         "doctrine/annotations": "1.4.0",
         "doctrine/lexer": "1.0.2",
+        "doctrine/instantiator": "1.0.5",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
         "phpdocumentor/phpdocumentor": "^2.9"
     },

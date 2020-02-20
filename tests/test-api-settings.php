@@ -10,7 +10,8 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
 use \WP_Error, \InvalidArgumentException;
-use FortAwesome\{ ApiTokenMissingException, ApiTokenInvalidException };
+use FortAwesome\ApiTokenMissingException;
+use FortAwesome\ApiTokenInvalidException;
 
 /**
  * ApiSettingsTest class
