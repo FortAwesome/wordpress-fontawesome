@@ -24,7 +24,7 @@
         <script type="text/javascript">
         function loadExternalCodeSnippets() {
             Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
-                var src = pre.getAttribute('data-src');
+                var src = pre.getAttribute('data-src').replace( /\\/g, '/');
                 var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
                 var language = 'php';
 
@@ -114,12 +114,12 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">3</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">4</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">1</span>
                                 </a>
                             </li>
                             <li>
@@ -144,27 +144,44 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-848115159"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1466975545"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-848115159" class="accordion-body collapse in">
+            <div id="namespace-1466975545" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-161571764"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-297157534"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-161571764" class="accordion-body collapse ">
+            <div id="namespace-297157534" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
                     <ul>
-                                                                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome.html">FontAwesome</a></li>
-                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></li>
+                                                                                                    <li class="class"><a href="../classes/FortAwesome.AccessTokenStorageException.html">AccessTokenStorageException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiRequestException.html">ApiRequestException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiResponseException.html">ApiResponseException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenEndpointRequestException.html">ApiTokenEndpointRequestException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenEndpointResponseException.html">ApiTokenEndpointResponseException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenInvalidException.html">ApiTokenInvalidException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenMissingException.html">ApiTokenMissingException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ClientPreferencesSchemaException.html">ClientPreferencesSchemaException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConfigCorruptionException.html">ConfigCorruptionException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConfigSchemaException.html">ConfigSchemaException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConflictDetectionSchemaException.html">ConflictDetectionSchemaException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConflictDetectionStorageException.html">ConflictDetectionStorageException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome.html">FontAwesome</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_API_Controller.html">FontAwesome_API_Controller</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_ClientException.html">FontAwesome_ClientException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Exception.html">FontAwesome_Exception</a></li>
                                                     <li class="class"><a href="../classes/FortAwesome.FontAwesome_Loader.html">FontAwesome_Loader</a></li>
-                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Release_Provider.html">FontAwesome_Release_Provider</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_ServerException.html">FontAwesome_ServerException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.PreferenceRegistrationException.html">PreferenceRegistrationException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ReleaseMetadataMissingException.html">ReleaseMetadataMissingException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ReleaseProviderStorageException.html">ReleaseProviderStorageException</a></li>
                                             </ul>
                 </div>
             </div>
@@ -189,8 +206,8 @@
                                                                     </nav>
 
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
-                    <h1><small>includes</small>class-fontawesome-config-controller.php</h1>
-                    <p><em></em></p>
+                    <h1><small>includes</small>class-fontawesome-api-controller.php</h1>
+                    <p><em>API Controller.</em></p>
                     
 
                     
@@ -198,8 +215,8 @@
                                         <h2>Classes</h2>
                     <table class="table table-hover">
                                             <tr>
-                            <td><a href="../classes/FortAwesome.FontAwesome_Config_Controller.html">FontAwesome_Config_Controller</a></td>
-                            <td><em>Controller class for REST endpoint</em></td>
+                            <td><a href="../classes/FortAwesome.FontAwesome_API_Controller.html">FontAwesome_API_Controller</a></td>
+                            <td><em>Controller class for the plugin&#039;s GraphQL API REST endpoint.</em></td>
                         </tr>
                                         </table>
                                     </div>
@@ -230,7 +247,7 @@
             <h3 id="source-view-label"></h3>
         </div>
         <div class="modal-body">
-            <pre data-src="../files/includes/class-fontawesome-config-controller.php.txt" class="language-php line-numbers"></pre>
+            <pre data-src="../files/includes/class-fontawesome-api-controller.php.txt" class="language-php line-numbers"></pre>
         </div>
     </div>
 
@@ -271,7 +288,7 @@
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on January 16th, 2020 at 00:40.
+                    on February 20th, 2020 at 19:51.
                 </section>
             </section>
         </section>

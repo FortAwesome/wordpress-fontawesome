@@ -24,7 +24,7 @@
     <script type="text/javascript">
     function loadExternalCodeSnippets() {
         Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
-            var src = pre.getAttribute('data-src');
+            var src = pre.getAttribute('data-src').replace( /\\/g, '/');
             var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
             var language = 'php';
 
@@ -114,12 +114,12 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">1</span>
                                 </a>
                             </li>
                             <li>
@@ -144,25 +144,44 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-454272194"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-838787886"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-454272194" class="accordion-body collapse in">
+            <div id="namespace-838787886" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1991244609"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1445014957"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-1991244609" class="accordion-body collapse ">
+            <div id="namespace-1445014957" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
                     <ul>
-                                                                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome.html">FontAwesome</a></li>
+                                                                                                    <li class="class"><a href="../classes/FortAwesome.AccessTokenStorageException.html">AccessTokenStorageException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiRequestException.html">ApiRequestException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiResponseException.html">ApiResponseException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenEndpointRequestException.html">ApiTokenEndpointRequestException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenEndpointResponseException.html">ApiTokenEndpointResponseException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenInvalidException.html">ApiTokenInvalidException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ApiTokenMissingException.html">ApiTokenMissingException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ClientPreferencesSchemaException.html">ClientPreferencesSchemaException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConfigCorruptionException.html">ConfigCorruptionException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConfigSchemaException.html">ConfigSchemaException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConflictDetectionSchemaException.html">ConflictDetectionSchemaException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ConflictDetectionStorageException.html">ConflictDetectionStorageException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome.html">FontAwesome</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_API_Controller.html">FontAwesome_API_Controller</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_ClientException.html">FontAwesome_ClientException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_Exception.html">FontAwesome_Exception</a></li>
                                                     <li class="class"><a href="../classes/FortAwesome.FontAwesome_Loader.html">FontAwesome_Loader</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.FontAwesome_ServerException.html">FontAwesome_ServerException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.PreferenceRegistrationException.html">PreferenceRegistrationException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ReleaseMetadataMissingException.html">ReleaseMetadataMissingException</a></li>
+                                                    <li class="class"><a href="../classes/FortAwesome.ReleaseProviderStorageException.html">ReleaseProviderStorageException</a></li>
                                             </ul>
                 </div>
             </div>
@@ -303,7 +322,7 @@ Thanks to Varun Sridharan.</p>
                         
                         
                         
-                        
+                                                
                                                                         </dl>
                     <h2>Tags</h2>
                     <table class="table table-condensed">
@@ -312,7 +331,7 @@ Thanks to Varun Sridharan.</p>
                                 since
                             </th>
                             <td>
-                                                                    
+                                                                    4.0.0                                    
                                                             </td>
                         </tr>
                                         </table>
@@ -339,13 +358,15 @@ Thanks to Varun Sridharan.</p>
 
                 
                 
-                				
+                
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html"><div class="path-wrapper">\FortAwesome\FontAwesome_Loader</div></a></dd>
+                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -382,14 +403,16 @@ should call this method from its own activation hook. For example:</p>
 
                 
                 
-                				
+                
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                             <span class="label label-info">static</span>
                                                             <dl>
-                                                                            </dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html"><div class="path-wrapper">\FortAwesome\FontAwesome_Loader</div></a></dd>
+                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -419,21 +442,23 @@ loader via \FortAwesome\font_awesome_load(), it does not delete the plugin optio
 since one of those others will end up becoming active and relying on the options data.</p>
 <p>Any theme or plugin that includes this Font Awesome plugin as a library
 dependency should call this from its own uninstall hook. For example:</p>
-<pre><code class="language-php">register_uninstall_hook(
-    __FILE__,
-    'FortAwesome\FontAwesome_Loader::maybe_uninstall'
-);</code></pre>
+<pre><code class="language-php"> register_uninstall_hook(
+     __FILE__,
+     'FortAwesome\FontAwesome_Loader::maybe_uninstall'
+ );</code></pre>
 
                 
                 
-                				
+                
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                             <span class="label label-info">static</span>
                                                             <dl>
-                                                                            </dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html"><div class="path-wrapper">\FortAwesome\FontAwesome_Loader</div></a></dd>
+                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -463,20 +488,22 @@ installations, if active, will be promoted and end up relying on the data.</p>
 <p>Any theme or plugin that includes this Font Awesome plugin as a library
 dependency should call this from its own uninstall hook. For example:</p>
 <pre><code class="language-php"> register_deactivation_hook(
-    __FILE__,
-    'FortAwesome\FontAwesome_Loader::maybe_deactivate'
+     __FILE__,
+     'FortAwesome\FontAwesome_Loader::maybe_deactivate'
  );</code></pre>
 
                 
                 
-                				
+                
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                             <span class="label label-info">static</span>
                                                             <dl>
-                                                                            </dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html"><div class="path-wrapper">\FortAwesome\FontAwesome_Loader</div></a></dd>
+                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr>
@@ -507,14 +534,16 @@ to access the Loader's functionality through the its public static methods.</p>
                 
                                     <h4>Returns</h4>
                     <a href="../classes/FortAwesome.FontAwesome_Loader.html">\FortAwesome\FontAwesome_Loader</a>
-                                    				
+                                    
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                             <span class="label label-info">static</span>
                                                             <dl>
-                                                                                            <dt>See also</dt>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html"><div class="path-wrapper">\FortAwesome\FontAwesome_Loader</div></a></dd>
+                                                                            <dt>See also</dt>
                                                                 <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html#method_initialize"><span class="namespace-wrapper">\FortAwesome\FontAwesome_Loader::initialize()</span></a></dd>
                                             <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html#method_maybe_deactivate"><span class="namespace-wrapper">\FortAwesome\FontAwesome_Loader::maybe_deactivate()</span></a></dd>
                                             <dd><a href="../classes/FortAwesome.FontAwesome_Loader.html#method_maybe_uninstall"><span class="namespace-wrapper">\FortAwesome\FontAwesome_Loader::maybe_uninstall()</span></a></dd>
@@ -583,7 +612,7 @@ to access the Loader's functionality through the its public static methods.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on February 10th, 2020 at 16:15.
+                    on February 20th, 2020 at 19:51.
                 </section>
             </section>
         </section>
