@@ -67,4 +67,82 @@ class OptionsTest extends \WP_UnitTestCase {
 			)
 		);
 	}
+
+	public function test_convert_options_coerce_pseudo_elements_true_for_webfont() {
+		$this->assertEquals(
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'webfont',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
+			),
+			fa()->convert_options(
+				array (
+				'adminClientLoadSpec' =>
+					array (
+						'name' => 'user',
+						'method' => 'webfont',
+						'v4shim' => 'require',
+						'pseudoElements' => 'forbid',
+						// clientVersion was a previous option
+						'clientVersion' => 1554559421,
+					),
+				'version' => '5.8.1',
+				'usePro' => true,
+				'removeUnregisteredClients' => true,
+				'lockedLoadSpec' =>
+					array (
+						'method' => 'webfont',
+						'v4shim' => true,
+						'pseudoElements' => false,
+						'clients' =>
+							array (
+								'user' => 1554559421,
+							),
+					),
+				)
+			)
+		);
+	}
+
+	public function test_convert_options_coerce_pseudo_elements_true_for_webfont_when_absent() {
+		$this->assertEquals(
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'webfont',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
+			),
+			fa()->convert_options(
+				array (
+				'adminClientLoadSpec' =>
+					array (
+						'name' => 'user',
+						'method' => 'svg',
+						'v4shim' => 'require',
+						'pseudoElements' => 'forbid',
+						// clientVersion was a previous option
+						'clientVersion' => 1554559421,
+					),
+				'version' => '5.8.1',
+				'usePro' => true,
+				'removeUnregisteredClients' => true,
+				'lockedLoadSpec' =>
+					array (
+						'v4shim' => true,
+						'clients' =>
+							array (
+								'user' => 1554559421,
+							),
+					),
+				)
+			)
+		);
+	}
 }

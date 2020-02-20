@@ -920,10 +920,18 @@ class FontAwesome {
 		}
 
 		if ( isset( $options['lockedLoadSpec'] ) ) {
-			$converted_options['technology'] = $options['lockedLoadSpec']['method'];
+			$converted_options['technology'] = isset( $options['lockedLoadSpec']['method'] )
+				? $options['lockedLoadSpec']['method']
+				: 'webfont';
 
-			$converted_options['pseudoElements'] = 'svg' === $options['lockedLoadSpec']['method']
-				&& $options['lockedLoadSpec']['pseudoElements'];
+			$converted_options['pseudoElements'] =
+				isset( $options['lockedLoadSpec']['method'] )
+					? 'svg' === $options['lockedLoadSpec']['method']
+						? $options['lockedLoadSpec']['method']
+						: true
+					: 'webfont' === $converted_options['technology']
+						? true
+						: false;
 
 			$converted_options['v4Compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
