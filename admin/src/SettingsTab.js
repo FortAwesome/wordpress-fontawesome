@@ -19,6 +19,7 @@ import has from 'lodash/has'
 import { addPendingOption, submitPendingOptions, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
 import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
 import size from 'lodash/size'
+import { __ } from '@wordpress/i18n'
 
 export default function SettingsTab() {
   const dispatch = useDispatch()
@@ -74,7 +75,7 @@ export default function SettingsTab() {
   }
 
   return <div><div className={ sharedStyles['wrapper-div'] }>
-    <h3>How are you using Font Awesome?</h3>
+    <h3>{ __( 'How are you using Font Awesome?', 'font-awesome' ) }</h3>
     <div className={ styles['select-config-container'] }>
       <span>
         <input
@@ -102,7 +103,7 @@ export default function SettingsTab() {
             />
           </span>
           <span className={ optionStyles['option-label-text'] }>
-          Use A Kit
+          { __( 'Use A Kit', 'font-awesome' ) }
           </span>
         </label>
       </span>
@@ -132,7 +133,7 @@ export default function SettingsTab() {
             />
           </span>
           <span className={ optionStyles['option-label-text'] }>
-          Use CDN
+          { __( 'Use CDN', 'font-awesome' ) }
           </span>
         </label>
       </span>
@@ -156,7 +157,7 @@ export default function SettingsTab() {
           name="submit"
           id="submit"
           className="button button-primary"
-          value="Save Changes"
+          value={ __( 'Save Changes', 'font-awesome' ) }
           disabled={ size(pendingOptions) === 0 }
           onClick={ handleSubmit }
         />
@@ -183,7 +184,7 @@ export default function SettingsTab() {
           : isChecking
             ? <CheckingOptionStatusIndicator/>
             : size(pendingOptions) > 0
-              ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
+              ? <span className={ sharedStyles['submit-status'] }>{ __( 'you have pending changes', 'font-awesome' ) }</span>
               : null
         }
       </div>
