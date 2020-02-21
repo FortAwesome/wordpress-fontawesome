@@ -4,6 +4,7 @@ import size from 'lodash/size'
 import get from 'lodash/get'
 import find from 'lodash/find'
 import reportRequestError from '../util/reportRequestError'
+import { __ } from '@wordpress/i18n'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -79,7 +80,7 @@ export function submitPendingUnregisteredClientDeletions() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Update failed', 'font-awesome' )
       })
 
       dispatch({
@@ -126,7 +127,7 @@ export function submitPendingBlocklist() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Update failed', 'font-awesome' )
       })
 
       dispatch({
@@ -163,7 +164,7 @@ export function checkPreferenceConflicts() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Update failed', 'font-awesome' )
       })
 
       dispatch({
@@ -236,7 +237,7 @@ export function queryKits() {
         dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message: 'Failed to fetch kits. Re-set your API Token and try again.'
+          message: __( 'Failed to fetch kits. Re-set your API Token and try again.', 'font-awesome' )
         })
 
         return
@@ -305,7 +306,7 @@ export function queryKits() {
       }).catch(error => {
         const message = reportRequestError({
           response: error,
-          uiMessageDefault: 'Failed saving kit changes'
+          uiMessageDefault: __( 'Failed saving kit changes', 'font-awesome' )
         })
 
         dispatch({
@@ -317,7 +318,7 @@ export function queryKits() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Failed to fetch kits'
+        uiMessageDefault: __( 'Failed to fetch kits', 'font-awesome' )
       })
 
       dispatch({
@@ -350,7 +351,7 @@ export function submitPendingOptions() {
         type: 'OPTIONS_FORM_SUBMIT_END',
         data,
         success: true,
-        message: 'Changes saved'
+        message: __( 'Changes saved', 'font-awesome' )
       })
 
       // We may receive errors back with a 200 response, such as when
@@ -395,7 +396,7 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
         type: 'OPTIONS_FORM_SUBMIT_END',
         data,
         success: true,
-        message: 'API Token saved'
+        message: __( 'API Token saved', 'font-awesome' )
       })
 
       if( runQueryKits ) {
@@ -554,7 +555,7 @@ export function setConflictDetectionScanner({ enable = true }) {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Update failed', 'font-awesome' )
       })
 
       dispatch({
