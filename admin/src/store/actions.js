@@ -226,11 +226,22 @@ export function queryKits() {
     ).then(response => {
       const data = get(response, 'data.data')
 
-      dispatch({
-        type: 'KITS_QUERY_END',
-        data,
-        success: true
-      })
+      if ( get( data, 'me' ) ) {
+        dispatch({
+          type: 'KITS_QUERY_END',
+          data,
+          success: true
+        })
+      } else {
+        dispatch({
+          type: 'KITS_QUERY_END',
+          success: false,
+          message: 'Failed to fetch kits. Re-set your API Token and try again.'
+        })
+
+        return
+      }
+
 
       // If we didn't start out with a saved kitToken, we're done.
       // Otherwise, we'll move on to update any config on that kit which
