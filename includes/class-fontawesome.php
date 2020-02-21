@@ -1284,56 +1284,62 @@ class FontAwesome {
 		add_action(
 			'admin_enqueue_scripts',
 			function( $hook ) {
-				if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-					wp_enqueue_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						$this->get_webpack_asset_url( 'main.js' ),
-						[],
-						null,
-						true
-					);
-				}
-
-				if ( $hook === $this->screen_id ) {
-					$this->maybe_refresh_releases();
-
-					if ( FONTAWESOME_ENV !== 'development' ) {
+				try {
+					if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-						wp_enqueue_style(
-							self::ADMIN_RESOURCE_HANDLE . '-css',
-							$this->get_webpack_asset_url( 'main.css' ),
+						wp_enqueue_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							$this->get_webpack_asset_url( 'main.js' ),
 							[],
 							null,
-							'all'
+							true
 						);
 					}
 
-					wp_localize_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						self::ADMIN_RESOURCE_LOCALIZATION_NAME,
-						array_merge(
-							$this->common_data_for_js_bundle(),
-							array(
-								'showAdmin'            => true,
-								'onSettingsPage'       => true,
-								'clientPreferences'    => $this->client_preferences(),
-								'releases'             => array(
-									'available'      => $this->release_provider()->versions(),
-									'latest_version' => $this->latest_version(),
-								),
-								'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
-								'preferenceConflicts'  => $this->conflicts_by_option(),
-								'v3DeprecationWarning' => $this->get_v3deprecation_warning_data(),
+					if ( $hook === $this->screen_id ) {
+						$this->maybe_refresh_releases();
+
+						if ( FONTAWESOME_ENV !== 'development' ) {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+							wp_enqueue_style(
+								self::ADMIN_RESOURCE_HANDLE . '-css',
+								$this->get_webpack_asset_url( 'main.css' ),
+								[],
+								null,
+								'all'
+							);
+						}
+
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+							array_merge(
+								$this->common_data_for_js_bundle(),
+								array(
+									'showAdmin'            => true,
+									'onSettingsPage'       => true,
+									'clientPreferences'    => $this->client_preferences(),
+									'releases'             => array(
+										'available'      => $this->release_provider()->versions(),
+										'latest_version' => $this->latest_version(),
+									),
+									'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
+									'preferenceConflicts'  => $this->conflicts_by_option(),
+									'v3DeprecationWarning' => $this->get_v3deprecation_warning_data(),
+								)
 							)
-						)
-					);
-				} else {
-					wp_localize_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						self::ADMIN_RESOURCE_LOCALIZATION_NAME,
-						$this->common_data_for_js_bundle()
-					);
+						);
+					} else {
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+							$this->common_data_for_js_bundle()
+						);
+					}
+				} catch ( Exception $e ) {
+					notify_admin_fatal_error( $e );
+				} catch ( Error $e ) {
+					notify_admin_fatal_error( $e );
 				}
 			}
 		);
@@ -1343,27 +1349,33 @@ class FontAwesome {
 				add_action(
 					$action,
 					function () {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_script(
-							self::ADMIN_RESOURCE_HANDLE,
-							$this->get_webpack_asset_url( 'main.js' ),
-							null,
-							null,
-							false
-						);
+						try {
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+							wp_enqueue_script(
+								self::ADMIN_RESOURCE_HANDLE,
+								$this->get_webpack_asset_url( 'main.js' ),
+								null,
+								null,
+								false
+							);
 
-						wp_localize_script(
-							self::ADMIN_RESOURCE_HANDLE,
-							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
-							array_merge(
-								$this->common_data_for_js_bundle(),
-								array(
-									'onSettingsPage' => false,
-									'showAdmin'      => false,
-									'showConflictDetectionReporter' => true,
+							wp_localize_script(
+								self::ADMIN_RESOURCE_HANDLE,
+								self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+								array_merge(
+									$this->common_data_for_js_bundle(),
+									array(
+										'onSettingsPage' => false,
+										'showAdmin'      => false,
+										'showConflictDetectionReporter' => true,
+									)
 								)
-							)
-						);
+							);
+						} catch ( Exception $e ) {
+							notify_admin_fatal_error( $e );
+						} catch ( Error $e ) {
+							notify_admin_fatal_error( $e );
+						}
 					}
 				);
 			}
@@ -1413,28 +1425,29 @@ class FontAwesome {
 			add_action(
 				$action,
 				function () use ( $kit_token ) {
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-					wp_enqueue_script(
-						self::RESOURCE_HANDLE,
-						trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
-						[],
-						null,
-						false
-					);
+					try {
+						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+						wp_enqueue_script(
+							self::RESOURCE_HANDLE,
+							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
+							[],
+							null,
+							false
+						);
 
-					/**
-					 * Kits have built-in support for detecting conflicts, but we need to
-					 * inject some configuration to turn it on. We will do that by manipulating
-					 * the FontAwesomeKitConfig global property.
-					 */
-					if ( $this->detecting_conflicts() ) {
 						/**
-						 * Kits Conflict Detection expects this value to be in milliseconds
-						 * since the unix epoch.
+						 * Kits have built-in support for detecting conflicts, but we need to
+						 * inject some configuration to turn it on. We will do that by manipulating
+						 * the FontAwesomeKitConfig global property.
 						 */
-						$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
+						if ( $this->detecting_conflicts() ) {
+							/**
+							 * Kits Conflict Detection expects this value to be in milliseconds
+							 * since the unix epoch.
+							 */
+							$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
 
-						$script_content = <<< EOT
+							$script_content = <<< EOT
 window.__FontAwesome__WP__KitConfig__ = {
 	detectConflictsUntil: ${detect_conflicts_until}
 }
@@ -1450,11 +1463,16 @@ Object.defineProperty(window, 'FontAwesomeKitConfig', {
 })
 EOT;
 
-						wp_add_inline_script(
-							self::RESOURCE_HANDLE,
-							$script_content,
-							'before'
-						);
+							wp_add_inline_script(
+								self::RESOURCE_HANDLE,
+								$script_content,
+								'before'
+							);
+						}
+					} catch ( Exception $e ) {
+						notify_admin_fatal_error( $e );
+					} catch ( Error $e ) {
+						notify_admin_fatal_error( $e );
 					}
 				}
 			);
@@ -1831,7 +1849,13 @@ EOT;
 				add_action(
 					$action,
 					function() {
-						fa()->infer_unregistered_clients_by_resource_url();
+						try {
+							fa()->infer_unregistered_clients_by_resource_url();
+						} catch ( Exception $e ) {
+							notify_admin_fatal_error( $e );
+						} catch ( Error $e ) {
+							notify_admin_fatal_error( $e );
+						}
 					},
 					PHP_INT_MAX - 1
 				);
@@ -1850,7 +1874,13 @@ EOT;
 			add_action(
 				$action,
 				function() {
-					fa()->remove_blocklist();
+					try {
+						fa()->remove_blocklist();
+					} catch ( Exception $e ) {
+						notify_admin_fatal_error( $e );
+					} catch ( Error $e ) {
+						notify_admin_fatal_error( $e );
+					}
 				},
 				PHP_INT_MAX
 			);
