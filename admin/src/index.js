@@ -6,11 +6,12 @@ import { Provider } from 'react-redux'
 import { createStore } from './store'
 import { reportDetectedConflicts } from './store/actions'
 import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
+import { __ } from '@wordpress/i18n'
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
 
 if(! initialData){
-  console.error('Font Awesome plugin is broken: initial state data missing.')
+  console.error( __( 'Font Awesome plugin is broken: initial state data missing.', 'font-awesome' ) )
 }
 
 const store = createStore(initialData)

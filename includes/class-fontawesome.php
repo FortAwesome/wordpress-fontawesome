@@ -372,6 +372,11 @@ class FontAwesome {
 
 					$this->maybe_enqueue_admin_js_bundle();
 
+					// Setup JavaScript internationalization if we're on WordPress 5.0+.
+					if ( function_exists( 'wp_set_script_translations' ) ) {
+						wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
+					}
+
 					if ( $this->using_kit() ) {
 						$this->enqueue_kit( $this->options()['kitToken'] );
 					} else {
