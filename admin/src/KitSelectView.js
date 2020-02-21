@@ -21,6 +21,7 @@ import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import size from 'lodash/size'
+import { sprintf, __ } from '@wordpress/i18n'
 
 export default function KitSelectView({ optionSelector }) {
   const dispatch = useDispatch()
@@ -65,7 +66,12 @@ export default function KitSelectView({ optionSelector }) {
     const selectedKit = (kits || []).find(k => k.token === kitToken)
 
     if( !selectedKit ) {
-      throw new Error(`When selecting to use kit ${ kitToken }, somehow the information we needed was missing. Try reloading the page.`)
+      throw new Error(
+        sprintf(
+          __( 'When selecting to use kit %s, somehow the information we needed was missing. Try reloading the page.' ),
+          kitToken
+        )
+      )
     }
 
     if( kitTokenActive === kitToken ) {
@@ -117,7 +123,7 @@ export default function KitSelectView({ optionSelector }) {
       <div className={ styles['field-apitoken'] }>
         <label htmlFor="api_token">
           <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faQuestionCircle } size="lg" />
-          API Token
+          { __( 'API Token', 'font-awesome' ) }
         </label>
         <div>
           <input
@@ -132,8 +138,12 @@ export default function KitSelectView({ optionSelector }) {
               setPendingApiToken(e.target.value)
             }}
           />
-          <p>Grab your secure and unique API token from your Font Awesome account page and enter it here so we can securely fetch your kits. <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/account#api-tokens">Get your API token on fontawesome.com<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a></p>
 
+          <p>
+            { __( 'Grab your secure and unique API token from your Font Awesome account page and enter it here so we can securely fetch your kits.', 'font-awesome') } <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/account#api-tokens">
+              { __( 'Get your API token on fontawesome.com', 'font-awesome') } <FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} />
+            </a>
+          </p>
         </div>
       </div>
       <div className="submit">
@@ -142,7 +152,7 @@ export default function KitSelectView({ optionSelector }) {
           name="submit"
           id="submit"
           className="button button-primary"
-          value="Save API Token"
+          value={ __( 'Save API Token', 'font-awesome' ) }
           disabled={ !pendingApiToken }
           onMouseDown={ () => {
               dispatch(updateApiToken({ apiToken: pendingApiToken, runQueryKits: true }))
@@ -178,7 +188,7 @@ export default function KitSelectView({ optionSelector }) {
           <span>
             <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
           </span>
-          API Token Saved
+          { __( 'API Token Saved', 'font-awesome' ) }
         </p>
         {
           !!apiToken &&
@@ -188,8 +198,8 @@ export default function KitSelectView({ optionSelector }) {
       {
         showingRemoveApiTokenAlert &&
         <div className={ styles['api-token-control-alert-wrapper'] }>
-          <Alert title="Whoa, whoa, whoa!" type='warning'>
-          You can't remove your API token when "Use a Kit" is active. Switch to "Use CDN" first.
+          <Alert title={ __( 'Whoa, whoa, whoa!', 'font-awesome' ) } type='warning'>
+            { __( 'You can\'t remove your API token when "Use a Kit" is active. Switch to "Use CDN" first.', 'font-awesome' ) }
           </Alert>
         </div>
       }
@@ -221,19 +231,28 @@ export default function KitSelectView({ optionSelector }) {
               ? STATUS.showingOnlyActiveKit
               : STATUS.apiTokenReadyNoKitsYet
         : STATUS.noApiToken
-    
+
     const kitRefreshButton = <button onClick={ () => dispatch(queryKits()) } className={ styles['refresh'] }>
       <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faRedo } title="refresh" alt="refresh" />
       <span>
       {
         0 === size(kits)
-        ? 'Get latest kits data'
-        : 'Refresh kits data'
+        ? __( 'Get latest kits data', 'font-awesome' )
+        : __( 'Refresh kits data', 'font-awesome' )
       }
       </span>
     </button>
 
-    const activeKitNotice = kitTokenActive ? <div className={ styles['wrap-active-kit'] }><p className={ classnames(styles['active-kit'], styles['set']) }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" /> { kitTokenActive } Kit is Currently Active</p></div> : null
+    const activeKitNotice = kitTokenActive
+      ? <div className={ styles['wrap-active-kit'] }><p className={ classnames(styles['active-kit'], styles['set']) }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
+        {
+          sprintf(
+            __( '%s Kit is Currently Active' ),
+            kitTokenActive
+          )
+        }
+        </p></div>
+     : null
 
 
       return <div className={ styles['kit-selector-container'] }>
@@ -242,10 +261,14 @@ export default function KitSelectView({ optionSelector }) {
 
         <div className={ styles['wrap-selectkit'] }>
           <h3 className={ styles['title-selectkit'] }><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faQuestionCircle } size="lg" />
-            Pick a Kit to Use or Check Settings
+            { __( 'Pick a Kit to Use or Check Settings', 'font-awesome' ) }
           </h3>
           <div className={ styles['selectkit'] }>
-            <p>Refresh your kits data to get the latest kit settings, then select the kit you would like to use. Remember to save when you're ready to use it.</p>
+            <p>
+              {
+              __( 'Refresh your kits data to get the latest kit settings, then select the kit you would like to use. Remember to save when you\'re ready to use it.', 'font-awesome' )
+              }
+            </p>
           {
             {
               noApiToken: 'noApiToken',
@@ -253,7 +276,7 @@ export default function KitSelectView({ optionSelector }) {
               querying:
                 <div>
                   <span>
-                    Loading your kits...
+                    { __( 'Loading your kits...', 'font-awesome' ) }
                   </span>
                   <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
                     <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
@@ -273,7 +296,10 @@ export default function KitSelectView({ optionSelector }) {
               noKitsFoundAfterQuery:
                 <>
                   <Alert title="Zoinks! Looks like you don't have any kits set up yet." type="info">
-                    <p>Head over to Font Awesome to create one, then come back here and refresh your kits. <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Create a kit on Font Awesome <FontAwesomeIcon icon={faExternalLinkAlt} /></a></p>
+                    <p>
+                      { __( 'Head over to Font Awesome to create one, then come back here and refresh your kits.', 'font-awesome' ) } <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">
+                        { __( 'Create a kit on Font Awesome', 'font-awesome' ) } <FontAwesomeIcon icon={faExternalLinkAlt} /></a>
+                    </p>
                   </Alert>
                   { kitRefreshButton }
                 </>,
@@ -288,7 +314,7 @@ export default function KitSelectView({ optionSelector }) {
                   onChange={ e => handleKitChange({ kitToken: e.target.value }) }
                   value={ kitToken || '' }
                   >
-                    <option key='empty' value=''>Select a kit</option>
+                    <option key='empty' value=''>{ __( 'Select a kit', 'font-awesome' ) }</option>
                   {
                     kits.map((kit, index) => {
                       return <option key={ index } value={ kit.token }>
