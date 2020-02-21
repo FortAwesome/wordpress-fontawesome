@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "10a8d9860daab9eddd7cd66870eb423881823a5c"
+                "reference": "3d91324b06fe5c924429d992be719331cf3e9669"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/10a8d9860daab9eddd7cd66870eb423881823a5c",
-                "reference": "10a8d9860daab9eddd7cd66870eb423881823a5c",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/3d91324b06fe5c924429d992be719331cf3e9669",
+                "reference": "3d91324b06fe5c924429d992be719331cf3e9669",
                 "shasum": ""
             },
             "archive": {
@@ -48,7 +48,9 @@
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-                "jms/serializer": "1.7.*",
+                "doctrine/annotations": "1.4.0",
+                "doctrine/instantiator": "1.0.5",
+                "doctrine/lexer": "1.0.2",
                 "phpdocumentor/phpdocumentor": "^2.9",
                 "squizlabs/php_codesniffer": "^3.3",
                 "wp-coding-standards/wpcs": "^1.2"
@@ -111,7 +113,7 @@
                 "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/epic/release-4-0",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2020-01-23T20:03:13+00:00"
+            "time": "2020-02-21T00:28:27+00:00"
         }
     ],
     "packages-dev": [],
