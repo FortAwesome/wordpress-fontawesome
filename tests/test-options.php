@@ -28,6 +28,17 @@ class OptionsTest extends \WP_UnitTestCase {
 		FontAwesome_Activator::activate();
 	}
 
+	public function test_option_defaults() {
+		$this->assertEquals(
+			'webfont',
+			fa()->technology()
+		);
+
+		$this->assertTrue(
+			fa()->pseudo_elements()
+		);
+	}
+
 	public function test_convert_options() {
 		$this->assertEquals(
 			array(

@@ -242,7 +242,7 @@ class FontAwesome {
 		'usePro'         => false,
 		'v4Compat'       => true,
 		'technology'     => 'webfont',
-		'pseudoElements' => false,
+		'pseudoElements' => true,
 		'kitToken'       => null,
 		// whether the token is present, not the token's value.
 		'apiToken'       => false,
