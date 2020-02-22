@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "6e18379a6492fcb44e28cd803b11106fcdd26b9c"
+                "reference": "6b0a82749dfa49e4c51ae6263119380a8d6c2099"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/6e18379a6492fcb44e28cd803b11106fcdd26b9c",
-                "reference": "6e18379a6492fcb44e28cd803b11106fcdd26b9c",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/6b0a82749dfa49e4c51ae6263119380a8d6c2099",
+                "reference": "6b0a82749dfa49e4c51ae6263119380a8d6c2099",
                 "shasum": ""
             },
             "archive": {
@@ -113,7 +113,7 @@
                 "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/epic/release-4-0",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2020-02-21T16:56:58+00:00"
+            "time": "2020-02-22T00:16:32+00:00"
         }
     ],
     "packages-dev": [],
