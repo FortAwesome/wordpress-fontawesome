@@ -132,7 +132,7 @@ export default function KitSelectView({ optionSelector }) {
               setPendingApiToken(e.target.value)
             }}
           />
-          <p>Grab your secure and unique API token from your <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/account">Font Awesome account page <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and enter it here so we can securely fetch your kits.</p>
+          <p>Grab your secure and unique API token from your Font Awesome account page and enter it here so we can securely fetch your kits. <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/account#api-tokens">Get your API token on fontawesome.com<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a></p>
 
         </div>
       </div>
@@ -188,8 +188,8 @@ export default function KitSelectView({ optionSelector }) {
       {
         showingRemoveApiTokenAlert &&
         <div className={ styles['api-token-control-alert-wrapper'] }>
-          <Alert title="API Token Removal" type='warning'>
-          You can't remove your API token when Use a Kit is active. Switch to Use CDN first.
+          <Alert title="Whoa, whoa, whoa!" type='warning'>
+          You can't remove your API token when "Use a Kit" is active. Switch to "Use CDN" first.
           </Alert>
         </div>
       }
@@ -280,7 +280,7 @@ export default function KitSelectView({ optionSelector }) {
               noKitsFoundAfterQuery:
                 <>
                   <h3>Zoinks! Looks like you don't have any kits set up yet.</h3>
-                  <p>Head over to your <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Kits on Font Awesome <FontAwesomeIcon icon={faExternalLinkAlt} /></a> to create one. Then come back here and refresh your kits.</p>
+                  <p>Head over to Font Awesome to create one, then come back here and refresh your kits. <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Create a kit on Font Awesome <FontAwesomeIcon icon={faExternalLinkAlt} /></a></p>
                   { kitRefreshButton }
                 </>,
 
