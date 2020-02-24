@@ -279,8 +279,9 @@ export default function KitSelectView({ optionSelector }) {
 
               noKitsFoundAfterQuery:
                 <>
-                  <h3>Zoinks! Looks like you don't have any kits set up yet.</h3>
-                  <p>Head over to Font Awesome to create one, then come back here and refresh your kits. <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Create a kit on Font Awesome <FontAwesomeIcon icon={faExternalLinkAlt} /></a></p>
+                  <Alert title="Zoinks! Looks like you don't have any kits set up yet." type="info">
+                    <p>Head over to Font Awesome to create one, then come back here and refresh your kits. <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/kits">Create a kit on Font Awesome <FontAwesomeIcon icon={faExternalLinkAlt} /></a></p>
+                  </Alert>
                   { kitRefreshButton }
                 </>,
 
