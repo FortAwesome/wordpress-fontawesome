@@ -1,5 +1,35 @@
 version: '3.6'
 
+# UPDATE: 2/24/2020
+# Why so slow to start up with Docker for Mac Desktop?
+#
+# Probably because of this:
+# https://docs.docker.com/docker-for-mac/osxfs-caching/
+#
+# The performance problems between the host and container are probably made worse
+# in our situation by the fact that there are many files on the host that we
+# don't really need or want to be mounted in the container, but are simply because
+# they fall under a directory that does need to be mounted. Such as:
+#
+# 1. every file in this repo is being mounted under wp-content/plugins/font-awesome 
+#    because of this, there's really no way to optimize mounts until this is
+#    done differently
+#
+# 2. there are lots of files under admin/node_modules in development environment
+#    that can take a while to mount, even though we don't need them to be mounted
+#    inside the container.
+#
+# 3. integrations/plugins/plugin-sigma, after running composer install/update
+#    pulls in all of the files for this repo under its vendor subdir, which again
+#    results in a lot of files that we wouldn't care about being mounted inside
+#    the container.
+#
+# 4. All of the files under volumes/wordpress are being re-mounted.
+#
+# To optimize, it seems that we'd need to re-organize files so that we're not
+# mounting things needlessly. But we can't mount a directory with exclusions
+# on some of its subdirectories.
+
 x-dev_volumes: &dev_volumes
   volumes:
     - ./volumes/wordpress:/var/www/html
