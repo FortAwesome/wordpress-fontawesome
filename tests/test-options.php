@@ -47,13 +47,16 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		$this->assertEquals(
 			array(
-				'version' => '5.8.1',
-				'pseudoElements' => true,
-				'technology' => 'svg',
-				'usePro' => true,
-				'v4Compat' => true,
-				'kitToken' => null,
-				'apiToken' => false
+				'changed' => true,
+				'options' => array(
+					'version' => '5.8.1',
+					'pseudoElements' => true,
+					'technology' => 'svg',
+					'usePro' => true,
+					'v4Compat' => true,
+					'kitToken' => null,
+					'apiToken' => false
+				),
 			),
 			fa()->convert_options(
 				array (
@@ -89,13 +92,16 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		$this->assertEquals(
 			array(
-				'version' => '5.8.1',
-				'pseudoElements' => true,
-				'technology' => 'webfont',
-				'usePro' => true,
-				'v4Compat' => true,
-				'kitToken' => null,
-				'apiToken' => false
+				'changed' => true,
+				'options' => array(
+					'version' => '5.8.1',
+					'pseudoElements' => true,
+					'technology' => 'webfont',
+					'usePro' => true,
+					'v4Compat' => true,
+					'kitToken' => null,
+					'apiToken' => false
+				),
 			),
 			fa()->convert_options(
 				array (
@@ -131,13 +137,16 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		$this->assertEquals(
 			array(
-				'version' => '5.8.1',
-				'pseudoElements' => true,
-				'technology' => 'webfont',
-				'usePro' => true,
-				'v4Compat' => true,
-				'kitToken' => null,
-				'apiToken' => false
+				'changed' => true,
+				'options' => array (
+					'version' => '5.8.1',
+					'pseudoElements' => true,
+					'technology' => 'webfont',
+					'usePro' => true,
+					'v4Compat' => true,
+					'kitToken' => null,
+					'apiToken' => false
+				)
 			),
 			fa()->convert_options(
 				array (
@@ -166,10 +175,10 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_options_empty() {
+	public function test_valid_options_empty() {
 		$this->expectException( ConfigCorruptionException::class );
 
-		fa()->options();
+		fa()->validate_options( [] );
 	}
 
 	public function test_options_missing_technology() {

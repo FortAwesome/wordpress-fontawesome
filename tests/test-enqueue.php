@@ -266,9 +266,13 @@ class EnqueueTest extends \WP_UnitTestCase {
 	}
 
 	public function test_svg_default() {
-		$options = wp_parse_args(
-			[ 'technology' => 'svg' ],
-			fa()->options()
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'technology'     => 'svg',
+				'pseudoElements' => false,
+				'version'        => '5.3.1'
+			]
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -288,10 +292,16 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_pseudo_elements( $output );
 	}
 
-	public function test_svg_pro_no_v4_compat_non_default_version() {
-		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'usePro' => true, 'v4Compat' => false, 'version' => '5.1.1' ],
-			fa()->options()
+	public function test_svg_pro_no_v4_compat_with_pseudo_elements_non_default_version() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'technology'     => 'svg',
+				'pseudoElements' => true,
+				'usePro'         => true,
+				'v4Compat'       => false,
+				'version'        => '5.1.1'
+			],
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -308,7 +318,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->refute_webfont( $output, 'pro', $version );
 		$this->assert_svg( $output, 'pro', $version );
 		$this->refute_svg_v4shim( $output, 'pro', $version );
-		$this->refute_pseudo_elements( $output );
+		$this->assert_pseudo_elements( $output );
 	}
 
 	public function test_svg_with_pseudo_elements() {

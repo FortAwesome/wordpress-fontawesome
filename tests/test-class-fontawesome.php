@@ -316,7 +316,10 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	public function test_using_kits_when_default() {
 		update_option(
 			FontAwesome::OPTIONS_KEY,
-			FontAwesome::DEFAULT_USER_OPTIONS
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[ 'version' => '5.3.1' ]
+			)
 		);
 
 		$this->assertFalse(
@@ -330,6 +333,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
+					'version' => '5.3.1',
 					'apiToken' => true
 				)
 			)
@@ -346,6 +350,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
+					'version'  => '5.3.1',
 					'kitToken' => 'abc123'
 				)
 			)
@@ -362,6 +367,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
+					'version'  => '5.3.1',
 					'kitToken' => 'abc123',
 					'apiToken' => true
 				)

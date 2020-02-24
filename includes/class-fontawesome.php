@@ -356,7 +356,7 @@ class FontAwesome {
 
 					add_filter( 'widget_text', 'do_shortcode' );
 
-					$this->validate_options();
+					$this->validate_options( fa()->options() );
 
 					try {
 						$this->gather_preferences();
@@ -435,10 +435,23 @@ class FontAwesome {
 	 * Yet this is a valid way to determine that.
 	 *
 	 * @since 4.0.0
+	 * @throws ConfigCorruptionException
 	 * @return bool
 	 */
 	public function using_kit() {
 		$options = $this->options();
+		$this->validate_options( $options );
+		return $this->using_kit_given_options( $options );
+	}
+
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	private function using_kit_given_options( $options ) {
 		return isset( $options['kitToken'] )
 			&& isset( $options['apiToken'] )
 			&& $options['apiToken']
@@ -757,10 +770,14 @@ class FontAwesome {
 	 * @return array
 	 */
 	public function options() {
-		// TODO: figure out how to best handle the situation where we don't have
-		// options set. Other stuff down the line will freak out. How will we handle it?
-		$options = get_option( self::OPTIONS_KEY );
-		return $this->convert_options( $options );
+		$options                 = get_option( self::OPTIONS_KEY );
+		$options_with_conversion = $this->convert_options( $options );
+
+		if ( $options_with_conversion['changed'] ) {
+			update_option( self::OPTIONS_KEY, $options_with_conversion['options'] );
+		}
+
+		return $options_with_conversion['options'];
 	}
 
 	/**
@@ -771,7 +788,8 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 * @param $options
-	 * @return array
+	 * @return array with a boolean "changed", indicating whether any changes were made
+	 *     and an "options" key with the results
 	 */
 	public function convert_options( $options ) {
 		if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
@@ -780,10 +798,16 @@ class FontAwesome {
 
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			// v1 schema.
-			return $this->convert_options_from_v1( $options );
+			return array(
+				'changed' => true,
+				'options' => $this->convert_options_from_v1( $options ),
+			);
 		} else {
 			// Nothing to convert.
-			return $options;
+			return array(
+				'changed' => false,
+				'options' => $options,
+			);
 		}
 	}
 
@@ -792,19 +816,12 @@ class FontAwesome {
 	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
-	 * This doesn't necessarily validate every single thing that could be validated.
-	 * Maybe only the most crucial, high-level issues. This validation is expected
-	 * to be run early in the lifecycle of loading the plugin.
-	 * More validations could be added here over time, if helpful.
-	 *
 	 * @ignore
 	 * @internal
 	 * @throws ConfigCorruptionException if options are invalid
-	 * @return TRUE if options are valid; otherwise it throws
 	 */
-	public function validate_options() {
-		$using_kit = $this->using_kit();
-		$options   = $this->options();
+	public function validate_options( $options ) {
+		$using_kit = $this->using_kit_given_options( $options );
 		$kit_token = isset( $options['kitToken'] ) ? $options['kitToken'] : null;
 		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
 		$version   = isset( $options['version'] ) ? $options['version'] : null;
@@ -822,21 +839,42 @@ class FontAwesome {
 				throw new ConfigCorruptionException();
 			}
 		} else {
-			/**
-			 * Intentionally not constraining the ending of the version number to
-			 * open the possibility of a pre-release version, which means it would have
-			 * something like -rc42 on the end.
-			 * For example, 5.12.0-rc42.
-			 */
-			$version_is_concrete = is_string( $version )
-				&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+			// A null version is permitted, until the release metadata has been queried.
+			if ( ! is_null( $this->releases_refreshed_at() ) ) {
+				/**
+				 * Intentionally not constraining the ending of the version number to
+				 * open the possibility of a pre-release version, which means it would have
+				 * something like -rc42 on the end.
+				 * For example, 5.12.0-rc42.
+				 */
+				$version_is_concrete = is_string( $version )
+					&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
 
-			if ( ! $version_is_concrete ) {
-				throw new ConfigCorruptionException();
+				if ( ! $version_is_concrete ) {
+					throw new ConfigCorruptionException();
+				}
 			}
 		}
 
-		return true;
+		if ( ! isset( $options['v4Compat'] ) || ! is_bool( $options['v4Compat'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
+		if ( ! isset( $options['usePro'] ) || ! is_bool( $options['usePro'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
+		if ( ! isset( $options['pseudoElements'] ) || ! is_bool( $options['pseudoElements'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
+		if (
+			! isset( $options['technology'] ) ||
+			! is_string( $options['technology'] ) ||
+			false === array_search( $options['technology'], [ 'svg', 'webfont' ], true )
+		) {
+			throw new ConfigCorruptionException();
+		}
 	}
 
 	/**
@@ -1134,24 +1172,29 @@ class FontAwesome {
 	 * It's a handy way to toggle the use of Pro icons in client theme or plugin template code.
 	 *
 	 * @since 4.0.0
+	 * @throws ConfigCorruptionException
 	 *
 	 * @return boolean
 	 */
 	public function pro() {
 		$options = $this->options();
-		return( wp_validate_boolean( $options['usePro'] ) );
+		$this->validate_options( $options );
+		return $options['usePro'];
 	}
 
 	/**
 	 * Indicates which Font Awesome technology is configured: 'webfont' or 'svg'.
 	 *
 	 * @since 4.0.0
+	 * @throws ConfigCorruptionException
 	 *
 	 * @return string
 	 */
 	public function technology() {
 		$options = $this->options();
-		return isset( $options['technology'] ) ? $options['technology'] : null;
+		$this->validate_options( $options );
+
+		return $options['technology'];
 	}
 
 	/**
@@ -1205,20 +1248,16 @@ class FontAwesome {
 	 * @see FontAwesome::latest_version()
 	 * @see FontAwesome::releases_refreshed_at()
 	 * @see FontAwesome::refresh_releases()
+	 * @throws ConfigCorruptionException
 	 * @return string|null null if no version has yet been saved in the options
 	 * in the db. Otherwise, a valid version string, which may be either a
 	 * concrete version like "5.12.0" or the string "latest".
 	 */
 	public function version() {
 		$options = $this->options();
+		$this->validate_options( $options );
 
-		return (
-			boolval( $options ) &&
-			isset( $options['version'] ) &&
-			is_string( $options['version'] )
-		)
-			? $options['version']
-			: null;
+		return $options['version'];
 	}
 
 	/**
@@ -1227,12 +1266,14 @@ class FontAwesome {
 	 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
 	 *
 	 * @since 4.0.0
+	 * @throws ConfigCorruptionException
 	 *
 	 * @return boolean
 	 */
 	public function v4_compatibility() {
 		$options = $this->options();
-		return isset( $options['v4Compat'] ) ? boolval( $options['v4Compat'] ) : self::DEFAULT_USER_OPTIONS['v4Compat'];
+		$this->validate_options( $options );
+		return $options['v4Compat'];
 	}
 
 	/**
@@ -1248,13 +1289,14 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 * @link https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements CSS Pseudo-Elements and Font Awesome
+	 * @throws ConfigCorruptionException
 	 * @return boolean
 	 */
 	public function pseudo_elements() {
 		$options = $this->options();
-		return isset( $options['pseudoElements'] )
-				? boolval( $options['pseudoElements'] )
-				: self::DEFAULT_USER_OPTIONS['pseudoElements'];
+		$this->validate_options( $options );
+
+		return $options['pseudoElements'];
 	}
 
 	/**
