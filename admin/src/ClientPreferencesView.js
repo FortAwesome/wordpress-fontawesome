@@ -35,7 +35,7 @@ export default function ClientPreferencesView() {
           { hasConflicts
             ? <span className={sharedStyles['explanation']}> The highlights
             show where the settings are mismatched. You might want to adjust
-            your settings to match, or things may not work as expected.
+            your settings to match, or your icons may not work as expected.
             </span>
             : null
           }</p>

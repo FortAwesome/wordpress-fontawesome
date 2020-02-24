@@ -30,16 +30,17 @@ export default function ConflictDetectionScannerSection() {
     <h2 className={ sharedStyles['section-title'] }>Detect Conflicts with Other Versions of Font Awesome</h2>
     <div className={sharedStyles['explanation']}>
       <p>If you are having trouble loading Font Awesome icons on your WordPress
-      site, one of the main causes can be other themes or plugins loading
-      conflicting versions of Font Awesome. <b>Use our conflict scanner to
-      detect other versions of Font Awesome running on your site.</b></p>
+      site, it may be because other themes or plugins are loading
+      conflicting versions of Font Awesome. You can use our conflict scanner to
+      detect other versions of Font Awesome running on your site.</p>
 
       <p>Enable the scanner below and a box will appear in the bottom corner
-      of your window (that only you can see) while it runs for 10 minutes. Then browse
-      your site, especially to the pages having trouble, to
-      catch any <span style={{ whiteSpace: "nowrap" }}>Slimers - *ahem* - 
-      conflicts</span> in the scanner. Then come back here to review and
-      manage Font Awesome versions found.</p>
+      of your window while it runs for 10 minutes (only you and other admins
+      can see the box). While the scanner is running, browse your site,
+      especially the pages having trouble to catch
+      any <span style={{ whiteSpace: "nowrap" }}>Slimers - *ahem* - conflicts
+      </span> in the scanner. Then come back here to review and manage Font
+      Awesome versions found.</p>
     </div>
     <div className={sharedStyles['scanner-actions']}>
       {
