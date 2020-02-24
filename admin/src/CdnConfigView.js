@@ -159,10 +159,10 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
               <Alert title='Pro requires a Font Awesome subscription' type='info'>
                 <ul>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro"><FontAwesomeIcon icon={faExternalLinkAlt} /> Get Pro</a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro">Get Pro<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
                   </li>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn"><FontAwesomeIcon icon={faExternalLinkAlt} /> Manage my allowed domains</a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn">Manage my allowed domains<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
                   </li>
                 </ul>
               </Alert>
@@ -233,7 +233,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                         className={ sharedStyles['unchecked-icon'] }
                       />
                     </span>
-                  <span className={ styles['option-label-text'] }>
+                    <span className={ styles['option-label-text'] }>
                       Web Font
                     </span>
                 </label>
@@ -257,30 +257,29 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                   className={classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom'])}
                 />
                 <label htmlFor="code_edit_features_pseudo_elements" className={styles['option-label']}>
-                <span className={sharedStyles['relative']}>
-                  <FontAwesomeIcon
-                    icon={faCheckSquare}
-                    className={sharedStyles['checked-icon']}
-                    size="lg"
-                    fixedWidth
-                  />
-                  <FontAwesomeIcon
-                    icon={faSquare}
-                    className={sharedStyles['unchecked-icon']}
-                    size="lg"
-                    fixedWidth
-                  />
-                </span>
-                  <span className={styles['option-label-text']}>
-                  Enable CSS Pseudo-elements with SVG
-                  <span className={styles['option-label-explanation']}>
-                    Can be tricky and may be slower than other methods.
-                    <br/>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">
-                      <FontAwesomeIcon icon={faExternalLinkAlt} /> Learn more
-                    </a>
+                  <span className={sharedStyles['relative']}>
+                    <FontAwesomeIcon
+                      icon={faCheckSquare}
+                      className={sharedStyles['checked-icon']}
+                      size="lg"
+                      fixedWidth
+                    />
+                    <FontAwesomeIcon
+                      icon={faSquare}
+                      className={sharedStyles['unchecked-icon']}
+                      size="lg"
+                      fixedWidth
+                    />
                   </span>
-                </span>
+                  <span className={styles['option-label-text']}>
+                    Enable CSS Pseudo-elements with SVG
+                    <span className={styles['option-label-explanation']}>
+                      May cause performance issues.
+                      <a rel="noopener noreferrer" target="_blank" style={{marginLeft: '.5em'}} href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">
+                        Learn more<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} />
+                      </a>
+                    </span>
+                  </span>
                 </label>
                 { getDetectionStatusForOption('pseudoElements') }
               </>
