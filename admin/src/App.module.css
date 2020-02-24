@@ -6,7 +6,7 @@
 
 @media only screen and (min-width: 1024px) {
   .wrapper-div {
-    width: 66%;
+    max-width: 1000px;
   }
 }
 
@@ -56,10 +56,6 @@ h3.section-title {
 .section-divider {
   margin-top: 1rem;
   margin-bottom: 1rem;
-}
-
-.explanation {
-  max-width: 750px;
 }
 
 .table-header th {
@@ -125,8 +121,10 @@ button .conflict-detection-timer {
   width: 1px;
 }
 
-.flex {
-  display: flex;
+@media only screen and (min-width: 1024px) {
+  .flex {
+    display: flex;
+  }
 }
 
 .flex-row {

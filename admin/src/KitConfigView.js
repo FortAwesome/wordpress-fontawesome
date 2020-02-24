@@ -97,7 +97,7 @@ export default function KitConfigView({ kitToken }) {
         </tr>
       </tbody>
     </table>
-    <p className={ styles['tip-text'] }>Make changes on <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/kits">fontawesome.com <FontAwesomeIcon icon={faExternalLinkAlt} /></a> and then refresh.</p>
+    <p className={ styles['tip-text'] }>Make changes on <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/kits">fontawesome.com/kits<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a></p>
   </div>
 }
 

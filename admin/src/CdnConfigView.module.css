@@ -36,7 +36,14 @@
 .option-choice-container {
     display: flex;
     flex-direction: column;
-    width: 70%
+    width: 70%;
+    margin-top: .5rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .option-choice-container {
+    margin-top: 0;
+  }
 }
 
 .option-explanation {
