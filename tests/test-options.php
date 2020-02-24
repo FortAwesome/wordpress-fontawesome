@@ -18,17 +18,20 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @before
 	 */
 	protected function reset() {
-		reset_db();
+		wp_cache_delete ( 'alloptions', 'options' );
+		delete_option( FontAwesome::OPTIONS_KEY );
+
 		FontAwesome::reset();
 		Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
-		FontAwesome_Activator::activate();
 	}
 
 	public function test_option_defaults() {
+		FontAwesome_Activator::activate();
+
 		$this->assertEquals(
 			'webfont',
 			fa()->technology()
@@ -40,6 +43,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	public function test_convert_options() {
+		FontAwesome_Activator::activate();
+
 		$this->assertEquals(
 			array(
 				'version' => '5.8.1',
@@ -80,6 +85,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	public function test_convert_options_coerce_pseudo_elements_true_for_webfont() {
+		FontAwesome_Activator::activate();
+
 		$this->assertEquals(
 			array(
 				'version' => '5.8.1',
@@ -120,6 +127,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	public function test_convert_options_coerce_pseudo_elements_true_for_webfont_when_absent() {
+		FontAwesome_Activator::activate();
+
 		$this->assertEquals(
 			array(
 				'version' => '5.8.1',
@@ -155,5 +164,143 @@ class OptionsTest extends \WP_UnitTestCase {
 				)
 			)
 		);
+	}
+
+	public function test_options_empty() {
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->options();
+	}
+
+	public function test_options_missing_technology() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1'
+			]
+		);
+
+		unset( $options['technology'] );
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->technology();
+	}
+
+	public function test_options_invalid_technology() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1',
+				'technology' => 'foo'
+			]
+		);
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->technology();
+	}
+
+	public function test_options_missing_pro() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1'
+			]
+		);
+
+		unset( $options['usePro'] );
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->pro();
+	}
+
+	public function test_options_invalid_pro() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1',
+				'usePro' => 42
+			]
+		);
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->pro();
+	}
+
+	public function test_options_pseudo_elements_missing() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1'
+			]
+		);
+
+		unset( $options['pseudoElements'] );
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->pseudo_elements();
+	}
+
+	public function test_options_pseudo_elements_invalid() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1',
+				'pseudoElements' => 42
+			]
+		);
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->pseudo_elements();
+	}
+
+	public function test_options_v4_compatibility_missing() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1'
+			]
+		);
+
+		unset( $options['v4Compat'] );
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->v4_compatibility();
+	}
+
+	public function test_options_v4_compatibility_invalid() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.3.1',
+				'v4Compat' => 42
+			]
+		);
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->v4_compatibility();
 	}
 }
