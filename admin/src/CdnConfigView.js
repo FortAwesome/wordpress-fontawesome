@@ -18,6 +18,7 @@ import size from 'lodash/size'
 import Alert from './Alert'
 import PropTypes from 'prop-types'
 import get from 'lodash/get'
+import { __ } from '@wordpress/i18n'
 
 const UNSPECIFIED = ''
 
@@ -65,18 +66,18 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
   function getDetectionStatusForOption(option) {
     if(has(pendingOptions, option)) {
       if ( hasChecked && ! preferenceCheckSuccess ) {
-        return <Alert title='Error checking preferences' type='warning'>
+        return <Alert title={ __( 'Error checking preferences', 'font-awesome' ) } type='warning'>
           <p>{ preferenceCheckMessage }</p>
         </Alert>
       } else if (has(pendingOptionConflicts, option)) {
-        return <Alert title="Preference Conflict" type='warning'>
+        return <Alert title={ __( 'Preference Conflict', 'font-awesome' ) } type='warning'>
             {
               size(pendingOptionConflicts[option]) > 1
               ? <div>
-                This change might cause problems for these themes or plugins: { pendingOptionConflicts[option].join(', ') }.
+                { __( 'This change might cause problems for these themes or plugins', 'font-awesome' ) }: { pendingOptionConflicts[option].join(', ') }.
               </div>
               : <div>
-                This change might cause problems for the theme or plugin: { pendingOptionConflicts[option][0] }.
+                { __( 'This change might cause problems for the theme or plugin', 'font-awesome' ) }: { pendingOptionConflicts[option][0] }.
                 </div>
             }
         </Alert>
@@ -156,13 +157,13 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
               </div>
             </div>
             { usePro &&
-              <Alert title='Pro requires a Font Awesome subscription' type='info'>
+              <Alert title={ __( 'Pro requires a Font Awesome subscription', 'font-awesome' ) } type='info'>
                 <ul>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro">Get Pro<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro">{ __( 'Get Pro', 'font-awesome' ) }<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
                   </li>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn">Manage my allowed domains<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn">{ __( 'Manage my allowed domains', 'font-awesome' ) }<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
                   </li>
                 </ul>
               </Alert>
@@ -172,7 +173,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
         </div>
         <hr className={ styles['option-divider'] }/>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'] ) }>
-          <div className={ styles['option-header'] }>Technology</div>
+          <div className={ styles['option-header'] }>{ __( 'Technology', 'font-awesome' ) }</div>
           <div className={ styles['option-choice-container'] }>
             <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
@@ -201,7 +202,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                     />
                   </span>
                   <span className={ styles['option-label-text'] }>
-                    SVG
+                    { __( 'SVG', 'font-awesome' ) }
                   </span>
                 </label>
               </div>
@@ -234,7 +235,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                       />
                     </span>
                     <span className={ styles['option-label-text'] }>
-                      Web Font
+                      { __( 'Web Font', 'font-awesome' ) }
                     </span>
                 </label>
               </div>
@@ -272,11 +273,10 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                     />
                   </span>
                   <span className={styles['option-label-text']}>
-                    Enable CSS Pseudo-elements with SVG
+                    { __( 'Enable CSS Pseudo-elements with SVG', 'font-awesome' ) }
                     <span className={styles['option-label-explanation']}>
-                      May cause performance issues.
-                      <a rel="noopener noreferrer" target="_blank" style={{marginLeft: '.5em'}} href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">
-                        Learn more<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} />
+                      { __( 'May cause performance issues.', 'font-awesome' ) } <a rel="noopener noreferrer" target="_blank" style={{marginLeft: '.5em'}} href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">
+                        { __( 'Learn more', 'font-awesome' ) } <FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} />
                       </a>
                     </span>
                   </span>
@@ -340,7 +340,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                     />
                   </span>
                   <span className={ styles['option-label-text'] }>
-                    On
+                    { __( 'On', 'font-awesome' ) }
                   </span>
                 </label>
               </div>
@@ -370,7 +370,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                       />
                     </span>
                     <span className={ styles['option-label-text'] }>
-                      Off
+                      { __( 'Off', 'font-awesome' ) }
                     </span>
                 </label>
               </div>
