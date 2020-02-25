@@ -706,8 +706,10 @@ class FontAwesome {
 			'admin_menu',
 			function() use ( $icon_data ) {
 				$this->screen_id = add_menu_page(
-					'Font Awesome Settings',
-					'Font Awesome',
+					/* translators: add_menu_page page_title */
+					esc_html__( 'Font Awesome Settings', 'font-awesome' ),
+					/* translators: add_menu_page menu_title */
+					esc_html__( 'Font Awesome', 'font-awesome' ),
 					'manage_options',
 					self::OPTIONS_PAGE,
 					array( $this, 'create_admin_page' ),
@@ -720,7 +722,8 @@ class FontAwesome {
 			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
 			function( $links ) {
 				$mylinks = array(
-					'<a href="' . $this->settings_page_url() . '">Settings</a>',
+					/* translators: label for link to settings page on plugin listing */
+					'<a href="' . $this->settings_page_url() . '">' . esc_html__( 'Settings', 'font-awesome' ) . '</a>',
 				);
 				return array_merge( $links, $mylinks );
 			}
