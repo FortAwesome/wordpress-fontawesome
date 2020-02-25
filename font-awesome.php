@@ -350,7 +350,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function initialize() {
-			$initialization_failed_msg = __( 'Font Awesome could not be initialized.', 'font-awesome' );
+			$initialization_failed_msg = __( 'A theme or plugin tried to initialize Font Awesome, but failed.', 'font-awesome' );
 
 			try {
 				self::instance()->select_latest_version_plugin_installation();
