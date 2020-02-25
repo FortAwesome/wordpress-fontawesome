@@ -662,7 +662,7 @@ class FontAwesome {
 							'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, or snooze this warning for a while.',
 							'font-awesome'
 						),
-						'<a href="' . esc_html( $this->settings_page_url() ) . '">',
+						'<a href="' . esc_html( $this->settings_page_url() ) . '&tab=ts">',
 						'</a>'
 					);
 				?>
