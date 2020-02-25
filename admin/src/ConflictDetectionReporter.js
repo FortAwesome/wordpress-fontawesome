@@ -262,7 +262,7 @@ function ConflictDetectionReporter() {
     </div>
 
   return (
-    <div style={ STYLES.container }>
+    <>
       <div style={ STYLES.header }>
         <h1 style={ STYLES.h1 }>{ __( 'Font Awesome Conflict Scanner', 'font-awesome' ) }</h1>
         <p style={ STYLES.adminEyesOnly }>{ __( 'only admins can see this box', 'font-awesome' ) }</p>
@@ -341,7 +341,7 @@ function ConflictDetectionReporter() {
           }[runStatus.code]
         }
       </div>
-    </div>
+    </>
   )
 }
 
