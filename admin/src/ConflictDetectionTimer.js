@@ -65,9 +65,9 @@ export default function ConflictDetectionTimer({ addDescription, children }) {
       (
         timeRemaining > 60
         /* translators: 1: space */
-        ? sprintf( __( '%1$smore minutes to browse your site for trouble', 'font-awesome' ), ' ' )
+        ? sprintf( __( '%1$sminutes left to browse your site for trouble', 'font-awesome' ), ' ' )
         /* translators: 1: space */
-        : sprintf( __( '%1$smore seconds to browse your site for trouble', 'font-awesome' ), ' ' )
+        : sprintf( __( '%1$sseconds left to browse your site for trouble', 'font-awesome' ), ' ' )
       )
     }
     {
