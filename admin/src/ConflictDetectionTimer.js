@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import sharedStyles from './App.module.css'
 import padStart from 'lodash/padStart'
 import dropWhile from 'lodash/dropWhile'
+import { __, sprintf } from '@wordpress/i18n'
 
 const SECONDS_PER_DAY = 60 * 60 * 24
 const SECONDS_PER_HOUR = 60 * 60
@@ -63,8 +64,10 @@ export default function ConflictDetectionTimer({ addDescription, children }) {
       !!addDescription &&
       (
         timeRemaining > 60
-        ? " more minutes to browse your site for trouble"
-        : " more seconds to browse your site for trouble"
+        /* translators: 1: space */
+        ? sprintf( __( '%1$smore minutes to browse your site for trouble', 'font-awesome' ), ' ' )
+        /* translators: 1: space */
+        : sprintf( __( '%1$smore seconds to browse your site for trouble', 'font-awesome' ), ' ' )
       )
     }
     {
