@@ -80,7 +80,7 @@ export function submitPendingUnregisteredClientDeletions() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: __( 'Update failed', 'font-awesome' )
+        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
       })
 
       dispatch({
@@ -127,7 +127,7 @@ export function submitPendingBlocklist() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: __( 'Update failed', 'font-awesome' )
+        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
       })
 
       dispatch({
@@ -164,7 +164,7 @@ export function checkPreferenceConflicts() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: __( 'Update failed', 'font-awesome' )
+        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
       })
 
       dispatch({
@@ -225,6 +225,7 @@ export function queryKits() {
         }
       }
     ).then(response => {
+      // TODO: wrap this in reportResponseError
       const data = get(response, 'data.data')
 
       if ( get( data, 'me' ) ) {
@@ -237,7 +238,7 @@ export function queryKits() {
         dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message: __( 'Failed to fetch kits. Re-set your API Token and try again.', 'font-awesome' )
+          message: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
         })
 
         return
@@ -301,12 +302,12 @@ export function queryKits() {
           type: 'OPTIONS_FORM_SUBMIT_END',
           data,
           success: true,
-          message: 'Kit changes saved'
+          message: __( 'Kit changes saved', 'font-awesome' )
         })
       }).catch(error => {
         const message = reportRequestError({
           response: error,
-          uiMessageDefault: __( 'Failed saving kit changes', 'font-awesome' )
+          uiMessageDefault: __( 'Couldn\'t update latest kit settings', 'font-awesome' )
         })
 
         dispatch({
@@ -555,7 +556,7 @@ export function setConflictDetectionScanner({ enable = true }) {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: __( 'Update failed', 'font-awesome' )
+        uiMessageDefault: __( 'Couldn\'t start the scanner', 'font-awesome' )
       })
 
       dispatch({
