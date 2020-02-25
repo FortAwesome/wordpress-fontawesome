@@ -1,7 +1,7 @@
 import get from 'lodash/get'
 import size from 'lodash/size'
 
-const ERROR_REPORT_PREAMBLE = 'Font Awesome WordPress Plugin Error Report'
+export const ERROR_REPORT_PREAMBLE = 'Font Awesome WordPress Plugin Error Report'
 const UI_MESSAGE_DEFAULT = "D'oh! That failed big time."
 const ERROR_REPORTING_ERROR = "There was an error attempting to report the error."
 const REST_NO_ROUTE_ERROR = 'Oh no! Your web browser could not reach your WordPress server.'
