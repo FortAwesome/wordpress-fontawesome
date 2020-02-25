@@ -220,7 +220,7 @@ class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Oh no! It looks like your API Token was valid, but the Font Awesome API server still returned an invalid response.',
+				'Oh no! It looks like your API Token was valid, but the Font Awesome API server returned an invalid response.',
 				'font-awesome'
 			),
 			$code,
@@ -245,7 +245,7 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'There was a problem trying to store API credentials. Your API Token was valid, but storage failed.',
+				'Your API Token was valid but we couldn\'t save it for some reason.',
 				'font-awesome'
 			),
 			$code,
@@ -269,7 +269,7 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 	public static function webfont_always_enables_pseudo_elements() {
 		return new static(
 			esc_html__(
-				'Pseudo-elements support cannot be disabled with webfont technology.',
+				'Pseudo-elements cannot be disabled with webfont technology.',
 				'font-awesome'
 			)
 		);
@@ -412,7 +412,7 @@ class ReleaseProviderStorageException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Failed to store Font Awesome releases metadata in your WordPress datbase.',
+				'Something when wrong when we tried to store the list of available Font Awesome versions in your WordPress database.',
 				'font-awesome'
 			),
 			$code,
@@ -436,7 +436,7 @@ class ReleaseMetadataMissingException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Somehow, we\'re missing metadata about available Font Awesome releaes, which should have already been queried from the Font Awesome API server. Try deactivating and re-activating the Font Awesome plugin.',
+				'Somehow, we\'re missing the list of available Font Awesome versions. Try deactivating and re-activating the Font Awesome plugin.',
 				'font-awesome'
 			),
 			$code,
