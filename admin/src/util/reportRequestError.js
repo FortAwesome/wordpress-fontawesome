@@ -128,8 +128,9 @@ export default function({ response, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMes
       ? get(response, 'response.data')
       : {} // pass through an error object that has a bad schema to produce a bad schema report
 
-  // If the status is OK and we have no wpError at this point, then there's nothing to report.
-  if(isOK && !wpError) return
+  // If the status is OK and we have no wpError at this point, then there's no
+  // error to process, but we should return what we may have been given as the uiMessage.
+  if(isOK && !wpError) return uiMessageOverride || uiMessageDefault
 
   console.group(ERROR_REPORT_PREAMBLE)
 
