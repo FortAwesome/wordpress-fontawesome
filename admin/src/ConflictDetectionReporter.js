@@ -9,7 +9,6 @@ import size from 'lodash/size'
 import has from 'lodash/has'
 import { __ } from '@wordpress/i18n'
 import ErrorBoundary from './ErrorBoundary'
-import { fatalAlert } from './ErrorFallbackView' 
 
 // NOTE: We don't have Webpack set up to handle the loading of CSS modules in
 // a way that is compatible with our use of Shadow DOM. After a failed attempt
@@ -146,7 +145,11 @@ function withErrorBoundary( Component ) {
       return <div style={ STYLES.container }>
         {
           !!this.state.error
-          ? fatalAlert
+          ? <div>
+            {
+              __( 'badness', 'font-awesome' )
+            }
+            </div>
           : <Component />
         }
       </div>
