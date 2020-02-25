@@ -1858,7 +1858,7 @@ EOT;
 					)
 				) {
 					return preg_replace(
-						'/<script[\s]+(.*?)>/',
+						'/<script(.*?)>/',
 						'<script ' . self::CONFLICT_DETECTION_IGNORE_ATTR . ' \1>',
 						$html
 					);
