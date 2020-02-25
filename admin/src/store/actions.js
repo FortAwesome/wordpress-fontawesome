@@ -225,25 +225,30 @@ export function queryKits() {
         }
       }
     ).then(response => {
-      // TODO: wrap this in reportResponseError
       const data = get(response, 'data.data')
 
-      if ( get( data, 'me' ) ) {
+      // We may receive errors back with a 200 response, such as when
+      // there PreferenceRegistrationExceptions.
+      if( get( data, 'me') ) {
         dispatch({
           type: 'KITS_QUERY_END',
           data,
           success: true
         })
       } else {
+        const message = reportRequestError({
+          response,
+          uiMessageDefault: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
+        })
+
         dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
+          message
         })
 
         return
       }
-
 
       // If we didn't start out with a saved kitToken, we're done.
       // Otherwise, we'll move on to update any config on that kit which
