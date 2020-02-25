@@ -19,6 +19,7 @@ import size from 'lodash/size'
 import isEqual from 'lodash/isEqual'
 import sortedUnique from 'lodash/sortedUniq'
 import difference from 'lodash/difference'
+import { __ } from '@wordpress/i18n'
 
 export default function UnregisteredClientsView() {
   const dispatch = useDispatch()
@@ -83,23 +84,19 @@ export default function UnregisteredClientsView() {
   }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
-    <h3 className={ sharedStyles['section-title'] }>Other themes or plugins</h3>
+    <h3 className={ sharedStyles['section-title'] }>{ __( 'Other themes or plugins', 'font-awesome' ) }</h3>
     {detectedUnregisteredClients
       ? <div>
           <p className={sharedStyles['explanation']}>
-            Below is the list of other versions of Font Awesome from active
-            plugins or themes that are loading on your site. Check off any that
-            you would like to block from loading. Normally this just blocks the
-            conflicting version of Font Awesome and doesn't affect the other
-            functions of the plugin, but you should verify your site works as
-            expected. If you think you've fixed a found conflict, you can clear it
-            from the table.
+            {
+              __( 'Below is the list of other versions of Font Awesome from active plugins or themes that are loading on your site. Check off any that you would like to block from loading. Normally this just blocks the conflicting version of Font Awesome and doesn\'t affect the other functions of the plugin, but you should verify your site works as expected. If you think you\'ve fixed a found conflict, you can clear it from the table.', 'font-awesome' )
+            }
           </p>
           <table className={classnames('widefat', 'striped')}>
             <thead>
             <tr className={sharedStyles['table-header']}>
               <th>
-              <div className={ styles['column-label'] }>Block</div>
+              <div className={ styles['column-label'] }>{ __( 'Block', 'font-awesome' ) }</div>
                 {
                   size( allDetectedConflicts ) > 1 &&
                   <div className={ styles['block-all-container'] }>
@@ -127,23 +124,23 @@ export default function UnregisteredClientsView() {
                           fixedWidth
                         />
                       </span>
-                      All
+                      { __( 'All', 'font-awesome' ) }
                     </label>
                   </div>
                 }
               </th>
               <th>
                 <span className={ styles['column-label'] }>
-                  Type
+                  { __( 'Type', 'font-awesome' ) }
                 </span>
               </th>
               <th>
                 <span className={ styles['column-label'] }>
-                  URL
+                  { __( 'URL', 'font-awesome' ) }
                 </span>
               </th>
               <th>
-                <div className={ styles['column-label'] }>Clear</div>
+                <div className={ styles['column-label'] }>{ __( 'Clear', 'font-awesome' ) }</div>
                 {
                   size( allDetectedConflicts ) > 1 &&
                   <div className={ styles['remove-all-container'] }>
@@ -171,7 +168,7 @@ export default function UnregisteredClientsView() {
                           fixedWidth
                         />
                       </span>
-                      All
+                      { __( 'All', 'font-awesome' ) }
                     </label>
                   </div>
                 }
@@ -213,7 +210,7 @@ export default function UnregisteredClientsView() {
                     {get(unregisteredClients[md5], 'tagName', 'unknown').toLowerCase()}
                   </td>
                   <td>
-                    {unregisteredClients[md5].src || unregisteredClients[md5].href || get(unregisteredClients[md5], 'excerpt') || <em>in page source</em>}
+                    {unregisteredClients[md5].src || unregisteredClients[md5].href || get(unregisteredClients[md5], 'excerpt') || <em>{ __( 'in page source', 'font-awesome' ) }</em>}
                   </td>
                   <td>
                     <input
@@ -253,7 +250,7 @@ export default function UnregisteredClientsView() {
             <FontAwesomeIcon icon={ faThumbsUp } size='lg'/>
           </div>
           <div className={ sharedStyles['space-left'] }>
-            We haven't detected any plugins or themes trying to load Font Awesome.
+            { __( 'We haven\'t detected any plugins or themes trying to load Font Awesome.', 'font-awesome' ) }
           </div>
       </div>
     }
