@@ -222,13 +222,6 @@ export default function KitSelectView({ optionSelector }) {
               : STATUS.apiTokenReadyNoKitsYet
         : STATUS.noApiToken
     
-    if(null === status) {
-      // TODO: use a utility reporting method for this
-      console.group('Font Awesome WordPress Plugin')
-      console.log('There is no active kitToken, yet KitSelector has not queried')
-      throw new Error('Something went wrong. Try reloading the page.')
-    }
-
     const kitRefreshButton = <button onClick={ () => dispatch(queryKits()) } className={ styles['refresh'] }>
       <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faRedo } title="refresh" alt="refresh" />
       <span>
