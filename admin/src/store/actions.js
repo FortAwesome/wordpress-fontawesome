@@ -52,6 +52,18 @@ export function updatePendingUnregisteredClientsForDeletion(data = []) {
   }
 }
 
+export function resetUnregisteredClientsDeletionStatus() {
+  return {
+    type: 'DELETE_UNREGISTERED_CLIENTS_RESET'
+  }
+}
+
+export function resetPendingBlocklistSubmissionStatus() {
+  return {
+    type: 'BLOCKLIST_UPDATE_RESET'
+  }
+}
+
 export function submitPendingUnregisteredClientDeletions() {
   return function(dispatch, getState){
     const { apiNonce, apiUrl, unregisteredClientsDeletionStatus } = getState()
