@@ -40,14 +40,10 @@ export function mountConflictDetectionReporter({ report = () => {}, store, now =
     shadow.appendChild(faStyle)
     shadow.appendChild(shadowContainer)
 
-    // TODO: need a different ErrorFallbackView for the ErrorBoundary used by the reporter, since
-    // it's smaller.
     ReactDOM.render(
-      <ErrorBoundary>
-        <Provider store={ store }>
-          <ConflictDetectionReporter />
-        </Provider>
-      </ErrorBoundary>,
+      <Provider store={ store }>
+        <ConflictDetectionReporter />
+      </Provider>,
       shadowContainer
     )
   }
