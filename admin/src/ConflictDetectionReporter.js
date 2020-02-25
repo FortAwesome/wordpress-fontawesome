@@ -8,6 +8,8 @@ import ConflictDetectionTimer from './ConflictDetectionTimer'
 import size from 'lodash/size'
 import has from 'lodash/has'
 import { __ } from '@wordpress/i18n'
+import ErrorBoundary from './ErrorBoundary'
+import { fatalAlert } from './ErrorFallbackView' 
 
 // NOTE: We don't have Webpack set up to handle the loading of CSS modules in
 // a way that is compatible with our use of Shadow DOM. After a failed attempt
@@ -138,7 +140,21 @@ const STYLES = {
   }
 }
 
-export default function ConflictDetectionReporter() {
+function withErrorBoundary( Component ) {
+  return class extends ErrorBoundary {
+    render() {
+      return <div style={ STYLES.container }>
+        {
+          !!this.state.error
+          ? fatalAlert
+          : <Component />
+        }
+      </div>
+    }
+  }
+}
+
+function ConflictDetectionReporter() {
   const dispatch = useDispatch()
   const settingsPageUrl = useSelector(state => state.settingsPageUrl)
   const troubleshootTabUrl = `${settingsPageUrl}&tab=ts`
@@ -328,3 +344,5 @@ export default function ConflictDetectionReporter() {
     </div>
   )
 }
+
+export default withErrorBoundary( ConflictDetectionReporter )

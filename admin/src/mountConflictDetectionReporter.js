@@ -2,7 +2,6 @@ import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ErrorBoundary from './ErrorBoundary'
 import { Provider } from 'react-redux'
 import retargetEvents from 'react-shadow-dom-retarget-events'
 
