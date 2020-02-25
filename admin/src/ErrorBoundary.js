@@ -1,5 +1,6 @@
 import React from 'react'
 import ErrorFallbackView from './ErrorFallbackView'
+import { ERROR_REPORT_PREAMBLE } from './util/reportRequestError'
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -11,13 +12,17 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    console.group(ERROR_REPORT_PREAMBLE)
+    console.log( error )
+    console.log( errorInfo )
+    console.groupEnd()
     this.setState({error, errorInfo})
   }
 
   render() {
     if (this.state.error) {
       //render fallback UI
-      return <ErrorFallbackView error={ this.state.error } errorInfo={ this.state.errorInfo }/>
+      return <ErrorFallbackView />
     } else {
       //when there's not an error, render children untouched
       return this.props.children
