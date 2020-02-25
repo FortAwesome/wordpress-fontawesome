@@ -18,6 +18,7 @@ import {
   faSpinner } from '@fortawesome/free-solid-svg-icons'
 import classnames from 'classnames'
 import size from 'lodash/size'
+import { __ } from '@wordpress/i18n'
 
 export default function TroubleshootTab() {
   const dispatch = useDispatch()
@@ -68,7 +69,7 @@ export default function TroubleshootTab() {
             name="submit"
             id="submit"
             className="button button-primary"
-            value="Save Changes"
+            value={ __( 'Save Changes', 'font-awesome' ) }
             disabled={ !hasPendingChanges }
             onClick={ handleSubmitClick }
           />
@@ -98,7 +99,7 @@ export default function TroubleshootTab() {
                 <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
               </span>
             : hasPendingChanges
-              ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
+              ? <span className={ sharedStyles['submit-status'] }>{ __( 'you have pending changes', 'font-awesome' ) }</span>
               : null
           }
         </div>
