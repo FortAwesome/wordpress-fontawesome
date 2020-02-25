@@ -8,6 +8,7 @@ import Alert from './Alert'
 import get from 'lodash/get'
 import has from 'lodash/has'
 import size from 'lodash/size'
+import { __ } from '@wordpress/i18n'
 
 export default function KitConfigView({ kitToken }) {
   const kitTokenIsActive = useSelector(state => get(state, 'options.kitToken') === kitToken)
@@ -15,10 +16,6 @@ export default function KitConfigView({ kitToken }) {
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
   const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
-
-  if(!kitTokenIsActive && !kitTokenApiData) {
-    throw new Error('Oh no! We could not find the kit data for the selected kit token. Try reloading this page.')
-  }
 
   const technology = useSelector(state =>
     kitTokenIsActive
@@ -64,41 +61,47 @@ export default function KitConfigView({ kitToken }) {
     }
   }
 
-  return <div className={ styles['kit-config-view-container'] }>
-    <table className={ styles['selected-kit-settings'] }>
-      <tbody>
-        <tr>
-          <th className={ styles['label'] }>Icons</th>
-          <td className={ styles['value'] }>
-            { usePro ? 'Pro' : 'Free' }
-            { getDetectionStatusForOption('usePro') }
-          </td>
-        </tr>
-        <tr>
-          <th className={ styles['label'] }>Technology</th>
-          <td className={ styles['value'] }>
-            { technology }
-            { getDetectionStatusForOption('technology') }
-          </td>
-        </tr>
-        <tr>
-          <th className={ styles['label'] }>Version</th>
-          <td className={ styles['value'] }>
-            { version }
-            { getDetectionStatusForOption('version') }
-          </td>
-        </tr>
-        <tr>
-          <th className={ styles['label'] }>Version 4 Compatability</th>
-          <td className={ styles['value'] }>
-            { v4Compat ? 'On' : 'Off' }
-            { getDetectionStatusForOption('v4Compat') }
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p className={ styles['tip-text'] }>Make changes on <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/kits">fontawesome.com/kits<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a></p>
-  </div>
+  return (!kitTokenIsActive && !kitTokenApiData) 
+    ? <Alert type="warning" title={ __('Oh no! We could not find the kit data for the selected kit token.', 'font-awesome' )}>
+        {
+          __( 'Try reloading.', 'font-awesome' )
+        }
+      </Alert>
+    : <div className={ styles['kit-config-view-container'] }>
+        <table className={ styles['selected-kit-settings'] }>
+          <tbody>
+            <tr>
+              <th className={ styles['label'] }>Icons</th>
+              <td className={ styles['value'] }>
+                { usePro ? 'Pro' : 'Free' }
+                { getDetectionStatusForOption('usePro') }
+              </td>
+            </tr>
+            <tr>
+              <th className={ styles['label'] }>Technology</th>
+              <td className={ styles['value'] }>
+                { technology }
+                { getDetectionStatusForOption('technology') }
+              </td>
+            </tr>
+            <tr>
+              <th className={ styles['label'] }>Version</th>
+              <td className={ styles['value'] }>
+                { version }
+                { getDetectionStatusForOption('version') }
+              </td>
+            </tr>
+            <tr>
+              <th className={ styles['label'] }>Version 4 Compatability</th>
+              <td className={ styles['value'] }>
+                { v4Compat ? 'On' : 'Off' }
+                { getDetectionStatusForOption('v4Compat') }
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p className={ styles['tip-text'] }>Make changes on <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/kits">fontawesome.com/kits<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a></p>
+      </div>
 }
 
 KitConfigView.propTypes = {
