@@ -236,6 +236,12 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
                     </span>
                     <span className={ styles['option-label-text'] }>
                       { __( 'Web Font', 'font-awesome' ) }
+                      {
+                        technology === 'webfont' &&
+                          <span className={styles['option-label-explanation']}>
+                            { __( 'CSS Pseudo-elements are enabled by default with Web Font', 'font-awesome' ) }
+                          </span>
+                      }
                     </span>
                 </label>
               </div>
