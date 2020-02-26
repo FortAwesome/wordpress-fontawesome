@@ -11,6 +11,36 @@ describe('reportRequestError', () => {
     console.info.mockClear()
   })
 
+  describe('with no error', () => {
+    const response = {
+      data: {},
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+      request: {}
+    }
+
+    describe('with no given default message', () => {
+      test('returns reporter default message', () => {
+        const message = reportRequestError({ response })
+
+        expect(message).toMatch(/D\'oh/)
+      })
+    })
+
+    describe('with a given default message', () => {
+      test('returns given default message', () => {
+        const message = reportRequestError({
+          response,
+          uiMessageDefault: 'foo'
+        })
+
+        expect(message).toEqual('foo')
+      })
+    })
+  })
+
   describe('with single fontawesome_client_exception', () => {
     const error = {
       response: {

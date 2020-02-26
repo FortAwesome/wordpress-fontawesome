@@ -6,14 +6,20 @@ import find from 'lodash/find'
 import has from 'lodash/has'
 import size from 'lodash/size'
 import classnames from 'classnames'
+import { __, sprintf } from '@wordpress/i18n'
 
-// TODO: refactor this with the one in OptionsSetter
 const UNSPECIFIED_INDICATOR = '-'
 
 function formatVersionPreference(versionPreference = []) {
   return versionPreference
     .map(pref => `${pref[1]}${pref[0]}`)
-    .join(' and ')
+    .join(
+      sprintf(
+        /* translators: 1: space */
+        __('%1$sand%1$s'),
+        ' '
+      )
+    )
 }
 
 export default function ClientPreferencesView() {
@@ -23,31 +29,34 @@ export default function ClientPreferencesView() {
   const hasConflicts = size(conflicts)
 
   return <div className={ styles['client-requirements'] }>
-    <h3 className={ sharedStyles['section-title'] }>Registered themes or plugins</h3>
+    <h3 className={ sharedStyles['section-title'] }>{ __( 'Registered themes or plugins', 'font-awesome' ) }</h3>
     {
       hasAdditionalClients
       ?
         <div>
           <p className={sharedStyles['explanation']}>
-            Below is the list of active themes or plugins using Font Awesome
-            that have opted-in to share information about the settings they
-            are expecting.
+            {
+              __(
+                'Below is the list of active themes or plugins using Font Awesome that have opted-in to share information about the settings they are expecting.',
+                'font-awesome'
+              )
+            }
+            
           { hasConflicts
-            ? <span className={sharedStyles['explanation']}> The highlights
-            show where the settings are mismatched. You might want to adjust
-            your settings to match, or your icons may not work as expected.
+            ? <span className={sharedStyles['explanation']}>
+              { __( 'The highlights show where the settings are mismatched. You might want to adjust your settings to match, or your icons may not work as expected.', 'font-awesome' ) }
             </span>
             : null
           }</p>
           <table className={ classnames( 'widefat', 'striped' ) }>
             <thead>
               <tr className={ sharedStyles['table-header'] }>
-                <th>Name</th>
-                <th className={ classnames({ [styles.conflicted]: !! conflicts['usePro'] }) }>Icons</th>
-                <th className={ classnames({ [styles.conflicted]: !! conflicts['technology'] }) }>Technology</th>
-                <th className={ classnames({ [styles.conflicted]: !! conflicts['version'] }) }>Version</th>
-                <th className={ classnames({ [styles.conflicted]: !! conflicts['v4Compat'] }) }>V4 Compat</th>
-                <th className={ classnames({ [styles.conflicted]: !! conflicts['pseudoElements'] }) }>CSS Pseudo-elements</th>
+                <th>{ __( 'Name', 'font-awesome' ) }</th>
+                <th className={ classnames({ [styles.conflicted]: !! conflicts['usePro'] }) }>{ __( 'Icons', 'font-awesome' ) }</th>
+                <th className={ classnames({ [styles.conflicted]: !! conflicts['technology'] }) }>{ __( 'Technology', 'font-awesome' ) }</th>
+                <th className={ classnames({ [styles.conflicted]: !! conflicts['version'] }) }>{ __( 'Version', 'font-awesome' ) }</th>
+                <th className={ classnames({ [styles.conflicted]: !! conflicts['v4Compat'] }) }>{ __( 'V4 Compat', 'font-awesome' ) }</th>
+                <th className={ classnames({ [styles.conflicted]: !! conflicts['pseudoElements'] }) }>{ __( 'CSS Pseudo-elements', 'font-awesome' ) }</th>
               </tr>
             </thead>
             <tbody>
@@ -102,7 +111,7 @@ export default function ClientPreferencesView() {
         </div>
       :
         <p className={ sharedStyles['explanation'] }>
-          No active themes or plugins have requested preferences for Font Awesome.
+          { __( 'No active themes or plugins have requested preferences for Font Awesome.', 'font-awesome' ) }
         </p>
     }
   </div>

@@ -6,13 +6,19 @@ import ConflictDetectionScannerSection from './ConflictDetectionScannerSection'
 import sharedStyles from './App.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSelector, useDispatch } from 'react-redux'
-import { submitPendingBlocklist, submitPendingUnregisteredClientDeletions } from './store/actions'
+import {
+  submitPendingBlocklist,
+  submitPendingUnregisteredClientDeletions,
+  resetPendingBlocklistSubmissionStatus,
+  resetUnregisteredClientsDeletionStatus
+} from './store/actions'
 import {
   faCheck,
   faSkull,
   faSpinner } from '@fortawesome/free-solid-svg-icons'
 import classnames from 'classnames'
 import size from 'lodash/size'
+import { __ } from '@wordpress/i18n'
 
 export default function TroubleshootTab() {
   const dispatch = useDispatch()
@@ -35,8 +41,17 @@ export default function TroubleshootTab() {
   function handleSubmitClick(e) {
     e.preventDefault()
 
-    dispatch(submitPendingBlocklist())
-    dispatch(submitPendingUnregisteredClientDeletions())
+    if ( blocklistUpdateStatus.pending ) {
+      dispatch(submitPendingBlocklist())
+    } else {
+      dispatch(resetPendingBlocklistSubmissionStatus())
+    }
+
+    if ( size( unregisteredClientsDeletionStatus.pending ) > 0 ) {
+      dispatch(submitPendingUnregisteredClientDeletions())
+    } else {
+      dispatch(resetUnregisteredClientsDeletionStatus())
+    }
   }
 
   return <>
@@ -54,7 +69,7 @@ export default function TroubleshootTab() {
             name="submit"
             id="submit"
             className="button button-primary"
-            value="Save Changes"
+            value={ __( 'Save Changes', 'font-awesome' ) }
             disabled={ !hasPendingChanges }
             onClick={ handleSubmitClick }
           />
@@ -69,10 +84,10 @@ export default function TroubleshootTab() {
                   </div>
                   <div className={ sharedStyles['explanation'] }>
                     {
-                      !!blocklistUpdateStatus.submitMessage && <p> { blocklistUpdateStatus.submitMessage } </p>
+                      !!blocklistUpdateStatus.message && <p> { blocklistUpdateStatus.message } </p>
                     }
                     {
-                      !!unregisteredClientsDeletionStatus.submitMessage && <p> { unregisteredClientsDeletionStatus.submitMessage } </p>
+                      !!unregisteredClientsDeletionStatus.message && <p> { unregisteredClientsDeletionStatus.message } </p>
                     }
                   </div>
                 </div>
@@ -84,7 +99,7 @@ export default function TroubleshootTab() {
                 <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
               </span>
             : hasPendingChanges
-              ? <span className={ sharedStyles['submit-status'] }>you have pending changes</span>
+              ? <span className={ sharedStyles['submit-status'] }>{ __( 'you have pending changes', 'font-awesome' ) }</span>
               : null
           }
         </div>

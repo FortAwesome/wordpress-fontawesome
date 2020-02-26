@@ -372,6 +372,11 @@ class FontAwesome {
 
 					$this->maybe_enqueue_admin_js_bundle();
 
+					// Setup JavaScript internationalization if we're on WordPress 5.0+.
+					if ( function_exists( 'wp_set_script_translations' ) ) {
+						wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
+					}
+
 					if ( $this->using_kit() ) {
 						$this->enqueue_kit( $this->options()['kitToken'] );
 					} else {
@@ -657,7 +662,7 @@ class FontAwesome {
 							'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, or snooze this warning for a while.',
 							'font-awesome'
 						),
-						'<a href="' . esc_html( $this->settings_page_url() ) . '">',
+						'<a href="' . esc_html( $this->settings_page_url() ) . '&tab=ts">',
 						'</a>'
 					);
 				?>
@@ -701,8 +706,10 @@ class FontAwesome {
 			'admin_menu',
 			function() use ( $icon_data ) {
 				$this->screen_id = add_menu_page(
-					'Font Awesome Settings',
-					'Font Awesome',
+					/* translators: add_menu_page page_title */
+					esc_html__( 'Font Awesome Settings', 'font-awesome' ),
+					/* translators: add_menu_page menu_title */
+					esc_html__( 'Font Awesome', 'font-awesome' ),
 					'manage_options',
 					self::OPTIONS_PAGE,
 					array( $this, 'create_admin_page' ),
@@ -715,7 +722,8 @@ class FontAwesome {
 			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
 			function( $links ) {
 				$mylinks = array(
-					'<a href="' . $this->settings_page_url() . '">Settings</a>',
+					/* translators: label for link to settings page on plugin listing */
+					'<a href="' . $this->settings_page_url() . '">' . esc_html__( 'Settings', 'font-awesome' ) . '</a>',
 				);
 				return array_merge( $links, $mylinks );
 			}

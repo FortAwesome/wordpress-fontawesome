@@ -6,6 +6,7 @@ import SettingsTab from './SettingsTab'
 import TroubleshootTab from './TroubleshootTab'
 import { ADMIN_TAB_SETTINGS, ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import { setActiveAdminTab } from './store/actions'
+import { __ } from '@wordpress/i18n'
 
 export default function FontAwesomeAdminView() {
   const activeAdminTab = useSelector(state => state.activeAdminTab || ADMIN_TAB_SETTINGS )
@@ -19,13 +20,13 @@ export default function FontAwesomeAdminView() {
           onClick={() => dispatch(setActiveAdminTab(ADMIN_TAB_SETTINGS))}
           disabled={ activeAdminTab === ADMIN_TAB_SETTINGS }
         >
-          Settings
+          { __( 'Settings', 'font-awesome' ) }
         </button>
         <button
           onClick={() => dispatch(setActiveAdminTab(ADMIN_TAB_TROUBLESHOOT))}
           disabled={ activeAdminTab === ADMIN_TAB_TROUBLESHOOT }
         >
-          Troubleshoot
+          { __( 'Troubleshoot', 'font-awesome' ) }
         </button>
       </div>
       {

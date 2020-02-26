@@ -79,17 +79,20 @@ function optionsFormState(
   }
 }
 
-function blocklistUpdateStatus(
-  state = {
-    hasSubmitted: false,
-    isSubmitting: false,
-    success: false,
-    pending: null,
-    message: ''
-  }, action = {}) {
+const INITIAL_STATE_BLOCKLIST_UPDATE_STATUS = {
+  hasSubmitted: false,
+  isSubmitting: false,
+  pending: null,
+  success: false,
+  message: ''
+}
+
+function blocklistUpdateStatus( state = INITIAL_STATE_BLOCKLIST_UPDATE_STATUS, action = {} ) {
   const { type, success, message } = action
   
   switch(type) {
+    case 'BLOCKLIST_UPDATE_RESET':
+      return INITIAL_STATE_BLOCKLIST_UPDATE_STATUS
     case 'BLOCKLIST_UPDATE_START':
       return { ...state, isSubmitting: true }
     case 'BLOCKLIST_UPDATE_END':
@@ -111,19 +114,24 @@ function blocklistUpdateStatus(
   }
 }
 
+const INITIAL_STATE_UNREGISTERED_CLIENTS_DELETION_STATUS = {
+  hasSubmitted: false,
+  isSubmitting: false,
+  pending: [],
+  success: false,
+  message: ''
+}
+
 function unregisteredClientsDeletionStatus(
-  state = {
-    hasSubmitted: false,
-    isSubmitting: false,
-    pending: [],
-    success: false,
-    message: ''
-  }, action = {}) {
+  state = INITIAL_STATE_UNREGISTERED_CLIENTS_DELETION_STATUS,
+  action = {} ) {
   const { type, success, message } = action
   
   switch(type) {
+    case 'DELETE_UNREGISTERED_CLIENTS_RESET':
+      return INITIAL_STATE_UNREGISTERED_CLIENTS_DELETION_STATUS
     case 'DELETE_UNREGISTERED_CLIENTS_START':
-      return { ...state, isSubmitting: true }
+      return { ...state, hasSubmitted: false, success: false, isSubmitting: true }
     case 'DELETE_UNREGISTERED_CLIENTS_END':
       return { ...state, isSubmitting: false, pending: [], hasSubmitted: true, success, message }
     case 'UPDATE_PENDING_UNREGISTERED_CLIENTS_FOR_DELETION':

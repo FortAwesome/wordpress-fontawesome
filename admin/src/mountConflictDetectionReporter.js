@@ -2,7 +2,6 @@ import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ErrorBoundary from './ErrorBoundary'
 import { Provider } from 'react-redux'
 import retargetEvents from 'react-shadow-dom-retarget-events'
 
@@ -40,14 +39,10 @@ export function mountConflictDetectionReporter({ report = () => {}, store, now =
     shadow.appendChild(faStyle)
     shadow.appendChild(shadowContainer)
 
-    // TODO: need a different ErrorFallbackView for the ErrorBoundary used by the reporter, since
-    // it's smaller.
     ReactDOM.render(
-      <ErrorBoundary>
-        <Provider store={ store }>
-          <ConflictDetectionReporter />
-        </Provider>
-      </ErrorBoundary>,
+      <Provider store={ store }>
+        <ConflictDetectionReporter />
+      </Provider>,
       shadowContainer
     )
   }

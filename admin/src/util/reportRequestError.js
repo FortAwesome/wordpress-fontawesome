@@ -1,13 +1,14 @@
 import get from 'lodash/get'
 import size from 'lodash/size'
+import { __ } from '@wordpress/i18n'
 
-export const ERROR_REPORT_PREAMBLE = 'Font Awesome WordPress Plugin Error Report'
-const UI_MESSAGE_DEFAULT = "D'oh! That failed big time."
-const ERROR_REPORTING_ERROR = "There was an error attempting to report the error."
-const REST_NO_ROUTE_ERROR = 'Oh no! Your web browser could not reach your WordPress server.'
-const REST_COOKIE_INVALID_NONCE_ERROR = 'It looks like your web browser session expired. Try logging out and log back in to WordPress admin.'
-const OK_ERROR_PREAMBLE = 'The last request was successful, but it also returned the following error(s), which might be helpful for troubleshooting.'
-const ONE_OF_MANY_ERRORS_GROUP_LABEL = 'Error'
+export const ERROR_REPORT_PREAMBLE = __( 'Font Awesome WordPress Plugin Error Report', 'font-awesome' )
+const UI_MESSAGE_DEFAULT = __( 'D\'oh! That failed big time.', 'font-awesome' )
+const ERROR_REPORTING_ERROR = __( 'There was an error attempting to report the error.', 'font-awesome' )
+const REST_NO_ROUTE_ERROR = __( 'Oh no! Your web browser could not reach your WordPress server.', 'font-awesome' )
+const REST_COOKIE_INVALID_NONCE_ERROR = __( 'It looks like your web browser session expired. Try logging out and log back in to WordPress admin.', 'font-awesome' )
+const OK_ERROR_PREAMBLE = __( 'The last request was successful, but it also returned the following error(s), which might be helpful for troubleshooting.', 'font-awesome' )
+const ONE_OF_MANY_ERRORS_GROUP_LABEL = __( 'Error', 'font-awesome' )
 
 /**
  * This both sends appropriately formatted output to the console via console.info,
@@ -127,8 +128,9 @@ export default function({ response, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMes
       ? get(response, 'response.data')
       : {} // pass through an error object that has a bad schema to produce a bad schema report
 
-  // If the status is OK and we have no wpError at this point, then there's nothing to report.
-  if(isOK && !wpError) return
+  // If the status is OK and we have no wpError at this point, then there's no
+  // error to process, but we should return what we may have been given as the uiMessage.
+  if(isOK && !wpError) return uiMessageOverride || uiMessageDefault
 
   console.group(ERROR_REPORT_PREAMBLE)
 

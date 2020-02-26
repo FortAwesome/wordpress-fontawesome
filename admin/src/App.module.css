@@ -21,7 +21,7 @@
 
 div.submit-status.fail {
   display: flex;
-	margin-top: 1em;
+	margin: 1em;
 	background-color: #fda09a;
 	border-radius: 5px;
 	max-width: 450px;

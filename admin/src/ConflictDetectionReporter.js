@@ -2,11 +2,13 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setConflictDetectionScanner, userAttemptToStopScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faCog, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faCog, faExclamationTriangle, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import size from 'lodash/size'
 import has from 'lodash/has'
+import { __ } from '@wordpress/i18n'
+import ErrorBoundary from './ErrorBoundary'
 
 // NOTE: We don't have Webpack set up to handle the loading of CSS modules in
 // a way that is compatible with our use of Shadow DOM. After a failed attempt
@@ -15,16 +17,46 @@ import has from 'lodash/has'
 // See: https://reactjs.org/docs/dom-elements.html#style
 
 const STATUS = {
-  running: 'Running',
-  done: 'Done',
-  submitting: 'Submitting',
-  none: 'None',
-  error: 'Error',
-  expired: 'Expired',
-  ready: 'Ready',
-  stopped: 'Stopped',
-  stopping: 'Stopping',
-  restarting: 'Restarting'
+  running: {
+    code: 'Running',
+    display: __( 'Running', 'font-awesome' )
+  },
+  done: {
+    code: 'Done',
+    display: __( 'Done', 'font-awesome' )
+  },
+  submitting: {
+    code: 'Submitting',
+    display: __( 'Submitting', 'font-awesome' )
+  },
+  none: {
+    code: 'None',
+    display: __( 'None', 'font-awesome' )
+  },
+  error: {
+    code: 'Error',
+    display: __( 'Error', 'font-awesome' )
+  },
+  expired: {
+    code: 'Expired',
+    display: __( 'Expired', 'font-awesome' )
+  },
+  ready: {
+    code: 'Ready',
+    display: __( 'Ready', 'font-awesome' )
+  },
+  stopped: {
+    code: 'Stopped',
+    display: __( 'Stopped', 'font-awesome' )
+  },
+  stopping: {
+    code: 'Stopping',
+    display: __( 'Stopping', 'font-awesome' )
+  },
+  restarting: {
+    code: 'Restarting',
+    display: __( 'Restarting', 'font-awesome' )
+  }
 }
 
 const STYLES = {
@@ -104,10 +136,34 @@ const STYLES = {
     color: '#fff', 
     opacity: '.7',
     cursor: 'pointer'
+  },
+  badness: {
+    padding: '20px 25px',
+    backgroundColor: '#FFC100',
+    color: '#202529'
   }
 }
 
-export default function ConflictDetectionReporter() {
+function withErrorBoundary( Component ) {
+  return class extends ErrorBoundary {
+    render() {
+      return <div style={ STYLES.container }>
+        {
+          !!this.state.error
+          ? <div style={ STYLES.badness }>
+              <FontAwesomeIcon icon={ faExclamationTriangle } />
+            {
+              __( ' Whoops, this is embarrassing! Some unexpected error has occurred. There might be some additional diagnostic information in the JavaScript console.', 'font-awesome' )
+            }
+            </div>
+          : <Component />
+        }
+      </div>
+    }
+  }
+}
+
+function ConflictDetectionReporter() {
   const dispatch = useDispatch()
   const settingsPageUrl = useSelector(state => state.settingsPageUrl)
   const troubleshootTabUrl = `${settingsPageUrl}&tab=ts`
@@ -193,34 +249,32 @@ export default function ConflictDetectionReporter() {
 
   const expiredOrStoppedDiv = 
     <div>
-        <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;Results to Review</span></h2>
-        <p style={ STYLES.p }>Manage results or restart the scanner
-        {
-          currentlyOnTroubleshootTab
-          ? ' here on the '
-          : ' on the '
-        }
-        {
-          currentlyOnTroubleshootTab
-          ? <span> Troubleshoot </span>
-          : <span> <a href={ troubleshootTabUrl } style={ STYLES.link }>Troubleshoot</a> </span>
-        }
-        tab
+        <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;{ __( 'Results to Review', 'font-awesome' ) }</span></h2>
+        <p style={ STYLES.p }>
+          {
+            currentlyOnTroubleshootTab
+            ? __( 'Manage results or restart the scanner here on the Troubleshoot tab.', 'font-awesome' )
+            : <>
+              {
+                __( 'Manage results or restart the scanner on the Troubleshoot tab.', 'font-awesome' )
+              } <a href={ troubleshootTabUrl } style={ STYLES.link }>{ __('Go', 'font-awesome' ) }</a>
+              </>
+          }
       </p>
     </div>
 
   const stoppingOrSubmittingDiv =
     <div>
       <div style={ STYLES.status }>
-        <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus }</span></h2>
+        <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus.display }</span></h2>
       </div>
     </div>
 
   return (
-    <div style={ STYLES.container }>
+    <>
       <div style={ STYLES.header }>
-        <h1 style={ STYLES.h1 }>Font Awesome Conflict Scanner</h1>
-        <p style={ STYLES.adminEyesOnly }>only admins can see this box</p>
+        <h1 style={ STYLES.h1 }>{ __( 'Font Awesome Conflict Scanner', 'font-awesome' ) }</h1>
+        <p style={ STYLES.adminEyesOnly }>{ __( 'only admins can see this box', 'font-awesome' ) }</p>
       </div>
       <div style={ STYLES.content }>
 
@@ -229,27 +283,27 @@ export default function ConflictDetectionReporter() {
             None:
               <div>
                 <div style={ STYLES.status }>
-                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faGrin } size="sm" /> <span>All clear!</span></h2>
-                  <p style={ STYLES.p }>No new conflicts found on this page.</p>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faGrin } size="sm" /> <span>{ __( 'All clear!', 'font-awesome' ) }</span></h2>
+                  <p style={ STYLES.p }>{ __( 'No new conflicts found on this page.', 'font-awesome' ) }</p>
                 </div>
               </div>,
             Running:
               <div>
                 <div style={ STYLES.status }>
-                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>Scanning...</span></h2>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ __( 'Scanning', 'font-awesome' ) }...</span></h2>
                 </div>
               </div>,
             Restarting:
               <div>
                 <div style={ STYLES.status }>
-                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>Restarting...</span></h2>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ __( 'Restarting', 'font-awesome' ) }...</span></h2>
                 </div>
               </div>,
             Ready:
               <div>
                 <div>
-                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faThumbsUp } size="sm" /> Proton pack charged!</h2>
-                  <p style={ STYLES.p }>Wander through the pages of your web site and this scanner will track progress.</p>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faThumbsUp } size="sm" /> { __( 'Proton pack charged!', 'font-awesome' ) }</h2>
+                  <p style={ STYLES.p }>{ __( 'Wander through the pages of your web site and this scanner will track progress.', 'font-awesome' ) }</p>
                 </div>
               </div>,
             Submitting: stoppingOrSubmittingDiv,
@@ -257,14 +311,14 @@ export default function ConflictDetectionReporter() {
             Done:
               <div>
                 <div style={ STYLES.status }>
-                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCheckCircle } size="sm" /> <span>Page scan complete</span></h2>
+                  <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCheckCircle } size="sm" /> <span>{ __( 'Page scan complete', 'font-awesome' ) }</span></h2>
                 </div>
-                <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</span> <span>new conflicts found on this page</span></p>
+                <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</span> <span>{ __( 'new conflicts found on this page', 'font-awesome' ) }</span></p>
                 <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( unregisteredClients ) }</span> <span>total found</span>
                 {
                   currentlyOnTroubleshootTab ?
-                  <span>&nbsp;(manage conflicts here on the Troubleshoot tab)</span>
-                  : <span>&nbsp;(<a href={ troubleshootTabUrl } style={ STYLES.link }>manage</a>)</span>
+                  <span>&nbsp;({ __( 'manage conflicts here on the Troubleshoot tab', 'font-awesome' ) })</span>
+                  : <span>&nbsp;(<a href={ troubleshootTabUrl } style={ STYLES.link }>{ __( 'manage', 'font-awesome' ) }</a>)</span>
                 }
                 </p>
               </div>,
@@ -272,30 +326,32 @@ export default function ConflictDetectionReporter() {
             Stopped: expiredOrStoppedDiv,
             Error:
               <div>
-                <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faSkull } /> <span>Don’t cross the streams! It would be bad.</span></h2>
+                <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faSkull } /> <span>{ __( 'Don\'t cross the streams! It would be bad.', 'font-awesome' ) }</span></h2>
                 <p style={ STYLES.p }>
                   { errorMessage }
                 </p>
               </div>
-          }[runStatus]
+          }[runStatus.code]
         }
       </div>
       <div style={ STYLES.timerRow }>
         <span>
           <ConflictDetectionTimer addDescription>
-            <button style={ STYLES.button } title="Stop timer" onClick={() => stopScanner()}>
+            <button style={ STYLES.button } title={ __( 'Stop timer', 'font-awesome' ) } onClick={() => stopScanner()}>
               <FontAwesomeIcon icon={ faTimesCircle } size="lg" />
             </button>
           </ConflictDetectionTimer>
         </span>
         {
           {
-            Expired: "Timer expired",
-            Stopped: "Timer stopped",
+            Expired: __( 'Timer expired', 'font-awesome' ),
+            Stopped: __( 'Timer stopped', 'font-awesome' ),
             Restarting: null
-          }[runStatus]
+          }[runStatus.code]
         }
       </div>
-    </div>
+    </>
   )
 }
+
+export default withErrorBoundary( ConflictDetectionReporter )

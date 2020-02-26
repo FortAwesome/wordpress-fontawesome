@@ -4,6 +4,7 @@ import size from 'lodash/size'
 import get from 'lodash/get'
 import find from 'lodash/find'
 import reportRequestError from '../util/reportRequestError'
+import { __ } from '@wordpress/i18n'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -51,6 +52,18 @@ export function updatePendingUnregisteredClientsForDeletion(data = []) {
   }
 }
 
+export function resetUnregisteredClientsDeletionStatus() {
+  return {
+    type: 'DELETE_UNREGISTERED_CLIENTS_RESET'
+  }
+}
+
+export function resetPendingBlocklistSubmissionStatus() {
+  return {
+    type: 'BLOCKLIST_UPDATE_RESET'
+  }
+}
+
 export function submitPendingUnregisteredClientDeletions() {
   return function(dispatch, getState){
     const { apiNonce, apiUrl, unregisteredClientsDeletionStatus } = getState()
@@ -79,7 +92,7 @@ export function submitPendingUnregisteredClientDeletions() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
       })
 
       dispatch({
@@ -126,7 +139,7 @@ export function submitPendingBlocklist() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
       })
 
       dispatch({
@@ -163,7 +176,7 @@ export function checkPreferenceConflicts() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
       })
 
       dispatch({
@@ -226,22 +239,28 @@ export function queryKits() {
     ).then(response => {
       const data = get(response, 'data.data')
 
-      if ( get( data, 'me' ) ) {
+      // We may receive errors back with a 200 response, such as when
+      // there PreferenceRegistrationExceptions.
+      if( get( data, 'me') ) {
         dispatch({
           type: 'KITS_QUERY_END',
           data,
           success: true
         })
       } else {
+        const message = reportRequestError({
+          response,
+          uiMessageDefault: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
+        })
+
         dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message: 'Failed to fetch kits. Re-set your API Token and try again.'
+          message
         })
 
         return
       }
-
 
       // If we didn't start out with a saved kitToken, we're done.
       // Otherwise, we'll move on to update any config on that kit which
@@ -300,12 +319,12 @@ export function queryKits() {
           type: 'OPTIONS_FORM_SUBMIT_END',
           data,
           success: true,
-          message: 'Kit changes saved'
+          message: __( 'Kit changes saved', 'font-awesome' )
         })
       }).catch(error => {
         const message = reportRequestError({
           response: error,
-          uiMessageDefault: 'Failed saving kit changes'
+          uiMessageDefault: __( 'Couldn\'t update latest kit settings', 'font-awesome' )
         })
 
         dispatch({
@@ -317,7 +336,7 @@ export function queryKits() {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Failed to fetch kits'
+        uiMessageDefault: __( 'Failed to fetch kits', 'font-awesome' )
       })
 
       dispatch({
@@ -350,7 +369,7 @@ export function submitPendingOptions() {
         type: 'OPTIONS_FORM_SUBMIT_END',
         data,
         success: true,
-        message: 'Changes saved'
+        message: __( 'Changes saved', 'font-awesome' )
       })
 
       // We may receive errors back with a 200 response, such as when
@@ -395,7 +414,7 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
         type: 'OPTIONS_FORM_SUBMIT_END',
         data,
         success: true,
-        message: 'API Token saved'
+        message: __( 'API Token saved', 'font-awesome' )
       })
 
       if( runQueryKits ) {
@@ -554,7 +573,7 @@ export function setConflictDetectionScanner({ enable = true }) {
     }).catch(error => {
       const message = reportRequestError({
         response: error,
-        uiMessageDefault: 'Update failed'
+        uiMessageDefault: __( 'Couldn\'t start the scanner', 'font-awesome' )
       })
 
       dispatch({
