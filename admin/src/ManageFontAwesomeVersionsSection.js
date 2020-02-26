@@ -3,7 +3,7 @@ import styles from './ManageFontAwesomeVersionsSection.module.css'
 import sharedStyles from './App.module.css'
 import ClientPreferencesView from './ClientPreferencesView'
 import classnames from 'classnames'
-import { __, sprintf } from '@wordpress/i18n'
+import { __ } from '@wordpress/i18n'
 import { __experimentalCreateInterpolateElement } from '@wordpress/element'
 
 export default function ManageFontAwesomeVersionsSection() {
@@ -12,9 +12,7 @@ export default function ManageFontAwesomeVersionsSection() {
     <p>
       {
         __experimentalCreateInterpolateElement(
-          sprintf(
-            __( '<b>Registered plugins and themes</b> have opted to share information about the Font Awesome settings they are expecting, and are therefore easier to fix. For the <b>unregistered plugins and themes</b>, which are more unpredictable, we have provided options for you to block their Font Awesome source from loading and causing issues.', 'font-awesome' )
-          ),
+          __( '<b>Registered plugins and themes</b> have opted to share information about the Font Awesome settings they are expecting, and are therefore easier to fix. For the <b>unregistered plugins and themes</b>, which are more unpredictable, we have provided options for you to block their Font Awesome source from loading and causing issues.', 'font-awesome' ),
           {
             b: <b />
           }

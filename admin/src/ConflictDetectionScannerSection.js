@@ -38,9 +38,7 @@ export default function ConflictDetectionScannerSection() {
       <p>
         {
           __experimentalCreateInterpolateElement(
-            sprintf(
-              __( 'Enable the scanner below and a box will appear in the bottom corner of your window while it runs for 10 minutes (only you and other admins can see the box). While the scanner is running, browse your site, especially the pages having trouble to catch any <noWrap>Slimers - *ahem* - conflicts</noWrap> in the scanner. Then come back here to review and manage Font Awesome versions found.', 'font-awesome' )
-            ),
+            __( 'Enable the scanner below and a box will appear in the bottom corner of your window while it runs for 10 minutes (only you and other admins can see the box). While the scanner is running, browse your site, especially the pages having trouble to catch any <noWrap>Slimers - *ahem* - conflicts</noWrap> in the scanner. Then come back here to review and manage Font Awesome versions found.', 'font-awesome' ),
             {
               noWrap: <span style={{ whiteSpace: "nowrap" }} />
             }
