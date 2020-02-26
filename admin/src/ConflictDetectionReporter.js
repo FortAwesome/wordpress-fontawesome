@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setConflictDetectionScanner, userAttemptToStopScanner } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faCog, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faCog, faExclamationTriangle, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
 import size from 'lodash/size'
@@ -136,6 +136,11 @@ const STYLES = {
     color: '#fff', 
     opacity: '.7',
     cursor: 'pointer'
+  },
+  badness: {
+    padding: '20px 25px',
+    backgroundColor: '#FFC100',
+    color: '#202529'
   }
 }
 
@@ -145,9 +150,10 @@ function withErrorBoundary( Component ) {
       return <div style={ STYLES.container }>
         {
           !!this.state.error
-          ? <div>
+          ? <div style={ STYLES.badness }>
+              <FontAwesomeIcon icon={ faExclamationTriangle } />
             {
-              __( 'badness', 'font-awesome' )
+              __( ' Whoops, this is embarrassing! Some unexpected error has occurred. There might be some additional diagnostic information in the JavaScript console.', 'font-awesome' )
             }
             </div>
           : <Component />
@@ -263,7 +269,7 @@ function ConflictDetectionReporter() {
         <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus.display }</span></h2>
       </div>
     </div>
-
+throw new Error('foo')
   return (
     <>
       <div style={ STYLES.header }>

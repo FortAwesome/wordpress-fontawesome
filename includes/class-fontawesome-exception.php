@@ -491,7 +491,7 @@ class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'The conflict detection information submitted to your WordPress server was invalid.',
+				'Inconceivable! Somehow the conflict detection information got garbled into something we can\'t understand.',
 				'font-awesome'
 			),
 			$code,
