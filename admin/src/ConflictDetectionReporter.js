@@ -269,7 +269,7 @@ function ConflictDetectionReporter() {
         <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCog } size="sm" spin /> <span>{ runStatus.display }</span></h2>
       </div>
     </div>
-throw new Error('foo')
+
   return (
     <>
       <div style={ STYLES.header }>
