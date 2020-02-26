@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 import { mountConflictDetectionReporter, isConflictDetectionReporterMounted } from './mountConflictDetectionReporter'
 import { __, sprintf } from '@wordpress/i18n'
+import { __experimentalCreateInterpolateElement } from '@wordpress/element'
 
 export default function ConflictDetectionScannerSection() {
   const dispatch = useDispatch()
@@ -36,11 +37,15 @@ export default function ConflictDetectionScannerSection() {
 
       <p>
         {
-          __( 'Enable the scanner below and a box will appear in the bottom corner of your window while it runs for 10 minutes (only you and other admins can see the box).', 'font-awesome' )
-        } While the scanner is running, browse your site,
-        especially the pages having trouble to catch
-        any <span style={{ whiteSpace: "nowrap" }}>Slimers - *ahem* - conflicts
-        </span> in the scanner.  { __( 'Then come back here to review and manage Font Awesome versions found.', 'font-awesome' ) }
+          __experimentalCreateInterpolateElement(
+            sprintf(
+              __( 'Enable the scanner below and a box will appear in the bottom corner of your window while it runs for 10 minutes (only you and other admins can see the box). While the scanner is running, browse your site, especially the pages having trouble to catch any <noWrap>Slimers - *ahem* - conflicts</noWrap> in the scanner. Then come back here to review and manage Font Awesome versions found.', 'font-awesome' )
+            ),
+            {
+              noWrap: <span style={{ whiteSpace: "nowrap" }} />
+            }
+          )
+        } 
       </p>
     </div>
     <div className={sharedStyles['scanner-actions']}>
