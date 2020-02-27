@@ -224,7 +224,7 @@ export default function UnregisteredClientsView() {
                       unregisteredClients[md5].src
                       || unregisteredClients[md5].href
                       || __experimentalCreateInterpolateElement(
-                        __( '<em>in page source</em><excerpt/>', 'font-awesome' ),
+                        __( '<em>in page source. File starts with</em><excerpt/>', 'font-awesome' ),
                         {
                           em: <em />,
                           excerpt: (
