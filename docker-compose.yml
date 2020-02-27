@@ -1,41 +1,54 @@
 version: '3.6'
 
-# UPDATE: 2/24/2020
-# Why so slow to start up with Docker for Mac Desktop?
-#
-# Probably because of this:
-# https://docs.docker.com/docker-for-mac/osxfs-caching/
-#
-# The performance problems between the host and container are probably made worse
-# in our situation by the fact that there are many files on the host that we
-# don't really need or want to be mounted in the container, but are simply because
-# they fall under a directory that does need to be mounted. Such as:
-#
-# 1. every file in this repo is being mounted under wp-content/plugins/font-awesome 
-#    because of this, there's really no way to optimize mounts until this is
-#    done differently
-#
-# 2. there are lots of files under admin/node_modules in development environment
-#    that can take a while to mount, even though we don't need them to be mounted
-#    inside the container.
-#
-# 3. integrations/plugins/plugin-sigma, after running composer install/update
-#    pulls in all of the files for this repo under its vendor subdir, which again
-#    results in a lot of files that we wouldn't care about being mounted inside
-#    the container.
-#
-# 4. All of the files under volumes/wordpress are being re-mounted.
-#
-# To optimize, it seems that we'd need to re-organize files so that we're not
-# mounting things needlessly. But we can't mount a directory with exclusions
-# on some of its subdirectories.
-
 x-dev_env_volumes: &dev_env_volumes
   volumes:
-    # TODO: get the comment from the reorg branch
+    # This wordpress bind mount could be uncommented in order to get access in the host
+    # to the wordpress installation used by the container, such as for debugging.
+    # Normally, it's best to leave it uncommented, because:
+    #
+    # 1. performance: the more is bind-mounted, the longer it takes to start up
+    #    the container, and there are quite a few files under wordress.
+    #
+    # 2. isolation: when there *is* something already mounted on /var/www/html,
+    #    that will be used for the wordpress install *instead* of the container
+    #    using its own version.
+
     # - ./volumes/wordpress:/var/www/html
+
+    # The bind mount for this plugin. The effect is that the entire directory structure
+    # of this repo is mounted inside the container under /var/www/html/wp-content/plugins/font-awesome
+    # As a result, Docker will have a lot of work to do if there are a lot of files.
+    # Under Docker for Mac Desktop, performance due to keeping the host
+    # and container filesystems in sync can get slow and bothersome, especially when
+    # starting up the container. But also when doing a bit filesystem churn, like
+    # removing or rebuilding admin/node_modules, which involves 10s of thousands
+    # of files.
+    #
+    # Docker doesn't seem to have feature for ignoring specified files or paths,
+    # but there's a trick to accomplish a similar result that works. See below
+    # how we ignore subdirectories.
+
     - .:/var/www/html/wp-content/plugins/font-awesome
-    # plugin ignores
+
+    # Bind mounts for integration themes or plugins
+    - ./integrations/js:/var/www/html/wp-content/js
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
+    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+
+    # Explicitly ignore various subdirectories like this, listing the target path
+    # on the container filesystem. The result will be that the directory will exist
+    # but it will be empty, thus relieving Docker of the burden to keep its files
+    # in sync between the host and container.
+    #
+    # ignores for the local plugin repo and working directory
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/config
     - /var/www/html/wp-content/plugins/font-awesome/admin/scripts
@@ -52,20 +65,20 @@ x-dev_env_volumes: &dev_env_volumes
     - /var/www/html/wp-content/plugins/font-awesome/.git
     - /var/www/html/wp-content/plugins/font-awesome/bin
     - /var/www/html/wp-content/plugins/font-awesome/vendor
+    - /var/www/html/wp-content/plugins/font-awesome/docker
     - /var/www/html/wp-content/plugins/font-awesome/integrations
-    - ./integrations/js:/var/www/html/wp-content/js
-    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
-    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
-    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
-    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
-    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
-    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
-    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
-    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
-    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
-    # integrations_ignores
+    # ignores for the stuff that plugin-sigma may pull into its vendor bundle
+    # when doing composer update
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/bin
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docsrv
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docker
 
 x-integration_env_volumes: &integration_env_volumes
   volumes:
@@ -80,8 +93,17 @@ x-integration_env_volumes: &integration_env_volumes
     - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
     - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
     - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
-    # integrations_ignores
+    # ignores (see notes above)
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/bin
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docsrv
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docker
 
 x-wordpress-defaults: &wordpress_defaults
   ports:
