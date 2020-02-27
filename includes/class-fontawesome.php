@@ -228,7 +228,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const RELEASES_REFRESH_INTERNAL = 10 * 60;
+	const RELEASES_REFRESH_INTERVAL = 10 * 60;
 
 	/**
 	 * We will not use a default for version, since we want the version stored in the options
@@ -578,7 +578,7 @@ class FontAwesome {
 	protected function maybe_refresh_releases() {
 		$refreshed_at = $this->releases_refreshed_at();
 
-		if ( is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERNAL ) {
+		if ( is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERVAL ) {
 			return $this->refresh_releases();
 		} else {
 			return 1;
