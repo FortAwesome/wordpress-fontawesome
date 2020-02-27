@@ -30,23 +30,12 @@ version: '3.6'
 # mounting things needlessly. But we can't mount a directory with exclusions
 # on some of its subdirectories.
 
-x-integrations: &integrations
+x-dev_env_volumes: &dev_env_volumes
   volumes:
-    - ./integrations/js:/var/www/html/wp-content/js
-    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
-    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
-    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
-    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
-    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
-    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
-    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
-    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
-    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
-
-
-x-plugin-ignores: &plugin_ignores
-  volumes:
+    # TODO: get the comment from the reorg branch
+    # - ./volumes/wordpress:/var/www/html
+    - .:/var/www/html/wp-content/plugins/font-awesome
+    # plugin ignores
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/config
     - /var/www/html/wp-content/plugins/font-awesome/admin/scripts
@@ -64,23 +53,35 @@ x-plugin-ignores: &plugin_ignores
     - /var/www/html/wp-content/plugins/font-awesome/bin
     - /var/www/html/wp-content/plugins/font-awesome/vendor
     - /var/www/html/wp-content/plugins/font-awesome/integrations
-
-x-integrations-ignores: &integrations_ignores
-  volumes:
+    - ./integrations/js:/var/www/html/wp-content/js
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
+    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    # integrations_ignores
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
-    # TODO: add the rest of the ignores
-
-x-dev_env_volumes: &dev_env_volumes
-  volumes:
-    # - ./volumes/wordpress:/var/www/html
-    - .:/var/www/html/wp-content/plugins/font-awesome
-  <<: *integrations
-  <<: *plugin_ignores
-  <<: *integrations_ignores
 
 x-integration_env_volumes: &integration_env_volumes
-  <<: *integrations
-  <<: *integrations_ignores
+  volumes:
+    - ./integrations/js:/var/www/html/wp-content/js
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
+    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    # integrations_ignores
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
 
 x-wordpress-defaults: &wordpress_defaults
   ports:
@@ -117,11 +118,12 @@ services:
      container_name: "com.fontawesome.wpdb-4.9.8"
 
    wordpress-latest-dev:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
      depends_on:
        - db-latest
      image: wordpress-fontawesome-dev-latest
-     <<: *dev_env_volumes
      env_file:
        - ".env.local"
      environment:
@@ -135,11 +137,12 @@ services:
      container_name: "com.fontawesome.wordpress-latest-dev"
 
    wordpress-latest-integration:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
      depends_on:
        - db-latest
      image: wordpress-fontawesome-dev-latest
-     <<: *integration_env_volumes
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
@@ -147,11 +150,12 @@ services:
      container_name: "com.fontawesome.wordpress-latest-integration"
 
    wordpress-4.9.8-dev:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
      image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
-     <<: *dev_env_volumes
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress
@@ -163,11 +167,12 @@ services:
      container_name: "com.fontawesome.wordpress-4.9.8-dev"
 
    wordpress-4.9.8-integration:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
      image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
-     <<: *integration_env_volumes
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress
