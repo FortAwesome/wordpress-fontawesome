@@ -157,13 +157,14 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
               </div>
             </div>
             { usePro &&
-              <Alert title={ __( 'Pro requires a Font Awesome subscription', 'font-awesome' ) } type='info'>
+              <Alert title={ __( 'Heads up! Pro requires a Font Awesome subscription', 'font-awesome' ) } type='info'>
+              <p>And you need to add your WordPress site to the allowed domains for your CDN.</p>
                 <ul>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro">{ __( 'Get Pro', 'font-awesome' ) }<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn">{ __( 'Manage my allowed domains', 'font-awesome' ) }<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
                   </li>
                   <li>
-                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/account/cdn">{ __( 'Manage my allowed domains', 'font-awesome' ) }<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
+                    <a rel="noopener noreferrer" target="_blank" href="https://fontawesome.com/pro">{ __( 'Get Pro', 'font-awesome' ) }<FontAwesomeIcon icon={faExternalLinkAlt} style={{marginLeft: '.5em'}} /></a>
                   </li>
                 </ul>
               </Alert>
