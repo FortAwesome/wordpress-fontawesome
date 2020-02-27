@@ -15,11 +15,21 @@ import {
 import {
     faSquare } from '@fortawesome/free-regular-svg-icons'
 import get from 'lodash/get'
+import truncate from 'lodash/truncate'
 import size from 'lodash/size'
 import isEqual from 'lodash/isEqual'
 import sortedUnique from 'lodash/sortedUniq'
 import difference from 'lodash/difference'
 import { __ } from '@wordpress/i18n'
+import { __experimentalCreateInterpolateElement } from '@wordpress/element'
+
+function excerpt( content ) {
+  if( !! content ) {
+    return truncate( content, { length: 100 } )
+  } else {
+    return null
+  }
+}
 
 export default function UnregisteredClientsView() {
   const dispatch = useDispatch()
@@ -210,7 +220,23 @@ export default function UnregisteredClientsView() {
                     {get(unregisteredClients[md5], 'tagName', 'unknown').toLowerCase()}
                   </td>
                   <td>
-                    {unregisteredClients[md5].src || unregisteredClients[md5].href || get(unregisteredClients[md5], 'excerpt') || <em>{ __( 'in page source', 'font-awesome' ) }</em>}
+                    {
+                      unregisteredClients[md5].src
+                      || unregisteredClients[md5].href
+                      || __experimentalCreateInterpolateElement(
+                        __( '<em>in page source</em><excerpt/>', 'font-awesome' ),
+                        {
+                          em: <em />,
+                          excerpt: (
+                            ( content ) => content
+                              ? <>
+                              : <code>{ content }</code>
+                              </>
+                              : ''
+                          ) ( excerpt( get(unregisteredClients[md5], 'innerText') ) )
+                        }
+                      )
+                    }
                   </td>
                   <td>
                     <input
