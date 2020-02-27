@@ -594,7 +594,7 @@ class FontAwesome {
 	 * @internal
 	 */
 	private function settings_page_url() {
-		return admin_url( 'options-general.php?page=' . self::OPTIONS_PAGE );
+		return admin_url( 'admin.php?page=' . self::OPTIONS_PAGE );
 	}
 
 	/**
