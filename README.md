@@ -19,6 +19,7 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [`<i>` tags](#i-tags)
     * [`[icon]` shortcode](#icon-shortcode)
     * [Avoid `:before` pseudo-elements](#avoid-before-pseudo-elements)
+- [Usage in Gutenberg (Blocks)](#usage-in-gutenberg-blocks)
 - [Detecting Configured Features](#detecting-configured-features)
 - [What Gets Enqueued](#what-gets-enqueued)
     * [Use CDN](#use-cdn)
@@ -213,6 +214,145 @@ Ease their pain by using a flexible and maximally compatible approach in your co
 
 Simply using `<i>` tags or `[icon]` shortcodes avoids the potential compatibility
 or performance problems that come with pseudo-elements.
+
+# Usage in Gutenberg (Blocks)
+
+There are several ways one might incorporate Font Awesome icons into Gutenberg blocks.
+
+Here are some considerations for you as you determine which approach you'll take:
+
+## **`i2svg` replaces `<i>` elements with `<svg>` elements automatically in the DOM**
+
+The [default configuration](https://fontawesome.com/how-to-use/with-the-api/setup/configuration) of the SVG with JavaScript technology that is loaded by this
+package, whether via CDN or Kit, is `autoReplaceSvg: true`. This means that:
+
+1. When the DOM loads, any `<i>` tags that look like Font Awesome icons are replaced with their correspoding `<svg>` elements.
+1. Any time the DOM is mutated to insert an `<i>` element dynamically, that `<i>` element is also replaced with its corresponding `<svg>`.
+
+So, if your Gutenberg code renders icons as `<i>` tags, and the active Font Awesome
+technology is SVG, then your rendered `<i>` tags will be immediately replaced
+with `<svg>` elements. That may or may not be what you want.
+
+If the `autoReplaceSvg` behavior is not what you want, you should not disable it
+if there's any chance that other themes, plugins or content creators may be relying
+on it. Instead, consider one of the alternatives below.
+
+## The WordPress admin may configure Font Awesome to use Web Font technology
+
+This is not necessarily a problem, as long as your Gutenberg code is only rendering
+icons `<i>` elements anyway, and you're not using any SVG-only features like
+[Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms), or [Text, Layers, or Counters](https://fontawesome.com/how-to-use/on-the-web/styling/layering).
+
+It just means that your rendred `<i>` elements will remain `<i>` elements in the
+DOM and not replaced by `<svg>` elements.
+
+The Web Fonts with CSS technology does not
+_replace_ the `<i>` elements, it matches their CSS classes with the appropriate
+glyph lookups in the associated web fonts.
+
+## `<i>` elements should work under either SVG and Web Font configurations
+
+This point can be inferred from the previous two. If your Gutenberg code works
+by rendering `<i>` elements, it would be best to ensure that it works equally
+well when Font Awesome is configured either for SVG or Web Font.
+
+## You could make it an error to run your code with Font Awesome technology as Web Font
+
+If you know that your code absolutely must have the SVG with JavaScript technology
+to work properly, you could detect the presence of that feature and have your
+code respond accordingly.
+
+On the WordPress server PHP code, you can call `fa()->technology()` and expect
+it to return `"svg"`.
+
+In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/how-to-use/with-the-api/setup/getting-started#in-the-browser) will be present on the global `FontAwesome`
+object only when SVG with JavaScript is loaded.
+
+This approach comes at the cost of limiting compatibility, though. It either limits
+when your code can run, or it creates a potential mutual exclusion
+with other themes or plugins that work better with Web Font technology.
+
+## You could use the JavaScript API directly instead of `<i>` tags
+
+If `all.js` is loaded, and it is when `fa()->technology() === "svg"` and 
+`fa()->using_kit()` is `false`, then the `IconDefinition` objects for all icons
+in the installed version of Font Awesome may be looked up
+with [`findIconDefinition()`](https://fontawesome.com/how-to-use/with-the-api/methods/findicondefinition).
+
+If `fa()->pro()` is also `true` then the `fal` style prefix will also be available.
+So the following
+would get the `IconDefinition` object for the `coffee` icon in the Light style.
+
+```javascript
+const faLightCoffee = FontAwesome.findIconDefinition({ prefix: 'fal', iconName: 'coffee' })
+```
+
+The `faLightCoffee` object then be used with [`icon()`](), for example, to get
+an html rendering of the icon as an `<svg>` element:
+
+```javascript
+FontAwesome.icon(faLightCoffee).html
+```
+
+would produce something like:
+
+```html
+[
+  '<svg data-prefix="fal" data-icon="coffee" class="svg-inline--fa fa-coffee fa-w-18"  ...>...</svg>
+]
+```
+
+This html could be stored directly as page content.
+(Note: at page load time, the Font Awesome CSS would also need to be present in
+order to style the SVG properly).
+
+Or an abstract object could be generated that you could use to create your own
+DOM elements or store in the attributes of your Block:
+
+```javascript
+FontAwesome.icon(faLightCoffee).abstract
+```
+
+would produce something like:
+
+```javascript
+[
+  {
+    "tag": "svg",
+    "attributes": {
+      "aria-hidden": "true",
+      "focusable": "false",
+      "data-prefix": "fal",
+      "data-icon": "coffee",
+      "class": "svg-inline--fa fa-coffee fa-w-18",
+      "role": "img",
+      "xmlns": "http://www.w3.org/2000/svg",
+      "viewBox": "0 0 512 512"
+    },
+    "children": [
+      {
+        "tag": "path",
+        "attributes": {
+          "fill": "currentColor",
+          "d": "M517.9...64z"
+        }
+      }
+    ]
+  }
+]
+```
+
+## You could use `react-fontawesome`
+
+[`react-fontawesome`](https://github.com/FortAwesome/react-fontawesome) is another alternative to `<i>` tags.
+
+When you already have an `IconDefinition` object, it's easy:
+
+```javascript
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// ...
+const lightCoffeeComponent = <FontAwesomeIcon icon={ faLightCoffee } />
+```
 
 # Detecting Configured Features
 
