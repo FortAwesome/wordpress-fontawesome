@@ -71,7 +71,9 @@ use function FortAwesome\fa;
 
 ## Register Hooks
 
-**Register an activation hook.** When your theme or plugin is activated,
+**Register an activation hook.**
+
+When your theme or plugin is activated,
 it should invoke `FortAwesome\FontAwesome_Loader::initialize`.
 
 This will ensure that Font Awesome is initialized, without interfering with any
@@ -85,7 +87,9 @@ register_activation_hook(
 );
 ```
 
-**Register a deactivation hook.** When your theme or plugin is deactivated,
+**Register a deactivation hook.**
+
+When your theme or plugin is deactivated,
 it should invoke `FortAwesome\FontAwesome_Loader::maybe_deactivate`.
 
 This will ensure that the Font Awesome deactivation logic is run if your theme
@@ -99,7 +103,9 @@ register_deactivation_hook(
 );
 ```
 
-**Register an uninstall hook.** When your theme or plugin is uninstalled, it
+**Register an uninstall hook.**
+
+When your theme or plugin is uninstalled, it
 should invoke `FortAwesome\FontAwesome_Loader::maybe_uninstall`.
 
 Similarly, this will ensure that the Font Awesome uninstall logic is run if your
@@ -113,7 +119,7 @@ register_uninstall_hook(
 );
 ```
 
-**Register yourself as a client.**
+**Register your code as a client.**
 
 You should register as a client of Font Awesome, even if you have no configuration
 preferences to specify, because the Font Awesome Troubleshoot tab will show the
