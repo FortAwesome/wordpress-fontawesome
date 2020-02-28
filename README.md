@@ -5,8 +5,8 @@
 This guide is for developers seeking to use `wordpress-fontawesome` as a package
 within another WordPress plugin or theme.
 
-Users of the Font Awesome plugin should consult the [plugin's description in the
-WordPress plugin directory](https://wordpress.org/plugins/font-awesome/).
+WordPress users should consult the [plugin's description in the
+WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for guidance on using Font Awesome in WordPress.
 
 <!-- toc -->
 # Contents
