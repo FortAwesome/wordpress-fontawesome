@@ -13,6 +13,7 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/).
 
 - [Description](#description)
 - [Adding as a Composer Package](#adding-as-a-composer-package)
+- [Installing as a Separate Plugin](#installing-as-a-separate-plugin)
 - [API References](#api-references)
 - [Usage in Pages, Posts, and Templates](#usage-in-pages-posts-and-templates)
     * [`<i>` tags](#i-tags)
@@ -27,7 +28,7 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/).
     * [The Whole Internet Warms the Cache](#the-whole-internet-warms-the-cache)
     * [All Icons vs Subset in WordPress](#all-icons-vs-subset-in-wordpress)
     * [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
-    * [How to Subset When You Know You Need To](#how-to-subset-when-you-know-you-need-to)
+    * [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
 - [How to Use Pro Icons](#how-to-use-pro-icons)
 - [Examples](#examples)
 - [Development](#development)
@@ -38,15 +39,14 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/).
 
 This package adds to your plugin or theme the following abilities:
 
-- use Font Awesome SVG, Web Font, Free or Pro, with version 4 compatibility from
-    loading from the Font Awesome CDN.
+- use Font Awesome SVG, Web Font, Free or Pro, with version 4 compatibility, loading from the Font Awesome CDN.
 - use Font Awesome Kits
 - an `[icon]` shortcode
 - detection and resolution of Font Awesome version conflicts introduced by other
     themes or plugins
 - coordination of configuration preferences by any number of plugins or theme that
     may be using this package on the same WordPress site.
-- management of Font Account access via API Token
+- management of Font Awesome account authorization via API Token
 - management of Font Awesome releases metadata (available versions and related metadata)
 - Font Awesome GraphQL API queries authorized by the site owner's API Token
 
@@ -139,6 +139,14 @@ add_action(
 	}
 );
 ```
+
+# Installing as a Separate Plugin
+
+This package is also available as a [plugin in the WordPress plugin directory](https://wordpress.org/plugins/font-awesome/).
+
+You could instruct your users to install that plugin separately. Once activated,
+using the [PHP API](https://fortawesome.github.io/wordpress-fontawesome/index.html)
+works the same as if you had included this package via composer.
 
 # API References
 
@@ -326,41 +334,54 @@ web site only used one icon out of the 7,000+ in Font Awesome Pro, then only tha
 one single icon would be fetched--except on subsequent loads when it would probably
 be pulled from disk cache.
 
-## How to Subset When You Know You Need To
+## How to Subset When You Know You Need To: Or, When Not To Use This Package
 
-What if you know for sure that compatibility with other themes or plugins that
-may be running on the same WordPress site is not an issue in your case,
-and that user-level configurability (i.e. version updates) is not a requirement?
+Suppose you're in a situation like this:
 
-Then you might skip all of this with the plugin package and take a
-[custom approach](https://fontawesome.com/how-to-use/customizing-wordpress/intro/getting-started) instead.
+- you are a developer
+- you're also the WordPress site owner
+- you control what themes or plugins are active on that site now and in the future
+- you are comfortable working directly in source code to manage which version and technology of Font Awesome is loaded
+- in the event that you do encounter an unexpected conflict, you are comfortable with investigating the WordPress resource queue and/or inspecting the browser DOM to identify and resolve the problem
+- the advantages of creating a subset are more important to you than the advantages of loading `all.css` or `all.js` from the Font Awesome CDN, or loading via Kit
+
+In that case, then you might prefer to do a [custom installation](https://fontawesome.com/how-to-use/customizing-wordpress/intro/getting-started) _instead_ of using this plugin package.
 
 You could either load exactly the resources you want from the Font Awesome CDN,
-or you could create your own subset of resources to load from the WordPress
+or you could create your own subset of resources to load locally from your WordPress
 server or from your own CDN.
 
-# How to Use Pro Icons
+# How to Make Pro Icons Available in Your Icon Chooser
 
-Your theme or plugin does not _determine_ the availability of Pro icons. In 
-particular, it would be a violation of Font Awesome's licensing terms for you
-to distribute Pro icons.
+Font Awesome's Pro icon licensing does not allow theme or plugin vendors to
+_distribute_ Font Awesome Pro to their users. However, if your user has enabled
+Font Awesome Pro on their WordPress site, then you can provide whatever functionality
+you like to aid the user's use of those Pro icons.
 
-Instead, you could:
+Some ways you could accomplish this:
 
-1. Register a preference for pro in your `font_awesome_preferences` action hook
-1. Post an admin notice or other alert for the WordPress admin when you detect
-    that `fa()->pro()` is `false` after the `font_awesome_enqueued` action is
-    triggered.
+1. In your marketing materials, make it clear that your product enables a design experience with a Font Awesome Pro installation provided by the user
+1. Using this package, register a preference for pro in your `font_awesome_preferences` action hook.
+   This will remind the user in the Font Awesome settings UI that your product
+   wants Pro to be enabled.
+1. Your code could detect that `fa()->pro()` is false and post an admin notice or other messaging in your own WordPress admin UI.
+
+Once the site owner enables Pro, `fa()->pro()` will be `true` and your code can
+then rely on the presence of Font Awesome Pro for the version indicated by
+`fa()->version()`.
+
+(See the [PHP API docs](https://fortawesome.github.io/wordpress-fontawesome/index.html) for how to resolve the symbolic
+`"latest"` version as a concrete version like `"5.12.0"`.)
 
 # Examples
 
-There are several clients in this GitHub repo that demonstrate how your code can use this plugin:
+There are several clients in this GitHub repo that demonstrate how your code can use this package:
 
 | Component | Description |
 | --------- | ----------- |
-| <span style="white-space:nowrap;">[`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha)</span> | Theme accepts default requirements, but also conditionally uses Pro icons when available. |
-| <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires version 4 compatibility, webfont technology, and a specific version. Uses some version 4 icon names. |
-| <span style="white-space:nowrap;">[`integrations/plugins/plugin-sigma`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-sigma)</span> | Registered Client that includes this composer package. |
+| <span style="white-space:nowrap;">[`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha)</span> | Theme accepts default requirements, but also conditionally uses Pro icons when available. It expects Font Awesome to be installed as a plugin by the site owner, rather than including it as a composer package. |
+| <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires version 4 compatibility, webfont technology, and a specific version. Uses some version 4 icon names. Assumes this package is already installed as a plugin. |
+| <span style="white-space:nowrap;">[`integrations/plugins/plugin-sigma`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-sigma)</span> | A plugin that requires this package via composer. |
 
 # Development
 See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can set up a development environment to make contributions to this code base.
