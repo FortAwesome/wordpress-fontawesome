@@ -13,20 +13,24 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/).
 
 - [Description](#description)
 - [Adding as a Composer Package](#adding-as-a-composer-package)
-- [API Reference](#api-reference)
-- [Usage in Templates or Blocks](#usage-in-templates-or-blocks)
+- [API References](#api-references)
 - [Usage in Pages, Posts, and Templates](#usage-in-pages-posts-and-templates)
     * [`<i>` tags](#i-tags)
     * [`[icon]` shortcode](#icon-shortcode)
     * [Avoid `:before` pseudo-elements](#avoid-before-pseudo-elements)
-- [What is Actually Enqueued](#what-is-actually-enqueued)
-- [Determining Available Versions](#determining-available-versions)
-- [Caching the Load Specification](#caching-the-load-specification)
-- [How to Ship Your Theme or Plugin To Work with Font Awesome](#how-to-ship-your-theme-or-plugin-to-work-with-font-awesome)
-    * [Don't Ship Font Awesome Assets](#dont-ship-font-awesome-assets)
-    * [Detect and Warn When the Font Awesome Plugin Version Doesn't Match Your Requirements](#detect-and-warn-when-the-font-awesome-plugin-version-doesnt-match-your-requirements)
-- [How to Make Pro Icons Available in Your Theme or Plugin](#how-to-make-pro-icons-available-in-your-theme-or-plugin)
+- [Detecting Configured Features](#detecting-configured-features)
+- [What Gets Enqueued](#what-gets-enqueued)
+    * [Use CDN](#use-cdn)
+    * [Use a Kit](#use-a-kit)
+- [Loading Efficiency and Subsetting](#loading-efficiency-and-subsetting)
+    * [Long-term Disk Cache](#long-term-disk-cache)
+    * [The Whole Internet Warms the Cache](#the-whole-internet-warms-the-cache)
+    * [All Icons vs Subset in WordPress](#all-icons-vs-subset-in-wordpress)
+    * [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
+    * [How to Subset When You Know You Need To](#how-to-subset-when-you-know-you-need-to)
+- [How to Use Pro Icons](#how-to-use-pro-icons)
 - [Examples](#examples)
+- [Development](#development)
 
 <!-- tocstop -->
 
@@ -136,9 +140,13 @@ add_action(
 );
 ```
 
-# API Reference
+# API References
 
-[See API docs](https://fortawesome.github.io/wordpress-fontawesome/index.html)
+Here are some relevant APIs:
+- [PHP API](https://fortawesome.github.io/wordpress-fontawesome/index.html): any theme or plugin developer probably needs this
+- [GraphQL API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
+- [JavaScript API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
+- [react-fontawesome component](https://github.com/FortAwesome/react-fontawesome): you might prefer this instead of doing low-level JS/SVG rendering
 
 # Usage in Pages, Posts, and Templates
 
@@ -210,12 +218,15 @@ singleton instance. The following examples assume that you've done a
 - `fa()->v4_compatibility()` (boolean)
 - `fa()-version()` ("latest" or something concrete like "5.12.0")
 
-Refer to the [API documentation](https://fortawesome.github.io/wordpress-fontawesome/index.html)
+You can use these accessors when or after the `font_awesome_enqueued` action
+hook has been been triggered.
+
+Refer to the [PHP API documentation](https://fortawesome.github.io/wordpress-fontawesome/index.html)
 for details on these accessors and any others that be available. 
 
-# What is Actually Enqueued
+# What Gets Enqueued
 
-What is enqueued depends upon whether the WordPress site owner has configured
+What gets enqueued depends upon whether the WordPress site owner has configured
 Font Awesome to use the CDN or Kits. (A bit of a misnomer, since kits are loaded from 
 CDN as well, just differently.)
 
@@ -238,97 +249,108 @@ the conflict detector from the CDN.
 
 ## Use a Kit
 
+When configured to use a kit, only the kit's loader `<script>` is enqueued.
+While the conflict scanner is enabled, an additional inline `<script>` is added
+to configure the conflict detector _within_ the kit.
 
+The kit loader script subsequently handles the insertion of various `<script>`
+or `<link>` elements, based on the kit's configuration, but that all happens
+outside of WordPress semantics. As far as WordPress is concerned, it's just a
+single `wp_enqueue_script` on the kit loader.
 
+# Loading Efficiency and Subsetting
 
+## Long-term Disk Cache
 
-In this version, all loading happens via the official Font Awesome Free CDN (`use.fontawesome.com`) or
-Pro CDN (`pro.fontawesome.com`). No icon assets are bundled with this plugin.
+The URLs loaded from the Font Awesome CDN are specific to a given release, so
+their contents don't change, and therefore, they can be long-term cached in
+the browser.
 
-So the end result of this plugin's work is the enqueuing of a stylesheet or script, resulting in the appropriate
-`<link>` or `<script>` tag in the `<head>`.
+For example, suppose Font Awesome is configured for Free Web Font, version 5.12.1,
+then this will be the main resource loaded:
 
-Once a particular version and method is resolved, we load the `all.js` or `all.css` for that version, either
-Free or Pro. This is the _simplest_, but normally not the most efficient. It would be more efficient
-to load only the icon styles that the web site actually uses. Or it could potentially be made even more efficient
-with some additional subsetting functionality. For this initial prototype version, though, we're not
-focusing on optimizing efficiency, but on the basic loading and version settlement paradigm across various clients.
-If this direction seems good, it would make sense to at least allow particular styles to be loaded.
+`https://use.fontawesome.com/releases/v5.12.1/css/all.css`
 
-# Determining Available Versions
+It's loaded as 56KB over the network, but on subsequent loads, it does not 
+hit the network but loads from the browser's disk cache.
 
-We have made a REST API endpoint available on `fontawesome.com` which this plugin uses to retrieve up-to-date metadata about available releases.
+(The CSS also causes the underlying webfont files to be loaded. The story is the
+same, subsequent loads will normally use the browser's disk cache and not use
+the network.)
 
-# Caching the Load Specification
+## The Whole Internet Warms the Cache
 
-This plugin computes a _load specification_, 
-which is the set of version and configuration options that satisfy the requirements of all registered clients, including
-the WordPress site owner via the options page and any themes or plugins that depend on this Font Awesome plugin.
+There are lots of web sites that use Font Awesome, and very often they do so
+by simply loading `all.css` or `all.js`. When a browser loads that resource
+for a specific version of Font Awesome on site A, and caches it, then it's already
+cached when the same browser visits site B where the same resource is required.
 
-To compute that requires retrieving the latest metadata about Font Awesome releases from a REST API on fontawesome.com
-and reducing all of the requirements registered by all clients of this Font Awesome plugin.
+In that case, even the first load of `all.css` for that browser's visit to site B
+would already be loaded from the browser's disk cache.
 
-We don't need to do all of that work on every page load. Once a load specification is computed, it will not change until
-the web site owner changes options on the options page. When this plugin computes a successful load specification,
-it stores it under an [options key](https://fortawesome.github.io/wordpress-fontawesome/classes/FontAwesome.html#constant_OPTIONS_KEY)
-in the WordPress database and then re-uses that load specification for each page load. In that case, it will not fetch
-metadata from fontawesome.com nor process the requirements from registered clients.
+## All Icons vs Subset in WordPress
 
-# How to Ship Your Theme or Plugin To Work with Font Awesome
+Given the large and growing number of icons availble in Font Awesome, it's
+natural to ask whether one might be able to load only the subset actually used.
 
-You have two options:
+In the WordPress ecosystem, though, it's common for site owners to install
+more than one theme or plugin that each uses Font Awesome icons, and tries
+to load its own version of Font Awesome. This causes conflicts across those 
+various themes or plugins when activated on the same WordPress site.
 
-1. Peer Dependency
+A primary goal of this plugin package is to ease the pain for site owners to get
+those themes and plugins working with a single loaded version of Font Awesome
+that works for all concerned. And especially if it's a Font Awesome Pro user,
+they should be able to use Pro icons in their pages and posts, even while other
+installed plugins only use Free icons from version 4.
 
-You would instruct your users to install this Font Awesome plugin separately when they install yours.
-Your code would expect this plugin to be installed and active. It would register its requirements, receive
-the action hook indicating successful load and confirmation of the final load specification. To place icons
-in your templates, use `<i>` tags [like normal](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use).
+In that case where the site owner, their theme, and any number of installed
+plugins each use Font Awesome icons directly, it would be very difficult to
+determine what minimal subset could be created that would include all of the
+icons required by any of those clients.
 
-2. Composer Dependency
+Simply making all of them available for a given version of Font Awesome allows
+for every client to be satisfied.
 
-In your composer project directory:
+## Pro Kits Do Auto-Subsetting
 
-`composer require fortawesome/wordpress-fontawesome`
+Font Awesome Pro Kits (but not Free kits) have some built-in loading optimization
+that results in fewer resources being loaded, only as they are required
+by the browser.
 
-In your plugin code, just require the plugin's entrypoint module, such as this:
+Again, those resources will normally be long-term cached in the browser and
+loaded from the browser's disk cache on subsequent loads.
 
-```php
-require_once trailingslashit(__DIR__) . 'vendor/fortawesome/wordpress-fontawesome/font-awesome.php';
-```
+**Pro SVG** Kits are super-optimized. They auto-subset icon-by-icon. If a given
+web site only used one icon out of the 7,000+ in Font Awesome Pro, then only that
+one single icon would be fetched--except on subsequent loads when it would probably
+be pulled from disk cache.
 
-Then you can access the `FontAwesome` class for class constants like `FontAwesome::PLUGIN_VERSION`, or
-get an instance of the plugin with `fa()`.
+## How to Subset When You Know You Need To
 
-## Don't Ship Font Awesome Assets
+What if you know for sure that compatibility with other themes or plugins that
+may be running on the same WordPress site is not an issue in your case,
+and that user-level configurability (i.e. version updates) is not a requirement?
 
-In any case, you would not ship any Font Awesome assets (no web font, CSS, JavaScript, or SVG files).
-Rather, you'd rely on this plugin to load the correct assets from the appropriate CDN with the appropriate
-configuration.
+Then you might skip all of this with the plugin package and take a
+[custom approach](https://fontawesome.com/how-to-use/customizing-wordpress/intro/getting-started) instead.
 
-In the case of Font Awesome Pro, it would be a violation of the license terms to ship Pro assets, so that's
-a no-go no  matter what. In the case of Font Awesome Free, while the license would support redistribution
-of those assets in your plugin or theme, doing so would defeat one of the chief goals of this plugin:
-to create a conflict-free experience of loading Font Awesome, both for developers and site owners.
-If you ship and load your own Font Awesome assets, you might just end up being the bad citizen whose code
-breaks other components.
+You could either load exactly the resources you want from the Font Awesome CDN,
+or you could create your own subset of resources to load from the WordPress
+server or from your own CDN.
 
-# How to Make Pro Icons Available in Your Theme or Plugin
+# How to Use Pro Icons
 
-Rather than _you_ supplying the Pro icons, it's your customer who _enables_ Pro icons by setting up their
-Pro accounts and configuring this Font Awesome plugin to indicate that Pro is enabled. Your code can then
-respond to the presence of Pro and use Pro icons.
+Your theme or plugin does not _determine_ the availability of Pro icons. In 
+particular, it would be a violation of Font Awesome's licensing terms for you
+to distribute Pro icons.
 
-If you insist on having Pro icons available at runtime, you'd need to insist that your customers purchase
-a Font Awesome Pro license, install this plugin, and enable their Pro account for use with it.
+Instead, you could:
 
-In the event that the customer has not enabled Pro, your code would have to use only Free icons.
-Any Pro icons would fail to load correctly. This may mean designing your code to work with Free icons
-as a baseline, and then using Pro icons only when available.
-
-Give us feedback about this to help us get the story right. For example, do you need to have a way to
-_require_ Pro (like `v4shim` can be `require`d) so that you can count on it being there at runtime,
-instead of designing for both alternatives, Free and Pro?
+1. Register a preference for pro in your `font_awesome_preferences` action hook
+1. Post an admin notice or other alert for the WordPress admin when you detect
+    that `fa()->pro()` is `false` after the `font_awesome_enqueued` action is
+    triggered.
 
 # Examples
 
@@ -336,11 +358,11 @@ There are several clients in this GitHub repo that demonstrate how your code can
 
 | Component | Description |
 | --------- | ----------- |
-| <span style="white-space:nowrap;">[`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha)</span> | Theme accepts default requirements, but also reacts to the presence of Pro by using Pro icons in a template. |
-| <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires v4shim and a specific version. Uses some version 4 icon names. |
-| <span style="white-space:nowrap;">[`integrations/plugins/plugin-sigma`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-sigma)</span> | Registered Client embedding Font Awesome as a composer dependency. When this plugin is activated, Font Awesome is implicitly activated, whether or not the Font Awesome plugin is directly installed or activated. |
+| <span style="white-space:nowrap;">[`integrations/themes/theme-alpha`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/themes/theme-alpha)</span> | Theme accepts default requirements, but also conditionally uses Pro icons when available. |
+| <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires version 4 compatibility, webfont technology, and a specific version. Uses some version 4 icon names. |
+| <span style="white-space:nowrap;">[`integrations/plugins/plugin-sigma`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-sigma)</span> | Registered Client that includes this composer package. |
 
-See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can run a dockerized WordPress environment and experiment
-with these examples.
+# Development
+See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can set up a development environment to make contributions to this code base.
 
 
