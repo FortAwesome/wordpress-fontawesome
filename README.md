@@ -20,6 +20,12 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [`[icon]` shortcode](#icon-shortcode)
     * [Avoid `:before` pseudo-elements](#avoid-before-pseudo-elements)
 - [Usage in Gutenberg (Blocks)](#usage-in-gutenberg-blocks)
+    * [`i2svg` auto-replaces `<i>` elements with `<svg>` elements](#i2svg-auto-replaces-i-elements-with-svg-elements)
+    * [Font Awesome might be configured for Web Font](#font-awesome-might-be-configured-for-web-font)
+    * [`<i>` elements should work under both SVG and Web Font configurations](#i-elements-should-work-under-both-svg-and-web-font-configurations)
+    * [Insisting on SVG technology](#insisting-on-svg-technology)
+    * [Using the JavaScript API directly instead of `<i>` tags](#using-the-javascript-api-directly-instead-of-i-tags)
+    * [Using `react-fontawesome`](#using-react-fontawesome)
 - [Detecting Configured Features](#detecting-configured-features)
 - [What Gets Enqueued](#what-gets-enqueued)
     * [Use CDN](#use-cdn)
@@ -217,11 +223,11 @@ or performance problems that come with pseudo-elements.
 
 # Usage in Gutenberg (Blocks)
 
-There are several ways one might incorporate Font Awesome icons into Gutenberg blocks.
+There are several ways one might incorporate Font Awesome icons in Gutenberg development.
 
-Here are some considerations for you as you determine which approach you'll take:
+Here are some considerations for you as you determine your approach:
 
-## **`i2svg` replaces `<i>` elements with `<svg>` elements automatically in the DOM**
+## `i2svg` auto-replaces `<i>` elements with `<svg>` elements
 
 The [default configuration](https://fontawesome.com/how-to-use/with-the-api/setup/configuration) of the SVG with JavaScript technology that is loaded by this
 package, whether via CDN or Kit, is `autoReplaceSvg: true`. This means that:
@@ -235,9 +241,11 @@ with `<svg>` elements. That may or may not be what you want.
 
 If the `autoReplaceSvg` behavior is not what you want, you should not disable it
 if there's any chance that other themes, plugins or content creators may be relying
-on it. Instead, consider one of the alternatives below.
+on it. Instead, consider one of the alternatives to `<i>` tags below.
 
-## The WordPress admin may configure Font Awesome to use Web Font technology
+## Font Awesome might be configured for Web Font
+
+The WordPress admin may have enabled Web Font technology instead of SVG.
 
 This is not necessarily a problem, as long as your Gutenberg code is only rendering
 icons `<i>` elements anyway, and you're not using any SVG-only features like
@@ -246,23 +254,24 @@ icons `<i>` elements anyway, and you're not using any SVG-only features like
 It just means that your rendred `<i>` elements will remain `<i>` elements in the
 DOM and not replaced by `<svg>` elements.
 
-The Web Fonts with CSS technology does not
+The Web Font technology does not
 _replace_ the `<i>` elements, it matches their CSS classes with the appropriate
-glyph lookups in the associated web fonts.
+glyph lookups in the associated web fonts loaded by the Font Awesome CSS.
 
-## `<i>` elements should work under either SVG and Web Font configurations
+## `<i>` elements should work under both SVG and Web Font configurations
 
 This point can be inferred from the previous two. If your Gutenberg code works
 by rendering `<i>` elements, it would be best to ensure that it works equally
 well when Font Awesome is configured either for SVG or Web Font.
 
-## You could make it an error to run your code with Font Awesome technology as Web Font
+## Insisting on SVG technology
 
+You could make it an error to run your code with Font Awesome technology as Web Font.
 If you know that your code absolutely must have the SVG with JavaScript technology
 to work properly, you could detect the presence of that feature and have your
 code respond accordingly.
 
-On the WordPress server PHP code, you can call `fa()->technology()` and expect
+In the WordPress server PHP code, you can call `fa()->technology()` and expect
 it to return `"svg"`.
 
 In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/how-to-use/with-the-api/setup/getting-started#in-the-browser) will be present on the global `FontAwesome`
@@ -272,7 +281,10 @@ This approach comes at the cost of limiting compatibility, though. It either lim
 when your code can run, or it creates a potential mutual exclusion
 with other themes or plugins that work better with Web Font technology.
 
-## You could use the JavaScript API directly instead of `<i>` tags
+Generally, our goal is to maximize compatibility and thus minimize pain for the
+WordPress user.
+
+## Using the JavaScript API directly instead of `<i>` tags
 
 If `all.js` is loaded, and it is when `fa()->technology() === "svg"` and 
 `fa()->using_kit()` is `false`, then the `IconDefinition` objects for all icons
@@ -342,7 +354,7 @@ would produce something like:
 ]
 ```
 
-## You could use `react-fontawesome`
+## Using `react-fontawesome`
 
 [`react-fontawesome`](https://github.com/FortAwesome/react-fontawesome) is another alternative to `<i>` tags.
 
