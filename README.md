@@ -29,9 +29,9 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [All Icons vs Subset in WordPress](#all-icons-vs-subset-in-wordpress)
     * [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
     * [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
-- [How to Use Pro Icons](#how-to-use-pro-icons)
+- [How to Make Pro Icons Available in Your Icon Chooser](#how-to-make-pro-icons-available-in-your-icon-chooser)
 - [Examples](#examples)
-- [Development](#development)
+- [Contributing Development to this Package](#contributing-development-to-this-package)
 
 <!-- tocstop -->
 
@@ -383,7 +383,7 @@ There are several clients in this GitHub repo that demonstrate how your code can
 | <span style="white-space:nowrap;">[`integrations/plugins/plugin-beta`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-beta)</span> | Plugin requires version 4 compatibility, webfont technology, and a specific version. Uses some version 4 icon names. Assumes this package is already installed as a plugin. |
 | <span style="white-space:nowrap;">[`integrations/plugins/plugin-sigma`](https://github.com/FortAwesome/wordpress-fontawesome/tree/master/integrations/plugins/plugin-sigma)</span> | A plugin that requires this package via composer. |
 
-# Development
-See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can set up a development environment to make contributions to this code base.
+# Contributing Development to this Package
+See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can set up a development environment to make contributions.
 
 
