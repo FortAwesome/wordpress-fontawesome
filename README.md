@@ -609,6 +609,83 @@ then rely on the presence of Font Awesome Pro for the version indicated by
 (See the [PHP API docs](https://fortawesome.github.io/wordpress-fontawesome/index.html) for how to resolve the symbolic
 `"latest"` version as a concrete version like `"5.12.0"`.)
 
+# Query the Font Awesome GraphQL API
+
+The Font Awesome GraphQL API allows you to query and search icon metadata.
+
+See also documentation in PHP API on the `FontAwesome::query()` method.
+
+## public scope queries on api.fontawesome.com
+
+When you only need to query public fields, you can issue queries directly
+against `api.fontawesome.com`.
+
+You could paste this into your browser's JavaScript console right now and get
+a list of all icon names in the 5.12.0 release:
+
+```javascript
+fetch(
+  'https://api.fontawesome.com',
+  {
+    method: 'POST',
+    body: 'query { release(version:"5.12.0") { icons { id } } }'
+  }
+)
+.then(response => response.ok ? response.json() : null)
+.then(json => console.log(json))
+.catch(e => console.error(e))
+```
+
+## query non-public scopes
+
+Queries that include field selections on fields requiring scopes more 
+privileged than public require authorization with a Font Awesome account-holder's
+API Token.
+
+There are some current and future Font Awesome features that require
+higher privileged scopes.
+
+Currently, to query the kits on an account requires an API Token with the `kits_read`
+scope. Normally, a plugin or theme you develop probably wouldn't need that particular
+information, but it will serve as an example for how authorized queries can be issued
+through the API REST controller provided by this package.
+
+The following examples assume that you're using the `apiFetch()` available
+on the global `wp` object in Gutenberg, or that you're using an `apiFetch()` that you've
+bundled and imported from [`@wordpress/api-fetch`](https://developer.wordpress.org/block-editor/packages/packages-api-fetch/),
+and configured it with an appopriate [REST root URL](https://developer.wordpress.org/reference/functions/rest_url/))
+and [nonce](https://developer.wordpress.org/reference/functions/wp_create_nonce/).
+
+If you open your browser to a window in Gutenberg, such as on a new post, you
+could copy and paste these samples into the JavaScript console as-is.
+
+First, for comparison, here's the same all-public query like we issued above,
+but this time through the Font Awesome REST API endpoint:
+
+```javascript
+wp.apiFetch( {
+    path: '/font-awesome/v1/api',
+    method: 'POST',
+    body: 'query { release(version:"5.12.0") { icons { id } } }'
+} ).then( res => {
+    console.log( res );
+} )
+```
+
+Now this query requires no extra authentication work on your part, yet it
+allows you to issue a query that is authorized by the WordPress site owner's
+API Token, if configured:
+
+```javascript
+wp.apiFetch( {
+    path: '/font-awesome/v1/api',
+    method: 'POST',
+    body: 'query { me { kits { token name } } }'
+} ).then( res => {
+    console.log( res );
+} )
+```
+
 # Examples
 
 There are several clients in this GitHub repo that demonstrate how your code can use this package:
