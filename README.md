@@ -39,7 +39,7 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
 - [How to Make Pro Icons Available in Your Icon Chooser](#how-to-make-pro-icons-available-in-your-icon-chooser)
 - [Query the Font Awesome GraphQL API](#query-the-font-awesome-graphql-api)
-    * [public scope queries on `api.fontawesome.com`](#public-scope-queries)
+    * [public scope queries on `api.fontawesome.com`](#public-scope-queries-on-apifontawesomecom)
     * [querying fields with non-public scopes](#querying-fields-with-non-public-scopes)
 - [Examples](#examples)
 - [Contributing Development to this Package](#contributing-development-to-this-package)
