@@ -26,6 +26,7 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [Insisting on SVG technology](#insisting-on-svg-technology)
     * [Using the JavaScript API directly instead of `<i>` tags](#using-the-javascript-api-directly-instead-of-i-tags)
     * [Using `react-fontawesome`](#using-react-fontawesome)
+    * [Font Awesome CSS Required](#font-awesome-css-required)
 - [Detecting Configured Features](#detecting-configured-features)
 - [What Gets Enqueued](#what-gets-enqueued)
     * [Use CDN](#use-cdn)
@@ -277,6 +278,23 @@ it to return `"svg"`.
 In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/how-to-use/with-the-api/setup/getting-started#in-the-browser) will be present on the global `FontAwesome`
 object only when SVG with JavaScript is loaded.
 
+You should also register a preference for SVG in your `font_awesome_preferences`
+action hook:
+
+```php
+add_action(
+	'font_awesome_preferences',
+	function() {
+		fa()->register(
+			array(
+                'name'       => 'plugin foo',
+                'technology' => 'svg'
+			)
+		);
+	}
+);
+```
+
 This approach comes at the cost of limiting compatibility, though. It either limits
 when your code can run, or it creates a potential mutual exclusion
 with other themes or plugins that work better with Web Font technology.
@@ -299,7 +317,7 @@ would get the `IconDefinition` object for the `coffee` icon in the Light style.
 const faLightCoffee = FontAwesome.findIconDefinition({ prefix: 'fal', iconName: 'coffee' })
 ```
 
-The `faLightCoffee` object then be used with [`icon()`](), for example, to get
+The `faLightCoffee` object can then be used with [`icon()`](), for example, to get
 an html rendering of the icon as an `<svg>` element:
 
 ```javascript
@@ -315,8 +333,6 @@ would produce something like:
 ```
 
 This html could be stored directly as page content.
-(Note: at page load time, the Font Awesome CSS would also need to be present in
-order to style the SVG properly).
 
 Or an abstract object could be generated that you could use to create your own
 DOM elements or store in the attributes of your Block:
@@ -365,6 +381,68 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // ...
 const lightCoffeeComponent = <FontAwesomeIcon icon={ faLightCoffee } />
 ```
+
+## Font Awesome CSS Required
+
+While icons may be pre-rendered as HTML or rendered as DOM objects using abstracts,
+as in the above examples, they still depend upon the [Font Awesome CSS](https://fontawesome.com/how-to-use/with-the-api/methods/dom-css)
+being inserted into the DOM separately.
+
+This is done automatically when the SVG with JavaScript technology is loaded via
+CDN or Kit. However, there's currently no built-in way to ensure that the
+Font Awesome CSS is inserted when Font Awesome is configured for Web Font technology.
+
+The workarounds risk compatibility problems with other clients, and one of
+the main goals of this package is to solve such compatibility problems.
+
+**Workaround 1: bundle the `fontawesome-svg-core` npm**
+
+```bash
+npm install --save @fortawesome/fontawesome-svg-core
+```
+
+```javascript
+import { dom } from '@fortawesome/fontawesome-svg-core'
+
+if ( !window.FontAwesome ) {
+    dom.insertCss(dom.css())
+}
+```
+
+If your bundler does tree-shaking, then this should result in a pretty slim
+addition to your bundle--mostly the CSS content itself.
+
+This approach is also susceptible to problems caused by differences in Font Awesome
+versions between the version of that npm package and the version used for generating
+the abstract with its classes.
+
+**Workaround 2: fetch the CSS appropriate for the version**
+
+Get the Font Awesome version currently loaded: `fa()->version()`.
+
+Fetch the required CSS from the CDN, replacing
+the version number appropriately and set its contents as the text of a new
+`<style>` node, like this:
+
+```javascript
+fetch('https://use.fontawesome.com/releases/v5.12.1/css/svg-with-js.css')
+.then(response => response.ok ? response.text() : null)
+.then(css => {
+    if( css ) {
+        const faCssStyle = document.createElement('STYLE')
+        faCssStyle.appendChild(document.createTextNode(css))
+        document.head.appendChild(faCssStyle)
+    } else {
+        // handle error
+    }
+})
+.catch(error => {
+    // handle error
+})
+```
+
+You might also query the DOM first to make sure some other similar CSS hasn't
+already been added before adding this to the DOM yourself.
 
 # Detecting Configured Features
 
