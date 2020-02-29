@@ -38,6 +38,9 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
     * [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
 - [How to Make Pro Icons Available in Your Icon Chooser](#how-to-make-pro-icons-available-in-your-icon-chooser)
+- [Query the Font Awesome GraphQL API](#query-the-font-awesome-graphql-api)
+    * [public scope queries on `api.fontawesome.com`](#public-scope-queries)
+    * [querying fields with non-public scopes](#querying-fields-with-non-public-scopes)
 - [Examples](#examples)
 - [Contributing Development to this Package](#contributing-development-to-this-package)
 
@@ -636,7 +639,7 @@ fetch(
 .catch(e => console.error(e))
 ```
 
-## query non-public scopes
+## querying fields with non-public scopes
 
 Queries that include field selections on fields requiring scopes more 
 privileged than public require authorization with a Font Awesome account-holder's
