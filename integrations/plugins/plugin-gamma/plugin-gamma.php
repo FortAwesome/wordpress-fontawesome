@@ -16,8 +16,6 @@ define( 'GAMMA_PLUGIN_LOG_PREFIX', 'gamma-plugin' );
 
 foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
 	add_action( $action, function () {
-		print "This rogue output from " . GAMMA_PLUGIN_LOG_PREFIX . " should not be returned by our config controller. If it does, it will break the admin client.";
-
 		wp_enqueue_style(
 			'GAMMA_PLUGIN_LOG_PREFIX',
 			'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',
