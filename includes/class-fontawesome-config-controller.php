@@ -8,8 +8,9 @@ namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
+use \WP_REST_Controller, \WP_Error, \Exception;
 
 /**
  * Controller class for REST endpoint
@@ -73,7 +74,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		try {
 			fa()->gather_preferences();
 		} catch ( PreferenceRegistrationException $e ) {
-			$preference_registration_error = fa_500( $e );
+			$preference_registration_error = wpe_fontawesome_server_exception( $e );
 		}
 
 		$item = array(
@@ -92,7 +93,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 	 * Update the singleton resource.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function update_item( $request ) {
 		try {
@@ -126,15 +127,15 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			);
 
 			$return_data = $this->build_item( fa() );
-			return new WP_REST_Response( $return_data, 200 );
+			return new FontAwesome_REST_Response( $return_data, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 

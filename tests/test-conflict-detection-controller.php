@@ -310,9 +310,9 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
  
 		$this->assertEquals( 400, $response->get_status() );
 
-		$error = $response->as_error();
-
- 		$this->assertEquals( 'fontawesome_client_exception', $error->get_error_code() );
+		$data = $response->get_data();
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 
 		$this->assertEquals(
 			$initial_data,
@@ -358,7 +358,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 		$this->assertEquals(
 			$later,
-			$response->get_data()
+			$response->get_data()['detectConflictsUntil']
 		);
 
 		$this->assertTrue( fa()->detecting_conflicts() );
@@ -454,12 +454,9 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 		$this->assertEquals( 400, $response->get_status() );
 
-		$error = $response->as_error();
-
-		$this->assertEquals(
-			'fontawesome_client_exception',
-			$error->get_error_code()
-		);
+		$data = $response->get_data();
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 
 		$this->assertTrue( fa()->detecting_conflicts() );
 
@@ -643,10 +640,9 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 			fa()->unregistered_clients()
 		);
 
-		$this->assertEquals(
-			'fontawesome_client_exception',
-			$response->as_error()->get_error_code()
-		);
+		$data = $response->get_data();
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 
 		// This should have remained unchanged.
 		$this->assertEquals(

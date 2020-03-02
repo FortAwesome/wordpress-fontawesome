@@ -2,8 +2,9 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+use \WP_REST_Controller, \WP_Error, \Error, \Exception;
 
 /**
  * Module for this plugin's Preference Check controller
@@ -64,7 +65,7 @@ class FontAwesome_Preference_Check_Controller extends WP_REST_Controller {
 	 * Get conflicts.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function check_preferences( $request ) {
 		try {
@@ -72,15 +73,15 @@ class FontAwesome_Preference_Check_Controller extends WP_REST_Controller {
 
 			$conflicts = fa()->conflicts_by_option( $request->get_json_params() );
 
-			return new WP_REST_Response( $conflicts, 200 );
+			return new FontAwesome_REST_Response( $conflicts, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 }

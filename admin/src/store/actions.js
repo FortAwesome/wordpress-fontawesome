@@ -5,6 +5,8 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 import reportRequestError from '../util/reportRequestError'
 import { __ } from '@wordpress/i18n'
+import has from 'lodash/has'
+import sliceJson from '../util/sliceJson'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -15,6 +17,151 @@ export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
 // order to protect against possible race conditions, instead of 0
 // (which would just be exactly "now").
 const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
+
+const COULD_NOT_SAVE_CHANGES_MESSAGE = __( 'Couldn\'t save those changes', 'font-awesome' )
+const COULD_NOT_CHECK_PREFERENCES_MESSAGE = __( 'Couldn\'t check preferences', 'font-awesome' )
+const NO_RESPONSE_MESSAGE = __( 'A request to your WordPress server never received a response', 'font-awesome' )
+const REQUEST_FAILED_MESSAGE = __( 'A request to your WordPress server failed', 'font-awesome' )
+const COULD_NOT_START_SCANNER_MESSAGE = __( 'Couldn\'t start the scanner', 'font-awesome' )
+const COULD_NOT_SNOOZE_MESSAGE = __( 'Couldn\'t snooze', 'font-awesome' )
+ 
+function preprocessResponse( response ) {
+  const confirmed = has( response, 'headers.fontawesome-confirmation' )
+
+  if ( 204 === response.status && '' !== response.data ) {
+      reportRequestError({ error: null, confirmed, trimmed: response.data, expectEmpty: true })
+      // clean it up
+      response.data = {}
+      return response
+  } 
+
+  const data = get(response, 'data', null)
+
+  const foundUnexpectedData = 'string' === typeof data
+
+  const sliced = foundUnexpectedData
+    ? sliceJson( data )
+    : {}
+  
+  // Fixup the response data if garbage was fixed
+  if ( foundUnexpectedData) {
+    if ( null === sliced ) {
+      reportRequestError({ error: null, confirmed, trimmed: data })
+      // clean it up
+      response.data = {}
+      return response
+    } else {
+      response.data = get(sliced, 'parsed')
+    }
+  }
+
+  // If we had to trim any garbage, we'll store it here
+  const trimmed = get(sliced, 'trimmed', '')
+
+  const errors = get( response, 'data.errors', null )
+
+  if ( response.status >= 400 ) {
+    if ( errors ) {
+      // This is just a normal error response.
+      response.uiMessage = reportRequestError({ error: response.data, confirmed, trimmed })
+    } else {
+      // This error response has a bad schema
+      response.uiMessage = reportRequestError({ error: null, confirmed, trimmed })
+    }
+    return response
+  }
+
+  /**
+   * We don't normally expect 3XX responses, but we'll just let it pass
+   * through, unless we can see that the response has been corrupted,
+   * in which case we'll report that first.
+   */
+  if ( response.status < 400 && response.status >= 300 ) {
+    if ( !confirmed || '' !== trimmed ) {
+      response.uiMessage = reportRequestError({ error: null, confirmed, trimmed })
+    }
+
+    return response
+  }
+
+  /**
+   * If we make it this far, then we have a 2XX response with some valid data,
+   * which we maybe had to fix up.
+   *
+   * Now we need to detect whether it contains any errors to identify false positives,
+   * or cases where its legitmate for the controller to return an otherwise
+   * successful response that also includes some error data for extra diagnostics.
+   */
+  if ( errors ) {
+    /** 
+     * The controller sent back _only_ error data, though the HTTP status is 2XX.
+     * This is a false positive.
+     * This can occur when other buggy code running on the WordPress server preempts
+     * and undermines the proper sending of HTTP headers, and yet the controller
+     * still sends its otherwise-valid JSON error response.
+     */
+    const falsePositive = true
+    response.falsePositive = true
+    response.uiMessage = reportRequestError({ error: response.data, confirmed, falsePositive, trimmed })
+    return response
+  } else {
+    const error = get( response, 'data.error', null )
+
+    if( error ) {
+      /**
+       * We may receive errors back with a 200 success response, such as when
+       * the controller catches PreferenceRegistrationExceptions.
+       */
+      response.uiMessage = reportRequestError({ error, ok: true, confirmed, trimmed })
+      return response
+    }
+
+    if( !confirmed ) {
+      /**
+       * We have received a response that, by every indication so far, is successful.
+       * However, it lacks the confirmation header, which _might_ indicate a problem.
+       */
+      response.uiMessage = reportRequestError({ error: null, ok: true, confirmed, trimmed })
+    }
+    return response
+  }
+}
+
+axios.interceptors.response.use(
+  response => preprocessResponse( response ),
+  error => {
+    if( error.response ) {
+      error.response = preprocessResponse( error.response )
+      error.uiMessage = get(error, 'response.uiMessage')
+    } else if ( error.request ) {
+      const code = 'fontawesome_request_noresponse'
+      const e = {
+        errors: {
+          [code]: [ NO_RESPONSE_MESSAGE ]
+        },
+        error_data: {
+          [code]: { request: error.request }
+        }
+      }
+
+      error.uiMessage = reportRequestError({ error: e })
+    } else {
+      const code = 'fontawesome_request_failed'
+      const e = {
+        errors: {
+          [code]: [ REQUEST_FAILED_MESSAGE ]
+        },
+        error_data: {
+          [code]: { failedRequestMessage: error.message }
+        }
+      }
+
+      error.uiMessage = reportRequestError({ error: e })
+    }
+
+    return error
+  }
+)
 
 export function resetPendingOptions() {
   return {
@@ -73,7 +220,15 @@ export function submitPendingUnregisteredClientDeletions() {
 
     dispatch({ type: 'DELETE_UNREGISTERED_CLIENTS_START' })
 
-    axios.delete(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'DELETE_UNREGISTERED_CLIENTS_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+      })
+    }
+
+    return axios.delete(
       `${apiUrl}/conflict-detection/conflicts`,
       {
         data: deleteList,
@@ -82,25 +237,19 @@ export function submitPendingUnregisteredClientDeletions() {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      dispatch({
-        type: 'DELETE_UNREGISTERED_CLIENTS_END',
-        success: true,
-        data: 204 === status ? null : data,
-        message: ''
-      })
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
-      })
+      const { status, data, falsePositive } = response
 
-      dispatch({
-        type: 'DELETE_UNREGISTERED_CLIENTS_END',
-        success: false,
-        message
-      })
-    })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'DELETE_UNREGISTERED_CLIENTS_END',
+          success: true,
+          data: 204 === status ? null : data,
+          message: ''
+        })
+      }
+    }).catch(handleError)
   }
 }
 
@@ -120,7 +269,15 @@ export function submitPendingBlocklist() {
 
     dispatch({type: 'BLOCKLIST_UPDATE_START'})
 
-    axios.put(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'BLOCKLIST_UPDATE_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+      })
+    }
+
+    return axios.put(
       `${apiUrl}/conflict-detection/conflicts/blocklist`,
       blocklist,
       {
@@ -129,25 +286,19 @@ export function submitPendingBlocklist() {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      dispatch({
-        type: 'BLOCKLIST_UPDATE_END',
-        success: true,
-        data: 204 === status ? null : data,
-        message: ''
-      })
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
-      })
+      const { status, data, falsePositive } = response
 
-      dispatch({
-        type: 'BLOCKLIST_UPDATE_END',
-        success: false,
-        message
-      })
-    })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'BLOCKLIST_UPDATE_END',
+          success: true,
+          data: 204 === status ? null : data,
+          message: ''
+        })
+      }
+    }).catch(handleError)
   }
 }
 
@@ -156,7 +307,15 @@ export function checkPreferenceConflicts() {
     dispatch({type: 'PREFERENCE_CHECK_START'})
     const { apiNonce, apiUrl, options, pendingOptions } = getState()
 
-    axios.post(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'PREFERENCE_CHECK_END',
+        success: false,
+        message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
+      })
+    }
+
+    return axios.post(
       `${apiUrl}/preference-check`,
       { ...options, ...pendingOptions },
       {
@@ -165,26 +324,19 @@ export function checkPreferenceConflicts() {
         }
       }
     ).then(response => {
-      const { data } = response
+      const { data, falsePositive } = response
 
-      dispatch({
-        type: 'PREFERENCE_CHECK_END',
-        success: true,
-        message: '',
-        detectedConflicts: data
-      })
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
-      })
-
-      dispatch({
-        type: 'PREFERENCE_CHECK_END',
-        success: false,
-        message
-      })
-    })
+      if( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'PREFERENCE_CHECK_END',
+          success: true,
+          message: '',
+          detectedConflicts: data
+        })
+      }
+    }).catch(handleError)
   }
 }
 
@@ -212,7 +364,23 @@ export function queryKits() {
 
     dispatch({ type: 'KITS_QUERY_START' })
 
-    axios.post(
+    const handleKitsQueryError = ({ uiMessage }) => {
+      dispatch({
+        type: 'KITS_QUERY_END',
+        success: false,
+        message: uiMessage || __( 'Failed to fetch kits', 'font-awesome' )
+      })
+    }
+
+    const handleKitUpdateError = ({ uiMessage }) => {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: uiMessage || __( 'Couldn\'t update latest kit settings', 'font-awesome' )
+      })
+    }
+
+    return axios.post(
       `${apiUrl}/api`,
       `query {
         me {
@@ -237,6 +405,8 @@ export function queryKits() {
         }
       }
     ).then(response => {
+      if ( response.falsePositive ) return handleKitsQueryError(response)
+
       const data = get(response, 'data.data')
 
       // We may receive errors back with a 200 response, such as when
@@ -248,18 +418,11 @@ export function queryKits() {
           success: true
         })
       } else {
-        const message = reportRequestError({
-          response,
-          uiMessageDefault: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
-        })
-
-        dispatch({
+        return dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message
+          message: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
         })
-
-        return
       }
 
       // If we didn't start out with a saved kitToken, we're done.
@@ -300,7 +463,7 @@ export function queryKits() {
 
       dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-      axios.put(
+      return axios.put(
         `${apiUrl}/config`,
         { 
           options: {
@@ -313,7 +476,9 @@ export function queryKits() {
           }
         }
       ).then(response => {
-        const { data } = response
+        const { data, falsePositive } = response
+
+        if ( falsePositive ) return handleKitUpdateError(response)
 
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
@@ -321,30 +486,8 @@ export function queryKits() {
           success: true,
           message: __( 'Kit changes saved', 'font-awesome' )
         })
-      }).catch(error => {
-        const message = reportRequestError({
-          response: error,
-          uiMessageDefault: __( 'Couldn\'t update latest kit settings', 'font-awesome' )
-        })
-
-        dispatch({
-          type: 'OPTIONS_FORM_SUBMIT_END',
-          success: false,
-          message
-        })
-      })
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Failed to fetch kits', 'font-awesome' )
-      })
-
-      dispatch({
-        type: 'KITS_QUERY_END',
-        success: false,
-        message
-      })
-    })
+      }).catch(handleKitUpdateError)
+    }).catch(handleKitsQueryError)
   }
 }
 
@@ -354,7 +497,15 @@ export function submitPendingOptions() {
 
     dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-    axios.put(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE 
+      })
+    }
+
+    return axios.put(
       `${apiUrl}/config`,
       { options: { ...options, ...pendingOptions }},
       {
@@ -363,33 +514,19 @@ export function submitPendingOptions() {
         }
       }
     ).then(response => {
-      const { data } = response
+      const { data, falsePositive } = response
 
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        data,
-        success: true,
-        message: __( 'Changes saved', 'font-awesome' )
-      })
-
-      // We may receive errors back with a 200 response, such as when
-      // there PreferenceRegistrationExceptions.
-      if( get(response, 'data.error') ) {
-        reportRequestError({
-          response
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          data,
+          success: true,
+          message: __( 'Changes saved', 'font-awesome' )
         })
       }
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error
-      })
-
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        success: false,
-        message
-      })
-    })
+    }).catch(handleError)
   }
 }
 
@@ -399,7 +536,15 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
 
     dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-    axios.put(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+      })
+    }
+
+    return axios.put(
       `${apiUrl}/config`,
       { options: { ...options, apiToken }},
       {
@@ -408,29 +553,23 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
         }
       }
     ).then(response => {
-      const { data } = response
+      const { data, falsePositive } = response
 
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        data,
-        success: true,
-        message: __( 'API Token saved', 'font-awesome' )
-      })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          data,
+          success: true,
+          message: __( 'API Token saved', 'font-awesome' )
+        })
 
-      if( runQueryKits ) {
-        dispatch(queryKits())
+        if( runQueryKits ) {
+          return dispatch(queryKits())
+        }
       }
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error
-      })
-
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        success: false,
-        message
-      })
-    })
+    }).catch(handleError)
   }
 }
 
@@ -465,7 +604,15 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         recentConflictsDetected: nodesTested.conflict
       })
 
-      axios.post(
+      const handleError = ({ uiMessage }) => {
+        dispatch({
+          type: 'CONFLICT_DETECTION_SUBMIT_END',
+          success: false,
+          message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+        })
+      }
+
+      return axios.post(
         `${apiUrl}/conflict-detection/conflicts`,
         payload,
         {
@@ -475,25 +622,24 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         }
       )
       .then(response => {
-        const { status, data } = response
+        const { status, data, falsePositive } = response
 
-        dispatch({
-          type: 'CONFLICT_DETECTION_SUBMIT_END',
-          success: true,
-          data: 204 === status ? null : data
-        })
+        if ( falsePositive ) {
+          handleError(response)
+        } else {
+          dispatch({
+            type: 'CONFLICT_DETECTION_SUBMIT_END',
+            success: true,
+            /**
+             * If get back no data here, that can only mean that a previous
+             * response with garbage in it had an erroneous HTTP 200 status
+             * on it, but no parseable JSON, which is equivalent to a 204.
+             */
+            data: ( 204 === status || 0 === size(data) ) ? null : data
+          })
+        }
       })
-      .catch(function(error){
-        const message = reportRequestError({
-          response: error
-        })
-
-        dispatch({
-          type: 'CONFLICT_DETECTION_SUBMIT_END',
-          success: false,
-          message
-        })
-      })
+      .catch(handleError)
     } else {
       dispatch({ type: 'CONFLICT_DETECTION_NONE_FOUND' })
     }
@@ -506,7 +652,15 @@ export function snoozeV3DeprecationWarning() {
 
     dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_START' })
 
-    axios.put(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'SNOOZE_V3DEPRECATION_WARNING_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
+      })
+    }
+
+    return axios.put(
       `${apiUrl}/v3deprecation`,
       { snooze: true },
       {
@@ -515,20 +669,21 @@ export function snoozeV3DeprecationWarning() {
         }
       }
     )
-    .then(function() {
-      dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_END', success: true, snooze: true })
-    })
-    .catch(function(error){
-      const message = reportRequestError({
-        response: error
-      })
+    .then(response => {
+      const { falsePositive } = response
 
-      dispatch({
-        type: 'SNOOZE_V3DEPRECATION_WARNING_END',
-        success: false,
-        message
-      })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'SNOOZE_V3DEPRECATION_WARNING_END',
+          success: true,
+          snooze: true,
+          message: ''
+        })
+      }
     })
+    .catch(handleError)
   }
 }
 
@@ -553,7 +708,15 @@ export function setConflictDetectionScanner({ enable = true }) {
 
     dispatch({type: actionStartType})
 
-    axios.put(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: actionEndType,
+        success: false,
+        message: uiMessage || COULD_NOT_START_SCANNER_MESSAGE
+      })
+    }
+
+    return axios.put(
       `${apiUrl}/conflict-detection/until`,
       enable
         ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)
@@ -564,23 +727,17 @@ export function setConflictDetectionScanner({ enable = true }) {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      dispatch({
-        type: actionEndType,
-        data: 204 === status ? null : data,
-        success: true
-      })
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t start the scanner', 'font-awesome' )
-      })
+      const { status, data, falsePositive } = response
 
-      dispatch({
-        type: actionEndType,
-        success: false,
-        message
-      })
-    })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: actionEndType,
+          data: 204 === status ? null : data,
+          success: true
+        })
+      }
+    }).catch(handleError)
   }
 }

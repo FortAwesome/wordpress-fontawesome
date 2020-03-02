@@ -1,7 +1,8 @@
 <?php
 namespace FortAwesome;
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
+use \WP_REST_Controller, \WP_Error, \Error, \Exception;
 
 /**
  * Controller class for REST endpoint
@@ -85,21 +86,21 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function get_item( $request ) {
 		try {
 			$data = $this->build_item();
 
-			return new WP_REST_Response( $data, 200 );
+			return new FontAwesome_REST_Response( $data, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 
@@ -111,7 +112,7 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function update_item( $request ) {
 		try {
@@ -123,15 +124,15 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 
 			$return_data = $this->build_item( fa() );
 
-			return new WP_REST_Response( $return_data, 200 );
+			return new FontAwesome_REST_Response( $return_data, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 

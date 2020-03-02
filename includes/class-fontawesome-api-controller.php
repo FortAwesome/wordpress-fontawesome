@@ -8,7 +8,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+use \WP_REST_Controller, \WP_Error, \Error, \Exception;
 
 /**
  * Controller class for the plugin's GraphQL API REST endpoint.
@@ -108,21 +108,21 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function query( $request ) {
 		try {
 			$result = $this->metadata_provider()->metadata_query( $request->get_body() );
 
-			return new WP_REST_Response( json_decode( $result, true ), 200 );
+			return new FontAwesome_REST_Response( json_decode( $result, true ), 200 );
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 

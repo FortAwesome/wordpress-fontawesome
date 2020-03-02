@@ -130,7 +130,16 @@ the Font Awesome, Font Awesome API, and kit edge apps.
     browser (running in the host) will need to reach. 
 1. run `bin/dev` in the `fontawesome` repo if you need to do things with kit configs or API Tokens
 
-## 4. Run an environment (one at a time)
+## 4. Add the wp.test host name
+
+On Unix-like OSes, such as Mac OS, you do this by editing your `/etc/hosts` file
+and adding a line like this:
+
+```
+127.0.0.1 wp.test
+```
+
+## 5. Run an environment (one at a time)
 
 `latest` is the default, so these two are equivalent:
 
@@ -183,11 +192,11 @@ $ docker-compose down
 You could also be a little more ninja-ish and use `docker ps` to find the running containers you know
 you want to stop, find the container ID for each, and then for each one do `docker container stop <container_id>`.
 
-## 5. install composer (PHP package manager)
+## 6. install composer (PHP package manager)
 
 On Mac OS X, it can be installed via `brew install composer`
 
-## 6. update composer dependencies
+## 7. update composer dependencies
 
 From the top-level directory that contains `composer.json`:
 
@@ -195,7 +204,7 @@ From the top-level directory that contains `composer.json`:
 composer install
 ```
 
-## 7. OPTIONAL: start the admin React app's development build (in development)
+## 8. OPTIONAL: start the admin React app's development build (in development)
 
 In one terminal window, `cd admin`, and then:
 
@@ -206,7 +215,7 @@ In one terminal window, `cd admin`, and then:
       This will start up another web server that serves up the assets for the React app separately from
       the WordPress site, so leave it running while you develop.
 
-## 8. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
+## 9. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
 
 The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
 
@@ -232,7 +241,7 @@ Here are some of the operations that require the container to talk back to the h
 - Webpack dev server port for React hot module reloading
 - Font Awesome GraphQL API (when running that service locally)
 
-## 9. run `bin/setup`
+## 10. run `bin/setup`
 
 This does the initial WordPress admin setup that happens first on any freshly installed WordPress
 site. We're just doing it from the command line with the script to be quick and convenient.
@@ -243,11 +252,11 @@ By default, it will use the container named `com.fontawesome.wordpress-latest-de
 
 You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
 
-After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://localhost:8765](http://localhost:8765).
+After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://wp.test:8765](http://wp.test:8765).
 
-You can login to the admin dashboard at [http://localhost:8765/wp-admin](http://localhost:8765/wp-admin) with admin username and password as found in `.env`.
+You can login to the admin dashboard at [http://wp.test:8765/wp-admin](http://wp.test:8765/wp-admin) with admin username and password as found in `.env`.
 
-## 10. OPTIONAL: configure debugging
+## 11. OPTIONAL: configure debugging
 
 ```bash
 bin/configure-debugging
@@ -257,7 +266,7 @@ This will setup debugging configuration in `wp-config.php` inside the container
 and will also install several plugins to power the debug bar available from the
 upper right hand nav bar when logged into WordPress as admin.
 
-## 11. Install and/or Activate the Font Awesome plugin
+## 12. Install and/or Activate the Font Awesome plugin
 
 If you're running the `bin/dev` environment, you'll find in the admin dashboard that the
 Font Awesome is already installed, because the source code in this repo is mounted as a volume
@@ -269,7 +278,7 @@ If you're running the `bin/integration` environment, install via zip archive upl
 from the WordPress plugins directory. [See above](#development) for more details. 
 
 After activating the plugin you can access the Font Awesome admin page here:
-`http://localhost:8765/wp-admin/options-general.php?page=font-awesome`
+`http://wp.test:8765/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
 
@@ -644,87 +653,3 @@ In order to activate it you must first run `composer install --prefer-dist` from
       "/var/www/html/wp-content/plugins/font-awesome": "${workspaceRoot}"
     }
     ```
-
-# Configure PhpStorm 2018.1.5 for debugging
-
-(This seems to be a black art and doesn't always work for reasons unknown.
-Your mileage may vary. And if you find a better way, please update this!)
-
-This is pretty advanced, and also not necessary for development—it's just a nice toolset to have available.
-So beware: your mileage may vary.
-
-1. Add a CLI interpreter
-
-Preferences -> Languages & Frameworks -> PHP
-
-![add cli interpreter](images/create_cli_interpreter_before.png)
-
-Add a new CLI interpreter with Docker Compose. We'll call it `wordpress-fontawesome-debug`.
-
-![configure cli interpeter](images/configure_cli_interpreter.png)
-
-* Enter `./docker-compose.yml` for the configuration file.
-* Service: `wordpress`
-* PHP Executable: php
-* Debugger extension: xdebug.so
-* Configuration options:
-  * xdebug.remote_enable=1
-  * xdebug.remote_host=docker.for.mac.localhost
-  * xdebug.remote_port=9000
-  * xdebug.remote_mode=jit
-
-2. Configure Debugging
-
-The defaults may be fine, but the key is to uncheck the option circled in the screenshot.
-
-[See also](https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000229624-Setting-up-xDebug-with-PHPUnit-using-Docker-for-Mac-and-PHPStorm)
-
-![configure debugging](images/configure_debugging.png)
-
-3. Configure Test Framework
-
-Our test framework is PHPUnit, and it will run "remotely", because it's in a Docker container.
-
-![create test framework](images/create_test_framework.png)
-
-![configure test framework](images/configure_test_framework.png)
-
-* CLI Interpreter: select the one we created previously.
-* Path mappings: these should be auto-populated, based on the `docker-compose.yml` being used by our CLI interpreter. If not, then look at the `docker-compose.yml`
-  to guide you in setting up path mappings. For example, your host directory `/Users/you/repos/wordpress-fontawesome/font-awesome` should map to container
-  directory `/var/www/html/wp-content/plugins/font-awesome`.
-* Path to phpunit.phar: this should be the full path _inside_ the container.
-* Default configuration file and Default bootstrap file: these are also full paths _inside_ the container.
-
-
-4. Create Run and Test Configurations
-
-(Menu) Run -> Edit Configurations...
-
-For running and debugging tests:
-
-![test run configuration](images/test_configuration.png)
-
-This is where you can configure which tests run when you invoke this test runner. You could create more than one test configuration
-for conveniently running different test groups. In this pictured configuration, we're just using the test configuration file that
-  we previously configured for use by the Test Framework.
-
-To run that run configuration, you can select it here (red arrow) and then either run it normally or run it under debugging (green arrows):
-
-![run test configuration](images/run_test_configuration.png)
-
-## Gotcha: `wordpress-fontawesome_phpstorm_helpers_1` container fails to start
-
-It may throw an error like "network \<some_big_hex_value\> not found".
-
-This happens, apparently, when _after_ you initially set up this configuration, you change the network id for the Docker Compose compose container.
-And this could happen if you ran `docker-compose down` or ran the local `bin/clean`. These tear down the network as well as the container.
-But PhpStorm creates a `php_helper` container and associates it wih this network. So if you remove the network, it will fail miserably.
-
-A solution is just to remove that container and then try again in PhpStorm. It will just recreate that helper container and  associate it with the
-new `docker-compose` network.
-
-There's more than one way to delete that container, but one way is to find the container's name and run:
-* `docker container stop wordpress-fontawesome_phpstorm_helpers_1`
-* `docker container rm wordpress-fontawesome_phpstorm_helpers_1`
-

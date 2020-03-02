@@ -14,6 +14,12 @@ else
   . .env.local
 fi
 
+$DIR/env -c ${WP_CONTAINER} /tmp/add-hosts.sh
+
+if [ "$?" != "0" ]; then
+  echo "WARNING: your docker container will not resolve the wp.test hostname"
+fi
+
 rc=`curl \
   --write-out '%{http_code}' \
   --silent \

@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Gamma
  * Plugin URI:        https://fontawesome.com/
- * Description:       Unregistered Client: tries to enqueue its own v4.7.0 webfont version from cdn.jsdelivr.net. On the front end, it prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath". It adds the same output on the login page, and in the footer of admin pages.
+ * Description:       Unregistered Client: tries to enqueue its own v4.7.0 webfont version from cdn.jsdelivr.net. On the front end, it prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath". It adds the same output on the login page, and in the footer of admin pages. It also emits rogue output that might break our REST API responses, like a buggy plugin might do.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -14,10 +14,10 @@ defined( 'WPINC' ) || die;
 define( 'GAMMA_PLUGIN_VERSION', '0.0.1' );
 define( 'GAMMA_PLUGIN_LOG_PREFIX', 'gamma-plugin' );
 
+print "This rogue output from " . GAMMA_PLUGIN_LOG_PREFIX . " should not break our handling of REST API responses from our controllers.";
+
 foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
 	add_action( $action, function () {
-		print "This rogue output from " . GAMMA_PLUGIN_LOG_PREFIX . " should not be returned by our config controller. If it does, it will break the admin client.";
-
 		wp_enqueue_style(
 			'GAMMA_PLUGIN_LOG_PREFIX',
 			'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css',

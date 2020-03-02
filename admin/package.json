@@ -3,7 +3,6 @@
   "version": "4.0.0-rc14",
   "private": true,
   "dependencies": {
-    "@babel/core": "7.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.8",
     "@fortawesome/free-regular-svg-icons": "^5.8.2",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
@@ -97,11 +96,12 @@
     "handlebars": "^4.5.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/helpers": "^7.8.4",
     "@svgr/webpack": "2.4.1",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "9.0.0",
-    "babel-jest": "23.6.0",
-    "babel-loader": "8.0.4",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^25.1.0",
+    "babel-loader": "^8.0.6",
     "babel-plugin-named-asset-import": "^0.2.2",
     "babel-preset-react-app": "^5.0.4",
     "case-sensitive-paths-webpack-plugin": "2.1.2",
@@ -125,6 +125,7 @@
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "pnp-webpack-plugin": "^1.5.0",
     "react-dev-utils": "^6.0.5",
+    "redux-mock-store": "^1.5.4",
     "terser-webpack-plugin": "^2.3.2",
     "webpack": "^4.41.5",
     "webpack-dev-server": "^3.10.1",
