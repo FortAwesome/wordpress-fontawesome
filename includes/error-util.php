@@ -26,17 +26,16 @@ function notify_admin_fatal_error( $e ) {
  * @ignore
  */
 // phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
-function build_wp_error( $e, $code, $status ) {
+function build_wp_error( $e, $code ) {
 	if ( is_a( $e, 'Error' ) || is_a( $e, 'Exception' ) ) {
 		$previous = boolval( $e->getPrevious() )
-			? build_wp_error( $e->getPrevious(), 'previous_exception', 500 )
+			? build_wp_error( $e->getPrevious(), 'previous_exception' )
 			: null;
 
 		$current = new WP_Error(
 			$code,
 			$e->getMessage(),
 			array(
-				'status' => $status,
 				'trace'  => $e->getTraceAsString(),
 			)
 		);
@@ -72,7 +71,6 @@ function build_wp_error( $e, $code, $status ) {
 				$code,
 				$e->getMessage(),
 				array(
-					'status' => $status,
 					'trace'  => $e->getTraceAsString(),
 				)
 			);
@@ -87,8 +85,8 @@ function build_wp_error( $e, $code, $status ) {
  * @internal
  * @ignore
  */
-function unknown_error_500( $e ) {
-	return build_wp_error( $e, 'fontawesome_unknown_error', 500 );
+function fontawesome_unknown_error( $e ) {
+	return build_wp_error( $e, 'fontawesome_unknown_error' );
 }
 
 /**
@@ -97,8 +95,8 @@ function unknown_error_500( $e ) {
  * @internal
  * @ignore
  */
-function fa_400( $e ) {
-	return build_wp_error( $e, 'fontawesome_client_exception', 400 );
+function fontawesome_client_exception( $e ) {
+	return build_wp_error( $e, 'fontawesome_client_exception' );
 }
 
 /**
@@ -107,6 +105,6 @@ function fa_400( $e ) {
  * @internal
  * @ignore
  */
-function fa_500( $e ) {
-	return build_wp_error( $e, 'fontawesome_server_exception', 500 );
+function fontawesome_server_exception( $e ) {
+	return build_wp_error( $e, 'fontawesome_server_exception' );
 }
