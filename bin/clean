@@ -4,12 +4,3 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/../.env
 
 docker-compose down -v
-
-# PhpStorm creates this helper container that we'll want to clean up as well, if it's there.
-CONTAINER_ID=`docker ps -a --filter "name=$PHP_STORM_HELPER_CONTAINER_NAME" -q -l`
-
-echo "Cleaning up any PhpStorm helper containers."
-if [ -n "$CONTAINER_ID" ]; then
-  docker container stop $CONTAINER_ID
-  docker container rm -vf $CONTAINER_ID
-fi
