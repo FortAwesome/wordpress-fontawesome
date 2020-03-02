@@ -7,11 +7,11 @@ if [ "xhost.docker.internal" == x${INTERNAL_IP} ]; then
 	exit 1
 fi
 
-echo "$INTERNAL_IP fa.test" >> /etc/hosts
+echo "$INTERNAL_IP wp.test" >> /etc/hosts
 
 if [ "$?" == "0" ]; then
-  echo "SUCCESS adding fa.test to container /etc/hosts"
+  echo "SUCCESS adding wp.test to container /etc/hosts"
 else
-  echo "FAILED attempting to add fa.test to container /etc/hosts"
+  echo "FAILED attempting to add wp.test to container /etc/hosts"
   exit 1
 fi
