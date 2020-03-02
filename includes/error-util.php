@@ -85,7 +85,7 @@ function build_wp_error( $e, $code ) {
  * @internal
  * @ignore
  */
-function fontawesome_unknown_error( $e ) {
+function wpe_fontawesome_unknown_error( $e ) {
 	return build_wp_error( $e, 'fontawesome_unknown_error' );
 }
 
@@ -95,7 +95,7 @@ function fontawesome_unknown_error( $e ) {
  * @internal
  * @ignore
  */
-function fontawesome_client_exception( $e ) {
+function wpe_fontawesome_client_exception( $e ) {
 	return build_wp_error( $e, 'fontawesome_client_exception' );
 }
 
@@ -105,6 +105,6 @@ function fontawesome_client_exception( $e ) {
  * @internal
  * @ignore
  */
-function fontawesome_server_exception( $e ) {
+function wpe_fontawesome_server_exception( $e ) {
 	return build_wp_error( $e, 'fontawesome_server_exception' );
 }

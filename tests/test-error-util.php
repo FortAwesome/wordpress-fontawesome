@@ -12,11 +12,11 @@ use \Exception, \Error;
  * Class ErrorUtilTest
  */
 class ErrorUtilTest extends \WP_UnitTestCase {
-	public function test_fontawesome_unknown_error_with_exception() {
+	public function test_wpe_fontawesome_unknown_error_with_exception() {
 		$message = 'foo';
 		$code    = 'fontawesome_unknown_error';
 		$e       = new Exception( $message );
-		$result  = fontawesome_unknown_error( $e );
+		$result  = wpe_fontawesome_unknown_error( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -24,11 +24,11 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$this->assertTrue( isset( $result->get_error_data( $code )['trace'] ) );
 	}
 
-	public function test_fontawesome_unknown_error_with_error() {
+	public function test_wpe_fontawesome_unknown_error_with_error() {
 		$message = 'foo';
 		$code    = 'fontawesome_unknown_error';
 		$e       = new Error( $message );
-		$result  = fontawesome_unknown_error( $e );
+		$result  = wpe_fontawesome_unknown_error( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -36,11 +36,11 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$this->assertTrue( isset( $result->get_error_data( $code )['trace'] ) );
 	}
 
-	public function test_fontawesome_unknown_error_with_array() {
+	public function test_wpe_fontawesome_unknown_error_with_array() {
 		$message = 'foo';
 		$code    = 'fontawesome_unknown_error';
 		$e       = array( 'alpha' => 42 );
-		$result  = fontawesome_unknown_error( $e );
+		$result  = wpe_fontawesome_unknown_error( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -48,11 +48,11 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$this->assertTrue( isset( $result->get_error_data( $code )['trace'] ) );
 	}
 
-	public function test_fontawesome_unknown_error_with_string() {
+	public function test_wpe_fontawesome_unknown_error_with_string() {
 		$message = 'foo';
 		$code    = 'fontawesome_unknown_error';
 		$e       = $message;
-		$result  = fontawesome_unknown_error( $e );
+		$result  = wpe_fontawesome_unknown_error( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -65,7 +65,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$message = 'foo';
 		$code    = 'fontawesome_client_exception';
 		$e       = new Exception( $message );
-		$result  = fontawesome_client_exception( $e );
+		$result  = wpe_fontawesome_client_exception( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -77,7 +77,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$message = 'foo';
 		$code    = 'fontawesome_client_exception';
 		$e       = new Error( $message );
-		$result  = fontawesome_client_exception( $e );
+		$result  = wpe_fontawesome_client_exception( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -89,7 +89,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$message = 'foo';
 		$code    = 'fontawesome_server_exception';
 		$e       = new Exception( $message );
-		$result  = fontawesome_server_exception( $e );
+		$result  = wpe_fontawesome_server_exception( $e );
 
 		$this->assertTrue( is_a( $result, 'WP_Error' ) );
 		$this->assertEquals( $code, $result->get_error_code() );
@@ -101,7 +101,7 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 		$prev = new Exception( 'some previous' );
 		$e    = PreferenceRegistrationException::with_thrown( $prev );
 
-		$result = fontawesome_server_exception( $e );
+		$result = wpe_fontawesome_server_exception( $e );
 
 		$this->assertEquals( [ 'fontawesome_server_exception', 'previous_exception' ], $result->get_error_codes() );
 	}
