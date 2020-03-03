@@ -2,7 +2,7 @@ import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
 import { submitPendingOptions } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import reportRequestError from '../util/reportRequestError'
+import reportRequestError, { MOCK_UI_MESSAGE } from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
 const INVALID_JSON_RESPONSE_DATA = 'foo[42]bar{123}'
@@ -147,9 +147,29 @@ describe('submitPendingOptions', () => {
           })
         })
 
-        test('reports warning but dispatches appropriate actions despite the garbage', done => {
+        test('reports warning and dispatches a failure action despite the garbage', done => {
           store.dispatch(submitPendingOptions()).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
+            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+              error: expect.objectContaining({
+                errors: expect.anything(),
+                'error_data': expect.anything()
+              }),
+              confirmed: false,
+              falsePositive: true,
+              trimmed: INVALID_JSON_RESPONSE_DATA
+            }))
+            expect(store.getActions().length).toEqual(2)
+            expect(store.getActions()).toEqual(expect.arrayContaining([
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_START'
+              }),
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_END',
+                success: false,
+                message: MOCK_UI_MESSAGE
+              })
+            ]))
             done()
           })
         })

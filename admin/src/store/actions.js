@@ -22,13 +22,11 @@ function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
 
   if ( 204 === response.status && '' !== response.data ) {
-      //console.log('WARNING: response body should be empty but has this:', response.data)
       reportRequestError({ error: null, confirmed, trimmed: response.data, expectEmpty: true })
   } else {
     const sliced = sliceJson( response.data )
 
     if ( null === sliced ) {
-      //console.log('WARNING: could not find valid JSON data in the response:', response.data)
       reportRequestError({ error: null, confirmed, falsePositive: true, trimmed: response.data })
     } else {
       const { parsed, trimmed, json } = sliced
@@ -36,16 +34,28 @@ function preprocessResponse( response ) {
       // Fixup the response data with just json
       response.data = json
 
-      // console.log('WARNING: found invalid content preceding JSON data in the response:', trimmed)
+      /**
+       * The garbage that preceded the valid JSON reply. We report this to help
+       * the user identify the root cause of the problem.
+       */
       response.fontAwesomeTrimmed = trimmed
 
       if( response.status < 300 ) {
         const errors = get( parsed, 'errors' )
 
         if ( errors ) {
-          // write an error report to the console and mention that this is a false negative
-          // console.log('WARNING: got errors in a 2XX response:', errors)
-          reportRequestError({ error: parsed, confirmed, falsePositive: true, trimmed })
+          /**
+           * This is a false positive. We've received an HTTP 200 response from
+           * the server, but it actually contains errors which should have been
+           * HTTP 4xx or 5xx. This can occur when other buggy code running
+           * on the WordPress server preempts and undermines the proper sending
+           * of HTTP headers, and yet our controller still follows up with its
+           * otherwise-valid JSON response.
+           */
+          const falsePositive = true
+          response.falsePositive = true
+          const message = reportRequestError({ error: parsed, confirmed, falsePositive, trimmed })
+          response.falsePositiveUiMessage = message
         } else {
           const error = get( parsed, 'error' )
 
@@ -432,14 +442,22 @@ export function submitPendingOptions() {
         }
       }
     ).then(response => {
-      const { data } = response
+      const { data, falsePositive, falsePositiveUiMessage } = response
 
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        data,
-        success: true,
-        message: __( 'Changes saved', 'font-awesome' )
-      })
+      if ( falsePositive ) {
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          success: false,
+          message: falsePositiveUiMessage
+        })
+      } else {
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          data,
+          success: true,
+          message: __( 'Changes saved', 'font-awesome' )
+        })
+      }
     }).catch(error => {
       const message = reportRequestError({
         response: error
