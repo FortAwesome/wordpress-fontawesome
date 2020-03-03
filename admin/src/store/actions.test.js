@@ -2,7 +2,7 @@ import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
 import { submitPendingOptions } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import reportRequestError from '../util/reportRequestError'
+import { getReportRequestErrorMock,resetReportRequestErrorMock } from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
 const INVALID_JSON_RESPONSE_DATA = 'foo[42]bar{123}'
@@ -16,6 +16,7 @@ describe('submitPendingOptions', () => {
   let pendingOptions = {
     technology: 'svg'
   }
+  let reportRequestError = null
 
   beforeEach(() => {
     store = mockStore({
@@ -26,6 +27,13 @@ describe('submitPendingOptions', () => {
       },
       pendingOptions
     })
+
+    resetReportRequestErrorMock()
+    reportRequestError = getReportRequestErrorMock()
+  })
+
+  afterEach(() => {
+    resetAxiosMocks()
   })
   
   describe('when HTTP 200', () => {
@@ -58,17 +66,15 @@ describe('submitPendingOptions', () => {
           })
         })
 
-        afterEach(() => resetAxiosMocks())
-
         test('reports warning but completes successfully', done => {
           store.dispatch(submitPendingOptions()).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(reportRequestError).toHaveBeenCalledWith({
+            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
               error: null,
               confirmed: false,
               ok: true,
               trimmed: INVALID_JSON_RESPONSE_DATA
-            })
+            }))
             expect(store.getActions().length).toEqual(2)
             expect(store.getActions()).toEqual(expect.arrayContaining([
               expect.objectContaining({
@@ -112,8 +118,44 @@ describe('submitPendingOptions', () => {
         })
       })
 
-      describe('when invalid data preceeds an error JSON response', () => {
+      describe('when invalid data preceeds an errors JSON response', () => {
+        let jsonRequest = null
+        let jsonResponse = null
 
+        beforeEach(() => {
+          jsonRequest = JSON.stringify({
+            options: pendingOptions
+          })
+
+          jsonResponse = JSON.stringify({
+            errors: {
+              "code1": ["message1"],
+            },
+            "error_data": {
+              "code1": {
+                "trace": 'some stack trace'
+              }
+            }
+          })
+
+          respondWith({
+            url: `${apiUrl}/config`,
+            method: 'PUT',
+            response: {
+              status: 200,
+              statusText: 'OK',
+              data: `${INVALID_JSON_RESPONSE_DATA}${jsonResponse}`
+            }
+          })
+        })
+
+        test('reports warning but dispatches appropriate actions despite the garbage', done => {
+          store.dispatch(submitPendingOptions()).then(() => {
+            //expect(reportRequestError).toHaveBeenCalledTimes(1)
+            expect(getReportRequestErrorMock()).toHaveBeenCalledTimes(1)
+            done()
+          })
+        })
       })
     })
   })
