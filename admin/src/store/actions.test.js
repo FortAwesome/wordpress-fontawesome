@@ -116,7 +116,7 @@ describe('submitPendingOptions', () => {
         })
       })
 
-      describe('when invalid data preceeds an errors JSON response', () => {
+      describe('false positive: when invalid data preceeds an errors JSON response that should have been HTTP 4xx or 5xx', () => {
         let jsonResponse = null
 
         beforeEach(() => {
