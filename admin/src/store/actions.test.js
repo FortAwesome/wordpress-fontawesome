@@ -2,7 +2,7 @@ import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
 import { submitPendingOptions } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import { getReportRequestErrorMock,resetReportRequestErrorMock } from '../util/reportRequestError'
+import reportRequestError from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
 const INVALID_JSON_RESPONSE_DATA = 'foo[42]bar{123}'
@@ -16,7 +16,6 @@ describe('submitPendingOptions', () => {
   let pendingOptions = {
     technology: 'svg'
   }
-  let reportRequestError = null
 
   beforeEach(() => {
     store = mockStore({
@@ -28,8 +27,7 @@ describe('submitPendingOptions', () => {
       pendingOptions
     })
 
-    resetReportRequestErrorMock()
-    reportRequestError = getReportRequestErrorMock()
+    reportRequestError.mockClear()
   })
 
   afterEach(() => {
@@ -151,8 +149,7 @@ describe('submitPendingOptions', () => {
 
         test('reports warning but dispatches appropriate actions despite the garbage', done => {
           store.dispatch(submitPendingOptions()).then(() => {
-            //expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(getReportRequestErrorMock()).toHaveBeenCalledTimes(1)
+            expect(reportRequestError).toHaveBeenCalledTimes(1)
             done()
           })
         })
