@@ -5,6 +5,8 @@ import get from 'lodash/get'
 import find from 'lodash/find'
 import reportRequestError from '../util/reportRequestError'
 import { __ } from '@wordpress/i18n'
+import has from 'lodash/has'
+import sliceJson from '../util/sliceJson'
 
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
@@ -15,6 +17,71 @@ export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
 // order to protect against possible race conditions, instead of 0
 // (which would just be exactly "now").
 const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
+
+function preprocessResponse( response ) {
+  const confirmed = has( response, 'headers.fontawesome-confirmation' )
+
+  if ( 204 === response.status && '' !== response.data ) {
+      //console.log('WARNING: response body should be empty but has this:', response.data)
+      reportRequestError({ error: null, confirmed, trimmed: response.data, expectEmpty: true })
+  } else {
+    const sliced = sliceJson( response.data )
+
+    if ( null === sliced ) {
+      //console.log('WARNING: could not find valid JSON data in the response:', response.data)
+      reportRequestError({ error: null, confirmed, falsePositive: true, trimmed: response.data })
+    } else {
+      const { parsed, trimmed, json } = sliced
+
+      // Fixup the response data with just json
+      response.data = json
+
+      // console.log('WARNING: found invalid content preceding JSON data in the response:', trimmed)
+      response.fontAwesomeTrimmed = trimmed
+
+      if( response.status < 300 ) {
+        const errors = get( parsed, 'errors' )
+
+        if ( errors ) {
+          // write an error report to the console and mention that this is a false negative
+          // console.log('WARNING: got errors in a 2XX response:', errors)
+          reportRequestError({ error: parsed, confirmed, falsePositive: true, trimmed })
+        } else {
+          const error = get( parsed, 'error' )
+
+          // We may receive errors back with a 200 response, such as when
+          // there PreferenceRegistrationExceptions.
+          if( error ) {
+            reportRequestError({ error, ok: true, confirmed, trimmed })
+          } else {
+            reportRequestError({ error: null, ok: true, confirmed, trimmed })
+          }
+        }
+      }
+    }
+  }
+
+  return response
+}
+
+axios.interceptors.response.use(
+  response => preprocessResponse( response ),
+  error => {
+    let fontAwesomeMessage = null
+
+    if( error.response ) {
+      error.response = preprocessResponse( error.response )
+      
+    } else if ( error.request ) {
+      // TODO: emit error about not being able to make a request
+
+    } else {
+      // TODO: emit totally unexpected error and add error.message if present
+    }
+    console.log('DEBUG: intercepting error')
+    return error
+  }
+)
 
 export function resetPendingOptions() {
   return {
@@ -354,7 +421,7 @@ export function submitPendingOptions() {
 
     dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-    axios.put(
+    return axios.put(
       `${apiUrl}/config`,
       { options: { ...options, ...pendingOptions }},
       {
@@ -371,14 +438,6 @@ export function submitPendingOptions() {
         success: true,
         message: __( 'Changes saved', 'font-awesome' )
       })
-
-      // We may receive errors back with a 200 response, such as when
-      // there PreferenceRegistrationExceptions.
-      if( get(response, 'data.error') ) {
-        reportRequestError({
-          response
-        })
-      }
     }).catch(error => {
       const message = reportRequestError({
         response: error

@@ -62,83 +62,48 @@ function handleSingleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverrid
   return uiMessageOverride || uiMessage || uiMessageDefault
 }
 
-function handleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride }) {
-  if( get(wpError, 'code') ) {
-    return handleSingleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride })
-  } else if( size( get(wpError, 'errors') ) > 0 ) {
-    // Multiple errors
-    const wpErrors = Object.keys(wpError.errors).map(code => {
-      // get the first error message available for this code
-      const message = get(wpError, `errors.${code}.0`)
-      const data = get(wpError, `error_data.${code}`)
+function handleAllWpErrorOutput({ error, uiMessageDefault, uiMessageOverride }) {
+  const wpErrors = Object.keys(error.errors).map(code => {
+    // get the first error message available for this code
+    const message = get(error, `errors.${code}.0`)
+    const data = get(error, `error_data.${code}`)
 
-      return {
-        code,
-        message,
-        data
-      }
+    return {
+      code,
+      message,
+      data
+    }
+  })
+
+  const uiMessage = wpErrors.reduce((acc, error) => {
+    console.group(ONE_OF_MANY_ERRORS_GROUP_LABEL)
+
+    const msg = handleSingleWpErrorOutput({
+      wpError: error,
+      uiMessageDefault,
+      uiMessageOverride
     })
 
-    const uiMessage = wpErrors.reduce((acc, error) => {
-      console.group(ONE_OF_MANY_ERRORS_GROUP_LABEL)
+    console.groupEnd()
 
-      const msg = handleSingleWpErrorOutput({
-        wpError: error,
-        uiMessageDefault,
-        uiMessageOverride
-      })
+    // The uiMessage we should return will be the first error message that isn't
+    // from a 'previous_exception'
+    return (!acc && wpError.code !== 'previous_exception')
+      ? msg
+      : acc
+  }, null)
 
-      console.groupEnd()
-
-      // The uiMessage we should return will be the first error message that isn't
-      // from a 'previous_exception'
-      return (!acc && wpError.code !== 'previous_exception')
-        ? msg
-        : acc
-    }, null)
-
-    return uiMessage
-  } else {
-    // We don't recognize this schema
-    return handleSingleWpErrorOutput({
-      wpError: {
-        code: 'fontawesome_unknown_error',
-        message: ERROR_REPORTING_ERROR
-      }
-    })
-  }
+  return uiMessage
 }
 
-export default function({ response, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMessageOverride = null }) {
-  // We might get back a successful response that still has errors on it, as in
-  // the case of a PreferenceRegistrationException.
-  const status = get(response, 'status')
-  const isOK = status >= 200 && status < 300
-  const okError = isOK
-    ? get(response, 'data.error', null)
-    : null
-
-  // This could be a serialized WP_Error object representing either a single
-  // or multiple errors.
-  const wpError = isOK
-    ? !!okError
-      ? okError
-      : null
-    : ( get(response, 'response.data.code') || get(response, 'data.errors') )
-      ? get(response, 'response.data')
-      : {} // pass through an error object that has a bad schema to produce a bad schema report
-
-  // If the status is OK and we have no wpError at this point, then there's no
-  // error to process, but we should return what we may have been given as the uiMessage.
-  if(isOK && !wpError) return uiMessageOverride || uiMessageDefault
-
+export default function({ error, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMessageOverride = null, ok = false, falsePositive = false, confirmed = true, expectEmpty = false , trimmed = '' }) {
   console.group(ERROR_REPORT_PREAMBLE)
 
-  if( !!okError ) {
+  if( ok ) {
     console.info(OK_ERROR_PREAMBLE)
   }
 
-  const uiMessage = handleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride })
+  const uiMessage = handleAllWpErrorOutput({ error, uiMessageDefault, uiMessageOverride })
 
   console.groupEnd()
 
