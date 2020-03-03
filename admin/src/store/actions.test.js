@@ -44,11 +44,9 @@ describe('submitPendingOptions', () => {
 
     describe('when confirmation header is absent', () => {
       describe('when invalid data precedes successful JSON response', () => {
-        //const json = '{"options":{"usePro":true,"v4Compat":true,"technology":"webfont","pseudoElements":true,"kitToken":null,"apiToken":false,"version":"5.12.1"},"conflicts":[]}'
         let json = null
 
         beforeEach(() => {
-        //const json = '{"options":{"usePro":true,"v4Compat":true,"technology":"webfont","pseudoElements":true,"kitToken":null,"apiToken":false,"version":"5.12.1"},"conflicts":[]}'
           json = JSON.stringify({
             options: pendingOptions
           })
