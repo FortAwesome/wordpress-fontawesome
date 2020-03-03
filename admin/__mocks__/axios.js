@@ -25,8 +25,6 @@ export function respondWith ({ url, method = "GET", response }) {
 
 export function resetAxiosMocks () {
   responses = {}
-  responseSuccessInterceptor = DEFAULT_INTERCEPTOR
-  responseFailureInterceptor = DEFAULT_INTERCEPTOR
   axios.put = DEFAULT_PUT
 }
 
