@@ -74,8 +74,10 @@ axios.interceptors.response.use(
       
     } else if ( error.request ) {
       // TODO: emit error about not being able to make a request
+      console.log('DEBUG: matched error.request')
 
     } else {
+      console.log('DEBUG: totally unexpected error')
       // TODO: emit totally unexpected error and add error.message if present
     }
     console.log('DEBUG: intercepting error')
