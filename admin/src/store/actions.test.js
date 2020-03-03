@@ -117,14 +117,9 @@ describe('submitPendingOptions', () => {
       })
 
       describe('when invalid data preceeds an errors JSON response', () => {
-        let jsonRequest = null
         let jsonResponse = null
 
         beforeEach(() => {
-          jsonRequest = JSON.stringify({
-            options: pendingOptions
-          })
-
           jsonResponse = JSON.stringify({
             errors: {
               "code1": ["message1"],
