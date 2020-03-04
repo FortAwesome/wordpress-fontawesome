@@ -478,13 +478,16 @@ Install the Font Awesome plugin from the admin dashboard by uploading the `font-
 that was created in the previous step.
 
 - activate and deactivate the plugin: expect no errors
-- enable "remove unregistered clients" and reload the plugin's admin page. Expect it to show up!
 - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
-- expect to see all of their client requirements listed on the options page under Client Requirements
+- expect to see all of their preferences listed on the Troubleshoot page
   - Especially, look for `plugin-gamma` and `plugin-delta` outputs in all three contexts: front end, admin, login
-- expect to see `plugin-gamma` and `plugin-delta` listed in the unregistered clients section
-- expect to see the over all stat of the plugin to be good/success (such as showing a green thumb icon)
-- change settings on the plugin options page to enable Pro and remove unregistered clients
+- run the conflict scanner and then expect to see the versions from `plugin-gamma` and `plugin-delta` to be listed
+    on detected conflicts in the Troubleshoot tab
+- block plugin-gamma's version (css) and expect it to be blocked, but not plugin-delta's version (js)
+- delete the blocked plugin-gamma version. expect that to work, and then see its css load again after visiting another page.
+- change settings on the Use CDN settings tab to enable Pro. Theme alpha should show pro icon(s).
+- change change settings on the Use CDN settings table to use SVG technology. Expect to see a preference warning from `plugin-beta`. 
+    - switch to the Troublehsoot tab and expect to see the `plugin-beta` warning indicated on the table.
 - view the site: expect to see all of those integration plugins doing their thing with no missing icons
 - deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
 - ( If you know how to properly test with `plugin-sigma`--it's more complicated--go for it. )
