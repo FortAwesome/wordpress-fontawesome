@@ -242,7 +242,7 @@ works the same as if you had included this package via composer.
 
 Here are some relevant APIs:
 - [PHP API](https://fortawesome.github.io/wordpress-fontawesome/index.html): any theme or plugin developer probably needs this
-- [GraphQL API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
+- (Not Yet Published) [GraphQL API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
 - [JavaScript API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
 - [react-fontawesome component](https://github.com/FortAwesome/react-fontawesome): you might prefer this instead of doing low-level JS/SVG rendering
 
