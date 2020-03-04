@@ -182,8 +182,9 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 		$data = $response->get_data();
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 	}
 
 	public function test_update_with_webfont_pseudo_elements_false() {
@@ -215,8 +216,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 		$data = $response->get_data();
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 	}
 
 	public function test_update_with_nonkit_invalid_version() {
@@ -250,8 +251,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 		$data = $response->get_data();
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 	}
 
 	public function test_update_with_nonkit_v4_compat_old_webfont() {
@@ -283,8 +284,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 		$data = $response->get_data();
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 	}
 
 	public function test_update_with_nonkit_symbolic_latest_version() {
@@ -316,8 +317,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		// Version unchanged.
 		$this->assertEquals( '5.3.1', fa()->version() );
 		$data = $response->get_data();
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 	}
 
 	public function test_update_with_nonkit_valid_version() {
@@ -375,8 +376,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$response = $this->server->dispatch( $request );
 		$this->assertEquals( 400, $response->get_status() );
 		$data = $response->get_data();
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 	}
@@ -520,9 +521,9 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		$response = $this->server->dispatch( $request );
 		$this->assertEquals( 400, $response->get_status() );
 		$data = $response->get_data();
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
 
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'fontawesome_client_exception', $data['code'] );
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 	}
