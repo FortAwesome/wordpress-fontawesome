@@ -411,3 +411,285 @@ describe('submitPendingOptions and interceptors', () => {
     })
   })
 })
+
+describe('submitPendingUnregisteredClientDeletions', () => {
+  // when deleteList is empty, return early doing nothing
+
+  // when falsePositive
+  // when normal success
+  // when catch failure
+})
+
+describe('submitPendingBlocklist', () => {
+  // when blocklist is falsy, return early doing nothing
+
+  // when falsePositive
+  // when normal success
+  // when catch failure
+})
+
+describe('checkPreferenceConflicts', () => {
+  // when falsePositive
+  // when normal success
+  // when catch failure
+})
+
+describe('queryKits', () => {
+  // when falsePositive
+  // when query succeeds but graphql response does not have "me" (bad API auth)
+
+  // when query succeeds and there are no changes to kits
+  // when query succeeds and there are kit changes
+  //   - subsequent query has false positive
+  //   - subsequent query has normal success
+  //   - subsequent query fails
+
+})
+
+describe('updateApiToken', () => {
+  // when falsePositive
+  // when successful
+  //    expect to run queryKits
+  // when fails
+})
+
+describe('reportDetectedConflicts', () => {
+  // when not showing conflict detector, return early
+  // when size(nodesTested) === 0 , dispatch none found
+  // when size > 0
+    // when falsePositive
+    // when normal success
+    // when normal failure
+
+  //
+})
+
+describe('snoozeV3DeprecationWarning', () => {
+  // when falsePositive
+  // when normal success
+  // when normal failure
+})
+
+describe('setConflictDetectionScanner', () => {
+  // when enable is true/false
+  // when falsePositive
+  // when normal success
+  // when normal failure
+})
+
+describe('some action failure cases', () => {
+  const cases = [
+    /*
+    {
+      action: 'submitPendingUnregisteredClientDeletions',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'submitPendingBlocklist',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'checkPreferenceConflicts',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'queryKits',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'updateApiToken',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'reportDetectedConflicts',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'snoozeV3DeprecationWarning',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    },
+    {
+      action: 'setConflictDetectionScanner',
+      state: {},
+      route: '',
+      method: '',
+      startAction: '',
+      endAction: '',
+      params: {}
+    }
+    */
+    {
+      action: 'submitPendingOptions',
+      state: {
+        options: {
+          technology: 'webfont'
+
+        },
+        pendingOptions: {
+          technology: 'svg'
+        }
+      },
+      route: 'config',
+      method: 'PUT',
+      startAction: 'OPTIONS_FORM_SUBMIT_START',
+      endAction: 'OPTIONS_FORM_SUBMIT_END',
+      params: {}
+    }
+  ]
+
+  const garbage = 'foo[alpha]bar{beta}'
+
+  const jsonError = JSON.stringify({
+    errors: {
+      "code1": ["message1"],
+    },
+    error_data: {
+      "code1": {
+        "trace": 'some stack trace'
+      }
+    }
+  })
+
+  beforeEach(() => {
+    reportRequestError.mockClear()
+  })
+
+  afterEach(() => {
+    resetAxiosMocks()
+  })
+
+  cases.map(c => {
+    describe(c.action, () => {
+      let store = null
+
+      beforeEach(() => {
+        store = mockStore({
+          apiNonce: fakeNonce,
+          apiUrl,
+          ...c.state
+        })
+      })
+
+      describe('when falsePositive', () => {
+        beforeEach(() => {
+          respondWith({
+            url: `${apiUrl}/${c.route}`,
+            method: c.method,
+            response: {
+              status: 200,
+              statusText: 'OK',
+              data: `${garbage}${jsonError}`,
+              // no confirmation header
+            }
+          })
+        })
+
+        test('reports warning and dispatches a failure action despite the garbage', done => {
+          store.dispatch(submitPendingOptions()).then(() => {
+            expect(reportRequestError).toHaveBeenCalledTimes(1)
+            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+              error: expect.objectContaining({
+                errors: expect.anything(),
+                'error_data': expect.anything()
+              }),
+              confirmed: false,
+              falsePositive: true,
+              trimmed: garbage
+            }))
+            expect(store.getActions().length).toEqual(2)
+            expect(store.getActions()).toEqual(expect.arrayContaining([
+              expect.objectContaining({
+                type: c.startAction
+              }),
+              expect.objectContaining({
+                type: c.endAction,
+                success: false,
+                message: expect.stringMatching(/[a-z]/)
+              })
+            ]))
+            done()
+          })
+        })
+      })
+
+      describe('when normal failure', () => {
+        beforeEach(() => {
+          respondWith({
+            url: `${apiUrl}/${c.route}`,
+            method: c.method,
+            response: {
+              status: 400,
+              statusText: 'Bad Request',
+              data: jsonError,
+              headers: {
+                'fontawesome-confirmation': 1
+              }
+            }
+          })
+        })
+
+        test('reports ui and console error messages', done => {
+          reportRequestError.mockReturnValueOnce(null)
+          store.dispatch(submitPendingOptions()).then(() => {
+            expect(reportRequestError).toHaveBeenCalledTimes(1)
+            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+              error: expect.objectContaining({
+                errors: expect.anything(),
+                'error_data': expect.anything()
+              }),
+              confirmed: true,
+              trimmed: ''
+            }))
+            expect(store.getActions().length).toEqual(2)
+            expect(store.getActions()).toEqual(expect.arrayContaining([
+              expect.objectContaining({
+                type: c.startAction
+              }),
+              expect.objectContaining({
+                type: c.endAction,
+                success: false,
+                message: expect.stringMatching(/[a-z]/)
+              })
+            ]))
+            done()
+          })
+        })
+      })
+    })
+  })
+})
