@@ -1,5 +1,5 @@
 === Font Awesome ===
-Contributors: fontawesome, mlwilkerson, robmadole, frrrances, rachelbaker
+Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.0.0-rc13
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
