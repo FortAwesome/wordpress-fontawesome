@@ -1,4 +1,5 @@
 import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
+import * as actions from './actions'
 import { submitPendingOptions } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
@@ -367,6 +368,16 @@ describe('setConflictDetectionScanner', () => {
 })
 
 describe('some action failure cases', () => {
+  const STATE_TECH_CHANGE = {
+    options: {
+      technology: 'webfont'
+
+    },
+    pendingOptions: {
+      technology: 'svg'
+    }
+  }
+
   const cases = [
     /*
     {
@@ -380,15 +391,6 @@ describe('some action failure cases', () => {
     },
     {
       action: 'submitPendingBlocklist',
-      state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
-      params: {}
-    },
-    {
-      action: 'checkPreferenceConflicts',
       state: {},
       route: '',
       method: '',
@@ -440,24 +442,25 @@ describe('some action failure cases', () => {
       startAction: '',
       endAction: '',
       params: {}
-    }
+    },
+    {
+      action: 'checkPreferenceConflicts',
+      state: STATE_TECH_CHANGE,
+      route: 'preference-check',
+      method: 'POST',
+      startAction: 'PREFERENCE_CHECK_START',
+      endAction: 'PREFERENCE_CHECK_END',
+      params: undefined
+    },
     */
     {
       action: 'submitPendingOptions',
-      state: {
-        options: {
-          technology: 'webfont'
-
-        },
-        pendingOptions: {
-          technology: 'svg'
-        }
-      },
+      state: STATE_TECH_CHANGE,
       route: 'config',
       method: 'PUT',
       startAction: 'OPTIONS_FORM_SUBMIT_START',
       endAction: 'OPTIONS_FORM_SUBMIT_END',
-      params: {}
+      params: undefined
     }
   ]
 
@@ -509,7 +512,7 @@ describe('some action failure cases', () => {
         })
 
         test('reports warning and dispatches a failure action despite the garbage', done => {
-          store.dispatch(submitPendingOptions()).then(() => {
+          store.dispatch(actions[c.action](c.params)).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
             expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
               error: expect.objectContaining({
@@ -554,7 +557,7 @@ describe('some action failure cases', () => {
 
         test('reports ui and console error messages', done => {
           reportRequestError.mockReturnValueOnce(null)
-          store.dispatch(submitPendingOptions()).then(() => {
+          store.dispatch(actions[c.action](c.params)).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
             expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
               error: expect.objectContaining({
