@@ -301,7 +301,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 				'usePro'         => true,
 				'v4Compat'       => false,
 				'version'        => '5.1.1'
-			],
+			]
 		);
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -344,40 +344,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assert_pseudo_elements( $output );
 	}
 
-	public function test_conflict_detector_enqueued_when_enabled_svg_no_pseudo_elements() {
-		$now = time();
-		// ten minutes later
-		$later = $now + (10 * 60);
-
-		update_option(
-			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
-			array_merge(
-				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
-				array(
-					'detectConflictsUntil' => $later
-				)
-			)
-		);
-
-		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'version' => '5.1.1', 'v4Compat' => true, 'pseudoElements' => false ],
-			fa()->options()
-		);
-		$resource_collection = $this->build_mock_resource_collection( $options );
-		$version = $resource_collection->version();
-
-		fa()->enqueue_cdn( $options, $resource_collection );
-
-		$output = $this->captureOutput();
-
-		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR, 'enqueued' ) );
-
-		$this->assert_svg( $output, 'use', $version );
-		$this->refute_pseudo_elements( $output );
-		$this->assert_svg_v4shim( $output, 'use', $version );
-	}
-
-	public function test_conflict_detector_enqueued_when_enabled_svg_pseudo_elements() {
+	public function test_conflict_detector_enqueued_when_enabled_svg() {
 		$now = time();
 		// ten minutes later
 		$later = $now + (10 * 60);
@@ -404,8 +371,6 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$output = $this->captureOutput();
 
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR, 'enqueued' ) );
-
-		$this->assertTrue( fa()->detecting_conflicts() );
 
 		$this->assert_svg( $output, 'use', $version );
 		$this->assert_pseudo_elements( $output );
