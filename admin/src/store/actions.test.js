@@ -260,6 +260,7 @@ describe('submitPendingOptions', () => {
         })
 
         test('reports ui and console error messages', done => {
+          reportRequestError.mockReturnValueOnce(null)
           store.dispatch(submitPendingOptions()).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
             expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
@@ -278,7 +279,7 @@ describe('submitPendingOptions', () => {
               expect.objectContaining({
                 type: 'OPTIONS_FORM_SUBMIT_END',
                 success: false,
-                message: MOCK_UI_MESSAGE
+                message: expect.stringContaining("Couldn't save")
               })
             ]))
             done()
@@ -307,6 +308,7 @@ describe('submitPendingOptions', () => {
         })
 
         test('displays default ui message and emits console message', done => {
+          reportRequestError.mockReturnValueOnce(null)
           store.dispatch(submitPendingOptions()).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
             expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
@@ -322,7 +324,7 @@ describe('submitPendingOptions', () => {
               expect.objectContaining({
                 type: 'OPTIONS_FORM_SUBMIT_END',
                 success: false,
-                message: MOCK_UI_MESSAGE
+                message: expect.stringContaining("Couldn't save")
               })
             ]))
             done()
