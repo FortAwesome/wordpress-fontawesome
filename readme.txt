@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, fmbots, deathnfudge
 Stable tag: 4.0.0-rc13
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.2.2
+Tested up to: 5.3.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -92,6 +92,10 @@ You can get more information about using the plugin, details for available setti
 
 == Upgrade Notice ==
 
+= 4.0.0-rc15 =
+
+Major update adds support for kits and improved conflict detection. See Changelog for upgrade details.
+
 = 4.0.0-rc1 =
 
 New plugin, replacing the old one. Font Awesome 3 icon names are being phased out, with a gradual upgrade path.
@@ -120,6 +124,18 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 
 == Changelog ==
+
+= 4.0.0-rc15 =
+
+* Major update, involving rewrites for many aspects of this plugin.
+* Includes auto-upgrade logic so that most WordPress users can expect to upgrade to this version with no noticeable change in how icons load on their web sites. Known exceptions to this easy-upgrade path include WordPress sites that use a theme or other plugins that rely on this plugin as "registered clients." If so, that would be clearly indicated on the plugin's settings page. Because this release includes major changes to how the plugin works under the hood, those registered clients will have to be updated to work with this new version before they will continue to work as expected. WordPress users should verify that websites still look as expected after upgrading to this version.
+* Added new conflict detection and resolution. A conflict detection scanner can be enabled to more precisely discover conflicting versions of Font Awesome. Users who had previously enabled the "remove unregistered clients" option should verify that the auto-upgrade worked successfully in their case, by visually inspecting that icons still work as expected. If not, run the Conflict Scanner from the Troubleshoot tab.
+* Overhaul the admin UI.
+* Overhaul the way the settings options are handled internally. Font Awesome will always load in the way the WordPress admin user configures it. Any registered themes or plugins may register preferences, which are reflected in the admin UI, but the WordPress admin will determine the configuration.
+* Add support for Kits.
+* Expanded error handling with detailed reports in the web console for more advanced diagnostics.
+* Add comprehensive internationalization in both PHP and JavaScript.
+* Developers: the PHP API contains significant changes. Consult the [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub for an overview and the [PHP API docs](https://fortawesome.github.io/wordpress-fontawesome/) for details. This release is intended as a final API-changing release before stabilizing the API at 4.0.0. Once 4.0.0 is released, it will follow semantic versioning best practices.
 
 = 4.0.0-rc13 =
 
