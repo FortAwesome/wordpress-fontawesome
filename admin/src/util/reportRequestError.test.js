@@ -100,7 +100,7 @@ describe('reportRequestError', () => {
     })
   })
 
-  describe('with single fontawesome_client_exception, no confirmation header, falsePositive, and trimmed garbage', () => {
+  describe.only('with single fontawesome_client_exception, no confirmation header, falsePositive, and trimmed garbage', () => {
     const TRIMMED = 'foobar'
 
     test('emits console report and returns uiMessage from given error', () => {
@@ -112,9 +112,18 @@ describe('reportRequestError', () => {
       })
 
       expect(message).toMatch(/^Whoops/)
-      // The top-level group, and then one error group
-      expect(console.group).toHaveBeenCalledTimes(2)
-      expect(console.info).toHaveBeenCalledTimes(3)
+      // The top-level group, and then one error group, then one for the trimmed content
+      expect(console.group).toHaveBeenCalledTimes(3)
+      expect(console.group).toHaveBeenCalledWith(
+        expect.stringMatching(/Error Report/),
+      )
+      expect(console.group).toHaveBeenCalledWith(
+        expect.stringMatching(/Trimmed/),
+      )
+
+      expect(console.groupEnd).toHaveBeenCalledTimes(3)
+
+      expect(console.info).toHaveBeenCalledTimes(4)
 
       expect(console.info).toHaveBeenCalledWith(
         expect.stringMatching(/reported it as a success/),
@@ -139,11 +148,14 @@ describe('reportRequestError', () => {
       expect(console.info).toHaveBeenCalledWith(
         expect.stringMatching(/status:/),
       )
+
       expect(console.info).toHaveBeenCalledWith(
         expect.stringMatching(/code: fontawesome_client_exception/)
       )
 
-      expect(console.groupEnd).toHaveBeenCalledTimes(2)
+      expect(console.info).toHaveBeenCalledWith(
+        expect.stringContaining(TRIMMED)
+      )
     })
   })
 })
