@@ -423,7 +423,7 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 1. Update the Changelog at the end of readme.txt
 
-2. Update the plugin version in the header comments of `font-awesome.php`
+2. Update the plugin version in the header comments of `index.php`
 
 3. Update the plugin version const in `includes/class-fontawesome.php`
 
@@ -602,7 +602,7 @@ $ svn ci -m 'Release 42.1.2'
 
 - `docs/`
 - `admin/build`
-- `font-awesome.php`
+- `index.php`
 - `includes/class-fontawesome.php`
 - `admin/package.json`
 - `readme.txt`
