@@ -217,10 +217,6 @@ export function submitPendingBlocklist() {
         success: false,
         message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
       })
-
-      if( !uiMessage ) {
-        console.error(error)
-      }
     })
   }
 }
@@ -263,10 +259,6 @@ export function checkPreferenceConflicts() {
         success: false,
         message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
       })
-      
-      if(!uiMessage) {
-        console.error(error)
-      }
     })
   }
 }
@@ -470,10 +462,6 @@ export function submitPendingOptions() {
         success: false,
         message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
       })
-      
-      if(!uiMessage) {
-        console.error(error)
-      }
     })
   }
 }
