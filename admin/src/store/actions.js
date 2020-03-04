@@ -18,6 +18,9 @@ export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
 // (which would just be exactly "now").
 const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
 
+const COULD_NOT_SAVE_CHANGES_MESSAGE = __( 'Couldn\'t save those changes', 'font-awesome' )
+const COULD_NOT_CHECK_PREFERENCES_MESSAGE = __( 'Couldn\'t check preferences', 'font-awesome' )
+
 function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
 
@@ -55,16 +58,16 @@ function preprocessResponse( response ) {
           const falsePositive = true
           response.falsePositive = true
           const message = reportRequestError({ error: parsed, confirmed, falsePositive, trimmed })
-          response.falsePositiveUiMessage = message
+          response.uiMessage = message
         } else {
           const error = get( parsed, 'error' )
 
           // We may receive errors back with a 200 response, such as when
           // there PreferenceRegistrationExceptions.
           if( error ) {
-            reportRequestError({ error, ok: true, confirmed, trimmed })
+            response.uiMessage = reportRequestError({ error, ok: true, confirmed, trimmed })
           } else {
-            reportRequestError({ error: null, ok: true, confirmed, trimmed })
+            response.uiMessage = reportRequestError({ error: null, ok: true, confirmed, trimmed })
           }
         }
       }
@@ -77,11 +80,9 @@ function preprocessResponse( response ) {
 axios.interceptors.response.use(
   response => preprocessResponse( response ),
   error => {
-    let fontAwesomeMessage = null
-
     if( error.response ) {
       error.response = preprocessResponse( error.response )
-      
+      error.uiMessage = get(error, 'response.uiMessage')
     } else if ( error.request ) {
       // TODO: emit error about not being able to make a request
       console.log('DEBUG: matched error.request')
@@ -169,15 +170,12 @@ export function submitPendingUnregisteredClientDeletions() {
         message: ''
       })
     }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
-      })
+      const { uiMessage } = error
 
       dispatch({
         type: 'DELETE_UNREGISTERED_CLIENTS_END',
         success: false,
-        message
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
       })
     })
   }
@@ -199,7 +197,7 @@ export function submitPendingBlocklist() {
 
     dispatch({type: 'BLOCKLIST_UPDATE_START'})
 
-    axios.put(
+    return axios.put(
       `${apiUrl}/conflict-detection/conflicts/blocklist`,
       blocklist,
       {
@@ -216,16 +214,17 @@ export function submitPendingBlocklist() {
         message: ''
       })
     }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
-      })
+      const { uiMessage } = error
 
       dispatch({
         type: 'BLOCKLIST_UPDATE_END',
         success: false,
-        message
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
       })
+
+      if( !uiMessage ) {
+        console.error(error)
+      }
     })
   }
 }
@@ -235,7 +234,7 @@ export function checkPreferenceConflicts() {
     dispatch({type: 'PREFERENCE_CHECK_START'})
     const { apiNonce, apiUrl, options, pendingOptions } = getState()
 
-    axios.post(
+    return axios.post(
       `${apiUrl}/preference-check`,
       { ...options, ...pendingOptions },
       {
@@ -244,25 +243,34 @@ export function checkPreferenceConflicts() {
         }
       }
     ).then(response => {
-      const { data } = response
+      const { data, falsePositive, uiMessage } = response
 
-      dispatch({
-        type: 'PREFERENCE_CHECK_END',
-        success: true,
-        message: '',
-        detectedConflicts: data
-      })
+      if( falsePositive ) {
+        dispatch({
+          type: 'PREFERENCE_CHECK_END',
+          success: false,
+          message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
+        })
+      } else {
+        dispatch({
+          type: 'PREFERENCE_CHECK_END',
+          success: true,
+          message: '',
+          detectedConflicts: data
+        })
+      }
     }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t save those changes', 'font-awesome' )
-      })
+      const { uiMessage } = error
 
       dispatch({
         type: 'PREFERENCE_CHECK_END',
         success: false,
-        message
+        message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
       })
+      
+      if(!uiMessage) {
+        console.error(error)
+      }
     })
   }
 }
@@ -442,32 +450,34 @@ export function submitPendingOptions() {
         }
       }
     ).then(response => {
-      const { data, falsePositive, falsePositiveUiMessage } = response
+      const { data, falsePositive, uiMessage } = response
 
       if ( falsePositive ) {
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
           success: false,
-          message: falsePositiveUiMessage
+          message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE 
         })
       } else {
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
           data,
           success: true,
-          message: __( 'Changes saved', 'font-awesome' )
+          message: uiMessage || __( 'Changes saved', 'font-awesome' )
         })
       }
     }).catch(error => {
-      const message = reportRequestError({
-        response: error
-      })
+      const { uiMessage } = error
 
       dispatch({
         type: 'OPTIONS_FORM_SUBMIT_END',
         success: false,
-        message
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
       })
+      
+      if(!uiMessage) {
+        console.error(error)
+      }
     })
   }
 }
