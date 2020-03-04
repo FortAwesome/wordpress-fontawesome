@@ -50,7 +50,7 @@ function handleRequest(req) {
   if ( response && status && status < 300 ) {
     return Promise.resolve( responseSuccessInterceptor( response ) )
   } else {
-    return Promise.reject( responseFailureInterceptor( response ) )
+    return Promise.reject( responseFailureInterceptor( { response } ) )
   }
 }
 
