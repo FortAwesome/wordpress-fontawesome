@@ -120,7 +120,8 @@ chooses.
 ## Icon Search
 
 Power-up those icon choosers with integrated Algolia search--the same icon search
-that powers the Icon Gallery on `fontawesome.com`. With 7,000+ icons and growing,
+that powers the [Icon Gallery on fontawesome.com](https://fontawesome.com/icons).
+With 7,000+ icons and growing,
 search makes _finding_ the right icon--by name, category, or conceptual similarity--much
 easier for users. Why re-invent that wheel?
 
