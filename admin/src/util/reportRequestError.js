@@ -9,10 +9,10 @@ const REST_NO_ROUTE_ERROR = __( 'Oh no! Your web browser could not reach your Wo
 const REST_COOKIE_INVALID_NONCE_ERROR = __( 'It looks like your web browser session expired. Try logging out and log back in to WordPress admin.', 'font-awesome' )
 const OK_ERROR_PREAMBLE = __( 'The last request was successful, but it also returned the following error(s), which might be helpful for troubleshooting.', 'font-awesome' )
 const ONE_OF_MANY_ERRORS_GROUP_LABEL = __( 'Error', 'font-awesome' )
-const FALSE_POSITIVE_MESSAGE = __( 'The last request contained errors, though your WordPress server reported it as a success. This usually means there\'s a problem with your theme or one of your other plugins emitting output that is causing problems.', 'font-awesome' )
-const UNCONFIRMED_RESPONSE_MESSAGE = __( 'The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.', 'font-awesome')
+const FALSE_POSITIVE_MESSAGE = __( 'WARNING: The last request contained errors, though your WordPress server reported it as a success. This usually means there\'s a problem with your theme or one of your other plugins emitting output that is causing problems.', 'font-awesome' )
+const UNCONFIRMED_RESPONSE_MESSAGE = __( 'WARNING: The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.', 'font-awesome')
 const TRIMMED_RESPONSE_PREAMBLE = __( 'WARNING: Invalid Data Trimmed from Server Response', 'font-awesome' )
-const EXPECTED_EMPTY_MESSAGE = __( 'We expected the last response from the server to contain no data, but it contained something unexpected.', 'font-awesome' )
+const EXPECTED_EMPTY_MESSAGE = __( 'WARNING: We expected the last response from the server to contain no data, but it contained something unexpected.', 'font-awesome' )
 
 /**
  * This both sends appropriately formatted output to the console via console.info,
