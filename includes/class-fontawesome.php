@@ -970,14 +970,18 @@ class FontAwesome {
 				? $options['lockedLoadSpec']['method']
 				: 'webfont';
 
+			/**
+			 * If technology is webfont, always coerce pseudo-elements to true.
+			 * Otherwise, carry over whatever value it had before.
+			 */
 			$converted_options['pseudoElements'] =
-				isset( $options['lockedLoadSpec']['method'] )
-					? 'svg' === $options['lockedLoadSpec']['method']
-						? $options['lockedLoadSpec']['method']
-						: true
-					: 'webfont' === $converted_options['technology']
-						? true
-						: false;
+				'webfont' === $converted_options['technology']
+					? true
+					: (
+						isset( $options['lockedLoadSpec']['pseudoElements'] )
+							? $options['lockedLoadSpec']['pseudoElements']
+							: false
+					);
 
 			$converted_options['v4Compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
