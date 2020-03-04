@@ -211,7 +211,7 @@ describe('reportRequestError', () => {
 
   describe('with request data', () => {
     test('adds additional console.info dumping the request', () => {
-      const code = 'fontawesome_request_failed'
+      const code = 'fontawesome_request_noresponse'
       const error = {
         errors: {
           [code]: [ 'no response' ]

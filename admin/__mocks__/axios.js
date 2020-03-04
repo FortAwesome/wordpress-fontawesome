@@ -43,8 +43,12 @@ function handleRequest(req) {
     return Promise.reject()
   }
 
+  if ( response instanceof XMLHttpRequest ) {
+    return Promise.reject( responseFailureInterceptor( { request: response } ) )
+  }
+
   const status = get( response, 'status' )
-  
+
   // TODO: use axios validateStatus to determine resolve or reject, instead
   // of hardcoding the default
   if ( response && status && status < 300 ) {

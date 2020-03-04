@@ -332,4 +332,43 @@ describe('submitPendingOptions and interceptors', () => {
         })
     })
   })
+
+  describe('when axios request fails with no response', () => {
+    beforeEach(() => {
+      respondWith({
+        url: `${apiUrl}/config`,
+        method: 'PUT',
+        response: new XMLHttpRequest()
+      })
+    })
+
+    test('failed request is reported to console and failure with uiMessage is dispatched to store', done => {
+      store.dispatch(submitPendingOptions()).then(() => {
+        expect(reportRequestError).toHaveBeenCalledTimes(1)
+        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+          error: {
+            errors: expect.objectContaining({
+              fontawesome_request_noresponse: [ expect.any(String) ]
+            }),
+            error_data: {
+              fontawesome_request_noresponse: {
+                request: expect.any(XMLHttpRequest)
+              }
+            }
+          },
+        }))
+        expect(store.getActions()).toEqual(expect.arrayContaining([
+          expect.objectContaining({
+            type: 'OPTIONS_FORM_SUBMIT_START'
+          }),
+          expect.objectContaining({
+            type: 'OPTIONS_FORM_SUBMIT_END',
+            success: false,
+            message: MOCK_UI_MESSAGE
+          })
+        ]))
+        done()
+      })
+    })
+  })
 })

@@ -20,6 +20,7 @@ const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
 
 const COULD_NOT_SAVE_CHANGES_MESSAGE = __( 'Couldn\'t save those changes', 'font-awesome' )
 const COULD_NOT_CHECK_PREFERENCES_MESSAGE = __( 'Couldn\'t check preferences', 'font-awesome' )
+const NO_RESPONSE_MESSAGE = __( 'A request to your WordPress server never received a response', 'font-awesome' )
 
 function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
@@ -80,9 +81,17 @@ axios.interceptors.response.use(
       error.response = preprocessResponse( error.response )
       error.uiMessage = get(error, 'response.uiMessage')
     } else if ( error.request ) {
-      // TODO: emit error about not being able to make a request
-      console.log('DEBUG: matched error.request')
+      const code = 'fontawesome_request_noresponse'
+      const e = {
+        errors: {
+          [code]: [ NO_RESPONSE_MESSAGE ]
+        },
+        error_data: {
+          [code]: { request: error.request }
+        }
+      }
 
+      error.uiMessage = reportRequestError({ error: e })
     } else {
       console.log('DEBUG: totally unexpected error')
       // TODO: emit totally unexpected error and add error.message if present
