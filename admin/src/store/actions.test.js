@@ -434,16 +434,27 @@ describe('some action failure cases', () => {
       endAction: '',
       params: {}
     },
+    */
     {
       action: 'setConflictDetectionScanner',
+      desc: 'when enabling',
       state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
-      params: {}
+      route: 'conflict-detection/until',
+      method: 'PUT',
+      startAction: 'ENABLE_CONFLICT_DETECTION_SCANNER_START',
+      endAction: 'ENABLE_CONFLICT_DETECTION_SCANNER_END',
+      params: { enable: true }
     },
-    */
+    {
+      action: 'setConflictDetectionScanner',
+      desc: 'when disabling',
+      state: {},
+      route: 'conflict-detection/until',
+      method: 'PUT',
+      startAction: 'DISABLE_CONFLICT_DETECTION_SCANNER_START',
+      endAction: 'DISABLE_CONFLICT_DETECTION_SCANNER_END',
+      params: { enable: false }
+    },
     {
       action: 'checkPreferenceConflicts',
       state: STATE_TECH_CHANGE,
@@ -486,7 +497,7 @@ describe('some action failure cases', () => {
   })
 
   cases.map(c => {
-    describe(c.action, () => {
+    describe(`${c.action}${ c.desc || ''}`, () => {
       let store = null
 
       beforeEach(() => {

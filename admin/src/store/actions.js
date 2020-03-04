@@ -22,7 +22,8 @@ const COULD_NOT_SAVE_CHANGES_MESSAGE = __( 'Couldn\'t save those changes', 'font
 const COULD_NOT_CHECK_PREFERENCES_MESSAGE = __( 'Couldn\'t check preferences', 'font-awesome' )
 const NO_RESPONSE_MESSAGE = __( 'A request to your WordPress server never received a response', 'font-awesome' )
 const REQUEST_FAILED_MESSAGE = __( 'A request to your WordPress server failed', 'font-awesome' )
-
+const COULD_NOT_START_SCANNER_MESSAGE = __( 'Couldn\'t start the scanner', 'font-awesome' )
+ 
 function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
 
@@ -645,7 +646,7 @@ export function setConflictDetectionScanner({ enable = true }) {
 
     dispatch({type: actionStartType})
 
-    axios.put(
+    return axios.put(
       `${apiUrl}/conflict-detection/until`,
       enable
         ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)
@@ -656,22 +657,28 @@ export function setConflictDetectionScanner({ enable = true }) {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      dispatch({
-        type: actionEndType,
-        data: 204 === status ? null : data,
-        success: true
-      })
+      const { status, data, falsePositive } = response
+
+      if ( falsePositive ) {
+        dispatch({
+          type: actionEndType,
+          success: false,
+          message: uiMessage || COULD_NOT_START_SCANNER_MESSAGE
+        })
+      } else {
+        dispatch({
+          type: actionEndType,
+          data: 204 === status ? null : data,
+          success: true
+        })
+      }
     }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Couldn\'t start the scanner', 'font-awesome' )
-      })
+      const { uiMessage } = error
 
       dispatch({
         type: actionEndType,
         success: false,
-        message
+        message: uiMessage || COULD_NOT_START_SCANNER_MESSAGE
       })
     })
   }
