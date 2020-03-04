@@ -463,7 +463,7 @@ export function submitPendingOptions() {
           type: 'OPTIONS_FORM_SUBMIT_END',
           data,
           success: true,
-          message: uiMessage || __( 'Changes saved', 'font-awesome' )
+          message: __( 'Changes saved', 'font-awesome' )
         })
       }
     }).catch(error => {
