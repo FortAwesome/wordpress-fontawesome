@@ -189,4 +189,23 @@ describe('reportRequestError', () => {
       )
     })
   })
+
+  describe('with confirmed error response but no error content', () => {
+    test('emits console report and returns null uiMessage', () => {
+      const message = reportRequestError({
+        error: null
+      })
+
+      expect(message).toBeNull()
+      expect(console.group).toHaveBeenCalledTimes(1)
+
+      expect(console.groupEnd).toHaveBeenCalledTimes(1)
+
+      expect(console.info).toHaveBeenCalledTimes(1)
+
+      expect(console.info).toHaveBeenCalledWith(
+        expect.stringMatching(/there was no information about the error/),
+      )
+    })
+  })
 })

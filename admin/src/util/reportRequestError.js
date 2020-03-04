@@ -13,6 +13,7 @@ const FALSE_POSITIVE_MESSAGE = __( 'WARNING: The last request contained errors, 
 const UNCONFIRMED_RESPONSE_MESSAGE = __( 'WARNING: The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.', 'font-awesome')
 const TRIMMED_RESPONSE_PREAMBLE = __( 'WARNING: Invalid Data Trimmed from Server Response', 'font-awesome' )
 const EXPECTED_EMPTY_MESSAGE = __( 'WARNING: We expected the last response from the server to contain no data, but it contained something unexpected.', 'font-awesome' )
+const MISSING_ERROR_DATA_MESSAGE = __( 'Your WordPress server returned an error for that last request, but there was no information about the error.', 'font-awesome' )
 
 /**
  * This both sends appropriately formatted output to the console via console.info,
@@ -139,6 +140,10 @@ export default function(params) {
   const uiMessage = null !== error
     ? handleAllWpErrorOutput( error )
     : null
+
+  if ( null === error && trimmed === '' && confirmed ) {
+    console.info(MISSING_ERROR_DATA_MESSAGE)
+  }
 
   console.groupEnd()
 
