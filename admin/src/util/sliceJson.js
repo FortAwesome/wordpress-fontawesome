@@ -51,6 +51,8 @@ function findJson( content, start = 0 ) {
  * beginning, and the parsed JSON.
  */
 export default function( content ) {
+  if(! content || '' === content ) return null
+
   const result = findJson( content )
 
   if ( null === result ) {
