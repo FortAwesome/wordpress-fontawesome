@@ -233,4 +233,33 @@ describe('reportRequestError', () => {
       expect(console.info).toHaveBeenCalledTimes(2)
     })
   })
+
+  describe('with failedRequestMessage', () => {
+    test('adds additional console.info with the message', () => {
+      const code = 'fontawesome_request_failed'
+      const error = {
+        errors: {
+          [code]: [ 'ui failure message' ]
+        },
+        error_data: {
+          [code]: { failedRequestMessage: 'failure console message' }
+        }
+      }
+
+      const message = reportRequestError({ error })
+
+      expect(message).toEqual('ui failure message')
+
+      // Once for the top-level and again for the error sub group
+      expect(console.group).toHaveBeenCalledTimes(2)
+
+      expect(console.groupEnd).toHaveBeenCalledTimes(2)
+
+      expect(console.info).toHaveBeenCalledTimes(2)
+
+      expect(console.info).toHaveBeenCalledWith(
+        expect.stringMatching(/failure console message/)
+      )
+    })
+  })
 })

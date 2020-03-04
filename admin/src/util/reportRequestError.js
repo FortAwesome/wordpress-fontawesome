@@ -70,6 +70,12 @@ function handleSingleWpErrorOutput( wpError ) {
     console.info(request)
   }
 
+  const failedRequestMessage = get(wpError, 'data.failedRequestMessage')
+
+  if(failedRequestMessage) {
+    console.info(failedRequestMessage)
+  }
+
   return uiMessage
 }
 
