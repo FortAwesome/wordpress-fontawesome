@@ -14,6 +14,8 @@ defined( 'WPINC' ) || die;
 define( 'GAMMA_PLUGIN_VERSION', '0.0.1' );
 define( 'GAMMA_PLUGIN_LOG_PREFIX', 'gamma-plugin' );
 
+print "This rogue output from " . GAMMA_PLUGIN_LOG_PREFIX . " should not break our handling of REST API responses from our controllers.";
+
 foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
 	add_action( $action, function () {
 		wp_enqueue_style(
