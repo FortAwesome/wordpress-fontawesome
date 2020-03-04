@@ -27,7 +27,7 @@ function preprocessResponse( response ) {
   if ( 204 === response.status && '' !== response.data ) {
       reportRequestError({ error: null, confirmed, trimmed: response.data, expectEmpty: true })
   } else {
-    const sliced = sliceJson( response.data )
+    const sliced = sliceJson( get(response, 'data', null) )
 
     if ( null === sliced ) {
       reportRequestError({ error: null, confirmed, falsePositive: true, trimmed: response.data })
