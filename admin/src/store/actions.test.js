@@ -443,6 +443,7 @@ describe('some action failure cases', () => {
       endAction: '',
       params: {}
     },
+    */
     {
       action: 'checkPreferenceConflicts',
       state: STATE_TECH_CHANGE,
@@ -452,7 +453,6 @@ describe('some action failure cases', () => {
       endAction: 'PREFERENCE_CHECK_END',
       params: undefined
     },
-    */
     {
       action: 'submitPendingOptions',
       state: STATE_TECH_CHANGE,
