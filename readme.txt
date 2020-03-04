@@ -1,5 +1,5 @@
 === Font Awesome ===
-Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
+Contributors: fontawesome, mlwilkerson, robmadole, fmbots, deathnfudge
 Stable tag: 4.0.0-rc13
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
@@ -20,27 +20,23 @@ This is a new, completely re-written plugin, tested with the latest WordPress an
 
 = Features =
 
-Our plugin lets you use: 
+Our official plugin lets you use Font Awesome the way you want:
+* Use Pro or Free icons.
+* Leverage the latest release or a specific version of our icons.
+* Choose the tech, either SVG or Web Font.
+* Take your pick of loading your icons from our classic Font Awesome CDN, or use Font Awesome kits - the easiest and most robust way to use our icons on the web.
+* And, if you haven’t had the chance to update your project in a long while, you can turn on automatic compatibility for Font Awesome Version 4.
 
- * Free or Pro icons
- * The latest version of Font Awesome 5 (or a specific previous version)
- * SVG or Web Font to load icons
- * Font Awesome Version 4 syntax if you haven’t had a chance to update your code
- * A kit or the classic Font Awesome CDN
-
-And, you also get a robust way to troubleshoot conflicting versions of Font Awesome loading on your site from other plugins or themes, and gives you tools to fix those conflicts. 
+But that’s not all... our official plugin can troubleshoot and help you resolve when multiple versions of Font Awesome are loading on your site from other plugins/themes and causing display or technical issues.
 
 
 == Usage ==
 
 **Install and enable the plugin**
-
-**Pick some icons**
-Find Font Awesome icons for your project in the [Icon Gallery](https://fontawesome.com/icons), or on the [cheatsheet](https://fontawesome.com/cheatsheet).
-
+(See the Installation tab for details)
 
 **Add icons to your pages and posts**
-Once you set your plugin to use CDN or a kit, you add icons to your pages and posts with a shortcodes or HTML. Be sure to use the [latest icon names and classes](https://fontawesome.com/icons?d=gallery). 
+Once you’ve set up your plugin, you add icons to your pages and posts by [using their names](https://fontawesome.com/icons?d=gallery) in shortcodes or HTML.
 
 When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the style will default to Solid. 
 
@@ -63,8 +59,8 @@ Font Awesome icons are popular, so lots of themes and plugins also load Font Awe
 
 If the plugin seems to be set up correctly and your icons still aren’t loading and you're not sure why, head over to the Troubleshoot tab, which has two parts: 
 
-* _Detect Conflicts with Other Versions of Font Awesome_ - which lets you start the conflict detection scanner to find versions of Font Awesome loading on your site
-* _Versions of Font Awesome Active on Your Site_ - which lists any other versions of Font Awesome being used on your site and lets you prevent conflicting versions from loading
+* _Detect Conflicts with Other Versions of Font Awesome_ - which lets you start the conflict detection scanner to find versions of Font Awesome loading on your site.
+* _Versions of Font Awesome Active on Your Site_ - which lists any other versions of Font Awesome being used on your site and lets you prevent conflicting versions from loading.
 
 Get more information about using the scanner for troubleshooting on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress#troubleshooting).
 
@@ -84,14 +80,14 @@ If you used the old plugin or are still using Version 3 of Font Awesome, we've t
 
 == See Also ==
 
-The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub has some more details for WordPress site owners and developers.
+The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub which has details for WordPress site owners and developers.
 
 The [API docs](https://fortawesome.github.io/wordpress-fontawesome/) for developers.
 
 
 == Frequently Asked Questions ==
 
-You can get more information about using the plugin, details for available settings, and frequently asked questions on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
+You can get more information about using the plugin, details for available settings, and answers to frequently asked questions on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
 
 
 == Upgrade Notice ==
