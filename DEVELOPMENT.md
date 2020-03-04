@@ -458,8 +458,7 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 $ composer dist
 ```
 
-This will delete the `vendor` directory, and previous build assets, and will re-install
-the composer bundle in production mode (`--no-dev --prefer-dist`) and produce the following:
+This will delete the previous build assets and produce the following:
 
 `wp-dist/`: the contents of this directory should be moved into the svn repo for the WordPress plugin
 that will be published through the WordPress plugins directory.
