@@ -34,18 +34,12 @@ function preprocessResponse( response ) {
     } else {
       const { parsed, trimmed, json } = sliced
 
-      // Fixup the response data with just json
+      // Fixup the response data with clean json
       response.data = json
 
-      /**
-       * The garbage that preceded the valid JSON reply. We report this to help
-       * the user identify the root cause of the problem.
-       */
-      response.fontAwesomeTrimmed = trimmed
+      const errors = get( parsed, 'errors' )
 
       if( response.status < 300 ) {
-        const errors = get( parsed, 'errors' )
-
         if ( errors ) {
           /**
            * This is a false positive. We've received an HTTP 200 response from
@@ -57,8 +51,7 @@ function preprocessResponse( response ) {
            */
           const falsePositive = true
           response.falsePositive = true
-          const message = reportRequestError({ error: parsed, confirmed, falsePositive, trimmed })
-          response.uiMessage = message
+          response.uiMessage = reportRequestError({ error: parsed, confirmed, falsePositive, trimmed })
         } else {
           const error = get( parsed, 'error' )
 
@@ -70,6 +63,9 @@ function preprocessResponse( response ) {
             response.uiMessage = reportRequestError({ error: null, ok: true, confirmed, trimmed })
           }
         }
+      } else {
+        // HTTP status is 3xx or greater
+        response.uiMessage = reportRequestError({ error: errors ? parsed : null, confirmed, trimmed })
       }
     }
   }
@@ -91,7 +87,7 @@ axios.interceptors.response.use(
       console.log('DEBUG: totally unexpected error')
       // TODO: emit totally unexpected error and add error.message if present
     }
-    console.log('DEBUG: intercepting error')
+
     return error
   }
 )

@@ -231,7 +231,103 @@ describe('submitPendingOptions', () => {
 
   describe('when HTTP 400', () => {
     describe('when confirmation header is present', () => {
+        let json = null
 
+        beforeEach(() => {
+          json = JSON.stringify({
+            errors: {
+              "code1": ["message1"],
+            },
+            error_data: {
+              "code1": {
+                "trace": 'some stack trace'
+              }
+            }
+          })
+
+          respondWith({
+            url: `${apiUrl}/config`,
+            method: 'PUT',
+            response: {
+              status: 400,
+              statusText: 'Bad Request',
+              data: json,
+              headers: {
+                'fontawesome-confirmation': 1
+              }
+            }
+          })
+        })
+
+        test('reports ui and console error messages', done => {
+          store.dispatch(submitPendingOptions()).then(() => {
+            expect(reportRequestError).toHaveBeenCalledTimes(1)
+            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+              error: expect.objectContaining({
+                errors: expect.anything(),
+                'error_data': expect.anything()
+              }),
+              confirmed: true,
+              trimmed: ''
+            }))
+            expect(store.getActions().length).toEqual(2)
+            expect(store.getActions()).toEqual(expect.arrayContaining([
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_START'
+              }),
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_END',
+                success: false,
+                message: MOCK_UI_MESSAGE
+              })
+            ]))
+            done()
+          })
+        })
+    })
+
+    describe('when errors payload is absent', () => {
+        let json = null
+
+        beforeEach(() => {
+          json = JSON.stringify({})
+
+          respondWith({
+            url: `${apiUrl}/config`,
+            method: 'PUT',
+            response: {
+              status: 400,
+              statusText: 'Bad Request',
+              data: json,
+              headers: {
+                'fontawesome-confirmation': 1
+              }
+            }
+          })
+        })
+
+        test('displays default ui message and emits console message', done => {
+          store.dispatch(submitPendingOptions()).then(() => {
+            expect(reportRequestError).toHaveBeenCalledTimes(1)
+            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+              error: null,
+              confirmed: true,
+              trimmed: ''
+            }))
+            expect(store.getActions().length).toEqual(2)
+            expect(store.getActions()).toEqual(expect.arrayContaining([
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_START'
+              }),
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_END',
+                success: false,
+                message: MOCK_UI_MESSAGE
+              })
+            ]))
+            done()
+          })
+        })
     })
 
     describe('when confirmation header is absent', () => {
