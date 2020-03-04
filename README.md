@@ -3,7 +3,7 @@
 > Font Awesome 5 Official WordPress Package
 
 This guide is for developers seeking to use `wordpress-fontawesome` as a package
-within another WordPress plugin or theme.
+in a WordPress plugin or theme.
 
 WordPress users should consult the [plugin's description in the
 WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for guidance on using Font Awesome in WordPress.
@@ -12,6 +12,12 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
 # Contents
 
 - [Description](#description)
+- [Why Use a Package?](#why-use-a-package)
+    * [Compatibility and Troubleshooting](#compatibility-and-troubleshooting)
+    * [Enabling Font Awesome Pro](#enabling-font-awesome-pro)
+    * [Staying Current](#staying-current)
+    * [Icon Search](#icon-search)
+    * [Future Features](#future-features)
 - [Adding as a Composer Package](#adding-as-a-composer-package)
 - [Installing as a Separate Plugin](#installing-as-a-separate-plugin)
 - [API References](#api-references)
@@ -60,6 +66,72 @@ This package adds to your plugin or theme the following abilities:
 - management of Font Awesome account authorization via API Token
 - management of Font Awesome releases metadata (available versions and related metadata)
 - Font Awesome GraphQL API queries authorized by the site owner's API Token
+
+# Why Use a Package?
+
+If you're a WordPress developer, then you already know how to use `wp_enqueue_style`
+or `wp_enqueue_script` to load assets like Font Awesome. So why take a dependency
+on another package to do that for you?
+
+## Compatibility and Troubleshooting
+
+Because Font Awesome is so popular among themes and plugins, and because it's
+so easy for a developer to enqueue the Font Awesome assets, it's become a jungle
+out there for our users.
+
+Some WordPress site owners have been known to have a theme and three different
+plugins installed, each trying to load its own self-hosted version of Font Awesome:
+- mixing version 4 with version 5
+- mixing SVG with Web Font
+- sometimes even Font Awesome version 3
+
+This package provides sophisticated conflict detection, resolution, and error reporting,
+empowering our users to solve their compatibility problems quickly.
+
+## Enabling Font Awesome Pro
+
+Also, back when many themes and plugins began including Font Awesome, there was
+no Pro version. Now there is, and there's a constant stream of new icons, styles,
+and features being added.
+
+Font Awesome Pro subscribers should be able to use
+their Pro goodies in your theme or plugin. But since Font Awesome's licensing
+doesn't allow you to distribute Font Awesome Pro, you'd have to
+rely on the user to do some kind of setup on their end to enable it.
+Why reinvent that wheel?
+
+And even if you do, you'd still have those compatibility problems with other
+themes and plugins, which you may be making even worse by giving the user yet
+another way to add another conflicting version of Font Awesome to their WordPress site.
+
+## Staying Current
+
+Some WordPress developers have solvd the Pro problem by not shipping the
+Font Awesome _assets_, but shipping the Pro _metadata_ to drive their icon choosers.
+That locks you into whatever version of Font Awesome Pro you happened snapshot
+when you release. But again, there's a constant flow of new icons and features
+being added to Font Awesome Pro. Font Awesome Pro subscribers love having access
+to those new icons when they come out, so let's help them stay current.
+
+This package allows the user to manage the version of Font Awesome, while giving
+you, the developer, runtime access to all metadata for whatever version the user
+chooses.
+
+## Icon Search
+
+Power-up those icon choosers with integrated Algolia search--the same icon search
+that powers the Icon Gallery on `fontawesome.com`. With 7,000+ icons and growing,
+search makes _finding_ the right icon--by name, category, or conceptual similarity--much
+easier for users. Why re-invent that wheel?
+
+## Future Features
+
+We can't say much right now, but there some big stuff coming to Font Awesome Pro
+that will only be accessible through an authenticated Font Awesome account.
+
+You could manage everything related to authorizing Font Awesome accounts to access
+those features (which your users are definitely going to want to use on their
+WordPress sites!) But again, why re-invent that wheel?
 
 # Adding as a Composer Package
 
