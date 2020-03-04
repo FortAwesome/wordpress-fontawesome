@@ -12,6 +12,7 @@ const ONE_OF_MANY_ERRORS_GROUP_LABEL = __( 'Error', 'font-awesome' )
 const FALSE_POSITIVE_MESSAGE = __( 'The last request contained errors, though your WordPress server reported it as a success. This usually means there\'s a problem with your theme or one of your other plugins emitting output that is causing problems.', 'font-awesome' )
 const UNCONFIRMED_RESPONSE_MESSAGE = __( 'The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.', 'font-awesome')
 const TRIMMED_RESPONSE_PREAMBLE = __( 'WARNING: Invalid Data Trimmed from Server Response', 'font-awesome' )
+const EXPECTED_EMPTY_MESSAGE = __( 'We expected the last response from the server to contain no data, but it contained something unexpected.', 'font-awesome' )
 
 /**
  * This both sends appropriately formatted output to the console via console.info,
@@ -127,11 +128,10 @@ export default function(params) {
   }
 
   if( '' !== trimmed ) {
-    if( expectEmpty ) {
-      console.log('TODO: write warning about expecting an empty response but getting non-empty')
-    }
-
     console.group(TRIMMED_RESPONSE_PREAMBLE)
+    if( expectEmpty ) {
+      console.info(EXPECTED_EMPTY_MESSAGE)
+    }
     console.info(trimmed)
     console.groupEnd()
   }

@@ -100,7 +100,7 @@ describe('reportRequestError', () => {
     })
   })
 
-  describe.only('with single fontawesome_client_exception, no confirmation header, falsePositive, and trimmed garbage', () => {
+  describe('with single fontawesome_client_exception, no confirmation header, falsePositive, and trimmed garbage', () => {
     const TRIMMED = 'foobar'
 
     test('emits console report and returns uiMessage from given error', () => {
@@ -155,6 +155,37 @@ describe('reportRequestError', () => {
 
       expect(console.info).toHaveBeenCalledWith(
         expect.stringContaining(TRIMMED)
+      )
+    })
+  })
+
+  describe('with no error and when expecting an empty data in the response, as in an HTTP 204', () => {
+    const TRIMMED = 'foobar'
+
+    test('emits console report and returns null uiMessage', () => {
+      const message = reportRequestError({
+        error: null,
+        trimmed: TRIMMED,
+        expectEmpty: true
+      })
+
+      expect(message).toBeNull()
+      // The top-level group, and then one for the trimmed content
+      expect(console.group).toHaveBeenCalledTimes(2)
+      expect(console.group).toHaveBeenCalledWith(
+        expect.stringMatching(/Trimmed/),
+      )
+
+      expect(console.groupEnd).toHaveBeenCalledTimes(2)
+
+      expect(console.info).toHaveBeenCalledTimes(2)
+
+      expect(console.info).toHaveBeenCalledWith(
+        expect.stringMatching(/contain no data/),
+      )
+
+      expect(console.info).toHaveBeenCalledWith(
+        expect.stringContaining(TRIMMED),
       )
     })
   })
