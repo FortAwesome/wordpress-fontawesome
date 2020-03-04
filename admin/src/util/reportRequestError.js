@@ -14,7 +14,7 @@ const ONE_OF_MANY_ERRORS_GROUP_LABEL = __( 'Error', 'font-awesome' )
  * This both sends appropriately formatted output to the console via console.info,
  * and returns a uiMessage that would be appropriate to display to an admin user.
  */
-function handleSingleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverride }) {
+function handleSingleWpErrorOutput( wpError ) {
   if( ! get(wpError, 'code') ) {
     console.info(ERROR_REPORTING_ERROR)
     return UI_MESSAGE_DEFAULT
@@ -59,14 +59,14 @@ function handleSingleWpErrorOutput({ wpError, uiMessageDefault, uiMessageOverrid
     console.info(wpError)
   }
 
-  return uiMessageOverride || uiMessage || uiMessageDefault
+  return uiMessage
 }
 
-function handleAllWpErrorOutput({ error, uiMessageDefault, uiMessageOverride }) {
-  const wpErrors = Object.keys(error.errors).map(code => {
+function handleAllWpErrorOutput(errorData) {
+  const wpErrors = Object.keys(errorData.errors || []).map(code => {
     // get the first error message available for this code
-    const message = get(error, `errors.${code}.0`)
-    const data = get(error, `error_data.${code}`)
+    const message = get(errorData, `errors.${code}.0`)
+    const data = get(errorData, `error_data.${code}`)
 
     return {
       code,
@@ -75,20 +75,23 @@ function handleAllWpErrorOutput({ error, uiMessageDefault, uiMessageOverride }) 
     }
   })
 
+  if(0 === size(wpErrors)) {
+    wpErrors.push({
+      code: 'fontawesome_unknown_error',
+      message: ERROR_REPORTING_ERROR
+    })
+  }
+
   const uiMessage = wpErrors.reduce((acc, error) => {
     console.group(ONE_OF_MANY_ERRORS_GROUP_LABEL)
 
-    const msg = handleSingleWpErrorOutput({
-      wpError: error,
-      uiMessageDefault,
-      uiMessageOverride
-    })
+    const msg = handleSingleWpErrorOutput( error )
 
     console.groupEnd()
 
     // The uiMessage we should return will be the first error message that isn't
     // from a 'previous_exception'
-    return (!acc && wpError.code !== 'previous_exception')
+    return (!acc && error.code !== 'previous_exception')
       ? msg
       : acc
   }, null)
@@ -96,16 +99,39 @@ function handleAllWpErrorOutput({ error, uiMessageDefault, uiMessageOverride }) 
   return uiMessage
 }
 
-export default function({ error, uiMessageDefault = UI_MESSAGE_DEFAULT, uiMessageOverride = null, ok = false, falsePositive = false, confirmed = true, expectEmpty = false , trimmed = '' }) {
+export default function(params) {
+  const {
+    error,
+    ok = false,
+    falsePositive = false,
+    confirmed = true,
+    expectEmpty = false,
+    trimmed = ''
+  } = params
+
   console.group(ERROR_REPORT_PREAMBLE)
 
   if( ok ) {
     console.info(OK_ERROR_PREAMBLE)
   }
 
-  const uiMessage = handleAllWpErrorOutput({ error, uiMessageDefault, uiMessageOverride })
+  if( falsePositive ) {
+    console.log('TODO: write falsePositive output')
+  }
+
+  if( ! confirmed ) {
+    console.log('TODO: write unconfirmed output')
+  }
+
+  if( expectEmpty && '' !== trimmed ) {
+    console.log('TODO: write warning about expecting and empty response but getting garbage')
+  }
+
+  const uiMessage = null !== error
+    ? handleAllWpErrorOutput( error )
+    : null
 
   console.groupEnd()
 
-  return uiMessageOverride || uiMessage || uiMessageDefault
+  return uiMessage
 }
