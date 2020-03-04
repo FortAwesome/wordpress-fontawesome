@@ -58,10 +58,16 @@ function handleSingleWpErrorOutput( wpError ) {
   const trace = get(wpError, 'data.trace')
   if(trace) output = output.concat(`trace:\n${trace}\n`)
 
+  const request = get(wpError, 'data.request')
+
   if( output && '' !== output ) {
     console.info(output)
   } else {
     console.info(wpError)
+  }
+
+  if(request) {
+    console.info(request)
   }
 
   return uiMessage

@@ -208,4 +208,29 @@ describe('reportRequestError', () => {
       )
     })
   })
+
+  describe('with request data', () => {
+    test('adds additional console.info dumping the request', () => {
+      const code = 'fontawesome_request_failed'
+      const error = {
+        errors: {
+          [code]: [ 'no response' ]
+        },
+        error_data: {
+          [code]: { request: new XMLHttpRequest() }
+        }
+      }
+
+      const message = reportRequestError({ error })
+
+      expect(message).toEqual('no response')
+
+      // Once for the top-level and again for the error sub group
+      expect(console.group).toHaveBeenCalledTimes(2)
+
+      expect(console.groupEnd).toHaveBeenCalledTimes(2)
+
+      expect(console.info).toHaveBeenCalledTimes(2)
+    })
+  })
 })
