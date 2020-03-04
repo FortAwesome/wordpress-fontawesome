@@ -68,11 +68,18 @@ describe('submitPendingOptions', () => {
           })
         })
 
-        test('submits successfully with successful ui message and also reports error to console', () => {
+        test('submits successfully with successful ui message and also reports error to console', done => {
           store.dispatch(submitPendingOptions()).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
             expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              error: null,
+              error: expect.objectContaining({
+                errors: {
+                  code1: expect.anything()
+                },
+                error_data: {
+                  code1: expect.anything()
+                }
+              }),
               confirmed: true,
               ok: true
             }))
