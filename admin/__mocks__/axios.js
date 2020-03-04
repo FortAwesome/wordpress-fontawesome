@@ -43,15 +43,15 @@ function handleRequest(req) {
     return Promise.reject()
   }
 
-  return new Promise((resolve, reject) => {
-    // TODO: use axios validateStatus to determine resolve or reject, instead
-    // of hardcoding the default
-    if ( response.status < 300 ) {
-      resolve( responseSuccessInterceptor( response ) )
-    } else {
-      reject( responseFailureInterceptor( response ) )
-    }
-  })
+  const status = get( response, 'status' )
+  
+  // TODO: use axios validateStatus to determine resolve or reject, instead
+  // of hardcoding the default
+  if ( response && status && status < 300 ) {
+    return Promise.resolve( responseSuccessInterceptor( response ) )
+  } else {
+    return Promise.reject( responseFailureInterceptor( response ) )
+  }
 }
 
 export default axios
