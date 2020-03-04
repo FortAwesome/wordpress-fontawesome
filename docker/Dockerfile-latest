@@ -34,4 +34,4 @@ RUN a2enconf proxy-webpack-dev
 # See: https://github.com/docker-library/wordpress/issues/205
 COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
 
-CMD ["apache2-foreground"]
+CMD ["docker-entrypoint.sh"]

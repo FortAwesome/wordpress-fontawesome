@@ -1,5 +1,61 @@
-.explanation {
-  max-width: 500px;
+.wrapper-div {
+  margin-right: 20px;
+  padding: 1rem 2rem 2rem 2rem;
+  background-color: #fff;
+}
+
+@media only screen and (min-width: 1024px) {
+  .wrapper-div {
+    max-width: 1000px;
+  }
+}
+
+.submit-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.submit-status {
+  padding-left: 1em;
+}
+
+div.submit-status.fail {
+  display: flex;
+	margin: 1em;
+	background-color: #fda09a;
+	border-radius: 5px;
+	max-width: 450px;
+	padding: 1em;
+}
+
+div.submit-status.fail .fail-icon-container {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+div.submit-status.fail .explanation {
+  max-width: 400px;
+}
+
+.submit-status .explanation {
+  padding-left: 1em;
+}
+
+.submit-status.success .icon {
+  color: green;
+}
+
+h2.section-title {
+  font-size: 18px;
+}
+
+h3.section-title {
+  font-size: 16px;
+}
+
+.section-divider {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .table-header th {
@@ -11,6 +67,41 @@ button.more-less {
   background: none;
 }
 
+.scanner-actions {
+  display: flex;
+  align-items: center;
+}
+
+.scanner-runstatus {
+  margin: 1rem;
+}
+
+button.faPrimary {
+  border: 1px solid #0064B1;
+  border-bottom: 4px solid #0064B1;
+  border-radius: 3px;
+  padding: .7em 1.5em;
+  background: #008DED;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4em;
+  color: #fff;
+  cursor: pointer;
+}
+
+button.faPrimary[disabled] {
+  border: 1px solid #F8F9FA;
+  background: #F8F9FA;
+  color: #008DED;
+  cursor: default;
+}
+
+button .conflict-detection-timer {
+  display: inline-block;
+  min-width: 3.2em;
+  text-align: left;
+}
+
 .warning {
   background-color: #fdfdf3;
   max-width: 600px;
@@ -19,68 +110,82 @@ button.more-less {
   border: 1px solid black;
 }
 
-.alert {
-  display: flex;
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+@media only screen and (min-width: 1024px) {
+  .flex {
+    display: flex;
+  }
+}
+
+.flex-row {
   flex-direction: row;
-  flex-wrap: no-wrap;
-  align-items: stretch;
-  background-color: rgb(248, 249, 250);
-  color: rgb(73, 80, 87);
-  border-radius: 0.25rem;
 }
 
-.alert-icon {
-  background-color: rgb(232, 236, 239);
-  color: rgb(134, 142, 150);
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-  padding: 2rem 1.5rem;
-  font-size: 1.25rem;
-}
-
-.alert-message {
-  flex-grow: 1;
-  display: flex;
+.flex-column {
   flex-direction: column;
-  justify-content: center;
-  padding: 1.5rem;
-  line-height: 1.5;
 }
 
-.alert-title {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
+.relative {
+  position: relative;
 }
 
-.alert-copy {
-  margin-bottom: -1.5rem;
+.status .icon {
+  font-size: 24px;
 }
 
-.alert-message p {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
+.status.good .icon, .success-icon {
+  color: green;
 }
 
-.alert-action {
-  margin-top: 1rem;
+.status.conflict .icon, .conflict-icon {
+  color: red;
 }
 
-.alert button {
-  color: #0073aa;
+.status.warning .icon, .warning-icon {
+  color: #b7b700;
 }
 
-.alert button:hover {
-  color: #00a0d2;
+.space-left {
+  margin-left: 1rem;
 }
 
-/* type: warning */
-.alert-warning {
-  background: rgb(255, 249, 219);
+.input-radio-custom ~ label .checked-icon, .input-checkbox-custom ~ label .checked-icon {
+    display:none;
+    opacity:0;
 }
 
-.alert-warning .alert-icon {
-  background: rgb(255, 224, 102);
-  color: rgb(250, 176, 7);
+.input-radio-custom:checked ~ label .checked-icon, .input-checkbox-custom:checked ~ label .checked-icon{
+    display:block;
+    opacity:1.0;
+    color: #228be6;
 }
+
+.input-radio-custom:checked ~ label .unchecked-icon, .input-checkbox-custom:checked ~ label .unchecked-icon{
+    display:none;
+    opacity:0;
+}
+
+.input-checkbox-custom:checked ~ label .option-label-explanation {
+    color: #495057;
+}
+
+.input-checkbox-custom:checked ~ label .option-label-explanation a {
+    color: #495057;
+}
+
+.input-checkbox-custom:checked ~ label .option-label-explanation a:hover,
+.input-checkbox-custom ~ label .option-label-explanation a:hover {
+    color: #228be6;
+    text-decoration-color: initial;
+}
+

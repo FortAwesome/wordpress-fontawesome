@@ -1,0 +1,188 @@
+/* Kit tab */
+
+.kit-tab-content {
+  position: relative;
+}
+
+/* API token */
+
+.field-apitoken {
+  display: flex;
+  border-bottom: 1px solid #DDE2E6;
+  padding: 1rem 1rem 1rem 0;
+}
+
+.field-apitoken label {
+  width: 30%;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.field-apitoken label svg {
+  padding-right: .5rem;
+  color: #DDE2E6;
+}
+
+.api-token-control-wrapper {
+  display: flex;
+  margin-bottom: .75rem;
+  padding: .5rem 1rem 1rem 0;
+  border-bottom: 1px solid #DDE2E6;
+  flex-direction: column;
+}
+
+.api-token-control {
+  display: flex;
+  justify-content: space-between;
+}
+
+.api-token-control-wrapper p {
+  margin: 0;
+  padding: .5rem 0;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.api-token-control p svg {
+  padding-right: .5rem;
+  color: #00C346 !important;
+}
+
+button.remove {
+  transition: background .1s ease-in;
+  transition: 0.1s ease-in;
+  display: inline-block;
+  margin-left: -.1em;
+  border: none;
+  border-radius: 3px;
+  background-color: transparent;
+  padding: .5rem 1rem;
+  color: #999;
+  cursor: pointer;
+}
+
+button.remove:hover {
+  background-color: #DA001D;
+  color: #fff;
+}
+
+/* Active kit info */
+.wrap-active-kit {
+  margin-bottom: .75rem;
+  border-bottom: 1px solid #DDE2E6;
+  padding: .5rem 1rem 1rem 0;
+}
+
+.active-kit {
+  margin: 0;
+  padding: .5rem 0;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.active-kit.set svg {
+  padding-right: .5rem;
+  color: #00C346;
+}
+
+.active-kit.none svg {
+  color: #F8F9FA;
+}
+
+
+/* Select/View kit data */
+
+.wrap-selectkit {
+  padding: .5rem 1rem 1rem 0;
+}
+
+.title-selectkit {
+  margin: 0 0 1rem 0;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.title-selectkit svg {
+  padding-right: .5rem;
+  color: #DDE2E6;
+}
+
+.selectkit {
+  margin-left: 1.8rem;
+}
+
+button.refresh {
+  transition: background .1s ease-in;
+  transition: 0.1s ease-in;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 0 .2rem;
+  border: none;
+  border-radius: 3px;
+  background-color: transparent;
+  padding: .5rem;
+  color: #228be6;
+  cursor: pointer;
+}
+
+button.refresh:hover {
+  background-color: #1c7ed6;
+  color: #fff;
+}
+
+button.refresh span {
+  padding-left: .5em;
+}
+
+.kit-selector-container .kit-select {
+  display: inline-block;
+  width: 30%;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 1rem;
+  padding: .4rem;
+  font-weight: 600;
+}
+
+/* Kit settings table */
+
+.kit-config-view-container {
+  margin-left: 1.8rem;
+}
+
+.selected-kit-settings {
+  width: 100%;
+  margin: 0 0 1rem 0;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.selected-kit-settings .label,
+.selected-kit-settings .value {
+  padding: .5rem;
+  text-align: left;
+  border-top: 1px solid #DDE2E6;
+  border-bottom: 1px solid #DDE2E6;
+  vertical-align: top;
+}
+
+.selected-kit-settings .label {
+  font-weight: 600;
+  width: 30%;
+}
+
+.tip-text {
+  display: block;
+  margin-top: .25rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: #868e96;
+}
+
+.tip-text a {
+  color: #868e96;
+}
+
+.tip-text a:hover {
+  color: #228be6;
+}

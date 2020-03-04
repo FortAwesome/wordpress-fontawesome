@@ -1,241 +1,247 @@
 <?php
+/**
+ * This module is not considered part of the public API, only internal.
+ * Any data or functionality that it produces should be exported by the
+ * main FontAwesome class and the API documented and semantically versioned there.
+ */
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception, \ReflectionMethod;
+use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
 
 /**
- * Module for this plugin's Configuration REST API controller
+ * Controller class for REST endpoint
  *
- * @noinspection PhpIncludeInspection
- */
-
-// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-/**
+ * @internal
  * @ignore
  */
+class FontAwesome_Config_Controller extends WP_REST_Controller {
 
-if ( ! class_exists( 'FortAwesome\FontAwesome_Config_Controller' ) ) :
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	private $plugin_slug = null;
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected $namespace = null;
+
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	public function __construct( $plugin_slug, $namespace ) {
+		$this->plugin_slug = $plugin_slug;
+		$this->namespace   = $namespace;
+	}
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	public function register_routes() {
+		$route_base = 'config';
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $route_base,
+			array(
+				array(
+					'methods'             => 'PUT',
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => function() {
+						return current_user_can( 'manage_options' ); },
+					'args'                => array(),
+				),
+			)
+		);
+	}
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected function build_item( $fa ) {
+		$preference_registration_error = null;
+
+		try {
+			fa()->gather_preferences();
+		} catch ( PreferenceRegistrationException $e ) {
+			$preference_registration_error = fa_500( $e );
+		}
+
+		$item = array(
+			'options'   => $fa->options(),
+			'conflicts' => $fa->conflicts_by_option(),
+		);
+
+		if ( ! is_null( $preference_registration_error ) ) {
+			$item['error'] = $preference_registration_error;
+		}
+
+		return $item;
+	}
 
 	/**
-	 * Controller class for REST endpoint
+	 * Update the singleton resource.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return WP_Error|WP_REST_Response
 	 */
-	class FontAwesome_Config_Controller extends WP_REST_Controller {
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		private $plugin_slug = null;
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected $namespace = null;
-
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		public function __construct( $plugin_slug, $namespace ) {
-			$this->plugin_slug = $plugin_slug;
-			$this->namespace   = $namespace;
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		public function register_routes() {
-			$route_base = 'config';
-
-			register_rest_route(
-				$this->namespace,
-				'/' . $route_base,
-				array(
-					array(
-						'methods'             => 'GET',
-						'callback'            => array( $this, 'get_item' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-					array(
-						'methods'             => 'PUT',
-						'callback'            => array( $this, 'update_item' ),
-						'permission_callback' => function() {
-							return current_user_can( 'manage_options' ); },
-						'args'                => array(),
-					),
-				)
-			);
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected function build_item( $fa ) {
-			$options          = $fa->options();
-			$locked_load_spec = isset( $options['lockedLoadSpec'] ) ? $options['lockedLoadSpec'] : false;
-
-			/**
-			 * Calling wp_enqueue_scripts() is required to trigger the 'wp_enqueue_scripts' action that is the
-			 * conventional time in the WordPress lifecycle when plugins or themes would enqueue scripts or styles.
-			 * We also have to explicitly run the detection function.
-			 * Note that this can only possibly detect those clients who enqueue their styles or scripts within the context
-			 * of the controller action that invokes this function.
-			 * It's possible than some unregistered client enqueues a style or script in some other circumstance. We
-			 * would not detect that here, but since _removal_ of unregistered clients would happen on any page load,
-			 * it would still be removed. So, in that case, you'd have an unregistered client that this plugin removes
-			 * at the right time, but which does not get reported here. If we wanted to be more sophisticated about
-			 * all of this, we'd have to come up with a way to be more comprehensive about detection, such as
-			 * caching in a transient any unregistered clients on any page load. Then, FontAwesome::unregistered_clients()
-			 * could return that--what may have been detected across any number of page loads--instead of only that
-			 * which is detected on the same page load for which FontAwesome::unregistered_clients() is queried.
-			 */
-			ob_start();
-			wp_enqueue_scripts();
-			$fa->detect_unregistered_clients();
-			ob_end_clean();
-
-			return array(
-				'adminClientInternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_INTERNAL,
-				'adminClientExternal'   => FontAwesome::ADMIN_USER_CLIENT_NAME_EXTERNAL,
-				'options'               => $fa->options(),
-				'clientRequirements'    => $fa->requirements(),
-				'conflicts'             => $fa->conflicts(),
-				'pluginVersionWarnings' => $fa->get_plugin_version_warnings(),
-				'pluginVersion'         => FontAwesome::PLUGIN_VERSION,
-				'currentLoadSpec'       => $fa->load_spec(),
-				'currentLoadSpecLocked' => $locked_load_spec && $fa->load_spec() === $locked_load_spec,
-				'unregisteredClients'   => $fa->unregistered_clients(),
-				'releaseProviderStatus' => $this->release_provider()->get_status(),
-				'releases'              => array(
-					'available'        => $fa->get_available_versions(),
-					'latest_version'   => $fa->get_latest_version(),
-					'previous_version' => $fa->get_previous_version(),
-				),
-			);
-		}
-
-		/**
-		 * Get the config, a singleton resource.
-		 *
-		 * @param WP_REST_Request $request Full data about the request.
-		 * @return WP_Error|WP_REST_Response
-		 */
-		public function get_item( $request ) {
-			// TODO: consider alternatives to using ini_set() to ensure that display_errors is disabled.
-			// Without this, when a client plugin of Font Awesome throws an error (like our plugin-epsilon
-			// in this repo), instead of this REST controller returning an HTTP status of 500, indicating
-			// the server error, it sends back a status of 200, setting the data property in the response
-			// object equal to an HTML document that describes the error. This confuses the client.
-			// Ideally, we'd be able to detect which plugin results in such an error by catching it and then
-			// reporting to the client which plugin caused the error. But at a minimum, we need to make sure
-			// that we return 500 instead of 200 in these cases.
-			// phpcs:disable
-			ini_set( 'display_errors', 0 );
-			// phpcs:enable
-
-			try {
-				$fa = fa();
-
-				// Make sure our releases metadata is fresh.
-				$load_releases = new ReflectionMethod( 'FortAwesome\FontAwesome_Release_Provider', 'load_releases' );
-				$load_releases->setAccessible( true );
-				$load_releases->invoke( $this->release_provider() );
-
-				$fa_load = new ReflectionMethod( 'FortAwesome\FontAwesome', 'load' );
-				$fa_load->setAccessible( true );
-				$fa_load->invoke( $fa );
-
-				$data = $this->build_item( $fa );
-
-				return new WP_REST_Response( $data, 200 );
-			} catch ( Exception $e ) {
-				return new WP_Error(
-					'cant_fetch',
-					$e->getMessage(),
-					array(
-						'status' => 500,
-						'trace'  => $e->getTraceAsString(),
-					)
-				);
-			}
-		}
-
-		/**
-		 * Update the singleton resource.
-		 *
-		 * @param WP_REST_Request $request Full data about the request.
-		 * @return WP_Error|WP_REST_Response
-		 */
-		public function update_item( $request ) {
-			// phpcs:disable
-			ini_set( 'display_errors', 0 );
-			// phpcs:enable
-
-			try {
-				$item = $this->prepare_item_for_database( $request );
-				$item['options']['adminClientLoadSpec']['clientVersion'] = time();
-
-				// Rather than directly updating the options in the db, we'll run the new adminClientSpec through the
-				// normal load process. If it satisfies all constraints, the new adminClientLoadSpec spec will be
-				// updated with the lockedLoadSpec. Otherwise, no db update will occur and we'll be able to report
-				// the error condition to the admin UI.
-				// We reset to avoid duplication client registrations.
-				$fa      = fa();
-				$load_fa = new ReflectionMethod( 'FortAwesome\FontAwesome', 'load' );
-				$load_fa->setAccessible( true );
-				$load_spec_success = $load_fa->invoke( $fa, $item['options'] );
-
-				$return_data = $this->build_item( $fa );
-
-				if ( $load_spec_success ) {
-					return new WP_REST_Response( $return_data, 200 );
-				} else {
-					return new WP_Error(
-						'cant_update',
-						'Whoops, those options would have resulted in a conflict so we did not save them.',
-						array( 'status' => 403 )
-					);
-				}
-			} catch ( FontAwesome_ConfigurationException $e ) {
-				return new WP_Error( 'cant_update', $e->getMessage(), array( 'status' => 400 ) );
-			} catch ( Exception $e ) {
-				return new WP_Error(
-					'cant_update',
-					$e->getMessage(),
-					array(
-						'status' => 500,
-						'trace'  => $e->getTraceAsString(),
-					)
-				);
-			}
-		}
-
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * @ignore
-		 */
-		protected function prepare_item_for_database( $request ) {
+	public function update_item( $request ) {
+		try {
 			$body = $request->get_json_params();
-			return array_merge( array(), $body );
-		}
 
-		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-		/**
-		 * Allows a test subclass to mock the release provider.
-		 *
-		 * @ignore
-		 */
-		protected function release_provider() {
-			return fa_release_provider();
+			$given_options = isset( $body['options'] ) ? $body['options'] : null;
+
+			$api_token = isset( $given_options['apiToken'] ) ? $given_options['apiToken'] : null;
+
+			if ( is_string( $api_token ) ) {
+				// We're adding an api_token.
+				$api_settings = FontAwesome_API_Settings::reset();
+				$api_settings->set_api_token( $api_token );
+				$api_settings->request_access_token();
+			} elseif ( boolval( fa_api_settings()->api_token() ) && ! boolval( $api_token ) ) {
+				// We're removing an existing API Token.
+				fa_api_settings()->remove();
+
+				/**
+				 * We also need to change the version to one that would be
+				 * valid for a CDN configuration.
+				 */
+				$given_options['version'] = fa()->latest_version();
+			}
+
+			$db_item = $this->prepare_item_for_database( $given_options );
+
+			update_option(
+				FontAwesome::OPTIONS_KEY,
+				$db_item
+			);
+
+			$return_data = $this->build_item( fa() );
+			return new WP_REST_Response( $return_data, 200 );
+		} catch ( FontAwesome_ServerException $e ) {
+			return fa_500( $e );
+		} catch ( FontAwesome_Exception $e ) {
+			return fa_400( $e );
+		} catch ( Exception $e ) {
+			return unknown_error_500( $e );
+		} catch ( Error $e ) {
+			return unknown_error_500( $e );
 		}
 	}
 
-endif; // end class_exists.
+	/**
+	 * Filters the incoming data, determines what should actually
+	 * be stored in the database, and ensures that it's valid.
+	 *
+	 * @internal
+	 * @ignore
+	 * @param array $given_options the options from the request body
+	 * @throws ConfigSchemaException
+	 * @return array The item to store on the options key
+	 */
+	protected function prepare_item_for_database( $given_options ) {
+		// start with a copy of the defaults and just override them indivually.
+		$item = array_merge( array(), FontAwesome::DEFAULT_USER_OPTIONS );
+
+		/**
+		 * The apiToken is handled specially.
+		 * We only store a boolean value indicating whether and apiToken
+		 * has been stored. It's the responsibility of the calling code
+		 * to store the actual API Token appropriately.
+		 */
+		$api_token        = isset( $given_options['apiToken'] ) && boolval( $given_options['apiToken'] );
+		$item['apiToken'] = $api_token;
+
+		/**
+		 * A kitToken is handled specially.
+		 * If one is provided, but there's no API token, then that is invalid.
+		 */
+		if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) ) {
+			if ( $api_token ) {
+				$item['kitToken'] = $given_options['kitToken'];
+			} else {
+				throw ConfigSchemaException::kit_token_no_api_token();
+			}
+		}
+
+		/**
+		 * For the following options, if they are provided at all, we just
+		 * use that to override the default.
+		 */
+		if ( isset( $given_options['usePro'] ) ) {
+			$item['usePro'] = $given_options['usePro'];
+		}
+		if ( isset( $given_options['v4Compat'] ) ) {
+			$item['v4Compat'] = $given_options['v4Compat'];
+		}
+		if ( isset( $given_options['technology'] ) ) {
+			$item['technology'] = $given_options['technology'];
+		}
+		if ( isset( $given_options['pseudoElements'] ) ) {
+			$item['pseudoElements'] = $given_options['pseudoElements'];
+		}
+		if ( isset( $given_options['usePro'] ) ) {
+			$item['usePro'] = $given_options['usePro'];
+		}
+
+		$version_is_symbolic_latest = isset( $given_options['version'] )
+			&& 'latest' === $given_options['version'];
+
+		$version_is_concrete = isset( $given_options['version'] )
+			&& 1 === preg_match( '/[0-9]+\.[0-9]+/', $given_options['version'] );
+
+		/**
+		 * The pseudoElements option is handled specially. If technology
+		 * is webfont, pseudoElements must be true.
+		 */
+		if ( 'webfont' === $item['technology'] && ! $item['pseudoElements'] ) {
+			throw ConfigSchemaException::webfont_always_enables_pseudo_elements();
+		}
+
+		/**
+		 * The version is handled specially.
+		 *
+		 * If this is a non-kit config, then the version must be concrete,
+		 * a major.minor.patch version like 5.12.0.
+		 *
+		 * If this is a kit-based config, then the version must either be
+		 * concrete or the exact, case-sensitive, string 'latest'.
+		 */
+		if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) && $version_is_symbolic_latest ) {
+			$item['version'] = 'latest';
+		} elseif ( $version_is_concrete ) {
+			$item['version'] = $given_options['version'];
+		} else {
+			throw ConfigSchemaException::concrete_version_expected();
+		}
+
+		if (
+			$version_is_concrete &&
+			version_compare( '5.1.0', $item['version'], '>' ) &&
+			boolval( $item['v4Compat'] ) &&
+			'webfont' === $item['technology']
+		) {
+			throw ConfigSchemaException::webfont_v4compat_introduced_later();
+		}
+
+		return $item;
+	}
+
+	/**
+	 * Allows a test subclass to mock the release provider.
+	 *
+	 * @ignore
+	 */
+	protected function release_provider() {
+		return fa_release_provider();
+	}
+}

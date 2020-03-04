@@ -1,0 +1,110 @@
+.release-provider-error {
+  color: red;
+}
+
+.warning-banner {
+  display: flex;
+  width: 100%;
+}
+
+.warning-banner svg {
+  margin-right: .5em;
+  margin-bottom: .125em;
+}
+
+.option-header {
+    width: 30%;
+    font-weight: bold;
+    font-size: .9rem;
+}
+
+.option-status {
+    width: 1rem;
+    margin-right: .25rem;
+    text-align: center;
+}
+
+.option-choices {
+  display: flex;
+  flex-direction: row;
+}
+
+.option-choice {
+    width: 50%;
+}
+
+.option-choice-container {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin-top: .5rem;
+}
+
+@media only screen and (min-width: 1024px) {
+  .option-choice-container {
+    margin-top: 0;
+  }
+}
+
+.option-explanation {
+  font-style: italic;
+}
+
+.option-explanation > ul {
+    list-style: none;
+    margin-left: 2em;
+}
+
+.option-label {
+    display: flex;
+    flex-direction: flex-row;
+}
+
+.option-label-text {
+    margin-left: 5px;
+    font-weight: 600;
+}
+
+.option-divider {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.options-setter {
+  margin-top: 1rem;
+}
+
+.options-setter button {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.options-setter button svg {
+    margin-right: 0.5em;
+}
+
+.features .option-choice {
+    margin-bottom: 1.5rem;
+}
+
+.option-label-explanation {
+    display: block;
+    font-weight: normal;
+    line-height: 1.5;
+    margin-top: .25rem;
+    color: #868e96;
+}
+
+.option-label-explanation a {
+  color: #868e96;
+}
+
+.option-label-explanation a:hover {
+  color: #228be6;
+}
+
+.checking-option-status-indicator {
+  padding-left: 1em;
+}

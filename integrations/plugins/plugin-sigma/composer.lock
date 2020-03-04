@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f438f09405e79768fba619fbd3cb105",
+    "content-hash": "2b6f26dd5577796a0fc2ec8a43e070b5",
     "packages": [
         {
             "name": "fortawesome/wordpress-fontawesome",
-            "version": "dev-master",
+            "version": "dev-epic/release-4-0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "80f973b4a0f6ac09cbb4dc3ecc1ae2964ef01d32"
+                "reference": "6b0a82749dfa49e4c51ae6263119380a8d6c2099"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/80f973b4a0f6ac09cbb4dc3ecc1ae2964ef01d32",
-                "reference": "80f973b4a0f6ac09cbb4dc3ecc1ae2964ef01d32",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/6b0a82749dfa49e4c51ae6263119380a8d6c2099",
+                "reference": "6b0a82749dfa49e4c51ae6263119380a8d6c2099",
                 "shasum": ""
             },
             "archive": {
@@ -48,6 +48,9 @@
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+                "doctrine/annotations": "1.4.0",
+                "doctrine/instantiator": "1.0.5",
+                "doctrine/lexer": "1.0.2",
                 "phpdocumentor/phpdocumentor": "^2.9",
                 "squizlabs/php_codesniffer": "^3.3",
                 "wp-coding-standards/wpcs": "^1.2"
@@ -67,7 +70,7 @@
                     "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip"
                 ],
                 "build.admin": [
-                    "cd admin; yarn build"
+                    "cd admin; yarn; yarn build"
                 ],
                 "cleandocs": [
                     "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs"
@@ -107,10 +110,10 @@
             ],
             "support": {
                 "email": "hello@fontawesome.com",
-                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/master",
+                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/epic/release-4-0",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2019-03-20T23:08:20+00:00"
+            "time": "2020-02-22T00:16:32+00:00"
         }
     ],
     "packages-dev": [],

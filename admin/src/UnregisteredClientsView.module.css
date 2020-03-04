@@ -1,3 +1,19 @@
-.unregistered-clients table {
-    width: unset;
+.unregistered-clients th {
+  vertical-align: top;
+}
+
+.unregistered-clients th .column-label {
+  font-weight: bold;
+}
+
+.unregistered-clients code {
+  font-size: 10px;
+}
+
+.block-all-container, .remove-all-container {
+  margin-top: .5rem;
+}
+
+.checkbox-label {
+  display: flex;
 }

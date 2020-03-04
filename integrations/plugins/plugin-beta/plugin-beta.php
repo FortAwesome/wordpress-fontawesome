@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Beta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client requiring version: 5.1.0, v4shim: require. Prepends a block before each blog post that displays (1) "fab fa-font-awesome", (2) "fa fa-arrows", which is a v4 icon declaration that the v4 shim should translate to "fas fa-arrows-alt", and (3) "fas fa-angry", which was a new icon in v5.1.0.
+ * Description:       Registered Client with preferences version: webfont, 5.1.0, v4shim: on. Prepends a block before each blog post that displays (1) "fab fa-font-awesome", (2) "fa fa-arrows", which is a v4 icon declaration that the v4 shim should translate to "fas fa-arrows-alt", and (3) "fas fa-angry", which was a new icon in v5.1.0.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -17,32 +17,17 @@ define( 'BETA_PLUGIN_LOG_PREFIX', 'beta-plugin' );
 use function FortAwesome\fa;
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
 		fa()->register(
 			array(
-				'name'          => BETA_PLUGIN_LOG_PREFIX,
-				'clientVersion' => BETA_PLUGIN_VERSION,
-				'v4shim'        => 'require',
+				'name'     => BETA_PLUGIN_LOG_PREFIX,
+				'v4Compat' => true,
+				'technology' => 'webfont',
+				'version' => [ [ '5.1.0', '>=' ] ]
 			)
 		);
 	}
-);
-
-add_action(
-	'font_awesome_enqueued',
-	function() {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		error_log(
-			BETA_PLUGIN_LOG_PREFIX .
-			' font_awesome_enqueued: method: ' .
-			fa()->fa_method() .
-			', ver: ' .
-			fa()->version()
-		);
-	},
-	10,
-	3
 );
 
 add_filter(

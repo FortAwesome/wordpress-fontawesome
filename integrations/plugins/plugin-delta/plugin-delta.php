@@ -15,27 +15,22 @@ define( 'DELTA_PLUGIN_VERSION', '0.0.1' );
 define( 'DELTA_PLUGIN_LOG_PREFIX', 'delta-plugin' );
 
 foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'] as $action ) {
-	wp_enqueue_script(
-		'DELTA_PLUGIN_LOG_PREFIX',
-		'https://use.fontawesome.com/releases/v5.0.11/js/all.js',
-		array(),
-		null,
-		false
+	add_action(
+		$action,
+		function() {
+			wp_enqueue_script(
+				'DELTA_PLUGIN_LOG_PREFIX',
+				'https://use.fontawesome.com/releases/v5.0.11/js/all.js',
+				array(),
+				null,
+				false
+			);
+		},
+		10
 	);
 }
 
-add_action('font_awesome_enqueued', function(){
-	error_log(
-		DELTA_PLUGIN_LOG_PREFIX .
-		" font_awesome_enqueued: " .
-		"method: " .
-		\FortAwesome\fa()->load_spec()['method'] .
-		", ver: " .
-		FortAwesome\fa()->version()
-	);
-}, 10, 3);
-
-$pre_content = <<<EOT
+  $pre_content = <<<EOT
 <div class="plugin-delta-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Delta</h2>
   <p>Expected by plugin-delta (introduced v5.0.11): "fas fa-cloud-download": <i class="fas fa-cloud-download"></i></p>

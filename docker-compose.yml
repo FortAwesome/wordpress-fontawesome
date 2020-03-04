@@ -1,22 +1,88 @@
 version: '3.6'
 
-x-dev_volumes: &dev_volumes
+x-dev_env_volumes: &dev_env_volumes
   volumes:
-    - ./volumes/wordpress:/var/www/html
-    - .:/var/www/html/wp-content/plugins/font-awesome
-    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
-    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
-    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
-    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
-    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
-    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
-    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
-    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+    # This wordpress bind mount could be uncommented in order to get access in the host
+    # to the wordpress installation used by the container, such as for debugging.
+    # Normally, it's best to leave it uncommented, because:
+    #
+    # 1. performance: the more is bind-mounted, the longer it takes to start up
+    #    the container, and there are quite a few files under wordress.
+    #
+    # 2. isolation: when there *is* something already mounted on /var/www/html,
+    #    that will be used for the wordpress install *instead* of the container
+    #    using its own version.
 
-x-integration_volumes: &integration_volumes
+    # - ./volumes/wordpress:/var/www/html
+
+    # The bind mount for this plugin. The effect is that the entire directory structure
+    # of this repo is mounted inside the container under /var/www/html/wp-content/plugins/font-awesome
+    # As a result, Docker will have a lot of work to do if there are a lot of files.
+    # Under Docker for Mac Desktop, performance due to keeping the host
+    # and container filesystems in sync can get slow and bothersome, especially when
+    # starting up the container. But also when doing a bit filesystem churn, like
+    # removing or rebuilding admin/node_modules, which involves 10s of thousands
+    # of files.
+    #
+    # Docker doesn't seem to have feature for ignoring specified files or paths,
+    # but there's a trick to accomplish a similar result that works. See below
+    # how we ignore subdirectories.
+
+    - .:/var/www/html/wp-content/plugins/font-awesome
+
+    # Bind mounts for integration themes or plugins
+    - ./integrations/js:/var/www/html/wp-content/js
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
+    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+
+    # Explicitly ignore various subdirectories like this, listing the target path
+    # on the container filesystem. The result will be that the directory will exist
+    # but it will be empty, thus relieving Docker of the burden to keep its files
+    # in sync between the host and container.
+    #
+    # ignores for the local plugin repo and working directory
+    - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/admin/config
+    - /var/www/html/wp-content/plugins/font-awesome/admin/scripts
+    - /var/www/html/wp-content/plugins/font-awesome/docs
+    - /var/www/html/wp-content/plugins/font-awesome/docsrv
+    - /var/www/html/wp-content/plugins/font-awesome/phpdoc-data
+    - /var/www/html/wp-content/plugins/font-awesome/tmp
+    - /var/www/html/wp-content/plugins/font-awesome/volumes
+    - /var/www/html/wp-content/plugins/font-awesome/wp-dist
+    - /var/www/html/wp-content/plugins/font-awesome/images
+    - /var/www/html/wp-content/plugins/font-awesome/assets
+    - /var/www/html/wp-content/plugins/font-awesome/.vscode
+    - /var/www/html/wp-content/plugins/font-awesome/.idea
+    - /var/www/html/wp-content/plugins/font-awesome/.git
+    - /var/www/html/wp-content/plugins/font-awesome/bin
+    - /var/www/html/wp-content/plugins/font-awesome/vendor
+    - /var/www/html/wp-content/plugins/font-awesome/docker
+    - /var/www/html/wp-content/plugins/font-awesome/integrations
+    # ignores for the stuff that plugin-sigma may pull into its vendor bundle
+    # when doing composer update
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/bin
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docsrv
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docker
+
+x-integration_env_volumes: &integration_env_volumes
   volumes:
-    - ./volumes/wordpress:/var/www/html
+    - ./integrations/js:/var/www/html/wp-content/js
     - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
     - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
     - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
@@ -25,12 +91,23 @@ x-integration_volumes: &integration_volumes
     - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
     - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
     - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
-    - ./integrations/plugins/plugin-theta:/var/www/html/wp-content/plugins/plugin-theta
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
+    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    # ignores (see notes above)
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/bin
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docsrv
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docker
 
 x-wordpress-defaults: &wordpress_defaults
   ports:
-    - "8080:80"
-  restart: always
+    - "8765:80"
   extra_hosts:
     - "dockerhost:169.254.254.254"
   command:
@@ -39,10 +116,8 @@ x-wordpress-defaults: &wordpress_defaults
 x-wordpress-dev-defaults: &wordpress_dev_defaults
   <<: *wordpress_defaults
 
-
 x-mysql-defaults: &mysql_defaults
   image: mysql:5.7
-  restart: always
   ports:
     - "3306:3306"
   environment:
@@ -65,11 +140,14 @@ services:
      container_name: "com.fontawesome.wpdb-4.9.8"
 
    wordpress-latest-dev:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
      depends_on:
        - db-latest
      image: wordpress-fontawesome-dev-latest
-     <<: *dev_volumes
+     env_file:
+       - ".env.local"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
@@ -80,12 +158,32 @@ services:
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-latest-dev"
 
+   wordpress-php7.2-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-php7.2
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
+       # static production ones in the admin/build dir.
+       # If this is "development", you get webpack. Otherwise, admin/build.
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-php7.2-dev"
+
    wordpress-latest-integration:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
      depends_on:
        - db-latest
      image: wordpress-fontawesome-dev-latest
-     <<: *integration_volumes
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
@@ -93,11 +191,12 @@ services:
      container_name: "com.fontawesome.wordpress-latest-integration"
 
    wordpress-4.9.8-dev:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
      image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
-     <<: *dev_volumes
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress
@@ -109,11 +208,12 @@ services:
      container_name: "com.fontawesome.wordpress-4.9.8-dev"
 
    wordpress-4.9.8-integration:
-     <<: *wordpress_defaults
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
      image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
-     <<: *integration_volumes
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress

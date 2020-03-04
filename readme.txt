@@ -1,5 +1,5 @@
 === Font Awesome ===
-Contributors: fontawesome, mlwilkerson, robmadole, rachelbaker
+Contributors: fontawesome, mlwilkerson, robmadole, fmbots, deathnfudge
 Stable tag: 4.0.0-rc13
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
@@ -8,149 +8,87 @@ Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Resolves conflicts across many plugins or themes that use Font Awesome.
+The official way to use Font Awesome Free or Pro icons on your site, brought to you by the Font Awesome team.
 
 == Description ==
 
-Adds Font Awesome 5 icons to your WordPress site. Supports Font Awesome Pro. Resolves conflicts across many plugins or themes that use Font Awesome.
-
-This is the official plugin from the Font Awesome team.
+The official way to use Font Awesome Free or Pro icons on your site, brought to you by the Font Awesome team.
 
 = New Plugin, Replacing an Old Plugin =
 
-This is a new, completely re-written plugin, tested with the latest WordPress and Font Awesome versions. It replaces the older plugin formerly occupying this space in the WordPress plugins directory, which was no longer being maintained.
-
-Thanks to Rachel Baker and the team behind the former plugin for getting something started and allowing us to carry it forward.
-
-We've built in some magic to help users of the old plugin experience a smooth upgrade path. We think you'll love Font Awesome 5!
+This is a new, completely re-written plugin, tested with the latest WordPress and Font Awesome versions. It replaces the older plugin formerly occupying this space in the WordPress plugins directory, which was no longer being maintained. Many thanks to Rachel Baker and the team behind the former plugin for getting the original plugin started and allowing us to carry it forward.
 
 = Features =
 
-1. Supports both Font Awesome Free and Font Awesome Pro.
+Our official plugin lets you use Font Awesome the way you want:
+* Use Pro or Free icons.
+* Leverage the latest release or a specific version of our icons.
+* Choose the tech, either SVG or Web Font.
+* Take your pick of loading your icons from our classic Font Awesome CDN, or use Font Awesome kits - the easiest and most robust way to use our icons on the web.
+* And, if you haven’t had the chance to update your project in a long while, you can turn on automatic compatibility for Font Awesome Version 4.
 
-2. Gets new icon updates directly from fontawesome.com right when they're released, ready to add to your site as soon as you like. New icons are released regularly.
+But that’s not all... our official plugin can troubleshoot and help you resolve when multiple versions of Font Awesome are loading on your site from other plugins/themes and causing display or technical issues.
 
-3. Provides easy configuration to enable the new SVG framework with extra features like [Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
-
-  Easily spot and fix conflicts when using SVG would conflict with other plugins or themes that require the classic Web Fonts & CSS method.
-
-4. Loads icons from the fast Font Awesome Free CDN, or the Font Awesome Pro CDN for [Pro subscribers](https://fontawesome.com/pro).
-
-5. Provides a "v4-shim" to [ease the upgrade from Font Awesome 4 to Font Awesome 5](https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4).
-
-6. Developers: supports development of themes and plugins to use Font Awesome without run time conflicts.
-
-  Eliminate the headache of various plugins and themes trying to load multiple or incompatible versions of Font Awesome.
-
-  Using this plugin provides a common framework for managing Font Awesome dependencies. Rest easy that icons for your templates will either load like you expect, or else warn the site owner gracefully with clear diagnostics and user-friendly guidance to resolve conflicts.
-
-  See also: [API docs](https://fortawesome.github.io/wordpress-fontawesome/)
-
-7. Prevents "unregistered" themes or plugins from breaking your icons by loading multiple or incompatible versions.
 
 == Usage ==
 
-Find icons for your version of Font Awesome in the [Icon Gallery](https://fontawesome.com/icons), or on the [cheatsheet](https://fontawesome.com/cheatsheet).
+**Install and enable the plugin**
+(See the Installation tab for details)
 
-*HTML*
+**Add icons to your pages and posts**
+Once you’ve set up your plugin, you add icons to your pages and posts by [using their names](https://fontawesome.com/icons?d=gallery) in shortcodes or HTML.
 
-The stroopwafel icon in the Solid (fas) style:
+When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the style will default to Solid. 
 
-`<i class="fas fa-stroopwafel"></i>`
-
-[All Font Awesome features](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) are available when using HTML, including advanced features only available using the SVG with JavaScript, such as [Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
-
-You can enable SVG in the admin settings page.
-
-Notice that we use the icon's CSS class here, `fa-stroopwafel`, rather than its plain name.
-
-*Shortcode*
+The shortcode for an icon looks like this: 
 
 `[icon name="stroopwafel"]`
 
-Notice we're just using the _name_ of the icon here (`stroopwafel`), as you'd find in the [Icon Gallery](https://fontawesome.com/icons), not its CSS class (`fa-stroopwafel`).
-
-By default, the `fas` style prefix (for the Solid style) will be used. To specify a different prefix, use the `prefix` attribute. This shows the same icon in the Light style (`fal`), available in Font Awesome Pro.
-
 `[icon name="stroopwafel" prefix="fal"]`
+
+Or you can use basic HTML with [standard Font Awesome syntax](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use):
+
+`<i class="fas fa-stroopwafel"></i>`
+
+**Using Pro Icons and Features**
+To enable Pro icons with the CDN, you will need to add your domain to the list allowed domains on your [CDN Settings page](https://fontawesome.com/account/cdn). To configure a kit, get your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens).
+
+
+**Troubleshooting with the Plugin**
+Font Awesome icons are popular, so lots of themes and plugins also load Font Awesome, and sometimes their version can conflict with yours. So we created a way to help you find and prevent those conflicting versions from affecting your icons: **The Conflict Detection Scanner**. 
+
+If the plugin seems to be set up correctly and your icons still aren’t loading and you're not sure why, head over to the Troubleshoot tab, which has two parts: 
+
+* _Detect Conflicts with Other Versions of Font Awesome_ - which lets you start the conflict detection scanner to find versions of Font Awesome loading on your site.
+* _Versions of Font Awesome Active on Your Site_ - which lists any other versions of Font Awesome being used on your site and lets you prevent conflicting versions from loading.
+
+Get more information about using the scanner for troubleshooting on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress#troubleshooting).
+
 
 = Configuring =
 
-Activating this plugin will use a default configuration that loads the latest available version of Font Awesome using the webfont method from the Font Awesome Free CDN. In the simplest case, no additional configuration is required.
+The plugin is set to serve Font Awesome Free icons as a Web Font via the Font Awesome CDN by default. You can change the CDN settings right in the plugin. In the simplest case, no additional configuration is required. 
 
-Here's what you can currently configure on the admin settings page:
+You can get more information about all the available settings and troubleshooting on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
 
-- Version
 
-  New releases of Font Awesome may include changes to the framework, or new icons. Framework changes might include fixes or enhancements to the JavaScript that runs in the browser to render SVG icons, for example.
 
-  Once we release a new version of Font Awesome, a simple re-load of this plugin's admin page will show that new version being available in the version dropdown. Select the new version and save your settings.
+= Upgrading from the Old Versions =
 
-  If for some reason you know you need to lock your Font Awesome version back to some other version that's available in the dropdown, just select it and save the settings.
+If you used the old plugin or are still using Version 3 of Font Awesome, we've tried to smooth the upgrade path for you by keeping `[icon]` shortcode compatibility for Font Awesome 3 names used with the old plugin. But we plan to remove version 3 naming support from this plugin soon so don't wait too long to update your code!
 
-- Method
-
-  Options: `svg` or `webfont`
-
-  Font Awesome 5 is available via two different implementation methods: Webfont with CSS, or SVG with JavaScript. If you're not sure of the difference, or don't know why you'd need to use SVG, then sticking with the default webfont method is probably easiest.
-
-  There are some extra features available only in SVG/JS, though, like [Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
-
-- Pseudo-elements (`::before`)
-
-  Options: `require` or `forbid`
-
-  [CSS Pseudo-elements](https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements) are a way to use CSS to add icons to a page when you can't otherwise control the page's content. You define a rule in your CSS with `::before`.
-
-  Because pseudo-elements is just a feature of CSS, they work implicitly when you're using Font Awesome via the webfont method.
-
-  However, it requires a little extra magic to get pseudo-elements working with SVG/JS. Sometimes, the performance trade-off isn't worth it. So when using SVG/JS, pseudo-elements are _not_ enabled by default, but you (or another client) can still `require` them. If you (or another client) feel sure that enabling pseudo-elements with SVG would be a disaster, then `forbid` can also be chosen to prevent said disaster.
-
-- Version 4 Compatibility (aka "v4shims")
-
-  Options: `require` or `forbid`
-
-  There are quite a few icon name changes, and some changes in icon style, that occurred between Font Awesome major versions 4 and 5. It's best to update them to the version 5 names whenever possible. But to ease the upgrade path, version 4 shims are available.
-
-  These are enabled by default, but can be disabled by selecting `forbid`.
-
-- Use Pro
-
-  [Font Awesome Pro](https://fontawesome.com/pro) gets you lots more icons, services, and support, and a steady stream of new icons when you have an active subscription. One of those Pro services is our Pro CDN. To load Font Awesome from the Pro CDN, including all the Pro icons, check "Use Pro" on the admin settings page.
-
-  You'll need to first make sure you've configured your [allowed CDN domains in your fontawesome.com account settings](https://fontawesome.com/account/cdn).
-
-- Remove Unregistered Clients
-
-  "Unregistered clients" include any themes or plugins that attempt to load their own versions of Font Awesome using the normal means of loading JavaScripts or stylesheets in WordPress.
-
-  If this plugin detects them, it will display them on the admin settings page. Checking the box to "Remove unregistered clients" just blocks their attempt to load a conflicting version of Font Awesome but does not otherwise interfere with their functioning. Most of the time, the version _you_ want to load will work just fine for them. So this option is intended to both _allow_ those unregistered clients to continue working as intended, while stopping them from breaking the rest of your icons.
-
-  But, your mileage may vary. Since those clients haven't registered their requirements with this plugin, we can't be sure what they really require in order to work as intended. You could enable this option and then view the outputs of those clients. If they seem to look as expected, great. If not, try enabling the v4shims in case the unregistered client expects to be able to use version 4 icon names.
-
-= Understanding Many Clients with Various Requirements =
-
-Our hope is that other themes and plugins will use this framework to register their Font Awesome requirements, to ensure that icons are working across all of your posts and pages, including content from those themes or plugins.
-
-On the admin settings page, you'll see the list of clients that have registered Font Awesome requirements. Think of yourself, the web site owner, as one of those clients. You set your Font Awesome requirements using the admin settings page. Any other clients--plugins or themes--use our API (under the hood) to register their requirements. You'll see all of them show up on the admin settings page, giving you a dashboard overview of what everyone's up to.
-
-This plugin loads a version and configuration of Font Awesome that is conflict-free across all client requirements. Unless those requirements include a version constraint, it loads the latest available by default. So you can change the configuration options from the admin settings page to your heart's content, as long as you don't introduce conflicts with other clients' requirements. If you're the only client, then the world is your oyster.
-
-For example, if you install a plugin that requires the svg method, then as long as you have that other plugin activated, you won't be able to require the webfont method without introducing a conflict between _your_ requirements and that other plugin's requirements. It's gotta be one or the other. If you try it, you'll be presented with a warning and some clear diagnostics in the admin settings page. And, by the way, it won't break the icons on your site if you try something and it introduces a conflict. This plugin will only lock and load a conflict-free configuration. Any conflicts are reported for you to troubleshoot on the admin settings page.
-
-## Upgrading from the Old Plugin
-
-If you've been a user of previous versions of this plugin, you'll eventually need to update your `[icon]` shortcodes to use Font Awesome 5 names instead of the out-dated Font Awesome 3 names used with the old plugin.
-
-We've tried to smooth the upgrade path for you by keeping that shortcode compatible with Font Awesome 3 names you're used to, while magically transforming them into their Font Awesome 5 equivalents on the fly. You'll still need to change your icon shortcodes in pages, posts, and templates. But our upgrade magic gives you some cushion to take a more leisurely pace. We plan to remove version 3 naming support, and the magic, from this plugin in upcoming releases, though, so don't wait too long!
-
-Note that this automatic translation of version 3 icon names to version 5 icon names will only occur where you've used the `[icon]` shortcode. If you've directly used `<i>` tags to reference version 3 icons, like `<i class="icon-calendar"></i>`, you'll need to manually revise those to use version 5 names.
 
 == See Also ==
 
-The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub has some more details for WordPress site owners and developers.
+The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub which has details for WordPress site owners and developers.
 
 The [API docs](https://fortawesome.github.io/wordpress-fontawesome/) for developers.
+
+
+== Frequently Asked Questions ==
+
+You can get more information about using the plugin, details for available settings, and answers to frequently asked questions on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
+
 
 == Upgrade Notice ==
 
@@ -176,13 +114,10 @@ From the "Add Plugins" page in WordPress admin:
 
 2. On the "Add Plugins" page in WordPress admin, click "Upload Plugin" and choose that `.zip` file
 
-= Access Font Awesome Settings =
+= Access Font Awesome Plugin Settings =
 
-Find the Font Awesome admin settings page either under the "Settings" menu on the left navigation panel in WordPress admin, or click "Settings" on the plugin's entry in the list of plugins on the "Plugins" page.
+Once you activate the Font Awesome plugin, you will see a top-level menu item for Font Awesome in your WordPress admin area, or you can click "Settings" on the plugin's entry on the Plugins page.
 
-= Additional Setup for Font Awesome Pro =
-
-[Font Awesome Pro](https://fontawesome.com/pro) subscribers who want to enable Pro icons on their WordPress sites, must first [add their allowed domains](https://fontawesome.com/account/domains) before enabling the "Use Pro" option on the plugin's settings page.
 
 == Changelog ==
 

@@ -74,25 +74,30 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   // These are the "entry points" to our application.
   // This means they will be the "root" imports that are included in JS bundle.
-  entry: [
-    // Include an alternative client for WebpackDevServer. A client's job is to
-    // connect to WebpackDevServer by a socket and get notified about changes.
-    // When you save a file, the client will either apply hot updates (in case
-    // of CSS changes), or refresh the page (in case of JS changes). When you
-    // make a syntax error, this client will display a syntax error overlay.
-    // Note: instead of the default WebpackDevServer client, we use a custom one
-    // to bring better experience for Create React App users. You can replace
-    // the line below with these two lines if you prefer the stock client:
-    require.resolve('webpack-dev-server/client') + '?http://localhost:3030/sockjs-node/',
-    require.resolve('webpack/hot/dev-server'),
-    // require.resolve('react-dev-utils/webpackHotDevClient'),
-    // Finally, this is your app's code:
-    paths.appIndexJs,
-    // We include the app code last so that if there is a runtime error during
-    // initialization, it doesn't blow up the WebpackDevServer client, and
-    // changing JS code would still trigger a refresh.
-  ],
+  entry: 
+       [
+        // Include an alternative client for WebpackDevServer. A client's job is to
+        // connect to WebpackDevServer by a socket and get notified about changes.
+        // When you save a file, the client will either apply hot updates (in case
+        // of CSS changes), or refresh the page (in case of JS changes). When you
+        // make a syntax error, this client will display a syntax error overlay.
+        // Note: instead of the default WebpackDevServer client, we use a custom one
+        // to bring better experience for Create React App users. You can replace
+        // the line below with these two lines if you prefer the stock client:
+        require.resolve('webpack-dev-server/client') + '?http://localhost:3030/sockjs-node/',
+        require.resolve('webpack/hot/dev-server'),
+        // require.resolve('react-dev-utils/webpackHotDevClient'),
+        // Finally, this is your app's code:
+        paths.appIndexJs,
+        // We include the app code last so that if there is a runtime error during
+        // initialization, it doesn't blow up the WebpackDevServer client, and
+        // changing JS code would still trigger a refresh.
+      ]
+  ,
   output: {
+    // See: https://reactjs.org/docs/cross-origin-errors.html
+    // and: https://webpack.js.org/configuration/output/#outputcrossoriginloading
+    crossOriginLoading: 'anonymous',
     // Add /* filename */ comments to generated require()s in the output.
     pathinfo: true,
     // This does not produce a real file. It's just the virtual path that is
@@ -106,18 +111,6 @@ module.exports = {
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
-  },
-  optimization: {
-    // Automatically split vendor and commons
-    // https://twitter.com/wSokra/status/969633336732905474
-    // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
-    splitChunks: {
-      chunks: 'all',
-      name: false,
-    },
-    // Keep the runtime chunk seperated to enable long term caching
-    // https://twitter.com/wSokra/status/969679223278505985
-    runtimeChunk: true,
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
@@ -287,7 +280,7 @@ module.exports = {
           {
             test: sassRegex,
             exclude: sassModuleRegex,
-            use: getStyleLoaders({ importLoaders: 2 }, 'sass-loader'),
+            use: getStyleLoaders({ importLoaders: 2 }, false, 'sass-loader'),
           },
           // Adds support for CSS Modules, but using SASS
           // using the extension .module.scss or .module.sass

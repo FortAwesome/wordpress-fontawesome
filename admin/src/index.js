@@ -1,6 +1,40 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
 import ErrorBoundary from './ErrorBoundary'
+import FontAwesomeAdminView from './FontAwesomeAdminView'
+import { Provider } from 'react-redux'
+import { createStore } from './store'
+import { reportDetectedConflicts } from './store/actions'
+import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
+import { __ } from '@wordpress/i18n'
 
-ReactDOM.render(<ErrorBoundary><App /></ErrorBoundary>, document.getElementById('font-awesome-admin'));
+const initialData = window['__FontAwesomeOfficialPlugin__']
+
+if(! initialData){
+  console.error( __( 'Font Awesome plugin is broken: initial state data missing.', 'font-awesome' ) )
+}
+
+const store = createStore(initialData)
+
+const { showAdmin, showConflictDetectionReporter } = store.getState()
+
+if( showAdmin ) {
+  document.addEventListener('DOMContentLoaded', () => {
+    ReactDOM.render(
+      <ErrorBoundary>
+        <Provider store={ store }>
+          <FontAwesomeAdminView/>
+        </Provider>
+      </ErrorBoundary>,
+      document.getElementById('font-awesome-admin')
+    )
+  })
+}
+
+if( showConflictDetectionReporter ) {
+  mountConflictDetectionReporter({
+    report: params => store.dispatch(reportDetectedConflicts(params)),
+    store,
+    now: false
+  })
+}

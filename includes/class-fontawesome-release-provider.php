@@ -1,7 +1,12 @@
 <?php
+/**
+ * This module is not considered part of the public API, only internal.
+ * Any data or functionality that it produces should be exported by the
+ * main FontAwesome class and the API documented and semantically versioned there.
+ */
 namespace FortAwesome;
 
-use \WP_Error, \Error, \Exception, \InvalidArgumentException;
+use \WP_Error, \Error, \Exception;
 
 /**
  * Provides metadata about Font Awesome releases.
@@ -15,8 +20,9 @@ use \WP_Error, \Error, \Exception, \InvalidArgumentException;
  */
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-noreleasesexception.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-configurationexception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resourcecollection.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
 /**
  * Provides metadata about Font Awesome releases by querying fontawesome.com.
@@ -51,7 +57,13 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
-	protected $status = null;
+	protected $refreshed_at = null;
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected $latest_version = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -89,131 +101,115 @@ class FontAwesome_Release_Provider {
 	}
 
 	/**
-	 * Returns an associative array indicating the status of the status of the last network
-	 * request that attempted to retrieve releases metadata, or null if no network request has
-	 * been issued during the life time of the current Singleton instance.
-	 *
-	 * The shape of an array return looks like this:
-	 * ```php
-	 * array(
-	 *   'code' => 403,
-	 *   'message' => 'some message',
-	 * )
-	 * ```
-	 *
-	 * The value of the `code` key is one of:
-	 * - `200` if successful,
-	 * - `0` if there was some code error that prevented the network request from completing
-	 * - otherwise some HTTP error code as returned by `wp_remote_get()`
-	 *
-	 * @return array|null
-	 */
-	public function get_status() {
-		return $this->status;
-	}
-
-	/**
 	 * Private constructor.
 	 *
 	 * @ignore
 	 */
 	private function __construct() {
-		$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+		$transient_value = get_site_transient( self::RELEASES_TRANSIENT );
 
-		if ( $cached_releases ) {
-			$this->releases = $cached_releases;
+		if ( $transient_value ) {
+			$this->releases       = $transient_value['data']['releases'];
+			$this->refreshed_at   = $transient_value['refreshed_at'];
+			$this->latest_version = $transient_value['data']['latest'];
 		}
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Loads release metadata and saves to a transient.
+	 *
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 * @return void
 	 */
-	private function map_api_release( $release ) {
-		$mapped_release              = array();
-		$mapped_release['version']   = $release['attributes']['version'];
-		$mapped_release['download']  = $release['attributes']['download'];
-		$mapped_release['date']      = $release['attributes']['date'];
-		$mapped_release['iconCount'] = $release['attributes']['icon-count'];
-		$mapped_release['sri']       = $release['attributes']['sri'];
-
-		return $mapped_release;
+	public function load_releases() {
+		$query = <<< EOD
+query {
+	latest: release(version: "latest") {
+		version
 	}
+	releases {
+		version
+		srisByLicense {
+			free {
+				path
+				value
+			}
+			pro {
+				path
+				value
+			}
+		}
+	}
+}
+EOD;
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
-	/**
-	 * @ignore
-	 */
-	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
-	private function load_releases() {
-		$init_status = array(
-			'code'    => null,
-			'message' => '',
+		$body = json_decode( $this->query( $query ), true );
+
+		$releases = array();
+
+		foreach ( $body['data']['releases'] as $release ) {
+			$sris = array();
+
+			foreach ( $release['srisByLicense'] as $license => $sri_set ) {
+				$sris[ $license ] = array();
+				foreach ( $sri_set as $sri ) {
+					$sris[ $license ][ $sri['path'] ] = $sri['value'];
+				}
+			}
+
+			$releases[ $release['version'] ] = array(
+				'sri' => $sris,
+			);
+		}
+
+		$previous_transient = get_site_transient( self::RELEASES_TRANSIENT );
+
+		if ( $previous_transient ) {
+			// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
+			delete_site_transient( self::RELEASES_TRANSIENT );
+		}
+
+		$refreshed_at   = time();
+		$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
+
+		if ( is_null( $latest_version ) ) {
+			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version' ) );
+		}
+
+		$transient_value = array(
+			'refreshed_at' => $refreshed_at,
+			'data'         => array(
+				'latest'   => $latest_version,
+				'releases' => $releases,
+			),
 		);
 
-		try {
-			$response = $this->get( FONTAWESOME_API_URL . '/api/releases' );
+		$ret = set_site_transient( self::RELEASES_TRANSIENT, $transient_value, self::RELEASES_TRANSIENT_EXPIRY );
 
-			if ( $response instanceof WP_Error ) {
-				throw new Error();
-			}
-
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => $response['response']['code'],
-					'message' => $response['response']['message'],
-				)
-			);
-
-			if ( 200 !== $this->status['code'] ) {
-				return;
-			}
-
-			$body_contents = $response['body'];
-			$body_json     = json_decode( $body_contents, true );
-			$api_releases  = array_map( array( $this, 'map_api_release' ), $body_json['data'] );
-			$releases      = array();
-			foreach ( $api_releases as $release ) {
-				$releases[ $release['version'] ] = $release;
-			}
-
-			$previous_transient = get_transient( self::RELEASES_TRANSIENT );
-
-			if ( $previous_transient ) {
-				// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
-				delete_transient( self::RELEASES_TRANSIENT );
-			}
-
-			$ret = set_transient( self::RELEASES_TRANSIENT, $releases, self::RELEASES_TRANSIENT_EXPIRY );
-
-			if ( ! $ret ) {
-				throw new Exception();
-			}
-
-			$this->releases = $releases;
-		} catch ( Exception $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, we failed to update the releases data.',
-				)
-			);
-		} catch ( Error $e ) {
-			$this->status = array_merge(
-				$init_status,
-				array(
-					'code'    => 0,
-					'message' => 'Whoops, we failed when trying to update the releases data.',
-				)
-			);
+		if ( ! $ret ) {
+			throw new ReleaseProviderStorageException();
 		}
+
+		$this->releases       = $releases;
+		$this->refreshed_at   = $refreshed_at;
+		$this->latest_version = $latest_version;
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
 	 * @ignore
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 */
 	private function build_resource( $version, $file_basename, $flags = array(
 		'use_svg' => false,
@@ -241,12 +237,22 @@ class FontAwesome_Release_Provider {
 		return( new FontAwesome_Resource( $full_url, $integrity_key ) );
 	}
 
-	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
+	 * Internal use only. Not part of this plugin's public API.
+	 *
 	 * @ignore
+	 * @internal
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @return array
 	 */
-	protected function get( $url, $args = array() ) {
-		return wp_remote_get( $url, $args );
+	protected function query( $query ) {
+		return fa_metadata_provider()->metadata_query( $query, true );
 	}
 
 	/**
@@ -262,23 +268,25 @@ class FontAwesome_Release_Provider {
 	 *
 	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT()
 	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT_EXPIRY()
-	 * @throws FontAwesome_NoReleasesException
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 * @return array
 	 */
 	protected function releases() {
 		if ( $this->releases ) {
 			return $this->releases;
 		} else {
-			$cached_releases = get_transient( self::RELEASES_TRANSIENT );
+			$transient_value = get_site_transient( self::RELEASES_TRANSIENT );
 
-			if ( $cached_releases ) {
-				return $cached_releases;
+			if ( $transient_value ) {
+				return $transient_value['data']['releases'];
 			} elseif ( is_null( $this->releases ) ) {
-				$this->load_releases();
+				$result = $this->load_releases();
 
-				// TODO: consider adding retry logic for loading Font Awesome releases.
 				if ( is_null( $this->releases ) ) {
-					throw new FontAwesome_NoReleasesException();
+					throw new ReleaseMetadataMissingException();
 				} else {
 					return $this->releases;
 				}
@@ -289,9 +297,27 @@ class FontAwesome_Release_Provider {
 	}
 
 	/**
+	 * Returns the time, in unix epoch seconds when the releases metadata were
+	 * last refreshed, or null for never.
+	 *
+	 * Internal use only. Clients should use the public API method on the
+	 * FontAwesome object.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return null|int
+	 */
+	public function refreshed_at() {
+		return $this->refreshed_at;
+	}
+
+	/**
 	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending version order.
 	 *
-	 * @throws FontAwesome_NoReleasesException
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
 	 * @return array
 	 */
 	public function versions() {
@@ -309,138 +335,55 @@ class FontAwesome_Release_Provider {
 	 * Returns an array containing version, shim, source URLs and integrity keys for given params.
 	 * They should be loaded in the order they appear in this collection.
 	 *
-	 * Throws InvalidArgumentException if called with use_svg = true, use_shim = true and version < 5.1.0.
-	 * Shims were not introduced for webfonts until 5.1.0.
-	 *
-	 * Throws InvalidArgumentException when called with an array for $style_opt that contains no known style specifiers.
-	 *
-	 * Throws FontAwesome_NoReleasesException when no releases metadata could be loaded.
-	 *
 	 * @param string $version
-	 * @param mixed  $style_opt either the string 'all' or an array containing any of the following:
-	 *         ['solid', 'regular', 'light', 'brands']
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
-	 * @throws InvalidArgumentException | FontAwesome_NoReleasesException
-	 * @throws FontAwesome_ConfigurationException
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return array
 	 */
-	public function get_resource_collection( $version, $style_opt, $flags = array(
+	public function get_resource_collection( $version, $flags = array(
 		'use_pro'  => false,
 		'use_svg'  => false,
 		'use_shim' => true,
 	) ) {
 		$resources = array();
 
+		if ( ! is_string( $version ) || 0 === strlen( $version ) ) {
+			throw new ConfigCorruptionException();
+		}
+
 		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
-			throw new FontAwesome_ConfigurationException(
-				'Whoops! You found a corner case here. ' .
-				'Version 4 compatibility for our webfont method was not introduced until Font Awesome 5.1.0. ' .
-				'Try using a newer version, disabling version 4 compatibility, or switch your method to SVG.'
-			);
+			throw ConfigSchemaException::webfont_v4compat_introduced_later();
 		}
 
 		if ( ! array_key_exists( $version, $this->releases() ) ) {
-			throw new InvalidArgumentException( "Font Awesome version \"$version\" is not one of the available versions." );
+			throw new ReleaseMetadataMissingException();
 		}
 
-		if ( gettype( $style_opt ) === 'string' && 'all' === $style_opt ) {
-			array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
-			if ( $flags['use_shim'] ) {
-				array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
-			}
-		} elseif ( is_array( $style_opt ) ) {
-			// These can be added to the collection in any order.
-			// Silently ignore any invalid ones, but if there are no styles, then we should die.
-			$load_styles = array();
-			foreach ( $style_opt as $style ) {
-				switch ( $style ) {
-					case 'solid':
-					case 'regular':
-					case 'light':
-					case 'brands':
-						$load_styles[ $style ] = true;
-						break;
-					default:
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-						error_log( 'WARNING: ignorning an unrecognized style specifier: ' . $style );
-				}
-			}
-			$styles = array_keys( $load_styles );
-			if ( count( $styles ) === 0 ) {
-				throw new InvalidArgumentException(
-					'No icon styles were specified to Font Awesome, so none would be loaded.' .
-					"If that's what you intend, then you should probably just disable the Font Awesome plugin."
-				);
-			}
-
-			// Add the main library first.
-			array_push( $resources, $this->build_resource( $version, 'fontawesome', $flags ) );
-
-			// create a new FontAwesome_Resource for each style, in any order.
-			foreach ( $styles as $style ) {
-				array_push( $resources, $this->build_resource( $version, $style, $flags ) );
-			}
-
-			if ( $flags['use_shim'] ) {
-				array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
-			}
-		} else {
-			throw new InvalidArgumentException(
-				'$style_opt must be either the string "all" or a collection of ' .
-				'style specifiers: solid, regular, light, brands.'
-			);
+		array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
+		if ( $flags['use_shim'] ) {
+			array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
 		}
 
-		return $resources;
+		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
 
 	/**
 	 * Returns a version number corresponding to the most recent minor release.
 	 *
-	 * @throws FontAwesome_NoReleasesException
-	 * @return string|null most recent major.minor.patch version. Returns null if no versions available.
-	 */
-	public function latest_minor_release() {
-		$sorted_versions = $this->versions();
-		return count( $sorted_versions ) > 0 ? $sorted_versions[0] : null;
-	}
-
-	/**
-	 * Returns a version number corresponding to the minor release immediately prior to the most recent minor release.
+	 * Internal use only. Clients should use the FontAwesome::latest_version()
+	 * public API method instead.
 	 *
-	 * @throws FontAwesome_NoReleasesException
-	 * @return string|null latest patch level for the previous minor version. major.minor.patch version.
-	 *         Returns null if there is no latest (and therefore no previous).
-	 *         Returns null if there's no previous, because the latest represents the only minor version in the set
-	 *           of available versions.
+	 * @internal
+	 * @ignore
+	 * @return string|null most recent major.minor.patch version or null if there's
+	 *   not yet been a successful query to the API server for releases metadata.
 	 */
-	public function previous_minor_release() {
-		// Find the latest.
-		$latest = $this->latest_minor_release();
-
-		if ( is_null( $latest ) ) {
-			return null;
-		}
-
-		// Build a major.minor version corresponding to the previous minor.
-		$version_parts    = explode( '.', $latest );
-		$new_minor_number = intval( $version_parts[1] ) - 1;
-		// make sure we don't try to use a negative number.
-		$new_minor_number = $new_minor_number >= 0 ? $new_minor_number : 0;
-		$version_parts[1] = $new_minor_number;
-		// This will look like "5.2", instead of "5.2.0".
-		$previous_minor_version_partial = implode( '.', array_slice( $version_parts, 0, 2 ) );
-
-		$satisfying_versions = array_filter(
-			$this->versions(),
-			function( $version ) use ( $previous_minor_version_partial ) {
-				return preg_match( "/$previous_minor_version_partial\.[0-9]+$/", $version );
-			}
-		);
-
-		$result = array_shift( $satisfying_versions );
-
-		return $result === $latest ? null : $result;
+	public function latest_version() {
+		return $this->latest_version;
 	}
 }
 

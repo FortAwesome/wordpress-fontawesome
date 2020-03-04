@@ -1,4 +1,9 @@
 <?php
+/**
+ * This example theme assumes the presence of the Font Awesome plugin.
+ * It does not bundle Font Awesome as a library dependency, such as via composer.
+ * See integrations/plugins/plugin-sigma for an example of do that.
+ */
 use function FortAwesome\fa;
 
 define('THEME_ALPHA_LOG_PREFIX', 'theme-alpha');
@@ -21,12 +26,11 @@ add_action('after_switch_theme', function(){
 });
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
 		fa()->register(
 			array(
-				'name'          => THEME_ALPHA_LOG_PREFIX,
-				'clientVersion' => THEME_ALPHA_VERSION,
+				'name' => THEME_ALPHA_LOG_PREFIX,
 			)
 		);
 	}
@@ -37,7 +41,7 @@ add_action('font_awesome_enqueued', function() {
 		THEME_ALPHA_LOG_PREFIX .
 		" font_awesome_enqueued: " .
 		"method: " .
-		fa()->fa_method() .
+		fa()->technology() .
 		", ver: " .
 		fa()->version()
 	);
@@ -55,7 +59,7 @@ function theme_alpha_fa_classes(){
     ? array_push($class_list, 'fa-version-5-0')
     : array_push($class_list, 'fa-version-5-1');
 
-  (fa()->fa_method() == 'svg')
+  (fa()->technology() == 'svg')
     ? array_push($class_list, 'fa-method-svg')
     : array_push($class_list, 'fa-method-webfont');
 

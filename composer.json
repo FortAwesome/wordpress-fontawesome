@@ -43,6 +43,9 @@
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.3",
         "wp-coding-standards/wpcs": "^1.2",
+        "doctrine/annotations": "1.4.0",
+        "doctrine/lexer": "1.0.2",
+        "doctrine/instantiator": "1.0.5",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
         "phpdocumentor/phpdocumentor": "^2.9"
     },
@@ -51,7 +54,7 @@
         "phpcbf": "phpcbf --standard=phpcs.xml.dist",
         "test": "bin/phpunit",
         "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip",
-        "build.admin": "cd admin; yarn build",
+        "build.admin": "cd admin; yarn; yarn build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
         "docs": "vendor/bin/phpdoc",
         "docsrv": "cd docsrv && yarn && node index.js",

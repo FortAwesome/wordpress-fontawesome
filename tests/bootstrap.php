@@ -6,6 +6,8 @@
  * @noinspection PhpCSValidationInspection
  */
 
+define( 'FONTAWESOME_ENV', 'test' );
+
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 // phpcs:ignore WordPress.PHP.DevelopmentFunctions
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
@@ -27,7 +29,7 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require_once dirname( dirname( __FILE__ ) ) . '/includes/class-fontawesome.php';
+	require_once dirname( dirname( __FILE__ ) ) . '/index.php';
 }
 set_include_path( get_include_path() . PATH_SEPARATOR . dirname( dirname( __FILE__ ) . '../' ) );
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
@@ -36,6 +38,3 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 /** @noinspection PhpIncludeInspection */
 require_once $_tests_dir . '/includes/bootstrap.php';
 
-// Add a global reference to FortAwesome\FontAwesome::load() that has been made accessible for tests to use.
-$fa_load  = new ReflectionMethod( 'FortAwesome\FontAwesome', 'load' );
-$fa_load->setAccessible( true );

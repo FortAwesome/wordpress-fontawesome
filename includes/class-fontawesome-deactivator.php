@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
+require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome.php';
 
 /**
  * Fired during plugin deactivation.
@@ -10,10 +10,20 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
  */
 class FontAwesome_Deactivator {
 
+	/**
+	 * Any caches or transients are removed when deactivating.
+	 * To remove options data, use uninstall().
+	 */
 	public static function deactivate() {
-		delete_option( FontAwesome::OPTIONS_KEY );
-		delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
+		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 		delete_transient( FontAwesome::V3DEPRECATION_TRANSIENT );
 	}
-}
 
+	/**
+	 * Delete options data.
+	 */
+	public static function uninstall() {
+		delete_option( FontAwesome::OPTIONS_KEY );
+		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+	}
+}

@@ -4,6 +4,7 @@ $repo_dir = dirname(__DIR__);
 $dist_subdir = 'wp-dist';
 $dist_dir = $repo_dir . '/' . $dist_subdir;
 $plugin_dir = $repo_dir;
+$ignore_file_patterns = ["/^\.$/", "/^\.\.$/", "/^\.DS_Store$/", "/\.swp$/"];
 
 initialize_dist_dir($dist_dir);
 $rc = null;
@@ -22,6 +23,8 @@ rcp($plugin_dir . '/admin/views', $dist_dir . '/admin/views');
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
 copy($plugin_dir . '/defines.php', $dist_dir . '/defines.php');
 copy($plugin_dir . '/font-awesome.php', $dist_dir . '/font-awesome.php');
+copy($plugin_dir . '/font-awesome-init.php', $dist_dir . '/font-awesome-init.php');
+copy($plugin_dir . '/uninstall.php', $dist_dir . '/uninstall.php');
 copy($repo_dir . '/readme.txt', $dist_dir . '/readme.txt');
 copy($repo_dir . '/LICENSE', $dist_dir . '/LICENSE');
 copy($plugin_dir . '/v3shims.php', $dist_dir . '/v3shims.php');
@@ -88,6 +91,19 @@ function rimraf($target){
   }
 }
 
+function ignore_file($file) {
+  global $ignore_file_patterns;
+  $found_ignore_pattern = FALSE;
+  foreach($ignore_file_patterns as $pattern) {
+    if(preg_match($pattern, $file)){
+      $found_ignore_pattern = TRUE;
+      break;
+    }
+  }
+
+  return $found_ignore_pattern;
+}
+
 // Copy recursively
 // Parts borrowed from http://php.net/manual/en/function.copy.php#91010
 function rcp($src, $dst){
@@ -95,7 +111,7 @@ function rcp($src, $dst){
     if(! file_exists($dst)) mkdir($dst);
     $dir = opendir($src);
     while(false !== ($file = readdir($dir))){
-      if (( $file != '.' ) && ( $file != '..' )) {
+      if ( ! ignore_file($file) ) {
         if( is_dir($src . '/' . $file)){
           rcp($src . '/' . $file, $dst . '/' . $file);
         } else {

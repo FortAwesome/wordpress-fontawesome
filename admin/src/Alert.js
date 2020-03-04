@@ -12,15 +12,15 @@ import {
 function getIcon(props = {}){
   switch(props.type){
     case 'info':
-      return <FontAwesomeIcon icon={ faInfoCircle } size='lg' title='info' fixedWidth />
+      return <FontAwesomeIcon icon={ faInfoCircle } title='info' fixedWidth />
     case 'warning':
-      return <FontAwesomeIcon icon={ faExclamationTriangle } title='warning' size='lg' fixedWidth />
+      return <FontAwesomeIcon icon={ faExclamationTriangle } title='warning' fixedWidth />
     case 'pending':
-      return <FontAwesomeIcon icon={ faSpinner } title='pending' spin size='lg' fixedWidth />
+      return <FontAwesomeIcon icon={ faSpinner } title='pending' spin fixedWidth />
     case 'success':
-      return <FontAwesomeIcon icon={ faThumbsUp } title='success' size='lg' fixedWidth />
+      return <FontAwesomeIcon icon={ faThumbsUp } title='success' fixedWidth />
     default:
-      return <FontAwesomeIcon icon={ faExclamationTriangle } title='warning' size='lg' fixedWidth />
+      return <FontAwesomeIcon icon={ faExclamationTriangle } title='warning' fixedWidth />
   }
 }
 
@@ -44,8 +44,9 @@ Alert.propTypes = {
   title: PropTypes.string.isRequired,
   type: PropTypes.oneOf(['info', 'warning', 'success', 'pending']),
   children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
-    PropTypes.string
+    PropTypes.object,
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.element)
   ]).isRequired
 }
 

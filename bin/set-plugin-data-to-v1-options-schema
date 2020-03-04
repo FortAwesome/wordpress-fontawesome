@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# This little script is to help with manual integration of the auto-upgrade
+# feature from the former implementation of the removeUnregisteredClients option
+# to the new conflict detection and resolution feature.
+#
+# Make sure the Font Awesome plugin is already active before doing this (otherwise),
+# the effect of this script will be overwritten when you active.
+#
+# Also activate the integration test plugins: plugin-gamma and plugin-delta.
+# These are examples of unregistered clients that enqueue their own versions
+# of webfont and svg, respectively.
+#
+# After activating all three plugins, run this script to reset the font-awesome
+# options in the WordPress db to a state like what would be present when running
+# plugin version 4.0.0-rc13 (or similar).
+#
+# Then just reload a page on the site, then go back to the Font Awesome plugin
+# settings page, Troubleshooting tab, and expect to see conflicts in the table
+# for both plugin-gamma and plugin-delta, already selected for blocking.
+#
+# NOTE: if your first page load is on the Font Awesome plugin settings page itself,
+# then you'll have to re-load it before you see those blocked conflicts show up
+# on the Troubleshooting tab.
+#
+# (This is because the REST API call issued by the admin React app doesn't actual
+# run the auto-upgrade detection/blocking logic. However, the WordPress request
+# that loads the HTML page on which the the React app is mounted *does* run that
+# auto-detection and blocking logic. Once it does that once, it'll store its
+# results in the database. Then, subsequent calls on the REST API will fetch
+# those results from the db.)
+#
+# To try the scenario where it's an upgrade but the former state did *not*
+# have removeUnregisteredClients enabled, and where you expect there *not* to be
+# any automatic detection or blocking of conflicts, just temporarily edit the
+# json payload below, setting removeUnregisteredClients: false
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/../.env
+source $DIR/.common.bash
+
+$DIR/wp -c ${WP_CONTAINER} option update font-awesome --format=json '{"adminClientLoadSpec":{"name":"user","clientVersion":1579716239},"version":"5.12.0","usePro":true,"removeUnregisteredClients":true,"lockedLoadSpec":{"method":"webfont","v4shim":true,"pseudoElements":true,"clients":{"user":1579716239}}}' \
+&& $DIR/wp -c ${WP_CONTAINER} option delete font-awesome-unregistered-clients
+
+if [ "$?" == "0" ]; then
+  echo "ok."
+else
+  echo "FAIL"
+  exit 1
+fi
+

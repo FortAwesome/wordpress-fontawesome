@@ -1,70 +1,269 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  updatePendingBlocklist,
+  updatePendingUnregisteredClientsForDeletion
+} from './store/actions'
+import { blocklistSelector } from './store/reducers'
 import styles from './UnregisteredClientsView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faCheckSquare,
+  faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import {
+    faSquare } from '@fortawesome/free-regular-svg-icons'
+import get from 'lodash/get'
+import truncate from 'lodash/truncate'
+import size from 'lodash/size'
+import isEqual from 'lodash/isEqual'
+import sortedUnique from 'lodash/sortedUniq'
+import difference from 'lodash/difference'
+import { __ } from '@wordpress/i18n'
+import { __experimentalCreateInterpolateElement } from '@wordpress/element'
 
-const UnregisteredClientsView = props => {
+function excerpt( content ) {
+  if( !! content ) {
+    return truncate( content, { length: 100 } )
+  } else {
+    return null
+  }
+}
 
-  const detectedUnregisteredClients = props.clients.length > 0
+export default function UnregisteredClientsView() {
+  const dispatch = useDispatch()
+  const unregisteredClients = useSelector(state => state.unregisteredClients)
+  const savedBlocklist = useSelector(state => blocklistSelector(state))
+  const blocklist = useSelector(state => {
+    if( null !== state.blocklistUpdateStatus.pending ) {
+      return state.blocklistUpdateStatus.pending
+    } else {
+      return savedBlocklist
+    }
+  })
+  const deleteList = useSelector( state => state.unregisteredClientsDeletionStatus.pending)
+  const detectedUnregisteredClients = size(Object.keys(unregisteredClients)) > 0
+  const allDetectedConflictsSelectedForBlocking = 
+              isEqual(Object.keys(unregisteredClients).sort(), [...(blocklist || [])].sort())
+  const allDetectedConflictsSelectedForRemoval = 
+              isEqual(Object.keys(unregisteredClients).sort(), [...(deleteList || [])].sort())
+  const allDetectedConflicts = Object.keys(unregisteredClients)
+
+  function isCheckedForBlocking(md5) {
+    return !! blocklist.find(x => x === md5)
+  }
+
+  function isCheckedForRemoval(md5) {
+    return !! deleteList.find(x => x === md5)
+  }
+
+  function changeCheckForRemoval(md5, allDetectedConflicts) {
+    const newDeleteList = 'all' === md5
+      ? allDetectedConflictsSelectedForRemoval
+        ? [] // uncheck them all
+        : allDetectedConflicts // check them all
+      : isCheckedForRemoval(md5)
+        ? deleteList.filter(x => x !== md5)
+        : [...deleteList, md5]
+    
+    dispatch(updatePendingUnregisteredClientsForDeletion(newDeleteList))
+  }
+
+  function changeCheckForBlocking(md5, allDetectedConflicts) {
+    const newBlocklist = 'all' === md5
+      ? allDetectedConflictsSelectedForBlocking
+        ? [] // uncheck them all
+        : allDetectedConflicts // check them all
+      : isCheckedForBlocking(md5)
+        ? blocklist.filter(x => x !== md5)
+        : [...blocklist, md5]
+
+    const orig = sortedUnique( savedBlocklist )
+    const updated = sortedUnique( newBlocklist )
+
+    if(
+      orig.length === updated.length &&
+      0 === size( difference(orig, updated) ) &&
+      0 === size( difference(updated, orig) )
+    ) {
+      dispatch(updatePendingBlocklist(null))
+    } else {
+      dispatch(updatePendingBlocklist(newBlocklist))
+    }
+  }
 
   return <div className={ classnames(styles['unregistered-clients'], { [styles['none-detected']]: !detectedUnregisteredClients }) }>
-    <h2>Unregistered Clients</h2>
+    <h3 className={ sharedStyles['section-title'] }>{ __( 'Other themes or plugins', 'font-awesome' ) }</h3>
     {detectedUnregisteredClients
       ? <div>
           <p className={sharedStyles['explanation']}>
-            These are plugins or themes we've detected that appear to be trying to load
-            their own versions of Font Awesome. Loading more than one version of Font Awesome
-            will almost certainly result in problems, eventually. So, even if all registered
-            clients are satisfied with your configuration, they can be broken by an
-            unexpected version of Font Awesome loaded by one of these unregistered clients.
-          </p>
-          <p className={sharedStyles['explanation']}>
-            We recommend enabling the <code>Remove unregistered clients</code> option to avoid
-            such conflicts. When enabled, our plugin will attempt to stop these other clients from loading
-            their own versions of Font Awesome. Most likely, they will continue to operate normally,
-            as long as they are compatible with the version configured here.
-          </p>
-          <p className={sharedStyles['explanation']}>
-            If you enable <code>Remove unregistered clients</code> and the results
-            produced by those unregistered clients aren't what you expect (for example, their icons are missing),
-            then you could try to select different options here, trying to find a configuration
-            that <em>is</em> compatible with them. Since they are <em>unregistered</em> clients, we don't know
-            what their requirements are, so you kinda just have to guess. You'll know you've found a workable
-            configuration when all of the registered clients are satisfied (no conflicts shown here),
-            and the unregistered clients produce expected results (their icons look right to you).
-          </p>
-          <p className={sharedStyles['explanation']}>
-            A couple other options for resolving problems with unregistered clients:
-          </p>
-          <ol className={ sharedStyles['explanation'] }>
-            <li>
-              Deactivate or replace it, if possible.
-            </li>
-            <li>
-              Contact the developer for the unregistered client and ask them to consider updating their
-              code to register with this Font Awesome Official plugin. Let them know they can reach us
-              at <code>hello@fontawesome.com</code>.
-            </li>
-          </ol>
-          <table className={classnames('widefat', 'striped')}>
-            <tbody>
-            <tr className={sharedStyles['table-header']}>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Loading</th>
-            </tr>
             {
-              props.clients.map((client, index) => (
-                <tr key={index}>
+              __( 'Below is the list of other versions of Font Awesome from active plugins or themes that are loading on your site. Check off any that you would like to block from loading. Normally this just blocks the conflicting version of Font Awesome and doesn\'t affect the other functions of the plugin, but you should verify your site works as expected. If you think you\'ve fixed a found conflict, you can clear it from the table.', 'font-awesome' )
+            }
+          </p>
+          <table className={classnames('widefat', 'striped')}>
+            <thead>
+            <tr className={sharedStyles['table-header']}>
+              <th>
+              <div className={ styles['column-label'] }>{ __( 'Block', 'font-awesome' ) }</div>
+                {
+                  size( allDetectedConflicts ) > 1 &&
+                  <div className={ styles['block-all-container'] }>
+                    <input
+                      id='block_all_detected_conflicts'
+                      name='block_all_detected_conflicts'
+                      type="checkbox"
+                      value='all'
+                      checked={ allDetectedConflictsSelectedForBlocking }
+                      onChange={ () => changeCheckForBlocking('all', allDetectedConflicts) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                    />
+                    <label htmlFor='block_all_detected_conflicts' className={ styles['checkbox-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faCheckSquare }
+                          className={ sharedStyles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faSquare }
+                          className={ sharedStyles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                      { __( 'All', 'font-awesome' ) }
+                    </label>
+                  </div>
+                }
+              </th>
+              <th>
+                <span className={ styles['column-label'] }>
+                  { __( 'Type', 'font-awesome' ) }
+                </span>
+              </th>
+              <th>
+                <span className={ styles['column-label'] }>
+                  { __( 'URL', 'font-awesome' ) }
+                </span>
+              </th>
+              <th>
+                <div className={ styles['column-label'] }>{ __( 'Clear', 'font-awesome' ) }</div>
+                {
+                  size( allDetectedConflicts ) > 1 &&
+                  <div className={ styles['remove-all-container'] }>
+                    <input
+                      id='remove_all_detected_conflicts'
+                      name='remove_all_detected_conflicts'
+                      type="checkbox"
+                      value='all'
+                      checked={ allDetectedConflictsSelectedForRemoval }
+                      onChange={ () => changeCheckForRemoval('all', allDetectedConflicts) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                    />
+                    <label htmlFor='remove_all_detected_conflicts' className={ styles['checkbox-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faCheckSquare }
+                          className={ sharedStyles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faSquare }
+                          className={ sharedStyles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                      { __( 'All', 'font-awesome' ) }
+                    </label>
+                  </div>
+                }
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            {
+              allDetectedConflicts.map(md5 => (
+                <tr key={md5}>
                   <td>
-                    {client.handle}
+                    <input
+                      id={`block_${md5}`}
+                      name={`block_${md5}`}
+                      type="checkbox"
+                      value={ md5 }
+                      checked={ isCheckedForBlocking(md5) }
+                      onChange={ () => changeCheckForBlocking(md5) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                    />
+                    <label htmlFor={`block_${md5}`} className={ styles['checkbox-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faCheckSquare }
+                          className={ sharedStyles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faSquare }
+                          className={ sharedStyles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                    </label>
                   </td>
                   <td>
-                    {client.type}
+                    {get(unregisteredClients[md5], 'tagName', 'unknown').toLowerCase()}
                   </td>
                   <td>
-                    {client.src}
+                    {
+                      unregisteredClients[md5].src
+                      || unregisteredClients[md5].href
+                      || __experimentalCreateInterpolateElement(
+                        __( '<em>in page source. </em><excerpt/>', 'font-awesome' ),
+                        {
+                          em: <em />,
+                          excerpt: (
+                            ( content ) => content
+                              ? <>
+                               File starts with: <code>{ content }</code>
+                              </>
+                              : ''
+                          ) ( excerpt( get(unregisteredClients[md5], 'innerText') ) )
+                        }
+                      )
+                    }
+                  </td>
+                  <td>
+                    <input
+                      id={`remove_${md5}`}
+                      name={`remove_${md5}`}
+                      type="checkbox"
+                      value={ md5 }
+                      checked={ isCheckedForRemoval(md5) }
+                      onChange={ () => changeCheckForRemoval(md5) }
+                      className={ classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom']) }
+                    />
+                    <label htmlFor={`remove_${md5}`} className={ styles['checkbox-label'] }>
+                      <span className={ sharedStyles['relative'] }>
+                        <FontAwesomeIcon
+                          icon={ faCheckSquare }
+                          className={ sharedStyles['checked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                        <FontAwesomeIcon
+                          icon={ faSquare }
+                          className={ sharedStyles['unchecked-icon'] }
+                          size="lg"
+                          fixedWidth
+                        />
+                      </span>
+                    </label>
                   </td>
                 </tr>
               ))
@@ -72,14 +271,14 @@ const UnregisteredClientsView = props => {
             </tbody>
           </table>
         </div>
-      : <p className={ sharedStyles['explanation'] }>We detected no unregistered clients.</p>
+      : <div className={ classnames(sharedStyles['explanation'], sharedStyles['flex'], sharedStyles['flex-row'] )}>
+          <div>
+            <FontAwesomeIcon icon={ faThumbsUp } size='lg'/>
+          </div>
+          <div className={ sharedStyles['space-left'] }>
+            { __( 'We haven\'t detected any plugins or themes trying to load Font Awesome.', 'font-awesome' ) }
+          </div>
+      </div>
     }
   </div>
 }
-
-UnregisteredClientsView.propTypes = {
-  clients: PropTypes.array.isRequired
-}
-
-export default UnregisteredClientsView
-

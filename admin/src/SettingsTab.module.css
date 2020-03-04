@@ -1,0 +1,10 @@
+.select-config-container {
+  display: flex;
+  margin-bottom: .5rem;
+  border-bottom: 2px solid #008DED;
+  padding-bottom: 1rem;
+}
+
+.select-config-container label {
+  margin-right: 1rem;
+}

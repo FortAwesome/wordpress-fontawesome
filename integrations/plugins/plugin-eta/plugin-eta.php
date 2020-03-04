@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Eta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client requiring pseudoElements. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
+ * Description:       Registered Client with preferences: technology: svg, pseudoElements: true. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -17,13 +17,13 @@ define( 'ETA_PLUGIN_VERSION', '0.0.1' );
 define( 'ETA_PLUGIN_LOG_PREFIX', 'eta-plugin' );
 
 add_action(
-	'font_awesome_requirements',
+	'font_awesome_preferences',
 	function() {
-		FortAwesome\fa()->register(
+		fa()->register(
 			array(
 				'name'           => ETA_PLUGIN_LOG_PREFIX,
-				'pseudoElements' => 'require',
-				'clientVersion'  => ETA_PLUGIN_VERSION,
+				'pseudoElements' => true,
+				'technology' => 'svg'
 			)
 		);
 	}
@@ -56,10 +56,9 @@ EOT;
 
 function plugin_eta_fa_classes(){
 	$fa = fa();
-	$load_spec = $fa->load_spec();
 	$class_list = [ 'plugin-eta' ];
 
-	$fa->using_pro()
+	$fa->pro()
 		? array_push($class_list, 'fa-license-pro')
 		: array_push($class_list, 'fa-license-free');
 
@@ -67,7 +66,7 @@ function plugin_eta_fa_classes(){
 		? array_push($class_list, 'fa-version-5-0')
 		: array_push($class_list, 'fa-version-5-1');
 
-	($load_spec['method'] == 'svg')
+	($fa->technology() == 'svg')
 		? array_push($class_list, 'fa-method-svg')
 		: array_push($class_list, 'fa-method-webfont');
 

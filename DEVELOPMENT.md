@@ -45,6 +45,26 @@ activated to help with testing and exploring interaction with the plugin at run 
 
 # Development Setup
 
+## 0. Install PHP
+
+Most of our PHP code will run inside a Docker container under the version of PHP installed within that container.
+However, some of the tools for building or running composer will run outside of the container, in the host environment,
+so you'll need a workable version of PHP installed in your host environment.
+
+If you can run `$ php --version` and it shows a PHP version that's 7.1 or later, that should be good enough.
+
+Otherwise, install php in a way appropriate to your host environment. On macOS, use:
+
+`$ brew install php`
+
+### asdf is a nightmare for PHP
+
+While Font Awesome's development environments normally use asdf to help standardize runtime configurations, getting
+the PHP plugin for asdf to work successfully on macOS is probably not worth it at this time. The original plugin
+has apparently [been abandoned](https://github.com/odarriba/asdf-php#why-using-this-plug-in), and the maintainer of the
+current plugin doesn't use it any longer, and thinks that it's ["near to a nightmare"](https://github.com/odarriba/asdf-php/issues/8#issuecomment-362911209)
+on macOS.
+
 ## 1. Make sure Docker is installed
 
 ## 2. Build any number of docker _images_ for the environments you want
@@ -77,7 +97,40 @@ and the DockerHub "latest" version are temporarily out of sync, you could be in 
 the WordPress `5.0.0` (in our example) is running, but with tests tagged for WordPress `5.0.1` are 
 installed. Probably this won't cause a real problem, but beware.
 
-## 3. Run an environment (one at a time)
+## 3. set up .env.local
+
+In the top-level of this repo, create a plain text file called `.env.local` that has at least
+the following in it:
+
+```bash
+WP_ADMIN_EMAIL=foo@example.com
+```
+
+Replace `foo@example.com` with a real email address where you can receive admin messages
+from this local install of WordPress, if it sends any (it tends not to). 
+
+This file is not checked into git. It's listed in `.gitignore`.
+
+### Font Awesome Internal Extra steps
+
+Designers and developers internal to Font Awesome can also run local instances of
+the Font Awesome, Font Awesome API, and kit edge apps.
+
+1. make sure the `devenv` is up to date
+1. in the `devenv` repo, run `bin/dev-wordpress`
+1. add entries for the following to your `.env.local` (replacing the URLs with the appropriate ones if they change)
+    ```bash
+    FONTAWESOME_API_URL=http://host.docker.internal:4543
+    FONTAWESOME_KIT_LOADER_BASE_URL=https://fa.test:4243
+    ```
+
+    *Heads Up!* make sure to use `host.docker.internal` in that API URL, because
+    the WordPress server needs to be able to reach the API server from inside the docker container.
+    That KIT_LOADER_BASE one needs to be `fa.test` because this is a URL that the
+    browser (running in the host) will need to reach. 
+1. run `bin/dev` in the `fontawesome` repo if you need to do things with kit configs or API Tokens
+
+## 4. Run an environment (one at a time)
 
 `latest` is the default, so these two are equivalent:
 
@@ -130,12 +183,6 @@ $ docker-compose down
 You could also be a little more ninja-ish and use `docker ps` to find the running containers you know
 you want to stop, find the container ID for each, and then for each one do `docker container stop <container_id>`.
 
-## 4. create a .env.email file in the root of the repository with an admin email address WordPress can use
-
-```
-WP_ADMIN_EMAIL=some_real_address@example.com
-```
-
 ## 5. install composer (PHP package manager)
 
 On Mac OS X, it can be installed via `brew install composer`
@@ -159,38 +206,31 @@ In one terminal window, `cd admin`, and then:
       This will start up another web server that serves up the assets for the React app separately from
       the WordPress site, so leave it running while you develop.
 
-## 8. OPTIONAL: Configure a loopback network address so the docker container can talk to your docker host
+## 8. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
 
-You'll need this for the `development` environment option.
+The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
 
-With our current configuration, the docker container in which the wordpress server runs may need to access
-your host OS for a couple of things:
+It's what allows processes running inside the container to access services running
+on ports in the host environment.
 
-- PHP debugging port
-- Webpack dev server port for React hot module reloading
-
-One way to set that up on your host is (on Mac OS):
+If you don't have `host.docker.internal` support for some reason, you could set up
+a loopback address with the following IP from your host OS.
+On Mac OS the command might look like this:
 
 `sudo ifconfig lo0 alias 169.254.254.254`
 
-### Caveat
+The `docker-compose.yml` adds a hostname called `dockerhost` that resolves to that
+IP address.
 
-The normal paradigm for Docker is not to allow the containers to access the host's network. That's generally
-appropriate, given Docker's goals to create a clean, isolated, and secure environment.
-However, we kinda know what we're doing here, and it's only for development purposes on our local development
-machines, so it's reasonable to set up a loopback address on the host that will allow the containers to
-reach the host network for the purposes listed above. (I know, there are less [hacky ways](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) to do this,
-and we need to clean up this part of the environment setup at some point. But this works on Mac OS where
-some of the simpler methods do not. NOTE: on non-Mac host OSes the command line comparable to
-the `ifconfig` command above may be different. Read your man pages or something.)
+Now search through the various config and source files in this repo where
+`host.docker.internal` appears and change them to `dockerhost`. Don't commit that
+change, since it's just a temporary change for your local development environment.
 
-The result will be a line is added to the `/etc/hosts` in the container that assigns the hostname `dockerhost`
-to that IP Address, and that's the address used by the Apache config, for example, for proxying some requests
-over to the webpack dev server running on `http://dockerhost:3030`.
+Here are some of the operations that require the container to talk back to the host:
 
-If you need to change which loopback IP address is used for some reason, it's configured in `docker-compose.yml`.
-
-(TODO: change configuration to use [`host.docker.internal`](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) for Mac OS and the equivalent for other host OSes)
+- PHP debugging port via remote xdebug
+- Webpack dev server port for React hot module reloading
+- Font Awesome GraphQL API (when running that service locally)
 
 ## 9. run `bin/setup`
 
@@ -203,11 +243,21 @@ By default, it will use the container named `com.fontawesome.wordpress-latest-de
 
 You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
 
-After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://localhost:8080](http://localhost:8080).
+After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://localhost:8765](http://localhost:8765).
 
-You can login to the admin dashboard at [http://localhost:8080/wp-admin](http://localhost:8080/wp-admin) with admin username and password as found in `.env`.
+You can login to the admin dashboard at [http://localhost:8765/wp-admin](http://localhost:8765/wp-admin) with admin username and password as found in `.env`.
 
-## 10. Install and/or Activate the Font Awesome plugin
+## 10. OPTIONAL: configure debugging
+
+```bash
+bin/configure-debugging
+```
+
+This will setup debugging configuration in `wp-config.php` inside the container
+and will also install several plugins to power the debug bar available from the
+upper right hand nav bar when logged into WordPress as admin.
+
+## 11. Install and/or Activate the Font Awesome plugin
 
 If you're running the `bin/dev` environment, you'll find in the admin dashboard that the
 Font Awesome is already installed, because the source code in this repo is mounted as a volume
@@ -219,7 +269,7 @@ If you're running the `bin/integration` environment, install via zip archive upl
 from the WordPress plugins directory. [See above](#development) for more details. 
 
 After activating the plugin you can access the Font Awesome admin page here:
-`http://localhost:8080/wp-admin/options-general.php?page=font-awesome`
+`http://localhost:8765/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
 
@@ -231,6 +281,12 @@ $ bin/phpunit
 
 This runs `phpunit` in the default docker container. It's just a docker wrapper around the normal `phpunit` command,
 so you can pass any normal `phpunit` command line arguments you might like.
+
+To run the loader tests, use this alternate test config:
+
+```bash
+$ bin/phpunit -c phpunit-loader.xml.dist
+```
 
 # Use WP-CLI within your Docker environment
 
@@ -318,18 +374,22 @@ $ bin/wp option delete font-awesome
 ## Releases Metadata Transient
 
 When the plugin retrieves releases metadata from `https://fontawesome.com/api/releases` it caches the results
-as a long-lived WordPress transient: `font-awesome-releases`. 
+as a long-lived WordPress transient: `font-awesome-releases`.
+
+(We use set_site_transient() for these, to support multi-site mode, so you have to
+use the `--network` switch on the following commands. Otherwise, it's like they
+aren't there at all.)
 
 Inspect it:
 
 ```bash
-$ bin/wp transient get font-awesome-releases
+$ bin/wp transient get font-awesome-releases --network
 ```
 
 Remove it:
 
 ```bash
-$ bin/wp transient delete font-awesome-releases
+$ bin/wp transient delete font-awesome-releases --network
 ```
 
 ## V3 Deprecation Warning
@@ -374,6 +434,13 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
  
   See also: [Run a Local Docs Server](#run-a-local-docs-server)
 
+  *WARNING*: look at the output from this docs command and make sure there are no
+  instances of parse errors. Also manually inspect the output in `docs/` to ensure
+  that the expected classes are documented there, especially the main class with API
+  documentation: `FontAwesome`.
+  
+  For reasons not yet understood, sometimes the phpdocumentor parser chokes.
+
 - `git add docs` to stage them for commit (and eventually commit them) 
 
 7. Build production admin app and WordPress distribution layout into `wp-dist` 
@@ -413,6 +480,7 @@ that was created in the previous step.
 - view the site: expect to see all of those integration plugins doing their thing with no missing icons
 - deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
 - ( If you know how to properly test with `plugin-sigma`--it's more complicated--go for it. )
+- verify that we're not overriding `window._` (lodash), `window.React` (or any other [relevant globals](https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/)). See also [this forum topic](https://wordpress.org/support/topic/lodash-overrides-window-_-underscore-js-variable/).
 
 9. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
 
@@ -526,7 +594,7 @@ $ svn ci -m 'Release 42.1.2'
 - `docs/`
 - `admin/build`
 - `font-awesome.php`
-- `includes/font-awesome.php`
+- `includes/class-fontawesome.php`
 - `admin/package.json`
 - `readme.txt`
 

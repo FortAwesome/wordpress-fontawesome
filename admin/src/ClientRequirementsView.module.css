@@ -1,7 +1,0 @@
-.client-requirements table {
-  width: unset;
-}
-
-.client-requirements th.conflicted, td.conflicted {
-  background-color: rgba(255, 172, 172, 0.25);
-}

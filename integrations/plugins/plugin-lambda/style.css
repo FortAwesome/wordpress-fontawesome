@@ -1,0 +1,17 @@
+.group-icon:before {
+    font-family: "FontAwesome";
+    content: '\f0c0';
+    color: red;
+}
+
+.facebook-icon:before {
+    font-family: "FontAwesome";
+    content: '\f09a';
+    color: red;
+}
+
+.hand-scissors-icon:before {
+    font-family: "FontAwesome";
+    content: '\f257';
+    color: red;
+}

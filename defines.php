@@ -1,23 +1,98 @@
 <?php
+/**
+ * Global constants.
+ */
 
-defined( 'FONTAWESOME_DIR_PATH' ) || define( 'FONTAWESOME_DIR_PATH', plugin_dir_path( __FILE__ ) );
-defined( 'FONTAWESOME_DIR_URL' ) || define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
-defined( 'FONTAWESOME_API_URL' ) || define( 'FONTAWESOME_API_URL', 'https://fontawesome.com' );
-defined( 'FONTAWESOME_ENV' ) || define( 'FONTAWESOME_ENV', getenv( 'FONTAWESOME_ENV' ) );
+if ( ! defined( 'FONTAWESOME_DIR_PATH' ) ) {
+	/**
+	 * Active Font Awesome plugin installation directory path.
+	 *
+	 * The result of `plugin_dir_path()` on the `defines.php` file for the actively
+	 * executing installation of the Font Awesome plugin.
+	 *
+	 * For example, if the example plugin under `integrations/plugins/plugin-sigma`
+	 * in this repo were installed, activated, and its copy of the Font Awesome
+	 * plugin were the one selected for execution, then the value of this
+	 * constant would be something like this:
+	 * `/var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/`
+	 *
+	 * However, suppose that a second copy of the Font Awesome plugin were installed
+	 * from the WordPress plugins directory, and that copy had a later semantic
+	 * version than the one bundled by plugin-sigma. In that case, the value
+	 * of this constant would look more like this:
+	 * `/var/www/html/wp-content/plugins/font-awesome/`
+	 *
+	 * @since 4.0.0
+	 */
+	define( 'FONTAWESOME_DIR_PATH', plugin_dir_path( __FILE__ ) );
+}
 
-// Find the vendor dir.
-if ( ! defined( 'FONTAWESOME_VENDOR_DIR' ) ) {
-	$matches = [];
-	if ( 1 === preg_match( '/^(.*)\/vendor\/.*?(?!vendor)$/', __DIR__, $matches ) ) {
-		define( 'FONTAWESOME_VENDOR_DIR', trailingslashit( $matches[1] ) . 'vendor' );
-	} else {
-		/*
-		 * This should never actually be called, because the above regex should always match in one of the valid
-		 * scenarios: either (a) we're being loaded directly as a WordPress plugin, or (b) we're being loaded
-		 * as a composer dependency out of some other plugin's vendor directory.
-		 * This fallback really is just another way of defining the vendor directory as if we were in scenario (a).
-		 * TODO: come back later and consider some better error handling
+if ( ! defined( 'FONTAWESOME_DIR_URL' ) ) {
+	/**
+	 * Active Font Awesome plugin installation directory URL.
+	 *
+	 * The result of `plugin_dir_url()` on the `defines.php` file for the actively
+	 * executing installation of the Font Awesome plugin.
+	 *
+	 * For example, if the example plugin under `integrations/plugins/plugin-sigma`
+	 * in this repo were installed, activated, and its copy of the Font Awesome
+	 * plugin were the one selected for execution, then the value of this
+	 * constant would be something like this:
+	 * `http://localhost:8765/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/`
+	 *
+	 * However, suppose that a second copy of the Font Awesome plugin were installed
+	 * from the WordPress plugins directory, and that copy had a later semantic
+	 * version than the one bundled by plugin-sigma. In that case, the value
+	 * of this constant would look more like this:
+	 * `http://localhost:8765/wp-content/plugins/font-awesome/`
+	 *
+	 * @since 4.0.0
+	*/
+	define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
+}
+
+if ( ! defined( 'FONTAWESOME_ENV' ) ) {
+	/**
+	 * @internal
+	 * @ignore
+	 */
+	define( 'FONTAWESOME_ENV', getenv( 'FONTAWESOME_ENV' ) );
+}
+
+if ( ! defined( 'FONTAWESOME_API_URL' ) ) {
+	if ( 'test' === FONTAWESOME_ENV ) {
+		/**
+		 * @internal
+		 * @ignore
 		 */
-		define( 'FONTAWESOME_VENDOR_DIR', trailingslashit( __DIR__ ) . '/vendor' );
+		define( 'FONTAWESOME_API_URL', 'no_network_in_test_env' );
+	} elseif ( 'development' === getenv( 'FONTAWESOME_ENV' ) && boolval( getenv( 'FONTAWESOME_API_URL' ) ) ) {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_API_URL', untrailingslashit( getenv( 'FONTAWESOME_API_URL' ) ) );
+	} else {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_API_URL', 'https://api.fontawesome.com' );
+	}
+}
+
+if ( ! defined( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) {
+	if ( 'development' === getenv( 'FONTAWESOME_ENV' ) && boolval( getenv( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) ) {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_KIT_LOADER_BASE_URL', untrailingslashit( getenv( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) );
+	} else {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_KIT_LOADER_BASE_URL', 'https://kit.fontawesome.com' );
 	}
 }

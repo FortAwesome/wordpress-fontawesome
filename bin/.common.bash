@@ -10,6 +10,7 @@ HOST_IMPORTS_DIR=$HOST_WP_DIR/$IMPORTS_REL_DIR
 HOST_UPLOADS_DIR=$HOST_WP_DIR/wp-content/$UPLOADS_REL_DIR
 SEEDS_DIR=$DIR/../seeds
 DEFAULT_CONTAINER_NAME=com.fontawesome.wordpress-latest-dev
+WP_CLI_CACHE_DIR=/tmp/.wp-cli/cache
 
 if [ ! -x "$DOCKER_COMPOSE" ]; then
   echo "ERROR: docker-compose not found. Make sure it's installed and available in your PATH."

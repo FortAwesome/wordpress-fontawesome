@@ -6,6 +6,8 @@
  * @noinspection PhpIncludeInspection
  */
 
+// phpcs:ignoreFile
+
 namespace FortAwesome;
 
 use \ReflectionException, \ReflectionProperty, \Exception;
@@ -38,9 +40,7 @@ function mock_singleton_method( $obj, $type, $method, callable $init ) {
 		$init( $mock->method( $method ) );
 		return $mock;
 	} catch ( ReflectionException $e ) {
-		// phpcs:disable
-		error_log( 'Reflection error: ' . $e );
-		// phpcs:enable
+		print( 'Reflection error: ' . $e );
 		return null;
 	}
 }
@@ -76,6 +76,8 @@ function end_error_log_capture( &$state ) {
 }
 
 function reset_db() {
+	wp_cache_delete ( 'alloptions', 'options' );
+
 	if ( ! delete_option( FontAwesome::OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
 		if ( get_option( FontAwesome::OPTIONS_KEY ) ) {
@@ -83,9 +85,16 @@ function reset_db() {
 		}
 	}
 
-	if ( ! delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+	if ( ! delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+		if ( get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) ) {
+			throw new Exception( 'Unsuccessful clearing the Font Awesome option key in the db.' );
+		}
+	}
+
+	if ( ! delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+		// false could mean either that it doesn't exist, or that the delete wasn't successful.
+		if ( get_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
 			throw new Exception( 'Unsuccessful clearing the Releases transient.' );
 		}
 	}

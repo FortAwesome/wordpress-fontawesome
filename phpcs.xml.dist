@@ -6,17 +6,18 @@
 	  <exclude name="Squiz.Commenting.FileComment" />
 	  <exclude name="Squiz.Commenting.VariableComment" />
 	  <exclude name="Squiz.Commenting.FunctionComment" />
+		<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged" />
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents" />
+		<exclude name="Generic.Commenting.DocComment.MissingShort" />
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber" />
 	</rule>
 
-	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>
 	<file>includes</file>
 	<file>tests</file>
-	<!-- TODO: cleanup the integrations and include them in code sniffing. -->
-	<!--
-	<file>integrations</file>
-	-->
 	<file>font-awesome.php</file>
+	<file>font-awesome-init.php</file>
 	<file>index.php</file>
 	<file>v3shims.php</file>
 	<file>defines.php</file>
