@@ -47,6 +47,10 @@ function handleRequest(req) {
     return Promise.reject( responseFailureInterceptor( { request: response } ) )
   }
 
+  if ( response instanceof Error ) {
+    return Promise.reject( responseFailureInterceptor( { message: response.message } ) )
+  }
+
   const status = get( response, 'status' )
 
   // TODO: use axios validateStatus to determine resolve or reject, instead

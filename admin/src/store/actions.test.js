@@ -371,4 +371,43 @@ describe('submitPendingOptions and interceptors', () => {
       })
     })
   })
+
+  describe('when axios request fails for some other reason', () => {
+    beforeEach(() => {
+      respondWith({
+        url: `${apiUrl}/config`,
+        method: 'PUT',
+        response: new Error('some axios error')
+      })
+    })
+
+    test('failure is reported to console and failure with uiMessage is dispatched to store', done => {
+      store.dispatch(submitPendingOptions()).then(() => {
+        expect(reportRequestError).toHaveBeenCalledTimes(1)
+        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+          error: {
+            errors: expect.objectContaining({
+              fontawesome_request_failed: [ expect.stringContaining('server failed') ]
+            }),
+            error_data: {
+              fontawesome_request_failed: {
+                failedRequestMessage: 'some axios error'
+              }
+            }
+          },
+        }))
+        expect(store.getActions()).toEqual(expect.arrayContaining([
+          expect.objectContaining({
+            type: 'OPTIONS_FORM_SUBMIT_START'
+          }),
+          expect.objectContaining({
+            type: 'OPTIONS_FORM_SUBMIT_END',
+            success: false,
+            message: MOCK_UI_MESSAGE
+          })
+        ]))
+        done()
+      })
+    })
+  })
 })
