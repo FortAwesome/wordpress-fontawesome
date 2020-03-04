@@ -3,6 +3,7 @@ import set from 'lodash/set'
 
 const DEFAULT_INTERCEPTOR = thing => thing
 const DEFAULT_PUT = ( url, _data, _config ) => handleRequest( { url, method: 'PUT' } )
+const DEFAULT_POST = ( url, _data, _config ) => handleRequest( { url, method: 'POST' } )
 let responses = {}
 let responseSuccessInterceptor = DEFAULT_INTERCEPTOR
 let responseFailureInterceptor = DEFAULT_INTERCEPTOR
@@ -16,7 +17,8 @@ const axios = {
       }
     }
   },
-  put: DEFAULT_PUT
+  put: DEFAULT_PUT,
+  post: DEFAULT_POST
 }
 
 export function respondWith ({ url, method = "GET", response }) {
