@@ -11,7 +11,7 @@ const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)
 const fakeNonce = 'fakeNonce'
 
-describe('submitPendingOptions', () => {
+describe('submitPendingOptions and interceptors', () => {
   let store = null
   let pendingOptions = {
     technology: 'svg'
@@ -330,10 +330,6 @@ describe('submitPendingOptions', () => {
             done()
           })
         })
-    })
-
-    describe('when confirmation header is absent', () => {
-
     })
   })
 })
