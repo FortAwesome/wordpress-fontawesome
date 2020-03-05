@@ -478,18 +478,31 @@ Install the Font Awesome plugin from the admin dashboard by uploading the `font-
 that was created in the previous step.
 
 - activate and deactivate the plugin: expect no errors
-- activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
-- expect to see all of their preferences listed on the Troubleshoot page
-  - Especially, look for `plugin-gamma` and `plugin-delta` outputs in all three contexts: front end, admin, login
-- run the conflict scanner and then expect to see the versions from `plugin-gamma` and `plugin-delta` to be listed
-    on detected conflicts in the Troubleshoot tab
-- block plugin-gamma's version (css) and expect it to be blocked, but not plugin-delta's version (js)
-- delete the blocked plugin-gamma version. expect that to work, and then see its css load again after visiting another page.
-- change settings on the Use CDN settings tab to enable Pro. Theme alpha should show pro icon(s).
-- change change settings on the Use CDN settings table to use SVG technology. Expect to see a preference warning from `plugin-beta`. 
-    - switch to the Troublehsoot tab and expect to see the `plugin-beta` warning indicated on the table.
-- view the site: expect to see all of those integration plugins doing their thing with no missing icons
-- deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
+- with Use a Kit settings
+    - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
+    - expect to see all of their preferences listed on the Troubleshoot page
+      - Especially, look for `plugin-gamma` and `plugin-delta` outputs in all three contexts: front end, admin, login
+    - run the conflict scanner and then expect to see the versions from `plugin-gamma` and `plugin-delta` to be listed
+        on detected conflicts in the Troubleshoot tab
+    - block plugin-gamma's version (css) and expect it to be blocked, but not plugin-delta's version (js)
+    - delete the blocked plugin-gamma version. expect that to work, and then see its css load again after visiting another page.
+    - change settings on the Use CDN settings tab to enable Pro. Theme alpha should show pro icon(s).
+    - change change settings on the Use CDN settings table to use SVG technology. Expect to see a preference warning from `plugin-beta`. 
+        - switch to the Troublehsoot tab and expect to see the `plugin-beta` warning indicated on the table.
+    - view the site: expect to see all of those integration plugins doing their thing with no missing icons
+    - deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
+- with Use a Kit
+    - Add a real API Token from a real fontawesome.com account
+    - Select a kit that uses svg tech
+    - Make sure you see a preference conflict with beta-plugin (it wants webfont)
+    - Change the kit's settings on fontawesome.come (webfont to svg)
+    - Refresh kit settings on the plugin settings page
+        - expect to see the kit settings to be updated and the
+          conflict with plugin-beta to be resolved
+    - Remove all detected conflicts on the Troubleshoot tab
+    - Re-run the conflict detector (plugin-gamma and plugin-delta should both be active)
+    - make sure the conflict scanner detects the same conflicts
+      now when using a kit as it did when we used CDN.
 - ( If you know how to properly test with `plugin-sigma`--it's more complicated--go for it. )
 - verify that we're not overriding `window._` (lodash), `window.React` (or any other [relevant globals](https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/)). See also [this forum topic](https://wordpress.org/support/topic/lodash-overrides-window-_-underscore-js-variable/).
 
