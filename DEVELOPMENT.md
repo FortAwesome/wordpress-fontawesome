@@ -478,6 +478,10 @@ Install the Font Awesome plugin from the admin dashboard by uploading the `font-
 that was created in the previous step.
 
 - activate and deactivate the plugin: expect no errors
+    - use wp-cli to ensure that the `font-awesome-releases` _site_ transient has been deleted
+    - the `font-awesome` option should remain
+- delete/uninstall: expect no errors
+    - use wp-cli to ensure that the `font-awesome` option has been deleted
 - with Use a Kit settings
     - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
     - expect to see all of their preferences listed on the Troubleshoot page
