@@ -37,7 +37,7 @@ function preprocessResponse( response ) {
 
   const data = get(response, 'data', null)
 
-  const foundUnexpectedData = 'string' === typeof data
+  const foundUnexpectedData = 'string' === typeof data && size(data) > 0
 
   const sliced = foundUnexpectedData
     ? sliceJson( data )
