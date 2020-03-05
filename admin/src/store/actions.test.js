@@ -302,71 +302,6 @@ describe('submitPendingOptions and interceptors', () => {
   })
 })
 
-describe('submitPendingUnregisteredClientDeletions', () => {
-  // when deleteList is empty, return early doing nothing
-
-  // when falsePositive
-  // when normal success
-  // when catch failure
-})
-
-describe('submitPendingBlocklist', () => {
-  // when blocklist is falsy, return early doing nothing
-
-  // when falsePositive
-  // when normal success
-  // when catch failure
-})
-
-describe('checkPreferenceConflicts', () => {
-  // when falsePositive
-  // when normal success
-  // when catch failure
-})
-
-describe('queryKits', () => {
-  // when falsePositive
-  // when query succeeds but graphql response does not have "me" (bad API auth)
-
-  // when query succeeds and there are no changes to kits
-  // when query succeeds and there are kit changes
-  //   - subsequent query has false positive
-  //   - subsequent query has normal success
-  //   - subsequent query fails
-
-})
-
-describe('updateApiToken', () => {
-  // when falsePositive
-  // when successful
-  //    expect to run queryKits
-  // when fails
-})
-
-describe('reportDetectedConflicts', () => {
-  // when not showing conflict detector, return early
-  // when size(nodesTested) === 0 , dispatch none found
-  // when size > 0
-    // when falsePositive
-    // when normal success
-    // when normal failure
-
-  //
-})
-
-describe('snoozeV3DeprecationWarning', () => {
-  // when falsePositive
-  // when normal success
-  // when normal failure
-})
-
-describe('setConflictDetectionScanner', () => {
-  // when enable is true/false
-  // when falsePositive
-  // when normal success
-  // when normal failure
-})
-
 describe('some action failure cases', () => {
   const STATE_TECH_CHANGE = {
     options: {
@@ -616,4 +551,53 @@ describe('some action failure cases', () => {
       })
     })
   })
+})
+
+describe('submitPendingUnregisteredClientDeletions', () => {
+  test.todo('when deleteList is empty return early doing nothing')
+  test.todo('success when deleteList is non-empty')
+})
+
+describe('submitPendingBlocklist', () => {
+  test.todo('when blocklist is falsy return early doing nothing')
+  test.todo('success when blocklist is non-empty')
+})
+
+describe('checkPreferenceConflicts', () => {
+  test.todo('success')
+})
+
+describe('queryKits', () => {
+  describe('when kits query succeeds', () => {
+    describe('when graphql response has null me field', () => {
+      test.todo('reports error when graphql response has null me field')
+    })
+    describe('when there are no changes to the active kit', () => {
+      test.todo('returns early instead of saving kit changes')
+    })
+    describe('when there are changes to the active kit', () => {
+      test.todo('success')
+      test.todo('false positive reports error')
+      test.todo('normal failure reports error')
+    })
+  })
+})
+
+describe('updateApiToken', () => {
+  test.todo('runs queryKits after successfully saving apiToken')
+})
+
+describe('reportDetectedConflicts', () => {
+  test.todo('return early when not showing conflict detector')
+  test.todo('dispatches NONE_FOUND when no conflicts are reported')
+  test.todo('success')
+})
+
+describe('snoozeV3DeprecationWarning', () => {
+  test.todo('success')
+})
+
+describe('setConflictDetectionScanner', () => {
+  test.todo('success when enabling')
+  test.todo('success when disabling')
 })
