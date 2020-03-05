@@ -314,7 +314,23 @@ export function queryKits() {
 
     dispatch({ type: 'KITS_QUERY_START' })
 
-    axios.post(
+    const handleKitsQueryError = ({ uiMessage }) => {
+      dispatch({
+        type: 'KITS_QUERY_END',
+        success: false,
+        message: uiMessage || __( 'Failed to fetch kits', 'font-awesome' )
+      })
+    }
+
+    const handleKitUpdateError = ({ uiMessage }) => {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: uiMessage || __( 'Couldn\'t update latest kit settings', 'font-awesome' )
+      })
+    }
+
+    return axios.post(
       `${apiUrl}/api`,
       `query {
         me {
@@ -339,6 +355,8 @@ export function queryKits() {
         }
       }
     ).then(response => {
+      if ( response.falsePositive ) return handleError(response)
+
       const data = get(response, 'data.data')
 
       // We may receive errors back with a 200 response, such as when
@@ -350,18 +368,11 @@ export function queryKits() {
           success: true
         })
       } else {
-        const message = reportRequestError({
-          response,
-          uiMessageDefault: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
-        })
-
-        dispatch({
+        return dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message
+          message: message || __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
         })
-
-        return
       }
 
       // If we didn't start out with a saved kitToken, we're done.
@@ -402,7 +413,7 @@ export function queryKits() {
 
       dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-      axios.put(
+      return axios.put(
         `${apiUrl}/config`,
         { 
           options: {
@@ -415,7 +426,9 @@ export function queryKits() {
           }
         }
       ).then(response => {
-        const { data } = response
+        const { data, falsePositive } = response
+
+        if ( falsePositive ) return handleKitUpdateError(response)
 
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
@@ -423,30 +436,8 @@ export function queryKits() {
           success: true,
           message: __( 'Kit changes saved', 'font-awesome' )
         })
-      }).catch(error => {
-        const message = reportRequestError({
-          response: error,
-          uiMessageDefault: __( 'Couldn\'t update latest kit settings', 'font-awesome' )
-        })
-
-        dispatch({
-          type: 'OPTIONS_FORM_SUBMIT_END',
-          success: false,
-          message
-        })
-      })
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error,
-        uiMessageDefault: __( 'Failed to fetch kits', 'font-awesome' )
-      })
-
-      dispatch({
-        type: 'KITS_QUERY_END',
-        success: false,
-        message
-      })
-    })
+      }).catch(handleKitUpdateError)
+    }).catch(handleKitsQueryError)
   }
 }
 

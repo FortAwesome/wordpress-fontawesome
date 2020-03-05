@@ -379,17 +379,19 @@ describe('some action failure cases', () => {
   }
 
   const cases = [
-    /*
     {
       action: 'queryKits',
-      state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
+      state: {
+        options: {
+          kitToken: 'deadbeef'
+        }
+      },
+      route: 'api',
+      method: 'POST',
+      startAction: 'KITS_QUERY_START',
+      endAction: 'KITS_QUERY_END',
       params: {}
     },
-    */
     {
       action: 'updateApiToken',
       state: {},
