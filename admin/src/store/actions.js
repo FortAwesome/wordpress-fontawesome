@@ -170,7 +170,15 @@ export function submitPendingUnregisteredClientDeletions() {
 
     dispatch({ type: 'DELETE_UNREGISTERED_CLIENTS_START' })
 
-    axios.delete(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'DELETE_UNREGISTERED_CLIENTS_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+      })
+    }
+
+    return axios.delete(
       `${apiUrl}/conflict-detection/conflicts`,
       {
         data: deleteList,
@@ -179,22 +187,19 @@ export function submitPendingUnregisteredClientDeletions() {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      dispatch({
-        type: 'DELETE_UNREGISTERED_CLIENTS_END',
-        success: true,
-        data: 204 === status ? null : data,
-        message: ''
-      })
-    }).catch(error => {
-      const { uiMessage } = error
+      const { status, data, falsePositive } = response
 
-      dispatch({
-        type: 'DELETE_UNREGISTERED_CLIENTS_END',
-        success: false,
-        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
-      })
-    })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'DELETE_UNREGISTERED_CLIENTS_END',
+          success: true,
+          data: 204 === status ? null : data,
+          message: ''
+        })
+      }
+    }).catch(handleError)
   }
 }
 

@@ -381,15 +381,6 @@ describe('some action failure cases', () => {
   const cases = [
     /*
     {
-      action: 'submitPendingUnregisteredClientDeletions',
-      state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
-      params: {}
-    },
-    {
       action: 'submitPendingBlocklist',
       state: {},
       route: '',
@@ -417,6 +408,19 @@ describe('some action failure cases', () => {
       params: {}
     },
     */
+    {
+      action: 'submitPendingUnregisteredClientDeletions',
+      state: {
+        unregisteredClientsDeletionStatus: {
+          pending: [ 'abc123' ]
+        }
+      },
+      route: 'conflict-detection/conflicts',
+      method: 'DELETE',
+      startAction: 'DELETE_UNREGISTERED_CLIENTS_START',
+      endAction: 'DELETE_UNREGISTERED_CLIENTS_END',
+      params: {}
+    },
     {
       action: 'reportDetectedConflicts',
       state: {
