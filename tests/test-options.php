@@ -87,6 +87,49 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
+	public function test_options_requiring_conversion() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array (
+			'adminClientLoadSpec' =>
+				array (
+					'name' => 'user',
+					'method' => 'webfont',
+					'v4shim' => 'require',
+					'pseudoElements' => 'require',
+					// clientVersion was a previous option
+					'clientVersion' => 1554559421,
+				),
+			'version' => '5.8.1',
+			'usePro' => true,
+			'removeUnregisteredClients' => true,
+			'lockedLoadSpec' =>
+				array (
+					'method' => 'svg',
+					'v4shim' => true,
+					'pseudoElements' => true,
+					'clients' =>
+						array (
+							'user' => 1554559421,
+						),
+				),
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
+			),
+			fa()->options()
+		);
+	}
+
 	public function test_convert_options_coerce_pseudo_elements_true_for_webfont() {
 		FontAwesome_Activator::activate();
 
