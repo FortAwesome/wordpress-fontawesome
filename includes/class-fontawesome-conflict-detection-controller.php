@@ -293,7 +293,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new FontAwesome_REST_Response( $new_value, 200 );
+					return new FontAwesome_REST_Response( array( 'detectConflictsUntil' => $new_value ), 200 );
 				} else {
 					throw new ConflictDetectionStorageException();
 				}

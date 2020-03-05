@@ -358,7 +358,7 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 
 		$this->assertEquals(
 			$later,
-			$response->get_data()
+			$response->get_data()['detectConflictsUntil']
 		);
 
 		$this->assertTrue( fa()->detecting_conflicts() );

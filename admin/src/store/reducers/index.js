@@ -259,8 +259,8 @@ function pendingOptionConflicts(state = {}, action = {}) {
 }
 
 function detectConflictsUntil( state = 0, action = {} ) {
-  const { type, data = 0 } = action
-  const intValue = parseInt( data )
+  const { type, data } = action
+  const intValue = parseInt( get(data, 'detectConflictsUntil') )
 
   switch(type) {
     case 'ENABLE_CONFLICT_DETECTION_SCANNER_END':
