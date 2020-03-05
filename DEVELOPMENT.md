@@ -482,7 +482,7 @@ that was created in the previous step.
     - the `font-awesome` option should remain
 - delete/uninstall: expect no errors
     - use wp-cli to ensure that the `font-awesome` option has been deleted
-- with Use a Kit settings
+- with Use CDN settings
     - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
     - expect to see all of their preferences listed on the Troubleshoot page
       - Especially, look for `plugin-gamma` and `plugin-delta` outputs in all three contexts: front end, admin, login
@@ -495,6 +495,7 @@ that was created in the previous step.
         - switch to the Troublehsoot tab and expect to see the `plugin-beta` warning indicated on the table.
     - view the site: expect to see all of those integration plugins doing their thing with no missing icons
     - deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
+- deactivate `plugin-gamma` and try several of those things again (without its garbage data in the API responses)
 - with Use a Kit
     - Add a real API Token from a real fontawesome.com account
     - Select a kit that uses svg tech
