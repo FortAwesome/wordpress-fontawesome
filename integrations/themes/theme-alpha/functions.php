@@ -48,10 +48,10 @@ add_action('font_awesome_enqueued', function() {
 }, 10, 3);
 
 function theme_alpha_fa_classes(){
-  $fa = fa();
+  fa();
   $class_list = [ 'theme-alpha' ];
 
-  $fa->using_pro()
+  fa()->pro()
     ? array_push($class_list, 'fa-license-pro')
     : array_push($class_list, 'fa-license-free');
 
