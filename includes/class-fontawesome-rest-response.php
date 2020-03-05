@@ -22,6 +22,12 @@ class FontAwesome_REST_Response extends WP_REST_Response {
 	 */
 	const CONFIRMATION_HEADER = 'FontAwesome-Confirmation';
 
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	public function __construct( $data = null, $status = 200, $headers = array() ) {
 		return parent::__construct(
 			$data,
