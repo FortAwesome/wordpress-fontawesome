@@ -30,6 +30,8 @@ function preprocessResponse( response ) {
 
   if ( 204 === response.status && '' !== response.data ) {
       reportRequestError({ error: null, confirmed, trimmed: response.data, expectEmpty: true })
+      // clean it up
+      response.data = {}
       return response
   } 
 
@@ -45,6 +47,8 @@ function preprocessResponse( response ) {
   if ( foundUnexpectedData) {
     if ( null === sliced ) {
       reportRequestError({ error: null, confirmed, trimmed: data })
+      // clean it up
+      response.data = {}
       return response
     } else {
       response.data = get(sliced, 'parsed')
@@ -626,7 +630,12 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
           dispatch({
             type: 'CONFLICT_DETECTION_SUBMIT_END',
             success: true,
-            data: 204 === status ? null : data
+            /**
+             * If get back no data here, that can only mean that a previous
+             * response with garbage in it had an erroneous HTTP 200 status
+             * on it, but no parseable JSON, which is equivalent to a 204.
+             */
+            data: ( 204 === status || 0 === size(data) ) ? null : data
           })
         }
       })
