@@ -2,6 +2,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
 use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
 
@@ -169,13 +170,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				return new WP_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 
@@ -244,13 +245,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				return new WP_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 
@@ -301,13 +302,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				return new WP_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 
@@ -378,13 +379,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				return new WP_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
-			return fa_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
-			return fa_400( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
 		} catch ( Exception $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		} catch ( Error $e ) {
-			return unknown_error_500( $e );
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
 		}
 	}
 
