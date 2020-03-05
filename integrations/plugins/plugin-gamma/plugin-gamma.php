@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Gamma
  * Plugin URI:        https://fontawesome.com/
- * Description:       Unregistered Client: tries to enqueue its own v4.7.0 webfont version from cdn.jsdelivr.net. On the front end, it prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath". It adds the same output on the login page, and in the footer of admin pages.
+ * Description:       Unregistered Client: tries to enqueue its own v4.7.0 webfont version from cdn.jsdelivr.net. On the front end, it prepends a block before each blog post that displays an icon with "fa fa-bathtub", which is a version 4 specification that the v4shim should translate to "fas fa-bath". It adds the same output on the login page, and in the footer of admin pages. It also emits rogue output that might break our REST API responses, like a buggy plugin might do.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
