@@ -447,8 +447,12 @@ export function queryKits() {
 
       if( options.technology === 'svg' && currentKitRefreshed.technologySelected !== 'svg' ) {
         optionsUpdate.technology = 'webfont'
+        // pseudoElements must always be true for webfont
+        optionsUpdate.pseudoElements = true
       } else if( options.technology !== 'svg' && currentKitRefreshed.technologySelected === 'svg' ) {
         optionsUpdate.technology = 'svg'
+        // pseudoElements must always be false for svg when loaded in a kit
+        optionsUpdate.pseudoElements = false
       }
 
       if( options.version !== currentKitRefreshed.version) {
