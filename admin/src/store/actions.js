@@ -247,6 +247,14 @@ export function checkPreferenceConflicts() {
     dispatch({type: 'PREFERENCE_CHECK_START'})
     const { apiNonce, apiUrl, options, pendingOptions } = getState()
 
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'PREFERENCE_CHECK_END',
+        success: false,
+        message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
+      })
+    }
+
     return axios.post(
       `${apiUrl}/preference-check`,
       { ...options, ...pendingOptions },
@@ -256,14 +264,10 @@ export function checkPreferenceConflicts() {
         }
       }
     ).then(response => {
-      const { data, falsePositive, uiMessage } = response
+      const { data, falsePositive } = response
 
       if( falsePositive ) {
-        dispatch({
-          type: 'PREFERENCE_CHECK_END',
-          success: false,
-          message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
-        })
+        handleError(response)
       } else {
         dispatch({
           type: 'PREFERENCE_CHECK_END',
@@ -272,15 +276,7 @@ export function checkPreferenceConflicts() {
           detectedConflicts: data
         })
       }
-    }).catch(error => {
-      const { uiMessage } = error
-
-      dispatch({
-        type: 'PREFERENCE_CHECK_END',
-        success: false,
-        message: uiMessage || COULD_NOT_CHECK_PREFERENCES_MESSAGE
-      })
-    })
+    }).catch(handleError)
   }
 }
 
@@ -450,6 +446,14 @@ export function submitPendingOptions() {
 
     dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE 
+      })
+    }
+
     return axios.put(
       `${apiUrl}/config`,
       { options: { ...options, ...pendingOptions }},
@@ -459,14 +463,10 @@ export function submitPendingOptions() {
         }
       }
     ).then(response => {
-      const { data, falsePositive, uiMessage } = response
+      const { data, falsePositive } = response
 
       if ( falsePositive ) {
-        dispatch({
-          type: 'OPTIONS_FORM_SUBMIT_END',
-          success: false,
-          message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE 
-        })
+        handleError(response)
       } else {
         dispatch({
           type: 'OPTIONS_FORM_SUBMIT_END',
@@ -475,15 +475,7 @@ export function submitPendingOptions() {
           message: __( 'Changes saved', 'font-awesome' )
         })
       }
-    }).catch(error => {
-      const { uiMessage } = error
-
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        success: false,
-        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
-      })
-    })
+    }).catch(handleError)
   }
 }
 
@@ -600,6 +592,14 @@ export function snoozeV3DeprecationWarning() {
 
     dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_START' })
 
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'SNOOZE_V3DEPRECATION_WARNING_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
+      })
+    }
+
     return axios.put(
       `${apiUrl}/v3deprecation`,
       { snooze: true },
@@ -610,14 +610,10 @@ export function snoozeV3DeprecationWarning() {
       }
     )
     .then(response => {
-      const { falsePositive, uiMessage } = response
+      const { falsePositive } = response
 
       if ( falsePositive ) {
-        dispatch({
-          type: 'SNOOZE_V3DEPRECATION_WARNING_END',
-          success: false,
-          message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
-        })
+        handleError(response)
       } else {
         dispatch({
           type: 'SNOOZE_V3DEPRECATION_WARNING_END',
@@ -627,15 +623,7 @@ export function snoozeV3DeprecationWarning() {
         })
       }
     })
-    .catch(error => {
-      const { uiMessage } = error
-
-      dispatch({
-        type: 'SNOOZE_V3DEPRECATION_WARNING_END',
-        success: false,
-        message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
-      })
-    })
+    .catch(handleError)
   }
 }
 
@@ -660,6 +648,14 @@ export function setConflictDetectionScanner({ enable = true }) {
 
     dispatch({type: actionStartType})
 
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: actionEndType,
+        success: false,
+        message: uiMessage || COULD_NOT_START_SCANNER_MESSAGE
+      })
+    }
+
     return axios.put(
       `${apiUrl}/conflict-detection/until`,
       enable
@@ -671,14 +667,10 @@ export function setConflictDetectionScanner({ enable = true }) {
         }
       }
     ).then(response => {
-      const { status, data, falsePositive, uiMessage } = response
+      const { status, data, falsePositive } = response
 
       if ( falsePositive ) {
-        dispatch({
-          type: actionEndType,
-          success: false,
-          message: uiMessage || COULD_NOT_START_SCANNER_MESSAGE
-        })
+        handleError(response)
       } else {
         dispatch({
           type: actionEndType,
@@ -686,14 +678,6 @@ export function setConflictDetectionScanner({ enable = true }) {
           success: true
         })
       }
-    }).catch(error => {
-      const { uiMessage } = error
-
-      dispatch({
-        type: actionEndType,
-        success: false,
-        message: uiMessage || COULD_NOT_START_SCANNER_MESSAGE
-      })
-    })
+    }).catch(handleError)
   }
 }
