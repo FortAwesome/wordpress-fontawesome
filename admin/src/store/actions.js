@@ -219,6 +219,14 @@ export function submitPendingBlocklist() {
 
     dispatch({type: 'BLOCKLIST_UPDATE_START'})
 
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'BLOCKLIST_UPDATE_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+      })
+    }
+
     return axios.put(
       `${apiUrl}/conflict-detection/conflicts/blocklist`,
       blocklist,
@@ -228,22 +236,19 @@ export function submitPendingBlocklist() {
         }
       }
     ).then(response => {
-      const { status, data } = response
-      dispatch({
-        type: 'BLOCKLIST_UPDATE_END',
-        success: true,
-        data: 204 === status ? null : data,
-        message: ''
-      })
-    }).catch(error => {
-      const { uiMessage } = error
+      const { status, data, falsePositive } = response
 
-      dispatch({
-        type: 'BLOCKLIST_UPDATE_END',
-        success: false,
-        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
-      })
-    })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'BLOCKLIST_UPDATE_END',
+          success: true,
+          data: 204 === status ? null : data,
+          message: ''
+        })
+      }
+    }).catch(handleError)
   }
 }
 

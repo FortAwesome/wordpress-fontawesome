@@ -381,15 +381,6 @@ describe('some action failure cases', () => {
   const cases = [
     /*
     {
-      action: 'submitPendingBlocklist',
-      state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
-      params: {}
-    },
-    {
       action: 'queryKits',
       state: {},
       route: '',
@@ -408,6 +399,19 @@ describe('some action failure cases', () => {
       params: {}
     },
     */
+    {
+      action: 'submitPendingBlocklist',
+      state: {
+        blocklistUpdateStatus: {
+          pending: [ 'abc123' ]
+        }
+      },
+      route: 'conflict-detection/conflicts/blocklist',
+      method: 'PUT',
+      startAction: 'BLOCKLIST_UPDATE_START',
+      endAction: 'BLOCKLIST_UPDATE_END',
+      params: {}
+    },
     {
       action: 'submitPendingUnregisteredClientDeletions',
       state: {
