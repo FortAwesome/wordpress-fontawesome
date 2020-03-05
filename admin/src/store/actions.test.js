@@ -389,16 +389,19 @@ describe('some action failure cases', () => {
       endAction: '',
       params: {}
     },
+    */
     {
       action: 'updateApiToken',
       state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
-      params: {}
+      route: 'config',
+      method: 'PUT',
+      startAction: 'OPTIONS_FORM_SUBMIT_START',
+      endAction: 'OPTIONS_FORM_SUBMIT_END',
+      params: {
+        apiToken: 'xyz456',
+        runQueryKits: false 
+      }
     },
-    */
     {
       action: 'submitPendingBlocklist',
       state: {

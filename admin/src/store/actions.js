@@ -495,7 +495,15 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
 
     dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-    axios.put(
+    const handleError = ({ uiMessage }) => {
+      dispatch({
+        type: 'OPTIONS_FORM_SUBMIT_END',
+        success: false,
+        message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+      })
+    }
+
+    return axios.put(
       `${apiUrl}/config`,
       { options: { ...options, apiToken }},
       {
@@ -504,29 +512,23 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
         }
       }
     ).then(response => {
-      const { data } = response
+      const { data, falsePositive } = response
 
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        data,
-        success: true,
-        message: __( 'API Token saved', 'font-awesome' )
-      })
+      if ( falsePositive ) {
+        handleError(response)
+      } else {
+        dispatch({
+          type: 'OPTIONS_FORM_SUBMIT_END',
+          data,
+          success: true,
+          message: __( 'API Token saved', 'font-awesome' )
+        })
 
-      if( runQueryKits ) {
-        dispatch(queryKits())
+        if( runQueryKits ) {
+          return dispatch(queryKits())
+        }
       }
-    }).catch(error => {
-      const message = reportRequestError({
-        response: error
-      })
-
-      dispatch({
-        type: 'OPTIONS_FORM_SUBMIT_END',
-        success: false,
-        message
-      })
-    })
+    }).catch(handleError)
   }
 }
 
