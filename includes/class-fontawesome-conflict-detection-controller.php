@@ -4,7 +4,7 @@ namespace FortAwesome;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+use \WP_REST_Controller, \WP_Error, \Error, \Exception;
 
 /**
  * REST Controller for managing data on the FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY.
@@ -123,13 +123,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 * returns an HTTP 404 status.
 	 *
 	 * @param WP_REST_Request $request the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	public function report_conflicts( $request ) {
 		try {
 			if ( ! fa()->detecting_conflicts() ) {
-				return new WP_REST_Response( null, 404 );
+				return new FontAwesome_REST_Response( null, 404 );
 			}
 
 			$item = $this->prepare_unregistered_clients_for_database( $request );
@@ -161,13 +161,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( $new_option_unregistered_clients, 200 );
+					return new FontAwesome_REST_Response( $new_option_unregistered_clients, 200 );
 				} else {
 					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
-				return new WP_REST_Response( null, 204 );
+				return new FontAwesome_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
@@ -193,7 +193,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 * returns an HTTP 404 status.
 	 *
 	 * @param WP_REST_Request $request the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	public function delete_conflicts( $request ) {
@@ -236,13 +236,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( $new_option_unregistered_clients, 200 );
+					return new FontAwesome_REST_Response( $new_option_unregistered_clients, 200 );
 				} else {
 					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
-				return new WP_REST_Response( null, 204 );
+				return new FontAwesome_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
@@ -261,7 +261,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	 * @throws ConflictDetectionSchemaException
 	 * @throws ConflictDetectionStorageException
 	 * @param WP_REST_Request $request the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function update_detect_conflicts_until( $request ) {
 		try {
@@ -293,13 +293,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( $new_value, 200 );
+					return new FontAwesome_REST_Response( $new_value, 200 );
 				} else {
 					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
-				return new WP_REST_Response( null, 204 );
+				return new FontAwesome_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
@@ -370,13 +370,13 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				);
 
 				if ( update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $new_option_value ) ) {
-					return new WP_REST_Response( fa()->blocklist(), 200 );
+					return new FontAwesome_REST_Response( fa()->blocklist(), 200 );
 				} else {
 					throw new ConflictDetectionStorageException();
 				}
 			} else {
 				// No change.
-				return new WP_REST_Response( null, 204 );
+				return new FontAwesome_REST_Response( null, 204 );
 			}
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );

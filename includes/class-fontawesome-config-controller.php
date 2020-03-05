@@ -10,7 +10,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Exception;
+use \WP_REST_Controller, \WP_Error, \Exception;
 
 /**
  * Controller class for REST endpoint
@@ -93,7 +93,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 	 * Update the singleton resource.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function update_item( $request ) {
 		try {

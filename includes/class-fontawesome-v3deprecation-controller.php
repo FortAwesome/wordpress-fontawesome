@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
-use \WP_REST_Controller, \WP_REST_Response, \WP_Error, \Error, \Exception;
+use \WP_REST_Controller, \WP_Error, \Error, \Exception;
 
 /**
  * Controller class for REST endpoint
@@ -86,13 +86,13 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function get_item( $request ) {
 		try {
 			$data = $this->build_item();
 
-			return new WP_REST_Response( $data, 200 );
+			return new FontAwesome_REST_Response( $data, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
@@ -112,7 +112,7 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 * @param WP_REST_Request $request Full data about the request.
-	 * @return WP_Error|WP_REST_Response
+	 * @return FontAwesome_REST_Response
 	 */
 	public function update_item( $request ) {
 		try {
@@ -124,7 +124,7 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 
 			$return_data = $this->build_item( fa() );
 
-			return new WP_REST_Response( $return_data, 200 );
+			return new FontAwesome_REST_Response( $return_data, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {
