@@ -36,7 +36,7 @@ function build_wp_error( $e, $code ) {
 			$code,
 			$e->getMessage(),
 			array(
-				'trace'  => $e->getTraceAsString(),
+				'trace' => $e->getTraceAsString(),
 			)
 		);
 
@@ -71,7 +71,7 @@ function build_wp_error( $e, $code ) {
 				$code,
 				$e->getMessage(),
 				array(
-					'trace'  => $e->getTraceAsString(),
+					'trace' => $e->getTraceAsString(),
 				)
 			);
 		}
