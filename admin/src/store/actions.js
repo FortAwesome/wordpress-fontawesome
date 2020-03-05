@@ -401,7 +401,7 @@ export function queryKits() {
         }
       }
     ).then(response => {
-      if ( response.falsePositive ) return handleError(response)
+      if ( response.falsePositive ) return handleKitsQueryError(response)
 
       const data = get(response, 'data.data')
 
@@ -417,7 +417,7 @@ export function queryKits() {
         return dispatch({
           type: 'KITS_QUERY_END',
           success: false,
-          message: message || __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
+          message: __( 'Failed to fetch kits. Regenerate your API Token and try again.', 'font-awesome' )
         })
       }
 
