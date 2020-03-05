@@ -425,16 +425,16 @@ describe('some action failure cases', () => {
       endAction: '',
       params: {}
     },
+    */
     {
       action: 'snoozeV3DeprecationWarning',
       state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
+      route: 'v3deprecation',
+      method: 'PUT',
+      startAction: 'SNOOZE_V3DEPRECATION_WARNING_START',
+      endAction: 'SNOOZE_V3DEPRECATION_WARNING_END',
       params: {}
     },
-    */
     {
       action: 'setConflictDetectionScanner',
       desc: 'when enabling',

@@ -23,6 +23,7 @@ const COULD_NOT_CHECK_PREFERENCES_MESSAGE = __( 'Couldn\'t check preferences', '
 const NO_RESPONSE_MESSAGE = __( 'A request to your WordPress server never received a response', 'font-awesome' )
 const REQUEST_FAILED_MESSAGE = __( 'A request to your WordPress server failed', 'font-awesome' )
 const COULD_NOT_START_SCANNER_MESSAGE = __( 'Couldn\'t start the scanner', 'font-awesome' )
+const COULD_NOT_SNOOZE_MESSAGE = __( 'Couldn\'t snooze', 'font-awesome' )
  
 function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
@@ -599,7 +600,7 @@ export function snoozeV3DeprecationWarning() {
 
     dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_START' })
 
-    axios.put(
+    return axios.put(
       `${apiUrl}/v3deprecation`,
       { snooze: true },
       {
@@ -608,18 +609,31 @@ export function snoozeV3DeprecationWarning() {
         }
       }
     )
-    .then(function() {
-      dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_END', success: true, snooze: true })
+    .then(response => {
+      const { falsePositive, uiMessage } = response
+
+      if ( falsePositive ) {
+        dispatch({
+          type: 'SNOOZE_V3DEPRECATION_WARNING_END',
+          success: false,
+          message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
+        })
+      } else {
+        dispatch({
+          type: 'SNOOZE_V3DEPRECATION_WARNING_END',
+          success: true,
+          snooze: true,
+          message: ''
+        })
+      }
     })
-    .catch(function(error){
-      const message = reportRequestError({
-        response: error
-      })
+    .catch(error => {
+      const { uiMessage } = error
 
       dispatch({
         type: 'SNOOZE_V3DEPRECATION_WARNING_END',
         success: false,
-        message
+        message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
       })
     })
   }
@@ -657,7 +671,7 @@ export function setConflictDetectionScanner({ enable = true }) {
         }
       }
     ).then(response => {
-      const { status, data, falsePositive } = response
+      const { status, data, falsePositive, uiMessage } = response
 
       if ( falsePositive ) {
         dispatch({
