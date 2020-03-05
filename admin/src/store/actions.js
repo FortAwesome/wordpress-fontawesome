@@ -551,7 +551,15 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         recentConflictsDetected: nodesTested.conflict
       })
 
-      axios.post(
+      const handleError = ({ uiMessage }) => {
+        dispatch({
+          type: 'CONFLICT_DETECTION_SUBMIT_END',
+          success: false,
+          message: uiMessage || COULD_NOT_SAVE_CHANGES_MESSAGE
+        })
+      }
+
+      return axios.post(
         `${apiUrl}/conflict-detection/conflicts`,
         payload,
         {
@@ -561,25 +569,19 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         }
       )
       .then(response => {
-        const { status, data } = response
+        const { status, data, falsePositive } = response
 
-        dispatch({
-          type: 'CONFLICT_DETECTION_SUBMIT_END',
-          success: true,
-          data: 204 === status ? null : data
-        })
+        if ( falsePositive ) {
+          handleError(response)
+        } else {
+          dispatch({
+            type: 'CONFLICT_DETECTION_SUBMIT_END',
+            success: true,
+            data: 204 === status ? null : data
+          })
+        }
       })
-      .catch(function(error){
-        const message = reportRequestError({
-          response: error
-        })
-
-        dispatch({
-          type: 'CONFLICT_DETECTION_SUBMIT_END',
-          success: false,
-          message
-        })
-      })
+      .catch(handleError)
     } else {
       dispatch({ type: 'CONFLICT_DETECTION_NONE_FOUND' })
     }

@@ -416,16 +416,24 @@ describe('some action failure cases', () => {
       endAction: '',
       params: {}
     },
+    */
     {
       action: 'reportDetectedConflicts',
-      state: {},
-      route: '',
-      method: '',
-      startAction: '',
-      endAction: '',
-      params: {}
+      state: {
+        showConflictDetectionReporter: true
+      },
+      route: 'conflict-detection/conflicts',
+      method: 'POST',
+      startAction: 'CONFLICT_DETECTION_SUBMIT_START',
+      endAction: 'CONFLICT_DETECTION_SUBMIT_END',
+      params: {
+        nodesTested: {
+          conflict: {
+            'abc123': {}
+          }
+        }
+      }
     },
-    */
     {
       action: 'snoozeV3DeprecationWarning',
       state: {},
