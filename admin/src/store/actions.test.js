@@ -38,10 +38,10 @@ describe('submitPendingOptions and interceptors', () => {
   describe('when HTTP 200', () => {
     describe('when confirmation header is present', () => {
       describe('successful JSON response also includes error information', () => {
-        let json = null
+        let data = null
 
         beforeEach(() => {
-          json = JSON.stringify({
+          data = {
             options: pendingOptions,
             error: {
               errors: {
@@ -53,7 +53,7 @@ describe('submitPendingOptions and interceptors', () => {
                 }
               }
             }
-          })
+          }
 
           respondWith({
             url: `${apiUrl}/config`,
@@ -61,7 +61,7 @@ describe('submitPendingOptions and interceptors', () => {
             response: {
               status: 200,
               statusText: 'OK',
-              data: json,
+              data,
               headers: {
                 'fontawesome-confirmation': 1
               }
@@ -92,7 +92,7 @@ describe('submitPendingOptions and interceptors', () => {
               expect.objectContaining({
                 type: 'OPTIONS_FORM_SUBMIT_END',
                 success: true,
-                data: json,
+                data,
                 message: expect.stringContaining('saved')
               })
             ]))
@@ -104,12 +104,12 @@ describe('submitPendingOptions and interceptors', () => {
 
     describe('when confirmation header is absent', () => {
       describe('when invalid data precedes successful JSON response', () => {
-        let json = null
+        let data = null
 
         beforeEach(() => {
-          json = JSON.stringify({
+          data = {
             options: pendingOptions
-          })
+          }
 
           respondWith({
             url: `${apiUrl}/config`,
@@ -117,7 +117,7 @@ describe('submitPendingOptions and interceptors', () => {
             response: {
               status: 200,
               statusText: 'OK',
-              data: `${INVALID_JSON_RESPONSE_DATA}${json}`
+              data: `${INVALID_JSON_RESPONSE_DATA}${JSON.stringify(data)}`
             }
           })
         })
@@ -139,7 +139,7 @@ describe('submitPendingOptions and interceptors', () => {
               expect.objectContaining({
                 type: 'OPTIONS_FORM_SUBMIT_END',
                 success: true,
-                data: json,
+                data,
                 message: expect.stringContaining('saved')
               })
             ]))
@@ -150,7 +150,7 @@ describe('submitPendingOptions and interceptors', () => {
         describe('axios request', () => {
           let mockPut = null
           beforeEach(() => {
-            mockPut = jest.fn(() => Promise.resolve({ data: json }))
+            mockPut = jest.fn(() => Promise.resolve({ data }))
             changeImpl({ name: 'put', fn: mockPut })
           })
 
@@ -433,7 +433,7 @@ describe('some action failure cases', () => {
 
   const garbage = 'foo[alpha]bar{beta}'
 
-  const jsonError = JSON.stringify({
+  const data = {
     errors: {
       "code1": ["message1"],
     },
@@ -442,7 +442,7 @@ describe('some action failure cases', () => {
         "trace": 'some stack trace'
       }
     }
-  })
+  }
 
   beforeEach(() => {
     reportRequestError.mockClear()
@@ -472,7 +472,7 @@ describe('some action failure cases', () => {
             response: {
               status: 200,
               statusText: 'OK',
-              data: `${garbage}${jsonError}`,
+              data: `${garbage}${JSON.stringify(data)}`,
               // no confirmation header
             }
           })
@@ -514,7 +514,7 @@ describe('some action failure cases', () => {
             response: {
               status: 400,
               statusText: 'Bad Request',
-              data: jsonError,
+              data,
               headers: {
                 'fontawesome-confirmation': 1
               }

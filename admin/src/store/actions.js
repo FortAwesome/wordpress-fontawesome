@@ -30,51 +30,97 @@ function preprocessResponse( response ) {
 
   if ( 204 === response.status && '' !== response.data ) {
       reportRequestError({ error: null, confirmed, trimmed: response.data, expectEmpty: true })
-  } else {
-    const sliced = sliceJson( get(response, 'data', null) )
+      return response
+  } 
 
+  const data = get(response, 'data', null)
+
+  const foundUnexpectedData = 'string' === typeof data
+
+  const sliced = foundUnexpectedData
+    ? sliceJson( data )
+    : {}
+  
+  // Fixup the response data if garbage was fixed
+  if ( foundUnexpectedData) {
     if ( null === sliced ) {
-      reportRequestError({ error: null, confirmed, falsePositive: true, trimmed: response.data })
+      reportRequestError({ error: null, confirmed, trimmed: data })
+      return response
     } else {
-      const { parsed, trimmed, json } = sliced
-
-      // Fixup the response data with clean json
-      response.data = json
-
-      const errors = get( parsed, 'errors' )
-
-      if( response.status < 300 ) {
-        if ( errors ) {
-          /**
-           * This is a false positive. We've received an HTTP 200 response from
-           * the server, but it actually contains errors which should have been
-           * HTTP 4xx or 5xx. This can occur when other buggy code running
-           * on the WordPress server preempts and undermines the proper sending
-           * of HTTP headers, and yet our controller still follows up with its
-           * otherwise-valid JSON response.
-           */
-          const falsePositive = true
-          response.falsePositive = true
-          response.uiMessage = reportRequestError({ error: parsed, confirmed, falsePositive, trimmed })
-        } else {
-          const error = get( parsed, 'error' )
-
-          // We may receive errors back with a 200 response, such as when
-          // there PreferenceRegistrationExceptions.
-          if( error ) {
-            response.uiMessage = reportRequestError({ error, ok: true, confirmed, trimmed })
-          } else {
-            response.uiMessage = reportRequestError({ error: null, ok: true, confirmed, trimmed })
-          }
-        }
-      } else {
-        // HTTP status is 3xx or greater
-        response.uiMessage = reportRequestError({ error: errors ? parsed : null, confirmed, trimmed })
-      }
+      response.data = get(sliced, 'parsed')
     }
   }
 
-  return response
+  // If we had to trim any garbage, we'll store it here
+  const trimmed = get(sliced, 'trimmed', '')
+
+  const errors = get( response, 'data.errors', null )
+
+  if ( response.status >= 400 ) {
+    if ( errors ) {
+      // This is just a normal error response.
+      response.uiMessage = reportRequestError({ error: response.data, confirmed, trimmed })
+    } else {
+      // This error response has a bad schema
+      response.uiMessage = reportRequestError({ error: null, confirmed, trimmed })
+    }
+    return response
+  }
+
+  /**
+   * We don't normally expect 3XX responses, but we'll just let it pass
+   * through, unless we can see that the response has been corrupted,
+   * in which case we'll report that first.
+   */
+  if ( response.status < 400 && response.status >= 300 ) {
+    if ( !confirmed || '' !== trimmed ) {
+      response.uiMessage = reportRequestError({ error: null, confirmed, trimmed })
+    }
+
+    return response
+  }
+
+  /**
+   * If we make it this far, then we have a 2XX response with some valid data,
+   * which we maybe had to fix up.
+   *
+   * Now we need to detect whether it contains any errors to identify false positives,
+   * or cases where its legitmate for the controller to return an otherwise
+   * successful response that also includes some error data for extra diagnostics.
+   */
+  if ( errors ) {
+    /** 
+     * The controller sent back _only_ error data, though the HTTP status is 2XX.
+     * This is a false positive.
+     * This can occur when other buggy code running on the WordPress server preempts
+     * and undermines the proper sending of HTTP headers, and yet the controller
+     * still sends its otherwise-valid JSON error response.
+     */
+    const falsePositive = true
+    response.falsePositive = true
+    response.uiMessage = reportRequestError({ error: response.data, confirmed, falsePositive, trimmed })
+    return response
+  } else {
+    const error = get( response, 'data.error', null )
+
+    if( error ) {
+      /**
+       * We may receive errors back with a 200 success response, such as when
+       * the controller catches PreferenceRegistrationExceptions.
+       */
+      response.uiMessage = reportRequestError({ error, ok: true, confirmed, trimmed })
+      return response
+    }
+
+    if( !confirmed ) {
+      /**
+       * We have received a response that, by every indication so far, is successful.
+       * However, it lacks the confirmation header, which _might_ indicate a problem.
+       */
+      response.uiMessage = reportRequestError({ error: null, ok: true, confirmed, trimmed })
+    }
+    return response
+  }
 }
 
 axios.interceptors.response.use(
