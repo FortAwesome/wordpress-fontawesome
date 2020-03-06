@@ -184,6 +184,8 @@ services:
      depends_on:
        - db-latest
      image: wordpress-fontawesome-dev-latest
+     env_file:
+       - ".env.local"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
@@ -197,6 +199,8 @@ services:
      image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
+     env_file:
+       - ".env.local"
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress
@@ -214,6 +218,8 @@ services:
      image: wordpress-fontawesome-dev-4.9.8
      depends_on:
        - db-4.9.8
+     env_file:
+       - ".env.local"
      environment:
        WORDPRESS_DB_HOST: db-4.9.8:3306
        WORDPRESS_DB_USER: wordpress
