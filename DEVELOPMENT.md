@@ -722,3 +722,31 @@ In order to activate it you must first run `composer install --prefer-dist` from
 1. the `bin/cache-show` script might help
 1. You're on your own (for now) to make sure the cache is flushed or otherwise
    doesn't interfere with your expectations when you switch environments.
+
+# Update WordPress to a Forthcoming Release
+
+1. Download the zip
+
+For example, download the latest on the 5.4 branch:
+
+```
+https://wordpress.org/nightly-builds/wordpress-5.4-latest.zip
+```
+
+1. Copy it into the docker container
+
+```bash
+docker cp ~/Downloads/wordpress-5.4-latest.zip com.fontawesome.wordpress-latest-dev:/tmp/
+```
+
+1. Shell into the container as root
+
+```bash
+bin/env /bin/bash
+```
+
+1. update with `wp core update`
+
+```bash
+wp --allow-root core update --version=5.4 /tmp/wordpress-5.4-latest.zip
+```
