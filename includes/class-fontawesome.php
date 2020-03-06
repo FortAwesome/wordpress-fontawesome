@@ -684,7 +684,7 @@ class FontAwesome {
 
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
 
-			$command = new FontAwesome_Command(
+			$v3_deprecation_command = new FontAwesome_Command(
 				function() use ( $v3deprecation_warning_data ) {
 					$current_screen = get_current_screen();
 					if ( $current_screen && $current_screen->id !== fa()->screen_id ) {
@@ -695,7 +695,7 @@ class FontAwesome {
 
 			add_action(
 				'admin_notices',
-				[ $command, 'run' ]
+				[ $v3_deprecation_command, 'run' ]
 			);
 		}
 
@@ -706,20 +706,24 @@ class FontAwesome {
 				. '" d="M397.8 32H50.2C22.7 32 0 54.7 0 82.2v347.6C0 457.3 22.7 480 50.2 480h347.6c27.5 0 50.2-22.7 50.2-50.2V82.2c0-27.5-22.7-50.2-50.2-50.2zm-45.4 284.3c0 4.2-3.6 6-7.8 7.8-16.7 7.2-34.6 13.7-53.8 13.7-26.9 0-39.4-16.7-71.7-16.7-23.3 0-47.8 8.4-67.5 17.3-1.2.6-2.4.6-3.6 1.2V385c0 1.8 0 3.6-.6 4.8v1.2c-2.4 8.4-10.2 14.3-19.1 14.3-11.3 0-20.3-9-20.3-20.3V166.4c-7.8-6-13.1-15.5-13.1-26.3 0-18.5 14.9-33.5 33.5-33.5 18.5 0 33.5 14.9 33.5 33.5 0 10.8-4.8 20.3-13.1 26.3v18.5c1.8-.6 3.6-1.2 5.4-2.4 18.5-7.8 40.6-14.3 61.5-14.3 22.7 0 40.6 6 60.9 13.7 4.2 1.8 8.4 2.4 13.1 2.4 22.7 0 47.8-16.1 53.8-16.1 4.8 0 9 3.6 9 7.8v140.3z"/></svg>'
 			);
 
-		add_action(
-			'admin_menu',
+		$admin_menu_command = new FontAwesome_Command(
 			function() use ( $icon_data ) {
-				$this->screen_id = add_menu_page(
+				fa()->screen_id = add_menu_page(
 					/* translators: add_menu_page page_title */
 					esc_html__( 'Font Awesome Settings', 'font-awesome' ),
 					/* translators: add_menu_page menu_title */
 					esc_html__( 'Font Awesome', 'font-awesome' ),
 					'manage_options',
 					self::OPTIONS_PAGE,
-					array( $this, 'create_admin_page' ),
+					array( fa(), 'create_admin_page' ),
 					$icon_data
 				);
 			}
+		);
+
+		add_action(
+			'admin_menu',
+			[ $admin_menu_command, 'run' ]
 		);
 
 		add_filter(
