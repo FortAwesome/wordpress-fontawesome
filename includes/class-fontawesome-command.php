@@ -36,7 +36,7 @@ class FontAwesome_Command {
 	 * @internal
 	 * @ignore
 	 */
-	public function run() {
-		return \call_user_func( $this->cmd );
+	public function run( ...$params ) {
+		return \call_user_func( $this->cmd, ...$params );
 	}
 }
