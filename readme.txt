@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, fmbots, deathnfudge
 Stable tag: 4.0.0-rc15
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.3.2
+Tested up to: 5.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
