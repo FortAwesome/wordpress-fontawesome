@@ -373,6 +373,8 @@ class FontAwesome {
 	 */
 	public function init() {
 		try {
+			$this->try_upgrade();
+
 			add_shortcode(
 				self::SHORTCODE_TAG,
 				[ $this, 'process_shortcode' ]
@@ -421,6 +423,63 @@ class FontAwesome {
 			notify_admin_fatal_error( $e );
 		} catch ( Error $e ) {
 			notify_admin_fatal_error( $e );
+		}
+	}
+
+	/**
+	 * Detects whether upgrade is necessary and performs upgrade if so.
+	 *
+	 * Internal use only.
+	 *
+	 * @throws UpgradeException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 * @throws ConfigCorruptionException if options are invalid
+	 * @internal
+	 * @ignore
+	 */
+	public function try_upgrade() {
+		$options = get_option( self::OPTIONS_KEY );
+
+		// Upgrade from v1 schema: 4.0.0-rc13 or earlier
+		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
+			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
+				$this->_old_remove_unregistered_clients = true;
+			}
+
+			$upgraded_options = $this->convert_options_from_v1( $options );
+
+			// Delete the old release metadata transient to ensure we refresh it here.
+			delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
+
+			$this->refresh_releases();
+
+			/**
+			 * Delete the main option to make sure it's removed entirely, including
+			 * from the autoload cache.
+			 *
+			 * delete_option() returns false when it fails, including when the
+			 * option does not exist. We know the option exists, because we just
+			 * queried it above. So any other failure should halt the upgrade
+			 * process to avoid inconsistent states.
+			 */
+			if(! delete_option( self::OPTIONS_KEY ) ) {
+				throw UpgradeException::main_option_delete();
+			}
+
+			/**
+			 * If the version is still not set for some reason, set it to a
+			 * default of the latest available version.
+			 */
+			if( ! isset( $upgraded_options['version'] ) ) {
+				$upgraded_options['version'] = fa()->latest_version();
+			}
+
+			// Final check: validate it.
+			$this->validate_options( $upgraded_options );
+
+			update_option( self::OPTIONS_KEY, $upgraded_options );
 		}
 	}
 
@@ -795,55 +854,23 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns current options as stored in the database, after converting
-	 * from any previous schema versions.
+	 * Returns current options.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
+	 * @throws ConfigCorruptionException
 	 * @internal
 	 * @ignore
 	 * @return array
 	 */
 	public function options() {
-		$options                 = get_option( self::OPTIONS_KEY );
-		$options_with_conversion = $this->convert_options( $options );
+		$options = get_option( self::OPTIONS_KEY );
 
-		if ( $options_with_conversion['changed'] ) {
-			update_option( self::OPTIONS_KEY, $options_with_conversion['options'] );
+		if ( ! $options ) {
+			throw new ConfigCorruptionException();
 		}
 
-		return $options_with_conversion['options'];
-	}
-
-	/**
-	 * Converts options array from a previous schema version to the current one.
-	 *
-	 * Internal use only. Not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 * @param $options
-	 * @return array with a boolean "changed", indicating whether any changes were made
-	 *     and an "options" key with the results
-	 */
-	public function convert_options( $options ) {
-		if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
-			$this->_old_remove_unregistered_clients = true;
-		}
-
-		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
-			// v1 schema.
-			return array(
-				'changed' => true,
-				'options' => $this->convert_options_from_v1( $options ),
-			);
-		} else {
-			// Nothing to convert.
-			return array(
-				'changed' => false,
-				'options' => $options,
-			);
-		}
+		return $options;
 	}
 
 	/**
@@ -981,7 +1008,7 @@ class FontAwesome {
 	 * @param $options
 	 * @return array
 	 */
-	protected function convert_options_from_v1( $options ) {
+	public function convert_options_from_v1( $options ) {
 		$converted_options = self::DEFAULT_USER_OPTIONS;
 
 		if ( isset( $options['usePro'] ) ) {
