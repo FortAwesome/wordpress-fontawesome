@@ -346,58 +346,7 @@ class FontAwesome {
 	public function run() {
 		add_action(
 			'init',
-			function () {
-				try {
-					add_shortcode(
-						self::SHORTCODE_TAG,
-						[ $this, 'process_shortcode' ]
-					);
-
-					add_filter( 'widget_text', 'do_shortcode' );
-
-					$this->validate_options( fa()->options() );
-
-					try {
-						$this->gather_preferences();
-					// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-					} catch ( PreferenceRegistrationException $e ) {
-						/**
-						 * Ignore this on normal page loads.
-						 * If something seems amiss, the site owner may try to look
-						 * into it on the plugin settings page where some additional
-						 * diagnostic information may be found.
-						 */
-					}
-
-					$this->maybe_enqueue_admin_js_bundle();
-
-					// Setup JavaScript internationalization if we're on WordPress 5.0+.
-					if ( function_exists( 'wp_set_script_translations' ) ) {
-						wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
-					}
-
-					if ( $this->using_kit() ) {
-						$this->enqueue_kit( $this->options()['kitToken'] );
-					} else {
-						$resource_collection = $this
-							->release_provider()
-							->get_resource_collection(
-								$this->options()['version'],
-								array(
-									'use_pro'  => $this->pro(),
-									'use_svg'  => 'svg' === $this->technology(),
-									'use_shim' => $this->v4_compatibility(),
-								)
-							);
-
-						$this->enqueue_cdn( $this->options(), $resource_collection );
-					}
-				} catch ( Exception $e ) {
-					notify_admin_fatal_error( $e );
-				} catch ( Error $e ) {
-					notify_admin_fatal_error( $e );
-				}
-			},
+			[ $this, 'init' ],
 			10,
 			/**
 			 * Explicitly indicate to the init action hook that 0 args should be passed in when invoking the
@@ -411,6 +360,67 @@ class FontAwesome {
 
 		if ( is_admin() ) {
 			$this->initialize_admin();
+		}
+	}
+
+	/**
+	 * Callback for init.
+	 *
+	 * Internal use only.
+	 * 
+	 * @ignore
+	 * @internal
+	 */
+	public function init() {
+		try {
+			add_shortcode(
+				self::SHORTCODE_TAG,
+				[ $this, 'process_shortcode' ]
+			);
+
+			add_filter( 'widget_text', 'do_shortcode' );
+
+			$this->validate_options( fa()->options() );
+
+			try {
+				$this->gather_preferences();
+			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( PreferenceRegistrationException $e ) {
+				/**
+				 * Ignore this on normal page loads.
+				 * If something seems amiss, the site owner may try to look
+				 * into it on the plugin settings page where some additional
+				 * diagnostic information may be found.
+				 */
+			}
+
+			$this->maybe_enqueue_admin_js_bundle();
+
+			// Setup JavaScript internationalization if we're on WordPress 5.0+.
+			if ( function_exists( 'wp_set_script_translations' ) ) {
+				wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
+			}
+
+			if ( $this->using_kit() ) {
+				$this->enqueue_kit( $this->options()['kitToken'] );
+			} else {
+				$resource_collection = $this
+					->release_provider()
+					->get_resource_collection(
+						$this->options()['version'],
+						array(
+							'use_pro'  => $this->pro(),
+							'use_svg'  => 'svg' === $this->technology(),
+							'use_shim' => $this->v4_compatibility(),
+						)
+					);
+
+				$this->enqueue_cdn( $this->options(), $resource_collection );
+			}
+		} catch ( Exception $e ) {
+			notify_admin_fatal_error( $e );
+		} catch ( Error $e ) {
+			notify_admin_fatal_error( $e );
 		}
 	}
 
