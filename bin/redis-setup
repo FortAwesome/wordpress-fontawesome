@@ -1,0 +1,32 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/.common.bash
+
+$WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html $WP_CONTAINER wp --allow-root plugin install wp-redis
+
+if [ "$?" != "0" ]; then
+  echo "FAILED when installing the wp-redis plugin"
+  exit 1
+fi
+
+$WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user:www-data $WP_CONTAINER wp plugin activate wp-redis
+
+if [ "$?" != "0" ]; then
+  echo "FAILED when activating the wp-redis plugin"
+  exit 1
+fi
+
+$WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html $WP_CONTAINER wp --allow-root redis enable
+
+if [ "$?" != "0" ]; then
+  echo "FAILED when enabling redis with the wp-redis plugin"
+  exit 1
+fi
+
+$WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user:www-data $WP_CONTAINER wp redis info
+
+if [ "$?" != "0" ]; then
+  echo "FAILED when attempting to verify that redis is working, after successfully installing and enabling wp-redis"
+  exit 1
+fi
