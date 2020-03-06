@@ -11,7 +11,6 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
  * Class RemoveBlocklistTest
  */
 class RemoveBlocklistTest extends \WP_UnitTestCase {
-
 	// TODO: add testing for removal of blocked inline scripts and styles.
 	protected $fake_unregistered_clients = array(
 		'3c937b6d9b50371df1e78b5d70e11512' => array(
@@ -61,6 +60,8 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 				'unregisteredClients'  => $this->fake_unregistered_clients,
 			)
 		);
+
+		remove_all_actions( 'font_awesome_preferences' );
 	}
 
 	// By default, we'll enqueue as late as possible, to make sure these are still detected.
@@ -98,6 +99,8 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 				$method->willReturn( $opts );
 			}
 		);
+
+		fa()->try_upgrade();
 
 		$this->enqueue_fakes();
 
@@ -144,6 +147,8 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 	}
 
 	public function test_unregistered_conflict_cleaned_automatically_when_old_feature_detected() {
+		delete_option( FontAwesome::OPTIONS_KEY );
+
 		$options_v1_schema = array(
 			'adminClientLoadSpec'       => array(
 				'name'           => 'admin-user',
@@ -154,10 +159,12 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			),
 			'usePro'                    => false,
 			'removeUnregisteredClients' => true,
-			'version'                   => 'latest',
+			'version'                   => '5.12.0',
 		);
 
 		update_option( FontAwesome::OPTIONS_KEY, $options_v1_schema );
+
+		fa()->try_upgrade();
 
 		$this->enqueue_fakes();
 
@@ -209,7 +216,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 				'v4Compat'       => true,
 				'technology'     => 'svg',
 				'pseudoElements' => true,
-				'version'        => 'latest',
+				'version'        => '5.12.0',
 				'kitToken'       => null,
 				'apiToken'       => false,
 			),
@@ -240,8 +247,6 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 	}
 
 	public function test_unregistered_client_not_blocked_by_default() {
-		$fa = fa();
-
 		$unregistered_clients = $this->fake_unregistered_clients;
 
 		foreach ( $unregistered_clients as $md5 => $client ) {
@@ -260,8 +265,8 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 
 		add_action(
 			'font_awesome_preferences',
-			function() use ( $fa ) {
-				$fa->register(
+			function() {
+				fa()->register(
 					[
 						'name' => 'clientA',
 					]
