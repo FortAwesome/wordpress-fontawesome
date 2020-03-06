@@ -741,8 +741,7 @@ class FontAwesome {
 			[ $plugin_action_links_command, 'run' ]
 		);
 
-		add_action(
-			'after_plugin_row_' . FONTAWESOME_PLUGIN_FILE,
+		$multi_version_warning_command = new FontAwesome_Command(
 			function( $plugin_file, $plugin_data, $status ) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
@@ -774,6 +773,12 @@ class FontAwesome {
 					<?php
 				}
 			},
+
+		);
+
+		add_action(
+			'after_plugin_row_' . FONTAWESOME_PLUGIN_FILE,
+			[ $multi_version_warning_command, 'run' ],
 			10,
 			3
 		);
