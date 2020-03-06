@@ -1493,13 +1493,12 @@ class FontAwesome {
 		}
 
 		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
-			add_action(
-				$action,
+			$enqueue_command = new FontAwesome_Command(
 				function () use ( $kit_token ) {
 					try {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_script(
-							self::RESOURCE_HANDLE,
+							FontAwesome::RESOURCE_HANDLE,
 							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 							[],
 							null,
@@ -1511,12 +1510,12 @@ class FontAwesome {
 						 * inject some configuration to turn it on. We will do that by manipulating
 						 * the FontAwesomeKitConfig global property.
 						 */
-						if ( $this->detecting_conflicts() ) {
+						if ( fa()->detecting_conflicts() ) {
 							/**
 							 * Kits Conflict Detection expects this value to be in milliseconds
 							 * since the unix epoch.
 							 */
-							$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
+							$detect_conflicts_until = fa()->detect_conflicts_until() * 1000;
 
 							$script_content = <<< EOT
 window.__FontAwesome__WP__KitConfig__ = {
@@ -1535,7 +1534,7 @@ Object.defineProperty(window, 'FontAwesomeKitConfig', {
 EOT;
 
 							wp_add_inline_script(
-								self::RESOURCE_HANDLE,
+								FontAwesome::RESOURCE_HANDLE,
 								$script_content,
 								'before'
 							);
@@ -1546,6 +1545,10 @@ EOT;
 						notify_admin_fatal_error( $e );
 					}
 				}
+			);
+			add_action(
+				$action,
+				[ $enqueue_command, 'run' ]
 			);
 		}
 
