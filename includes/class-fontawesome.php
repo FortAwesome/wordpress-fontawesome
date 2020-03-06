@@ -19,6 +19,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -682,14 +683,19 @@ class FontAwesome {
 		$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
-			add_action(
-				'admin_notices',
+
+			$command = new FontAwesome_Command(
 				function() use ( $v3deprecation_warning_data ) {
 					$current_screen = get_current_screen();
-					if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-						$this->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
+					if ( $current_screen && $current_screen->id !== fa()->screen_id ) {
+						fa()->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
 					}
 				}
+			);
+
+			add_action(
+				'admin_notices',
+				[ $command, 'run' ]
 			);
 		}
 
