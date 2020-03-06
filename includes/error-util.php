@@ -2,6 +2,7 @@
 namespace FortAwesome;
 
 use \WP_Error, \Exception;
+require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-command.php';
 
 /**
  * Handle fatal errors
@@ -10,11 +11,15 @@ use \WP_Error, \Exception;
  */
 function notify_admin_fatal_error( $e ) {
 	if ( method_exists( 'FortAwesome\FontAwesome_Loader', 'emit_admin_error_output' ) ) {
-		add_action(
-			'admin_notices',
+		$command = new FontAwesome_Command(
 			function() use ( $e ) {
 				FontAwesome_Loader::emit_admin_error_output( $e );
 			}
+		);
+
+		add_action(
+			'admin_notices',
+			[ $command, 'run' ]
 		);
 	}
 }
