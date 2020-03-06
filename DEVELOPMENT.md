@@ -719,3 +719,4 @@ In order to activate it you must first run `composer install --prefer-dist` from
     ```bash
     bin/wp redis info
     ```
+1. the `bin/cache-show` script might help
