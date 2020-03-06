@@ -38,13 +38,15 @@ export default function V3DeprecationWarning() {
 
       <p>
         { __('Just adjust your shortcode from this:', 'font-awesome' ) }
-        
-        <blockquote><code>[icon name="{ atts.name }"]</code></blockquote>
-
-        { __( 'to this:', 'font-awesome' ) }
-
-        <blockquote><code>[icon name="{ v5name }" prefix="{ v5prefix }"]</code></blockquote>
       </p>
+        
+      <blockquote><code>[icon name="{ atts.name }"]</code></blockquote>
+
+      <p>
+        { __( 'to this:', 'font-awesome' ) }
+      </p>
+
+      <blockquote><code>[icon name="{ v5name }" prefix="{ v5prefix }"]</code></blockquote>
 
       <p>
         {

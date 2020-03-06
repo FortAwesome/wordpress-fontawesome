@@ -19,6 +19,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -345,60 +346,7 @@ class FontAwesome {
 	public function run() {
 		add_action(
 			'init',
-			function () {
-				try {
-					add_shortcode(
-						self::SHORTCODE_TAG,
-						function( $params ) {
-							return $this->process_shortcode( $params );
-						}
-					);
-
-					add_filter( 'widget_text', 'do_shortcode' );
-
-					$this->validate_options( fa()->options() );
-
-					try {
-						$this->gather_preferences();
-					// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-					} catch ( PreferenceRegistrationException $e ) {
-						/**
-						 * Ignore this on normal page loads.
-						 * If something seems amiss, the site owner may try to look
-						 * into it on the plugin settings page where some additional
-						 * diagnostic information may be found.
-						 */
-					}
-
-					$this->maybe_enqueue_admin_js_bundle();
-
-					// Setup JavaScript internationalization if we're on WordPress 5.0+.
-					if ( function_exists( 'wp_set_script_translations' ) ) {
-						wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
-					}
-
-					if ( $this->using_kit() ) {
-						$this->enqueue_kit( $this->options()['kitToken'] );
-					} else {
-						$resource_collection = $this
-							->release_provider()
-							->get_resource_collection(
-								$this->options()['version'],
-								array(
-									'use_pro'  => $this->pro(),
-									'use_svg'  => 'svg' === $this->technology(),
-									'use_shim' => $this->v4_compatibility(),
-								)
-							);
-
-						$this->enqueue_cdn( $this->options(), $resource_collection );
-					}
-				} catch ( Exception $e ) {
-					notify_admin_fatal_error( $e );
-				} catch ( Error $e ) {
-					notify_admin_fatal_error( $e );
-				}
-			},
+			[ $this, 'init' ],
 			10,
 			/**
 			 * Explicitly indicate to the init action hook that 0 args should be passed in when invoking the
@@ -412,6 +360,126 @@ class FontAwesome {
 
 		if ( is_admin() ) {
 			$this->initialize_admin();
+		}
+	}
+
+	/**
+	 * Callback for init.
+	 *
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function init() {
+		try {
+			$this->try_upgrade();
+
+			add_shortcode(
+				self::SHORTCODE_TAG,
+				[ $this, 'process_shortcode' ]
+			);
+
+			add_filter( 'widget_text', 'do_shortcode' );
+
+			$this->validate_options( fa()->options() );
+
+			try {
+				$this->gather_preferences();
+			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( PreferenceRegistrationException $e ) {
+				/**
+				 * Ignore this on normal page loads.
+				 * If something seems amiss, the site owner may try to look
+				 * into it on the plugin settings page where some additional
+				 * diagnostic information may be found.
+				 */
+			}
+
+			$this->maybe_enqueue_admin_js_bundle();
+
+			// Setup JavaScript internationalization if we're on WordPress 5.0+.
+			if ( function_exists( 'wp_set_script_translations' ) ) {
+				wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
+			}
+
+			if ( $this->using_kit() ) {
+				$this->enqueue_kit( $this->options()['kitToken'] );
+			} else {
+				$resource_collection = $this
+					->release_provider()
+					->get_resource_collection(
+						$this->options()['version'],
+						array(
+							'use_pro'  => $this->pro(),
+							'use_svg'  => 'svg' === $this->technology(),
+							'use_shim' => $this->v4_compatibility(),
+						)
+					);
+
+				$this->enqueue_cdn( $this->options(), $resource_collection );
+			}
+		} catch ( Exception $e ) {
+			notify_admin_fatal_error( $e );
+		} catch ( Error $e ) {
+			notify_admin_fatal_error( $e );
+		}
+	}
+
+	/**
+	 * Detects whether upgrade is necessary and performs upgrade if so.
+	 *
+	 * Internal use only.
+	 *
+	 * @throws UpgradeException
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 * @throws ConfigCorruptionException if options are invalid
+	 * @internal
+	 * @ignore
+	 */
+	public function try_upgrade() {
+		$options = get_option( self::OPTIONS_KEY );
+
+		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
+		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
+			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
+				$this->_old_remove_unregistered_clients = true;
+			}
+
+			$upgraded_options = $this->convert_options_from_v1( $options );
+
+			// Delete the old release metadata transient to ensure we refresh it here.
+			delete_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
+
+			$this->refresh_releases();
+
+			/**
+			 * Delete the main option to make sure it's removed entirely, including
+			 * from the autoload cache.
+			 *
+			 * Function delete_option() returns false when it fails, including when the
+			 * option does not exist. We know the option exists, because we just
+			 * queried it above. So any other failure should halt the upgrade
+			 * process to avoid inconsistent states.
+			 */
+			if ( ! delete_option( self::OPTIONS_KEY ) ) {
+				throw UpgradeException::main_option_delete();
+			}
+
+			/**
+			 * If the version is still not set for some reason, set it to a
+			 * default of the latest available version.
+			 */
+			if ( ! isset( $upgraded_options['version'] ) ) {
+				$upgraded_options['version'] = fa()->latest_version();
+			}
+
+			// Final check: validate it.
+			$this->validate_options( $upgraded_options );
+
+			update_option( self::OPTIONS_KEY, $upgraded_options );
 		}
 	}
 
@@ -684,14 +752,19 @@ class FontAwesome {
 		$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
-			add_action(
-				'admin_notices',
+
+			$v3_deprecation_command = new FontAwesome_Command(
 				function() use ( $v3deprecation_warning_data ) {
 					$current_screen = get_current_screen();
-					if ( $current_screen && $current_screen->id !== $this->screen_id ) {
-						$this->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
+					if ( $current_screen && fa()->screen_id !== $current_screen->id ) {
+						fa()->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
 					}
 				}
+			);
+
+			add_action(
+				'admin_notices',
+				[ $v3_deprecation_command, 'run' ]
 			);
 		}
 
@@ -702,35 +775,42 @@ class FontAwesome {
 				. '" d="M397.8 32H50.2C22.7 32 0 54.7 0 82.2v347.6C0 457.3 22.7 480 50.2 480h347.6c27.5 0 50.2-22.7 50.2-50.2V82.2c0-27.5-22.7-50.2-50.2-50.2zm-45.4 284.3c0 4.2-3.6 6-7.8 7.8-16.7 7.2-34.6 13.7-53.8 13.7-26.9 0-39.4-16.7-71.7-16.7-23.3 0-47.8 8.4-67.5 17.3-1.2.6-2.4.6-3.6 1.2V385c0 1.8 0 3.6-.6 4.8v1.2c-2.4 8.4-10.2 14.3-19.1 14.3-11.3 0-20.3-9-20.3-20.3V166.4c-7.8-6-13.1-15.5-13.1-26.3 0-18.5 14.9-33.5 33.5-33.5 18.5 0 33.5 14.9 33.5 33.5 0 10.8-4.8 20.3-13.1 26.3v18.5c1.8-.6 3.6-1.2 5.4-2.4 18.5-7.8 40.6-14.3 61.5-14.3 22.7 0 40.6 6 60.9 13.7 4.2 1.8 8.4 2.4 13.1 2.4 22.7 0 47.8-16.1 53.8-16.1 4.8 0 9 3.6 9 7.8v140.3z"/></svg>'
 			);
 
-		add_action(
-			'admin_menu',
+		$admin_menu_command = new FontAwesome_Command(
 			function() use ( $icon_data ) {
-				$this->screen_id = add_menu_page(
+				fa()->screen_id = add_menu_page(
 					/* translators: add_menu_page page_title */
 					esc_html__( 'Font Awesome Settings', 'font-awesome' ),
 					/* translators: add_menu_page menu_title */
 					esc_html__( 'Font Awesome', 'font-awesome' ),
 					'manage_options',
 					self::OPTIONS_PAGE,
-					array( $this, 'create_admin_page' ),
+					array( fa(), 'create_admin_page' ),
 					$icon_data
 				);
 			}
 		);
 
-		add_filter(
-			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
-			function( $links ) {
+		add_action(
+			'admin_menu',
+			[ $admin_menu_command, 'run' ]
+		);
+
+		$plugin_action_links_command = new FontAwesome_Command(
+			function ( $links ) {
 				$mylinks = array(
 					/* translators: label for link to settings page on plugin listing */
-					'<a href="' . $this->settings_page_url() . '">' . esc_html__( 'Settings', 'font-awesome' ) . '</a>',
+					'<a href="' . fa()->settings_page_url() . '">' . esc_html__( 'Settings', 'font-awesome' ) . '</a>',
 				);
 				return array_merge( $links, $mylinks );
 			}
 		);
 
-		add_action(
-			'after_plugin_row_' . FONTAWESOME_PLUGIN_FILE,
+		add_filter(
+			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
+			[ $plugin_action_links_command, 'run' ]
+		);
+
+		$multi_version_warning_command = new FontAwesome_Command(
 			function( $plugin_file, $plugin_data, $status ) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
@@ -761,62 +841,35 @@ class FontAwesome {
 					</tr>
 					<?php
 				}
-			},
+			}
+		);
+
+		add_action(
+			'after_plugin_row_' . FONTAWESOME_PLUGIN_FILE,
+			[ $multi_version_warning_command, 'run' ],
 			10,
 			3
 		);
 	}
 
 	/**
-	 * Returns current options as stored in the database, after converting
-	 * from any previous schema versions.
+	 * Returns current options.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
+	 * @throws ConfigCorruptionException
 	 * @internal
 	 * @ignore
 	 * @return array
 	 */
 	public function options() {
-		$options                 = get_option( self::OPTIONS_KEY );
-		$options_with_conversion = $this->convert_options( $options );
+		$options = get_option( self::OPTIONS_KEY );
 
-		if ( $options_with_conversion['changed'] ) {
-			update_option( self::OPTIONS_KEY, $options_with_conversion['options'] );
+		if ( ! $options ) {
+			throw new ConfigCorruptionException();
 		}
 
-		return $options_with_conversion['options'];
-	}
-
-	/**
-	 * Converts options array from a previous schema version to the current one.
-	 *
-	 * Internal use only. Not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 * @param $options
-	 * @return array with a boolean "changed", indicating whether any changes were made
-	 *     and an "options" key with the results
-	 */
-	public function convert_options( $options ) {
-		if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
-			$this->_old_remove_unregistered_clients = true;
-		}
-
-		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
-			// v1 schema.
-			return array(
-				'changed' => true,
-				'options' => $this->convert_options_from_v1( $options ),
-			);
-		} else {
-			// Nothing to convert.
-			return array(
-				'changed' => false,
-				'options' => $options,
-			);
-		}
+		return $options;
 	}
 
 	/**
@@ -954,7 +1007,7 @@ class FontAwesome {
 	 * @param $options
 	 * @return array
 	 */
-	protected function convert_options_from_v1( $options ) {
+	public function convert_options_from_v1( $options ) {
 		$converted_options = self::DEFAULT_USER_OPTIONS;
 
 		if ( isset( $options['usePro'] ) ) {
@@ -1476,13 +1529,12 @@ class FontAwesome {
 		}
 
 		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
-			add_action(
-				$action,
+			$enqueue_command = new FontAwesome_Command(
 				function () use ( $kit_token ) {
 					try {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_script(
-							self::RESOURCE_HANDLE,
+							FontAwesome::RESOURCE_HANDLE,
 							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 							[],
 							null,
@@ -1494,12 +1546,12 @@ class FontAwesome {
 						 * inject some configuration to turn it on. We will do that by manipulating
 						 * the FontAwesomeKitConfig global property.
 						 */
-						if ( $this->detecting_conflicts() ) {
+						if ( fa()->detecting_conflicts() ) {
 							/**
 							 * Kits Conflict Detection expects this value to be in milliseconds
 							 * since the unix epoch.
 							 */
-							$detect_conflicts_until = $this->detect_conflicts_until() * 1000;
+							$detect_conflicts_until = fa()->detect_conflicts_until() * 1000;
 
 							$script_content = <<< EOT
 window.__FontAwesome__WP__KitConfig__ = {
@@ -1518,7 +1570,7 @@ Object.defineProperty(window, 'FontAwesomeKitConfig', {
 EOT;
 
 							wp_add_inline_script(
-								self::RESOURCE_HANDLE,
+								FontAwesome::RESOURCE_HANDLE,
 								$script_content,
 								'before'
 							);
@@ -1530,10 +1582,13 @@ EOT;
 					}
 				}
 			);
+			add_action(
+				$action,
+				[ $enqueue_command, 'run' ]
+			);
 		}
 
-		add_filter(
-			'script_loader_tag',
+		$script_loader_tag_command = new FontAwesome_Command(
 			function ( $html, $handle ) {
 				$revised_html = $html;
 
@@ -1551,7 +1606,12 @@ EOT;
 				}
 
 				return $revised_html;
-			},
+			}
+		);
+
+		add_filter(
+			'script_loader_tag',
+			[ $script_loader_tag_command, 'run' ],
 			11,
 			2
 		);
@@ -1593,21 +1653,25 @@ EOT;
 
 		$resources = $resource_collection->resources();
 
+		$conflict_detection_enqueue_command = new FontAwesome_Command(
+			function () {
+				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				wp_enqueue_script(
+					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
+					FontAwesome::CONFLICT_DETECTOR_SOURCE,
+					[ FontAwesome::ADMIN_RESOURCE_HANDLE ],
+					null,
+					true
+				);
+			}
+		);
+
 		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
 			// Enqueue the conflict detector.
 			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
 				add_action(
 					$action,
-					function () {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_script(
-							self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
-							self::CONFLICT_DETECTOR_SOURCE,
-							[ self::ADMIN_RESOURCE_HANDLE ],
-							null,
-							true
-						);
-					},
+					[ $conflict_detection_enqueue_command, 'run' ],
 					PHP_INT_MAX
 				);
 			}

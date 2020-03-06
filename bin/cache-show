@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/.common.bash
+
+DEFAULT_OPTION=font-awesome
+
+if [ "x" = "x$1" ]; then
+  OPTION=$DEFAULT_OPTION
+else
+  OPTION=$1
+fi
+
+PHP_CODE="\$all = wp_cache_get('alloptions', 'options'); print_r(isset(\$all[\"$OPTION\"]) ? \$all[\"$OPTION\"] : []);"
+
+$WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user:www-data $WP_CONTAINER wp eval "$PHP_CODE"

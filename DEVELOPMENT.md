@@ -21,7 +21,7 @@
 - [Run a Local Docs Server](#run-a-local-docs-server)
 - [Special Notes on plugin-sigma](#special-notes-on-plugin-sigma)
 - [Remote Debugging with VSCode](#remote-debugging-with-vscode)
-- [Configure PhpStorm 2018.1.5 for debugging](#configure-phpstorm-201815-for-debugging)
+- [Redis Cache Setup](#redis-cache-setup)
 
 <!-- tocstop -->
 
@@ -110,6 +110,26 @@ Replace `foo@example.com` with a real email address where you can receive admin 
 from this local install of WordPress, if it sends any (it tends not to). 
 
 This file is not checked into git. It's listed in `.gitignore`.
+
+### Redis Cache Extra Steps
+
+If you know that you'll be install the WP Redis plugin to test behavior with caching,
+then you'll need to add at least the following environment variable to `.env.local` as well:
+
+```bash
+CACHE_HOST=host.docker.internal
+```
+
+This assumes that your version of Docker supports the `host.docker.internal`
+special host name to route from the container to the host. If you have some
+other configuration, you should set it accordingly here.
+
+The following are optional:
+```bash
+CACHE_PORT=1111 # default: 6379
+CACHE_AUTH=1111 # default: 12345
+CACHE_DB=1111 # default: 0
+```
 
 ### Font Awesome Internal Extra steps
 
@@ -661,6 +681,8 @@ In order to activate it you must first run `composer install --prefer-dist` from
 
 # Remote Debugging with VSCode
 
+(Only the "latest" WordPress docker image has the xdebug extension. Hack `Dockerfile-4.9.8` if you need it in the 4.9.8 image as well.)
+
 1. Install the PHP Debug (Felix Becker) extension in VSCode
 1. Restart VSCode
 1. Click the debug tab (looks like a crossed-out bug icon)
@@ -673,3 +695,58 @@ In order to activate it you must first run `composer install --prefer-dist` from
       "/var/www/html/wp-content/plugins/font-awesome": "${workspaceRoot}"
     }
     ```
+
+# Redis Cache Setup
+
+1. Make sure you've set the `CACHE_HOST` and `CACHE_PORT` environment variables
+    in `.env.local` (see above).
+1. Run the `bin/redis-setup` script from the root of this repo:
+
+   This example uses a non-default container option with `-c`.
+
+    ```bash
+    bin/redis-setup -c com.fontawesome.wordpress-latest-integration
+    ```
+
+    If successful, it will show the results of `wp redis info`. The `wp-redis`
+    plugin provides additional WP-CLI commands. You can run them like this:
+
+    ```bash
+    bin/wp -c com.fontawesome.wordpress-latest-integration -- redis info
+    ```
+
+    Or if using the default dev container, just:
+    ```bash
+    bin/wp redis info
+    ```
+1. the `bin/cache-show` script might help
+1. You're on your own (for now) to make sure the cache is flushed or otherwise
+   doesn't interfere with your expectations when you switch environments.
+
+# Update WordPress to a Forthcoming Release
+
+1. Download the zip
+
+For example, download the latest on the 5.4 branch:
+
+```
+https://wordpress.org/nightly-builds/wordpress-5.4-latest.zip
+```
+
+1. Copy it into the docker container
+
+```bash
+docker cp ~/Downloads/wordpress-5.4-latest.zip com.fontawesome.wordpress-latest-dev:/tmp/
+```
+
+1. Shell into the container as root
+
+```bash
+bin/env /bin/bash
+```
+
+1. update with `wp core update`
+
+```bash
+wp --allow-root core update --version=5.4 /tmp/wordpress-5.4-latest.zip
+```

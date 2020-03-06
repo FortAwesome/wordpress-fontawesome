@@ -42,23 +42,24 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_convert_options() {
-		FontAwesome_Activator::activate();
+	public function test_option_throws_when_empty() {
+		$this->expectException( ConfigCorruptionException::class );
 
+		fa()->options();
+	}
+
+	public function test_convert_options_from_v1() {
 		$this->assertEquals(
 			array(
-				'changed' => true,
-				'options' => array(
-					'version' => '5.8.1',
-					'pseudoElements' => true,
-					'technology' => 'svg',
-					'usePro' => true,
-					'v4Compat' => true,
-					'kitToken' => null,
-					'apiToken' => false
-				),
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
 			),
-			fa()->convert_options(
+			fa()->convert_options_from_v1(
 				array (
 				'adminClientLoadSpec' =>
 					array (
@@ -87,23 +88,93 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_convert_options_coerce_pseudo_elements_true_for_webfont() {
-		FontAwesome_Activator::activate();
+	public function test_try_upgrade_when_upgrade_required() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array (
+			'adminClientLoadSpec' =>
+				array (
+					'name' => 'user',
+					'method' => 'webfont',
+					'v4shim' => 'require',
+					'pseudoElements' => 'require',
+					// clientVersion was a previous option
+					'clientVersion' => 1554559421,
+				),
+			'version' => '5.8.1',
+			'usePro' => true,
+			'removeUnregisteredClients' => true,
+			'lockedLoadSpec' =>
+				array (
+					'method' => 'svg',
+					'v4shim' => true,
+					'pseudoElements' => true,
+					'clients' =>
+						array (
+							'user' => 1554559421,
+						),
+				),
+			)
+		);
+
+		fa()->try_upgrade();
 
 		$this->assertEquals(
 			array(
-				'changed' => true,
-				'options' => array(
-					'version' => '5.8.1',
-					'pseudoElements' => true,
-					'technology' => 'webfont',
-					'usePro' => true,
-					'v4Compat' => true,
-					'kitToken' => null,
-					'apiToken' => false
-				),
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
 			),
-			fa()->convert_options(
+			fa()->options()
+		);
+	}
+
+	public function test_try_upgrade_when_upgrade_not_required() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					// Non-default option values preserved
+					'version'    => '5.12.0',
+					'technology' => 'svg',
+					'usePro'     => true
+				]
+			)
+		);
+
+		fa()->try_upgrade();
+
+		$this->assertEquals(
+			array(
+				'version' => '5.12.0',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
+			),
+			fa()->options()
+		);
+	}
+
+	public function test_convert_options_from_v1_coerce_pseudo_elements_true_for_webfont() {
+		$this->assertEquals(
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'webfont',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
+			),
+			fa()->convert_options_from_v1(
 				array (
 				'adminClientLoadSpec' =>
 					array (
@@ -132,23 +203,18 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_convert_options_coerce_pseudo_elements_true_for_webfont_when_absent() {
-		FontAwesome_Activator::activate();
-
+	public function test_convert_options_from_v1_coerce_pseudo_elements_true_for_webfont_when_absent() {
 		$this->assertEquals(
 			array(
-				'changed' => true,
-				'options' => array (
-					'version' => '5.8.1',
-					'pseudoElements' => true,
-					'technology' => 'webfont',
-					'usePro' => true,
-					'v4Compat' => true,
-					'kitToken' => null,
-					'apiToken' => false
-				)
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'webfont',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false
 			),
-			fa()->convert_options(
+			fa()->convert_options_from_v1(
 				array (
 				'adminClientLoadSpec' =>
 					array (
@@ -175,7 +241,7 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_valid_options_empty() {
+	public function test_validate_options_empty() {
 		$this->expectException( ConfigCorruptionException::class );
 
 		fa()->validate_options( [] );
