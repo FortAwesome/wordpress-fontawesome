@@ -10,10 +10,18 @@ RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
 # Add non-privileged user, best for using wp-cli
 RUN groupadd -r user && useradd --no-log-init -r -g user user
 
+# DEBUG is not set up for 4.9.8
+# To enable this would require setting up a different docker-php-ext-xdebug.ini
+# that refers to the specific .so file that is installed by by this pecl command.
 # Install xdebug
-RUN pecl install xdebug
-# Copy in our php.ini debug configuration
-COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
+#RUN pecl install xdebug
+## Copy in our php.ini debug configuration
+#COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
+
+# Install redis php extension
+# The echo is to avoid the terminal prompt on install
+RUN echo "\n" | pecl install redis
+COPY ./docker-php-ext-redis.ini /usr/local/etc/php/conf.d
 
 # Install phpunit
 RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit

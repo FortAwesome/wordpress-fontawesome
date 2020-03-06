@@ -15,6 +15,11 @@ RUN pecl install xdebug
 # Copy in our php.ini debug configuration
 COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
 
+# Install redis php extension
+# The echo is to avoid the terminal prompt on install
+RUN echo "\n" | pecl install redis
+COPY ./docker-php-ext-redis.ini /usr/local/etc/php/conf.d
+
 # Install phpunit
 RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 
