@@ -532,3 +532,25 @@ class ConflictDetectionStorageException extends FontAwesome_ServerException {
  * @since 4.0.0
  */
 class ClientPreferencesSchemaException extends FontAwesome_ServerException {}
+
+/**
+ * Indicates a problem during upgrade process.
+ *
+ * @since 4.0.0 
+ */
+class UpgradeException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function main_option_delete() {
+		return new static(
+			esc_html__(
+				'Failed during upgrade when trying to delete the main Font Awesome option.',
+				'font-awesome'
+			)
+		);
+	}
+}

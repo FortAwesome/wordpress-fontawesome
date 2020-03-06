@@ -55,4 +55,11 @@ class ExceptionsTest extends \WP_UnitTestCase {
 	public function test_config_exception_default() {
 		$this->assertEquals( '', ( new ConfigSchemaException() )->getMessage() );
 	}
+
+	public function test_upgrade_exception() {
+		$this->assertInstanceOf(
+			FontAwesome_ServerException::class,
+			new UpgradeException()
+		);
+	}
 }
