@@ -349,9 +349,7 @@ class FontAwesome {
 				try {
 					add_shortcode(
 						self::SHORTCODE_TAG,
-						function( $params ) {
-							return $this->process_shortcode( $params );
-						}
+						[ $this, 'process_shortcode' ]
 					);
 
 					add_filter( 'widget_text', 'do_shortcode' );
