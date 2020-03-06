@@ -720,3 +720,5 @@ In order to activate it you must first run `composer install --prefer-dist` from
     bin/wp redis info
     ```
 1. the `bin/cache-show` script might help
+1. You're on your own (for now) to make sure the cache is flushed or otherwise
+   doesn't interfere with your expectations when you switch environments.
