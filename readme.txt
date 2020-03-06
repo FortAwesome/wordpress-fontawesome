@@ -125,6 +125,10 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 == Changelog ==
 
+= 4.0.0-rc16 =
+
+* Fixes to the upgrade process
+
 = 4.0.0-rc15 =
 
 **MAJOR UPDATE**, some breaking changes for developers. Improves conflict detection, adds support for kits and internationalization.
