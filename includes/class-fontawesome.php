@@ -442,7 +442,7 @@ class FontAwesome {
 	public function try_upgrade() {
 		$options = get_option( self::OPTIONS_KEY );
 
-		// Upgrade from v1 schema: 4.0.0-rc13 or earlier
+		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
 				$this->_old_remove_unregistered_clients = true;
@@ -459,7 +459,7 @@ class FontAwesome {
 			 * Delete the main option to make sure it's removed entirely, including
 			 * from the autoload cache.
 			 *
-			 * delete_option() returns false when it fails, including when the
+			 * Function delete_option() returns false when it fails, including when the
 			 * option does not exist. We know the option exists, because we just
 			 * queried it above. So any other failure should halt the upgrade
 			 * process to avoid inconsistent states.
@@ -756,7 +756,7 @@ class FontAwesome {
 			$v3_deprecation_command = new FontAwesome_Command(
 				function() use ( $v3deprecation_warning_data ) {
 					$current_screen = get_current_screen();
-					if ( $current_screen && $current_screen->id !== fa()->screen_id ) {
+					if ( $current_screen && fa()->screen_id !== $current_screen->id ) {
 						fa()->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
 					}
 				}
