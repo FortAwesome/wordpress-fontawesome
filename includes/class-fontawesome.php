@@ -367,7 +367,7 @@ class FontAwesome {
 	 * Callback for init.
 	 *
 	 * Internal use only.
-	 * 
+	 *
 	 * @ignore
 	 * @internal
 	 */
@@ -464,7 +464,7 @@ class FontAwesome {
 			 * queried it above. So any other failure should halt the upgrade
 			 * process to avoid inconsistent states.
 			 */
-			if(! delete_option( self::OPTIONS_KEY ) ) {
+			if ( ! delete_option( self::OPTIONS_KEY ) ) {
 				throw UpgradeException::main_option_delete();
 			}
 
@@ -472,7 +472,7 @@ class FontAwesome {
 			 * If the version is still not set for some reason, set it to a
 			 * default of the latest available version.
 			 */
-			if( ! isset( $upgraded_options['version'] ) ) {
+			if ( ! isset( $upgraded_options['version'] ) ) {
 				$upgraded_options['version'] = fa()->latest_version();
 			}
 
@@ -842,7 +842,6 @@ class FontAwesome {
 					<?php
 				}
 			},
-
 		);
 
 		add_action(

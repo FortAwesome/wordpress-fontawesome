@@ -536,7 +536,7 @@ class ClientPreferencesSchemaException extends FontAwesome_ServerException {}
 /**
  * Indicates a problem during upgrade process.
  *
- * @since 4.0.0 
+ * @since 4.0.0
  */
 class UpgradeException extends FontAwesome_ServerException {
 	/**

@@ -8,7 +8,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
  *
  * Internal use only.
  *
- * @internal 
+ * @internal
  * @ignore
  */
 class FontAwesome_Command {
