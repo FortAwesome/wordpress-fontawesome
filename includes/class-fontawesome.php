@@ -841,7 +841,7 @@ class FontAwesome {
 					</tr>
 					<?php
 				}
-			},
+			}
 		);
 
 		add_action(
