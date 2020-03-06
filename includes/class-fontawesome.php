@@ -1552,8 +1552,7 @@ EOT;
 			);
 		}
 
-		add_filter(
-			'script_loader_tag',
+		$script_loader_tag_command = new FontAwesome_Command(
 			function ( $html, $handle ) {
 				$revised_html = $html;
 
@@ -1571,7 +1570,12 @@ EOT;
 				}
 
 				return $revised_html;
-			},
+			}
+		);
+
+		add_filter(
+			'script_loader_tag',
+			[ $script_loader_tag_command, 'run' ],
 			11,
 			2
 		);
