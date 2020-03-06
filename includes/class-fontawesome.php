@@ -726,15 +726,19 @@ class FontAwesome {
 			[ $admin_menu_command, 'run' ]
 		);
 
-		add_filter(
-			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
-			function( $links ) {
+		$plugin_action_links_command = new FontAwesome_Command(
+			function ( $links ) {
 				$mylinks = array(
 					/* translators: label for link to settings page on plugin listing */
-					'<a href="' . $this->settings_page_url() . '">' . esc_html__( 'Settings', 'font-awesome' ) . '</a>',
+					'<a href="' . fa()->settings_page_url() . '">' . esc_html__( 'Settings', 'font-awesome' ) . '</a>',
 				);
 				return array_merge( $links, $mylinks );
 			}
+		);
+
+		add_filter(
+			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
+			[ $plugin_action_links_command, 'run' ]
 		);
 
 		add_action(
