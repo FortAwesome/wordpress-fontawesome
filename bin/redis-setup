@@ -2,12 +2,50 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
+ENV_LOCAL=$DIR/../.env.local
+
+if [ -f $ENV_LOCAL ]; then 
+  source $ENV_LOCAL
+fi
 
 $WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html $WP_CONTAINER wp --allow-root plugin install wp-redis
 
 if [ "$?" != "0" ]; then
   echo "FAILED when installing the wp-redis plugin"
   exit 1
+fi
+
+if [[ ! -z "$CACHE_HOST" ]] ; then
+
+  if [[ ! -z "$CACHE_PORT" ]] ; then
+    WP_REDIS_PORT=$CACHE_PORT
+  else
+    WP_REDIS_PORT=6379
+  fi
+
+  if [[ ! -z "$CACHE_AUTH" ]] ; then
+    WP_REDIS_AUTH=$CACHE_AUTH
+  else
+    WP_REDIS_AUTH=12345
+  fi
+
+  if [[ ! -z "$CACHE_DB" ]] ; then
+    WP_REDIS_DB=$CACHE_DB
+  else
+    WP_REDIS_DB=0
+  fi
+
+  REDIS_CONFIG_PHP="\$redis_server = array(\'host\' => \'$CACHE_HOST\', \'port\' => $WP_REDIS_PORT, \'auth\' => \'$WP_REDIS_AUTH\', \'database\' => $WP_REDIS_DB, );"
+
+  $WP_SUDO $DOCKER exec -it -w /var/www/html $WP_CONTAINER grep -P "^[$]redis_server" wp-config.php > /dev/null;
+
+  if [ $? == 0 ]; then
+    echo "Found existing redis_server config in wp-config.php. Changing..."
+    $WP_SUDO $DOCKER exec -it -w /var/www/html $WP_CONTAINER sed -ri "/^[$]redis_server.*?;$/ s/^.*$/$REDIS_CONFIG_PHP/" wp-config.php
+  else
+    echo "Adding redis_server config to wp-config.php..."
+    $WP_SUDO $DOCKER exec -it -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user:www-data $WP_CONTAINER sed -ri "2i$REDIS_CONFIG_PHP" wp-config.php
+  fi
 fi
 
 $WP_SUDO $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u user:www-data $WP_CONTAINER wp plugin activate wp-redis

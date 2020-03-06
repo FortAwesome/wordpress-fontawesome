@@ -114,18 +114,22 @@ This file is not checked into git. It's listed in `.gitignore`.
 ### Redis Cache Extra Steps
 
 If you know that you'll be install the WP Redis plugin to test behavior with caching,
-then you'll need to add the following environment variables to `.env.local` as well:
+then you'll need to add at least the following environment variable to `.env.local` as well:
 
 ```bash
 CACHE_HOST=host.docker.internal
-CACHE_PORT=6379
 ```
 
-This assumes that your development environment works like it would at Font Awesome,
-where the redis server runs on port `6379` on the host system, and your version
-of Docker supports the `host.docker.internal` special host name to route from the
-container to the host. If you have some other configuration, you should set it
-accordingly here.
+This assumes that your version of Docker supports the `host.docker.internal`
+special host name to route from the container to the host. If you have some
+other configuration, you should set it accordingly here.
+
+The following are optional:
+```bash
+CACHE_PORT=1111 # default: 6379
+CACHE_AUTH=1111 # default: 12345
+CACHE_DB=1111 # default: 0
+```
 
 ### Font Awesome Internal Extra steps
 
