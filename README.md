@@ -39,7 +39,6 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
     * [Use a Kit](#use-a-kit)
 - [Loading Efficiency and Subsetting](#loading-efficiency-and-subsetting)
     * [Long-term Disk Cache](#long-term-disk-cache)
-    * [The Whole Internet Warms the Cache](#the-whole-internet-warms-the-cache)
     * [All Icons vs Subset in WordPress](#all-icons-vs-subset-in-wordpress)
     * [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
     * [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
@@ -597,16 +596,6 @@ hit the network but loads from the browser's disk cache.
 (The CSS also causes the underlying webfont files to be loaded. The story is the
 same, subsequent loads will normally use the browser's disk cache and not use
 the network.)
-
-## The Whole Internet Warms the Cache
-
-There are lots of web sites that use Font Awesome, and very often they do so
-by simply loading `all.css` or `all.js`. When a browser loads that resource
-for a specific version of Font Awesome on site A, and caches it, then it's already
-cached when the same browser visits site B where the same resource is required.
-
-In that case, even the first load of `all.css` for that browser's visit to site B
-would already be loaded from the browser's disk cache.
 
 ## All Icons vs Subset in WordPress
 

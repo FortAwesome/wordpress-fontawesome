@@ -13,12 +13,12 @@ use \WP_Error, \InvalidArgumentException;
  */
 class FontAwesome_API_Settings {
 	/**
-	 * Name of the settings file that will be stored adjacent to wp-config.php.
+	 * Name of the option used to store API settings.
 	 *
 	 * @since 4.0.0
 	 * @ignore
 	 */
-	const FILENAME = 'font-awesome-api.ini';
+	const OPTIONS_KEY = 'font-awesome-api-settings';
 
 	/**
 	 * Current access token.
@@ -53,6 +53,46 @@ class FontAwesome_API_Settings {
 	protected static $instance = null;
 
 	/**
+	 * Encryption method.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	protected $_encryption_method = null;
+
+	/**
+	 * Encryption cipher length.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	protected $_encryption_cipher_length = null;
+
+	/**
+	 * Encryption key.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	protected $_encryption_key = null;
+
+	/**
+	 * Encryption salt.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	protected $_encryption_salt = null;
+
+	/**
+	 * Preferred encryption method.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	const PREFERRED_ENCRYPTION_METHOD = 'aes-256-ctr';
+
+	/**
 	 * Returns the FontAwesome_API_Settings singleton instance.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
@@ -83,59 +123,42 @@ class FontAwesome_API_Settings {
 	 * @ignore
 	 */
 	private function __construct() {
-		$initial_data = self::read_from_file();
+		$this->initialize();
+	}
 
-		if ( ! boolval( $initial_data ) ) {
+	/**
+	 * Initialize and instance
+	 *
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public function initialize() {
+		$this->prepare_encryption();
+
+		$option = get_option( self::OPTIONS_KEY );
+
+		if (
+			! is_array( $option ) ||
+			! isset( $option['api_token'] ) ||
+			! array_key_exists( 'access_token', $option ) ||
+			! array_key_exists( 'access_token_expiration_time', $option )
+		) {
 			return;
-		} else {
-			if ( isset( $initial_data['api_token'] ) ) {
-				$this->_api_token = $initial_data['api_token'];
-			}
-			if ( isset( $initial_data['access_token'] ) ) {
-				$this->_access_token = $initial_data['access_token'];
-			}
-			if ( isset( $initial_data['access_token_expiration_time'] ) ) {
-				$int_val = intval( $initial_data['access_token_expiration_time'] );
-
-				if ( 0 !== $int_val ) {
-					$this->_access_token_expiration_time = $int_val;
-				} else {
-					$this->_access_token_expiration_time = null;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Reads ini file into an associative array, or returns false
-	 * if the file does not exist or there is an error.
-	 *
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @ignore
-	 * @internal
-	 */
-	protected static function read_from_file() {
-		$config_path = self::ini_path();
-
-		if ( ! file_exists( $config_path ) ) {
-			return false;
 		}
 
-		return parse_ini_file( $config_path, true );
-	}
+		$this->_api_token = is_string( $option['api_token'] )
+			? $this->decrypt( $option['api_token'] )
+			: null;
 
-	/**
-	 * Returns the path to our font-awesome-api.ini file where we'll store
-	 * API token and access token data.
-	 *
-	 * Internal use only. Not part of this plugin's public API.
-	 *
-	 * @ignore
-	 * @internal
-	 */
-	public static function ini_path() {
-		return trailingslashit( ABSPATH ) . self::FILENAME;
+		$this->_access_token = is_string( $option['access_token'] )
+			? $this->decrypt( $option['access_token'] )
+			: null;
+
+		$this->_access_token_expiration_time = is_numeric( $option['access_token_expiration_time'] )
+			? $option['access_token_expiration_time']
+			: null;
 	}
 
 	/**
@@ -145,52 +168,59 @@ class FontAwesome_API_Settings {
 	 *
 	 * @ignore
 	 * @internal
-	 * @return bool whether write succeeded
+	 * @return bool whether write succeeded or needs no update
 	 */
 	public function write() {
-		$date                         = date( DATE_RFC2822 );
-		$api_token                    = $this->api_token();
-		$access_token                 = $this->access_token();
-		$access_token_expiration_time = $this->access_token_expiration_time();
-		$contents                     = <<< EOD
-; Font Awesome API Settings
-;
-; Created by the font-awesome plugin on $date
-;
-; This was created when you added your Font Awesome API Token in the plugin's
-; settings page. It allows your WordPress server to connect to your Font Awesome
-; account for using kits and such.
-;
-; Use the plugin's settings page to manage the contents of this file.
-; To get rid of it entirely, instead of just deleting this file, use the
-; plugin settings page to delete the API Token. That will cause this whole file
-; to go away, and also do the other cleanup necessary in the database.
+		$new_api_token = is_string( $this->api_token() )
+			? $this->encrypt( $this->api_token() )
+			: null;
 
-EOD;
-		// Write each setting to the file conditionally, if it doesn't have
-		// a string value in memory, don't write it at all.
-		if ( is_string( $api_token ) ) {
-			$contents .= "\napi_token = \"" . $api_token . "\"\n";
-		}
+		$new_access_token = is_string( $this->access_token() )
+			? $this->encrypt( $this->access_token() )
+			: null;
 
-		if ( is_string( $access_token ) ) {
-			$contents .= "\naccess_token = \"" . $access_token . "\"\n";
-		}
+		$new_access_token_expiration_time = is_numeric( $this->access_token_expiration_time() )
+			? $this->access_token_expiration_time()
+			: null;
 
-		if ( is_int( $access_token_expiration_time ) ) {
-			$contents .= "\naccess_token_expiration_time = " . $access_token_expiration_time . "\n";
-		}
+		$new_option_value = array(
+			'api_token'                    => $new_api_token,
+			'access_token'                 => $new_access_token,
+			'access_token_expiration_time' => $new_access_token_expiration_time,
+		);
 
-		if ( ! @file_put_contents( self::ini_path(), $contents ) ) {
-			return false;
-		} else {
+		$old_option_value = get_option( self::OPTIONS_KEY );
+
+		if (
+			is_array( $old_option_value ) &&
+			array_key_exists( 'api_token', $old_option_value ) &&
+			$old_option_value['api_token'] === $new_option_value['api_token'] &&
+			array_key_exists( 'access_token', $old_option_value ) &&
+			$old_option_value['access_token'] === $new_option_value['access_token'] &&
+			array_key_exists( 'access_token_expiration_time', $old_option_value ) &&
+			$old_option_value['access_token_expiration_time'] === $new_option_value['access_token_expiration_time']
+		) {
+			// They are already equivalent, so we don't need to write again.
 			return true;
 		}
+
+		if ( file_exists( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' ) ) {
+			/**
+			 * Remove the old API settings file if it exists.
+			 * Anything previously stored in it will be obsolete.
+			 */
+			@unlink( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' );
+		}
+
+		return update_option(
+			self::OPTIONS_KEY,
+			$new_option_value
+		);
 	}
 
 	/**
 	 * Removes current API Token and related settings, setting them all to null,
-	 * and deletes the backing ini file store.
+	 * and deletes the option store.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
@@ -198,7 +228,7 @@ EOD;
 	 * @ignore
 	 */
 	public function remove() {
-		wp_delete_file( self::ini_path() );
+		delete_option( self::OPTIONS_KEY );
 		self::reset();
 	}
 
@@ -337,6 +367,115 @@ EOD;
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Determines encryption method, key, salt, and cipher iv length if
+	 * the openssl extension is available.
+	 *
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public function prepare_encryption() {
+		if ( ! extension_loaded( 'openssl' ) ) {
+			return;
+		}
+
+		$methods = openssl_get_cipher_methods();
+		$method  = null;
+
+		if ( array_search( self::PREFERRED_ENCRYPTION_METHOD, $methods, true ) ) {
+			$method = self::PREFERRED_ENCRYPTION_METHOD;
+		} elseif ( is_array( $methods ) && count( $methods ) > 0 ) {
+			// Take the first available method as a fallback.
+			$method = $methods[0];
+		}
+
+		if (
+			$method &&
+			defined( 'LOGGED_IN_SALT' ) &&
+			is_string( LOGGED_IN_SALT ) &&
+			defined( 'LOGGED_IN_KEY' ) &&
+			is_string( LOGGED_IN_KEY )
+		) {
+			$this->_encryption_method        = $method;
+			$this->_encryption_cipher_length = openssl_cipher_iv_length( $method );
+			$this->_encryption_key           = LOGGED_IN_KEY;
+			$this->_encryption_salt          = LOGGED_IN_SALT;
+		}
+	}
+
+	/**
+	 * Encrypts and returns data.
+	 *
+	 * Internal use only.
+	 *
+	 * This method is patterned after the Data_Encryption::encrypt() method
+	 * in the Site Kit by Google plugin, version 1.4.0, licensed under Apache v2.0.
+	 * https://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function encrypt( $data ) {
+		if ( ! $this->_encryption_key ) {
+			return $data;
+		}
+
+		$init_vec = openssl_random_pseudo_bytes( $this->_encryption_cipher_length );
+
+		$raw = openssl_encrypt(
+			$data . $this->_encryption_salt,
+			$this->_encryption_method,
+			$this->_encryption_key,
+			0,
+			$init_vec
+		);
+
+		return base64_encode( $init_vec . $raw );
+	}
+
+	/**
+	 * Decrypts and returns data.
+	 *
+	 * Internal use only.
+	 *
+	 * This method is patterned after the Data_Encryption::decrypt() method
+	 * in the Site Kit by Google plugin, version 1.4.0, licensed under Apache v2.0.
+	 * https://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function decrypt( $data ) {
+		if ( ! $this->_encryption_method ) {
+			return $data;
+		}
+
+		$raw = base64_decode( $data, true );
+
+		$init_vec = substr( $raw, 0, $this->_encryption_cipher_length );
+
+		$raw = substr( $raw, $this->_encryption_cipher_length );
+
+		$result = openssl_decrypt(
+			$raw,
+			$this->_encryption_method,
+			$this->_encryption_key,
+			0,
+			$init_vec
+		);
+
+		if (
+			! $result ||
+			substr( $result, - strlen( $this->_encryption_salt ) ) !== $this->_encryption_salt
+		) {
+			return null;
+		}
+
+		return substr( $result, 0, - strlen( $this->_encryption_salt ) );
 	}
 
 	/**

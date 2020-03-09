@@ -58,13 +58,15 @@ export function options(state = {}, action = {}) {
   }
 }
 
+const OPTIONS_FORM_INITIAL_STATE = {
+  hasSubmitted: false,
+  isSubmitting: false,
+  success: false,
+  message: ''
+}
+
 function optionsFormState(
-  state = {
-    hasSubmitted: false,
-    isSubmitting: false,
-    success: false,
-    message: ''
-  }, action = {}) {
+  state = OPTIONS_FORM_INITIAL_STATE, action = {}) {
   const { type, success, message } = action
   
   switch(type) {
@@ -72,6 +74,10 @@ function optionsFormState(
       return { ...state, isSubmitting: true }
     case 'OPTIONS_FORM_SUBMIT_END':
       return { ...state, isSubmitting: false, hasSubmitted: true, success, message }
+    case 'OPTIONS_FORM_STATE_RESET':
+    case 'CHOOSE_AWAY_FROM_KIT_CONFIG':
+    case 'CHOOSE_INTO_KIT_CONFIG':
+      return OPTIONS_FORM_INITIAL_STATE
     case 'ADD_PENDING_OPTION':
       return { ...state, hasSubmitted: false, success: false, message: '' }
     default:

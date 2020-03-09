@@ -48,11 +48,11 @@ function handleRequest(req) {
   }
 
   if ( response instanceof XMLHttpRequest ) {
-    return Promise.reject( responseFailureInterceptor( { request: response } ) )
+    return responseFailureInterceptor( { request: response } )
   }
 
   if ( response instanceof Error ) {
-    return Promise.reject( responseFailureInterceptor( { message: response.message } ) )
+    return responseFailureInterceptor( { message: response.message } )
   }
 
   const status = get( response, 'status' )
@@ -62,7 +62,7 @@ function handleRequest(req) {
   if ( response && status && status < 300 ) {
     return Promise.resolve( responseSuccessInterceptor( response ) )
   } else {
-    return Promise.reject( responseFailureInterceptor( { response } ) )
+    return responseFailureInterceptor( { response } )
   }
 }
 

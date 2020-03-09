@@ -2,6 +2,7 @@
 namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-deactivator.php';
+require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
 
 /**
  * Class ActivationTest
@@ -40,6 +41,7 @@ class DeactivationTest extends \WP_UnitTestCase {
 		$foobar = array( 'foo' => 'bar' );
 		update_option( FontAwesome::OPTIONS_KEY, $foobar );
 		update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $foobar );
+		update_option( FontAwesome_API_Settings::OPTIONS_KEY, $foobar );
 
 		FontAwesome_Deactivator::uninstall();
 
@@ -47,6 +49,10 @@ class DeactivationTest extends \WP_UnitTestCase {
 
 		$this->assertFalse(
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
+		);
+
+		$this->assertFalse(
+			get_option( FontAwesome_API_Settings::OPTIONS_KEY )
 		);
 	}
 }

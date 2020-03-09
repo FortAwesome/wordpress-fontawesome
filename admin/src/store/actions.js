@@ -159,13 +159,19 @@ axios.interceptors.response.use(
       error.uiMessage = reportRequestError({ error: e })
     }
 
-    return error
+    return Promise.reject(error)
   }
 )
 
 export function resetPendingOptions() {
   return {
     type: 'RESET_PENDING_OPTIONS'
+  }
+}
+
+export function resetOptionsFormState() {
+  return {
+    type: 'OPTIONS_FORM_STATE_RESET'
   }
 }
 

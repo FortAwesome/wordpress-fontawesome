@@ -2,6 +2,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome.php';
+require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome-api-settings.php';
 
 /**
  * Fired during plugin deactivation.
@@ -25,5 +26,6 @@ class FontAwesome_Deactivator {
 	public static function uninstall() {
 		delete_option( FontAwesome::OPTIONS_KEY );
 		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
+		delete_option( FontAwesome_API_Settings::OPTIONS_KEY );
 	}
 }

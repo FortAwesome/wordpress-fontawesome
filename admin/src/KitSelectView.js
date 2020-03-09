@@ -6,11 +6,13 @@ import {
   queryKits,
   addPendingOption,
   checkPreferenceConflicts,
-  updateApiToken
+  updateApiToken,
+  resetOptionsFormState
  } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSpinner,
+  faSync,
   faExternalLinkAlt,
   faRedo,
   faSkull, 
@@ -23,12 +25,13 @@ import PropTypes from 'prop-types'
 import size from 'lodash/size'
 import { sprintf, __ } from '@wordpress/i18n'
 
-export default function KitSelectView({ optionSelector }) {
+export default function KitSelectView({ optionSelector, masterSubmitButtonShowing, setMasterSubmitButtonShowing }) {
   const dispatch = useDispatch()
   const kitTokenActive = useSelector(state => state.options.kitToken)
   const kitToken = optionSelector('kitToken')
   const [ pendingApiToken, setPendingApiToken ] = useState(null)
   const [ showingRemoveApiTokenAlert, setShowRemoveApiTokenAlert ] = useState(false)
+  const [ showApiTokenInputForUpdate, setShowApiTokenInputForUpdate ] = useState(false)
   const apiToken = useSelector(state => {
     if( null !== pendingApiToken ) return pendingApiToken
 
@@ -118,9 +121,23 @@ export default function KitSelectView({ optionSelector }) {
 
   const hasSavedApiToken = useSelector(state => !! state.options.apiToken)
 
+  function cancelApiTokenUpdate() {
+    setShowApiTokenInputForUpdate(false)
+    setMasterSubmitButtonShowing(true)
+    dispatch(resetOptionsFormState())
+  }
+
   function ApiTokenInput() {
+
+    useEffect(() => {
+      if ( submitSuccess && showApiTokenInputForUpdate ) {
+        setShowApiTokenInputForUpdate(false)
+        setMasterSubmitButtonShowing(true)
+      }
+    }, [ hasSubmitted ] )
+
     return <>
-      <div className={ styles['field-apitoken'] }>
+      <div className={ classnames( styles['field-apitoken'], { [styles['api-token-update']]: showApiTokenInputForUpdate } )}>
         <label htmlFor="api_token">
           <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faQuestionCircle } size="lg" />
           { __( 'API Token', 'font-awesome' ) }
@@ -177,22 +194,45 @@ export default function KitSelectView({ optionSelector }) {
             <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
           </span>
         }
+        {
+          (showApiTokenInputForUpdate && ! isSubmitting) &&
+        <button onClick={ () => cancelApiTokenUpdate() } className={ styles['button-dismissable'] }>{ __('Nevermind', 'font-awesome') }</button>
+        }
       </div>
     </>
   }
 
   function ApiTokenControl() {
+    function switchToApiTokenUpdate() {
+      dispatch(resetOptionsFormState())
+      setShowApiTokenInputForUpdate(true)
+      setMasterSubmitButtonShowing(false)
+      setShowRemoveApiTokenAlert(false)
+    }
+
     return <div className={ styles['api-token-control-wrapper'] }>
-      <div className={ styles['api-token-control'] }>
-        <p className={ styles['token-saved'] }> 
-          <span>
-            <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
-          </span>
-          { __( 'API Token Saved', 'font-awesome' ) }
-        </p>
+      <div className={ classnames( styles['api-token-control'], { [styles['api-token-update']]: showApiTokenInputForUpdate } )}>
         {
-          !!apiToken &&
-          <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button"><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faTrashAlt } title="remove" alt="remove" /></button>
+          showApiTokenInputForUpdate
+          ? <ApiTokenInput />
+          : <>
+              <p className={ styles['token-saved'] }> 
+                <span>
+                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheckCircle } size="lg" />
+                </span>
+                { __( 'API Token Saved', 'font-awesome' ) }
+              </p>
+              {
+                !!apiToken &&
+                <div className={ styles['button-group'] }>
+                  <button onClick={ () => switchToApiTokenUpdate() } className={ styles['refresh'] } type="button">
+                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSync } title="update" alt="update" />
+                    <span>{ __( 'Update token', 'font-awesome' ) }</span>
+                  </button>
+                  <button onClick={ () => removeApiToken() } className={ styles['remove'] } type="button"><FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faTrashAlt } title="remove" alt="remove" /></button>
+                </div>
+              }
+            </>
         }
       </div>
       {
@@ -312,6 +352,7 @@ export default function KitSelectView({ optionSelector }) {
                   id="kits"
                   name="kit"
                   onChange={ e => handleKitChange({ kitToken: e.target.value }) }
+                  disabled={! masterSubmitButtonShowing }
                   value={ kitToken || '' }
                   >
                     <option key='empty' value=''>{ __( 'Select a kit', 'font-awesome' ) }</option>
@@ -354,5 +395,7 @@ export default function KitSelectView({ optionSelector }) {
 
 KitSelectView.propTypes = {
   optionSelector: PropTypes.func.isRequired,
-  handleOptionChange: PropTypes.func.isRequired
+  handleOptionChange: PropTypes.func.isRequired,
+  masterSubmitButtonShowing: PropTypes.bool.isRequired,
+  setMasterSubmitButtonShowing: PropTypes.func.isRequired
 }

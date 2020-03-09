@@ -23,6 +23,16 @@
   color: #DDE2E6;
 }
 
+.api-token-control-wrapper .field-apitoken p {
+  font-size: unset;
+  font-weight: unset;
+}
+
+.api-token-control-wrapper .api-token-control p svg {
+  padding-right: .5rem;
+  color: unset;
+}
+
 .api-token-control-wrapper {
   display: flex;
   margin-bottom: .75rem;
@@ -31,9 +41,17 @@
   flex-direction: column;
 }
 
+.field-apitoken.api-token-update {
+  border-bottom: none;
+}
+
 .api-token-control {
   display: flex;
   justify-content: space-between;
+}
+
+.api-token-control.api-token-update {
+  flex-direction: column;
 }
 
 .api-token-control-wrapper p {
@@ -43,9 +61,9 @@
   font-weight: 600;
 }
 
-.api-token-control p svg {
+.api-token-control .token-saved span svg {
   padding-right: .5rem;
-  color: #00C346 !important;
+  color: #00C346;
 }
 
 button.remove {
@@ -64,6 +82,24 @@ button.remove {
 button.remove:hover {
   background-color: #DA001D;
   color: #fff;
+}
+
+.button-group button {
+  margin-left: 2em;
+}
+
+.button-dismissable {
+  margin-left: 1rem;
+  line-height: 2.15384615;
+  border: none;
+  background-color: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.15);
+}
+
+.button-dismissable:hover {
+  text-decoration-color: black;
 }
 
 /* Active kit info */

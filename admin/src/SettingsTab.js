@@ -32,6 +32,7 @@ export default function SettingsTab() {
   const isSubmitting = useSelector(state => state.optionsFormState.isSubmitting)
   const pendingOptions = useSelector(state => state.pendingOptions)
   const apiToken = useSelector(state => state.options.apiToken)
+  const [ masterSubmitButtonShowing, setMasterSubmitButtonShowing ] = useState( true )
 
   const optionSelector = option => useSelector(state => 
     has(state.pendingOptions, option)
@@ -70,6 +71,7 @@ export default function SettingsTab() {
 
   function handleSwitchToKitConfig() {
     setUseKit( true )
+    setMasterSubmitButtonShowing( true )
 
     dispatch( chooseIntoKitConfig() )
   }
@@ -142,7 +144,7 @@ export default function SettingsTab() {
       {
         useKit
           ? <>
-            <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
+            <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit } masterSubmitButtonShowing={ masterSubmitButtonShowing } setMasterSubmitButtonShowing={ setMasterSubmitButtonShowing }/>
             { !!kitToken && <KitConfigView kitToken={ kitToken } /> }
           </>
           : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
@@ -150,7 +152,7 @@ export default function SettingsTab() {
     </>
     </div>
     {
-      (!useKit || apiToken) &&
+      (!useKit || ( apiToken && masterSubmitButtonShowing ) ) &&
       <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
         <input
           type="submit"
