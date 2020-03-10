@@ -177,6 +177,25 @@ services:
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php7.2-dev"
 
+   wordpress-php5.6-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-php5.6
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
+       # static production ones in the admin/build dir.
+       # If this is "development", you get webpack. Otherwise, admin/build.
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-php5.6-dev"
+
    wordpress-latest-integration:
      <<:
        - *wordpress_defaults
