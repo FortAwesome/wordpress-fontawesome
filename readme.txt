@@ -92,6 +92,10 @@ You can get more information about using the plugin, details for available setti
 
 == Upgrade Notice ==
 
+= 4.0.0-rc17 =
+
+Security update. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. See Changelog.
+
 = 4.0.0-rc15 =
 
 MAJOR UPDATE, some breaking changes for developers. Improves conflict detection, adds support for kits and internationalization. See Changelog for important details.
@@ -124,6 +128,11 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 
 == Changelog ==
+
+= 4.0.0-rc17 =
+
+**SECURITY:** fixes a vulnerability in how API tokens were being stored, when configured to use a kit. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. Find more details and instructions for updating your API Token on the [Font Awesome blog](https://blog.fontawesome.com/font-awesome-wordpress-plugin-api-token-vulnerability-fixed).
+* a minor bug in how network errors are handled
 
 = 4.0.0-rc16 =
 
