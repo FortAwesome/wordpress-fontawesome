@@ -21,6 +21,7 @@ This is a new, completely re-written plugin, tested with the latest WordPress an
 = Features =
 
 Our official plugin lets you use Font Awesome the way you want:
+
 * Use Pro or Free icons.
 * Leverage the latest release or a specific version of our icons.
 * Choose the tech, either SVG or Web Font.
