@@ -1,5 +1,5 @@
 === Font Awesome ===
-Contributors: fontawesome, mlwilkerson, robmadole, fmbots, deathnfudge
+Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.0.0-rc17
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
@@ -52,7 +52,7 @@ Or you can use basic HTML with [standard Font Awesome syntax](https://fontawesom
 `<i class="fas fa-stroopwafel"></i>`
 
 **Using Pro Icons and Features**
-To enable Pro icons with the CDN, you will need to add your domain to the list allowed domains on your [CDN Settings page](https://fontawesome.com/account/cdn). To configure a kit, get your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens).
+To enable Pro icons with the CDN, you will need to add your domain to the list allowed domains on your [Font Awesome CDN Settings page](https://fontawesome.com/account/cdn). To configure a kit, get your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens).
 
 
 **Troubleshooting with the Plugin**
@@ -69,6 +69,8 @@ Get more information about using the scanner for troubleshooting on the [WordPre
 = Configuring =
 
 The plugin is set to serve Font Awesome Free icons as a Web Font via the Font Awesome CDN by default. You can change the CDN settings right in the plugin. In the simplest case, no additional configuration is required. 
+
+*Note: The plugin is not compatible on WordPress multisite at this time.*
 
 You can get more information about all the available settings and troubleshooting on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
 
@@ -133,6 +135,7 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 = 4.0.0-rc17 =
 
 **SECURITY:** fixes a vulnerability in how API tokens were being stored, when configured to use a kit. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. Find more details and instructions for updating your API Token on the [Font Awesome blog](https://blog.fontawesome.com/font-awesome-wordpress-plugin-api-token-vulnerability-fixed).
+
 * a minor bug in how network errors are handled
 
 = 4.0.0-rc16 =
