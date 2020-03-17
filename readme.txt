@@ -132,6 +132,10 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 == Changelog ==
 
+= 4.0.0-rc18 =
+
+* minor update with additional error logging
+
 = 4.0.0-rc17 =
 
 **SECURITY:** fixes a vulnerability in how API tokens were being stored, when configured to use a kit. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. Find more details and instructions for updating your API Token on the [Font Awesome blog](https://blog.fontawesome.com/font-awesome-wordpress-plugin-api-token-vulnerability-fixed).
