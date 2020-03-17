@@ -26,7 +26,7 @@ export default function ConflictDetectionScannerSection() {
         now: true
       })
     }
-  }, [showConflictDetectionReporter])
+  }, [ showConflictDetectionReporter, store ])
 
   return <div>
     <h2 className={ sharedStyles['section-title'] }>{ __( 'Detect Conflicts with Other Versions of Font Awesome', 'font-awesome' ) }</h2>

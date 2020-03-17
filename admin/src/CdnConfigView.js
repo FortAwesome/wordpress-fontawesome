@@ -22,12 +22,12 @@ import { __ } from '@wordpress/i18n'
 
 const UNSPECIFIED = ''
 
-export default function CdnConfigView({ optionSelector, handleSubmit }) {
-  const usePro = optionSelector('usePro')
-  const technology = optionSelector('technology')
-  const version = optionSelector('version')
-  const v4Compat = optionSelector('v4Compat')
-  const pseudoElements = optionSelector('pseudoElements')
+export default function CdnConfigView({ useOption, handleSubmit }) {
+  const usePro = useOption('usePro')
+  const technology = useOption('technology')
+  const version = useOption('version')
+  const v4Compat = useOption('v4Compat')
+  const pseudoElements = useOption('pseudoElements')
 
   const pendingOptions = useSelector(state => state.pendingOptions)
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
@@ -390,7 +390,7 @@ export default function CdnConfigView({ optionSelector, handleSubmit }) {
 }
 
 CdnConfigView.propTypes = {
-  optionSelector: PropTypes.func.isRequired,
+  useOption: PropTypes.func.isRequired,
   handleOptionChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired
 }

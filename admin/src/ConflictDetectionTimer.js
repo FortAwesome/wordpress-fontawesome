@@ -41,13 +41,11 @@ export default function ConflictDetectionTimer({ addDescription, children }) {
   const [timeRemaining, setTimer] = useState(secondsRemaining(detectConflictsUntil))
   const dispatch = useDispatch()
 
-  const countdown = () => setTimer(secondsRemaining(detectConflictsUntil))
-
   useEffect(() => {
     let timeoutId = null
 
     if(secondsRemaining(detectConflictsUntil) > 0) {
-      timeoutId = setTimeout(countdown, 1000)
+      timeoutId = setTimeout(() => setTimer(secondsRemaining(detectConflictsUntil)), 1000)
     } else {
       setTimer(timerString(0))
       dispatch({
@@ -56,7 +54,7 @@ export default function ConflictDetectionTimer({ addDescription, children }) {
     }
 
     return () => timeoutId && clearTimeout( timeoutId )
-  }, [detectConflictsUntil, timeRemaining])
+  }, [detectConflictsUntil, timeRemaining, dispatch])
 
   return timeRemaining <= 0 ? null : <span className={ sharedStyles['conflict-detection-timer'] }>
     { timerString( timeRemaining ) }

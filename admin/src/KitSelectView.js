@@ -25,10 +25,10 @@ import PropTypes from 'prop-types'
 import size from 'lodash/size'
 import { sprintf, __ } from '@wordpress/i18n'
 
-export default function KitSelectView({ optionSelector, masterSubmitButtonShowing, setMasterSubmitButtonShowing }) {
+export default function KitSelectView({ useOption, masterSubmitButtonShowing, setMasterSubmitButtonShowing }) {
   const dispatch = useDispatch()
   const kitTokenActive = useSelector(state => state.options.kitToken)
-  const kitToken = optionSelector('kitToken')
+  const kitToken = useOption('kitToken')
   const [ pendingApiToken, setPendingApiToken ] = useState(null)
   const [ showingRemoveApiTokenAlert, setShowRemoveApiTokenAlert ] = useState(false)
   const [ showApiTokenInputForUpdate, setShowApiTokenInputForUpdate ] = useState(false)
@@ -134,7 +134,7 @@ export default function KitSelectView({ optionSelector, masterSubmitButtonShowin
         setShowApiTokenInputForUpdate(false)
         setMasterSubmitButtonShowing(true)
       }
-    }, [ hasSubmitted ] )
+    } )
 
     return <>
       <div className={ classnames( styles['field-apitoken'], { [styles['api-token-update']]: showApiTokenInputForUpdate } )}>
@@ -394,7 +394,7 @@ export default function KitSelectView({ optionSelector, masterSubmitButtonShowin
 }
 
 KitSelectView.propTypes = {
-  optionSelector: PropTypes.func.isRequired,
+  useOption: PropTypes.func.isRequired,
   handleOptionChange: PropTypes.func.isRequired,
   masterSubmitButtonShowing: PropTypes.bool.isRequired,
   setMasterSubmitButtonShowing: PropTypes.func.isRequired

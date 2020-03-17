@@ -34,11 +34,13 @@ export default function SettingsTab() {
   const apiToken = useSelector(state => state.options.apiToken)
   const [ masterSubmitButtonShowing, setMasterSubmitButtonShowing ] = useState( true )
 
-  const optionSelector = option => useSelector(state => 
-    has(state.pendingOptions, option)
-    ? state.pendingOptions[option]
-    : state.options[option]
-  )
+  function useOption(option) {
+    return useSelector(state => 
+      has(state.pendingOptions, option)
+      ? state.pendingOptions[option]
+      : state.options[option]
+    )
+  }
 
   function handleSubmit(e) {
     if(!!e && 'function' == typeof e.preventDefault) {
@@ -49,7 +51,7 @@ export default function SettingsTab() {
   }
 
   // The kitToken that may be a pendingOption
-  const kitToken = optionSelector( 'kitToken' )
+  const kitToken = useOption( 'kitToken' )
 
   // The one that's actually saved in the database already
   const activeKitToken = useSelector( state => state.options.kitToken )
@@ -144,10 +146,10 @@ export default function SettingsTab() {
       {
         useKit
           ? <>
-            <KitSelectView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit } masterSubmitButtonShowing={ masterSubmitButtonShowing } setMasterSubmitButtonShowing={ setMasterSubmitButtonShowing }/>
+            <KitSelectView useOption={ useOption } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit } masterSubmitButtonShowing={ masterSubmitButtonShowing } setMasterSubmitButtonShowing={ setMasterSubmitButtonShowing }/>
             { !!kitToken && <KitConfigView kitToken={ kitToken } /> }
           </>
-          : <CdnConfigView optionSelector={ optionSelector } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
+          : <CdnConfigView useOption={ useOption } handleOptionChange={ handleOptionChange } handleSubmit={ handleSubmit }/>
       }
     </>
     </div>
