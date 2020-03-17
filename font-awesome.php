@@ -305,11 +305,23 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				return;
 			}
 
+			$wp_error = null;
+
+			if ( method_exists( $e, 'get_wp_error' ) ) {
+				$wp_error = $e->get_wp_error();
+			}
+
 			echo '<script>';
 			echo "console.group('" . esc_html__( 'Font Awesome Plugin Error Details', 'font-awesome' ) . "');";
 			echo "console.info('message: " . esc_html( self::escape_error_output( $e->getMessage() ) ) . "');";
 			echo "console.info('stack trace:\\n" . esc_html( self::escape_error_output( $e->getTraceAsString() ) ) . "');";
-			echo 'console.groupEnd()';
+
+			if ( $wp_error ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				echo "console.info('" . esc_html( self::escape_error_output( print_r( $wp_error, true ) ) ) . "');";
+			}
+
+			echo 'console.groupEnd();';
 			echo '</script>';
 		}
 
