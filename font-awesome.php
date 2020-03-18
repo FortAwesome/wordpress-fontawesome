@@ -301,6 +301,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @param Error|Exception
 		 */
 		public static function emit_error_output_to_console( $e ) {
+			global $wp_version;
+
 			if ( ! is_a( $e, 'Exception' ) && ! is_a( $e, 'Error' ) ) {
 				return;
 			}
@@ -311,6 +313,51 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				$wp_error = $e->get_wp_error();
 			}
 
+			$additional_diagnostics = "";
+			$additional_diagnostics .= "php version: " . phpversion() . "\n";
+			$additional_diagnostics .= "WordPress version: $wp_version\n";
+			$additional_diagnostics .= "multisite: " . (is_multisite() ? 'true' : 'false') . "\n";
+			$additional_diagnostics .= "is_network_admin: " . (is_network_admin() ? 'true' : 'false') . "\n";
+
+			if ( extension_loaded('curl') ) {
+				$additional_diagnostics .= "curl loaded: true\n";
+
+				if( function_exists('curl_version') ) {
+					$curl_version = curl_version();
+
+					$curl_version_keys_to_report = array(
+						'version_number',
+						'features',
+						'ssl_version_number',
+						'version',
+						'host',
+						'ssl_version'
+					);
+
+					foreach( $curl_version_keys_to_report as $key ) {
+						$additional_diagnostics .= array_key_exists($key, $curl_version)
+							? "curl $key: $curl_version[$key]\n"
+							: "curl $key: (not available)\n";
+					}
+				} else {
+					$additional_diagnostics .= "curl_version() not avaialble\n";
+				}
+			} else {
+				$additional_diagnostics .= "curl loaded: false\n";
+			}
+
+			if ( extension_loaded('openssl') ) {
+				$additional_diagnostics .= "openssl loaded: true\n";
+
+				if ( function_exists('openssl_get_cipher_methods') ) {
+					$additional_diagnostics .= "openssl cipher methods: " . implode( ',', openssl_get_cipher_methods() ) . "\n";
+				} else {
+					$additional_diagnostics .= "openssl_get_cipher_methods() not available\n";
+				}
+			} else {
+				$additional_diagnostics .= "openssl loaded: false\n";
+			}
+
 			echo '<script>';
 			echo "console.group('" . esc_html__( 'Font Awesome Plugin Error Details', 'font-awesome' ) . "');";
 			echo "console.info('message: " . esc_html( self::escape_error_output( $e->getMessage() ) ) . "');";
@@ -319,6 +366,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			if ( $wp_error ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				echo "console.info('" . esc_html( self::escape_error_output( print_r( $wp_error, true ) ) ) . "');";
+			}
+
+			if ( strlen( $additional_diagnostics ) > 0 ) {
+				echo "console.info('" . esc_html( self::escape_error_output( $additional_diagnostics ) ) . "');";
 			}
 
 			echo 'console.groupEnd();';
