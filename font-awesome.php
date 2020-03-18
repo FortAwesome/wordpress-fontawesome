@@ -323,6 +323,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				$additional_diagnostics .= "curl loaded: true\n";
 
 				if ( function_exists( 'curl_version' ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_version
 					$curl_version = curl_version();
 
 					$curl_version_keys_to_report = array(
