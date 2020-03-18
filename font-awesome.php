@@ -322,24 +322,27 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			echo '<script>';
 			echo "console.group('" . esc_html__( 'Font Awesome Plugin Error Details', 'font-awesome' ) . "');";
 			echo "console.info('message: " . esc_html( self::escape_error_output( $e->getMessage() ) ) . "');";
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo "console.info('stack trace:\\n" . self::escape_error_output( $e->getTraceAsString() ) . "');";
 
 			if ( $wp_error ) {
 				$codes = $wp_error->get_error_codes();
 				foreach ( $codes as $code ) {
 					echo "console.group('WP_Error');";
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo "console.info('code: $code');";
 
 					$messages = $wp_error->get_error_messages( $code );
 
 					foreach ( $messages as $message ) {
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo "console.info('message: " . self::escape_error_output( $message ) . "');";
 					}
 
 					$data = $wp_error->get_error_data( $code );
 
 					if ( $data ) {
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r, WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo "console.info('data:\\n" . self::escape_error_output( print_r( $data, true ) ) . "');";
 					}
 
