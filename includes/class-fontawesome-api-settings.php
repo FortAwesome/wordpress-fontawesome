@@ -334,7 +334,7 @@ class FontAwesome_API_Settings {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			throw ApiTokenEndpointRequestException::with_wp_error( $response );
+			throw ApiTokenEndpointRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
 		}
 
 		if ( 200 !== $response['response']['code'] ) {
