@@ -52,13 +52,17 @@ function handleSingleWpErrorOutput( wpError ) {
     }
   }
 
-  const status = get(wpError, 'data.status')
-  if(status) output = output.concat(`status: ${status}\n`)
+  const data = get(wpError, 'data')
 
-  const trace = get(wpError, 'data.trace')
-  if(trace) output = output.concat(`trace:\n${trace}\n`)
+  if ( 'string' === typeof data ) {
+    output = output.concat(`data: ${data}\n`)
+  } else {
+    const status = get(wpError, 'data.status')
+    if(status) output = output.concat(`status: ${status}\n`)
 
-  const request = get(wpError, 'data.request')
+    const trace = get(wpError, 'data.trace')
+    if(trace) output = output.concat(`trace:\n${trace}\n`)
+  }
 
   if( output && '' !== output ) {
     console.info(output)
@@ -66,6 +70,7 @@ function handleSingleWpErrorOutput( wpError ) {
     console.info(wpError)
   }
 
+  const request = get(wpError, 'data.request')
   if(request) {
     console.info(request)
   }
