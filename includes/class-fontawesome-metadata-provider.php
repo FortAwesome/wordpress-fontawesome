@@ -119,7 +119,7 @@ class FontAwesome_Metadata_Provider {
 		$response = $this->post( FONTAWESOME_API_URL, $args );
 
 		if ( $response instanceof WP_Error ) {
-			throw ApiRequestException::with_wp_error( $response );
+			throw ApiRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
 		}
 
 		if ( 200 === $response['response']['code'] ) {
