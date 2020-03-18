@@ -326,19 +326,19 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 			if ( $wp_error ) {
 				$codes = $wp_error->get_error_codes();
-				foreach( $codes as $code ) {
+				foreach ( $codes as $code ) {
 					echo "console.group('WP_Error');";
 					echo "console.info('code: $code');";
 
 					$messages = $wp_error->get_error_messages( $code );
 
-					foreach( $messages as $message ) {
+					foreach ( $messages as $message ) {
 						echo "console.info('message: " . self::escape_error_output( $message ) . "');";
 					}
 
 					$data = $wp_error->get_error_data( $code );
 
-					if( $data ) {
+					if ( $data ) {
 						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 						echo "console.info('data:\\n" . self::escape_error_output( print_r( $data, true ) ) . "');";
 					}
@@ -363,7 +363,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @return escaped string, or '' if the argument is not a string
 		 */
 		public static function escape_error_output( $content ) {
-			if ( ! is_string( $content ) ) return '';
+			if ( ! is_string( $content ) ) {
+				return '';
+			}
 
 			$result = preg_replace( '/\'/', "\\'", $content );
 			$result = preg_replace( '/\"/', '\\"', $result );

@@ -34,9 +34,11 @@ function notify_admin_fatal_error( $e ) {
  *   returns that argument unchanged.
  */
 function add_failed_request_diagnostics( $e ) {
-	if ( ! is_wp_error( $e ) ) return $e;
+	if ( ! is_wp_error( $e ) ) {
+		return $e;
+	}
 
-	$additional_diagnostics = "";
+	$additional_diagnostics = '';
 
 	if ( extension_loaded( 'curl' ) ) {
 		$additional_diagnostics .= "curl loaded: true\n";
