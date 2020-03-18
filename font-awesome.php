@@ -319,54 +319,32 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 			$additional_diagnostics .= 'multisite: ' . ( is_multisite() ? 'true' : 'false' ) . "\n";
 			$additional_diagnostics .= 'is_network_admin: ' . ( is_network_admin() ? 'true' : 'false' ) . "\n";
 
-			if ( extension_loaded( 'curl' ) ) {
-				$additional_diagnostics .= "curl loaded: true\n";
-
-				if ( function_exists( 'curl_version' ) ) {
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_version
-					$curl_version = curl_version();
-
-					$curl_version_keys_to_report = array(
-						'version_number',
-						'features',
-						'ssl_version_number',
-						'version',
-						'host',
-						'ssl_version',
-					);
-
-					foreach ( $curl_version_keys_to_report as $key ) {
-						$additional_diagnostics .= array_key_exists( $key, $curl_version )
-							? "curl $key: $curl_version[$key]\n"
-							: "curl $key: (not available)\n";
-					}
-				} else {
-					$additional_diagnostics .= "curl_version() not avaialble\n";
-				}
-			} else {
-				$additional_diagnostics .= "curl loaded: false\n";
-			}
-
-			if ( extension_loaded( 'openssl' ) ) {
-				$additional_diagnostics .= "openssl loaded: true\n";
-
-				if ( function_exists( 'openssl_get_cipher_methods' ) ) {
-					$additional_diagnostics .= 'openssl cipher methods: ' . implode( ',', openssl_get_cipher_methods() ) . "\n";
-				} else {
-					$additional_diagnostics .= "openssl_get_cipher_methods() not available\n";
-				}
-			} else {
-				$additional_diagnostics .= "openssl loaded: false\n";
-			}
-
 			echo '<script>';
 			echo "console.group('" . esc_html__( 'Font Awesome Plugin Error Details', 'font-awesome' ) . "');";
 			echo "console.info('message: " . esc_html( self::escape_error_output( $e->getMessage() ) ) . "');";
-			echo "console.info('stack trace:\\n" . esc_html( self::escape_error_output( $e->getTraceAsString() ) ) . "');";
+			echo "console.info('stack trace:\\n" . self::escape_error_output( $e->getTraceAsString() ) . "');";
 
 			if ( $wp_error ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				echo "console.info('" . esc_html( self::escape_error_output( print_r( $wp_error, true ) ) ) . "');";
+				$codes = $wp_error->get_error_codes();
+				foreach( $codes as $code ) {
+					echo "console.group('WP_Error');";
+					echo "console.info('code: $code');";
+
+					$messages = $wp_error->get_error_messages( $code );
+
+					foreach( $messages as $message ) {
+						echo "console.info('message: " . self::escape_error_output( $message ) . "');";
+					}
+
+					$data = $wp_error->get_error_data( $code );
+
+					if( $data ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						echo "console.info('data:\\n" . self::escape_error_output( print_r( $data, true ) ) . "');";
+					}
+
+					echo 'console.groupEnd();';
+				}
 			}
 
 			if ( strlen( $additional_diagnostics ) > 0 ) {
@@ -382,9 +360,12 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 *
 		 * @internal
 		 * @ignore
+		 * @return escaped string, or '' if the argument is not a string
 		 */
-		public static function escape_error_output( $trace ) {
-			$result = preg_replace( '/\'/', "\\'", $trace );
+		public static function escape_error_output( $content ) {
+			if ( ! is_string( $content ) ) return '';
+
+			$result = preg_replace( '/\'/', "\\'", $content );
 			$result = preg_replace( '/\"/', '\\"', $result );
 			$result = preg_replace( '/\n/', '\\n', $result );
 
