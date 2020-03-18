@@ -112,6 +112,18 @@ function build_wp_error( $e, $code ) {
 			);
 		}
 
+		if ( method_exists( $e, 'get_wp_error' ) ) {
+			$wpe = $e->get_wp_error();
+
+			if ( $wpe ) {
+				$current->add(
+					$wpe->get_error_code(),
+					$wpe->get_error_message(),
+					$wpe->get_error_data()
+				);
+			}
+		}
+
 		return $current;
 	} else {
 		try {
