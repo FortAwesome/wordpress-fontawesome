@@ -34,7 +34,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 				'code'    => 200,
 				'message' => 'OK',
 			),
-			'body'     => '{"data":{"releases":[{"version":"5.0.1"},{"version":"5.0.2"},{"version":"5.0.3"},{"version":"5.0.4"},{"version":"5.0.6"},{"version":"5.0.8"},{"version":"5.0.9"},{"version":"5.0.10"},{"version":"5.0.12"},{"version":"5.0.13"},{"version":"5.1.0"},{"version":"5.1.1"},{"version":"5.2.0"},{"version":"5.3.1"},{"version":"5.4.1"},{"version":"5.4.2"},{"version":"5.5.0"},{"version":"5.6.0"},{"version":"5.6.1"},{"version":"5.6.3"},{"version":"5.7.0"},{"version":"5.7.1"},{"version":"5.7.2"},{"version":"5.8.0"},{"version":"5.8.1"},{"version":"5.8.2"},{"version":"5.9.0"},{"version":"5.10.0"},{"version":"5.10.1"},{"version":"5.10.2"},{"version":"5.11.0"},{"version":"5.11.1"},{"version":"5.11.2"},{"version":"5.12.0"},{"version":"5.12.1"}]}}'
+			'body'     => '{"data":{"releases":[{"version":"5.0.1"},{"version":"5.0.2"},{"version":"5.0.3"},{"version":"5.0.4"},{"version":"5.0.6"},{"version":"5.0.8"},{"version":"5.0.9"},{"version":"5.0.10"},{"version":"5.0.12"},{"version":"5.0.13"},{"version":"5.1.0"},{"version":"5.1.1"},{"version":"5.2.0"},{"version":"5.3.1"},{"version":"5.4.1"},{"version":"5.4.2"},{"version":"5.5.0"},{"version":"5.6.0"},{"version":"5.6.1"},{"version":"5.6.3"},{"version":"5.7.0"},{"version":"5.7.1"},{"version":"5.7.2"},{"version":"5.8.0"},{"version":"5.8.1"},{"version":"5.8.2"},{"version":"5.9.0"},{"version":"5.10.0"},{"version":"5.10.1"},{"version":"5.10.2"},{"version":"5.11.0"},{"version":"5.11.1"},{"version":"5.11.2"},{"version":"5.12.0"},{"version":"5.12.1"}]}}',
 		);
 	}
 
