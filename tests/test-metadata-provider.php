@@ -34,7 +34,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 				'code'    => 200,
 				'message' => 'OK',
 			),
-			'body'     => '{"data":{"versions":["5.0.1","5.0.2","5.0.3","5.0.4","5.0.6","5.0.8","5.0.9","5.0.10","5.0.12","5.0.13","5.1.0","5.1.1","5.2.0","5.3.1","5.4.1","5.4.2","5.5.0","5.6.0","5.6.1","5.6.3","5.7.0","5.7.1","5.7.2","5.8.0","5.8.1","5.8.2","5.9.0","5.10.0","5.10.1","5.10.2","5.11.0","5.11.1","5.11.2"]}}',
+			'body'     => '{"data":{"releases":[{"version":"5.0.1"},{"version":"5.0.2"},{"version":"5.0.3"},{"version":"5.0.4"},{"version":"5.0.6"},{"version":"5.0.8"},{"version":"5.0.9"},{"version":"5.0.10"},{"version":"5.0.12"},{"version":"5.0.13"},{"version":"5.1.0"},{"version":"5.1.1"},{"version":"5.2.0"},{"version":"5.3.1"},{"version":"5.4.1"},{"version":"5.4.2"},{"version":"5.5.0"},{"version":"5.6.0"},{"version":"5.6.1"},{"version":"5.6.3"},{"version":"5.7.0"},{"version":"5.7.1"},{"version":"5.7.2"},{"version":"5.8.0"},{"version":"5.8.1"},{"version":"5.8.2"},{"version":"5.9.0"},{"version":"5.10.0"},{"version":"5.10.1"},{"version":"5.10.2"},{"version":"5.11.0"},{"version":"5.11.1"},{"version":"5.11.2"},{"version":"5.12.0"},{"version":"5.12.1"}]}}',
 		);
 	}
 
@@ -47,7 +47,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 			'body'     => wp_json_encode(
 				array(
 					'errors' => array(
-						0 => [ 'message' => 'syntax error before: "queryversions"' ],
+						0 => [ 'message' => 'syntax error before: "queryreleases"' ],
 					),
 				)
 			),
@@ -104,7 +104,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$caught = false;
 
 		try {
-			$result = $famp->metadata_query( 'query {versions}' );
+			$result = $famp->metadata_query( 'query { releases { version } }' );
 		} catch ( ApiResponseException $e ) {
 			$caught = true;
 			$this->assertNotNull( $e->get_wp_response() );
@@ -121,7 +121,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$caught = false;
 
 		try {
-			$result = $famp->metadata_query( 'query {versions}' );
+			$result = $famp->metadata_query( 'query { releases { version } }' );
 		} catch ( ApiRequestException $e ) {
 			$caught = true;
 			$this->assertNull( $e->get_wp_response() );
@@ -141,7 +141,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$caught = false;
 
 		try {
-			$result = $famp->metadata_query( 'query {versions}' );
+			$result = $famp->metadata_query( 'query { releases { version } }' );
 		} catch ( ApiResponseException $e ) {
 			$caught = true;
 			$this->assertNotNull( $e->get_wp_response() );
@@ -159,18 +159,18 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_query_error_response();
 		$famp          = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$result = json_decode( $famp->metadata_query( 'queryversions' ), true );
+		$result = json_decode( $famp->metadata_query( 'queryreleases' ), true );
 
-		$this->assertEquals( 'syntax error before: "queryversions"', $result['errors'][0]['message'] );
+		$this->assertEquals( 'syntax error before: "queryreleases"', $result['errors'][0]['message'] );
 	}
 
 	public function test_metadata_query_success() {
 		$mock_response = self::build_success_response();
 		$famp          = $this->create_metadata_provider_with_mocked_response( $mock_response );
 
-		$result = json_decode( $famp->metadata_query( 'query {versions}' ), true );
+		$result = json_decode( $famp->metadata_query( 'query { releases { version } }' ), true );
 
-		$this->assertEquals( '5.0.1', $result['data']['versions'][0] );
+		$this->assertEquals( '5.0.1', $result['data']['releases'][0]['version'] );
 	}
 
 	public function handle_pre_http_request_for_valid_current_access_token( $preempt, $parsed_args, $url ) {
@@ -258,7 +258,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		fa_api_settings()->set_access_token( 'xyz' );
 		fa_api_settings()->set_access_token_expiration_time( time() + 3600 );
 
-		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
+		$result = fa_metadata_provider()->metadata_query( 'query { releases { versions } }' );
 
 		fa_api_settings()->remove();
 
@@ -280,7 +280,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		fa_api_settings()->set_access_token_expiration_time( time() - 10 );
 		fa_api_settings()->write();
 
-		$result = fa_metadata_provider()->metadata_query( 'query {versions}' );
+		$result = fa_metadata_provider()->metadata_query( 'query { releases { versions } }' );
 
 		$this->assertTrue( boolval( $result ) );
 		$this->assertEquals( 'new_access_token', fa_api_settings()->access_token() );
@@ -317,7 +317,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 		fa_api_settings()->set_access_token( 'xyz' );
 		fa_api_settings()->set_access_token_expiration_time( time() + 3600 );
 
-		$result = fa_metadata_provider()->metadata_query( 'query {versions}', true );
+		$result = fa_metadata_provider()->metadata_query( 'query { releases { versions } }', true );
 
 		fa_api_settings()->remove();
 

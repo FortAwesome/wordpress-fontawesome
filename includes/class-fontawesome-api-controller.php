@@ -32,7 +32,7 @@ use \WP_REST_Controller, \WP_Error, \Error, \Exception;
  * version numbers:
  *
  * ```
- * query { versions }
+ * query { releases { version } }
  * ```
  *
  * <h3>Internal Use vs. Public API</h3>
