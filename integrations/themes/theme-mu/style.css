@@ -1,0 +1,70 @@
+/*
+ Theme Name:   Theme Mu
+ Theme URI:    http://example.com/theme-mu/
+ Description:  Twenty Seventeen Child Theme
+ Author:       John Doe
+ Author URI:   http://example.com
+ Template:     twentyseventeen
+ Version:      0.0.1
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+ Text Domain:  twenty-seventeen-child
+*/
+
+.theme-mu-explanation {
+  border: 1px solid grey;
+}
+
+.beer:after {
+  content: "\f0fc";
+}
+
+/**
+ * These CSS classes are added by our own template code in this theme. They are not standard Font Awesome classes.
+ * We're doing this to demonstrate how we might tune a theme to be resilient and adaptable to what Font Awesome
+ * version and method is loaded.
+ */
+
+/**
+ * For svg pseudo-elements, you need display: hide;
+ */
+.theme-mu.fa-method-svg.beer:after {
+  display: none;
+}
+
+/**
+ * For svg 5.0.x the font-family specifies the style and doesn't reference the license (Free/Pro).
+ */
+.theme-mu.fa-method-svg.fa-license-free.fa-version-5-0:after {
+    font-family: "Font Awesome 5 Solid";
+}
+.theme-mu.fa-method-svg.fa-license-pro.fa-version-5-0:after {
+  font-family: "Font Awesome 5 Light";
+}
+
+/**
+ * For svg 5.1.x the font-family works the same as for webfonts: does not specify the style, only the license.
+ */
+.theme-mu.fa-method-svg.fa-version-5-1.fa-license-free:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+.theme-mu.fa-method-svg.fa-version-5-1.fa-license-pro:after {
+  font-family: "Font Awesome 5 Pro";
+  font-weight: 300;
+}
+
+/* For webfonts > 5.0.0, the font-family is specified by Free/Pro and the style
+ * is based on the font-weight.
+ */
+.theme-mu.fa-method-webfont.fa-license-free:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+.theme-mu.fa-method-webfont.fa-license-pro:after {
+  font-family: "Font Awesome 5 Pro";
+  font-weight: 300; /* light style */
+}

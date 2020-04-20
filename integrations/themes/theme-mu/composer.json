@@ -1,0 +1,23 @@
+{
+  "name": "fortawesome/wordpress-theme-mu",
+  "description": "Example integration of a WordPress theme using the Font Awesome WordPress composer package.",
+  "keywords": [ "font awesome", "font-awesome", "icon", "icons", "webfont", "svg" ],
+  "homepage": "https://fontawesome.com",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Mike Wilkerson",
+      "email": "mwlkerson@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/FortAwesome/wordpress-fontawesome"
+    }
+  ],
+  "require": {
+    "fortawesome/wordpress-fontawesome": "dev-master"
+  }
+}

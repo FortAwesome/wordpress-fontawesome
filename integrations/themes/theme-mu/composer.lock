@@ -1,0 +1,129 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "f13ace9bbfe8564e1ce8b1a5a46c9fbb",
+    "packages": [
+        {
+            "name": "fortawesome/wordpress-fontawesome",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
+                "reference": "287bf4c96716f4b2f419653ce65b5ede58c0131b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/287bf4c96716f4b2f419653ce65b5ede58c0131b",
+                "reference": "287bf4c96716f4b2f419653ce65b5ede58c0131b",
+                "shasum": ""
+            },
+            "archive": {
+                "exclude": [
+                    "/images",
+                    "/integrations",
+                    "/tests",
+                    ".gitattributes",
+                    ".github",
+                    ".gitignore",
+                    ".travis.yml",
+                    "/images",
+                    "phpunit.xml.dist",
+                    "phpcs.xml.dist",
+                    "/.git",
+                    "proxy-webpack-dev.conf",
+                    "readme.txt",
+                    "docker-php-ext-xdebug.ini",
+                    "docker-compose.yml",
+                    "/bin",
+                    "admin/config",
+                    "admin/src",
+                    "admin/scripts",
+                    "Dockerfile",
+                    ".env",
+                    "DEVELOPMENT.md"
+                ]
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+                "doctrine/annotations": "1.4.0",
+                "doctrine/instantiator": "1.0.5",
+                "doctrine/lexer": "1.0.2",
+                "phpdocumentor/phpdocumentor": "^2.9",
+                "squizlabs/php_codesniffer": "^3.3",
+                "wp-coding-standards/wpcs": "^1.2"
+            },
+            "type": "library",
+            "scripts": {
+                "phpcs": [
+                    "phpcs --standard=phpcs.xml.dist"
+                ],
+                "phpcbf": [
+                    "phpcbf --standard=phpcs.xml.dist"
+                ],
+                "test": [
+                    "bin/phpunit"
+                ],
+                "clean": [
+                    "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip"
+                ],
+                "build.admin": [
+                    "cd admin; yarn; yarn build"
+                ],
+                "cleandocs": [
+                    "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs"
+                ],
+                "docs": [
+                    "vendor/bin/phpdoc"
+                ],
+                "docsrv": [
+                    "cd docsrv && yarn && node index.js"
+                ],
+                "dist": [
+                    "composer clean && composer build.admin && bin/make-wp-dist"
+                ],
+                "dist2trunk": [
+                    "bin/dist-to-trunk.sh"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Wilkerson",
+                    "email": "mwlkerson@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Official Font Awesome WordPress plugin composer package.",
+            "homepage": "https://fontawesome.com",
+            "keywords": [
+                "font awesome",
+                "font-awesome",
+                "icon",
+                "icons",
+                "svg",
+                "webfont"
+            ],
+            "support": {
+                "email": "hello@fontawesome.com",
+                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/master",
+                "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
+            },
+            "time": "2020-04-20T20:16:30+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "fortawesome/wordpress-fontawesome": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
