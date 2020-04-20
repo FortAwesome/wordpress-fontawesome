@@ -31,8 +31,8 @@ if ( ! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	/**
 	 * Active Font Awesome plugin installation directory URL.
 	 *
-	 * The result of `plugin_dir_url()` on the `defines.php` file for the actively
-	 * executing installation of the Font Awesome plugin.
+	 * The url that corresponds to the top level of the executing installation
+	 * of the Font Awesome plugin (where the `defines.php` file lives).
 	 *
 	 * For example, if the example plugin under `integrations/plugins/plugin-sigma`
 	 * in this repo were installed, activated, and its copy of the Font Awesome
@@ -46,9 +46,26 @@ if ( ! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	 * of this constant would look more like this:
 	 * `http://localhost:8765/wp-content/plugins/font-awesome/`
 	 *
+	 * This also accounts for the possibility that current Font Awesome is installed
+	 * as a composer package required by the current theme. For example, if the
+	 * example theme under `integrations/themes/plugin-mu` in this repo were installed,
+	 * activated, and its copy of the Font Awesome plugin were the one selected for execution,
+	 * then the value of this constant would be something like this:
+	 * `http://localhost:8765/wp-content/themes/theme-mu/vendor/fortawesome/wordpress-fontawesome/`
+	 *
 	 * @since 4.0.0
 	*/
-	define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
+	$ss_dir = get_stylesheet_directory();
+	/**
+	 * If the current file path begins with the stylesheet directory, then we
+	 * know that Font Awesome is being loaded as a dependency of a theme.
+	 */
+	if ( $ss_dir === substr( __FILE__, 0, strlen($ss_dir) ) ) {
+		$fa_sub_path = substr( __DIR__, strlen($ss_dir) );
+		define( 'FONTAWESOME_DIR_URL', untrailingslashit( get_stylesheet_directory_uri() ) . '/' . trailingslashit( $fa_sub_path ) );
+	} else {
+		define( 'FONTAWESOME_DIR_URL', plugin_dir_url( __FILE__ ) );
+	}
 }
 
 if ( ! defined( 'FONTAWESOME_ENV' ) ) {
