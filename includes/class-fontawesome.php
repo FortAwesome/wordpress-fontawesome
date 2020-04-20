@@ -2342,7 +2342,7 @@ EOT;
 	/**
 	 * Runs a GraphQL query against the Font Awesome GraphQL API.
 	 *
-	 * It accepts a GraphQL query string like 'query { versions }' and returns
+	 * It accepts a GraphQL query string like 'query { releases { version } }' and returns
 	 * the json encoded body of response from the API server when the response
 	 * has an HTTP status of 200. Otherwise, it throws an exception whose
 	 * message, if non-null, is appropriate for displaying in the WordPress admin ui
