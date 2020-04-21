@@ -123,7 +123,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 */
 		private function __construct() {
-			add_action( 'plugins_loaded', [ &$this, 'load_plugin' ], -1 );
+			add_action( 'wp_loaded', [ &$this, 'load_plugin' ], -1 );
 			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1 );
 		}
 
