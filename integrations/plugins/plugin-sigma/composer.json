@@ -18,6 +18,6 @@
     }
   ],
   "require": {
-    "fortawesome/wordpress-fontawesome": "dev-epic/release-4-0"
+    "fortawesome/wordpress-fontawesome": "dev-theme-using-composer-package"
   }
 }

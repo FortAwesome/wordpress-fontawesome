@@ -5,7 +5,7 @@
 define('THEME_MU_LOG_PREFIX', 'theme-mu');
 define('THEME_MU_VERSION', '0.0.1');
 
-require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
+require_once __DIR__ . '/vendor/autoload.php';
 use function FortAwesome\fa;
 
 add_action(
@@ -20,10 +20,13 @@ add_action(
 );
 
 add_action('after_switch_theme', 'FortAwesome\FontAwesome_Loader::initialize');
-add_action('switch_theme', function() {
+
+function unique_prefix_deactivate_theme() {
 	FortAwesome\FontAwesome_Loader::maybe_deactivate();
 	FortAwesome\FontAwesome_Loader::maybe_uninstall();
-});
+}
+
+add_action('switch_theme', 'unique_prefix_deactivate_theme');
 
 add_action( 'wp_enqueue_scripts', function (){
   $parent_style = 'twentyseventeen';

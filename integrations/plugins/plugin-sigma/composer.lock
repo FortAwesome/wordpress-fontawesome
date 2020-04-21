@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b6f26dd5577796a0fc2ec8a43e070b5",
+    "content-hash": "06f6f3c048542884adcc935e17b6a367",
     "packages": [
         {
             "name": "fortawesome/wordpress-fontawesome",
-            "version": "dev-epic/release-4-0",
+            "version": "dev-theme-using-composer-package",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "6b0a82749dfa49e4c51ae6263119380a8d6c2099"
+                "reference": "3d8abe2b528ac6e51a8fe639e363b056cfcc4dd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/6b0a82749dfa49e4c51ae6263119380a8d6c2099",
-                "reference": "6b0a82749dfa49e4c51ae6263119380a8d6c2099",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/3d8abe2b528ac6e51a8fe639e363b056cfcc4dd0",
+                "reference": "3d8abe2b528ac6e51a8fe639e363b056cfcc4dd0",
                 "shasum": ""
             },
             "archive": {
@@ -56,6 +56,11 @@
                 "wp-coding-standards/wpcs": "^1.2"
             },
             "type": "library",
+            "autoload": {
+                "classmap": [
+                    "font-awesome.php"
+                ]
+            },
             "scripts": {
                 "phpcs": [
                     "phpcs --standard=phpcs.xml.dist"
@@ -110,10 +115,10 @@
             ],
             "support": {
                 "email": "hello@fontawesome.com",
-                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/epic/release-4-0",
+                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/theme-using-composer-package",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2020-02-22T00:16:32+00:00"
+            "time": "2020-04-21T18:18:17+00:00"
         }
     ],
     "packages-dev": [],

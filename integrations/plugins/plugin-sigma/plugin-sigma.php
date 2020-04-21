@@ -16,7 +16,7 @@ define( 'SIGMA_PLUGIN_LOG_PREFIX', 'sigma-plugin' );
 
 // index.php is the entry point that must be required in order to leverage
 // the FontAwesome_Loader.
-require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use function FortAwesome\fa;
 
