@@ -5,9 +5,11 @@
 define('THEME_MU_LOG_PREFIX', 'theme-mu');
 define('THEME_MU_VERSION', '0.0.1');
 
+// Load the composer package.
 require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
 use function FortAwesome\fa;
 
+// Register this theme as a client of Font Awesome.
 add_action(
 	'font_awesome_preferences',
 	function() {
@@ -19,14 +21,24 @@ add_action(
 	}
 );
 
+/**
+ * When this theme is activated, initialize Font Awesome in a way that respects
+ * other clients that may have already initialized it.
+ */
 add_action('after_switch_theme', 'FortAwesome\FontAwesome_Loader::initialize');
 
-function unique_prefix_deactivate_theme() {
+/**
+ * When some other theme is activated, making this one inactive, run the deactivation
+ * an uninstallation logic for Font Awesome. This will respect any other clients
+ * of Font Awesome that may still be active, only cleaning up the db if this theme
+ * would represent the last active client.
+ */
+add_action('switch_theme', function() {
 	FortAwesome\FontAwesome_Loader::maybe_deactivate();
 	FortAwesome\FontAwesome_Loader::maybe_uninstall();
-}
+});
 
-add_action('switch_theme', 'unique_prefix_deactivate_theme');
+// Any other theme functionality...
 
 add_action( 'wp_enqueue_scripts', function (){
   $parent_style = 'twentyseventeen';
