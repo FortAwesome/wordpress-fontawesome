@@ -19,17 +19,11 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 	exit( 1 );
 }
 
-// Give access to tests_add_filter() function.
-/** @noinspection PhpIncludeInspection */
-require_once $_tests_dir . '/includes/functions.php';
-
-function _manually_load_plugin() {
-	require_once dirname( dirname( __FILE__ ) ) . '/index.php';
-	require_once dirname( __FILE__ ) . '/loader/mock_installations/ver_a/index.php';
-	require_once dirname( __FILE__ ) . '/loader/mock_installations/ver_b/index.php';
-}
-set_include_path( get_include_path() . PATH_SEPARATOR . dirname( dirname( __FILE__ ) . '../' ) );
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+/**
+ * Intentionally omitting the manual loading of the plugin under test, because
+ * it's the loading that's being tested for the test cases being run under this
+ * bootstrap.
+ */
 
 // Start up the WP testing environment.
 /** @noinspection PhpIncludeInspection */

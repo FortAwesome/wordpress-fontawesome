@@ -2,9 +2,16 @@
 namespace FortAwesome;
 
 /**
- * FontAwesomeLoaderTest class
+ * FontAwesomeLoaderTestBasic class
  */
-class FontAwesomeLoaderTest extends \WP_UnitTestCase {
+class FontAwesomeLoaderTestBasic extends \WP_UnitTestCase {
+	public function setUp() {
+		require_once dirname( __FILE__ ) . '/mock_installations/ver_a/index.php';
+		require_once dirname( __FILE__ ) . '/mock_installations/ver_b/index.php';
+
+		// Trigger the load of the plugin
+		do_action('wp_loaded');
+	}
 	// It should choose the latest *semantic* version.
 	public function test_select_latest_plugin_installation() {
 		$this->assertEquals(
