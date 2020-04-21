@@ -137,18 +137,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @throws Exception
 		 */
 		private function select_latest_version_plugin_installation() {
-			if ( count( self::$_loaded ) > 0 ) {
+			if ( count( self::$_loaded ) > 0 || count( self::$_data ) === 0 ) {
 				return;
 			}
 
-			$versions = array_keys( self::$data );
-
 			usort(
-				$versions,
+				self::$data,
 				function( $a, $b ) {
-					if ( version_compare( $a, $b, '=' ) ) {
+					if ( version_compare( $a['version'], $b['version'], '=' ) ) {
 						return 0;
-					} elseif ( version_compare( $a, $b, 'gt' ) ) {
+					} elseif ( version_compare( $a['version'], $b['version'], 'gt' ) ) {
 						return -1;
 					} else {
 						return 1;
@@ -156,10 +154,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				}
 			);
 
-			$latest_version = $versions[0];
-			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
+			$selected_installation = self::$data[0];
 
-			if ( empty( $info ) ) {
+			if ( empty( $selected_installation ) ) {
 				throw new Exception(
 					sprintf(
 						esc_html__(
@@ -187,10 +184,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				);
 			}
 
-			self::$_loaded = array(
-				'path'    => $info,
-				'version' => $latest_version,
-			);
+			self::$_loaded = $selected_installation;
 		}
 
 		/**
@@ -522,7 +516,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 					$args    = get_file_data( trailingslashit( $data ) . 'index.php', array( 'version' => 'Version' ) );
 					$version = ( isset( $args['version'] ) && ! empty( $args['version'] ) ) ? $args['version'] : $version;
 				}
-				self::$data[ $version ] = trailingslashit( $data );
+				array_push( self::$data, [ 'version' => $version, 'path' => trailingslashit( $data ) ] );
 			}
 			error_log("DEBUG: FontAwesome_Loader::add ends with new count: " . count( self::$data ) . ", loading from path: $data");
 			return $this;
