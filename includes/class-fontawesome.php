@@ -345,7 +345,7 @@ class FontAwesome {
 	 */
 	public function run() {
 		add_action(
-			'init',
+			'wp_loaded',
 			[ $this, 'init' ],
 			10,
 			/**
