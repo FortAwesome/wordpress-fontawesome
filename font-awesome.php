@@ -137,7 +137,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @throws Exception
 		 */
 		private function select_latest_version_plugin_installation() {
-			if ( count( self::$_loaded ) > 0 || count( self::$_data ) === 0 ) {
+			if ( count( self::$_loaded ) > 0 || count( self::$data ) === 0 ) {
 				return;
 			}
 
@@ -432,8 +432,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function maybe_uninstall() {
-			error_log("DEBUG FontAwesome_Loader::maybe_uninstall has count: " . count( self::$data ) );
-
 			if ( count( self::$data ) === 1 ) {
 				// If there's only installation in the list, then it's
 				// the one that has invoked this function and is is about to
@@ -466,12 +464,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function maybe_deactivate() {
-			error_log("DEBUG FontAwesome_Loader::maybe_deactivate has count: " . count( self::$data ) );
-
 			if ( count( self::$data ) === 1 ) {
-				$version_key = array_keys( self::$data )[0];
-
-				require_once trailingslashit( self::$data[ $version_key ] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[0]['path'] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::deactivate();
 			}
 		}
@@ -510,7 +504,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @return $this
 		 */
 		public function add( $data = '', $version = false ) {
-			error_log("DEBUG: FontAwesome_Loader::add starts with prior count: " . count( self::$data ) . ", loading from path: $data");
 			if ( file_exists( trailingslashit( $data ) . 'index.php' ) ) {
 				if ( false === $version ) {
 					$args    = get_file_data( trailingslashit( $data ) . 'index.php', array( 'version' => 'Version' ) );
@@ -518,7 +511,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				}
 				array_push( self::$data, [ 'version' => $version, 'path' => trailingslashit( $data ) ] );
 			}
-			error_log("DEBUG: FontAwesome_Loader::add ends with new count: " . count( self::$data ) . ", loading from path: $data");
 			return $this;
 		}
 	}
