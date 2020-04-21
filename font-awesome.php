@@ -438,6 +438,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function maybe_uninstall() {
+			error_log("DEBUG FontAwesome_Loader::maybe_uninstall has count: " . count( self::$data ) );
+
 			if ( count( self::$data ) === 1 ) {
 				// If there's only installation in the list, then it's
 				// the one that has invoked this function and is is about to
@@ -470,6 +472,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function maybe_deactivate() {
+			error_log("DEBUG FontAwesome_Loader::maybe_deactivate has count: " . count( self::$data ) );
+
 			if ( count( self::$data ) === 1 ) {
 				$version_key = array_keys( self::$data )[0];
 
