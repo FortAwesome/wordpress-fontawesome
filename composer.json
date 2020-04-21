@@ -63,7 +63,7 @@
     },
     "autoload": {
         "psr-4": {
-          "FortAwesome\\FontAwesome_Loader\\": "font-awesome.php"
+          "classmap": ["font-awesome.php"]
         }
     }
 }
