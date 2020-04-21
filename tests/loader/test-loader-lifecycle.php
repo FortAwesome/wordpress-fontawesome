@@ -29,13 +29,32 @@ class FontAwesomeLoaderTestLifecycle extends \WP_UnitTestCase {
 		FontAwesome_Loader::initialize();
 
 		$this->assertTrue( boolval( get_option( 'font-awesome' ) ) );
+
+		global $fa_initialize_call_count;
+		$this->assertEquals( 1, $fa_initialize_call_count );
 	}
 
 	public function test_maybe_deactivate() {
+		FontAwesome_Loader::initialize();
 		FontAwesome_Loader::maybe_deactivate();
 
 		$this->assertFalse(
 			\get_site_transient( 'font-awesome-releases' )
 		);
+
+		global $fa_deactivate_call_count;
+		$this->assertEquals( 1, $fa_deactivate_call_count );
+	}
+
+	public function test_maybe_uninstall() {
+		FontAwesome_Loader::initialize();
+		FontAwesome_Loader::maybe_uninstall();
+
+		$this->assertFalse(
+			\get_option( 'font-awesome' )
+		);
+
+		global $fa_uninstall_call_count;
+		$this->assertEquals( 1, $fa_uninstall_call_count );
 	}
 }
