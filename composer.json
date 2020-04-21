@@ -62,6 +62,7 @@
         "dist2trunk": "bin/dist-to-trunk.sh"
     },
     "autoload": {
-        "classmap": ["font-awesome.php"]       
+        "classmap": ["font-awesome.php"],
+        "files": ["font-awesome.php"]
     }
 }
