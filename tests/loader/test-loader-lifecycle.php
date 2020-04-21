@@ -19,7 +19,7 @@ class FontAwesomeLoaderTestLifecycle extends \WP_UnitTestCase {
 		$fa_uninstall_call_count  = 0;
 		$fa_initialize_call_count = 0;
 
-		// Trigger the load of the plugin
+		// Trigger the load of the plugin.
 		do_action( 'wp_loaded' );
 	}
 

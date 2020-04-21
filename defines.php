@@ -60,7 +60,7 @@ if ( ! defined( 'FONTAWESOME_DIR_URL' ) ) {
 	 * If the current file path begins with the stylesheet directory, then we
 	 * know that Font Awesome is being loaded as a dependency of a theme.
 	 */
-	if ( $ss_dir === substr( __FILE__, 0, strlen( $ss_dir ) ) ) {
+	if ( substr( __FILE__, 0, strlen( $ss_dir ) ) === $ss_dir ) {
 		$fa_sub_path = substr( __DIR__, strlen( $ss_dir ) );
 		define( 'FONTAWESOME_DIR_URL', untrailingslashit( get_stylesheet_directory_uri() ) . '/' . trailingslashit( $fa_sub_path ) );
 	} else {
