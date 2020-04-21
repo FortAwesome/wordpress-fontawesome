@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "c25593afc6b1cc51b690295ffd9eda0c6d155f49"
+                "reference": "4d530acbfd79de43fb2152cbb9cb60c750ac00c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/c25593afc6b1cc51b690295ffd9eda0c6d155f49",
-                "reference": "c25593afc6b1cc51b690295ffd9eda0c6d155f49",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/4d530acbfd79de43fb2152cbb9cb60c750ac00c6",
+                "reference": "4d530acbfd79de43fb2152cbb9cb60c750ac00c6",
                 "shasum": ""
             },
             "archive": {
@@ -113,7 +113,7 @@
                 "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/theme-using-composer-package",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2020-04-21T22:22:37+00:00"
+            "time": "2020-04-21T23:08:12+00:00"
         }
     ],
     "packages-dev": [],
