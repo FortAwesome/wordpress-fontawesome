@@ -539,6 +539,7 @@ if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
 	 * @since 4.0.0
 	 */
 	function font_awesome_load( $plugin_installation_path = __DIR__, $version = false ) {
+		error_log("DEBUG: FontAwesome_Loader::font_awesome_load from path: $plugin_installation_path");
 		FontAwesome_Loader::instance()
 			->add( $plugin_installation_path, $version );
 	}
