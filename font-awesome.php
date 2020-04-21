@@ -436,7 +436,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				// If there's only installation in the list, then it's
 				// the one that has invoked this function and is is about to
 				// go away, so it's safe to clean up.
-				require_once trailingslashit( self::$data[ 0 ]['path'] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[0]['path'] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::uninstall();
 			}
 		}
@@ -507,7 +507,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 					$args    = get_file_data( trailingslashit( $data ) . 'index.php', array( 'version' => 'Version' ) );
 					$version = ( isset( $args['version'] ) && ! empty( $args['version'] ) ) ? $args['version'] : $version;
 				}
-				array_push( self::$data, [ 'version' => $version, 'path' => trailingslashit( $data ) ] );
+				array_push(
+					self::$data,
+					[
+						'version' => $version,
+						'path'    => trailingslashit( $data ),
+					]
+				);
 			}
 			return $this;
 		}

@@ -11,7 +11,7 @@ class FontAwesomeLoaderTestRedundantVersions extends \WP_UnitTestCase {
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_a/index.php';
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_c/index.php';
 		// Trigger the load of the plugin
-		do_action('wp_loaded');
+		do_action( 'wp_loaded' );
 		\set_site_transient( 'font-awesome-releases', 42 );
 	}
 

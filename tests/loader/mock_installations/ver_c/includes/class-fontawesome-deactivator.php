@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 $fa_deactivate_call_count = 0;
-$fa_uninstall_call_count = 0;
+$fa_uninstall_call_count  = 0;
 
 class FontAwesome_Deactivator {
 	public static function deactivate() {

@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-$fa_activate_call_count = 0;
+$fa_activate_call_count   = 0;
 $fa_initialize_call_count = 0;
 
 class FontAwesome_Activator {
