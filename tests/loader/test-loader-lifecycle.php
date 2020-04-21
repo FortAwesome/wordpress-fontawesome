@@ -31,10 +31,6 @@ class FontAwesomeLoaderTestLifecycle extends \WP_UnitTestCase {
 		$this->assertTrue( boolval( get_option( 'font-awesome' ) ) );
 	}
 
-	/**
-	 * When two of them are loaded, having the same version, and maybe_deactivate()
-	 * is invoked, the plugin should NOT be deactivated.
-	 */
 	public function test_maybe_deactivate() {
 		FontAwesome_Loader::maybe_deactivate();
 
