@@ -62,8 +62,6 @@
         "dist2trunk": "bin/dist-to-trunk.sh"
     },
     "autoload": {
-        "psr-4": {
-          "classmap": ["font-awesome.php"]
-        }
+        "classmap": ["font-awesome.php"]       
     }
 }
