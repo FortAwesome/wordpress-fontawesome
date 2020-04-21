@@ -26,6 +26,6 @@ EOD;
 		$expected = <<<EOD
 line 1\\nline \"2\"\\nline \'3\'
 EOD;
-		$this->assertEquals( $expected, FontAwesome_Loader::escape_stack_trace( $input ) );
+		$this->assertEquals( $expected, FontAwesome_Loader::escape_error_output( $input ) );
 	}
 }
