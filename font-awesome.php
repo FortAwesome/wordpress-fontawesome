@@ -516,7 +516,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @return $this
 		 */
 		public function add( $data = '', $version = false ) {
-			error_log("DEBUG: FontAwesome_Loader::add starts with prior count: " . count( self::$data ) . ", loading from path: $plugin_installation_path");
+			error_log("DEBUG: FontAwesome_Loader::add starts with prior count: " . count( self::$data ) . ", loading from path: $data");
 			if ( file_exists( trailingslashit( $data ) . 'index.php' ) ) {
 				if ( false === $version ) {
 					$args    = get_file_data( trailingslashit( $data ) . 'index.php', array( 'version' => 'Version' ) );
@@ -524,7 +524,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				}
 				self::$data[ $version ] = trailingslashit( $data );
 			}
-			error_log("DEBUG: FontAwesome_Loader::add ends with new count: " . count( self::$data ) . ", loading from path: $plugin_installation_path");
+			error_log("DEBUG: FontAwesome_Loader::add ends with new count: " . count( self::$data ) . ", loading from path: $data");
 			return $this;
 		}
 	}
