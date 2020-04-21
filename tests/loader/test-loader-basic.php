@@ -3,6 +3,8 @@ namespace FortAwesome;
 
 /**
  * FontAwesomeLoaderTestBasic class
+ *
+ * @runTestsInSeparateProcesses
  */
 class FontAwesomeLoaderTestBasic extends \WP_UnitTestCase {
 	public function setUp() {

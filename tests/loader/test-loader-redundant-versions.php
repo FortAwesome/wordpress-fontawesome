@@ -3,6 +3,8 @@ namespace FortAwesome;
 
 /**
  * FontAwesomeLoaderTestRedundantVersions class
+ *
+ * @runTestsInSeparateProcesses
  */
 class FontAwesomeLoaderTestRedundantVersions extends \WP_UnitTestCase {
 	public function setUp() {
