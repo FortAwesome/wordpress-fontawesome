@@ -436,9 +436,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				// If there's only installation in the list, then it's
 				// the one that has invoked this function and is is about to
 				// go away, so it's safe to clean up.
-				$version_key = array_keys( self::$data )[0];
-
-				require_once trailingslashit( self::$data[ $version_key ] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[ 0 ]['path'] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::uninstall();
 			}
 		}
