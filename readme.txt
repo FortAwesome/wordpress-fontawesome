@@ -132,6 +132,10 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 == Changelog ==
 
+= 4.0.0-rc20 =
+
+* developer-oriented update to support building themes that use this code as a composer package
+
 = 4.0.0-rc19 =
 
 * another minor update with additional error logging
