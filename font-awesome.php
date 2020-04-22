@@ -123,7 +123,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 */
 		private function __construct() {
-			add_action( 'plugins_loaded', [ &$this, 'load_plugin' ], -1 );
+			add_action( 'wp_loaded', [ &$this, 'run_plugin' ], -1 );
 			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1 );
 		}
 
@@ -137,18 +137,16 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @throws Exception
 		 */
 		private function select_latest_version_plugin_installation() {
-			if ( count( self::$_loaded ) > 0 ) {
+			if ( count( self::$_loaded ) > 0 || count( self::$data ) === 0 ) {
 				return;
 			}
 
-			$versions = array_keys( self::$data );
-
 			usort(
-				$versions,
+				self::$data,
 				function( $a, $b ) {
-					if ( version_compare( $a, $b, '=' ) ) {
+					if ( version_compare( $a['version'], $b['version'], '=' ) ) {
 						return 0;
-					} elseif ( version_compare( $a, $b, 'gt' ) ) {
+					} elseif ( version_compare( $a['version'], $b['version'], 'gt' ) ) {
 						return -1;
 					} else {
 						return 1;
@@ -156,10 +154,9 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				}
 			);
 
-			$latest_version = $versions[0];
-			$info           = ( isset( self::$data[ $latest_version ] ) ) ? self::$data[ $latest_version ] : [];
+			$selected_installation = self::$data[0];
 
-			if ( empty( $info ) ) {
+			if ( empty( $selected_installation ) ) {
 				throw new Exception(
 					sprintf(
 						esc_html__(
@@ -187,14 +184,11 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				);
 			}
 
-			self::$_loaded = array(
-				'path'    => $info,
-				'version' => $latest_version,
-			);
+			self::$_loaded = $selected_installation;
 		}
 
 		/**
-		 * Loads the plugin installation that has been selected for loading.
+		 * Runs the main plugin logic from the installation that has been selected.
 		 *
 		 * This is public because it's a callback, but should not be considered
 		 * part of this plugin's API.
@@ -206,7 +200,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 * @ignore
 		 */
-		public function load_plugin() {
+		public function run_plugin() {
 			try {
 				$this->select_latest_version_plugin_installation();
 				require self::$_loaded['path'] . 'font-awesome-init.php';
@@ -442,9 +436,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				// If there's only installation in the list, then it's
 				// the one that has invoked this function and is is about to
 				// go away, so it's safe to clean up.
-				$version_key = array_keys( self::$data )[0];
-
-				require_once trailingslashit( self::$data[ $version_key ] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[0]['path'] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::uninstall();
 			}
 		}
@@ -471,9 +463,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 */
 		public static function maybe_deactivate() {
 			if ( count( self::$data ) === 1 ) {
-				$version_key = array_keys( self::$data )[0];
-
-				require_once trailingslashit( self::$data[ $version_key ] ) . 'includes/class-fontawesome-deactivator.php';
+				require_once trailingslashit( self::$data[0]['path'] ) . 'includes/class-fontawesome-deactivator.php';
 				FontAwesome_Deactivator::deactivate();
 			}
 		}
@@ -517,7 +507,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 					$args    = get_file_data( trailingslashit( $data ) . 'index.php', array( 'version' => 'Version' ) );
 					$version = ( isset( $args['version'] ) && ! empty( $args['version'] ) ) ? $args['version'] : $version;
 				}
-				self::$data[ $version ] = trailingslashit( $data );
+				array_push(
+					self::$data,
+					[
+						'version' => $version,
+						'path'    => trailingslashit( $data ),
+					]
+				);
 			}
 			return $this;
 		}

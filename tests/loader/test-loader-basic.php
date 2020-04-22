@@ -2,9 +2,18 @@
 namespace FortAwesome;
 
 /**
- * FontAwesomeLoaderTest class
+ * FontAwesomeLoaderTestBasic class
+ *
+ * @runTestsInSeparateProcesses
  */
-class FontAwesomeLoaderTest extends \WP_UnitTestCase {
+class FontAwesomeLoaderTestBasic extends \WP_UnitTestCase {
+	public function setUp() {
+		require_once dirname( __FILE__ ) . '/mock_installations/ver_a/index.php';
+		require_once dirname( __FILE__ ) . '/mock_installations/ver_b/index.php';
+
+		// Trigger the load of the plugin.
+		do_action( 'wp_loaded' );
+	}
 	// It should choose the latest *semantic* version.
 	public function test_select_latest_plugin_installation() {
 		$this->assertEquals(
@@ -26,6 +35,6 @@ EOD;
 		$expected = <<<EOD
 line 1\\nline \"2\"\\nline \'3\'
 EOD;
-		$this->assertEquals( $expected, FontAwesome_Loader::escape_stack_trace( $input ) );
+		$this->assertEquals( $expected, FontAwesome_Loader::escape_error_output( $input ) );
 	}
 }

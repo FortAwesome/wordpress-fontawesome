@@ -33,6 +33,7 @@ x-dev_env_volumes: &dev_env_volumes
     # Bind mounts for integration themes or plugins
     - ./integrations/js:/var/www/html/wp-content/js
     - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/themes/theme-mu:/var/www/html/wp-content/themes/theme-mu
     - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
     - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
     - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
@@ -84,6 +85,7 @@ x-integration_env_volumes: &integration_env_volumes
   volumes:
     - ./integrations/js:/var/www/html/wp-content/js
     - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/themes/theme-mu:/var/www/html/wp-content/themes/theme-mu
     - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
     - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
     - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta

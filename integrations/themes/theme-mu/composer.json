@@ -1,6 +1,6 @@
 {
-  "name": "fortawesome/wordpress-plugin-sigma",
-  "description": "Example integration of a WordPress plugin embedding the Font Awesome WordPress plugin.",
+  "name": "fortawesome/wordpress-theme-mu",
+  "description": "Example integration of a WordPress theme using the Font Awesome WordPress composer package.",
   "keywords": [ "font awesome", "font-awesome", "icon", "icons", "webfont", "svg" ],
   "homepage": "https://fontawesome.com",
   "license": "GPL-2.0-or-later",

@@ -9,6 +9,12 @@ namespace FortAwesome;
 
 defined( 'WPINC' ) || die;
 
-if ( function_exists( 'FortAwesome\font_awesome_load' ) ) {
-	font_awesome_load( __DIR__ );
+if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
+	function font_awesome_load( $plugin_installation_path = __DIR__, $version = false ) {
+		// noop.
+	}
 }
+
+require_once dirname( __FILE__ ) . '/../../../../index.php';
+
+FontAwesome_Loader::instance()->add( __DIR__, false );

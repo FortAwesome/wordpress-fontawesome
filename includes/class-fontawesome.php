@@ -344,17 +344,7 @@ class FontAwesome {
 	 * @ignore
 	 */
 	public function run() {
-		add_action(
-			'init',
-			[ $this, 'init' ],
-			10,
-			/**
-			 * Explicitly indicate to the init action hook that 0 args should be passed in when invoking the
-			 * callback function, so that the default parameter will be used.
-			 * Otherwise, the callback seems to be called with a single empty string parameter, which confuses it.
-			 */
-			0
-		);
+		$this->init();
 
 		$this->initialize_rest_api();
 
