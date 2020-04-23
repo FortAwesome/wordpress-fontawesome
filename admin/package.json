@@ -1,6 +1,6 @@
 {
   "name": "font-awesome-admin",
-  "version": "4.0.0-rc19",
+  "version": "4.0.0-rc20",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.8",
