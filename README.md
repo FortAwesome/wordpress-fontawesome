@@ -142,7 +142,7 @@ composer require fortawesome/wordpress-fontawesome
 In your code, requiring this package's `index.php` will cause the version of
 the package as bundled by your theme or plugin to be added to the list of
 possible versions to be loaded by the `FontAwesome_Loader`. The loader coordinates
-among potentially multiple uses of the plugin, ensuring that the latest available
+among potentially multiple installations of the plugin, ensuring that the latest available
 version of the package is loaded and used at run time.
 
 ```php
@@ -152,16 +152,51 @@ require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
 use function FortAwesome\fa;
 ```
 
-## Register Hooks
+## Register your code as a client
 
-**Register an activation hook.**
+You should register your code as a client of Font Awesome, even if you have no configuration
+preferences to specify, because the Font Awesome Troubleshoot tab will show the
+WP admin a listing of which plugins or themes are actively using Font Awesome,
+what their preferences are, and what conflicts there may be.
 
-When your theme or plugin is activated,
-it should invoke `FortAwesome\FontAwesome_Loader::initialize`.
+Do not register any preferences if you don't really need to. It will be a better 
+experience for the WP admin user if your theme or plugin can adapt to their changes
+of Font Awesome preferences without complaint from your code.
 
-This will ensure that Font Awesome is initialized, without interfering with any
-existing Font Awesome configuration that may already exist from some other theme
-or plugin's use of this package.
+[See the API documentation](https://fortawesome.github.io/wordpress-fontawesome/index.html) for the preferences schema.
+
+```php
+add_action(
+    'font_awesome_preferences',
+    function() {
+        fa()->register(
+            array(
+                'name' => 'plugin foo'
+                // other preferences would be registered here
+            )
+        );
+    }
+);
+```
+
+## Register Hooks for Initialization and Cleanup
+
+There are basic principles for initialization and cleanup that apply in either case,
+but the implementation details will vary depending on whether you're building a theme
+or a plugin.
+
+### Activation
+
+When your theme or plugin is activated, it should invoke `FortAwesome\FontAwesome_Loader::initialize`.
+
+This will ensure that Font Awesome is initialized without interfering with any
+existing Font Awesome configuration that may already be present from some other theme's
+or plugin's use of this package. In other words `initialize()` can be called multiple times,
+but subsequent invocations will not overwrite or reset prior saved settings.
+
+**Plugin Activation**
+
+Your plugin code should do something like this:
 
 ```php
 register_activation_hook(
@@ -170,14 +205,33 @@ register_activation_hook(
 );
 ```
 
-**Register a deactivation hook.**
+**Theme Activation**
+
+Your theme code should do something like this:
+
+```php
+add_action('after_switch_theme', 'FortAwesome\FontAwesome_Loader::initialize');
+```
+
+### Deactivation
 
 When your theme or plugin is deactivated,
 it should invoke `FortAwesome\FontAwesome_Loader::maybe_deactivate`.
 
 This will ensure that the Font Awesome deactivation logic is run if your theme
 or plugin is the last known client of Font Awesome. Otherwise, the state of the
-database is left alone, for the sake of other themes or plugins.
+database is left alone, for the sake of any remaining Font Awesome clients.
+
+Plugins have a specific deactivation hook that is separate from an uninstall hook.
+There are different things to clean up in each case.
+
+Themes don't have the same lifecyle hooks as plugins. In _your_ theme, you might
+want to handle deactivation and uninstallation differently than the examples below,
+but these will get the job done.
+
+**Plugin Deactivation**
+
+Your plugin code should do something like this:
 
 ```php
 register_deactivation_hook(
@@ -186,7 +240,25 @@ register_deactivation_hook(
 );
 ```
 
-**Register an uninstall hook.**
+**Theme Deactivation**
+
+A theme is deactivated when some other theme is activated instead. At that time,
+the `switch_theme` action is fired. This is an opportunity for your theme to run
+_both_ the deactivation _and_ uninstallation logic. 
+Both should probably be run from that one callback, since there's no separate, subsequent uninstall
+hook for themes as there is for plugins.
+
+(NOTE: if you're a theme developer who knows a better pattern for us to use here, please open
+an issue on this repo with a suggestion.)
+
+```php
+add_action('switch_theme', function() {
+	FortAwesome\FontAwesome_Loader::maybe_deactivate();
+	FortAwesome\FontAwesome_Loader::maybe_uninstall();
+});
+```
+
+### Uninstallation
 
 When your theme or plugin is uninstalled, it
 should invoke `FortAwesome\FontAwesome_Loader::maybe_uninstall`.
@@ -195,6 +267,10 @@ Similarly, this will ensure that the Font Awesome uninstall logic is run if your
 theme or plugin is the last known client of Font Awesome. Otherwise, the state
 of the database is left alone, for the sake of other themes or plugins.
 
+**Plugin Uninstall**
+
+Your code should do something like this:
+
 ```php
 register_uninstall_hook(
 	__FILE__,
@@ -202,32 +278,11 @@ register_uninstall_hook(
 );
 ```
 
-**Register your code as a client.**
+**Theme Uninstall**
 
-You should register as a client of Font Awesome, even if you have no configuration
-preferences to specify, because the Font Awesome Troubleshoot tab will show the
-WP admin a listing of which plugins or themes are actively using Font Awesome,
-what their preference are, and conflicts there may be.
-
-Do no register any preferences if you don't really need to. It will be a better 
-experience for the WP admin user if your theme or plugin can adapt without
-complaint to whatever Font Awesome setup they configure.
-
-[See the API documentation](https://fortawesome.github.io/wordpress-fontawesome/index.html) for the preferences schema.
-
-```php
-add_action(
-	'font_awesome_preferences',
-	function() {
-		fa()->register(
-			array(
-                'name' => 'plugin foo'
-                // other preferences would be registered here
-			)
-		);
-	}
-);
-```
+There's no hook for themes that's analogous to the `register_uninstall_hook` for plugins.
+For themes, our last chance to run uninstall logic is on the `switch_theme` action hook,
+as noted above under _Theme Deactivation_.
 
 # Installing as a Separate Plugin
 
