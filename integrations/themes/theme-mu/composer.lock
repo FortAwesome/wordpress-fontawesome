@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "560790bb442f5c93de84e2466c2d03fc",
+    "content-hash": "f13ace9bbfe8564e1ce8b1a5a46c9fbb",
     "packages": [
         {
             "name": "fortawesome/wordpress-fontawesome",
-            "version": "dev-theme-using-composer-package",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "4d530acbfd79de43fb2152cbb9cb60c750ac00c6"
+                "reference": "5220884d4ad1b06149661dc07e601341e873a116"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/4d530acbfd79de43fb2152cbb9cb60c750ac00c6",
-                "reference": "4d530acbfd79de43fb2152cbb9cb60c750ac00c6",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/5220884d4ad1b06149661dc07e601341e873a116",
+                "reference": "5220884d4ad1b06149661dc07e601341e873a116",
                 "shasum": ""
             },
             "archive": {
@@ -110,10 +110,10 @@
             ],
             "support": {
                 "email": "hello@fontawesome.com",
-                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/theme-using-composer-package",
+                "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/master",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2020-04-21T23:08:12+00:00"
+            "time": "2020-04-23T00:21:14+00:00"
         }
     ],
     "packages-dev": [],
