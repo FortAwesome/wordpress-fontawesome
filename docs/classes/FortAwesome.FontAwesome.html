@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-792614984"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-199146352"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-792614984" class="accordion-body collapse in">
+            <div id="namespace-199146352" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1630961742"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-735808956"></a>
                                 <a href="../namespaces/FortAwesome.html" style="margin-left: 30px; padding-left: 0">FortAwesome</a>
             </div>
-            <div id="namespace-1630961742" class="accordion-body collapse ">
+            <div id="namespace-735808956" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -456,7 +456,7 @@ routes, not to the Font Awesome GraphQL API at <code>api.fontawesome.com</code>.
             <a id="constant_PLUGIN_VERSION" name="constant_PLUGIN_VERSION" class="anchor"></a>
             <article id="constant_PLUGIN_VERSION" class="constant">
                 <h3 class="">PLUGIN_VERSION</h3>
-                <pre class="signature">PLUGIN_VERSION = &#039;4.0.0-rc18&#039;</pre>
+                <pre class="signature">PLUGIN_VERSION = &#039;4.0.0-rc20&#039;</pre>
                 <p><em>The version of this WordPress plugin.</em></p>
                 
             </article>
@@ -1309,7 +1309,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">query(string  <span class="argument">$query_string</span>) : string</pre>
                 <p><em>Runs a GraphQL query against the Font Awesome GraphQL API.</em></p>
-                <p>It accepts a GraphQL query string like 'query { versions }' and returns
+                <p>It accepts a GraphQL query string like 'query { releases { version } }' and returns
 the json encoded body of response from the API server when the response
 has an HTTP status of 200. Otherwise, it throws an exception whose
 message, if non-null, is appropriate for displaying in the WordPress admin ui
@@ -1507,7 +1507,7 @@ has a HTTP 200 status.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on March 17th, 2020 at 18:02.
+                    on April 23rd, 2020 at 02:53.
                 </section>
             </section>
         </section>
