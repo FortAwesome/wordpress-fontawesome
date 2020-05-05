@@ -296,8 +296,8 @@ works the same as if you had included this package via composer.
 
 Here are some relevant APIs:
 - [PHP API](https://fortawesome.github.io/wordpress-fontawesome/index.html): any theme or plugin developer probably needs this
-- (Not Yet Published) [GraphQL API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
-- [JavaScript API](https://fontawesome.com/how-to-use/with-the-api): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
+- [GraphQL API](https://fontawesome.com/how-to-use/graphql-api/intro/getting-started): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
+- [JavaScript API](https://fontawesome.com/how-to-use/javascript-api/setup/getting-started): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
 - [react-fontawesome component](https://github.com/FortAwesome/react-fontawesome): you might prefer this instead of doing low-level JS/SVG rendering
 
 # Usage in Pages, Posts, and Templates
@@ -731,9 +731,9 @@ then rely on the presence of Font Awesome Pro for the version indicated by
 
 # Query the Font Awesome GraphQL API
 
-The Font Awesome GraphQL API allows you to query and search icon metadata.
+The Font Awesome [GraphQL API](https://fontawesome.com/how-to-use/graphql-api/intro/getting-started) allows you to query and search icon metadata.
 
-See also documentation in PHP API on the `FontAwesome::query()` method.
+See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/classes/FortAwesome.FontAwesome.html#method_query) method.
 
 ## public scope queries on api.fontawesome.com
 
