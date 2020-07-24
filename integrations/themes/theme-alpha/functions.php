@@ -19,6 +19,13 @@ add_action( 'wp_enqueue_scripts', function (){
       array( $parent_style ),
       wp_get_theme()->get('Version')
   );
+
+  wp_enqueue_script( 'theme-alpha-fake-kit',
+	  get_stylesheet_directory_uri() . '/fake-kit.js',
+	  [], // no deps
+	  null, // don't add version string
+	  false // don't put it in the footer
+  );
 });
 
 add_action('after_switch_theme', function(){
