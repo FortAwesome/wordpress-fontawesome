@@ -46,7 +46,7 @@
         "doctrine/annotations": "1.4.0",
         "doctrine/lexer": "1.0.2",
         "doctrine/instantiator": "1.0.5",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "phpdocumentor/phpdocumentor": "^2.9"
     },
     "scripts": {
