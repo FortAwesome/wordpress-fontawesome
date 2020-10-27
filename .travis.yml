@@ -1,73 +1,74 @@
-sudo: false
-
-language: php
-
-services:
-  - mysql
-
-notifications:
-  email:
-    on_success: never
-    on_failure: change
-
-cache:
-  directories:
-  - vendor
-  - $HOME/.composer/cache
-
-matrix:
-  include:
-  - php: 7.4
-    env: WP_VERSION=trunk
-  - php: 7.3
-    env: WP_VERSION=latest
-  - php: 7.4
-    env: WP_VERSION=latest
-  - php: 7.3
-    env: WP_VERSION=5.2.5
-  - php: 7.3
-    env: WP_TRAVISCI=phpcs
-  - php: 7.2
-    env: WP_VERSION=latest
-  - php: 7.1
-    env: WP_VERSION=latest
-    # PHP 5.6.20 is the minimum supported version by WordPress, as of WordPress 5.2.0
-    # https://wordpress.org/support/wordpress-version/version-5-2/#php-version-bump
-  - php: 5.6.20
-    # env: WP_VERSION=4.4
-    # The REST API is included in 4.7 and later. If we want to target >= 4.4 < 4.7, we may need to do it by
-    # installing the REST API plugin for those older versions and require that customers do the same.
-    env: WP_VERSION=4.7
-
-before_script:
-- export PATH="$HOME/.composer/vendor/bin:$PATH"
-- export COMPOSER="composer-ci.json"
-- |
-  if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
-    phpenv config-rm xdebug.ini
-  else
-    echo "xdebug.ini does not exist"
-  fi
-- |
-  if [[ ! -z "$WP_VERSION" ]] ; then
-    bash bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
-    composer global require "phpunit/phpunit=4.8.*|5.7.*|6.5.*"
-  fi
-- |
-  if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-    composer global require "squizlabs/php_codesniffer=^3.5.8"
-    composer global require "wp-coding-standards/wpcs=^1.2"
-    phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
-  fi
-
-script:
-- composer install
-- |
-  if [[ ! -z "$WP_VERSION" ]] ; then
-    phpunit --exclude-group output
-    WP_MULTISITE=1 phpunit --exclude-group output
-  fi
-- |
-  if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-    phpcs --standard=phpcs.xml.dist
-  fi
+#sudo: false
+#
+#language: php
+#
+#services:
+#  - mysql
+#
+#notifications:
+#  email:
+#    on_success: never
+#    on_failure: change
+#
+#cache:
+#  directories:
+#  - vendor
+#  - $HOME/.composer/cache
+#
+#matrix:
+#  include:
+#  - php: 7.4
+#    env: WP_VERSION=trunk
+#  - php: 7.3
+#    env: WP_VERSION=latest
+#  - php: 7.4
+#    env: WP_VERSION=latest
+#  - php: 7.3
+#    env: WP_VERSION=5.2.5
+#  - php: 7.3
+#    env: WP_TRAVISCI=phpcs
+#  - php: 7.2
+#    env: WP_VERSION=latest
+#  - php: 7.1
+#    env: WP_VERSION=latest
+#    # PHP 5.6.20 is the minimum supported version by WordPress, as of WordPress 5.2.0
+#    # https://wordpress.org/support/wordpress-version/version-5-2/#php-version-bump
+#  - php: 5.6.20
+#    # env: WP_VERSION=4.4
+#    # The REST API is included in 4.7 and later. If we want to target >= 4.4 < 4.7, we may need to do it by
+#    # installing the REST API plugin for those older versions and require that customers do the same.
+#    env: WP_VERSION=4.7
+#
+#before_script:
+#- export PATH="$HOME/.composer/vendor/bin:$PATH"
+#- export COMPOSER="composer-ci.json"
+#- |
+#  if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
+#    phpenv config-rm xdebug.ini
+#  else
+#    echo "xdebug.ini does not exist"
+#  fi
+#- |
+#  if [[ ! -z "$WP_VERSION" ]] ; then
+#    bash bin/install-wp-tests-travis.sh wordpress_test root '' localhost $WP_VERSION
+#    composer global require "phpunit/phpunit=4.8.*|5.7.*|6.5.*"
+#  fi
+#- |
+#  if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+#    composer global require "squizlabs/php_codesniffer=^3.5.8"
+#    composer global require "wp-coding-standards/wpcs=^1.2"
+#    phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+#  fi
+#
+#script:
+#- composer install
+#- |
+#  if [[ ! -z "$WP_VERSION" ]] ; then
+#    phpunit --exclude-group output
+#    WP_MULTISITE=1 phpunit --exclude-group output
+#  fi
+#- |
+#  if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+#    phpcs --standard=phpcs.xml.dist
+#  fi
+#
