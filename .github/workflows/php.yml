@@ -54,7 +54,7 @@ jobs:
       run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
 
     - name: Install wordpress
-      run: bin/install-wp-tests-travis.sh wordpress_test root '' localhost:3306 ${{ matrix.wordpress }}
+      run: bin/install-wp-tests-ci.sh wordpress_test-${{ matrix.wordpress }} root '' localhost:3306 ${{ matrix.wordpress }}
 
     - name: Install phpunit
       run: composer global require "phpunit/phpunit=6.5.*"
