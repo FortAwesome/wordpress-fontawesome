@@ -41,6 +41,7 @@ matrix:
 
 before_script:
 - export PATH="$HOME/.composer/vendor/bin:$PATH"
+- export COMPOSER="composer-ci.json"
 - |
   if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
     phpenv config-rm xdebug.ini
