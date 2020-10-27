@@ -63,8 +63,8 @@ script:
 - composer install
 - |
   if [[ ! -z "$WP_VERSION" ]] ; then
-    phpunit
-    WP_MULTISITE=1 phpunit
+    phpunit --exclude-group output
+    WP_MULTISITE=1 phpunit --exclude-group output
   fi
 - |
   if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
