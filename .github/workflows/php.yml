@@ -18,7 +18,7 @@ jobs:
               MYSQL_ALLOW_EMPTY_PASSWORD: yes
               MYSQL_DATABASE: wordpress_test
           ports:
-              - 3306
+            - 3306:3306
 
     strategy:
         matrix:
