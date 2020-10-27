@@ -6,19 +6,19 @@ on:
   pull_request:
     branches: [ master ]
 
-services:
-  mysql:
-      image: mysql:5.7
-      env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: wordpress_test
-      ports:
-          - 3306
-
 jobs:
   build:
 
     runs-on: ubuntu-16.04
+
+    services:
+      mysql:
+          image: mysql:5.7
+          env:
+              MYSQL_ALLOW_EMPTY_PASSWORD: yes
+              MYSQL_DATABASE: wordpress_test
+          ports:
+              - 3306
 
     strategy:
         matrix:
