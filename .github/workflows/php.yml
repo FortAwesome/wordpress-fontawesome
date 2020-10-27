@@ -15,8 +15,10 @@ jobs:
       mysql:
           image: mysql:5.7
           env:
-              MYSQL_ALLOW_EMPTY_PASSWORD: yes
               MYSQL_DATABASE: wordpress_test
+              MYSQL_ROOT_PASSWORD: somewordpress
+              MYSQL_USER: wordpress
+              MYSQL_PASSWORD: wordpress
           ports:
             - 3306:3306
 
@@ -54,7 +56,7 @@ jobs:
       run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
 
     - name: Install wordpress
-      run: bin/install-wp-tests-ci.sh wordpress_test-${{ matrix.wordpress }} root '' localhost:3306 ${{ matrix.wordpress }}
+      run: bin/install-wp-tests-ci.sh wordpress_test-${{ matrix.wordpress }} wordpress wordpress localhost:3306 ${{ matrix.wordpress }}
 
     - name: Install phpunit
       run: composer global require "phpunit/phpunit=6.5.*"
