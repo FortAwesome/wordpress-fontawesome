@@ -144,10 +144,10 @@ install_db() {
 	fi
 
 	# create database if it doesn't exist
-	if ! mysql --user="$DB_USER" --password="$DB_PASS" -e "use $DB_NAME"$EXTRA; then
-		mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
-	fi
+	mysql --user="$DB_USER" --password="$DB_PASS"$EXTRA -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 }
+
+apt-get update && apt-get install -y subversion mysql-client
 
 install_wp
 install_test_suite

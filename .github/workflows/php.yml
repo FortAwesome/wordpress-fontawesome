@@ -14,11 +14,9 @@ jobs:
     services:
       mysql:
           image: mysql:5.7
-          env:
+          environment:
               MYSQL_DATABASE: wordpress_test
-              MYSQL_ROOT_PASSWORD: somewordpress
-              MYSQL_USER: wordpress
-              MYSQL_PASSWORD: wordpress
+              MYSQL_ROOT_PASSWORD: password
           ports:
             - 3306:3306
 
@@ -34,6 +32,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    #- name: Install OS packages
+    #  id: apt-cache
+    #  run: apt-get update && apt-get install -y subversion mysql-client
 
     - uses: shivammathur/setup-php@v2
       with:
@@ -56,7 +58,7 @@ jobs:
       run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
 
     - name: Install wordpress
-      run: bin/install-wp-tests-ci.sh wordpress_test-${{ matrix.wordpress }} wordpress wordpress localhost:3306 ${{ matrix.wordpress }}
+      run: bin/install-wp-tests-ci.sh wordpress_test-${{ matrix.wordpress }} root root localhost:3306 ${{ matrix.wordpress }}
 
     - name: Install phpunit
       run: composer global require "phpunit/phpunit=6.5.*"
