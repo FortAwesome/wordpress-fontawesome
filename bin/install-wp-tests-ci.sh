@@ -151,4 +151,4 @@ apt-get update && apt-get install -y subversion mysql-client
 
 install_wp
 install_test_suite
-install_db
+#install_db

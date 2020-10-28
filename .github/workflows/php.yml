@@ -59,6 +59,12 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
 
+    - name: Install OS packages
+      run: apt-get update && apt-get install -y subversion mysql-client
+
+    - name: Setup DB
+      run: mysql --user=root --password=password --host=localhost --port=3306 --protocol=tcp -e 'CREATE DATABASE IF NOT EXISTS wordpress;'
+
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpress mysql password localhost:3306 ${{ matrix.wordpress }}
 
