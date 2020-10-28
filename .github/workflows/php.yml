@@ -159,14 +159,20 @@ jobs:
       if: steps.wordpress-test-cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
-        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/includes/ ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}/includes
-        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/data/ ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}/data
-
-    - name: Install wordpress
-      run: bin/install-wp-tests-ci.sh wordpressdb wordpress password 127.0.0.1:3306 ${{ matrix.wordpress }}
-    
-    - name: Show test config
-      run: cat /tmp/wordpress-tests-lib/wp-tests-config.php
+        DB_USER=wordpress
+        DB_PASS=password
+        DB_HOST=127.0.0.1:3306
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
+        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/data/ $WP_TESTS_DIR/data
+        curl https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/wp-tests-config-sample.php > $WP_TESTS_DIR/wp-tests-config.php
+        # remove all forward slashes in the end
+        WP_CORE_DIR=$(echo ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }} | sed "s:/\+$::")
+        sed -i "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
 
     - name: Install phpunit
       run: composer global require "phpunit/phpunit=4.8.*|5.7.*|6.5.*"
