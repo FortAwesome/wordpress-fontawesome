@@ -161,6 +161,7 @@ jobs:
         mkdir -p ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
         DB_USER=wordpress
         DB_PASS=password
+        DB_NAME=wordpressdb
         DB_HOST=127.0.0.1:3306
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
         svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
