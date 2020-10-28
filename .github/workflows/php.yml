@@ -65,7 +65,7 @@ jobs:
     #    mysql --user=root --password=somewordpress --host=localhost --port=3306 --protocol=tcp -e "GRANT ALL PRIVILEGES ON * . * TO 'mysql'@'localhost';"
 
     - name: Install wordpress
-      run: bin/install-wp-tests-ci.sh wordpress mysql password localhost:3306 ${{ matrix.wordpress }}
+      run: bin/install-wp-tests-ci.sh wordpressdb wordpress password localhost:3306 ${{ matrix.wordpress }}
     
     - name: Show test config
       run: cat /tmp/wordpress-tests-lib/wp-tests-config.php
