@@ -87,27 +87,47 @@ jobs:
       run: |
         if [ "${{ matrix.wordpress }}" == 'latest' ]; then
           curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
-          echo "::set-output name=WORDPRESS_VERSION::$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')"
-        else
-          echo "::set-output name=WORDPRESS_VERSION::${{ matrix.wordpress }}"
+          VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
+          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
+          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+        elif [ "${{ matrix.wordpress }}" == 'trunk' ]; then
+          VERSION=trunk-$(date +'%Y-%m-%d')
+          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
+          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::1"
+          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+        else 
+          VERSION=${{ matrix.wordpress }}
+          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
+          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
+          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
         fi
       id: wordpress-version
 
     - name: Show WordPress Version
       run: echo "The current version is ${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}"
 
-    - name: Cache WordPress download
+    - name: Cache WordPress Core Installation
       id: wordpress-cache
       uses: actions/cache@v2
       with:
-        path: /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}/wordpress.tar.gz
-        key: ${{ runner.os }}-wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}/wordpress.tar.gz') }}
+        path: /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        key: ${{ runner.os }}-wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
 
-    - name: Download WordPress
+    - name: Install WordPress Core
       if: steps.wordpress-cache.outputs.cache-hit != 'true'
       run: |
-        mkdir -p //tmp/${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}
-        curl -s https://wordpress.org/wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}.tar.gz  > /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}/wordpress.tar.gz
+        mkdir -p /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_COR_DIR }}
+        if ${{ steps.wordpress-version.outputs.WORDPRESS_VERSION_IS_TRUNK }} == 1; then
+          mkdir -p /tmp/wordpress-nightly
+          curl https://wordpress.org/nightly-builds/wordpress-latest.zip > /tmp/wordpress-nightly.zip
+          unzip -q /tmp/wordpress-nightly.zip -d /tmp/wordpress-nightly/
+          mv /tmp/wordpress-nightly/wordpress/* ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        else
+          curl -s https://wordpress.org/wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}.tar.gz  > /tmp/wordpress.tar.gz
+          tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        fi
+        curl https://raw.github.com/markoheijnen/wp-mysqli/master/db.php > ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}/wp-content/db.php
 
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpressdb wordpress password 127.0.0.1:3306 ${{ matrix.wordpress }}
