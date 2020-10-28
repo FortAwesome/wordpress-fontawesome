@@ -179,5 +179,4 @@ jobs:
 
     - name: Run PHPUnit
       run: |
-        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
-        phpunit --exclude-group output
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} phpunit --exclude-group output
