@@ -6,14 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  MYSQL_ROOT_PASSWORD: somewordpress
-  MYSQL_DATABASE: wordpressdb
-  MYSQL_USER: wordpress
-  MYSQL_PASSWORD: password
-  MYSQL_PORT: 3306
-  MYSQL_HOST: 127.0.0.1
-
 jobs:
   build:
 
@@ -23,12 +15,14 @@ jobs:
       mysql:
           image: mysql:5.7
           env:
-              MYSQL_ROOT_PASSWORD: ${{ MYSQL_ROOT_PASSWORD }}
-              MYSQL_DATABASE: ${{ MYSQL_DATABASE }}
-              MYSQL_USER: ${{ MYSQL_USER }}
-              MYSQL_PASSWORD: ${{ MYSQL_PASSWORD }}
+              MYSQL_ROOT_PASSWORD: somewordpress
+              MYSQL_DATABASE: wordpressdb
+              MYSQL_USER: wordpress
+              MYSQL_PASSWORD: password
+              PORT: 3306
+              HOST: 127.0.0.1
           ports:
-            - ${{ MYSQL_PORT }}:${{ MYSQL_PORT }}
+            - ${{ services.mysql.env.PORT }}:${{ services.mysql.env.PORT }}
 
     strategy:
         matrix:
