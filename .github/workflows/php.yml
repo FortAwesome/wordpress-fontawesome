@@ -90,11 +90,15 @@ jobs:
         mkdir -p /tmp/apt-sources-${{ steps.date.outputs.DATE }}
         sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-${{ steps.date.outputs.DATE }}
 
-    - name: Install OS packages
+    - name: Download APT Packages
+      if: steps.apt-packages-cache.outputs.cache-hit != 'true'
       run: |
-        sudo mkdir -p /var/lib/apt/lists
         sudo cp -R /tmp/apt-sources-${{ steps.date.outputs.DATE }}/* /var/lib/apt/lists
-        sudo sudo apt-get install -y subversion mysql-client
+        sudo apt-get install -y --download-only subversion mysql-client
+        sudo cp -R /var/cache/apt/archives/* /tmp/apt-packages-${{ steps.date.outputs.DATE }}
+
+    - name: Install OS Packages
+      run: sudo dpkg -i /tmp/apt-packages-${{ steps.date.outputs.DATE }}/*
 
     - name: Verify DB
       run: mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --host=${MYSQL_HOST} --port=${MYSQL_PORT} --protocol=tcp -e 'SHOW DATABASES;'
@@ -190,9 +194,6 @@ jobs:
         sed -i "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
         sed -i "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
         sed -i "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
-
-    - name: Show Test config
-      run: cat ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}/wp-tests-config.php
 
     - name: Install phpunit
       run: composer global require "phpunit/phpunit=4.8.*|5.7.*|6.5.*"
