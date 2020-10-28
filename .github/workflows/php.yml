@@ -67,6 +67,9 @@ jobs:
 
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpress mysql password localhost:3306 ${{ matrix.wordpress }}
+    
+    - name: Show test config
+      run: cat /tmp/wordpress/wp-includes/wp-db.php
 
     - name: Install phpunit
       run: composer global require "phpunit/phpunit=6.5.*"
