@@ -55,8 +55,27 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
 
+    - name: Cache APT Sources Daily
+      id: apt-sources-cache
+      uses: actions/cache@v2
+      with:
+        path: /var/lib/apt/lists
+        key: ${{ runner.os }}-apt-sources
+        run: |
+          if test `find "/var/lib/apt/lists/lock" -mmin +1440`
+            echo "::set-output name=APT_SOURCES_NEED_REFRESH::0"
+            echo "Re-using cached apt sources"
+          then
+            echo "::set-output name=APT_SOURCES_NEED_REFRESH::1"
+            echo "Will refresh apt sources"
+          fi
+
+    - name: Update APT Sources
+      if: steps.apt-sources-cache.outputs.cache-hit != 'true' && steps.apt-sources-cache.outputs.APT_SOURCES_NEED_REFRESH == 1
+      run: sudo apt-get update
+
     - name: Install OS packages
-      run: sudo apt-get update && sudo apt-get install -y subversion mysql-client
+      run: sudo sudo apt-get install -y subversion mysql-client
 
     - name: Verify DB
       run: mysql --user=root --password=somewordpress --host=127.0.0.1 --port=3306 --protocol=tcp -e 'SHOW DATABASES;'
