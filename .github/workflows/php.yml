@@ -6,6 +6,16 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  # Seems like we should be able to use these in the services section below
+  # to keep things DRY, but how?
+  MYSQL_ROOT_PASSWORD: somewordpress
+  MYSQL_DATABASE: wordpressdb
+  MYSQL_USER: wordpress
+  MYSQL_PASSWORD: password
+  MYSQL_PORT: 3306
+  MYSQL_HOST: 127.0.0.1
+
 jobs:
   build:
 
@@ -19,8 +29,6 @@ jobs:
               MYSQL_DATABASE: wordpressdb
               MYSQL_USER: wordpress
               MYSQL_PASSWORD: password
-              PORT: 3306
-              HOST: 127.0.0.1
           ports:
             - 3306:3306
 
@@ -83,7 +91,7 @@ jobs:
       run: sudo sudo apt-get install -y subversion mysql-client
 
     - name: Verify DB
-      run: mysql --user=root --password=${{ services.mysql.env.MYSQL_ROOT_PASSWORD }} --host=${{ services.mysql.env.MYSQL_HOST }} --port=${{ services.mysql.env.MYSQL_PORT }} --protocol=tcp -e 'SHOW DATABASES;'
+      run: mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --host=${MYSQL_HOST} --port=${MYSQL_PORT} --protocol=tcp -e 'SHOW DATABASES;'
 
     - name: Resolve WordPress Version
       run: |
@@ -161,10 +169,10 @@ jobs:
       if: steps.wordpress-test-cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
-        DB_USER=${{ env.MYSQL_USER }}
-        DB_PASS=${{ env.MYSQL_PASSWORD }}
-        DB_NAME=${{ env.MYSQL_DATABASE }}
-        DB_HOST=${{ env.MYSQL_HOST }}:${{ env.MYSQL_PORT }}
+        DB_USER=${MYSQL_USER}
+        DB_PASS=${MYSQL_PASSWORD}
+        DB_NAME=${MYSQL_DATABASE}
+        DB_HOST=${MYSQL_HOST}:${MYSQL_PORT}
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
         svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
         svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/data/ $WP_TESTS_DIR/data
