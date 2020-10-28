@@ -105,7 +105,7 @@ jobs:
 
     - name: Download WordPress
       if: steps.wordpress-cache.outputs.cache-hit != 'true'
-      run: curl -s https://wordpress.org/wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}.tar.gz  /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}/wordpress.tar.gz
+      run: curl -s https://wordpress.org/wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}.tar.gz  > /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}/wordpress.tar.gz
 
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpressdb wordpress password 127.0.0.1:3306 ${{ matrix.wordpress }}
