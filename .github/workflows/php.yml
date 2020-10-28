@@ -85,27 +85,45 @@ jobs:
 
     - name: Resolve WordPress Version
       run: |
+        curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
+        LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
         if [ "${{ matrix.wordpress }}" == 'latest' ]; then
-          curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
-          VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+          VERSION=$LATEST_VERSION
           echo "::set-output name=WORDPRESS_VERSION::$VERSION"
           echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
           echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+          echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
         elif [ "${{ matrix.wordpress }}" == 'trunk' ]; then
           VERSION=trunk-$(date +'%Y-%m-%d')
           echo "::set-output name=WORDPRESS_VERSION::$VERSION"
           echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::1"
           echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+          echo "::set-output name=WP_TESTS_TAG::trunk"
         else 
           VERSION=${{ matrix.wordpress }}
           echo "::set-output name=WORDPRESS_VERSION::$VERSION"
           echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
           echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
         fi
+
+        if [[ $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
+          echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
+        elif [[ $VERSION =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+          if [[ $VERSION =~ [0-9]+\.[0-9]+\.[0] ]]; then
+            # version x.x.0 means the first release of the major version, so strip off the .0 and download version x.x
+            echo "::set-output name=WP_TESTS_TAG::tags/${VERSION%??}"
+          else
+            echo "::set-output name=WP_TESTS_TAG::tags/$VERSION"
+          fi
+        elif [[ $VERSION == 'nightly' || $VERSION == 'trunk' ]]; then
+          echo "::set-output name=WP_TESTS_TAG::trunk"
+        else
+          echo "::set-output name=WP_TESTS_TAG::tags/$LATEST_VERSION"
+        fi
       id: wordpress-version
 
     - name: Show WordPress Version
-      run: echo "The current version is ${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}"
+      run: echo "The current WordPress version is ${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}, and WP_TESTS_TAG=${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}"
 
     - name: Cache WordPress Core Installation
       id: wordpress-cache
