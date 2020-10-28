@@ -77,12 +77,12 @@ jobs:
       run: |
         sudo apt-get update
         mkdir -p /tmp/apt-sources-$(date +'%Y-%m-%d')
-        cp -R /var/lib/apt/lists/* /tmp/apt-sources-$(date +'%Y-%m-%d')/
+        sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-$(date +'%Y-%m-%d')/
 
     - name: Install OS packages
       run: |
-        mkdir -p /var/lib/apt/lists
-        cp -R /tmp/apt-sources-$(date +'%Y-%m-%d')/* /var/lib/apt/lists
+        sudo mkdir -p /var/lib/apt/lists
+        sudo cp -R /tmp/apt-sources-$(date +'%Y-%m-%d')/* /var/lib/apt/lists
         sudo sudo apt-get install -y subversion mysql-client
 
     - name: Verify DB
