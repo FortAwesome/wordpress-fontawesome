@@ -55,6 +55,9 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
 
+    - name: Install OS packages
+      run: sudo apt-get update && sudo apt-get install -y subversion mysql-client
+
     - name: Verify DB
       run: mysql --user=root --password=somewordpress --host=127.0.0.1 --port=3306 --protocol=tcp -e 'SHOW DATABASES;'
 
