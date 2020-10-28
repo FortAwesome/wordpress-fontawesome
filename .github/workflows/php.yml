@@ -22,7 +22,7 @@ jobs:
               PORT: 3306
               HOST: 127.0.0.1
           ports:
-            - ${{ services.mysql.env.PORT }}:${{ services.mysql.env.PORT }}
+            - 3306:3306
 
     strategy:
         matrix:
@@ -83,7 +83,7 @@ jobs:
       run: sudo sudo apt-get install -y subversion mysql-client
 
     - name: Verify DB
-      run: mysql --user=root --password=${{ env.MYSQL_ROOT_PASSWORD }} --host=${{ env.MYSQL_HOST }} --port=${{ env.MYSQL_PORT }} --protocol=tcp -e 'SHOW DATABASES;'
+      run: mysql --user=root --password=${{ services.mysql.env.MYSQL_ROOT_PASSWORD }} --host=${{ services.mysql.env.MYSQL_HOST }} --port=${{ services.mysql.env.MYSQL_PORT }} --protocol=tcp -e 'SHOW DATABASES;'
 
     - name: Resolve WordPress Version
       run: |
