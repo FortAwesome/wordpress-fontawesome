@@ -52,6 +52,10 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
+    - name: Resolve Date
+      id: date
+      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')"
+
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v2
@@ -69,20 +73,27 @@ jobs:
       id: apt-sources-cache
       uses: actions/cache@v2
       with:
-        path: /tmp/apt-sources-$(date +'%Y-%m-%d')
-        key: ${{ runner.os }}-apt-sources-$(date +'%Y-%m-%d')
+        path: /tmp/apt-sources-${{ steps.date.outputs.DATE }}
+        key: ${{ runner.os }}-apt-sources-${{ steps.date.outputs.DATE }}
+
+    - name: Cache APT Packages Daily
+      id: apt-packages-cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/apt-packages-${{ steps.date.outputs.DATE }}
+        key: ${{ runner.os }}-apt-packages-${{ steps.date.outputs.DATE }}
 
     - name: Update APT Sources
       if: steps.apt-sources-cache.outputs.cache-hit != 'true'
       run: |
         sudo apt-get update
-        mkdir -p /tmp/apt-sources-$(date +'%Y-%m-%d')
-        sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-$(date +'%Y-%m-%d')/
+        mkdir -p /tmp/apt-sources-${{ steps.date.outputs.DATE }}
+        sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-${{ steps.date.outputs.DATE }}
 
     - name: Install OS packages
       run: |
         sudo mkdir -p /var/lib/apt/lists
-        sudo cp -R /tmp/apt-sources-$(date +'%Y-%m-%d')/* /var/lib/apt/lists
+        sudo cp -R /tmp/apt-sources-${{ steps.date.outputs.DATE }}/* /var/lib/apt/lists
         sudo sudo apt-get install -y subversion mysql-client
 
     - name: Verify DB
