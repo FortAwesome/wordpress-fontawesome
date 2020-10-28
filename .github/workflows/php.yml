@@ -117,7 +117,7 @@ jobs:
     - name: Install WordPress Core
       if: steps.wordpress-cache.outputs.cache-hit != 'true'
       run: |
-        mkdir -p /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        mkdir -p ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
         if ${{ steps.wordpress-version.outputs.WORDPRESS_VERSION_IS_TRUNK }} == 1; then
           mkdir -p /tmp/wordpress-nightly
           curl https://wordpress.org/nightly-builds/wordpress-latest.zip > /tmp/wordpress-nightly.zip
