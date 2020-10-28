@@ -120,6 +120,7 @@ jobs:
         else
           echo "::set-output name=WP_TESTS_TAG::tags/$LATEST_VERSION"
         fi
+        echo "::set-output name=WP_TESTS_DIR::/tmp/test/$VERSION"
       id: wordpress-version
 
     - name: Show WordPress Version
@@ -129,7 +130,7 @@ jobs:
       id: wordpress-cache
       uses: actions/cache@v2
       with:
-        path: /tmp/${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        path: ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
         key: ${{ runner.os }}-wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
 
     - name: Install WordPress Core
@@ -146,6 +147,20 @@ jobs:
           tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
         fi
         curl https://raw.github.com/markoheijnen/wp-mysqli/master/db.php > ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}/wp-content/db.php
+
+    - name: Cache WordPress Test Installation
+      id: wordpress-test-cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        key: ${{ runner.os }}-wordpress-test-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
+
+    - name: Install WordPress Test
+      if: steps.wordpress-test-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/includes/ ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}/includes
+        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/data/ ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}/data
 
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpressdb wordpress password 127.0.0.1:3306 ${{ matrix.wordpress }}
