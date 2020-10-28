@@ -58,6 +58,15 @@ jobs:
     - name: Verify DB
       run: mysql --user=root --password=somewordpress --host=127.0.0.1 --port=3306 --protocol=tcp -e 'SHOW DATABASES;'
 
+    - name: Set Latest WordPress Version
+      run: |
+        curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
+        echo "::set-output name=WORDPRESS_LATEST_VERSION::$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')"
+      id: wordpress-latest
+
+    - name: Show Latest WordPress Version
+      run: echo "The latest version is ${{ steps.wordpress-latest.outputs.WORDPRESS_LATEST_VERSION }}"
+
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpressdb wordpress password 127.0.0.1:3306 ${{ matrix.wordpress }}
     
