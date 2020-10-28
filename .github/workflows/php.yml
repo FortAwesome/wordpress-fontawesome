@@ -178,4 +178,6 @@ jobs:
       run: composer global require "phpunit/phpunit=4.8.*|5.7.*|6.5.*"
 
     - name: Run PHPUnit
-      run: phpunit --exclude-group output
+      run: |
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        phpunit --exclude-group output
