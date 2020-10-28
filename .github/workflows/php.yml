@@ -61,17 +61,20 @@ jobs:
       with:
         path: /var/lib/apt/lists
         key: ${{ runner.os }}-apt-sources
-        run: |
-          if test `find "/var/lib/apt/lists/lock" -mmin +1440`
-            echo "::set-output name=APT_SOURCES_NEED_REFRESH::0"
-            echo "Re-using cached apt sources"
-          then
-            echo "::set-output name=APT_SOURCES_NEED_REFRESH::1"
-            echo "Will refresh apt sources"
-          fi
+
+    - name: Check APT Sources Cache Freshness
+      id: apt-sources-refresh
+      run: |
+        if test `find "/var/lib/apt/lists/lock" -mmin +1440`; then
+          echo "::set-output name=NEED_REFRESH::0"
+          echo "Re-using cached apt sources"
+        else
+          echo "::set-output name=NEED_REFRESH::1"
+          echo "Will refresh apt sources"
+        fi
 
     - name: Update APT Sources
-      if: steps.apt-sources-cache.outputs.cache-hit != 'true' && steps.apt-sources-cache.outputs.APT_SOURCES_NEED_REFRESH == 1
+      if: steps.apt-sources-cache.outputs.cache-hit != 'true' && steps.apt-sources-refresh.outputs.NEED_REFRESH == 1
       run: sudo apt-get update
 
     - name: Install OS packages
