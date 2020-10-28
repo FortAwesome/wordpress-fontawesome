@@ -15,7 +15,7 @@ jobs:
       mysql:
           image: mysql:5.7
           env:
-              #MYSQL_ALLOW_EMPTY_PASSWORD: yes
+              MYSQL_ALLOW_EMPTY_PASSWORD: yes
               MYSQL_DATABASE: wordpress_test
               MYSQL_USER: mysql
               MYSQL_PASSWORD: password
@@ -63,7 +63,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y subversion mysql-client
 
     - name: Setup DB
-      run: mysql --user=root --password=password --host=localhost --port=3306 --protocol=tcp -e 'CREATE DATABASE IF NOT EXISTS wordpress;'
+      run: mysql --user=root --password= --host=localhost --port=3306 --protocol=tcp -e 'CREATE DATABASE IF NOT EXISTS wordpress;'
 
     - name: Install wordpress
       run: bin/install-wp-tests-ci.sh wordpress mysql password localhost:3306 ${{ matrix.wordpress }}
