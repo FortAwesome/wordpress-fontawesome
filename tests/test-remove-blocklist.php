@@ -108,9 +108,9 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			'font_awesome_preferences',
 			function() use ( $fa ) {
 				$fa->register(
-					[
+					array(
 						'name' => 'clientA',
-					]
+					)
 				);
 			}
 		);
@@ -172,9 +172,9 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			'font_awesome_preferences',
 			function() {
 				fa()->register(
-					[
+					array(
 						'name' => 'clientA',
-					]
+					)
 				);
 			}
 		);
@@ -267,9 +267,9 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 			'font_awesome_preferences',
 			function() {
 				fa()->register(
-					[
+					array(
 						'name' => 'clientA',
-					]
+					)
 				);
 			}
 		);

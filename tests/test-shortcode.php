@@ -14,25 +14,25 @@ class ShortcodeTest extends \WP_UnitTestCase {
 		$sc = new ReflectionMethod( 'FortAwesome\FontAwesome', 'process_shortcode' );
 		$sc->setAccessible( true );
 
-		$this->assertRegExp( '/<i class="fas fa-coffee">.*?<\/i>/', $sc->invoke( $fa, [ 'name' => 'coffee' ] ) );
+		$this->assertRegExp( '/<i class="fas fa-coffee">.*?<\/i>/', $sc->invoke( $fa, array( 'name' => 'coffee' ) ) );
 		$this->assertRegExp(
 			'/<i class="far fa-bell">.*?<\/i>/',
 			$sc->invoke(
 				$fa,
-				[
+				array(
 					'name'   => 'bell',
 					'prefix' => 'far',
-				]
+				)
 			)
 		);
 		$this->assertRegExp(
 			'/<i class="fas fa-coffee fa-2x foo">.*?<\/i>/',
 			$sc->invoke(
 				$fa,
-				[
+				array(
 					'name'  => 'coffee',
 					'class' => 'fa-2x foo',
-				]
+				)
 			)
 		);
 	}

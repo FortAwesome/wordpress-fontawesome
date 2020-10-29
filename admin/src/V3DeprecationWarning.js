@@ -7,7 +7,7 @@ import styles from './V3DeprecationWarning.module.css'
 import classnames from 'classnames'
 import Alert from './Alert'
 import { __, sprintf } from '@wordpress/i18n'
-import { __experimentalCreateInterpolateElement } from '@wordpress/element'
+import { createInterpolateElement } from '@wordpress/element'
 
 export default function V3DeprecationWarning() {
   const { snooze, atts, v5name, v5prefix } = useSelector(state => state.v3DeprecationWarning)
@@ -22,7 +22,7 @@ export default function V3DeprecationWarning() {
     >
       <p>
         {
-          __experimentalCreateInterpolateElement(
+          createInterpolateElement(
             sprintf(
               __('Looks like you\'re using an old Font Awesome 3 icon name in your shortcode: <code>%s</code>. We discontinued support for Font Awesome 3 quite some time ago. Won\'t you jump into <a>the newest Font Awesome</a> with us? It\'s way better, and it\'s easy to upgrade.', 'font-awesome' ),
               atts.name
@@ -50,7 +50,7 @@ export default function V3DeprecationWarning() {
 
       <p>
         {
-          __experimentalCreateInterpolateElement(
+          createInterpolateElement(
             __( 'You\'ll need to go adjust any version 3 icon names in [icon] shortcodes in your pages, posts, widgets, templates (or wherever they\'re coming from) to the new format with prefix. You can check the icon names and prefixes in our <linkIconGallery>Icon Gallery</linkIconGallery>. But what\'s that prefix, you ask? We now support a number of different styles for each icon. <linkLearnMore>Learn more</linkLearnMore>', 'font-awesome' ),
             {
               // eslint-disable-next-line jsx-a11y/anchor-has-content
@@ -64,7 +64,7 @@ export default function V3DeprecationWarning() {
 
       <p>
         {
-          __experimentalCreateInterpolateElement(
+          createInterpolateElement(
             __( 'Once you update your icon shortcodes, this warning will disappear or you could hit snooze to hide it for a while. <strong>But we\'re gonna remove this v3-to-v5 magic soon, though, so don\'t wait forever.</strong>', 'font-awesome' ),
             {
               strong: <strong />

@@ -7,6 +7,7 @@ namespace FortAwesome;
 use \Exception;
 
 // phpcs:disable Generic.Files.OneClassPerFile.MultipleFound
+// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
 
 /**
  * An abstract class defining behavior for most exceptions thrown by this plugin.

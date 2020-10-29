@@ -57,7 +57,7 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 
 		fa()->register(
 			array(
-				'name'              => 'beta',
+				'name'           => 'beta',
 				'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements']
 			)
 		);

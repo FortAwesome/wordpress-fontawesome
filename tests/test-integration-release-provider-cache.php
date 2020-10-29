@@ -80,9 +80,9 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	 */
 	public function test_caching() {
 		$this->prepare(
-			[
+			array(
 				self::build_success_response(), // An initial successful one.
-			]
+			)
 		);
 
 		$fa = $this->fa;
@@ -107,9 +107,9 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		// Now, reset to simulate a subsequent PHP process running, so the Singletons will have to
 		// refresh themselves, but we already have the load configuration in the db from the previous run.
 		$this->prepare(
-			[
+			array(
 				self::build_error_response(),
-			]
+			)
 		);
 
 		$fa->enqueue_cdn( $fa->options(), $resource_collection );

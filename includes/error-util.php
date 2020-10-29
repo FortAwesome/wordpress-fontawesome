@@ -20,7 +20,7 @@ function notify_admin_fatal_error( $e ) {
 
 		add_action(
 			'admin_notices',
-			[ $command, 'run' ]
+			array( $command, 'run' )
 		);
 	}
 }

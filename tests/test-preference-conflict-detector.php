@@ -26,10 +26,10 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 			'usePro'          => false,
 			'removeConflicts' => false,
 			'pseudoElements'  => false,
-			'version'         => [ [ '5.8.2', '=' ] ],
+			'version'         => array( array( '5.8.2', '=' ) ),
 		);
 
-		$this->assertEquals( [], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
+		$this->assertEquals( array(), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
 	}
 
 	public function test_when_something_does_not_match() {
@@ -43,7 +43,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 			'v4Compat' => false,
 		);
 
-		$this->assertEquals( [ 'method' ], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
+		$this->assertEquals( array( 'method' ), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
 	}
 
 	public function test_when_version_does_not_match() {
@@ -52,10 +52,10 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		);
 
 		$client_preferences = array(
-			'version' => [ [ '5.8.2', '>' ] ],
+			'version' => array( array( '5.8.2', '>' ) ),
 		);
 
-		$this->assertEquals( [ 'version' ], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
+		$this->assertEquals( array( 'version' ), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
 	}
 
 	public function test_success_when_configured_version_is_symbolically_latest() {
@@ -65,10 +65,10 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		);
 
 		$client_preferences = array(
-			'version' => [ [ '5.8.2', '>' ] ],
+			'version' => array( array( '5.8.2', '>' ) ),
 		);
 
-		$this->assertEquals( [], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0' ) );
+		$this->assertEquals( array(), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0' ) );
 	}
 
 	public function test_failure_when_configured_version_is_symbolically_latest() {
@@ -78,10 +78,10 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		);
 
 		$client_preferences = array(
-			'version' => [ [ '5.8.2', '=' ] ],
+			'version' => array( array( '5.8.2', '=' ) ),
 		);
 
-		$this->assertEquals( [ 'version' ], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0' ) );
+		$this->assertEquals( array( 'version' ), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0' ) );
 	}
 
 	public function test_with_empty_preference() {
@@ -92,15 +92,15 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 
 		$client_preferences = array();
 
-		$this->assertEquals( [], FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
+		$this->assertEquals( array(), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences ) );
 	}
 
 	public function test_satisfies() {
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ [ '42.1.3', '=' ] ] )
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', array( array( '42.1.3', '=' ) ) )
 		);
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ [ '42.1.2', '>=' ], [ '43', '<' ] ] )
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', array( array( '42.1.2', '>=' ), array( '43', '<' ) ) )
 		);
 	}
 
@@ -108,7 +108,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		$this->expectException( ClientPreferencesSchemaException::class );
 
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ [ '42.1.2', 'xyz' ] ] )
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', array( array( '42.1.2', 'xyz' ) ) )
 		);
 	}
 
@@ -116,7 +116,7 @@ class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
 		$this->expectException( ClientPreferencesSchemaException::class );
 
 		$this->assertTrue(
-			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', [ '42.1.2', 'xyz' ] )
+			FontAwesome_Preference_Conflict_Detector::version_satisfies( '42.1.3', array( '42.1.2', 'xyz' ) )
 		);
 	}
 }

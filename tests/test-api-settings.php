@@ -181,7 +181,7 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 					'message' => 'Forbidden',
 				),
 				'body'     => '',
-				'headers'  => [],
+				'headers'  => array(),
 			)
 		);
 
@@ -210,7 +210,7 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 						'expires_in' => 3600,
 					)
 				),
-				'headers'  => [],
+				'headers'  => array(),
 			)
 		);
 
@@ -240,7 +240,7 @@ class ApiSettingsTest extends \WP_UnitTestCase {
 						'access_token' => 'abc',
 					)
 				),
-				'headers'  => [],
+				'headers'  => array(),
 			)
 		);
 

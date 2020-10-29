@@ -398,8 +398,6 @@ export function queryKits() {
             minified
             token
             shimEnabled
-            integrityHash
-            useIntegrityHash
             autoAccessibilityEnabled
             status
           }

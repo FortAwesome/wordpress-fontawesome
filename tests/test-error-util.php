@@ -103,6 +103,6 @@ class ErrorUtilTest extends \WP_UnitTestCase {
 
 		$result = wpe_fontawesome_server_exception( $e );
 
-		$this->assertEquals( [ 'fontawesome_server_exception', 'previous_exception' ], $result->get_error_codes() );
+		$this->assertEquals( array( 'fontawesome_server_exception', 'previous_exception' ), $result->get_error_codes() );
 	}
 }

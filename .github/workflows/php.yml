@@ -1,0 +1,227 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  # Seems like we should be able to use these in the services section below
+  # to keep things DRY, but how?
+  MYSQL_ROOT_PASSWORD: somewordpress
+  MYSQL_DATABASE: wordpressdb
+  MYSQL_USER: wordpress
+  MYSQL_PASSWORD: password
+  MYSQL_PORT: 3306
+  MYSQL_HOST: 127.0.0.1
+
+jobs:
+  build:
+
+    runs-on: ubuntu-16.04
+
+    services:
+      mysql:
+          image: mysql:5.7
+          env:
+              MYSQL_ROOT_PASSWORD: somewordpress
+              MYSQL_DATABASE: wordpressdb
+              MYSQL_USER: wordpress
+              MYSQL_PASSWORD: password
+          ports:
+            - 3306:3306
+
+    strategy:
+        matrix:
+          php: [7.1, 7.2, 7.3, 7.4]
+          wordpress: [latest]
+          include:
+            - php: 5.6
+              wordpress: 5.2.5
+            - php: 7.4
+              wordpress: trunk
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+
+    - name: Validate composer.json and composer.lock
+      id: composer-lock
+      run: |
+        if [ ${{ matrix.php }} == 7.4 ]; then
+          composer validate
+          LOCK_FILE=composer.lock
+          COMPOSER_FILE=composer.json
+        else
+          COMPOSER=composer-php${{ matrix.php }}.json composer validate
+          LOCK_FILE=composer-php${{ matrix.php }}.lock
+          COMPOSER_FILE=composer-php${{ matrix.php }}.json
+        fi
+        echo "::set-output name=COMPOSER_LOCK_HASH::$(md5sum $LOCK_FILE | cut -d' ' -f1)"
+        echo "::set-output name=COMPOSER_FILE::${COMPOSER_FILE}"
+
+    - name: Resolve Cache Date
+      id: cache-date
+      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')"
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-b-${{ steps.composer-lock.outputs.COMPOSER_LOCK_HASH }}
+
+    - name: Install dependencies
+      if: steps.composer-cache.outputs.cache-hit != 'true'
+      run: COMPOSER=${{ steps.composer-lock.outputs.COMPOSER_FILE }} composer install --prefer-dist --no-progress
+
+    - name: Cache APT Sources Daily
+      id: apt-sources-cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
+        key: ${{ runner.os }}-apt-sources-${{ steps.cache-date.outputs.DATE }}
+
+    - name: Cache APT Packages Daily
+      id: apt-packages-cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
+        key: ${{ runner.os }}-apt-packages-${{ steps.cache-date.outputs.DATE }}
+
+    - name: Update APT Sources
+      if: steps.apt-sources-cache.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get update
+        mkdir -p /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
+        sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
+
+    - name: Download APT Packages
+      if: steps.apt-packages-cache.outputs.cache-hit != 'true'
+      run: |
+        sudo cp -R /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}/* /var/lib/apt/lists
+        sudo apt-get install -y --download-only subversion mysql-client
+        sudo mkdir -p /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
+        sudo cp -R /var/cache/apt/archives/*.deb /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
+
+    - name: Install OS Packages
+      run: sudo dpkg -i /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}/*.deb
+
+    - name: Verify DB
+      run: mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --host=${MYSQL_HOST} --port=${MYSQL_PORT} --protocol=tcp -e 'SHOW DATABASES;'
+
+    - name: Resolve WordPress Version
+      run: |
+        curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
+        LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+        if [ "${{ matrix.wordpress }}" == 'latest' ]; then
+          VERSION=$LATEST_VERSION
+          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
+          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
+          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+          echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
+        elif [ "${{ matrix.wordpress }}" == 'trunk' ]; then
+          VERSION=trunk-$(date +'%Y-%m-%d')
+          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
+          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::1"
+          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+          echo "::set-output name=WP_TESTS_TAG::trunk"
+        else 
+          VERSION=${{ matrix.wordpress }}
+          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
+          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
+          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+        fi
+
+        if [[ $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
+          echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
+        elif [[ $VERSION =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+          if [[ $VERSION =~ [0-9]+\.[0-9]+\.[0] ]]; then
+            # version x.x.0 means the first release of the major version, so strip off the .0 and download version x.x
+            echo "::set-output name=WP_TESTS_TAG::tags/${VERSION%??}"
+          else
+            echo "::set-output name=WP_TESTS_TAG::tags/$VERSION"
+          fi
+        elif [[ $VERSION == 'nightly' || $VERSION == 'trunk' ]]; then
+          echo "::set-output name=WP_TESTS_TAG::trunk"
+        else
+          echo "::set-output name=WP_TESTS_TAG::tags/$LATEST_VERSION"
+        fi
+        echo "::set-output name=WP_TESTS_DIR::/tmp/test/$VERSION"
+      id: wordpress-version
+
+    - name: Show WordPress Version
+      run: echo "The current WordPress version is ${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}, and WP_TESTS_TAG=${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}"
+
+    - name: Cache WordPress Core Installation
+      id: wordpress-cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        key: ${{ runner.os }}-wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
+
+    - name: Install WordPress Core
+      if: steps.wordpress-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        if [ "${{ steps.wordpress-version.outputs.WORDPRESS_VERSION_IS_TRUNK }}" == "1" ]; then
+          mkdir -p /tmp/wordpress-nightly
+          curl https://wordpress.org/nightly-builds/wordpress-latest.zip > /tmp/wordpress-nightly.zip
+          unzip -q /tmp/wordpress-nightly.zip -d /tmp/wordpress-nightly/
+          mv /tmp/wordpress-nightly/wordpress/* ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        else
+          curl -s https://wordpress.org/wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}.tar.gz  > /tmp/wordpress.tar.gz
+          tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
+        fi
+        curl https://raw.github.com/markoheijnen/wp-mysqli/master/db.php > ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}/wp-content/db.php
+
+    - name: Cache WordPress Test Installation
+      id: wordpress-test-cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        key: ${{ runner.os }}-wordpress-test-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
+
+    - name: Install WordPress Test
+      if: steps.wordpress-test-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        DB_USER=${MYSQL_USER}
+        DB_PASS=${MYSQL_PASSWORD}
+        DB_NAME=${MYSQL_DATABASE}
+        DB_HOST=${MYSQL_HOST}:${MYSQL_PORT}
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
+        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
+        svn co --quiet https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/tests/phpunit/data/ $WP_TESTS_DIR/data
+        curl https://develop.svn.wordpress.org/${{ steps.wordpress-version.outputs.WP_TESTS_TAG }}/wp-tests-config-sample.php > $WP_TESTS_DIR/wp-tests-config.php
+        # remove all forward slashes in the end
+        WP_CORE_DIR=$(echo ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }} | sed "s:/\+$::")
+        sed -i "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
+        sed -i "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
+
+    - name: Run PHPUnit
+      # only run the output tests on the newer versions of php and phpunit, cause
+      # they're trickier
+      run: |
+        if [ "7.4" == ${{ matrix.php }} ]; then
+          PHP_UNIT_ARGS=""
+        else
+          PHP_UNIT_ARGS="--exclude-group output"
+        fi
+
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit $PHP_UNIT_ARGS
+
+    - name: Maybe run phpcs
+      run: |
+        if [ ${{ matrix.php }} == 7.4 ] && [ ${{ matrix.wordpress }} == latest ]; then
+          composer phpcs
+        echo
+          echo "Skipping phpcs"
+        fi

@@ -26,7 +26,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_access_token = null;
+	protected $access_token = null;
 
 	/**
 	 * Expiration time for current access token.
@@ -34,7 +34,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_access_token_expiration_time = null;
+	protected $access_token_expiration_time = null;
 
 	/**
 	 * Current API token.
@@ -42,7 +42,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_api_token = null;
+	protected $api_token = null;
 
 	/**
 	 * Singleton instance.
@@ -58,7 +58,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_encryption_method = null;
+	protected $encryption_method = null;
 
 	/**
 	 * Encryption cipher length.
@@ -66,7 +66,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_encryption_cipher_length = null;
+	protected $encryption_cipher_length = null;
 
 	/**
 	 * Encryption key.
@@ -74,7 +74,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_encryption_key = null;
+	protected $encryption_key = null;
 
 	/**
 	 * Encryption salt.
@@ -82,7 +82,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_encryption_salt = null;
+	protected $encryption_salt = null;
 
 	/**
 	 * Preferred encryption method.
@@ -148,15 +148,15 @@ class FontAwesome_API_Settings {
 			return;
 		}
 
-		$this->_api_token = is_string( $option['api_token'] )
+		$this->api_token = is_string( $option['api_token'] )
 			? $this->decrypt( $option['api_token'] )
 			: null;
 
-		$this->_access_token = is_string( $option['access_token'] )
+		$this->access_token = is_string( $option['access_token'] )
 			? $this->decrypt( $option['access_token'] )
 			: null;
 
-		$this->_access_token_expiration_time = is_numeric( $option['access_token_expiration_time'] )
+		$this->access_token_expiration_time = is_numeric( $option['access_token_expiration_time'] )
 			? $option['access_token_expiration_time']
 			: null;
 	}
@@ -241,7 +241,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 */
 	public function api_token() {
-		return $this->_api_token;
+		return $this->api_token;
 	}
 
 	/**
@@ -250,7 +250,7 @@ class FontAwesome_API_Settings {
 	 * Internal use only. Not part of this plugin's public API.
 	 */
 	public function set_api_token( $api_token ) {
-		$this->_api_token = $api_token;
+		$this->api_token = $api_token;
 	}
 
 	/**
@@ -262,7 +262,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 */
 	public function access_token() {
-		return $this->_access_token;
+		return $this->access_token;
 	}
 
 	/**
@@ -271,7 +271,7 @@ class FontAwesome_API_Settings {
 	 * Internal use only. Not part of this plugin's public API.
 	 */
 	public function set_access_token( $access_token ) {
-		$this->_access_token = $access_token;
+		$this->access_token = $access_token;
 	}
 
 	/**
@@ -286,7 +286,7 @@ class FontAwesome_API_Settings {
 		$int_val = intval( $access_token_expiration_time );
 
 		if ( 0 !== $int_val ) {
-			$this->_access_token_expiration_time = $access_token_expiration_time;
+			$this->access_token_expiration_time = $access_token_expiration_time;
 		} else {
 			throw new InvalidArgumentException();
 		}
@@ -301,7 +301,7 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 */
 	public function access_token_expiration_time() {
-		return $this->_access_token_expiration_time;
+		return $this->access_token_expiration_time;
 	}
 
 	/**
@@ -400,10 +400,10 @@ class FontAwesome_API_Settings {
 			defined( 'LOGGED_IN_KEY' ) &&
 			is_string( LOGGED_IN_KEY )
 		) {
-			$this->_encryption_method        = $method;
-			$this->_encryption_cipher_length = openssl_cipher_iv_length( $method );
-			$this->_encryption_key           = LOGGED_IN_KEY;
-			$this->_encryption_salt          = LOGGED_IN_SALT;
+			$this->encryption_method        = $method;
+			$this->encryption_cipher_length = openssl_cipher_iv_length( $method );
+			$this->encryption_key           = LOGGED_IN_KEY;
+			$this->encryption_salt          = LOGGED_IN_SALT;
 		}
 	}
 
@@ -420,20 +420,21 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 */
 	public function encrypt( $data ) {
-		if ( ! $this->_encryption_key ) {
+		if ( ! $this->encryption_key ) {
 			return $data;
 		}
 
-		$init_vec = openssl_random_pseudo_bytes( $this->_encryption_cipher_length );
+		$init_vec = openssl_random_pseudo_bytes( $this->encryption_cipher_length );
 
 		$raw = openssl_encrypt(
-			$data . $this->_encryption_salt,
-			$this->_encryption_method,
-			$this->_encryption_key,
+			$data . $this->encryption_salt,
+			$this->encryption_method,
+			$this->encryption_key,
 			0,
 			$init_vec
 		);
 
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		return base64_encode( $init_vec . $raw );
 	}
 
@@ -450,32 +451,33 @@ class FontAwesome_API_Settings {
 	 * @internal
 	 */
 	public function decrypt( $data ) {
-		if ( ! $this->_encryption_method ) {
+		if ( ! $this->encryption_method ) {
 			return $data;
 		}
 
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		$raw = base64_decode( $data, true );
 
-		$init_vec = substr( $raw, 0, $this->_encryption_cipher_length );
+		$init_vec = substr( $raw, 0, $this->encryption_cipher_length );
 
-		$raw = substr( $raw, $this->_encryption_cipher_length );
+		$raw = substr( $raw, $this->encryption_cipher_length );
 
 		$result = openssl_decrypt(
 			$raw,
-			$this->_encryption_method,
-			$this->_encryption_key,
+			$this->encryption_method,
+			$this->encryption_key,
 			0,
 			$init_vec
 		);
 
 		if (
 			! $result ||
-			substr( $result, - strlen( $this->_encryption_salt ) ) !== $this->_encryption_salt
+			substr( $result, - strlen( $this->encryption_salt ) ) !== $this->encryption_salt
 		) {
 			return null;
 		}
 
-		return substr( $result, 0, - strlen( $this->_encryption_salt ) );
+		return substr( $result, 0, - strlen( $this->encryption_salt ) );
 	}
 
 	/**

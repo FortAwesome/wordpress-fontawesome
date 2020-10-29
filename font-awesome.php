@@ -96,7 +96,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @ignore
 		 * @internal
 		 */
-		private static $_instance = null;
+		private static $instance = null;
 
 		/**
 		 * Stores metadata about the various modules attempted to be
@@ -105,7 +105,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @ignore
 		 * @internal
 		 */
-		private static $_loaded = array();
+		private static $loaded = array();
 
 		/**
 		 * Stores data about each plugin installation that has
@@ -123,8 +123,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 */
 		private function __construct() {
-			add_action( 'wp_loaded', [ &$this, 'run_plugin' ], -1 );
-			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1 );
+			add_action( 'wp_loaded', array( &$this, 'run_plugin' ), -1 );
+			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, array( &$this, 'activate_plugin' ), -1 );
 		}
 
 		/**
@@ -137,7 +137,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @throws Exception
 		 */
 		private function select_latest_version_plugin_installation() {
-			if ( count( self::$_loaded ) > 0 || count( self::$data ) === 0 ) {
+			if ( count( self::$loaded ) > 0 || count( self::$data ) === 0 ) {
 				return;
 			}
 
@@ -164,6 +164,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 							'font-awesome'
 						)
 					) .
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 					' Data: ' . base64_encode( wp_json_encode( self::$data ) )
 				);
 			}
@@ -184,7 +185,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				);
 			}
 
-			self::$_loaded = $selected_installation;
+			self::$loaded = $selected_installation;
 		}
 
 		/**
@@ -203,7 +204,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		public function run_plugin() {
 			try {
 				$this->select_latest_version_plugin_installation();
-				require self::$_loaded['path'] . 'font-awesome-init.php';
+				require self::$loaded['path'] . 'font-awesome-init.php';
 			} catch ( Exception $e ) {
 				add_action(
 					'admin_notices',
@@ -227,7 +228,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public function loaded_path() {
-			return self::$_loaded['path'];
+			return self::$loaded['path'];
 		}
 
 		/**
@@ -245,7 +246,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 			try {
 				$this->select_latest_version_plugin_installation();
-				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
+				require_once self::$loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::activate();
 			} catch ( Exception $e ) {
 				self::emit_admin_error_output( $e, $activation_failed_message );
@@ -398,7 +399,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 
 			try {
 				self::instance()->select_latest_version_plugin_installation();
-				require_once self::$_loaded['path'] . 'includes/class-fontawesome-activator.php';
+				require_once self::$loaded['path'] . 'includes/class-fontawesome-activator.php';
 				FontAwesome_Activator::initialize();
 			} catch ( Exception $e ) {
 				self::emit_admin_error_output( $e, $initialization_failed_msg );
@@ -482,10 +483,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @since 4.0.0
 		 */
 		public static function instance() {
-			if ( null === self::$_instance ) {
-				self::$_instance = new self();
+			if ( null === self::$instance ) {
+				self::$instance = new self();
 			}
-			return self::$_instance;
+			return self::$instance;
 		}
 
 		/**
@@ -509,10 +510,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				}
 				array_push(
 					self::$data,
-					[
+					array(
 						'version' => $version,
 						'path'    => trailingslashit( $data ),
-					]
+					)
 				);
 			}
 			return $this;

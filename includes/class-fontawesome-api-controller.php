@@ -64,16 +64,16 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 */
-	private $_metadata_provider = null;
+	private $metadata_provider = null;
 
 	/**
 	 * @ignore
 	 * @internal
 	 */
 	public function __construct( $plugin_slug, $namespace ) {
-		$this->plugin_slug        = $plugin_slug;
-		$this->namespace          = $namespace;
-		$this->_metadata_provider = fa_metadata_provider();
+		$this->plugin_slug       = $plugin_slug;
+		$this->namespace         = $namespace;
+		$this->metadata_provider = fa_metadata_provider();
 	}
 
 	/**
@@ -135,6 +135,6 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @ignore
 	 */
 	protected function metadata_provider() {
-		return $this->_metadata_provider;
+		return $this->metadata_provider;
 	}
 }

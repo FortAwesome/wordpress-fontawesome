@@ -3,4 +3,4 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
 
-$WP_SUDO $DOCKER exec -it -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER phpunit $@
+$WP_SUDO $DOCKER exec -it -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER vendor/bin/phpunit $@

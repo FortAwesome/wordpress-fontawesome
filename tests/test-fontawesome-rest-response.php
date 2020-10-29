@@ -18,7 +18,7 @@ class RestResponseTest extends \WP_UnitTestCase {
 	}
 
 	public function test_non_default() {
-		$r = new FontAwesome_REST_Response( 'foo', 422, [ 'FakeHeader' => 42 ] );
+		$r = new FontAwesome_REST_Response( 'foo', 422, array( 'FakeHeader' => 42 ) );
 
 		$this->assertTrue( is_a( $r, 'WP_REST_Response' ) );
 		$this->assertEquals( 'foo', $r->get_data() );
