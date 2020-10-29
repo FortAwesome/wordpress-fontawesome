@@ -52,9 +52,9 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
-    - name: Resolve Date
-      id: date
-      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')"
+    - name: Resolve Cache Date
+      id: cache-date
+      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')-b"
 
     - name: Cache Composer packages
       id: composer-cache
@@ -73,33 +73,33 @@ jobs:
       id: apt-sources-cache
       uses: actions/cache@v2
       with:
-        path: /tmp/apt-sources-${{ steps.date.outputs.DATE }}
-        key: ${{ runner.os }}-apt-sources-${{ steps.date.outputs.DATE }}
+        path: /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
+        key: ${{ runner.os }}-apt-sources-${{ steps.cache-date.outputs.DATE }}
 
     - name: Cache APT Packages Daily
       id: apt-packages-cache
       uses: actions/cache@v2
       with:
-        path: /tmp/apt-packages-${{ steps.date.outputs.DATE }}
-        key: ${{ runner.os }}-apt-packages-${{ steps.date.outputs.DATE }}
+        path: /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
+        key: ${{ runner.os }}-apt-packages-${{ steps.cache-date.outputs.DATE }}
 
     - name: Update APT Sources
       if: steps.apt-sources-cache.outputs.cache-hit != 'true'
       run: |
         sudo apt-get update
-        mkdir -p /tmp/apt-sources-${{ steps.date.outputs.DATE }}
-        sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-${{ steps.date.outputs.DATE }}
+        mkdir -p /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
+        sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
 
     - name: Download APT Packages
       if: steps.apt-packages-cache.outputs.cache-hit != 'true'
       run: |
-        sudo cp -R /tmp/apt-sources-${{ steps.date.outputs.DATE }}/* /var/lib/apt/lists
+        sudo cp -R /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}/* /var/lib/apt/lists
         sudo apt-get install -y --download-only subversion mysql-client
-        sudo mkdir -p /tmp/apt-packages-${{ steps.date.outputs.DATE }}
-        sudo cp -R /var/cache/apt/archives/*.deb /tmp/apt-packages-${{ steps.date.outputs.DATE }}
+        sudo mkdir -p /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
+        sudo cp -R /var/cache/apt/archives/*.deb /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
 
     - name: Install OS Packages
-      run: sudo dpkg -i /tmp/apt-packages-${{ steps.date.outputs.DATE }}/*.deb
+      run: sudo dpkg -i /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}/*.deb
 
     - name: Verify DB
       run: mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --host=${MYSQL_HOST} --port=${MYSQL_PORT} --protocol=tcp -e 'SHOW DATABASES;'
@@ -201,4 +201,4 @@ jobs:
 
     - name: Run PHPUnit
       run: |
-        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} phpunit --exclude-group output
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} phpunit
