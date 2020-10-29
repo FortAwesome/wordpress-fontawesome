@@ -96,10 +96,10 @@ jobs:
         sudo cp -R /tmp/apt-sources-${{ steps.date.outputs.DATE }}/* /var/lib/apt/lists
         sudo apt-get install -y --download-only subversion mysql-client
         sudo mkdir -p /tmp/apt-packages-${{ steps.date.outputs.DATE }}
-        sudo cp -R /var/cache/apt/archives/* /tmp/apt-packages-${{ steps.date.outputs.DATE }}
+        sudo cp -R /var/cache/apt/archives/*.deb /tmp/apt-packages-${{ steps.date.outputs.DATE }}
 
     - name: Install OS Packages
-      run: sudo dpkg -i /tmp/apt-packages-${{ steps.date.outputs.DATE }}/*
+      run: sudo dpkg -i /tmp/apt-packages-${{ steps.date.outputs.DATE }}/*.deb
 
     - name: Verify DB
       run: mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --host=${MYSQL_HOST} --port=${MYSQL_PORT} --protocol=tcp -e 'SHOW DATABASES;'
