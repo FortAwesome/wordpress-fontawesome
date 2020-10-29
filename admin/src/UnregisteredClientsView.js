@@ -21,7 +21,7 @@ import isEqual from 'lodash/isEqual'
 import sortedUnique from 'lodash/sortedUniq'
 import difference from 'lodash/difference'
 import { __ } from '@wordpress/i18n'
-import { __experimentalCreateInterpolateElement } from '@wordpress/element'
+import { createInterpolateElement } from '@wordpress/element'
 
 function excerpt( content ) {
   if( !! content ) {
@@ -223,7 +223,7 @@ export default function UnregisteredClientsView() {
                     {
                       unregisteredClients[md5].src
                       || unregisteredClients[md5].href
-                      || __experimentalCreateInterpolateElement(
+                      || createInterpolateElement(
                         __( '<em>in page source. </em><excerpt/>', 'font-awesome' ),
                         {
                           em: <em />,
