@@ -74,8 +74,6 @@ jobs:
       with:
         path: vendor
         key: ${{ runner.os }}-php-b-${{ steps.composer-lock.outputs.COMPOSER_LOCK_HASH }}
-        restore-keys: |
-          ${{ runner.os }}-php-
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
