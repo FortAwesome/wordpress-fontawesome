@@ -18,7 +18,7 @@ require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php
  * @group api
  */
 class ReleaseProviderTest extends \WP_UnitTestCase {
-	protected $known_versions_sorted_desc = [
+	protected $known_versions_sorted_desc = array(
 		'5.4.1',
 		'5.3.1',
 		'5.2.0',
@@ -34,7 +34,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		'5.0.3',
 		'5.0.2',
 		'5.0.1',
-	];
+	);
 
 	public function setUp() {
 		reset_db();
@@ -61,7 +61,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 				'message' => 'Internal Server Error',
 			),
 			'body'     => '',
-			'headers'  => [],
+			'headers'  => array(),
 		);
 	}
 
@@ -141,11 +141,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
-			[
+			array(
 				'use_pro'  => false,
 				'use_svg'  => false,
 				'use_shim' => false,
-			]
+			)
 		);
 
 		$this->assertFalse( is_null( $resource_collection ) );
@@ -168,11 +168,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
-			[
+			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
 				'use_shim' => false,
-			]
+			)
 		);
 
 		$this->assertFalse( is_null( $resource_collection ) );
@@ -194,11 +194,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp->get_resource_collection(
 			'5.0.13', // version.
-			[
+			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
 				'use_shim' => true,
-			]
+			)
 		);
 	}
 
@@ -210,11 +210,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
-			[
+			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
 				'use_shim' => false,
-			]
+			)
 		);
 
 		$this->assertFalse( is_null( $resource_collection ) );
@@ -232,11 +232,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
-			[
+			array(
 				'use_pro'  => false,
 				'use_svg'  => false,
 				'use_shim' => true,
-			]
+			)
 		);
 
 		$this->assertFalse( is_null( $resource_collection ) );
@@ -254,11 +254,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
-			[
+			array(
 				'use_pro'  => true,
 				'use_svg'  => true,
 				'use_shim' => true,
-			]
+			)
 		);
 
 		$this->assertFalse( is_null( $resource_collection ) );
@@ -279,11 +279,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$resource_collection = $farp->get_resource_collection(
 			'4.0.13', // invalid version.
-			[
+			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
 				'use_shim' => false,
-			]
+			)
 		);
 
 		// END: since we're testing an exception, code won't run after the exception-throwing statement.

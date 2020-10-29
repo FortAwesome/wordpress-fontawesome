@@ -367,7 +367,7 @@ class FontAwesome {
 
 			add_shortcode(
 				self::SHORTCODE_TAG,
-				[ $this, 'process_shortcode' ]
+				array( $this, 'process_shortcode' )
 			);
 
 			add_filter( 'widget_text', 'do_shortcode' );
@@ -754,7 +754,7 @@ class FontAwesome {
 
 			add_action(
 				'admin_notices',
-				[ $v3_deprecation_command, 'run' ]
+				array( $v3_deprecation_command, 'run' )
 			);
 		}
 
@@ -782,7 +782,7 @@ class FontAwesome {
 
 		add_action(
 			'admin_menu',
-			[ $admin_menu_command, 'run' ]
+			array( $admin_menu_command, 'run' )
 		);
 
 		$plugin_action_links_command = new FontAwesome_Command(
@@ -797,7 +797,7 @@ class FontAwesome {
 
 		add_filter(
 			'plugin_action_links_' . FONTAWESOME_PLUGIN_FILE,
-			[ $plugin_action_links_command, 'run' ]
+			array( $plugin_action_links_command, 'run' )
 		);
 
 		$multi_version_warning_command = new FontAwesome_Command(
@@ -836,7 +836,7 @@ class FontAwesome {
 
 		add_action(
 			'after_plugin_row_' . FONTAWESOME_PLUGIN_FILE,
-			[ $multi_version_warning_command, 'run' ],
+			array( $multi_version_warning_command, 'run' ),
 			10,
 			3
 		);
@@ -922,7 +922,7 @@ class FontAwesome {
 		if (
 			! isset( $options['technology'] ) ||
 			! is_string( $options['technology'] ) ||
-			false === array_search( $options['technology'], [ 'svg', 'webfont' ], true )
+			false === array_search( $options['technology'], array( 'svg', 'webfont' ), true )
 		) {
 			throw new ConfigCorruptionException();
 		}
@@ -1387,7 +1387,7 @@ class FontAwesome {
 						wp_enqueue_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							$this->get_webpack_asset_url( 'main.js' ),
-							[],
+							array(),
 							null,
 							true
 						);
@@ -1401,7 +1401,7 @@ class FontAwesome {
 							wp_enqueue_style(
 								self::ADMIN_RESOURCE_HANDLE . '-css',
 								$this->get_webpack_asset_url( 'main.css' ),
-								[],
+								array(),
 								null,
 								'all'
 							);
@@ -1442,7 +1442,7 @@ class FontAwesome {
 		);
 
 		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
-			foreach ( [ 'wp_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
 					function () {
@@ -1518,7 +1518,7 @@ class FontAwesome {
 			throw new ConfigCorruptionException();
 		}
 
-		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 			$enqueue_command = new FontAwesome_Command(
 				function () use ( $kit_token ) {
 					try {
@@ -1526,7 +1526,7 @@ class FontAwesome {
 						wp_enqueue_script(
 							FontAwesome::RESOURCE_HANDLE,
 							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
-							[],
+							array(),
 							null,
 							false
 						);
@@ -1574,7 +1574,7 @@ EOT;
 			);
 			add_action(
 				$action,
-				[ $enqueue_command, 'run' ]
+				array( $enqueue_command, 'run' )
 			);
 		}
 
@@ -1601,7 +1601,7 @@ EOT;
 
 		add_filter(
 			'script_loader_tag',
-			[ $script_loader_tag_command, 'run' ],
+			array( $script_loader_tag_command, 'run' ),
 			11,
 			2
 		);
@@ -1649,7 +1649,7 @@ EOT;
 				wp_enqueue_script(
 					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
 					FontAwesome::CONFLICT_DETECTOR_SOURCE,
-					[ FontAwesome::ADMIN_RESOURCE_HANDLE ],
+					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
 					null,
 					true
 				);
@@ -1658,10 +1658,10 @@ EOT;
 
 		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
 			// Enqueue the conflict detector.
-			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					[ $conflict_detection_enqueue_command, 'run' ],
+					array( $conflict_detection_enqueue_command, 'run' ),
 					PHP_INT_MAX
 				);
 			}
@@ -1670,7 +1670,7 @@ EOT;
 		}
 
 		if ( 'webfont' === $options['technology'] ) {
-			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
 					function () use ( $resources ) {
@@ -1684,7 +1684,7 @@ EOT;
 			add_filter(
 				'style_loader_tag',
 				function( $html, $handle ) use ( $resources ) {
-					if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
+					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $resources[0]->integrity_key() .
@@ -1712,7 +1712,7 @@ EOT;
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
 				 * that may try to declare a @font-face with a font-family of "FontAwesome".
 				 */
-				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
 						function () use ( $resources, $options, $version ) {
@@ -1771,7 +1771,7 @@ EOT;
 					add_filter(
 						'style_loader_tag',
 						function ( $html, $handle ) use ( $resources ) {
-							if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
+							if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $resources[1]->integrity_key() .
@@ -1789,7 +1789,7 @@ EOT;
 				}
 			}
 		} else {
-			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
 					function () use ( $resources, $options ) {
@@ -1807,7 +1807,7 @@ EOT;
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle ) use ( $resources ) {
-					if ( in_array( $handle, [ self::RESOURCE_HANDLE ], true ) ) {
+					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
 						$extra_tag_attributes = 'defer crossorigin="anonymous"';
 
 						if ( ! is_null( $resources[0]->integrity_key() ) ) {
@@ -1830,7 +1830,7 @@ EOT;
 			);
 
 			if ( $options['v4Compat'] ) {
-				foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
 						function () use ( $resources ) {
@@ -1843,7 +1843,7 @@ EOT;
 				add_filter(
 					'script_loader_tag',
 					function ( $tag, $handle ) use ( $resources ) {
-						if ( in_array( $handle, [ self::RESOURCE_HANDLE_V4SHIM ], true ) ) {
+						if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
 							$extra_tag_attributes = 'defer crossorigin="anonymous"';
 							if ( ! is_null( $resources[1]->integrity_key() ) ) {
 								$extra_tag_attributes .= ' integrity="' . $resources[1]->integrity_key() . '"';
@@ -1885,7 +1885,7 @@ EOT;
 					in_array(
 						$handle,
 						array_merge(
-							[ self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ],
+							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ),
 							handles_ignored_for_conflict_detection()
 						),
 						true
@@ -1912,12 +1912,12 @@ EOT;
 					in_array(
 						$handle,
 						array_merge(
-							[
+							array(
 								self::RESOURCE_HANDLE,
 								self::RESOURCE_HANDLE_V4SHIM,
 								self::RESOURCE_HANDLE_CONFLICT_DETECTOR,
 								self::ADMIN_RESOURCE_HANDLE,
-							],
+							),
 							handles_ignored_for_conflict_detection()
 						),
 						true
@@ -1953,7 +1953,7 @@ EOT;
 		 * add what we find to the new-style blocklist.
 		 */
 		if ( $this->_old_remove_unregistered_clients ) {
-			foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
 					function() {
@@ -1978,7 +1978,7 @@ EOT;
 		 * hopefully allowing any unregistered client to have already enqueued
 		 * itself so that our attempt to dequeue it will be successful.
 		 */
-		foreach ( [ 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ] as $action ) {
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 			add_action(
 				$action,
 				function() {
@@ -2021,7 +2021,7 @@ EOT;
 			'script' => $wp_scripts,
 		);
 
-		$inferred_unregistered_clients = [];
+		$inferred_unregistered_clients = array();
 
 		foreach ( $collections as $key => $collection ) {
 			foreach ( $collection->registered as $handle => $details ) {
@@ -2150,7 +2150,7 @@ EOT;
 
 		foreach ( $collections as $type => $collection ) {
 			foreach ( $collection->registered as $handle => $details ) {
-				foreach ( [ 'before', 'after' ] as $position ) {
+				foreach ( array( 'before', 'after' ) as $position ) {
 					$data = $collection->get_data( $handle, $position );
 					if ( $this->is_inline_data_blocked( $data ) ) {
 						unset( $collection->registered[ $handle ]->extra[ $position ] );
@@ -2515,7 +2515,7 @@ EOT;
 			$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 		}
 
-		$classes = rtrim( implode( ' ', [ $prefix_and_name_classes, $atts['class'] ] ) );
+		$classes = rtrim( implode( ' ', array( $prefix_and_name_classes, $atts['class'] ) ) );
 		return '<i class="' . $classes . '"></i>';
 	}
 

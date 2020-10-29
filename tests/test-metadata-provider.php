@@ -47,7 +47,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 			'body'     => wp_json_encode(
 				array(
 					'errors' => array(
-						0 => [ 'message' => 'syntax error before: "queryreleases"' ],
+						0 => array( 'message' => 'syntax error before: "queryreleases"' ),
 					),
 				)
 			),
@@ -61,7 +61,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 				'message' => 'Internal Server Error',
 			),
 			'body'     => '',
-			'headers'  => [],
+			'headers'  => array(),
 		);
 	}
 
@@ -248,7 +248,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 	public function test_authorized_request_with_valid_access_token() {
 		add_filter(
 			'pre_http_request',
-			[ $this, 'handle_pre_http_request_for_valid_current_access_token' ],
+			array( $this, 'handle_pre_http_request_for_valid_current_access_token' ),
 			1, // filter priority.
 			3  // num args accepted.
 		);
@@ -268,7 +268,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 	public function test_authorized_request_with_expired_access_token() {
 		add_filter(
 			'pre_http_request',
-			[ $this, 'handle_pre_http_request_for_expiring_access_token' ],
+			array( $this, 'handle_pre_http_request_for_expiring_access_token' ),
 			1, // filter priority.
 			3  // num args accepted.
 		);
@@ -299,7 +299,7 @@ class MetadataProviderTest extends \WP_UnitTestCase {
 	public function test_noauth_request() {
 		add_filter(
 			'pre_http_request',
-			[ $this, 'handle_pre_http_request_for_noauth_request' ],
+			array( $this, 'handle_pre_http_request_for_noauth_request' ),
 			1, // filter priority.
 			3  // num args accepted.
 		);

@@ -36,7 +36,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @ignore
 	 * @since 4.0.0
 	 */
-	public static function detect( $configured_options = [], $client_preferences = [], $latest_version = null ) {
+	public static function detect( $configured_options = array(), $client_preferences = array(), $latest_version = null ) {
 		return array_reduce(
 			array_keys( $configured_options ),
 			function( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version ) {
@@ -48,17 +48,17 @@ class FontAwesome_Preference_Conflict_Detector {
 							$configured_options[ $option ],
 							$client_preferences[ $option ],
 							$latest_version
-						) ? $carry : array_merge( $carry, [ $option ] );
+						) ? $carry : array_merge( $carry, array( $option ) );
 					} else {
 						return $configured_options[ $option ] === $client_preferences[ $option ]
 						? $carry
-						: array_merge( $carry, [ $option ] );
+						: array_merge( $carry, array( $option ) );
 					}
 				} else {
 					return $carry;
 				}
 			},
-			[]
+			array()
 		);
 	}
 
@@ -97,7 +97,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @return bool
 	 */
 	public static function version_satisfies( $version, $constraints ) {
-		$valid_operators = [ '<', 'lt', '<=', 'le', '>', 'gt', '>=', 'ge', '==', '=', 'eq', '!=', '<>', 'ne' ];
+		$valid_operators = array( '<', 'lt', '<=', 'le', '>', 'gt', '>=', 'ge', '==', '=', 'eq', '!=', '<>', 'ne' );
 
 		if ( ! is_array( $constraints ) ) {
 			throw new ClientPreferencesSchemaException();

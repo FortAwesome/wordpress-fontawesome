@@ -24,7 +24,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 
 		$this->server = $wp_rest_server;
 
-		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+		$this->admin_user = get_users( array( 'role' => 'administrator' ) )[0];
 
 		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
 
@@ -47,7 +47,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
-				[ 'version' => $version ]
+				array( 'version' => $version )
 			)
 		);
 	}
@@ -61,7 +61,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 		fa()->register(
 			array(
 				'name'    => 'alpha',
-				'version' => [ [ '5.4.0', '>=' ] ],
+				'version' => array( array( '5.4.0', '>=' ) ),
 			)
 		);
 
@@ -94,14 +94,14 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$data = $response->get_data();
 
-		$this->assertEquals( [], $data );
+		$this->assertEquals( array(), $data );
 	}
 
 	public function test_check_conflicts_with_conflicts() {
 		fa()->register(
 			array(
 				'name'    => 'alpha',
-				'version' => [ [ '5.8.0', '>=' ] ],
+				'version' => array( array( '5.8.0', '>=' ) ),
 			)
 		);
 
@@ -121,7 +121,7 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 			wp_json_encode(
 				array_merge(
 					FontAwesome::DEFAULT_USER_OPTIONS,
-					[ 'version' => '5.6.0' ]
+					array( 'version' => '5.6.0' )
 				)
 			)
 		);
@@ -131,8 +131,8 @@ class PreferenceCheckControllerTest extends \WP_UnitTestCase {
 		$data = $response->get_data();
 		$this->assertEquals(
 			array(
-				'version'  => [ 'alpha' ],
-				'v4Compat' => [ 'beta' ],
+				'version'  => array( 'alpha' ),
+				'v4Compat' => array( 'beta' ),
 			),
 			$data
 		);

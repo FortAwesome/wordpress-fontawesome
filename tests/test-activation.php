@@ -36,7 +36,7 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_activation_creates_default_config() {
 		FontAwesome_Activator::activate();
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->latest_version() ] );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
@@ -48,7 +48,7 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_initialize_from_scratch_creates_default_config() {
 		FontAwesome_Activator::initialize();
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => fa()->latest_version() ] );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
@@ -60,10 +60,10 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_initialize_preserves_existing_options() {
 		$expected_options = array_merge(
 			FontAwesome::DEFAULT_USER_OPTIONS,
-			[
+			array(
 				'version' => '5.11.1',
 				'usePro'  => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'],
-			]
+			)
 		);
 		update_option( FontAwesome::OPTIONS_KEY, $expected_options );
 
@@ -97,10 +97,10 @@ class ActivationTest extends \WP_UnitTestCase {
 	public function test_initialize_force_overwrites_with_defaults() {
 		$initial_options = array_merge(
 			FontAwesome::DEFAULT_USER_OPTIONS,
-			[
+			array(
 				'version' => '5.11.1',
 				'usePro'  => ! FontAwesome::DEFAULT_USER_OPTIONS['usePro'],
-			]
+			)
 		);
 		update_option( FontAwesome::OPTIONS_KEY, $initial_options );
 
@@ -120,7 +120,7 @@ class ActivationTest extends \WP_UnitTestCase {
 		);
 
 		// 5.4.1 is the latest in the mock
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, [ 'version' => '5.4.1' ] );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => '5.4.1' ) );
 
 		FontAwesome_Activator::initialize( true );
 		$actual_options                   = get_option( FontAwesome::OPTIONS_KEY );

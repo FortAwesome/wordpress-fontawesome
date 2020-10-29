@@ -31,7 +31,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	/**
 	 * @ignore
 	 */
-	protected $valid_attrs = [ 'type', 'technology', 'href', 'src', 'innerText', 'tagName' ];
+	protected $valid_attrs = array( 'type', 'technology', 'href', 'src', 'innerText', 'tagName' );
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**

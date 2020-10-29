@@ -123,8 +123,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 */
 		private function __construct() {
-			add_action( 'wp_loaded', [ &$this, 'run_plugin' ], -1 );
-			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, [ &$this, 'activate_plugin' ], -1 );
+			add_action( 'wp_loaded', array( &$this, 'run_plugin' ), -1 );
+			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, array( &$this, 'activate_plugin' ), -1 );
 		}
 
 		/**
@@ -509,10 +509,10 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				}
 				array_push(
 					self::$data,
-					[
+					array(
 						'version' => $version,
 						'path'    => trailingslashit( $data ),
-					]
+					)
 				);
 			}
 			return $this;

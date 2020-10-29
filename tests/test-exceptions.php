@@ -35,7 +35,7 @@ class ExceptionsTest extends \WP_UnitTestCase {
 					'message' => 'Forbidden',
 				),
 				'body'     => '',
-				'headers'  => [],
+				'headers'  => array(),
 			)
 		);
 

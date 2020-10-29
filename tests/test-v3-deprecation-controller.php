@@ -21,9 +21,9 @@ class V3DeprecationControllerTest extends \WP_UnitTestCase {
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
-				[
+				array(
 					'version' => '5.4.1',
-				]
+				)
 			)
 		);
 
@@ -33,7 +33,7 @@ class V3DeprecationControllerTest extends \WP_UnitTestCase {
 
 		$this->server = $wp_rest_server;
 
-		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+		$this->admin_user = get_users( array( 'role' => 'administrator' ) )[0];
 
 		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
 
@@ -67,9 +67,9 @@ class V3DeprecationControllerTest extends \WP_UnitTestCase {
 
 		$request->set_body(
 			wp_json_encode(
-				[
+				array(
 					'snooze' => true,
-				]
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
