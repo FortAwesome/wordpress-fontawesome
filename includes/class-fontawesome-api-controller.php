@@ -71,8 +71,8 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 */
 	public function __construct( $plugin_slug, $namespace ) {
-		$this->plugin_slug        = $plugin_slug;
-		$this->namespace          = $namespace;
+		$this->plugin_slug       = $plugin_slug;
+		$this->namespace         = $namespace;
 		$this->metadata_provider = fa_metadata_provider();
 	}
 
