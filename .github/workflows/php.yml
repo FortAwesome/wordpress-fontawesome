@@ -221,7 +221,6 @@ jobs:
     - name: Maybe run phpcs
       run: |
         if [ ${{ matrix.php }} == 7.4 ] && [ ${{ matrix.wordpress }} == latest ]; then
-          vendor/bin/phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
           composer phpcs
         echo
           echo "Skipping phpcs"
