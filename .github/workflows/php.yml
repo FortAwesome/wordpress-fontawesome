@@ -95,6 +95,7 @@ jobs:
       run: |
         sudo cp -R /tmp/apt-sources-${{ steps.date.outputs.DATE }}/* /var/lib/apt/lists
         sudo apt-get install -y --download-only subversion mysql-client
+        sudo mkdir -p /tmp/apt-packages-${{ steps.date.outputs.DATE }}
         sudo cp -R /var/cache/apt/archives/* /tmp/apt-packages-${{ steps.date.outputs.DATE }}
 
     - name: Install OS Packages
