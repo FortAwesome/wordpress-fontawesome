@@ -52,8 +52,8 @@
         "phpunit/phpunit": "^7.4.5"
     },
     "scripts": {
-        "phpcs": "phpcs --standard=phpcs.xml.dist",
-        "phpcbf": "phpcbf --standard=phpcs.xml.dist",
+        "phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist",
+        "phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
         "test": "vendor/bin/phpunit",
         "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip",
         "build.admin": "cd admin; yarn; yarn build",

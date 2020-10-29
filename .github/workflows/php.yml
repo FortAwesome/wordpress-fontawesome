@@ -218,6 +218,11 @@ jobs:
 
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit $PHP_UNIT_ARGS
 
-    - name: Run phpcs
-      if: ${{ matrix.php }} == 7.4 && ${{ matrix.wordpress }} == latest
-      run: composer phpcs
+    - name: Maybe run phpcs
+      run: |
+        if [ ${{ matrix.php }} == 7.4 ] && [ ${{ matrix.wordpress }} == latest ]; then
+          vendor/bin/phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+          composer phpcs
+        echo
+          echo "Skipping phpcs"
+        fi
