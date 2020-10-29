@@ -207,7 +207,13 @@ jobs:
         sed -i "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
 
     - name: Run PHPUnit
-      # The output group tends to fail in CI even when it passes locally.
-      # TODO: figure out a solution. In the meantime, exclude that group.
+      # only run the output tests on the newer versions of php and phpunit, cause
+      # they're trickier
       run: |
-        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit --exclude-group output
+        if [ "7.4" == ${{ matrix.php }} ]; then
+          PHP_UNIT_ARGS=""
+        else
+          PHP_UNIT_ARGS="--exclude-group output"
+        fi
+
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit $PHP_UNIT_ARGS
