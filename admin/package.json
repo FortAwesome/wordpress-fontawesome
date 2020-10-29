@@ -17,7 +17,7 @@
     "dotenv-expand": "4.2.0",
     "handlebars": "^4.5.3",
     "identity-obj-proxy": "3.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "postcss-flexbugs-fixes": "4.1.0",
     "postcss-loader": "3.0.0",
     "postcss-preset-env": "6.0.6",
