@@ -1,4 +1,4 @@
-vendor/bin/name: PHP Composer
+name: PHP Composer
 
 on:
   push:
