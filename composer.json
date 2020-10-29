@@ -48,7 +48,8 @@
         "doctrine/lexer": "^1.2.1",
         "doctrine/instantiator": "^1.3.1",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-        "phpdocumentor/phpdocumentor": "^3.0.0"
+        "phpdocumentor/phpdocumentor": "^3.0.0",
+        "phpunit/phpunit": "6.5.*"
     },
     "scripts": {
         "phpcs": "phpcs --standard=phpcs.xml.dist",
