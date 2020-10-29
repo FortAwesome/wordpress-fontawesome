@@ -61,12 +61,12 @@ jobs:
           LOCK_FILE=composer-php${{ matrix.php }}.lock
           COMPOSER_FILE=composer-php${{ matrix.php }}.json
         fi
-        echo "::set-output name=COMPOSER_LOCK_HASH::${{ hashFiles($LOCK_FILE) }}"
+        echo "::set-output name=COMPOSER_LOCK_HASH::$(md5sum $LOCK_FILE | cut -d' ' -f1)"
         echo "::set-output name=COMPOSER_FILE::${COMPOSER_FILE}"
 
     - name: Resolve Cache Date
       id: cache-date
-      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')-b"
+      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')"
 
     - name: Cache Composer packages
       id: composer-cache
