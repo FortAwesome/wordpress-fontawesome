@@ -91,7 +91,7 @@ jobs:
         sudo cp -R /var/lib/apt/lists/* /tmp/apt-sources-${{ steps.date.outputs.DATE }}
 
     - name: Download APT Packages
-      #if: steps.apt-packages-cache.outputs.cache-hit != 'true'
+      if: steps.apt-packages-cache.outputs.cache-hit != 'true'
       run: |
         sudo cp -R /tmp/apt-sources-${{ steps.date.outputs.DATE }}/* /var/lib/apt/lists
         sudo apt-get install -y --download-only subversion mysql-client
