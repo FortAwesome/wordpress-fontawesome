@@ -43,16 +43,6 @@ class EnqueueTest extends \WP_UnitTestCase {
 		FontAwesome_Activator::activate();
 	}
 
-	protected function captureOutput() {
-		/**
-		 * For some reason the expectOutputRegex feature of PHPUnit is resulting in false positives, so we'll
-		 * handle output buffering and matching ourselves here.
-		 */
-		ob_start();
-		wp_head(); // generates the output
-		return ob_get_clean();
-	}
-
 	public function build_mock_resource_collection($options) {
 		$version = ( 'latest' === $options['version'] ) ? self::MOCK_LATEST_VERSION : $options['version'];
 
@@ -101,7 +91,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<script[\s]+${ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/all\.js\'><\/script>/",
+				"/<script[\s]+${ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/all\.js\'.*?><\/script>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -133,7 +123,7 @@ class EnqueueTest extends \WP_UnitTestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<script[\s]+${ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake246\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/v4-shims\.js\'><\/script>/",
+				"/<script[\s]+${ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake246\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/v4-shims\.js\'.*?><\/script>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE . "\n\n$output\n\n"
@@ -210,7 +200,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
@@ -231,7 +224,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertFalse( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
@@ -254,7 +250,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
@@ -281,7 +280,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
@@ -310,7 +312,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertFalse( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
@@ -333,7 +338,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertFalse( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
@@ -368,7 +376,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR, 'enqueued' ) );
 
@@ -401,7 +412,10 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 		fa()->enqueue_cdn( $options, $resource_collection );
 
-		$output = $this->captureOutput();
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
 
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR, 'enqueued' ) );
 
