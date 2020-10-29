@@ -217,3 +217,7 @@ jobs:
         fi
 
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit $PHP_UNIT_ARGS
+
+    - name: Run phpcs
+      if: ${{ matrix.php }} == 7.4 && ${{ matrix.wordpress }} == latest
+      run: composer phpcs
