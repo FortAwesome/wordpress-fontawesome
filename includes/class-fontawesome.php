@@ -296,7 +296,7 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	protected $_old_remove_unregistered_clients = false;
+	protected $old_remove_unregistered_clients = false;
 
 	/**
 	 * Returns the singleton instance of the FontAwesome plugin.
@@ -435,7 +435,7 @@ class FontAwesome {
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
-				$this->_old_remove_unregistered_clients = true;
+				$this->old_remove_unregistered_clients = true;
 			}
 
 			$upgraded_options = $this->convert_options_from_v1( $options );
@@ -668,12 +668,12 @@ class FontAwesome {
 	 * @return string|null
 	 */
 	private function active_admin_tab() {
-		// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) || empty( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) ) {
 			return null;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$value = $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ];
 
 		// These values are defined in the Redux reducer module of the admin JS React app.
@@ -759,6 +759,7 @@ class FontAwesome {
 		}
 
 		$icon_data = 'data:image/svg+xml;base64,'
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			. base64_encode(
 				'<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 448 512"><path fill="'
 				. $this->get_admin_icon_color()
@@ -1952,7 +1953,7 @@ EOT;
 		 * run some server-side detection like that old feature worked and
 		 * add what we find to the new-style blocklist.
 		 */
-		if ( $this->_old_remove_unregistered_clients ) {
+		if ( $this->old_remove_unregistered_clients ) {
 			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
