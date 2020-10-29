@@ -42,6 +42,7 @@
         ]
     },
     "require-dev": {
+      "phpunit/phpunit": "4.8.*|5.7.*|6.5.*"
     },
     "scripts": {
         "phpcs": "phpcs --standard=phpcs.xml.dist",
