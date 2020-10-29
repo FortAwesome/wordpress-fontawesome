@@ -50,7 +50,19 @@ jobs:
         php-version: ${{ matrix.php }}
 
     - name: Validate composer.json and composer.lock
-      run: COMPOSER=composer-ci.json composer validate
+      id: composer-lock
+      run: |
+        if [ ${{ matrix.php }} == 7.4 ]; then
+          composer validate
+          LOCK_FILE=composer.lock
+          COMPOSER_FILE=composer.json
+        else
+          COMPOSER=composer-php${{ matrix.php }}.json composer validate
+          LOCK_FILE=composer-php${{ matrix.php }}.lock
+          COMPOSER_FILE=composer-php${{ matrix.php }}.json
+        fi
+        echo "::set-output name=COMPOSER_LOCK_HASH::${{ hashFiles($LOCK_FILE) }}"
+        echo "::set-output name=COMPOSER_FILE::${COMPOSER_FILE}"
 
     - name: Resolve Cache Date
       id: cache-date
@@ -61,13 +73,13 @@ jobs:
       uses: actions/cache@v2
       with:
         path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer-ci.lock') }}
+        key: ${{ runner.os }}-php-${{ steps.composer-lock.outputs.COMPOSER_LOCK_HASH }}
         restore-keys: |
           ${{ runner.os }}-php-
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: COMPOSER=composer-ci.json composer install --prefer-dist --no-progress
+      run: COMPOSER=${{ steps.composer-lock.outputs.COMPOSER_FILE }} composer install --prefer-dist --no-progress
 
     - name: Cache APT Sources Daily
       id: apt-sources-cache
