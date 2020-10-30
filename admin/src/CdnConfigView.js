@@ -100,7 +100,6 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_icons_pro"
                   name="code_edit_icons"
                   type="radio"
-                  value="svg"
                   checked={ usePro }
                   onChange={ () => handleOptionChange({ usePro: true }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
@@ -130,7 +129,6 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_icons_free"
                   name="code_edit_icons"
                   type="radio"
-                  value="webfont"
                   checked={ ! usePro }
                   onChange={ () => handleOptionChange({ usePro: false }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
@@ -182,7 +180,6 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_tech_svg"
                   name="code_edit_tech"
                   type="radio"
-                  value="svg"
                   checked={ technology === 'svg' }
                   onChange={ () => handleOptionChange({ technology: 'svg' }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
@@ -212,7 +209,6 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_tech_webfont"
                   name="code_edit_tech"
                   type="radio"
-                  value="webfont"
                   checked={ technology === 'webfont' }
                   onChange={ () => handleOptionChange({
                     technology: 'webfont',
@@ -259,7 +255,6 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_features_pseudo_elements"
                   name="code_edit_features"
                   type="checkbox"
-                  value="pseudo_elements"
                   checked={ pseudoElements }
                   onChange={() => handleOptionChange({ pseudoElements: !pseudoElements })}
                   className={classnames(sharedStyles['sr-only'], sharedStyles['input-checkbox-custom'])}

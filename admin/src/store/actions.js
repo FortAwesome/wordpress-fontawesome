@@ -179,21 +179,21 @@ export function addPendingOption(change) {
   return function(dispatch, getState) {
     const { options } = getState()
 
-    const [ key, val ] = toPairs(change)[0]
+    for (const [ key, val ] of toPairs(change)) {
+      const originalValue = options[key]
 
-    const originalValue = options[key]
-
-    // If we're changing back to an original setting
-    if( originalValue === val ) {
-      dispatch({
-        type: 'RESET_PENDING_OPTION',
-        change
-      })
-    } else {
-      dispatch({
-        type: 'ADD_PENDING_OPTION',
-        change
-      })
+      // If we're changing back to an original setting
+      if( originalValue === val ) {
+        dispatch({
+          type: 'RESET_PENDING_OPTION',
+          change: {[key]: val}
+        })
+      } else {
+        dispatch({
+          type: 'ADD_PENDING_OPTION',
+          change: {[key]: val}
+        })
+      }
     }
   }
 }

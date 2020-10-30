@@ -1,6 +1,6 @@
 import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
 import * as actions from './actions'
-import { submitPendingOptions } from './actions'
+import { submitPendingOptions, addPendingOption } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import reportRequestError, { MOCK_UI_MESSAGE } from '../util/reportRequestError'
@@ -11,6 +11,35 @@ const INVALID_JSON_RESPONSE_DATA = 'foo[42]bar{123}'
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)
 const fakeNonce = 'fakeNonce'
+
+describe('addPendingOption', () => {
+  let store = null
+
+  beforeEach(() => {
+    store = mockStore({
+      apiNonce: fakeNonce,
+      apiUrl,
+      options: {
+        technology: 'svg',
+        pseudoElements: false
+      },
+      pendingOptions: {}
+    })
+  })
+
+  test('when multiple pending options are adjusted together, all are updated', () => {
+    store.dispatch(addPendingOption({ technology: 'webfont', pseudoElements: true }))
+    expect(store.getActions().length).toEqual(2)
+    expect(store.getActions()[0]).toEqual(expect.objectContaining({
+      type: 'ADD_PENDING_OPTION',
+      change: { technology: 'webfont' }
+    }))
+    expect(store.getActions()[1]).toEqual(expect.objectContaining({
+      type: 'ADD_PENDING_OPTION',
+      change: { pseudoElements: true }
+    }))
+  })
+})
 
 describe('submitPendingOptions and interceptors', () => {
   let store = null
