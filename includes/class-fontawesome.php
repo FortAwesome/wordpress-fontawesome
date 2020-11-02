@@ -761,7 +761,7 @@ class FontAwesome {
 		$admin_menu_command = new FontAwesome_Command(
 			function() {
 				fa()->screen_id = add_options_page(
-				    /* translators: add_options_page page_title */
+					/* translators: add_options_page page_title */
 					esc_html__( 'Font Awesome Settings', 'font-awesome' ),
 					/* translators: add_options_page menu_title */
 					esc_html__( 'Font Awesome', 'font-awesome' ),
