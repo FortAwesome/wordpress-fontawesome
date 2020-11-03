@@ -64,7 +64,7 @@ class FontAwesome_Release_Provider {
 	 * @ignore
 	 * @internal
 	 */
-	const LAST_USED_RELEASE_TRANSIENT_EXPIRY = WEEK_IN_SECONDS;
+	const LAST_USED_RELEASE_TRANSIENT_EXPIRY = YEAR_IN_SECONDS;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
