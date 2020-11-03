@@ -48,7 +48,7 @@ class FontAwesome_Release_Provider {
 	 * @ignore
 	 * @internal
 	 */
-	const LAST_USED_RELEASE_TRANSIENT  = 'font-awesome-last-used-release';
+	const LAST_USED_RELEASE_TRANSIENT = 'font-awesome-last-used-release';
 
 	/**
 	 * Expiry time for the releases transient.
@@ -404,7 +404,7 @@ EOD;
 			'use_pro'   => $flags['use_pro'],
 			'use_svg'   => $flags['use_svg'],
 			'use_shim'  => $flags['use_shim'],
-			'resources' => $resources
+			'resources' => $resources,
 		);
 
 		$ret = set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );

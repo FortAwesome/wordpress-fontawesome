@@ -127,27 +127,35 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	}
 
 	public function test_last_used_cache() {
-		$all_releases_query_count = 0;
+		$all_releases_query_count      = 0;
 		$last_used_release_query_count = 0;
 
-		add_filter( "pre_site_transient_" . FontAwesome_Release_Provider::RELEASES_TRANSIENT, function() use( &$all_releases_query_count ) {
-			$all_releases_query_count++;
-			return false;
-		}, 0);
+		add_filter(
+			'pre_site_transient_' . FontAwesome_Release_Provider::RELEASES_TRANSIENT,
+			function() use ( &$all_releases_query_count ) {
+				$all_releases_query_count++;
+				return false;
+			},
+			0
+		);
 
-		add_filter( "pre_site_transient_" . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT, function() use( &$last_used_release_query_count ) {
-			$last_used_release_query_count++;
-			return false;
-		}, 0);
+		add_filter(
+			'pre_site_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+			function() use ( &$last_used_release_query_count ) {
+				$last_used_release_query_count++;
+				return false;
+			},
+			0
+		);
 
 		$this->prepare(
 			array(
-				self::build_success_response()
+				self::build_success_response(),
 			)
 		);
 
-		$this->assertEquals(1, $all_releases_query_count);
-		$this->assertEquals(0, $last_used_release_query_count );
+		$this->assertEquals( 1, $all_releases_query_count );
+		$this->assertEquals( 0, $last_used_release_query_count );
 
 		$resource_collection = $this->release_provider->get_resource_collection(
 			'5.4.1',
@@ -158,8 +166,8 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$this->assertEquals(1, $all_releases_query_count);
-		$this->assertEquals(1, $last_used_release_query_count );
+		$this->assertEquals( 1, $all_releases_query_count );
+		$this->assertEquals( 1, $last_used_release_query_count );
 
 		$resource_collection = $this->release_provider->get_resource_collection(
 			'5.4.1',
