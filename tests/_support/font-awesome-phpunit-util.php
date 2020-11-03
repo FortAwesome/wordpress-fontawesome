@@ -98,5 +98,12 @@ function reset_db() {
 			throw new Exception( 'Unsuccessful clearing the Releases transient.' );
 		}
 	}
+
+	if ( ! delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
+		// false could mean either that it doesn't exist, or that the delete wasn't successful.
+		if ( get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
+			throw new Exception( 'Unsuccessful clearing the Last Used Releases transient.' );
+		}
+	}
 }
 
