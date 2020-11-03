@@ -41,11 +41,30 @@ class FontAwesome_Release_Provider {
 	const RELEASES_TRANSIENT = 'font-awesome-releases';
 
 	/**
+	 * Name of the transient that stores the cache of the last used Font Awesome
+	 * release so we won't load all of the releases metadata on each page load.
+	 *
+	 * @since 4.0.0-rc4
+	 * @ignore
+	 * @internal
+	 */
+	const LAST_USED_RELEASE_TRANSIENT = 'font-awesome-last-used-release';
+
+	/**
 	 * Expiry time for the releases transient.
 	 *
 	 * @ignore
+	 * @internal
 	 */
-	const RELEASES_TRANSIENT_EXPIRY = 0;
+	const RELEASES_TRANSIENT_EXPIRY = YEAR_IN_SECONDS;
+
+	/**
+	 * Expiry time for the releases transient.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	const LAST_USED_RELEASE_TRANSIENT_EXPIRY = YEAR_IN_SECONDS;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
 	/**
@@ -105,15 +124,7 @@ class FontAwesome_Release_Provider {
 	 *
 	 * @ignore
 	 */
-	private function __construct() {
-		$transient_value = get_site_transient( self::RELEASES_TRANSIENT );
-
-		if ( $transient_value ) {
-			$this->releases       = $transient_value['data']['releases'];
-			$this->refreshed_at   = $transient_value['refreshed_at'];
-			$this->latest_version = $transient_value['data']['latest'];
-		}
-	}
+	private function __construct() {}
 
 	/**
 	 * Loads release metadata and saves to a transient.
@@ -281,7 +292,11 @@ EOD;
 			$transient_value = get_site_transient( self::RELEASES_TRANSIENT );
 
 			if ( $transient_value ) {
-				return $transient_value['data']['releases'];
+				$this->releases       = $transient_value['data']['releases'];
+				$this->refreshed_at   = $transient_value['refreshed_at'];
+				$this->latest_version = $transient_value['data']['latest'];
+
+				return $this->releases;
 			} elseif ( is_null( $this->releases ) ) {
 				$result = $this->load_releases();
 
@@ -359,6 +374,22 @@ EOD;
 			throw ConfigSchemaException::webfont_v4compat_introduced_later();
 		}
 
+		// If this is the same query as last time, then our LAST_USED_RELEASE_TRANSIENT should be current.
+		$last_used_transient = get_site_transient( self::LAST_USED_RELEASE_TRANSIENT );
+
+		if ( $last_used_transient ) {
+			// For simplicity, we're require that it's exactly what we're looking for, else we'll re-build and overwrite it.
+			if (
+				$version === $last_used_transient['version']
+				&& $flags['use_pro'] === $last_used_transient['use_pro']
+				&& $flags['use_svg'] === $last_used_transient['use_svg']
+				&& $flags['use_shim'] === $last_used_transient['use_shim']
+				&& is_array( $last_used_transient['resources'] )
+			) {
+				return new FontAwesome_ResourceCollection( $version, $last_used_transient['resources'] );
+			}
+		}
+
 		if ( ! array_key_exists( $version, $this->releases() ) ) {
 			throw new ReleaseMetadataMissingException();
 		}
@@ -366,6 +397,20 @@ EOD;
 		array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
 		if ( $flags['use_shim'] ) {
 			array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
+		}
+
+		$transient_value = array(
+			'version'   => $version,
+			'use_pro'   => $flags['use_pro'],
+			'use_svg'   => $flags['use_svg'],
+			'use_shim'  => $flags['use_shim'],
+			'resources' => $resources,
+		);
+
+		$ret = set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+
+		if ( ! $ret ) {
+			throw new ReleaseProviderStorageException();
 		}
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
