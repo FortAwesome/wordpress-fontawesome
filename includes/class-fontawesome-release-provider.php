@@ -380,10 +380,10 @@ EOD;
 		if ( $last_used_transient ) {
 			// For simplicity, we're require that it's exactly what we're looking for, else we'll re-build and overwrite it.
 			if (
-				$version == $last_used_transient['version']
-				&& $flags['use_pro'] == $last_used_transient['use_pro']
-				&& $flags['use_svg'] == $last_used_transient['use_svg']
-				&& $flags['use_shim'] == $last_used_transient['use_shim']
+				$version === $last_used_transient['version']
+				&& $flags['use_pro'] === $last_used_transient['use_pro']
+				&& $flags['use_svg'] === $last_used_transient['use_svg']
+				&& $flags['use_shim'] === $last_used_transient['use_shim']
 				&& is_array( $last_used_transient['resources'] )
 			) {
 				return new FontAwesome_ResourceCollection( $version, $last_used_transient['resources'] );
