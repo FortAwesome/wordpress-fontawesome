@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>    Documentation &raquo; Markers
-</title>
+    <title>Documentation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../">
     <link rel="icon" href="images/favicon.ico"/>
@@ -73,17 +72,67 @@
 
             <div class="phpdocumentor-column -eight phpdocumentor-content">
                     <ul class="phpdocumentor-breadcrumbs">
-        <li><a href="">Home</a></li>
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/fortawesome.html">FortAwesome</a></li>
     </ul>
 
-    <div class="phpdocumentor-row">
-        <h2 class="phpdocumentor-content__title">Markers</h2>
+    <article class="phpdocumentor-element -class">
+        <h2 class="phpdocumentor-content__title">
+    FontAwesome_API_Controller
 
-                    <div class="phpdocumentor-admonition phpdocumentor-admonition--success">
-                No markers have been found in this project.
-            </div>
+        <span class="phpdocumentor-element__extends">
+        extends <abbr title="\WP_REST_Controller">WP_REST_Controller</abbr>
+    </span>
+    
+    
+    
+    </h2>
+
+        <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-api-controller.php"><a href="files/includes-class-fontawesome-api-controller.html"><abbr title="includes/class-fontawesome-api-controller.php">class-fontawesome-api-controller.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">49</span>
+</aside>
+
+            <p class="phpdocumentor-summary">Controller class for the plugin&#039;s GraphQL API REST endpoint.</p>
+
+    <section class="phpdocumentor-description"><p>This controller provides a REST route for WordPress client access to the
+Font Awesome GraphQL API. It delegates to <a href="classes/FortAwesome-FontAwesome.html#method_query"><abbr title="\FortAwesome\FontAwesome::query()">FontAwesome::query()</abbr></a>.
+The plugin's setting page is a React app that acts as such a client,
+querying kits.</p>
+<p>Requests to this REST route should have the following headers and body:</p>
+<h3>Headers</h3>
+<p><code class="prettyprint">X-WP-Nonce</code>: include an appropriate nonce from WordPress.</p>
+<h3>Body</h3>
+<p>The request body should contain a GraphQL query document as a string.</p>
+<p>For example, the following query would return all available Font Awesome
+version numbers:</p>
+<pre class="prettyprint"><code class="prettyprint">query { releases { version } }
+</code></pre>
+<h3>Internal Use vs. Public API</h3>
+<p>The PHP methods in this controller class are not part of this plugin's
+public API, but the REST route it exposes is.</p>
+<p>If you need to issue a query from server-side PHP code to the
+Font Awesome API server, use the <a href="classes/FortAwesome-FontAwesome.html#method_query"><abbr title="\FortAwesome\FontAwesome::query()">FontAwesome::query()</abbr></a> method.</p>
+<p>If you need to issue a query from client-side JavaScript, send
+an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1/api</code>.</p>
+</section>
+
+
+
+
+
+
+
+
+
+
+
         
-            </div>
+
+        
+
+        
+    </article>
                 <section data-search-results class="phpdocumentor-search-results phpdocumentor-search-results--hidden">
     <section class="phpdocumentor-search-results__dialog">
         <header class="phpdocumentor-search-results__header">
@@ -97,7 +146,7 @@
 </section>
             </div>
         </div>
-        <a href="reports/markers.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/FortAwesome-FontAwesome-API-Controller.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

@@ -610,7 +610,7 @@ that was created in the previous step.
 
             This should be non-empty/truthy.
 
-    - Finally, deactivate theme-mu by activating another theme. This should cause _both_ the deactivate _and_ uninstall logic to be triggered, because it's the last client of Font Awesome, and it's a theme (apparently themes don't have separate deactitation and uninstall logic like plugins have).
+    - Finally, deactivate theme-mu by activating another theme. This should cause _both_ the deactivate _and_ uninstall logic to be triggered, because it's the last client of Font Awesome, and it's a theme (apparently themes don't have separate deactivation and uninstall logic like plugins have).
         - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate twentynineteen`
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
 

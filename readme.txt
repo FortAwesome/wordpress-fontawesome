@@ -1,6 +1,6 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
-Stable tag: 4.0.0-rc20
+Stable tag: 4.0.0-rc21
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
 Tested up to: 5.5.3
@@ -131,6 +131,14 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 
 == Changelog ==
+
+= 4.0.0-rc21 =
+
+* optimize normal page loads by loading much less metadata from the database (GitHub #96)
+* move the Font Awesome settings link from the main admin nav menu back down under Settings, where it used to be
+* update the version of the conflict detection script to one that also detects conflicting kits
+* minor maintenance changes to keep JavaScript dependencies up to date
+* fix a bug involving the pseudo-elements setting when moving back and forth between using a kit and using CDN (GitHub #82)
 
 = 4.0.0-rc20 =
 

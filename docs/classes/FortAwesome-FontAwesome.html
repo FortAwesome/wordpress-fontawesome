@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <link rel="icon" href="images/favicon.ico"/>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/base.css">
+            <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/template.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css" integrity="sha256-ybRkN9dBjhcS2qrW1z+hfCxq+1aBdwyQM5wlQoQVt/0=" crossorigin="anonymous" />
+                <script src="https://cdn.jsdelivr.net/npm/fuse.js@3.4.6"></script>
+        <script src="https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/js/all.min.js" integrity="sha256-0vuk8LXoyrmCjp1f0O300qo1M75ZQyhH9X3J6d+scmk=" crossorigin="anonymous"></script>
+        <script src="js/search.js"></script>
+        <script defer src="js/searchIndex.js"></script>
+    </head>
+<body id="top">
+    <header class="phpdocumentor-header phpdocumentor-section">
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">Documentation</a></h1>
+    <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
+    <label class="phpdocumentor-header__menu-icon" for="menu-button">
+        <i class="fas fa-bars"></i>
+    </label>
+    <section data-search-form class="phpdocumentor-search">
+    <label>
+        <span class="visually-hidden">Search for</span>
+        <svg class="phpdocumentor-search__icon" width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="2"/>
+            <line x1="12.4892" y1="12.2727" x2="19.1559" y2="18.9393" stroke="currentColor" stroke-width="3"/>
+        </svg>
+        <input type="search" class="phpdocumentor-field phpdocumentor-search__field" placeholder="Loading .." disabled />
+    </label>
+</section>
+
+    <nav class="phpdocumentor-topnav">
+    <ul class="phpdocumentor-topnav__menu">
+        </ul>
+</nav>
+</header>
+
+    <main class="phpdocumentor">
+        <div class="phpdocumentor-section">
+            <input class="phpdocumentor-sidebar__menu-button" type="checkbox" id="sidebar-button" name="sidebar-button" />
+<label class="phpdocumentor-sidebar__menu-icon" for="sidebar-button">
+    Menu
+</label>
+<aside class="phpdocumentor-column -four phpdocumentor-sidebar">
+    
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
+                                                <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/fortawesome.html"><abbr title="\FortAwesome">FortAwesome</abbr></a></h4>
+                <ul class="phpdocumentor-list">
+                                    </ul>
+                        </section>
+
+    
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Reports</h2>
+                <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/deprecated.html">Deprecated</a></h3>
+        <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/errors.html">Errors</a></h3>
+        <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/markers.html">Markers</a></h3>
+    </section>
+
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Indices</h2>
+        <h3 class="phpdocumentor-sidebar__root-package"><a href="indices/files.html">Files</a></h3>
+    </section>
+</aside>
+
+            <div class="phpdocumentor-column -eight phpdocumentor-content">
+                    <ul class="phpdocumentor-breadcrumbs">
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/fortawesome.html">FortAwesome</a></li>
+    </ul>
+
+    <article class="phpdocumentor-element -class">
+        <h2 class="phpdocumentor-content__title">
+    FontAwesome
+
+    
+    
+    
+    </h2>
+
+        <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">86</span>
+</aside>
+
+            <p class="phpdocumentor-summary">Main plugin class, a Singleton. Exposes all API methods and hooks that may be used by
+client code to register with this plugin, to receive notifications about runtime
+configuration, or to query the runtime configuration.</p>
+
+    <section class="phpdocumentor-description"><h3>Action Hooks</h3>
+<p>Fires the following WordPress action hooks:</p>
+<ul>
+<li>
+<p><code class="prettyprint">font_awesome_preferences</code></p>
+<p>Fired when the plugin is ready for clients to register their preferences.</p>
+<p>Client plugins and themes should normally use this action hook to call <a href="classes/FortAwesome-FontAwesome.html#method_register"><abbr title="\FortAwesome\FontAwesome::register()">FontAwesome::register()</abbr></a>
+with their preferences.</p>
+<p>The hook passes no parameters to its callbacks.</p>
+</li>
+<li>
+<p><code class="prettyprint">font_awesome_enqueued</code></p>
+<p>Called when a version of Font Awesome has been successfully prepared for enqueuing.</p>
+<p>Clients should register a callback on this action to be notified when it is valid to query the FontAwesome
+plugin's metadata using methods such as:</p>
+<ul>
+<li>
+<a href="classes/FortAwesome-FontAwesome.html#method_version"><abbr title="\FortAwesome\FontAwesome::version()">FontAwesome::version()</abbr></a> to discover the version of Font Awesome being loaded</li>
+<li>
+<a href="classes/FortAwesome-FontAwesome.html#method_pro"><abbr title="\FortAwesome\FontAwesome::pro()">FontAwesome::pro()</abbr></a> to discover whether a version with Pro icons is being loaded</li>
+<li>
+<a href="classes/FortAwesome-FontAwesome.html#method_pseudo_elements"><abbr title="\FortAwesome\FontAwesome::pseudo_elements()">FontAwesome::pseudo_elements()</abbr></a> to discover whether Font Awesome is being loaded with support for svg pseudo-elements</li>
+</ul>
+</li>
+</ul>
+<h3>Internal Use vs. Public API</h3>
+<p>Developers should take care to notice which functions, methods, classes,
+constants, defines, REST routes, or data structures are indicated as part of
+this plugin's public API and which are not.</p>
+<p>A method, for example, being declared in PHP with <code class="prettyprint">public</code> visibility does not
+indicate its inclusion in the plugin's <em>public API</em>.</p>
+<p>A method may be declared with public visibility in PHP in order to satisfy
+the language's requirements for access across code modules, or for callbacks.
+Yet this does not mean it can be relied upon as a stable interface by client
+code.</p>
+<p>A method that is part of <em>this plugin's public API</em> can be relied upon to
+change, or not change, according to <a href="https://semver.org/">semantic versioning best practices</a>.
+No such conventions apply to a method that is for internal use only, even
+if it is declared <code class="prettyprint">public</code> in PHP.</p>
+<p>Generally, public API members are accessed only from this <code class="prettyprint">FontAwesome</code> class.</p>
+<p>For example, the <a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases"><abbr title="\FortAwesome\FontAwesome::refresh_releases()">FontAwesome::refresh_releases()</abbr></a> method provides a way
+to re-query available releases metadata from <code class="prettyprint">api.fontawesome.com</code>. It delegates
+to another class internally. But that other class and its methods are not part
+of this plugin's public API. They may change significantly from one patch
+release to another, but no breaking changes would be made to
+<a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases"><abbr title="\FortAwesome\FontAwesome::refresh_releases()">FontAwesome::refresh_releases()</abbr></a> without a major version change.</p>
+<p>References to &quot;API&quot; in this section refer to this plugin's PHP code or REST
+routes, not to the Font Awesome GraphQL API at <code class="prettyprint">api.fontawesome.com</code>.</p>
+</section>
+
+
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+
+
+
+
+
+<h3 id="toc">
+    Table of Contents
+    <a href="#toc" class="headerlink"><i class="fas fa-link"></i></a>
+</h3>
+
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_DEFAULT_PREFIX">DEFAULT_PREFIX</a>
+    <span>
+        &nbsp;= &#039;fas&#039;                    </span>
+</dt>
+<dd>Default style prefix.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_OPTIONS_PAGE">OPTIONS_PAGE</a>
+    <span>
+        &nbsp;= &#039;font-awesome&#039;                    </span>
+</dt>
+<dd>The name of this plugin&#039;s options page, or WordPress admin dashboard page.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_NAME">PLUGIN_NAME</a>
+    <span>
+        &nbsp;= &#039;font-awesome&#039;                    </span>
+</dt>
+<dd>The unique WordPress plugin slug for this plugin.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_VERSION">PLUGIN_VERSION</a>
+    <span>
+        &nbsp;= &#039;4.0.0-rc21&#039;                    </span>
+</dt>
+<dd>The version of this WordPress plugin.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_RESOURCE_HANDLE">RESOURCE_HANDLE</a>
+    <span>
+        &nbsp;= &#039;font-awesome-official&#039;                    </span>
+</dt>
+<dd>The handle used when enqueuing this plugin&#039;s resulting resource.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_RESOURCE_HANDLE_V4SHIM">RESOURCE_HANDLE_V4SHIM</a>
+    <span>
+        &nbsp;= &#039;font-awesome-official-v4shim&#039;                    </span>
+</dt>
+<dd>The handle used when enqueuing the v4shim.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="classes/FortAwesome-FontAwesome.html#constant_SHORTCODE_TAG">SHORTCODE_TAG</a>
+    <span>
+        &nbsp;= &#039;icon&#039;                    </span>
+</dt>
+<dd>Name of this plugin&#039;s shortcode tag.</dd>
+
+                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_blocklist">blocklist()</a>
+    <span>
+                        &nbsp;: array&lt;string|int, mixed&gt;    </span>
+</dt>
+<dd>An array of md5 hashes that identify detected conflicting versions of
+Font Awesome that the site owner has chosen to block from being enqueued.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_detecting_conflicts">detecting_conflicts()</a>
+    <span>
+                        &nbsp;: bool    </span>
+</dt>
+<dd>Returns boolean indicating whether the plugin is currently configured
+to run the client-side conflict detection scanner.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_instance">instance()</a>
+    <span>
+                        &nbsp;: <a href="classes/FortAwesome-FontAwesome.html"><abbr title="\FortAwesome\FontAwesome">FontAwesome</abbr></a>    </span>
+</dt>
+<dd>Returns the singleton instance of the FontAwesome plugin.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_latest_version">latest_version()</a>
+    <span>
+                        &nbsp;: null|string    </span>
+</dt>
+<dd>Returns the latest available version of Font Awesome as a string, or null
+if the releases metadata has not yet been successfully retrieved from the
+API server.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_pro">pro()</a>
+    <span>
+                        &nbsp;: bool    </span>
+</dt>
+<dd>Indicates whether Font Awesome Pro is being loaded.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_pseudo_elements">pseudo_elements()</a>
+    <span>
+                        &nbsp;: bool    </span>
+</dt>
+<dd>Indicates whether Font Awesome is being loaded with support for pseudo-elements.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_query">query()</a>
+    <span>
+                        &nbsp;: string    </span>
+</dt>
+<dd>Runs a GraphQL query against the Font Awesome GraphQL API.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases">refresh_releases()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Queries the Font Awesome API to load releases metadata. Results are
+cached in a site transient.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_register">register()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Registers client preferences. This is the &quot;front door&quot; for registered clients,
+themes or plugins, that depend upon this Font Awesome plugin to load a
+compatible version of Font Awesome.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_releases_refreshed_at">releases_refreshed_at()</a>
+    <span>
+                        &nbsp;: int|null    </span>
+</dt>
+<dd>Returns the time when releases metadata was last
+refreshed.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_technology">technology()</a>
+    <span>
+                        &nbsp;: string    </span>
+</dt>
+<dd>Indicates which Font Awesome technology is configured: &#039;webfont&#039; or &#039;svg&#039;.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_using_kit">using_kit()</a>
+    <span>
+                        &nbsp;: bool    </span>
+</dt>
+<dd>Returns boolean indicating whether a kit is configured.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_v4_compatibility">v4_compatibility()</a>
+    <span>
+                        &nbsp;: bool    </span>
+</dt>
+<dd>Indicates whether Font Awesome is being loaded with version 4 compatibility.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_version">version()</a>
+    <span>
+                        &nbsp;: string|null    </span>
+</dt>
+<dd>Reports the version of Font Awesome assets being loaded, which may be &quot;latest&quot;.</dd>
+
+        </dl>
+
+
+
+        
+    <section class="phpdocumentor-constants">
+        <h3 class="phpdocumentor-elements__header" id="constants">
+            Constants
+            <a href="classes/FortAwesome-FontAwesome.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
+        </h3>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_DEFAULT_PREFIX">
+        DEFAULT_PREFIX
+        <a href="classes/FortAwesome-FontAwesome.html#constant_DEFAULT_PREFIX" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">99</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Default style prefix.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">DEFAULT_PREFIX</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;fas&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_OPTIONS_PAGE">
+        OPTIONS_PAGE
+        <a href="classes/FortAwesome-FontAwesome.html#constant_OPTIONS_PAGE" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">143</span>
+</aside>
+
+        <p class="phpdocumentor-summary">The name of this plugin&#039;s options page, or WordPress admin dashboard page.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">OPTIONS_PAGE</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;font-awesome&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_PLUGIN_NAME">
+        PLUGIN_NAME
+        <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_NAME" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">123</span>
+</aside>
+
+        <p class="phpdocumentor-summary">The unique WordPress plugin slug for this plugin.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">PLUGIN_NAME</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;font-awesome&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_PLUGIN_VERSION">
+        PLUGIN_VERSION
+        <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_VERSION" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">129</span>
+</aside>
+
+        <p class="phpdocumentor-summary">The version of this WordPress plugin.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">PLUGIN_VERSION</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;4.0.0-rc21&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_RESOURCE_HANDLE">
+        RESOURCE_HANDLE
+        <a href="classes/FortAwesome-FontAwesome.html#constant_RESOURCE_HANDLE" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">159</span>
+</aside>
+
+        <p class="phpdocumentor-summary">The handle used when enqueuing this plugin&#039;s resulting resource.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">RESOURCE_HANDLE</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;font-awesome-official&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"><p>Used when this plugin calls either <code class="prettyprint">wp_enqueue_script</code> or <code class="prettyprint">wp_enqueue_style</code> to enqueue Font Awesome assets.</p>
+</section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_RESOURCE_HANDLE_V4SHIM">
+        RESOURCE_HANDLE_V4SHIM
+        <a href="classes/FortAwesome-FontAwesome.html#constant_RESOURCE_HANDLE_V4SHIM" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">165</span>
+</aside>
+
+        <p class="phpdocumentor-summary">The handle used when enqueuing the v4shim.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">RESOURCE_HANDLE_V4SHIM</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;font-awesome-official-v4shim&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_SHORTCODE_TAG">
+        SHORTCODE_TAG
+        <a href="classes/FortAwesome-FontAwesome.html#constant_SHORTCODE_TAG" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">93</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Name of this plugin&#039;s shortcode tag.</p>
+
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">SHORTCODE_TAG</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;icon&#039;</span>
+</code>
+
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+            </section>
+
+        
+
+            <section class="phpdocumentor-methods">
+        <h3 class="phpdocumentor-elements__header" id="methods">
+            Methods
+            <a href="classes/FortAwesome-FontAwesome.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+        </h3>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_blocklist">
+        blocklist()
+        <a href="classes/FortAwesome-FontAwesome.html#method_blocklist" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">932</span>
+</aside>
+
+        <p class="phpdocumentor-summary">An array of md5 hashes that identify detected conflicting versions of
+Font Awesome that the site owner has chosen to block from being enqueued.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">blocklist</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
+
+        <section class="phpdocumentor-description"><p>It is managed through the plugin's settings page.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_detecting_conflicts">
+        detecting_conflicts()
+        <a href="classes/FortAwesome-FontAwesome.html#method_detecting_conflicts" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">483</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Returns boolean indicating whether the plugin is currently configured
+to run the client-side conflict detection scanner.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">detecting_conflicts</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">bool</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_instance">
+        instance()
+        <a href="classes/FortAwesome-FontAwesome.html#method_instance" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">309</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Returns the singleton instance of the FontAwesome plugin.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">instance</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/FortAwesome-FontAwesome.html"><abbr title="\FortAwesome\FontAwesome">FontAwesome</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="namespaces/fortawesome.html#function_fa"><abbr title="\FortAwesome\fa()">fa()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/FortAwesome-FontAwesome.html"><abbr title="\FortAwesome\FontAwesome">FontAwesome</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_latest_version">
+        latest_version()
+        <a href="classes/FortAwesome-FontAwesome.html#method_latest_version" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">593</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Returns the latest available version of Font Awesome as a string, or null
+if the releases metadata has not yet been successfully retrieved from the
+API server.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">latest_version</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">null|string</span></code>
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">null|string</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_pro">
+        pro()
+        <a href="classes/FortAwesome-FontAwesome.html#method_pro" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1226</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Indicates whether Font Awesome Pro is being loaded.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">pro</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+        <section class="phpdocumentor-description"><p>It's a handy way to toggle the use of Pro icons in client theme or plugin template code.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ConfigCorruptionException.html"><abbr title="\FortAwesome\ConfigCorruptionException">ConfigCorruptionException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">bool</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_pseudo_elements">
+        pseudo_elements()
+        <a href="classes/FortAwesome-FontAwesome.html#method_pseudo_elements" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1342</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Indicates whether Font Awesome is being loaded with support for pseudo-elements.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">pseudo_elements</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+        <section class="phpdocumentor-description"><p>Its results are only valid after the <code class="prettyprint">font_awesome_enqueued</code> action has been triggered.</p>
+<p>There are known performance problems with this SVG and pseudo-elements,
+but it is provided for added compatibility where pseudo-elements must be used.</p>
+<p>Always returns true if technology() === 'webfont', because pseudo-elements
+are always inherently supported by the CSS/Webfont technology.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">link</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                                        <a class="phpdocumentor-tag-link" href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements"> <p>CSS Pseudo-Elements and Font Awesome</p>
+ </a>
+                    
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ConfigCorruptionException.html"><abbr title="\FortAwesome\ConfigCorruptionException">ConfigCorruptionException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">bool</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_query">
+        query()
+        <a href="classes/FortAwesome-FontAwesome.html#method_query" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">2462</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Runs a GraphQL query against the Font Awesome GraphQL API.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">query</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$query_string</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+        <section class="phpdocumentor-description"><p>It accepts a GraphQL query string like 'query { releases { version } }' and returns
+the json encoded body of response from the API server when the response
+has an HTTP status of 200. Otherwise, it throws an exception whose
+message, if non-null, is appropriate for displaying in the WordPress admin ui
+to an admin user.</p>
+<p>Requests to the Font Awesome API server will automatically be authorized
+by the WordPress site owner's API Token if they have added one through the
+plugin's settings page. The API Token is used to retrieve a short-lived
+access_token, and that that access_token is used for subsequent API requests.</p>
+<p>Refreshing an expired access_token using the API Token is also handled
+automatically, when necessary.</p>
+<p>Each API Token has any number of authorization scopes on it. Most fields
+in the GraphQL schema have a <code class="prettyprint">public</code> scope, and so do not require an
+API Token at all.</p>
+<p>For example, the following query lists all icons in the latest
+version of Font Awesome, with various metadata properties, including an
+icon's membership in Font Awesome Pro and/or Font Awesome Free. All fields
+in this query are in the <code class="prettyprint">public</code> scope.</p>
+<pre class="prettyprint"><code class="prettyprint">query {
+  release(version:&quot;latest&quot;) {
+    icons {
+      id
+      label
+      membership {
+        free
+        pro
+      }
+      shim {
+        id
+        name
+        prefix
+      }
+      styles
+      unicode
+    }
+  }
+}
+</code></pre>
+<p>When the site owner has configured an API Token that includes
+the <code class="prettyprint">kits_read</code> scope, the following query would retrieve the name and
+version properites for each kit in that authenticated account:</p>
+<pre class="prettyprint"><code class="prettyprint">query {
+  me {
+    kits {
+      name
+      version
+    }
+  }
+}
+</code></pre>
+<h3>Error Handling</h3>
+<p>Errors that prevent the API server from handling the query will result
+in thrown exceptions.</p>
+<p>If the query is resolved and the request returns with an HTTP 200 status,
+there may still be GraphQL errors encoded in the response.</p>
+<p>For example, if the site owner has not added an API Token, then requests
+to the API will only have <code class="prettyprint">public</code> scope. In that case, any GraphQL schema fields
+that would require some higher privilege will be resolved as <code class="prettyprint">null</code>, and
+the response body will include errors indicating the resolution failure.</p>
+<p>For example, if the above kits query were made without an API Token having
+the <code class="prettyprint">kits_read</code> scope, then the following response would be returned:</p>
+<pre class="prettyprint"><code class="language-json">{
+  &quot;data&quot;:{
+    &quot;me&quot;:null
+  },
+  &quot;errors&quot;:[
+    {
+      &quot;locations&quot;:[
+        {&quot;column&quot;:0,&quot;line&quot;:1}
+      ],
+      &quot;message&quot;:&quot;unauthorized&quot;,
+      &quot;path&quot;:[&quot;me&quot;]
+    }
+  ]
+}
+</code></pre>
+<p>It is possible that a query could select both authorized and unauthorized
+fields. The <code class="prettyprint">data</code> property in the response will include all of those
+field resolutions, and the <code class="prettyprint">error</code> property--if present--will include
+any errors during resolution, such as attempting to resolve fields without
+proper authorization. This is all standard GraphQL: this plugin just passes
+through the GraphQL query and passes back the GraphQL response without
+modification.</p>
+<p>See documentation about <a href="https://graphql.org/learn/validation/">GraphQL validation</a>
+for more on error handling.</p>
+<h3>Adding Authorization</h3>
+<p>If you know that you need access to some part of the schema that requires some
+additional authorization scope, the way to get that is to instruct the site owner
+to copy an API Token from their fontawesome.com account and add it to this
+plugin's configuration on the plugin's settings page.</p>
+<p>As of version 4.0.0 of this plugin, the only non-public portions of the
+GraphQL schema that are relevant to usage in WordPress involve querying
+the user's kits, which requires the <code class="prettyprint">kits_read</code> scope, as shown above.</p>
+<h3>Additional Resources</h3>
+<p>For more on how to construct GraphQL queries, <a href="https://graphql.org/learn/queries/">see here</a>.</p>
+<p>A reference on the Font Awesome GraphQL API is <a href="https://fontawesome.com/how-to-use/with-the-api">available here</a>.</p>
+<p>You can explore the Font Awesome GraphQL API using an app like <a href="https://www.electronjs.org/apps/graphiql">GraphiQL</a>.
+Point it at <code class="prettyprint">https://api.fontawesome.com</code>.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$query_string</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>a GraphQL query document</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiTokenMissingException.html"><abbr title="\FortAwesome\ApiTokenMissingException">ApiTokenMissingException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiTokenEndpointRequestException.html"><abbr title="\FortAwesome\ApiTokenEndpointRequestException">ApiTokenEndpointRequestException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiTokenEndpointResponseException.html"><abbr title="\FortAwesome\ApiTokenEndpointResponseException">ApiTokenEndpointResponseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiTokenInvalidException.html"><abbr title="\FortAwesome\ApiTokenInvalidException">ApiTokenInvalidException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-AccessTokenStorageException.html"><abbr title="\FortAwesome\AccessTokenStorageException">AccessTokenStorageException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiRequestException.html"><abbr title="\FortAwesome\ApiRequestException">ApiRequestException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>json encoded response body when the API server response
+has a HTTP 200 status.</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_refresh_releases">
+        refresh_releases()
+        <a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">611</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Queries the Font Awesome API to load releases metadata. Results are
+cached in a site transient.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">refresh_releases</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>This is the metadata that supports API
+methods like <a href="classes/FortAwesome-FontAwesome.html#method_latest_version"><abbr title="\FortAwesome\FontAwesome::latest_version()">FontAwesome::latest_version()</abbr></a>
+and all other metadata required to enqueue Font Awesome when configured
+to use the standard CDN (non-kits).</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiRequestException.html"><abbr title="\FortAwesome\ApiRequestException">ApiRequestException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiResponseException.html"><abbr title="\FortAwesome\ApiResponseException">ApiResponseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ReleaseProviderStorageException.html"><abbr title="\FortAwesome\ReleaseProviderStorageException">ReleaseProviderStorageException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_register">
+        register()
+        <a href="classes/FortAwesome-FontAwesome.html#method_register" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">2316</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Registers client preferences. This is the &quot;front door&quot; for registered clients,
+themes or plugins, that depend upon this Font Awesome plugin to load a
+compatible version of Font Awesome.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">register</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$client_preferences</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>The shape of the <code class="prettyprint">$client_preferences</code> array parameter looks like this:</p>
+<pre class="prettyprint"><code class="language-php">  array(
+    'technology'        =&gt; 'svg', // &quot;svg&quot; or &quot;webfont&quot;
+    'v4Compat'          =&gt; true, // true or false
+    'pseudoElements' =&gt; false, // true or false
+    'name'              =&gt; 'Foo Plugin', // (required)
+    'version'           =&gt; [
+                             [ '5.10.0', '&gt;=']
+                           ]
+  )
+</code></pre>
+<p>We use camelCase instead of snake_case for these keys, because they end up
+being passed to the JavaScript admin UI client encoded as json and camelCase
+is preferred for object properties in JavaScript.</p>
+<p>All preference specifications are optional, except <code class="prettyprint">name</code>. The name provided
+here is how your theme or plugin will be identified in the Troubleshoot
+tab on the plugin settings page.</p>
+<p>Only the WordPress site owner can <em>determine</em> the Font Awesome configuration,
+using the plugin's admin settings page. This registration mechanism only
+allows plugin or theme developers to provide hints to the site owner as
+to their preferred configurations. These preferences are automatically checked
+any time the user makes configuration changes, providing immediate visual
+feedback before saving changes that might cause problems for your theme or
+plugin.</p>
+<p>Because this plugin also gives you an API for discovering those
+configured options at page load time, you can adapt to any configuration
+differences, or possibly issue your own admin notices to the site owner
+as may be appropriate.</p>
+<p>Hopefully, the site owner will be able to set a configuration that satisfies
+any preferences registered by their theme and any plugins that rely upon
+this Font Awesome plugin. However, similar to writing mobile responsive
+code where you don't control the size of display but can detect the screen
+size and adapt, here too, theme and plugin developers do not control the
+Font Awesome environment but should be prepared to adapt.</p>
+<p>The reason is that when any one theme or plugin <em>controls</em> or <em>determines</em>
+the Font Awesome configuration, it is very likely to produce conflicts for
+others. This plugin provides a coordination service to significantly increase
+the likelihood that everyone has a reliable Font Awesome environment.</p>
+<h3>Maximize Compatibility</h3>
+<p>Here is a checklist for maximizing compatibility.</p>
+<ul>
+<li>
+<p>Write your plugin or theme to works just as well with either Webfont or
+SVG technology.</p>
+<p>There may be a good reason that you need to insist on SVG. For example,
+you might be building a page designer that includes a feature for
+for visually composing icons with Power Transforms, Layering, or Text,
+all features that are only avaialble in SVG. For that feature to work
+in your theme or plugin, the site owner must configure SVG, not Webfont.</p>
+<p>That may be a good use case for registering a preference for SVG. It
+will aid your communication with the site owner, increasingly the
+likelihood that they'll avoid mis-configuring Font Awesome.</p>
+<p>However, a tradeoff will be that using your theme or plugin is that much
+less compatible with others. For example, some themes or plugins reference
+icons as CSS pseudo-elements (not recommended, but it's common).
+Pseudo-elements can be enabled under the SVG technology, but there can
+be some significant performance problems with SVG Pseudo-elements.</p>
+<p>Summary: you may have a good reason to try and insist on SVG over Webfont,
+but your code might be running on a WordPress site where some other theme
+or plugin assumes a similar good reason for insisting on Webfont over
+SVG. We're trying to work together here to make it more delightful for
+the site owner to get our code up and running painlessly. Consider the
+tradeoffs carefully any time you think it's necessary to insist on
+a particular Font Awesome configuration.</p>
+</li>
+<li>
+<p>Update your icon references to use version 5 names so no <a href="https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">v4 shim</a> is required.</p>
+</li>
+<li>
+<p>Don't use <a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">pseudo-elements</a></p>
+</li>
+<li>
+<p>Be mindful of which <a href="https://fontawesome.com/icons">icons you use and in which versions of Font Awesome they're available</a>.</p>
+</li>
+<li>
+<p>Adapt gracefully when the version loaded lacks icons you want to use (see more below).</p>
+</li>
+</ul>
+<h3>Using Pro icons</h3>
+<p>If you are shipping a theme or plugin for which you insist on being able to use Font Awesome Pro, your only
+option is to instruct your users to purchase and enable appropriate licenses of Font Awesome Pro for their
+websites.</p>
+<h3>Font Awesome version</h3>
+<p>To maximize compatibility and user-friendliness, keep track of the icons you use and in which versions they're
+introduced (<a href="https://fontawesome.com/changelog/latest">new ones are being added all the time</a>).
+Add a hook on the <code class="prettyprint">font_awesome_enqueued</code> action to discover what version of Font Awesome is being loaded
+and either turn off or replace newer icons that are not available in older releases, or warn the
+site owner in your own WordPress admin UI that they'll need to update to a new version in order for icons
+to work as expected in your templates.</p>
+<p>The <code class="prettyprint">version</code> key in the $client_preferences array should contain one element
+per version constraint, where each individual constraint is itself an array
+of arguments that can be passed as the second and third arguments to the
+standard PHP <code class="prettyprint">version_compare</code> function. The constraints will be ANDed together.</p>
+<p>For example, the following means &quot;prefer a Font Awesome version greater than
+or equal to 5.10.0.&quot;</p>
+<pre class="prettyprint"><code class="language-php">  [
+    [ '5.10.0', '&gt;=']
+  ]
+</code></pre>
+<p>Your theme may add this if you prefer to use Duotone
+style icons, since Duotone was first released in Font Awesome 5.10.0.</p>
+<p>The following means &quot;greater than or equal to 5.10.0 AND strictly less than 6.0.0&quot;.</p>
+<pre class="prettyprint"><code class="language-php">  [
+    [ '5.10.0', '&gt;='],
+    [ '6.0.0', '&lt;']
+  ]
+</code></pre>
+<h3>Additional Notes on Specific Preferences</h3>
+<ul>
+<li>
+<p><code class="prettyprint">v4Compat</code></p>
+<p>There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
+It's best to upgrade name references to the version 5 names,
+but to <a href="https://fontawesome.com/how-to-use/on-the-web/setup/upgrading-from-version-4">ease the upgrade path</a>,
+the &quot;v4 shims&quot; accept the v4 icon names and translate them into the equivalent v5 icon names.
+Shims for SVG with JavaScript have been available since <code class="prettyprint">5.0.0</code> and shims for Web Font with CSS have been
+available since <code class="prettyprint">5.1.0</code>.</p>
+<p>Another common pattern out there on the web (not a recommended practice these days, though) is to place
+icons as pseudo-elements where the unicode is specific in CSS as <code class="prettyprint">content</code> and <code class="prettyprint">&quot;FontAwesome&quot;</code> is specified
+as the <code class="prettyprint">font-family</code>. The main problem here is that the <code class="prettyprint">font-family</code> name has changed for Font Awesome 5,
+and there are multiple <code class="prettyprint">font-family</code> names. So the v4Compat feature of this plugin also &quot;shims&quot; those
+hardcoded version 4 <code class="prettyprint">font-family</code> names so that they will use the corresponding Font Awesome 5 webfont files.</p>
+</li>
+<li>
+<p><code class="prettyprint">pseudoElements</code></p>
+<p><a href="https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements">Pseudo-elements</a>
+are always intrinsically available when using the Web Font with CSS method.
+However, for the SVG with JavaScript method, additional functionality must be enabled. It's not a recommended
+approach, because the performance can be poor. <em>Really</em> poor, in some cases. However, sometimes, it's necessary.</p>
+</li>
+</ul>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$client_preferences</span>
+                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"></section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ClientPreferencesSchemaException.html"><abbr title="\FortAwesome\ClientPreferencesSchemaException">ClientPreferencesSchemaException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_releases_refreshed_at">
+        releases_refreshed_at()
+        <a href="classes/FortAwesome-FontAwesome.html#method_releases_refreshed_at" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">623</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Returns the time when releases metadata was last
+refreshed.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">releases_refreshed_at</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><abbr title="\FortAwesome\FontAwesome::refresh_releases">FontAwesome::refresh_releases</abbr></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">int|null</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>the time in unix epoch seconds or null if never</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_technology">
+        technology()
+        <a href="classes/FortAwesome-FontAwesome.html#method_technology" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1240</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Indicates which Font Awesome technology is configured: &#039;webfont&#039; or &#039;svg&#039;.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">technology</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ConfigCorruptionException.html"><abbr title="\FortAwesome\ConfigCorruptionException">ConfigCorruptionException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_using_kit">
+        using_kit()
+        <a href="classes/FortAwesome-FontAwesome.html#method_using_kit" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">504</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Returns boolean indicating whether a kit is configured.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">using_kit</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+        <section class="phpdocumentor-description"><p>It normally shouldn't make a difference to other theme's or plugins
+as to whether Font Awesome is configured to use the standard CDN or a kit.
+Yet this is a valid way to determine that.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ConfigCorruptionException.html"><abbr title="\FortAwesome\ConfigCorruptionException">ConfigCorruptionException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">bool</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_v4_compatibility">
+        v4_compatibility()
+        <a href="classes/FortAwesome-FontAwesome.html#method_v4_compatibility" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1320</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Indicates whether Font Awesome is being loaded with version 4 compatibility.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">v4_compatibility</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+        <section class="phpdocumentor-description"><p>Its result is valid only after the <code class="prettyprint">font_awesome_enqueued</code> has been triggered.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ConfigCorruptionException.html"><abbr title="\FortAwesome\ConfigCorruptionException">ConfigCorruptionException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">bool</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_version">
+        version()
+        <a href="classes/FortAwesome-FontAwesome.html#method_version" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">1303</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Reports the version of Font Awesome assets being loaded, which may be &quot;latest&quot;.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">version</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+
+        <section class="phpdocumentor-description"><p>Your theme or plugin can call this method in order to determine
+whether all of the icons used in your templates will be available,
+especially if you tend to use newer icons.</p>
+<p>It should be really easy for site owners to update to a new Font Awesome
+version to accommodate your templates--just a simple dropdown selection
+on the Font Awesome plugin settings page. You might need to show an admin
+notice to nudge them to do so if you detect that the current version of
+Font Awesome being loaded is older than you'd like.</p>
+<p>When Font Awesome is configured to use a kit, that kit may be configured
+to load the &quot;latest&quot; version. The resolution of that symoblic &quot;latest&quot;
+version happens internal to the kit's own loading logic, which is
+outside the scope of this plugin.</p>
+<p>If your code needs to resolve what that concrete version will <em>probably</em>
+be at runtime, you can take some extra steps after invoking this method
+and seeing that it returns &quot;latest&quot;.</p>
+<ul>
+<li>
+<p><code class="prettyprint">fa()-&gt;latest_version()</code> will only ever return the latest known
+concrete version of Font Awesome, as recently as the last time the
+releases metadata was queried from the Font Awesome API server.</p>
+</li>
+<li>
+<p><code class="prettyprint">fa()-&gt;releases_refreshed_at()</code> will return the time when releases
+metadata was last refreshed.</p>
+</li>
+<li>
+<p><code class="prettyprint">fa-&gt;refresh_releases()</code> will refresh the releases metadata. This will
+run a synchronous (blocking) network query to the Font Awesome API
+server.</p>
+</li>
+</ul>
+<p>Therefore, if releases have been refreshed recently enough for your
+purposes, you can rely on the version returned by <code class="prettyprint">fa()-&gt;latest_version()</code>.
+Or, you could refresh the releases metadata and then call
+<code class="prettyprint">fa()-&gt;latest_version()</code>.</p>
+<p>It is still possible that by the time the page loads in the browser,
+a new release of Font Awesome will have become available since your
+refresh of releases metadata, and will have been loaded as the &quot;latest&quot;
+version for the kit. There's no way to guarantee that the latest version
+you resolve by this method will be the one loaded at runtime. The race
+condition is always possible. However, it is very unlikely, since these
+are sub-second windows of time, and new versions of Font Awesome tend to
+be released only approximately once per month.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome.html#method_latest_version"><abbr title="\FortAwesome\FontAwesome::latest_version()">FontAwesome::latest_version()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome.html#method_releases_refreshed_at"><abbr title="\FortAwesome\FontAwesome::releases_refreshed_at()">FontAwesome::releases_refreshed_at()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases"><abbr title="\FortAwesome\FontAwesome::refresh_releases()">FontAwesome::refresh_releases()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ConfigCorruptionException.html"><abbr title="\FortAwesome\ConfigCorruptionException">ConfigCorruptionException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">string|null</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>null if no version has yet been saved in the options
+in the db. Otherwise, a valid version string, which may be either a
+concrete version like &quot;5.12.0&quot; or the string &quot;latest&quot;.</p>
+</section>
+
+    
+</article>
+            </section>
+
+    </article>
+                <section data-search-results class="phpdocumentor-search-results phpdocumentor-search-results--hidden">
+    <section class="phpdocumentor-search-results__dialog">
+        <header class="phpdocumentor-search-results__header">
+            <h2 class="phpdocumentor-search-results__title">Search results</h2>
+            <button class="phpdocumentor-search-results__close"><i class="fas fa-times"></i></button>
+        </header>
+        <section class="phpdocumentor-search-results__body">
+            <ul class="phpdocumentor-search-results__entries"></ul>
+        </section>
+    </section>
+</section>
+            </div>
+        </div>
+        <a href="classes/FortAwesome-FontAwesome.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+
+    </main>
+
+    <script>
+        cssVars({});
+    </script>
+</body>
+</html>

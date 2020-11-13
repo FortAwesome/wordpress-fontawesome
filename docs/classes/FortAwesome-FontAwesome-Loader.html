@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <link rel="icon" href="images/favicon.ico"/>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/base.css">
+            <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/template.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css" integrity="sha256-ybRkN9dBjhcS2qrW1z+hfCxq+1aBdwyQM5wlQoQVt/0=" crossorigin="anonymous" />
+                <script src="https://cdn.jsdelivr.net/npm/fuse.js@3.4.6"></script>
+        <script src="https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/js/all.min.js" integrity="sha256-0vuk8LXoyrmCjp1f0O300qo1M75ZQyhH9X3J6d+scmk=" crossorigin="anonymous"></script>
+        <script src="js/search.js"></script>
+        <script defer src="js/searchIndex.js"></script>
+    </head>
+<body id="top">
+    <header class="phpdocumentor-header phpdocumentor-section">
+    <h1 class="phpdocumentor-title"><a href="" class="phpdocumentor-title__link">Documentation</a></h1>
+    <input class="phpdocumentor-header__menu-button" type="checkbox" id="menu-button" name="menu-button" />
+    <label class="phpdocumentor-header__menu-icon" for="menu-button">
+        <i class="fas fa-bars"></i>
+    </label>
+    <section data-search-form class="phpdocumentor-search">
+    <label>
+        <span class="visually-hidden">Search for</span>
+        <svg class="phpdocumentor-search__icon" width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="2"/>
+            <line x1="12.4892" y1="12.2727" x2="19.1559" y2="18.9393" stroke="currentColor" stroke-width="3"/>
+        </svg>
+        <input type="search" class="phpdocumentor-field phpdocumentor-search__field" placeholder="Loading .." disabled />
+    </label>
+</section>
+
+    <nav class="phpdocumentor-topnav">
+    <ul class="phpdocumentor-topnav__menu">
+        </ul>
+</nav>
+</header>
+
+    <main class="phpdocumentor">
+        <div class="phpdocumentor-section">
+            <input class="phpdocumentor-sidebar__menu-button" type="checkbox" id="sidebar-button" name="sidebar-button" />
+<label class="phpdocumentor-sidebar__menu-icon" for="sidebar-button">
+    Menu
+</label>
+<aside class="phpdocumentor-column -four phpdocumentor-sidebar">
+    
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
+                                                <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/fortawesome.html"><abbr title="\FortAwesome">FortAwesome</abbr></a></h4>
+                <ul class="phpdocumentor-list">
+                                    </ul>
+                        </section>
+
+    
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Reports</h2>
+                <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/deprecated.html">Deprecated</a></h3>
+        <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/errors.html">Errors</a></h3>
+        <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/markers.html">Markers</a></h3>
+    </section>
+
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Indices</h2>
+        <h3 class="phpdocumentor-sidebar__root-package"><a href="indices/files.html">Files</a></h3>
+    </section>
+</aside>
+
+            <div class="phpdocumentor-column -eight phpdocumentor-content">
+                    <ul class="phpdocumentor-breadcrumbs">
+            <li class="phpdocumentor-breadcrumb"><a href="namespaces/fortawesome.html">FortAwesome</a></li>
+    </ul>
+
+    <article class="phpdocumentor-element -class">
+        <h2 class="phpdocumentor-content__title">
+    FontAwesome_Loader
+
+    
+    
+    
+    </h2>
+
+        <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="font-awesome.php"><a href="files/font-awesome.html"><abbr title="font-awesome.php">font-awesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">92</span>
+</aside>
+
+            <p class="phpdocumentor-summary">Loader class, a Singleton. Coordinates potentially multiple installations of
+the Font Awesome plugin code, and ensures that the latest available semantic
+version is selected for execution at runtime. Exposes a few public API
+methods for initialization (activation), deactivation, and uninstallation
+of plugin code.</p>
+
+    <section class="phpdocumentor-description"><p>Font Awesome plugin installations may be installed either directly
+as a plugin appearing in the plugins table, or as a composer dependency
+of any number of themes or other plugins.</p>
+<p>We only have in mind various installations of this code base,
+of course. Not other non-official Font Awesome plugins. We don't try
+to anticipate what <em>other</em> potentially conflicting plugins might be installed.</p>
+<p>All Font Awesome plugin installations should attempt to load themselves via this loader,
+which will ensure that the code for plugin installation with the latest
+semantic version is what actually runs. It also ensures appropriate
+handling of initialization, deactivation and uninstallation, so that the
+actions of one plugin installation don't interfere with another's.</p>
+<p>Refer to <code class="prettyprint">integrations/plugins/plugin-sigma</code>
+in this repo for an example of how to load the Font Awesome plugin code
+via this Loader when including it as a composer dependency.</p>
+<p>The client code should <code class="prettyprint">require_once</code> the <code class="prettyprint">index.php</code> found
+in the root of this code base:</p>
+<pre class="prettyprint"><code class="language-php">require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
+</code></pre>
+<p>For example, suppose the following scenario: A later version of the plugin
+is installed from the WordPress plugins directory and appears in the
+plugins table. It is activated.
+Then suppose a page builder plugin is installed and activated. That page builder
+plugin includes this plugin code as a composer dependency. In that case,
+the plugin code with the later semantic version will be the one loaded
+and executed at runtime.
+The page builder plugin should work just as expected, even though it would
+be running against a newer version of the Font Awesome plugin code than it
+had shipped in its own vendor bundle.</p>
+<p>Now suppose that the site owner deactivates and deletes the plugin that
+appears in the plugins table, the one that had been installed from the
+WordPress plugins directory. Because this loader knows that the page builder
+plugin's installation is still present, that deactivation and uninstallation
+will not cause the Font Awesome plugin's options and transients to be removed from the
+database. And as soon as that plugin installation is removed,
+the Font Awesome plugin installation included in the page builder plugin's
+composer vendor bundle is automatically promoted and runs as expected with
+no change to the plugin's state in the database.</p>
+<p>This loader pattern follows that of <a href="https://github.com/wponion/wponion/blob/master/wponion.php">wponion</a>.
+Thanks to Varun Sridharan.</p>
+</section>
+
+
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+
+
+
+
+
+<h3 id="toc">
+    Table of Contents
+    <a href="#toc" class="headerlink"><i class="fas fa-link"></i></a>
+</h3>
+
+<dl class="phpdocumentor-table-of-contents">
+                    <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Loader.html#method_initialize">initialize()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Initializes the Font Awesome plugin&#039;s options.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Loader.html#method_instance">instance()</a>
+    <span>
+                        &nbsp;: <a href="classes/FortAwesome-FontAwesome-Loader.html"><abbr title="\FortAwesome\FontAwesome_Loader">FontAwesome_Loader</abbr></a>    </span>
+</dt>
+<dd>Creates and/or returns the static instance for this Singleton.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Loader.html#method_loaded_path">loaded_path()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Returns the path to the plugin installation that is actively loaded.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Loader.html#method_maybe_deactivate">maybe_deactivate()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Deactivates, cleaning up temporary data, such as transients, if this
+represents the last installed copy of the Font Awesome plugin being deactivated.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Loader.html#method_maybe_uninstall">maybe_uninstall()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Runs uninstall logic for the plugin, but only if its invocation
+represents the last plugin installation trying to clean up.</dd>
+
+        </dl>
+
+
+
+        
+
+        
+
+            <section class="phpdocumentor-methods">
+        <h3 class="phpdocumentor-elements__header" id="methods">
+            Methods
+            <a href="classes/FortAwesome-FontAwesome-Loader.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+        </h3>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_initialize">
+        initialize()
+        <a href="classes/FortAwesome-FontAwesome-Loader.html#method_initialize" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="font-awesome.php"><a href="files/font-awesome.html"><abbr title="font-awesome.php">font-awesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">397</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Initializes the Font Awesome plugin&#039;s options.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">initialize</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>If multiple installations of the plugin are installed, such as by
+composer dependencies in multiple plugins, this will ensure that the
+plugin is not re-initialized.</p>
+<p>If the plugin's options are empty, this will initialize with defaults.
+Otherwise, it will leave them alone.</p>
+<p>Any theme or plugin that uses this plugin as a composer dependency
+should call this method from its own activation hook. For example:</p>
+<pre class="prettyprint"><code class="language-php">register_activation_hook(
+    __FILE__,
+    'FortAwesome\FontAwesome_Loader::initialize'
+);
+</code></pre>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_instance">
+        instance()
+        <a href="classes/FortAwesome-FontAwesome-Loader.html#method_instance" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="font-awesome.php"><a href="files/font-awesome.html"><abbr title="font-awesome.php">font-awesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">485</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Creates and/or returns the static instance for this Singleton.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">instance</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/FortAwesome-FontAwesome-Loader.html"><abbr title="\FortAwesome\FontAwesome_Loader">FontAwesome_Loader</abbr></a></span></code>
+
+        <section class="phpdocumentor-description"><p>It is probably not necessary for a theme or plugin that depends upon
+the Font Awesome plugin to invoke this. It's probably more convenient
+to access the Loader's functionality through the its public static methods.</p>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome-Loader.html#method_initialize"><abbr title="\FortAwesome\FontAwesome_Loader::initialize()">FontAwesome_Loader::initialize()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome-Loader.html#method_maybe_deactivate"><abbr title="\FortAwesome\FontAwesome_Loader::maybe_deactivate()">FontAwesome_Loader::maybe_deactivate()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                            <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">see</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome-Loader.html#method_maybe_uninstall"><abbr title="\FortAwesome\FontAwesome_Loader::maybe_uninstall()">FontAwesome_Loader::maybe_uninstall()</abbr></a></span>
+                                        
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type"><a href="classes/FortAwesome-FontAwesome-Loader.html"><abbr title="\FortAwesome\FontAwesome_Loader">FontAwesome_Loader</abbr></a></span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_loaded_path">
+        loaded_path()
+        <a href="classes/FortAwesome-FontAwesome-Loader.html#method_loaded_path" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="font-awesome.php"><a href="files/font-awesome.html"><abbr title="font-awesome.php">font-awesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">230</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Returns the path to the plugin installation that is actively loaded.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">loaded_path</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"></section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_maybe_deactivate">
+        maybe_deactivate()
+        <a href="classes/FortAwesome-FontAwesome-Loader.html#method_maybe_deactivate" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="font-awesome.php"><a href="files/font-awesome.html"><abbr title="font-awesome.php">font-awesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">465</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Deactivates, cleaning up temporary data, such as transients, if this
+represents the last installed copy of the Font Awesome plugin being deactivated.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">maybe_deactivate</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>However, if this loader is aware of any remaining installations, it does
+not clean up temporary data, since one of those other Font Awesome plugin
+installations, if active, will be promoted and end up relying on the data.</p>
+<p>Any theme or plugin that includes this Font Awesome plugin as a library
+dependency should call this from its own uninstall hook. For example:</p>
+<pre class="prettyprint"><code class="language-php"> register_deactivation_hook(
+     __FILE__,
+     'FortAwesome\FontAwesome_Loader::maybe_deactivate'
+ );
+</code></pre>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_maybe_uninstall">
+        maybe_uninstall()
+        <a href="classes/FortAwesome-FontAwesome-Loader.html#method_maybe_uninstall" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="font-awesome.php"><a href="files/font-awesome.html"><abbr title="font-awesome.php">font-awesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">435</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Runs uninstall logic for the plugin, but only if its invocation
+represents the last plugin installation trying to clean up.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">maybe_uninstall</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>Deletes options records in the database.</p>
+<p>If there would be other remaining installations previously added to this
+loader via <a href="%5CFortAwesome%5Cfont_awesome_load()"></a>, it does not delete the plugin options,
+since one of those others will end up becoming active and relying on the options data.</p>
+<p>Any theme or plugin that includes this Font Awesome plugin as a library
+dependency should call this from its own uninstall hook. For example:</p>
+<pre class="prettyprint"><code class="language-php"> register_uninstall_hook(
+     __FILE__,
+     'FortAwesome\FontAwesome_Loader::maybe_uninstall'
+ );
+</code></pre>
+</section>
+
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                                 <section class="phpdocumentor-description"></section>
+
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
+
+    
+</article>
+            </section>
+
+    </article>
+                <section data-search-results class="phpdocumentor-search-results phpdocumentor-search-results--hidden">
+    <section class="phpdocumentor-search-results__dialog">
+        <header class="phpdocumentor-search-results__header">
+            <h2 class="phpdocumentor-search-results__title">Search results</h2>
+            <button class="phpdocumentor-search-results__close"><i class="fas fa-times"></i></button>
+        </header>
+        <section class="phpdocumentor-search-results__body">
+            <ul class="phpdocumentor-search-results__entries"></ul>
+        </section>
+    </section>
+</section>
+            </div>
+        </div>
+        <a href="classes/FortAwesome-FontAwesome-Loader.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+
+    </main>
+
+    <script>
+        cssVars({});
+    </script>
+</body>
+</html>
