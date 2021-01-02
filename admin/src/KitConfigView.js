@@ -93,7 +93,7 @@ export default function KitConfigView({ kitToken }) {
               </td>
             </tr>
             <tr>
-              <th className={ styles['label'] }>{ __( 'Version 4 Compatability', 'font-awesome' ) }</th>
+              <th className={ styles['label'] }>{ __( 'Version 4 Compatibility', 'font-awesome' ) }</th>
               <td className={ styles['value'] }>
                 { v4Compat ? 'On' : 'Off' }
                 { getDetectionStatusForOption('v4Compat') }
