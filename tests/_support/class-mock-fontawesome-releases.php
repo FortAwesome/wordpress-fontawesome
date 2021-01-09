@@ -16,8 +16,8 @@ class Mock_FontAwesome_Releases extends TestCase {
 		$obj = new self();
 		mock_singleton_method(
 			$obj,
-			FontAwesome_Release_Provider::class,
-			'query',
+			FontAwesome_Metadata_Provider::class,
+			'metadata_query',
 			function( $method ) {
 				$method->willReturn(
 					wp_json_encode(
@@ -28,11 +28,12 @@ class Mock_FontAwesome_Releases extends TestCase {
 				);
 			}
 		);
+
+		FontAwesome_Release_Provider::load_releases();
 	}
 
 	public function test_basic() {
 		self::mock();
-		FontAwesome_Release_Provider::instance()->load_releases();
 
 		$this->assertEquals( '5.4.1', fa()->latest_version() );
 	}
