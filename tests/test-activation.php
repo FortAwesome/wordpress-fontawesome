@@ -17,17 +17,6 @@ class ActivationTest extends \WP_UnitTestCase {
 		Mock_FontAwesome_Releases::mock();
 	}
 
-	protected function create_release_provider_that_throws( $exception ) {
-		return mock_singleton_method(
-			$this,
-			FontAwesome_Release_Provider::class,
-			'query',
-			function( $method ) use ( $exception ) {
-				$method->will( $this->throwException( $exception ) );
-			}
-		);
-	}
-
 	public function test_before_activation() {
 		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
 		$this->assertFalse( get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) );
@@ -132,13 +121,5 @@ class ActivationTest extends \WP_UnitTestCase {
 			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
-	}
-
-	public function test_activate_when_release_provider_throws() {
-		$this->create_release_provider_that_throws( new ApiResponseException() );
-
-		$this->expectException( ApiResponseException::class );
-
-		FontAwesome_Activator::activate();
 	}
 }

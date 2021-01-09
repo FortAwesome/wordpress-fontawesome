@@ -114,12 +114,26 @@ class FontAwesome_Release_Provider {
 	/**
 	 * Private constructor.
 	 *
+	 * Requires that releases metadata have already been loaded into the db option.
+	 *
 	 * @ignore
+	 * @internal
+	 * @throws ReleaseMetadataMissingException
 	 */
-	private function __construct() {}
+	private function __construct() {
+		$option_value = get_option( self::OPTIONS_KEY );
+
+		if ( $option_value ) {
+			$this->releases       = $option_value['data']['releases'];
+			$this->refreshed_at   = $option_value['refreshed_at'];
+			$this->latest_version = $option_value['data']['latest'];
+		} else {
+			throw new ReleaseMetadataMissingException();
+		}
+	}
 
 	/**
-	 * Loads release metadata and saves to a transient.
+	 * Loads release metadata and saves to the options table.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
 	 *
@@ -130,7 +144,7 @@ class FontAwesome_Release_Provider {
 	 * @throws ReleaseProviderStorageException
 	 * @return void
 	 */
-	public function load_releases() {
+	public static function load_releases() {
 		$query = <<< EOD
 query {
 	latest: release(version: "latest") {
@@ -152,7 +166,7 @@ query {
 }
 EOD;
 
-		$body = json_decode( $this->query( $query ), true );
+		$body = json_decode( self::query( $query ), true );
 
 		$releases = array();
 
@@ -187,10 +201,6 @@ EOD;
 		);
 
 		update_option( self::OPTIONS_KEY, $option_value );
-
-		$this->releases       = $releases;
-		$this->refreshed_at   = $refreshed_at;
-		$this->latest_version = $latest_version;
 	}
 
 	/**
@@ -243,52 +253,19 @@ EOD;
 	 * @throws ApiResponseException
 	 * @return array
 	 */
-	protected function query( $query ) {
+	protected static function query( $query ) {
 		return fa_metadata_provider()->metadata_query( $query, true );
 	}
 
 	/**
-	 * Retrieves Font Awesome releases metadata with as few network requests as possible.
+	 * Retrieves Font Awesome releases metadata from the singleton instance.
 	 *
-	 * Will first attempt to return releases already memoized by this Singleton instance.
-	 * Next, will try to retrieve a cached set of releases stored in the local WordPress db.
+	 * Makes no network or database requests.
 	 *
-	 * If there's nothing cached, then it tries to load releases by making a network request to the
-	 * releases API endpoint.
-	 *
-	 * If that fails, it throws an exception.
-	 *
-	 * @see FontAwesome_Release_Provider::OPTIONS_KEY()
-	 * @throws ReleaseMetadataMissingException
-	 * @throws ApiRequestException
-	 * @throws ApiResponseException
-	 * @throws ReleaseProviderStorageException
 	 * @return array
 	 */
 	protected function releases() {
-		if ( $this->releases ) {
-			return $this->releases;
-		} else {
-			$option_value = get_option( self::OPTIONS_KEY );
-
-			if ( $option_value ) {
-				$this->releases       = $option_value['data']['releases'];
-				$this->refreshed_at   = $option_value['refreshed_at'];
-				$this->latest_version = $option_value['data']['latest'];
-
-				return $this->releases;
-			} elseif ( is_null( $this->releases ) ) {
-				$result = $this->load_releases();
-
-				if ( is_null( $this->releases ) ) {
-					throw new ReleaseMetadataMissingException();
-				} else {
-					return $this->releases;
-				}
-			} else {
-				return $this->releases;
-			}
-		}
+		return $this->releases;
 	}
 
 	/**

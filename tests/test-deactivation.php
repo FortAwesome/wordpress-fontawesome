@@ -9,6 +9,11 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.
  */
 class DeactivationTest extends \WP_UnitTestCase {
 
+	public function setUp() {
+		reset_db();
+		remove_all_filters( 'option_' . FontAwesome_Release_Provider::OPTIONS_KEY );
+	}
+
 	public function test_deactivate_preserves_options_deletes_transients() {
 		$foobar = array( 'foo' => 'bar' );
 		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, $foobar );
