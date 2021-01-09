@@ -407,11 +407,7 @@ EOD;
 			'resources' => $resources,
 		);
 
-		$ret = set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
-
-		if ( ! $ret ) {
-			throw new ReleaseProviderStorageException();
-		}
+		set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
