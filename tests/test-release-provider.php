@@ -109,12 +109,10 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	}
 
 	public function test_error_response() {
-		$farp = $this->create_release_provider_that_throws( new ApiRequestException() );
-
 		$caught = false;
 
 		try {
-			$farp->load_releases();
+			$farp = $this->create_release_provider_that_throws( new ApiRequestException() );
 		} catch ( ApiRequestException $e ) {
 			$caught = true;
 		}
@@ -126,7 +124,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$versions = $farp->versions();
 		$this->assertCount( count( $this->known_versions_sorted_desc ), $versions );
@@ -137,7 +134,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -164,7 +160,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -188,7 +183,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$this->expectException( ConfigSchemaException::class );
 
@@ -206,7 +200,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -228,7 +221,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.1.0', // version.
@@ -250,7 +242,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$resource_collection = $farp->get_resource_collection(
 			'5.0.13', // version.
@@ -273,7 +264,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$this->expectException( ReleaseMetadataMissingException::class );
 
@@ -293,7 +283,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$mock_response = self::build_success_response();
 
 		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
 
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
