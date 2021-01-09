@@ -38,7 +38,7 @@ class FontAwesome_Release_Provider {
 	 * @since 4.0.0-rc4
 	 * @ignore
 	 */
-	const RELEASES_TRANSIENT = 'font-awesome-releases';
+	const OPTIONS_KEY = 'font-awesome-releases';
 
 	/**
 	 * Name of the transient that stores the cache of the last used Font Awesome
@@ -49,14 +49,6 @@ class FontAwesome_Release_Provider {
 	 * @internal
 	 */
 	const LAST_USED_RELEASE_TRANSIENT = 'font-awesome-last-used-release';
-
-	/**
-	 * Expiry time for the releases transient.
-	 *
-	 * @ignore
-	 * @internal
-	 */
-	const RELEASES_TRANSIENT_EXPIRY = YEAR_IN_SECONDS;
 
 	/**
 	 * Expiry time for the releases transient.
@@ -179,13 +171,6 @@ EOD;
 			);
 		}
 
-		$previous_transient = get_site_transient( self::RELEASES_TRANSIENT );
-
-		if ( $previous_transient ) {
-			// We must be refreshing the releases metadata, so delete the transient before trying to set it again.
-			delete_site_transient( self::RELEASES_TRANSIENT );
-		}
-
 		$refreshed_at   = time();
 		$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
 
@@ -193,7 +178,7 @@ EOD;
 			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version' ) );
 		}
 
-		$transient_value = array(
+		$option_value = array(
 			'refreshed_at' => $refreshed_at,
 			'data'         => array(
 				'latest'   => $latest_version,
@@ -201,11 +186,7 @@ EOD;
 			),
 		);
 
-		$ret = set_site_transient( self::RELEASES_TRANSIENT, $transient_value, self::RELEASES_TRANSIENT_EXPIRY );
-
-		if ( ! $ret ) {
-			throw new ReleaseProviderStorageException();
-		}
+		update_option( self::OPTIONS_KEY, $option_value );
 
 		$this->releases       = $releases;
 		$this->refreshed_at   = $refreshed_at;
@@ -270,15 +251,14 @@ EOD;
 	 * Retrieves Font Awesome releases metadata with as few network requests as possible.
 	 *
 	 * Will first attempt to return releases already memoized by this Singleton instance.
-	 * Next, will try to retrieve a cached set of releases from a non-expiring transient.
+	 * Next, will try to retrieve a cached set of releases stored in the local WordPress db.
 	 *
 	 * If there's nothing cached, then it tries to load releases by making a network request to the
 	 * releases API endpoint.
 	 *
 	 * If that fails, it throws an exception.
 	 *
-	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT()
-	 * @see FontAwesome_Release_Provider::RELEASES_TRANSIENT_EXPIRY()
+	 * @see FontAwesome_Release_Provider::OPTIONS_KEY()
 	 * @throws ReleaseMetadataMissingException
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
@@ -289,12 +269,12 @@ EOD;
 		if ( $this->releases ) {
 			return $this->releases;
 		} else {
-			$transient_value = get_site_transient( self::RELEASES_TRANSIENT );
+			$option_value = get_option( self::OPTIONS_KEY );
 
-			if ( $transient_value ) {
-				$this->releases       = $transient_value['data']['releases'];
-				$this->refreshed_at   = $transient_value['refreshed_at'];
-				$this->latest_version = $transient_value['data']['latest'];
+			if ( $option_value ) {
+				$this->releases       = $option_value['data']['releases'];
+				$this->refreshed_at   = $option_value['refreshed_at'];
+				$this->latest_version = $option_value['data']['latest'];
 
 				return $this->releases;
 			} elseif ( is_null( $this->releases ) ) {

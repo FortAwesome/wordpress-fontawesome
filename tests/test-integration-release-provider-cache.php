@@ -131,10 +131,10 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		$last_used_release_query_count = 0;
 
 		add_filter(
-			'pre_site_transient_' . FontAwesome_Release_Provider::RELEASES_TRANSIENT,
-			function() use ( &$all_releases_query_count ) {
+			'option_' . FontAwesome_Release_Provider::OPTIONS_KEY,
+			function( $value ) use ( &$all_releases_query_count ) {
 				$all_releases_query_count++;
-				return false;
+				return $value;
 			},
 			0
 		);
@@ -148,14 +148,20 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 			0
 		);
 
+		/**
+		 * This will activate the plugin, which would initialize the ReleaseProvider option.
+		 * That process is expected to write the option, but it doesn't need to
+		 * read it.
+		 */
 		$this->prepare(
 			array(
 				self::build_success_response(),
 			)
 		);
 
-		$this->assertEquals( 1, $all_releases_query_count );
+		$this->assertEquals( 0, $all_releases_query_count );
 		$this->assertEquals( 0, $last_used_release_query_count );
+		$this->assertTrue( is_array( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
 
 		$resource_collection = $this->release_provider->get_resource_collection(
 			'5.4.1',

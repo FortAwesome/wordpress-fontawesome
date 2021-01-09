@@ -94,7 +94,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		 * When the GET for releases does not return successfully and we have no version metadata available,
 		 * we expect an exception to be thrown.
 		 */
-		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
 
 		$farp   = $this->create_release_provider_that_throws( new ApiResponseException() );
 		$caught = false;
