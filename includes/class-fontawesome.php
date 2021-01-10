@@ -610,7 +610,7 @@ class FontAwesome {
 
 	/**
 	 * Queries the Font Awesome API to load releases metadata. Results are
-	 * cached in a site transient.
+	 * cached in the local WordPress db.
 	 *
 	 * This is the metadata that supports API
 	 * methods like {@see FontAwesome::latest_version()}
@@ -623,7 +623,7 @@ class FontAwesome {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public function refresh_releases() {
-		$this->release_provider()->load_releases();
+		FontAwesome_Release_Provider::load_releases();
 	}
 
 	/**

@@ -63,7 +63,7 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	private static function initialize_user_options() {
-		fa()->refresh_releases();
+		FontAwesome_Release_Provider::load_releases();
 		$version = fa()->latest_version();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => $version ) );
 		update_option( FontAwesome::OPTIONS_KEY, $options );
