@@ -208,10 +208,7 @@ EOD;
 	 *
 	 * @internal
 	 * @ignore
-	 * @throws ReleaseMetadataMissingException
-	 * @throws ApiRequestException
-	 * @throws ApiResponseException
-	 * @throws ReleaseProviderStorageException
+	 * @return FontAwesome_Resource
 	 */
 	private function build_resource( $version, $file_basename, $flags = array(
 		'use_svg' => false,
@@ -286,10 +283,6 @@ EOD;
 	/**
 	 * Returns a simple array of available Font Awesome versions as strings, sorted in descending version order.
 	 *
-	 * @throws ReleaseMetadataMissingException
-	 * @throws ApiRequestException
-	 * @throws ApiResponseException
-	 * @throws ReleaseProviderStorageException
 	 * @return array
 	 */
 	public function versions() {
