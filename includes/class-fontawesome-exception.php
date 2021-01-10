@@ -413,7 +413,7 @@ class ReleaseProviderStorageException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Something when wrong when we tried to store the list of available Font Awesome versions in your WordPress database.',
+				'Something went wrong when we tried to store the list of available Font Awesome versions in your WordPress database.',
 				'font-awesome'
 			),
 			$code,
