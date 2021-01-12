@@ -100,7 +100,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$caught = false;
 
 		try {
-			fa_release_provider();
+			FontAwesome_Release_Provider::reset();
 		} catch ( ReleaseMetadataMissingException $e ) {
 			$caught = true;
 		}
