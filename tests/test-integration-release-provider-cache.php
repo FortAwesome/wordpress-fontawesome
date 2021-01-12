@@ -30,7 +30,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	// on consecutive GETs to the fontawesome API,
 	// or to throw an exception if given an error.
 	protected function prepare( $arg ) {
-		if( \is_wp_error( $arg ) ) {
+		if ( \is_wp_error( $arg ) ) {
 			mock_singleton_method(
 				$this,
 				FontAwesome_Metadata_Provider::class,
@@ -51,7 +51,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 
 			FontAwesome_Activator::activate();
 		} else {
-			throw new Exception('arg must be a callable or array of responses');
+			throw new Exception( 'arg must be a callable or array of responses' );
 		}
 	}
 
@@ -77,7 +77,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	public function test_releases_caching() {
 		$this->prepare(
 			array(
-				self::build_success_response()
+				self::build_success_response(),
 			)
 		);
 

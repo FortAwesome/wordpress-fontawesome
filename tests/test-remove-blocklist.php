@@ -38,13 +38,13 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 	 */
 	protected function reset() {
 		FontAwesome::instance()->reset();
-		(new Mock_FontAwesome_Metadata_Provider())->mock(
+		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
 				wp_json_encode(
 					array(
 						'data' => graphql_releases_query_fixture(),
 					)
-				)
+				),
 			)
 		);
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
