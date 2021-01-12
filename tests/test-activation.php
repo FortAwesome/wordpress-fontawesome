@@ -14,7 +14,15 @@ class ActivationTest extends \WP_UnitTestCase {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
-		Mock_FontAwesome_Releases::mock();
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				)
+			)
+		);
 	}
 
 	public function test_before_activation() {
