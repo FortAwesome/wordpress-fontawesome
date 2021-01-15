@@ -45,6 +45,13 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 						'data' => graphql_releases_query_fixture(),
 					)
 				),
+				// We need a second one of these because it'll be triggered not
+				// only when we do activate(), but also when we do fa()->try_upgrade().
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				),
 			)
 		);
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
