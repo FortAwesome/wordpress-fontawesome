@@ -247,6 +247,7 @@ class FontAwesome {
 		'kitToken'       => null,
 		// whether the token is present, not the token's value.
 		'apiToken'       => false,
+		'dataVersion'      => 3
 	);
 
 	/**
@@ -432,20 +433,6 @@ class FontAwesome {
 	public function try_upgrade() {
 		$options = get_option( self::OPTIONS_KEY );
 
-		/**
-		 * Intentional Omission: fontawesome-releases-transient.
-		 *
-		 * For upgrades from version 4.0.0-rc21 to any later versions,
-		 * for which the font-awesome-releases transient is obsolete,
-		 * the recommended way to clean up that obsolete transient data is to
-		 * either allow it to expire on its own, to deactivate and reactivate the
-		 * plugin, or use the wp cli or some other admin tool to remove it.
-		 *
-		 * If we were to put in a check here for its existence, that extra check
-		 * would have to run on every page load going forward, which seems too
-		 * inefficient.
-		 */
-
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
@@ -454,10 +441,7 @@ class FontAwesome {
 
 			$upgraded_options = $this->convert_options_from_v1( $options );
 
-			// Delete the old release metadata transient.
-			delete_transient( 'font-awesome-releases' );
-
-			FontAwesome_Release_Provider::load_releases();
+			$this->upgrade_for_4_0_0_rc22();
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -485,6 +469,26 @@ class FontAwesome {
 
 			update_option( self::OPTIONS_KEY, $upgraded_options );
 		}
+
+		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 3 ) {
+			$this->upgrade_for_4_0_0_rc22();
+
+			$options['dataVersion'] = 3;
+
+			update_option( self::OPTIONS_KEY, $options );
+		}
+	}
+
+	private function upgrade_for_4_0_0_rc22() {
+		// Delete the old release metadata transient.
+		delete_transient( 'font-awesome-releases' );
+
+		/**
+		 * This is one exception to the rule about not loading release metadata
+		 * on front end page loads. But this would only happen on the first page
+		 * load after upgrading from a particular range of earlier versions.
+		 */
+		FontAwesome_Release_Provider::load_releases();
 	}
 
 	/**
