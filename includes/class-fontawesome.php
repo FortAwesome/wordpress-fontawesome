@@ -247,7 +247,7 @@ class FontAwesome {
 		'kitToken'       => null,
 		// whether the token is present, not the token's value.
 		'apiToken'       => false,
-		'dataVersion'      => 3
+		'dataVersion'    => 3,
 	);
 
 	/**
@@ -1275,7 +1275,7 @@ class FontAwesome {
 	 *
 	 * - `fa()->releases_refreshed_at()` will return the time when releases
 	 *     metadata was last refreshed.
-	 * 
+	 *
 	 * Releases are refreshed when the admin user loads the Font Awesome settings
 	 * page if it's been longer than the {@see FortAwesome\FontAwesome::RELEASES_REFRESH_INTERVAL}.
 	 *

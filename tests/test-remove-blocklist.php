@@ -234,7 +234,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 				'version'        => '5.12.0',
 				'kitToken'       => null,
 				'apiToken'       => false,
-				'dataVersion'    => 3
+				'dataVersion'    => 3,
 			),
 			fa()->options()
 		);
