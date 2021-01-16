@@ -468,6 +468,8 @@ class FontAwesome {
 			$this->validate_options( $upgraded_options );
 
 			update_option( self::OPTIONS_KEY, $upgraded_options );
+
+			$options = $upgraded_options;
 		}
 
 		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 3 ) {
@@ -482,6 +484,8 @@ class FontAwesome {
 	private function upgrade_for_4_0_0_rc22() {
 		// Delete the old release metadata transient.
 		delete_transient( 'font-awesome-releases' );
+
+		delete_site_transient( 'font-awesome-releases' );
 
 		/**
 		 * This is one exception to the rule about not loading release metadata

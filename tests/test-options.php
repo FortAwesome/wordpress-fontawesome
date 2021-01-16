@@ -28,6 +28,11 @@ class OptionsTest extends \WP_UnitTestCase {
 					array(
 						'data' => graphql_releases_query_fixture(),
 					)
+				),
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
 				)
 			)
 		);
@@ -65,7 +70,8 @@ class OptionsTest extends \WP_UnitTestCase {
 				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
-				'apiToken' => false
+				'apiToken' => false,
+				'dataVersion' => 3
 			),
 			fa()->convert_options_from_v1(
 				array (
@@ -96,7 +102,7 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 	}
 
-	public function test_try_upgrade_when_upgrade_required() {
+	public function test_try_upgrade_when_upgrade_required_from_pre_rc13() {
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array (
@@ -135,10 +141,50 @@ class OptionsTest extends \WP_UnitTestCase {
 				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
-				'apiToken' => false
+				'apiToken' => false,
+				'dataVersion' => 3
 			),
 			fa()->options()
 		);
+
+		$releases_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		$this->assertTrue(boolval($releases_option));
+	}
+
+	public function test_try_upgrade_when_upgrade_required_from_post_rc13_pre_rc22() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false,
+			)
+		);
+
+		fa()->try_upgrade();
+
+		$this->assertEquals(
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'v4Compat' => true,
+				'kitToken' => null,
+				'apiToken' => false,
+				'dataVersion' => 3
+			),
+			fa()->options()
+		);
+
+		$releases_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		$this->assertTrue(boolval($releases_option));
 	}
 
 	public function test_try_upgrade_when_upgrade_not_required() {
@@ -165,7 +211,8 @@ class OptionsTest extends \WP_UnitTestCase {
 				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
-				'apiToken' => false
+				'apiToken' => false,
+				'dataVersion' => 3
 			),
 			fa()->options()
 		);
@@ -180,7 +227,8 @@ class OptionsTest extends \WP_UnitTestCase {
 				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
-				'apiToken' => false
+				'apiToken' => false,
+				'dataVersion' => 3
 			),
 			fa()->convert_options_from_v1(
 				array (
@@ -220,7 +268,8 @@ class OptionsTest extends \WP_UnitTestCase {
 				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
-				'apiToken' => false
+				'apiToken' => false,
+				'dataVersion' => 3
 			),
 			fa()->convert_options_from_v1(
 				array (
