@@ -295,22 +295,6 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 	}
 
-	/*
-	public function test_refresh_releases() {
-		FontAwesome_Release_Provider::reset();
-		Mock_FontAwesome_Releases::mock();
-
-		// Before, these would be null
-		$this->assertNull( fa()->latest_version() );
-		$this->assertNull( fa()->releases_refreshed_at() );
-
-		$result = fa()->refresh_releases();
-
-		// If it works, we'd be able to get a non-null latest_version
-		$this->assertNotNull( fa()->latest_version() );
-	}
-	*/
-
 	public function test_latest_version() {
 		$this->assertEquals( '5.4.1', fa()->latest_version() );
 	}

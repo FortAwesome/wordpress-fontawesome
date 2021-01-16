@@ -71,12 +71,12 @@ require_once ABSPATH . 'wp-admin/includes/screen.php';
  *
  * Generally, public API members are accessed only from this `FontAwesome` class.
  *
- * For example, the {@see FontAwesome::refresh_releases()} method provides a way
- * to re-query available releases metadata from `api.fontawesome.com`. It delegates
- * to another class internally. But that other class and its methods are not part
- * of this plugin's public API. They may change significantly from one patch
- * release to another, but no breaking changes would be made to
- * {@see FontAwesome::refresh_releases()} without a major version change.
+ * For example, the {@see FontAwesome::releases_refreshed_at()} method provides a way
+ * to find out when releases metadata were last fetched from `api.fontawesome.com`.
+ * It delegates to another class internally. But that other class and its methods
+ * are not part of this plugin's public API. They may change significantly from
+ * one patch release to another, but no breaking changes would be made to
+ * {@see FontAwesome::releases_refreshed_at()} without a major version change.
  *
  * References to "API" in this section refer to this plugin's PHP code or REST
  * routes, not to the Font Awesome GraphQL API at `api.fontawesome.com`.
@@ -457,7 +457,7 @@ class FontAwesome {
 			// Delete the old release metadata transient.
 			delete_transient( 'font-awesome-releases' );
 
-			$this->refresh_releases();
+			FontAwesome_Release_Provider::load_releases();
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -609,28 +609,9 @@ class FontAwesome {
 	}
 
 	/**
-	 * Queries the Font Awesome API to load releases metadata. Results are
-	 * cached in the local WordPress db.
-	 *
-	 * This is the metadata that supports API
-	 * methods like {@see FontAwesome::latest_version()}
-	 * and all other metadata required to enqueue Font Awesome when configured
-	 * to use the standard CDN (non-kits).
-	 *
-	 * @since 4.0.0
-	 * @throws ApiRequestException
-	 * @throws ApiResponseException
-	 * @throws ReleaseProviderStorageException
-	 */
-	public function refresh_releases() {
-		FontAwesome_Release_Provider::load_releases();
-	}
-
-	/**
 	 * Returns the time when releases metadata was last
 	 * refreshed.
 	 *
-	 * @see FontAwesome::refresh_releases
 	 * @since 4.0.0
 	 * @return integer|null the time in unix epoch seconds or null if never
 	 */
@@ -651,7 +632,7 @@ class FontAwesome {
 		$refreshed_at = $this->releases_refreshed_at();
 
 		if ( is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERVAL ) {
-			return $this->refresh_releases();
+			return FontAwesome_Release_Provider::load_releases();
 		} else {
 			return 1;
 		}
@@ -1286,18 +1267,16 @@ class FontAwesome {
 	 *
 	 * - `fa()->releases_refreshed_at()` will return the time when releases
 	 *     metadata was last refreshed.
+	 * 
+	 * Releases are refreshed when the admin user loads the Font Awesome settings
+	 * page if it's been longer than the {@see FortAwesome\FontAwesome::RELEASES_REFRESH_INTERVAL}.
 	 *
-	 * - `fa->refresh_releases()` will refresh the releases metadata. This will
-	 *     run a synchronous (blocking) network query to the Font Awesome API
-	 *     server.
-	 *
-	 * Therefore, if releases have been refreshed recently enough for your
-	 * purposes, you can rely on the version returned by `fa()->latest_version()`.
-	 * Or, you could refresh the releases metadata and then call
-	 * `fa()->latest_version()`.
+	 * If you think the releases metadata should be refreshed, the best approach
+	 * would be to alert the user in the admin dashboard, requesting that they
+	 * refresh releases by simply re-loading the Font Awesome settings page.
 	 *
 	 * It is still possible that by the time the page loads in the browser,
-	 * a new release of Font Awesome will have become available since your
+	 * a new release of Font Awesome will have become available since the last
 	 * refresh of releases metadata, and will have been loaded as the "latest"
 	 * version for the kit. There's no way to guarantee that the latest version
 	 * you resolve by this method will be the one loaded at runtime. The race
@@ -1305,10 +1284,13 @@ class FontAwesome {
 	 * are sub-second windows of time, and new versions of Font Awesome tend to
 	 * be released only approximately once per month.
 	 *
+	 * (We want to avoid making a synchronous network request to the API server
+	 * on normal front end page loads, so there's currently no supported way in
+	 * this API to programatically force the reload of metadata.)
+	 *
 	 * @since 4.0.0
 	 * @see FontAwesome::latest_version()
 	 * @see FontAwesome::releases_refreshed_at()
-	 * @see FontAwesome::refresh_releases()
 	 * @throws ConfigCorruptionException
 	 * @return string|null null if no version has yet been saved in the options
 	 * in the db. Otherwise, a valid version string, which may be either a
