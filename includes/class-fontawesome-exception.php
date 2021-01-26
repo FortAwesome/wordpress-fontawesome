@@ -437,7 +437,7 @@ class ReleaseMetadataMissingException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		return parent::__construct(
 			esc_html__(
-				'Somehow, we\'re missing the information we need to load your currently selected version of Font Awesome. Try visiting the Font Awesome plugin settings page, re-selecting a version to use, and saving changes. If that doesn\'t work, try deactivating and re-activating the plugin. If that doesn\'t work, deactivate and then delete and re-install it.',
+				'Eek! We\'re missing the information we need to load the version of Font Awesome you have selected. Go to your Font Awesome plugin settings page, re-select a version, and save. If that doesn\'t work, try deactivating and then re-activating the plugin. If that doesn\'t work either, you might need to delete and re-install the plug-in.',
 				'font-awesome'
 			),
 			$code,
