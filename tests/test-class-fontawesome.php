@@ -18,7 +18,10 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	public function setUp() {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		FontAwesome::reset();
+		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
+		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
+		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
+		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
 		(new Mock_FontAwesome_Metadata_Provider())->mock(
 			array(
 				wp_json_encode(
@@ -28,11 +31,9 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 				)
 			)
 		);
-		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
-		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
-		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
-		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
 		FontAwesome_Activator::activate();
+		FontAwesome_Release_Provider::reset();
+		FontAwesome::reset();
 	}
 
 	protected function mock_with_plugin_version($plugin_version) {
