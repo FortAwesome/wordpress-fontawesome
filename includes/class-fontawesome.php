@@ -617,6 +617,32 @@ class FontAwesome {
 	}
 
 	/**
+	 * Queries the Font Awesome API to load releases metadata. Results are stored
+	 * in the wp database.
+	 *
+	 * This is the metadata that supports API
+	 * methods like {@see FontAwesome::latest_version()}
+	 * and all other metadata required to enqueue Font Awesome when configured
+	 * to use the standard CDN (non-kits).
+	 *
+	 * This has been deprecated to discourage themes or plugins from invoking
+	 * it as a blocking network request during front-end page loads. If we find
+	 * that functionality like this is still needed for some use cases, let's
+	 * design an alternative API that encourages best-practice use while
+	 * discouraging anti-patterns.
+	 *
+	 * @since 4.0.0
+	 * @deprecated
+	 * @ignore
+	 * @throws ApiRequestException
+	 * @throws ApiResponseException
+	 * @throws ReleaseProviderStorageException
+	 */
+	public function refresh_releases() {
+		$this->release_provider()->load_releases();
+	}	
+
+	/**
 	 * Returns the time when releases metadata was last
 	 * refreshed.
 	 *

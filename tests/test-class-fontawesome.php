@@ -295,6 +295,110 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 		);
 	}
 
+	public function test_refresh_releases() {
+		// Before
+		$this->assertEquals( '5.4.1', fa()->latest_version() );
+
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => 
+							array(
+								'latest'   => array(
+									'version' => '5.15.2',
+								),
+								'releases' =>
+								array(
+									0  =>
+									array(
+										'date'          => '2017-12-08 00:00:00',
+										'iconCount'     =>
+										array(
+											'free' => 899,
+											'pro'  => 1278,
+										),
+										'srisByLicense' =>
+										array(
+											'free' =>
+											array(
+												0  =>
+												array(
+													'path'  => 'css/all.css',
+													'value' => 'sha384-VVoO3UHXsmXwXvf1kJx2jV3b1LbOfTqKL46DdeLG8z4pImkQ4GAP9GMy+MxHMDYG',
+												),
+												1  =>
+												array(
+													'path'  => 'css/brands.css',
+													'value' => 'sha384-JT52EiskN0hkvVxJA8d2wg8W/tLxrC02M4u5+YAezNnBlY/N2yy3X51pKC1QaPkw',
+												),
+												2  =>
+												array(
+													'path'  => 'css/fontawesome.css',
+													'value' => 'sha384-7mC9VNNEUg5vt0kVQGblkna/29L8CpTJ5fkpo0nlmTbfCoDXyuK/gPO3wx8bglOz',
+												),
+												3  =>
+												array(
+													'path'  => 'css/regular.css',
+													'value' => 'sha384-JZ2w5NHrKZS6hqVAVlhUO3eHPVzjDZqOpWBZZ6opcmMwVjN7uoagKSSftrq8F0pn',
+												),
+												4  =>
+												array(
+													'path'  => 'css/solid.css',
+													'value' => 'sha384-TQW9cJIp+U8M7mByg5ZKUQoIxj0ac36aOpNzqQ04HpwyrJivS38EQsKHO2rR5eit',
+												),
+												5  =>
+												array(
+													'path'  => 'css/svg-with-js.css',
+													'value' => 'sha384-X1ZQAmDHBeo7eaAJwWMyyA3mva9mMK10CpRFvX8PejR0XIUjwvGDqr2TwJqwbH9S',
+												),
+												6  =>
+												array(
+													'path'  => 'js/all.js',
+													'value' => 'sha384-2CD5KZ3lSO1FK9XJ2hsLsEPy5/TBISgKIk2NSEcS03GbEnWEfhzd0x6DBIkqgPN1',
+												),
+												7  =>
+												array(
+													'path'  => 'js/brands.js',
+													'value' => 'sha384-i3UPn8g8uJGiS6R/++68nHyfYAnr/lE/biTuWYbya2dONccicnZZPlAH6P8EWf28',
+												),
+												8  =>
+												array(
+													'path'  => 'js/fontawesome.js',
+													'value' => 'sha384-tqpP2rDLsdWkeBrG3Jachyp0yzl/pmhnsdV88ySUFZATuziAnHWsHRSS97l5D9jn',
+												),
+												9  =>
+												array(
+													'path'  => 'js/regular.js',
+													'value' => 'sha384-hXqI+wajk6jJu2DXwf2oqBg6q5+HqXM5yz9smX94pDjiLzH81gAuVtjter66i1Ct',
+												),
+												10 =>
+												array(
+													'path'  => 'js/solid.js',
+													'value' => 'sha384-kbPfTyGdGugnvSKEBJCd6+vYipOQ6a+2np5O4Ty3sW7tgI0MpwPyAh+QwUpMujV9',
+												),
+												11 =>
+												array(
+													'path'  => 'js/v4-shims.js',
+													'value' => 'sha384-BRge2B8T+0rmvB/KszFfdQ0PDvPnhV2J80JMKrnq21Fq6tHeKFhSIrdoroXvk7eB',
+												),
+											),
+											'pro'  =>
+											array(),
+										),
+										'version'       => '5.0.1',
+									)
+								)
+							)
+					)
+				)
+			));
+		FontAwesome_Release_Provider::reset();
+
+		// After
+		$this->assertNotNull( fa()->latest_version() );
+	}
+
 	public function test_latest_version() {
 		$this->assertEquals( '5.4.1', fa()->latest_version() );
 	}
