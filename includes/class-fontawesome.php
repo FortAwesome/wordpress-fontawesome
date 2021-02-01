@@ -640,7 +640,7 @@ class FontAwesome {
 	 */
 	public function refresh_releases() {
 		$this->release_provider()->load_releases();
-	}	
+	}
 
 	/**
 	 * Returns the time when releases metadata was last
