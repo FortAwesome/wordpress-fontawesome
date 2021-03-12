@@ -11,6 +11,7 @@
     "@wordpress/i18n": "^3.16.0",
     "axios": "^0.21.0",
     "bfj": "6.1.1",
+    "chokidar": "^3.4.3",
     "classnames": "^2.2.6",
     "css-loader": "1.0.0",
     "dotenv": "6.0.0",
