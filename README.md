@@ -1,5 +1,6 @@
 # wordpress-fontawesome
 
+[![PHP Composer](https://github.com/FortAwesome/wordpress-fontawesome/actions/workflows/php.yml/badge.svg)](https://github.com/FortAwesome/wordpress-fontawesome/actions/workflows/php.yml)
 > Font Awesome 5 Official WordPress Package
 
 This guide is for developers seeking to use `wordpress-fontawesome` as a package
