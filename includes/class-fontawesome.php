@@ -1716,6 +1716,7 @@ EOT;
 							$font_face = <<< EOT
 @font-face {
 font-family: "FontAwesome";
+font-display: block;
 src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot"),
 		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"),
 		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.woff2") format("woff2"),
@@ -1726,6 +1727,7 @@ src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webf
 
 @font-face {
 font-family: "FontAwesome";
+font-display: block;
 src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot"),
 		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"),
 		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff2") format("woff2"),
@@ -1736,6 +1738,7 @@ src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webf
 
 @font-face {
 font-family: "FontAwesome";
+font-display: block;
 src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.eot"),
 		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.eot?#iefix") format("embedded-opentype"),
 		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.woff2") format("woff2"),
