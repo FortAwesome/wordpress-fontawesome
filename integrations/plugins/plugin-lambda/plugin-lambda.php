@@ -23,8 +23,8 @@ foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'
 	}, 99 );
 }
 
-  $pre_content = <<<EOT
-<div class="plugin-lambda-pre-content" style="border: 1px solid grey;">
+  $extra_content = <<<EOT
+<div class="plugin-lambda-content" style="border: 1px solid grey;">
   <h2>Plugin Lambda</h2>
   <p>v4.7.0 icon name: "fa fa-bathtub": <i class="fa fa-bathtub"></i></p>
   <p class="group-icon"><code>:before</code> pseudo-element should match <code>fas fa-users</code>: <i class="fas fa-users"></i></p>
@@ -33,17 +33,13 @@ foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'
 </div>
 EOT;
 
-add_filter('the_content', function($content) use($pre_content){
-  return $pre_content . $content;
+add_action('wp_print_footer_scripts', function() use($extra_content) {
+	echo $extra_content;
 });
 
-add_filter('login_message', function($content) use($pre_content) {
-	return $pre_content . $content;
-});
-
-add_action('admin_footer', function() use($pre_content) {
+add_action('admin_footer', function() use($extra_content) {
 	?>
-	<style>.plugin-lambda-pre-content{position:absolute; margin-left: 20rem;}</style>
+	<style>.plugin-lambda-content{position:absolute; margin-left: 20rem;}</style>
 	<?php
-	echo $pre_content;
+	echo $extra_content;
 }, 10, 1);

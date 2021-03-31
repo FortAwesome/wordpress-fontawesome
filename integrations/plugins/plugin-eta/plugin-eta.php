@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Eta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client with preferences: technology: svg, pseudoElements: true. Prepends a block to each blog post that displays the "fa-bed" icon as a :before pseudo-element.
+ * Description:       Registered Client with preferences: technology: svg, pseudoElements: true. Adds content to the page footer that displays the "fa-bed" icon as a :before pseudo-element.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -43,16 +43,14 @@ add_action(
 	}
 );
 
-add_filter('the_content', function($content){
-	$classes = plugin_eta_fa_classes();
-  $pre_content = <<<EOT
-<div class="$classes" style="border: 1px solid grey;">
+add_action('wp_print_footer_scripts', function() use($pre_content) {
+?>
+<div class="<?php echo esc_html__(plugin_eta_fa_classes(), 'font-awesome'); ?>" style="border: 1px solid grey;">
   <h2>Plugin Eta</h2>
   <p>Expected by plugin-eta: "fas fa-bed" icon as :before pseudo-element. <span class="bed"><- bed?</span></p>
-</uiv>
-EOT;
-  return $pre_content . $content;
-}, 10, 1);
+</div>
+<?php
+});
 
 function plugin_eta_fa_classes(){
 	$fa = fa();

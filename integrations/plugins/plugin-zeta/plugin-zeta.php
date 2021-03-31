@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Zeta
  * Plugin URI:        https://fontawesome.com/
- * Description:       Registered Client preferring technology: svg (but not pseudo-elements). Prepends a block before each blog post that displays a magic icon with a rotate-90 power transform.
+ * Description:       Registered Client preferring technology: svg (but not pseudo-elements). Adds content to the template footer that displays a magic icon with a rotate-90 power transform.
  * Version:           0.0.1
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
@@ -28,10 +28,8 @@ add_action(
 	}
 );
 
-add_filter(
-	'the_content',
-	function( $content ) {
-		$pre_content = <<<EOT
+add_action('wp_print_footer_scripts', function() use($pre_content) {
+?>
 <div class="plugin-zeta-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Zeta</h2>
   <p>Expected by plugin-zeta: magic icon with rotate-90 power transform:
@@ -40,9 +38,5 @@ add_filter(
     </span>
   </p>
 </div>
-EOT;
-		return $pre_content . $content;
-	},
-	10,
-	1
-);
+<?php
+});

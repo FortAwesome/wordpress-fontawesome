@@ -60,17 +60,11 @@ add_action(
 	}
 );
 
-add_filter(
-	'the_content',
-	function( $content ) {
-		$pre_content = <<<EOT
+add_action('wp_print_footer_scripts', function() use($pre_content) {
+?>
 <div class="plugin-sigma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Sigma</h2>
   <p>Expected by plugin-sigma: "fab fa-fort-awesome": <i class="fab fa-fort-awesome"></i></p>
 </div>
-EOT;
-		return $pre_content . $content;
-	},
-	10,
-	1
-);
+<?php
+});
