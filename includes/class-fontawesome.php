@@ -2601,7 +2601,7 @@ EOT;
 	 */
 	private function get_webpack_asset_manifest() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://host.docker.internal:3030/asset-manifest.json' );
+			$response = wp_remote_get( 'http://host.docker.internal:3030/manifest.json' );
 
 			if ( is_wp_error( $response ) ) {
 				wp_die(
@@ -2620,7 +2620,7 @@ EOT;
 
 			return json_decode( $response['body'], true );
 		} else {
-			$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
+			$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/manifest.json';
 			if ( ! file_exists( $asset_manifest_file ) ) {
 				return null;
 			}
