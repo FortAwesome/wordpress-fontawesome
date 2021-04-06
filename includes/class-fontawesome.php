@@ -1480,7 +1480,7 @@ class FontAwesome {
 					array_filter(
 						$entrypoints,
 						function( $e ) {
-							return '.js' == substr( $e, -3 );
+							return '.js' === substr( $e, -3 );
 						}
 					);
 
@@ -1497,7 +1497,7 @@ class FontAwesome {
 		$js_url_id = 0;
 		$deps      = array();
 		foreach ( $js_entrypoint_urls as $js_url ) {
-			$cur_resource_handle = ( $js_main_url == substr( $js_url, -1 * strlen( $js_main_url ) ) )
+			$cur_resource_handle = ( substr( $js_url, -1 * strlen( $js_main_url ) ) === $js_main_url )
 				? self::ADMIN_RESOURCE_HANDLE
 				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
 
@@ -1505,11 +1505,11 @@ class FontAwesome {
 				$cur_resource_handle,
 				$js_url,
 				$deps,
-				null,
+				self::PLUGIN_VERSION,
 				true
 			);
 
-			$js_url_id = $js_url_id + 1;
+			++$js_url_id;
 			array_push( $deps, $cur_resource_handle );
 		}
 	}
