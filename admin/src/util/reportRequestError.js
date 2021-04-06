@@ -121,7 +121,7 @@ function handleAllWpErrorOutput(errorData) {
   return uiMessage
 }
 
-export default function(params) {
+function report(params) {
   const {
     error,
     ok = false,
@@ -166,3 +166,5 @@ export default function(params) {
 
   return uiMessage
 }
+
+export default report

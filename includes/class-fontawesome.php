@@ -386,7 +386,7 @@ class FontAwesome {
 				 */
 			}
 
-			$this->maybe_enqueue_admin_js_bundle();
+			$this->maybe_enqueue_admin_assets();
 
 			// Setup JavaScript internationalization if we're on WordPress 5.0+.
 			if ( function_exists( 'wp_set_script_translations' ) ) {
@@ -731,7 +731,7 @@ class FontAwesome {
 
 	/**
 	 * Initalizes everything about the admin environment except the React app
-	 * bundle, which is handled in maybe_enqueue_js_bundle().
+	 * bundle, which is handled in maybe_enqueue_admin_assets().
 	 *
 	 * Internal use only, not part of this plugin's public API.
 	 *
@@ -1369,20 +1369,13 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	public function maybe_enqueue_admin_js_bundle() {
+	public function maybe_enqueue_admin_assets() {
 		add_action(
 			'admin_enqueue_scripts',
 			function( $hook ) {
 				try {
 					if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-						wp_enqueue_script(
-							self::ADMIN_RESOURCE_HANDLE,
-							$this->get_webpack_asset_url( 'main.js' ),
-							array(),
-							null,
-							true
-						);
+						$this->enqueue_admin_js_assets();
 					}
 
 					if ( $hook === $this->screen_id ) {
@@ -1439,14 +1432,7 @@ class FontAwesome {
 					$action,
 					function () {
 						try {
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script(
-								self::ADMIN_RESOURCE_HANDLE,
-								$this->get_webpack_asset_url( 'main.js' ),
-								null,
-								null,
-								false
-							);
+							$this->enqueue_admin_js_assets();
 
 							wp_localize_script(
 								self::ADMIN_RESOURCE_HANDLE,
@@ -1468,6 +1454,63 @@ class FontAwesome {
 					}
 				);
 			}
+		}
+	}
+
+	/**
+	 * Enqueues all js assets in the webpack asset manifest, according to their
+	 * dependency relationships: those appearing later in the asset manifest
+	 * depend on those appearing earlier.
+	 *
+	 * Expects that one of the resources corresponds to main.js and assigns
+	 * the handle ADMIN_RESOURCE_HANDLE to that one. This is the handle to which
+	 * any subsequent localization should be applied via wp_set_script_translations
+	 * or wp_localize_script.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return string $main_js_handle
+	 */
+	private function enqueue_admin_js_assets() {
+		$asset_manifest = $this->get_webpack_asset_manifest();
+		$asset_url_base = $this->get_webpack_asset_url_base();
+		$entrypoints    = $asset_manifest['entrypoints'];
+
+		$js_entrypoints =
+					array_filter(
+						$entrypoints,
+						function( $e ) {
+							return '.js' === substr( $e, -3 );
+						}
+					);
+
+		$js_entrypoint_urls = array_map(
+			function ( $e ) use ( $asset_url_base ) {
+				return trailingslashit( $asset_url_base ) . $e;
+			},
+			$js_entrypoints
+		);
+
+		// Which one represents main.js?
+		$js_main_url = $asset_manifest['files']['main.js'];
+
+		$js_url_id = 0;
+		$deps      = array();
+		foreach ( $js_entrypoint_urls as $js_url ) {
+			$cur_resource_handle = ( substr( $js_url, -1 * strlen( $js_main_url ) ) === $js_main_url )
+				? self::ADMIN_RESOURCE_HANDLE
+				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
+
+			wp_enqueue_script(
+				$cur_resource_handle,
+				$js_url,
+				$deps,
+				self::PLUGIN_VERSION,
+				true
+			);
+
+			++$js_url_id;
+			array_push( $deps, $cur_resource_handle );
 		}
 	}
 
@@ -2648,7 +2691,21 @@ EOT;
 			$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
 		}
 
-		return $asset_url_base . $asset_manifest[ $asset ];
+		return $asset_url_base . $asset_manifest['files'][ $asset ];
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	private function get_webpack_asset_url_base() {
+		if ( FONTAWESOME_ENV === 'development' ) {
+			return 'http://localhost:3030';
+		} else {
+			return FONTAWESOME_DIR_URL . 'admin/build';
+		}
 	}
 }
 

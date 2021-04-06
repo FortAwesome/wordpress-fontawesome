@@ -31,4 +31,4 @@ jobs:
       run: cd admin && yarn install
 
     - name: Run Jest
-      run: cd admin && node_modules/.bin/jest
+      run: cd admin && yarn test
