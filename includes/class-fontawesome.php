@@ -1474,19 +1474,19 @@ class FontAwesome {
 	private function enqueue_admin_js_assets() {
 		$asset_manifest = $this->get_webpack_asset_manifest();
 		$asset_url_base = $this->get_webpack_asset_url_base();
-		$entrypoints = $asset_manifest['entrypoints'];
+		$entrypoints    = $asset_manifest['entrypoints'];
 
-		$js_entrypoints = 
+		$js_entrypoints =
 					array_filter(
 						$entrypoints,
 						function( $e ) {
-							return '.js' == substr($e, -3);
+							return '.js' == substr( $e, -3 );
 						}
 					);
 
 		$js_entrypoint_urls = array_map(
-			function ( $e ) use ($asset_url_base) {
-				return trailingslashit($asset_url_base) . $e;
+			function ( $e ) use ( $asset_url_base ) {
+				return trailingslashit( $asset_url_base ) . $e;
 			},
 			$js_entrypoints
 		);
@@ -1495,9 +1495,9 @@ class FontAwesome {
 		$js_main_url = $asset_manifest['files']['main.js'];
 
 		$js_url_id = 0;
-		$deps = array();
+		$deps      = array();
 		foreach ( $js_entrypoint_urls as $js_url ) {
-			$cur_resource_handle = ($js_main_url == substr($js_url, -1 * strlen($js_main_url)))
+			$cur_resource_handle = ( $js_main_url == substr( $js_url, -1 * strlen( $js_main_url ) ) )
 				? self::ADMIN_RESOURCE_HANDLE
 				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
 
@@ -1510,7 +1510,7 @@ class FontAwesome {
 			);
 
 			$js_url_id = $js_url_id + 1;
-			array_push($deps, $cur_resource_handle);
+			array_push( $deps, $cur_resource_handle );
 		}
 	}
 
