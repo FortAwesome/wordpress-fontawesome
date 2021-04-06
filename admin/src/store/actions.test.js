@@ -127,6 +127,7 @@ describe('submitPendingOptions and interceptors', () => {
             ]))
             done()
           })
+          .catch(e => done(e))
         })
       })
     })
@@ -174,6 +175,7 @@ describe('submitPendingOptions and interceptors', () => {
             ]))
             done()
           })
+          .catch(e => done(e))
         })
 
         describe('axios request', () => {
@@ -199,6 +201,7 @@ describe('submitPendingOptions and interceptors', () => {
               )
               done()
             })
+            .catch(e => done(e))
           })
         })
       })
@@ -248,6 +251,7 @@ describe('submitPendingOptions and interceptors', () => {
             ]))
             done()
           })
+          .catch(e => done(e))
         })
     })
   })
@@ -288,6 +292,7 @@ describe('submitPendingOptions and interceptors', () => {
         ]))
         done()
       })
+      .catch(e => done(e))
     })
   })
 
@@ -325,8 +330,8 @@ describe('submitPendingOptions and interceptors', () => {
             message: MOCK_UI_MESSAGE
           })
         ]))
-        done()
       })
+      .catch(e => done(e))
     })
   })
 })
@@ -532,6 +537,7 @@ describe('some action failure cases', () => {
             ]))
             done()
           })
+          .catch(e => done(e))
         })
       })
 
@@ -576,6 +582,7 @@ describe('some action failure cases', () => {
             ]))
             done()
           })
+          .catch(e => done(e))
         })
       })
     })
