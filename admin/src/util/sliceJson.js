@@ -50,7 +50,7 @@ function findJson( content, start = 0 ) {
  * the json content as an unparsed string, the non-json content trimmed from the
  * beginning, and the parsed JSON.
  */
-export default function( content ) {
+function sliceJson( content ) {
   if(! content || '' === content ) return null
 
   const result = findJson( content )
@@ -68,3 +68,5 @@ export default function( content ) {
     }
   }
 }
+
+export default sliceJson
