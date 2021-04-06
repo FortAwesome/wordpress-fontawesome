@@ -263,6 +263,8 @@ describe('submitPendingOptions and interceptors', () => {
         method: 'PUT',
         response: new XMLHttpRequest()
       })
+
+      reportRequestError.mockImplementation(() => MOCK_UI_MESSAGE)
     })
 
     test('failed request is reported to console and failure with uiMessage is dispatched to store', done => {
@@ -303,6 +305,8 @@ describe('submitPendingOptions and interceptors', () => {
         method: 'PUT',
         response: new Error('some axios error')
       })
+
+      reportRequestError.mockImplementation(() => MOCK_UI_MESSAGE)
     })
 
     test('failure is reported to console and failure with uiMessage is dispatched to store', done => {
@@ -330,6 +334,7 @@ describe('submitPendingOptions and interceptors', () => {
             message: MOCK_UI_MESSAGE
           })
         ]))
+        done()
       })
       .catch(e => done(e))
     })
