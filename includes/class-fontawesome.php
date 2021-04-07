@@ -911,20 +911,15 @@ class FontAwesome {
 				throw new ConfigCorruptionException();
 			}
 		} else {
-			// A null version is permitted, until the release metadata has been queried.
-			if ( ! is_null( $this->releases_refreshed_at() ) ) {
-				/**
-				 * Intentionally not constraining the ending of the version number to
-				 * open the possibility of a pre-release version, which means it would have
-				 * something like -rc42 on the end.
-				 * For example, 5.12.0-rc42.
-				 */
-				$version_is_concrete = is_string( $version )
-					&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+			/**
+			 * If we're not using a kit, then the version cannot be "latest" at this
+			 * point. It must have already been resolved into a concrete version.
+			 */
+			$version_is_concrete = is_string( $version )
+				&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
 
-				if ( ! $version_is_concrete ) {
-					throw new ConfigCorruptionException();
-				}
+			if ( ! $version_is_concrete ) {
+				throw new ConfigCorruptionException();
 			}
 		}
 
