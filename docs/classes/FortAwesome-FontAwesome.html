@@ -134,12 +134,12 @@ change, or not change, according to <a href="https://semver.org/">semantic versi
 No such conventions apply to a method that is for internal use only, even
 if it is declared <code class="prettyprint">public</code> in PHP.</p>
 <p>Generally, public API members are accessed only from this <code class="prettyprint">FontAwesome</code> class.</p>
-<p>For example, the <a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases"><abbr title="\FortAwesome\FontAwesome::refresh_releases()">FontAwesome::refresh_releases()</abbr></a> method provides a way
-to re-query available releases metadata from <code class="prettyprint">api.fontawesome.com</code>. It delegates
-to another class internally. But that other class and its methods are not part
-of this plugin's public API. They may change significantly from one patch
-release to another, but no breaking changes would be made to
-<a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases"><abbr title="\FortAwesome\FontAwesome::refresh_releases()">FontAwesome::refresh_releases()</abbr></a> without a major version change.</p>
+<p>For example, the <a href="classes/FortAwesome-FontAwesome.html#method_releases_refreshed_at"><abbr title="\FortAwesome\FontAwesome::releases_refreshed_at()">FontAwesome::releases_refreshed_at()</abbr></a> method provides a way
+to find out when releases metadata were last fetched from <code class="prettyprint">api.fontawesome.com</code>.
+It delegates to another class internally. But that other class and its methods
+are not part of this plugin's public API. They may change significantly from
+one patch release to another, but no breaking changes would be made to
+<a href="classes/FortAwesome-FontAwesome.html#method_releases_refreshed_at"><abbr title="\FortAwesome\FontAwesome::releases_refreshed_at()">FontAwesome::releases_refreshed_at()</abbr></a> without a major version change.</p>
 <p>References to &quot;API&quot; in this section refer to this plugin's PHP code or REST
 routes, not to the Font Awesome GraphQL API at <code class="prettyprint">api.fontawesome.com</code>.</p>
 </section>
@@ -196,7 +196,7 @@ routes, not to the Font Awesome GraphQL API at <code class="prettyprint">api.fon
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_VERSION">PLUGIN_VERSION</a>
     <span>
-        &nbsp;= &#039;4.0.0-rc21&#039;                    </span>
+        &nbsp;= &#039;4.0.0-rc22&#039;                    </span>
 </dt>
 <dd>The version of this WordPress plugin.</dd>
 
@@ -273,14 +273,6 @@ API server.</dd>
                         &nbsp;: string    </span>
 </dt>
 <dd>Runs a GraphQL query against the Font Awesome GraphQL API.</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases">refresh_releases()</a>
-    <span>
-                        &nbsp;: mixed    </span>
-</dt>
-<dd>Queries the Font Awesome API to load releases metadata. Results are
-cached in a site transient.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/FortAwesome-FontAwesome.html#method_register">register()</a>
@@ -481,7 +473,7 @@ refreshed.</dd>
     <span class="phpdocumentor-signature__visibility">public</span>
     <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">PLUGIN_VERSION</span>
-    = <span class="phpdocumentor-signature__default-value">&#039;4.0.0-rc21&#039;</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;4.0.0-rc22&#039;</span>
 </code>
 
 
@@ -654,7 +646,7 @@ refreshed.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">932</span>
+    <span class="phpdocumentor-element-found-in__line">960</span>
 </aside>
 
         <p class="phpdocumentor-summary">An array of md5 hashes that identify detected conflicting versions of
@@ -705,7 +697,7 @@ Font Awesome that the site owner has chosen to block from being enqueued.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">483</span>
+    <span class="phpdocumentor-element-found-in__line">509</span>
 </aside>
 
         <p class="phpdocumentor-summary">Returns boolean indicating whether the plugin is currently configured
@@ -755,7 +747,7 @@ to run the client-side conflict detection scanner.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">309</span>
+    <span class="phpdocumentor-element-found-in__line">310</span>
 </aside>
 
         <p class="phpdocumentor-summary">Returns the singleton instance of the FontAwesome plugin.</p>
@@ -813,7 +805,7 @@ to run the client-side conflict detection scanner.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">593</span>
+    <span class="phpdocumentor-element-found-in__line">619</span>
 </aside>
 
         <p class="phpdocumentor-summary">Returns the latest available version of Font Awesome as a string, or null
@@ -864,7 +856,7 @@ API server.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1226</span>
+    <span class="phpdocumentor-element-found-in__line">1254</span>
 </aside>
 
         <p class="phpdocumentor-summary">Indicates whether Font Awesome Pro is being loaded.</p>
@@ -923,7 +915,7 @@ API server.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1342</span>
+    <span class="phpdocumentor-element-found-in__line">1371</span>
 </aside>
 
         <p class="phpdocumentor-summary">Indicates whether Font Awesome is being loaded with support for pseudo-elements.</p>
@@ -994,7 +986,7 @@ are always inherently supported by the CSS/Webfont technology.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2462</span>
+    <span class="phpdocumentor-element-found-in__line">2537</span>
 </aside>
 
         <p class="phpdocumentor-summary">Runs a GraphQL query against the Font Awesome GraphQL API.</p>
@@ -1202,87 +1194,6 @@ has a HTTP 200 status.</p>
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_refresh_releases">
-        refresh_releases()
-        <a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">611</span>
-</aside>
-
-        <p class="phpdocumentor-summary">Queries the Font Awesome API to load releases metadata. Results are
-cached in a site transient.</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">refresh_releases</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
-
-        <section class="phpdocumentor-description"><p>This is the metadata that supports API
-methods like <a href="classes/FortAwesome-FontAwesome.html#method_latest_version"><abbr title="\FortAwesome\FontAwesome::latest_version()">FontAwesome::latest_version()</abbr></a>
-and all other metadata required to enqueue Font Awesome when configured
-to use the standard CDN (non-kits).</p>
-</section>
-
-    
-    
-    <h5 class="phpdocumentor-tag-list__heading" id="tags">
-        Tags
-        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
-    </h5>
-    <dl class="phpdocumentor-tag-list">
-                                    <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">since</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                            <span class="phpdocumentor-tag-link">4.0.0</span>
-                                                                                
-                                                 <section class="phpdocumentor-description"></section>
-
-                                    </dd>
-                                                <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">throws</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiRequestException.html"><abbr title="\FortAwesome\ApiRequestException">ApiRequestException</abbr></a></span>
-                                                            
-                                                 <section class="phpdocumentor-description"></section>
-
-                                    </dd>
-                            <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">throws</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ApiResponseException.html"><abbr title="\FortAwesome\ApiResponseException">ApiResponseException</abbr></a></span>
-                                                            
-                                                 <section class="phpdocumentor-description"></section>
-
-                                    </dd>
-                            <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">throws</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-ReleaseProviderStorageException.html"><abbr title="\FortAwesome\ReleaseProviderStorageException">ReleaseProviderStorageException</abbr></a></span>
-                                                            
-                                                 <section class="phpdocumentor-description"></section>
-
-                                    </dd>
-                        </dl>
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">mixed</span>
-            &mdash;
-            <section class="phpdocumentor-description"></section>
-
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
-                                                        "
->
     <h4 class="phpdocumentor-element__name" id="method_register">
         register()
         <a href="classes/FortAwesome-FontAwesome.html#method_register" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1290,7 +1201,7 @@ to use the standard CDN (non-kits).</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2316</span>
+    <span class="phpdocumentor-element-found-in__line">2391</span>
 </aside>
 
         <p class="phpdocumentor-summary">Registers client preferences. This is the &quot;front door&quot; for registered clients,
@@ -1492,7 +1403,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">623</span>
+    <span class="phpdocumentor-element-found-in__line">656</span>
 </aside>
 
         <p class="phpdocumentor-summary">Returns the time when releases metadata was last
@@ -1512,15 +1423,6 @@ refreshed.</p>
     </h5>
     <dl class="phpdocumentor-tag-list">
                                     <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">see</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                                    <span class="phpdocumentor-tag-link"><abbr title="\FortAwesome\FontAwesome::refresh_releases">FontAwesome::refresh_releases</abbr></span>
-                                        
-                                                 <section class="phpdocumentor-description"></section>
-
-                                    </dd>
-                                                <dt class="phpdocumentor-tag-list__entry">
                     <span class="phpdocumentor-tag__name">since</span>
                 </dt>
                 <dd class="phpdocumentor-tag-list__definition">
@@ -1552,7 +1454,7 @@ refreshed.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1240</span>
+    <span class="phpdocumentor-element-found-in__line">1268</span>
 </aside>
 
         <p class="phpdocumentor-summary">Indicates which Font Awesome technology is configured: &#039;webfont&#039; or &#039;svg&#039;.</p>
@@ -1610,7 +1512,7 @@ refreshed.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">504</span>
+    <span class="phpdocumentor-element-found-in__line">530</span>
 </aside>
 
         <p class="phpdocumentor-summary">Returns boolean indicating whether a kit is configured.</p>
@@ -1671,7 +1573,7 @@ Yet this is a valid way to determine that.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1320</span>
+    <span class="phpdocumentor-element-found-in__line">1349</span>
 </aside>
 
         <p class="phpdocumentor-summary">Indicates whether Font Awesome is being loaded with version 4 compatibility.</p>
@@ -1730,7 +1632,7 @@ Yet this is a valid way to determine that.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1303</span>
+    <span class="phpdocumentor-element-found-in__line">1332</span>
 </aside>
 
         <p class="phpdocumentor-summary">Reports the version of Font Awesome assets being loaded, which may be &quot;latest&quot;.</p>
@@ -1764,24 +1666,23 @@ releases metadata was queried from the Font Awesome API server.</p>
 <p><code class="prettyprint">fa()-&gt;releases_refreshed_at()</code> will return the time when releases
 metadata was last refreshed.</p>
 </li>
-<li>
-<p><code class="prettyprint">fa-&gt;refresh_releases()</code> will refresh the releases metadata. This will
-run a synchronous (blocking) network query to the Font Awesome API
-server.</p>
-</li>
 </ul>
-<p>Therefore, if releases have been refreshed recently enough for your
-purposes, you can rely on the version returned by <code class="prettyprint">fa()-&gt;latest_version()</code>.
-Or, you could refresh the releases metadata and then call
-<code class="prettyprint">fa()-&gt;latest_version()</code>.</p>
+<p>Releases are refreshed when the admin user loads the Font Awesome settings
+page if it's been longer than the <abbr title="\FortAwesome\FortAwesome\FontAwesome::RELEASES_REFRESH_INTERVAL">FontAwesome::RELEASES_REFRESH_INTERVAL</abbr>.</p>
+<p>If you think the releases metadata should be refreshed, the best approach
+would be to alert the user in the admin dashboard, requesting that they
+refresh releases by simply re-loading the Font Awesome settings page.</p>
 <p>It is still possible that by the time the page loads in the browser,
-a new release of Font Awesome will have become available since your
+a new release of Font Awesome will have become available since the last
 refresh of releases metadata, and will have been loaded as the &quot;latest&quot;
 version for the kit. There's no way to guarantee that the latest version
 you resolve by this method will be the one loaded at runtime. The race
 condition is always possible. However, it is very unlikely, since these
 are sub-second windows of time, and new versions of Font Awesome tend to
 be released only approximately once per month.</p>
+<p>(We want to avoid making a synchronous network request to the API server
+on normal front end page loads, so there's currently no supported way in
+this API to programatically force the reload of metadata.)</p>
 </section>
 
     
@@ -1814,15 +1715,6 @@ be released only approximately once per month.</p>
                 </dt>
                 <dd class="phpdocumentor-tag-list__definition">
                                                                                     <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome.html#method_releases_refreshed_at"><abbr title="\FortAwesome\FontAwesome::releases_refreshed_at()">FontAwesome::releases_refreshed_at()</abbr></a></span>
-                                        
-                                                 <section class="phpdocumentor-description"></section>
-
-                                    </dd>
-                            <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">see</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                                    <span class="phpdocumentor-tag-link"><a href="classes/FortAwesome-FontAwesome.html#method_refresh_releases"><abbr title="\FortAwesome\FontAwesome::refresh_releases()">FontAwesome::refresh_releases()</abbr></a></span>
                                         
                                                  <section class="phpdocumentor-description"></section>
 
