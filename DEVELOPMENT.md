@@ -681,6 +681,14 @@ You can do `svn delete` on lots of files with that status at once like this:
 $ svn stat | grep '^\!' | sed 's/^\![\ ]*trunk/trunk/' | xargs svn delete
 ``` 
 
+We don't need the index.html under the admin subdir in the release, so it can be
+snipped out instead of being added to svn:
+```bash
+$ rm trunk/admin/build/index.html
+```
+
+(It would be nice to stop `react-scripts` from including it in the build.)
+
 If there are files with `?` status, that indicates they are being added and you should do `svn add` on each of them.
 
 You can do `svn add` on lots of files with that status at once like this:
