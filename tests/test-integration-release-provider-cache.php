@@ -23,6 +23,12 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	public function setUp() {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
+		remove_all_filters(
+			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY
+		);
+		remove_all_filters(
+			'pre_site_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
+		);
 	}
 
 	// Pass an array of responses, in the shape returned by wp_remote_get(), or a WP_Error().
@@ -127,7 +133,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		$last_used_release_query_count = 0;
 
 		add_filter(
-			'option_' . FontAwesome_Release_Provider::OPTIONS_KEY,
+			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY,
 			function( $value ) use ( &$all_releases_query_count ) {
 				$all_releases_query_count++;
 				return $value;
@@ -155,8 +161,8 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$this->assertEquals( 0, $all_releases_query_count );
 		$this->assertEquals( 0, $last_used_release_query_count );
+		$this->assertEquals( 2, $all_releases_query_count );
 		$this->assertTrue( is_array( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
@@ -168,8 +174,9 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 			)
 		);
 
-		$this->assertEquals( 1, $all_releases_query_count );
+		// each are incremented.
 		$this->assertEquals( 1, $last_used_release_query_count );
+		$this->assertEquals( 3, $all_releases_query_count );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
@@ -180,7 +187,18 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 			)
 		);
 
+		// only on the transient query count is incremented.
 		$this->assertEquals( 2, $last_used_release_query_count );
-		$this->assertEquals( 1, $all_releases_query_count );
+		$this->assertEquals( 3, $all_releases_query_count );
+
+		/**
+		 * Ensure no false positives by asserting that the count would have
+		 * been incremented if the query had been attempted.
+		 */
+		get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
+
+		$this->assertEquals( 3, $last_used_release_query_count );
+		$this->assertEquals( 4, $all_releases_query_count );
 	}
 }
