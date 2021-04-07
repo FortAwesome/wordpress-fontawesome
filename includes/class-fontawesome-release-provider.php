@@ -200,7 +200,7 @@ EOD;
 			),
 		);
 
-		update_option( self::OPTIONS_KEY, $option_value );
+		update_option( self::OPTIONS_KEY, $option_value, false );
 	}
 
 	/**
