@@ -503,10 +503,15 @@ Install the Font Awesome plugin from the admin dashboard by uploading the `font-
 that was created in the previous step.
 
 - activate and deactivate the plugin: expect no errors
-    - use wp-cli to ensure that the `font-awesome-releases` _site_ transient has been deleted
-    - the `font-awesome` option should remain
+    - upon deactivation, site transients like `font-awesome-last-used-release` should be deleted
+    - options like `font-awesome` or `font-awesome-releases` should remain upon deactivation
+    - verify these via db query, such as, from within the container:
+        ```
+        $ wp --allow-root db query 'select option_id, option_name from wp_options where option_name like "%awesome%";'
+        ```
 - delete/uninstall: expect no errors
-    - use wp-cli to ensure that the `font-awesome` option has been deleted
+    - use wp-cli or db query to ensure that the `font-awesome` option has been deleted
+    - use wp-cli or db query to ensure that transients have been deleted
 - with Use CDN settings
     - activate `theme-alpha`, `plugin-beta`, `plugin-delta`, `plugin-eta`, `plugin-gamma`, and `plugin-zeta`
     - expect to see all of their preferences listed on the Troubleshoot page
@@ -519,8 +524,11 @@ that was created in the previous step.
     - change change settings on the Use CDN settings table to use SVG technology. Expect to see a preference warning from `plugin-beta`. 
         - switch to the Troublehsoot tab and expect to see the `plugin-beta` warning indicated on the table.
     - view the site: expect to see all of those integration plugins doing their thing with no missing icons
-    - deactivate all of those integration testing plugins and activate `plugin-epsilon`: expect a fatal error admin notice in the admin UI, but it should not crash WordPress or throw an exception with stack trace in the browser.  
-- deactivate `plugin-gamma` and try several of those things again (without its garbage data in the API responses)
+    - deactivate all of those integration testing plugins and activate `plugin-epsilon`
+        - expect an error notice after the preference check when changing preferences in the Use CDN view.
+        - expect to see an error object in the JSON response of the REST request to the `config` endpoint
+            when saving changes.
+        - it should not crash WordPress or throw an exception with stack trace in the browser
 - with Use a Kit
     - Add a real API Token from a real fontawesome.com account
     - Select a kit that uses svg tech
@@ -549,7 +557,8 @@ that was created in the previous step.
 
                 This retrieves the main `font-awesome` option from the wpdb, which would be created upon initialization and only removed upon _uninstall_
 
-            - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+            - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome-releases`
+            - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
         - If there's stuff there and you haven't activated anything yet, then it's leftover from prior db container state. An easy way to start from scratch:
             1. kill the currently running container
             1. `bin/clean` will put you back into a clean state
@@ -560,9 +569,13 @@ that was created in the previous step.
 
             This should now show the initial/default state of the main option
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome-releases`
 
             This should now show a bunch of metadata about FA releases
+
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+
+            This should now just the slice of release metadata for the currently configured release
 
     - Activate theme-mu and expect no errors
         `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate theme-mu`
@@ -570,19 +583,19 @@ that was created in the previous step.
         (theme-mu uses the wordpress-fontawesome composer package also)
 
     - Deactivate theme-mu by activating some other theme. In this case, we expect no db changes, because the loader should see that plugin-sigma is still active. Afterward, the querying the `font-awesome` option and `font-awesome-releases` transient should continue to show the same truthy, non-empty results as before.
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate twentynineteen`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate theme-alpha`
         
         (or any other available theme)
 
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
-    - Deactivate plugin-sigma and expect that the `font-awesome` option remains, but the `font-awesome-releases` transient is removed:
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+    - Deactivate plugin-sigma and expect that the `font-awesome` option remains, but the `font-awesome-last-used-release` transient is removed:
         - `bin/wp -c com.fontawesome.wordpress-latest-integration plugin deactivate plugin-sigma`
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
 
             This should be non-empty/truthy.
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
 
             This should be empty/falsy.
 
@@ -591,23 +604,25 @@ that was created in the previous step.
 
             (Using a direct `docker exec` command here instead of the `bin/wp` so we can run it as the root user inside the container)
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
             This should again be non-empty/truthy.
             Of course the `font-awesome` option should still be truthy.
     - Deactivate _and_ uninstall the Font Awesome plugin and expect that the `font-awesome` option is now gone as well:
         - `bin/wp -c com.fontawesome.wordpress-latest-integration plugin deactivate font-awesome`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
 
             This should now be empty.
 
         - `bin/wp -c com.fontawesome.wordpress-latest-integration plugin uninstall font-awesome`
+
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
 
-            This should now be empty as well.
+            These should now be empty as well.
 
     - Activate theme-mu, expect all data to be initialized:
         - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate theme-mu`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
 
             This should again be non-empty/truthy.
 
@@ -616,12 +631,12 @@ that was created in the previous step.
             This should be non-empty/truthy.
 
     - Finally, deactivate theme-mu by activating another theme. This should cause _both_ the deactivate _and_ uninstall logic to be triggered, because it's the last client of Font Awesome, and it's a theme (apparently themes don't have separate deactivation and uninstall logic like plugins have).
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate twentynineteen`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate theme-alpha`
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
 
             This should be empty.
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-releases --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
 
             This should be empty.
 
