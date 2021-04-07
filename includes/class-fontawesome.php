@@ -398,13 +398,13 @@ class FontAwesome {
 				$this->enqueue_kit( $this->options()['kitToken'] );
 			} else {
 				$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
-						$this->options()['version'],
-						array(
-							'use_pro'  => $this->pro(),
-							'use_svg'  => 'svg' === $this->technology(),
-							'use_shim' => $this->v4_compatibility(),
-						)
-					);
+					$this->options()['version'],
+					array(
+						'use_pro'  => $this->pro(),
+						'use_svg'  => 'svg' === $this->technology(),
+						'use_shim' => $this->v4_compatibility(),
+					)
+				);
 
 				$this->enqueue_cdn( $this->options(), $resource_collection );
 			}

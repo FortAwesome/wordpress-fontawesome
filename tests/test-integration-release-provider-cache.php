@@ -125,8 +125,8 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * get_resource_collection() should only hit the database when the LAST_USED_RELEASE
-	 * transient is not already populated.
+	 * Invoking get_resource_collection() should only hit the database when the
+	 * LAST_USED_RELEASE transient is not already populated.
 	 */
 	public function test_last_used_cache() {
 		$all_releases_query_count      = 0;
