@@ -461,7 +461,6 @@ class OptionsTest extends \WP_UnitTestCase {
 		add_filter(
 			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY,
 			function( $value ) use ( &$all_releases_query_count ) {
-				error_log("DEBUG: called");
 				$all_releases_query_count++;
 				return $value;
 			}
