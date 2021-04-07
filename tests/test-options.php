@@ -40,6 +40,10 @@ class OptionsTest extends \WP_UnitTestCase {
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
+
+		remove_all_filters(
+			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY
+		);
 	}
 
 	public function test_option_defaults() {
@@ -434,5 +438,51 @@ class OptionsTest extends \WP_UnitTestCase {
 		$this->expectException( ConfigCorruptionException::class );
 
 		fa()->v4_compatibility();
+	}
+
+	public function test_options_version_must_be_concrete() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => 'latest'
+			]
+		);
+
+		update_option( FontAwesome::OPTIONS_KEY, $options );
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->validate_options( $options );
+	}
+
+	public function test_validate_options_does_not_query_release_metadata() {
+		$all_releases_query_count      = 0;
+
+		add_filter(
+			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY,
+			function( $value ) use ( &$all_releases_query_count ) {
+				error_log("DEBUG: called");
+				$all_releases_query_count++;
+				return $value;
+			}
+		);
+
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '5.0.13'
+			]
+		);
+
+		fa()->validate_options( $options );
+
+		$this->assertEquals( $all_releases_query_count, 0 );
+
+		/**
+		 * Ensure no false positives by asserting that the count would have
+		 * been incremented if the query had been attempted.
+		 */
+		get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		$this->assertEquals( $all_releases_query_count, 1 );
 	}
 }
