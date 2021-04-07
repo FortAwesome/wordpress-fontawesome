@@ -397,9 +397,7 @@ class FontAwesome {
 			if ( $this->using_kit() ) {
 				$this->enqueue_kit( $this->options()['kitToken'] );
 			} else {
-				$resource_collection = $this
-					->release_provider()
-					->get_resource_collection(
+				$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 						$this->options()['version'],
 						array(
 							'use_pro'  => $this->pro(),

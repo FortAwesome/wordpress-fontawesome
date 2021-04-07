@@ -300,6 +300,13 @@ EOD;
 	 * Returns an array containing version, shim, source URLs and integrity keys for given params.
 	 * They should be loaded in the order they appear in this collection.
 	 *
+	 * First tries to resolve this by using the LAST_USED_RELEASE_TRANSIENT, without
+	 * instantiating a Release Provider and thus incurring the cost of a trip to
+	 * the database to load the release metadata. If it does need to instantiate
+	 * the Release Provider, it will also populate that transient so that subsequent
+	 * invocations of the function will probably not incur the cost of a database
+	 * query.
+	 *
 	 * @param string $version
 	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
 	 * @throws ReleaseMetadataMissingException
@@ -309,7 +316,7 @@ EOD;
 	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return array
 	 */
-	public function get_resource_collection( $version, $flags = array(
+	public static function get_resource_collection( $version, $flags = array(
 		'use_pro'  => false,
 		'use_svg'  => false,
 		'use_shim' => true,
@@ -340,13 +347,15 @@ EOD;
 			}
 		}
 
-		if ( ! array_key_exists( $version, $this->releases() ) ) {
+		$provider = self::instance();
+
+		if ( ! array_key_exists( $version, $provider->releases() ) ) {
 			throw new ReleaseMetadataMissingException();
 		}
 
-		array_push( $resources, $this->build_resource( $version, 'all', $flags ) );
+		array_push( $resources, $provider->build_resource( $version, 'all', $flags ) );
 		if ( $flags['use_shim'] ) {
-			array_push( $resources, $this->build_resource( $version, 'v4-shims', $flags ) );
+			array_push( $resources, $provider->build_resource( $version, 'v4-shims', $flags ) );
 		}
 
 		$transient_value = array(

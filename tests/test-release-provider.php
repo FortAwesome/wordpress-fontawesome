@@ -123,7 +123,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => false,
@@ -149,7 +149,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => true,
@@ -174,7 +174,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$this->expectException( ConfigSchemaException::class );
 
-		$farp->get_resource_collection(
+		FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => true,
@@ -189,7 +189,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.1.0', // version.
 			array(
 				'use_pro'  => true,
@@ -210,7 +210,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.1.0', // version.
 			array(
 				'use_pro'  => false,
@@ -231,7 +231,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => true,
@@ -255,7 +255,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$this->expectException( ReleaseMetadataMissingException::class );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'4.0.13', // invalid version.
 			array(
 				'use_pro'  => true,

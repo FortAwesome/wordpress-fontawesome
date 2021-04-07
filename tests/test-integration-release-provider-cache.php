@@ -118,6 +118,10 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		$this->assertEquals( $versions, fa_release_provider()->versions() );
 	}
 
+	/**
+	 * get_resource_collection() should only hit the database when the LAST_USED_RELEASE
+	 * transient is not already populated.
+	 */
 	public function test_last_used_cache() {
 		$all_releases_query_count      = 0;
 		$last_used_release_query_count = 0;
@@ -155,7 +159,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		$this->assertEquals( 0, $last_used_release_query_count );
 		$this->assertTrue( is_array( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
 
-		$resource_collection = fa_release_provider()->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
 			array(
 				'use_pro'  => true,
@@ -167,7 +171,7 @@ class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
 		$this->assertEquals( 1, $all_releases_query_count );
 		$this->assertEquals( 1, $last_used_release_query_count );
 
-		$resource_collection = fa_release_provider()->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
 			array(
 				'use_pro'  => true,
