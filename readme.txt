@@ -1,9 +1,9 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
-Stable tag: 4.0.0-rc21
+Stable tag: 4.0.0-rc22
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.5.3
+Tested up to: 5.7
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -95,6 +95,10 @@ You can get more information about using the plugin, details for available setti
 
 == Upgrade Notice ==
 
+= 4.0.0-rc22 =
+
+This update changes how plugin configuration and metadata are stored in the WordPress database. Automatically updates database entries upon first use. See Changelog.
+
 = 4.0.0-rc17 =
 
 Security update. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. See Changelog.
@@ -131,6 +135,27 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 
 == Changelog ==
+
+= 4.0.0-rc22 =
+
+* Metadata about available Font Awesome releases is now stored as a normal option
+  in the WordPress database, instead of as a transient. Thus, it does not expire
+  and does not disappear if the transient cache is purged.
+  
+  This is in part to avoid the scenario where a request to the Font Awesome API
+  server may be required to refresh metadata in response to a front end page load
+  when that transient expires.
+  
+  Some site owners had occassionally experienced problems where a sudden burst of
+  requests to the API server from many WordPress sites caused this plugin to fail
+  when making a request with an error like 'An unexpected response was received
+  from the Font Awesome API server.' This change means that it is significantly
+  less likely that such a scenario will occur.
+  (Additionally, changes have been made on the API server, also making it
+  significantly less likely that this over-load failure will occur again.)
+
+* Developers: the refresh_releases() API method has been deprecated to discourage
+  unnecessary blocking network requests to the API server.
 
 = 4.0.0-rc21 =
 

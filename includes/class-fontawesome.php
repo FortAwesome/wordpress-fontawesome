@@ -126,7 +126,7 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.0.0-rc21';
+	const PLUGIN_VERSION = '4.0.0-rc22';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
@@ -178,7 +178,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.15.1/js/conflict-detection.js';
+	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v5.15.3/js/conflict-detection.js';
 
 	/**
 	 * The custom data attribute added to script, link, and style elements enqueued
@@ -479,6 +479,12 @@ class FontAwesome {
 		}
 	}
 
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
 	private function upgrade_for_4_0_0_rc22() {
 		// Delete the old release metadata transient.
 		delete_transient( 'font-awesome-releases' );
