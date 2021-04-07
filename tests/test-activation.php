@@ -14,23 +14,21 @@ class ActivationTest extends \WP_UnitTestCase {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
-		Mock_FontAwesome_Releases::mock();
-	}
-
-	protected function create_release_provider_that_throws( $exception ) {
-		return mock_singleton_method(
-			$this,
-			FontAwesome_Release_Provider::class,
-			'query',
-			function( $method ) use ( $exception ) {
-				$method->will( $this->throwException( $exception ) );
-			}
+		( new Mock_FontAwesome_Metadata_Provider() )->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				),
+			)
 		);
 	}
 
 	public function test_before_activation() {
 		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
 		$this->assertFalse( get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) );
+		$this->assertFalse( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) );
 	}
 
 	public function test_activation_creates_default_config() {
@@ -38,6 +36,9 @@ class ActivationTest extends \WP_UnitTestCase {
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 		$this->assertEquals( $expected_options, $actual_options );
+
+		$releases = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		$this->assertTrue( boolval( $releases ) );
 
 		$this->assertEquals(
 			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
@@ -132,13 +133,5 @@ class ActivationTest extends \WP_UnitTestCase {
 			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
-	}
-
-	public function test_activate_when_release_provider_throws() {
-		$this->create_release_provider_that_throws( new ApiResponseException() );
-
-		$this->expectException( ApiResponseException::class );
-
-		FontAwesome_Activator::activate();
 	}
 }

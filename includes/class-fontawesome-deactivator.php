@@ -16,7 +16,6 @@ class FontAwesome_Deactivator {
 	 * To remove options data, use uninstall().
 	 */
 	public static function deactivate() {
-		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
 		delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
 		delete_transient( FontAwesome::V3DEPRECATION_TRANSIENT );
 	}
@@ -26,6 +25,7 @@ class FontAwesome_Deactivator {
 	 */
 	public static function uninstall() {
 		delete_option( FontAwesome::OPTIONS_KEY );
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
 		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 		delete_option( FontAwesome_API_Settings::OPTIONS_KEY );
 	}

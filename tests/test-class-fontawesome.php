@@ -18,13 +18,22 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	public function setUp() {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		FontAwesome::reset();
-		Mock_FontAwesome_Releases::mock();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				)
+			)
+		);
 		FontAwesome_Activator::activate();
+		FontAwesome_Release_Provider::reset();
+		FontAwesome::reset();
 	}
 
 	protected function mock_with_plugin_version($plugin_version) {
@@ -288,27 +297,38 @@ class FontAwesomeTest extends \WP_UnitTestCase {
 	}
 
 	public function test_refresh_releases() {
+		// Before
+		$this->assertEquals( '5.4.1', fa()->latest_version() );
+
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => 
+							array(
+								'latest'   => array(
+									'version' => '5.15.2',
+								),
+								'releases' =>
+								array()
+							)
+					)
+				)
+			));
+
+		fa()->refresh_releases();
+
 		FontAwesome_Release_Provider::reset();
-		Mock_FontAwesome_Releases::mock();
 
-		// Before, these would be null
-		$this->assertNull( fa()->latest_version() );
-		$this->assertNull( fa()->releases_refreshed_at() );
-
-		$result = fa()->refresh_releases();
-
-		// If it works, we'd be able to get a non-null latest_version
-		$this->assertNotNull( fa()->latest_version() );
+		// After
+		$this->assertEquals( '5.15.2', fa()->latest_version() );
 	}
 
 	public function test_latest_version() {
-		fa()->refresh_releases();
 		$this->assertEquals( '5.4.1', fa()->latest_version() );
 	}
 
 	public function test_releases_refreshed_at() {
-		fa()->refresh_releases();
-
 		$delta = time() - fa()->releases_refreshed_at();
 		$this->assertLessThanOrEqual(1, $delta );
   }

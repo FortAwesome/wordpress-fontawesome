@@ -32,7 +32,15 @@ class EnqueueTest extends \WP_UnitTestCase {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
-		Mock_FontAwesome_Releases::mock();
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				)
+			)
+		);
 		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
 		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );

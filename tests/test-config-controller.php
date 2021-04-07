@@ -25,7 +25,17 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 
-		Mock_FontAwesome_Releases::mock();
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				)
+			)
+		);
+
+		FontAwesome_Release_Provider::load_releases();
 
 		global $wp_rest_server;
 
@@ -348,8 +358,6 @@ class ConfigControllerTest extends \WP_UnitTestCase {
     	$request->add_header('Content-Type', 'application/json');
 		$request->set_body( wp_json_encode( $request_body ) );
 		
-		fa()->refresh_releases();
-
 		$response = $this->server->dispatch( $request );
 		$this->assertNotNull( fa()->latest_version() );
 		$this->assertEquals( 200, $response->get_status() );

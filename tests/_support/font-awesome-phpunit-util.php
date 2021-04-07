@@ -12,7 +12,7 @@ namespace FortAwesome;
 
 use \ReflectionException, \ReflectionProperty, \Exception;
 
-require_once FONTAWESOME_DIR_PATH . 'tests/_support/class-mock-fontawesome-releases.php';
+require_once FONTAWESOME_DIR_PATH . 'tests/_support/class-mock-fontawesome-metadata-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
 
@@ -92,10 +92,10 @@ function reset_db() {
 		}
 	}
 
-	if ( ! delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
+	if ( ! delete_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT ) ) {
-			throw new Exception( 'Unsuccessful clearing the Releases transient.' );
+		if ( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
+			throw new Exception( 'Unsuccessful clearing the Releases option.' );
 		}
 	}
 

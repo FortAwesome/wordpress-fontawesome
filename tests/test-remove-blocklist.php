@@ -38,7 +38,22 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 	 */
 	protected function reset() {
 		FontAwesome::instance()->reset();
-		Mock_FontAwesome_Releases::mock();
+		( new Mock_FontAwesome_Metadata_Provider() )->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				),
+				// We need a second one of these because it'll be triggered not
+				// only when we do activate(), but also when we do fa()->try_upgrade().
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				),
+			)
+		);
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
@@ -219,6 +234,7 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 				'version'        => '5.12.0',
 				'kitToken'       => null,
 				'apiToken'       => false,
+				'dataVersion'    => 3,
 			),
 			fa()->options()
 		);

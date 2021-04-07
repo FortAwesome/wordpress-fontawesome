@@ -41,11 +41,6 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		remove_all_actions( 'font_awesome_preferences' );
 	}
 
-	public function test_can_load_and_instantiate() {
-		$obj = fa_release_provider();
-		$this->assertFalse( is_null( $obj ) );
-	}
-
 	protected static function build_success_response() {
 		return wp_json_encode(
 			array(
@@ -65,57 +60,48 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		);
 	}
 
-	protected function create_release_provider_with_mocked_response( $response ) {
-		return mock_singleton_method(
+	protected function create_release_provider_with_mock_metadata( $response ) {
+		mock_singleton_method(
 			$this,
-			FontAwesome_Release_Provider::class,
-			'query',
+			FontAwesome_Metadata_Provider::class,
+			'metadata_query',
 			function( $method ) use ( $response ) {
 				$method->willReturn(
 					$response
 				);
 			}
 		);
+
+		FontAwesome_Release_Provider::load_releases();
+
+		return fa_release_provider();
 	}
 
 	protected function create_release_provider_that_throws( $exception ) {
-		return mock_singleton_method(
+		mock_singleton_method(
 			$this,
-			FontAwesome_Release_Provider::class,
-			'query',
+			FontAwesome_Metadata_Provider::class,
+			'metadata_query',
 			function( $method ) use ( $exception ) {
-				$method->will( $this->throwException( $exception ) );
+				$method->willReturn( array() );
 			}
 		);
+
+		return fa_release_provider();
 	}
 
-	public function test_versions_exception() {
+	public function test_constructor_exception() {
 		/**
 		 * When the GET for releases does not return successfully and we have no version metadata available,
 		 * we expect an exception to be thrown.
 		 */
-		delete_site_transient( FontAwesome_Release_Provider::RELEASES_TRANSIENT );
-
-		$farp   = $this->create_release_provider_that_throws( new ApiResponseException() );
-		$caught = false;
-
-		try {
-			$farp->versions();
-		} catch ( ApiResponseException $e ) {
-			$caught = true;
-		}
-
-		$this->assertTrue( $caught );
-	}
-
-	public function test_error_response() {
-		$farp = $this->create_release_provider_that_throws( new ApiRequestException() );
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
 
 		$caught = false;
 
 		try {
-			$farp->load_releases();
-		} catch ( ApiRequestException $e ) {
+			FontAwesome_Release_Provider::reset();
+		} catch ( ReleaseMetadataMissingException $e ) {
 			$caught = true;
 		}
 
@@ -125,8 +111,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_versions_success() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
 		$versions = $farp->versions();
 		$this->assertCount( count( $this->known_versions_sorted_desc ), $versions );
@@ -136,10 +121,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_5_0_all_free_shimless() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => false,
@@ -163,10 +147,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_5_0_all_webfont_pro_shimless() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => true,
@@ -187,12 +170,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_5_0_webfont_shim_exception() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
 		$this->expectException( ConfigSchemaException::class );
 
-		$farp->get_resource_collection(
+		FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => true,
@@ -205,10 +187,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_5_1_all_webfont_pro_shimless() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.1.0', // version.
 			array(
 				'use_pro'  => true,
@@ -227,10 +208,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_5_1_0_missing_webfont_free_shim_integrity() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.1.0', // version.
 			array(
 				'use_pro'  => false,
@@ -249,10 +229,9 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_5_0_all_svg_pro_shim() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
 				'use_pro'  => true,
@@ -272,12 +251,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_invalid_version_exception() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
 		$this->expectException( ReleaseMetadataMissingException::class );
 
-		$resource_collection = $farp->get_resource_collection(
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'4.0.13', // invalid version.
 			array(
 				'use_pro'  => true,
@@ -292,8 +270,7 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 	public function test_latest_version() {
 		$mock_response = self::build_success_response();
 
-		$farp = $this->create_release_provider_with_mocked_response( $mock_response );
-		$farp->load_releases();
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}

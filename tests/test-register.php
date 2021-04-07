@@ -20,7 +20,15 @@ class RegisterTest extends \WP_UnitTestCase {
 	protected function reset() {
 		reset_db();
 		FontAwesome::reset();
-		Mock_FontAwesome_Releases::mock();
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				)
+			)
+		);
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );

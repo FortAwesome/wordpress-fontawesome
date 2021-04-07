@@ -51,7 +51,12 @@ Most of our PHP code will run inside a Docker container under the version of PHP
 However, some of the tools for building or running composer will run outside of the container, in the host environment,
 so you'll need a workable version of PHP installed in your host environment.
 
-If you can run `$ php --version` and it shows a PHP version that's 7.1 or later, that should be good enough.
+You could run this to see what version of php is used in the `wordpress:latest` docker
+image:
+
+```
+$ docker run --rm wordpress:latest php --version
+```
 
 Otherwise, install php in a way appropriate to your host environment. On macOS, use:
 
