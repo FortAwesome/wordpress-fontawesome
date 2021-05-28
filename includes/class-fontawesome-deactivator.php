@@ -3,6 +3,7 @@ namespace FortAwesome;
 
 require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome.php';
 require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome-api-settings.php';
+require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome-release-provider.php';
 
 /**
  * Fired during plugin deactivation.

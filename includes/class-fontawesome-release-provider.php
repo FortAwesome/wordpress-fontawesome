@@ -32,10 +32,10 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
  */
 class FontAwesome_Release_Provider {
 	/**
-	 * Name of the transient that stores the cache of Font Awesome releases so we won't query
+	 * Name of the option that stores the Font Awesome release metadata so we won't query
 	 * the fontawesome.com releases API except when the admin settings page is re-loaded.
 	 *
-	 * @since 4.0.0-rc4
+	 * @since 4.0.0-rc22
 	 * @ignore
 	 */
 	const OPTIONS_KEY = 'font-awesome-releases';
