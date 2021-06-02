@@ -608,11 +608,18 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns the latest available version of Font Awesome as a string, or null
-	 * if the releases metadata has not yet been successfully retrieved from the
+	 * Returns the latest available full release version of Font Awesome 5 as a string,
+	 * or null if the releases metadata has not yet been successfully retrieved from the
 	 * API server.
 	 *
+	 * As of the release of Font Awesome 6.0.0-beta1, this API is being deprecated,
+	 * because the symbolic version "latest" is being deprecated. It now just means
+	 * "the latest full release of Font Awesome with major version 5." Therefore,
+	 * it may not be very useful any more as Font Awesome 6 is released.
+	 *
 	 * @since 4.0.0
+	 * @deprecated
+	 * @ignore
 	 *
 	 * @return null|string
 	 */
