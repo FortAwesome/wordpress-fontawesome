@@ -29,7 +29,7 @@ add_action('after_switch_theme', 'FortAwesome\FontAwesome_Loader::initialize');
 
 /**
  * When some other theme is activated, making this one inactive, run the deactivation
- * an uninstallation logic for Font Awesome. This will respect any other clients
+ * and uninstallation logic for Font Awesome. This will respect any other clients
  * of Font Awesome that may still be active, only cleaning up the db if this theme
  * would represent the last active client.
  */
