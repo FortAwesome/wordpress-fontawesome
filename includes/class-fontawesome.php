@@ -2550,9 +2550,15 @@ EOT;
 		 */
 		$atts = shortcode_atts(
 			array(
-				'name'   => '',
-				'prefix' => self::DEFAULT_PREFIX,
-				'class'  => '',
+				'name'            => '',
+				'prefix'          => self::DEFAULT_PREFIX,
+				'class'           => '',
+				'style'           => null,
+				'aria-hidden'     => null,
+				'aria-label'      => null,
+				'aria-labelledby' => null,
+				'title'           => null,
+				'role'            => null,
 			),
 			$params,
 			self::SHORTCODE_TAG
@@ -2579,8 +2585,18 @@ EOT;
 			$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 		}
 
-		$classes = rtrim( implode( ' ', array( $prefix_and_name_classes, $atts['class'] ) ) );
-		return '<i class="' . $classes . '"></i>';
+		$classes    = rtrim( implode( ' ', array( $prefix_and_name_classes, $atts['class'] ) ) );
+		$class_attr = "class=\"$classes\"";
+
+		$tag_attrs = array( $class_attr );
+
+		foreach ( array( 'style', 'aria-hidden', 'role', 'title', 'aria-label', 'aria-labelledby' ) as $attr_name ) {
+			if ( isset( $atts[ $attr_name ] ) ) {
+				array_push( $tag_attrs, $attr_name . '="' . $atts[ $attr_name ] . '"' );
+			}
+		}
+
+		return '<i ' . implode( ' ', $tag_attrs ) . '></i>';
 	}
 
 	/**
