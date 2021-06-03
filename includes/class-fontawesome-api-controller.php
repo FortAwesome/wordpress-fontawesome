@@ -93,7 +93,17 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'query' ),
 					'permission_callback' => function() {
-						return current_user_can( 'edit_posts' ); },
+						/**
+						 * It's possible that a non-admin user may need to be able
+						 * to issue requests through this API Controller, such as
+						 * when searching through the Font Awesome API search via
+						 * an icon chooser. That's why 'edit_posts' is allowed here.
+						 *
+						 * However, it seems there are cases where a user may be
+						 * able to manage_options but not edit_posts, so we'll include
+						 * that permission separately.
+						 */
+						return current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' ); },
 					'args'                => array(),
 				),
 			)
