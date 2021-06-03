@@ -101,6 +101,10 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 
 			$given_options = isset( $body['options'] ) ? $body['options'] : null;
 
+			if( is_null( $given_options ) ) {
+				return new FontAwesome_REST_Response( new WP_Error('fontawesome_client_exception'), 400 );
+			}
+
 			$api_token = isset( $given_options['apiToken'] ) ? $given_options['apiToken'] : null;
 
 			if ( is_string( $api_token ) ) {
