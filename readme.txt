@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.0.0-rc22
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.7
+Tested up to: 5.7.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -135,6 +135,13 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 
 == Changelog ==
+
+= 4.0.0-rc23 =
+
+* FIX: plugin now handles kits with version "5.x" or "6.x"
+
+* FEATURE: shortcode supports attributes: style, role, title, aria-hidden,
+  aria-label, aria-labelledby
 
 = 4.0.0-rc22 =
 
