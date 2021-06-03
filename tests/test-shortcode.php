@@ -1,39 +1,26 @@
 <?php
 namespace FortAwesome;
 
-use \ReflectionMethod;
-
 /**
  * Class ShortcodeTest
  */
 class ShortcodeTest extends \WP_UnitTestCase {
+	public static function setUpBeforeClass() {
+		add_shortcode(
+			FontAwesome::SHORTCODE_TAG,
+			array( fa(), 'process_shortcode' )
+		);
+    }
 
 	public function test_shortcode() {
-		$fa = fa();
-
-		$sc = new ReflectionMethod( 'FortAwesome\FontAwesome', 'process_shortcode' );
-		$sc->setAccessible( true );
-
-		$this->assertRegExp( '/<i class="fas fa-coffee">.*?<\/i>/', $sc->invoke( $fa, array( 'name' => 'coffee' ) ) );
+		$this->assertRegExp( '/<i class="fas fa-coffee">.*?<\/i>/', do_shortcode('[icon name="coffee"/]') );
 		$this->assertRegExp(
 			'/<i class="far fa-bell">.*?<\/i>/',
-			$sc->invoke(
-				$fa,
-				array(
-					'name'   => 'bell',
-					'prefix' => 'far',
-				)
-			)
+			do_shortcode('[icon prefix="far" name="bell" /]')
 		);
 		$this->assertRegExp(
 			'/<i class="fas fa-coffee fa-2x foo">.*?<\/i>/',
-			$sc->invoke(
-				$fa,
-				array(
-					'name'  => 'coffee',
-					'class' => 'fa-2x foo',
-				)
-			)
+			do_shortcode('[icon class="fa-2x foo" name="coffee" /]')
 		);
 	}
 }
