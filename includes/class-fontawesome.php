@@ -608,11 +608,18 @@ class FontAwesome {
 	}
 
 	/**
-	 * Returns the latest available version of Font Awesome as a string, or null
-	 * if the releases metadata has not yet been successfully retrieved from the
+	 * Returns the latest available full release version of Font Awesome 5 as a string,
+	 * or null if the releases metadata has not yet been successfully retrieved from the
 	 * API server.
 	 *
+	 * As of the release of Font Awesome 6.0.0-beta1, this API is being deprecated,
+	 * because the symbolic version "latest" is being deprecated. It now just means
+	 * "the latest full release of Font Awesome with major version 5." Therefore,
+	 * it may not be very useful any more as Font Awesome 6 is released.
+	 *
 	 * @since 4.0.0
+	 * @deprecated
+	 * @ignore
 	 *
 	 * @return null|string
 	 */
@@ -916,8 +923,9 @@ class FontAwesome {
 			}
 		} else {
 			/**
-			 * If we're not using a kit, then the version cannot be "latest" at this
-			 * point. It must have already been resolved into a concrete version.
+			 * If we're not using a kit, then the version cannot be "latest",
+			 * "5.x", or "6.x" at this point. It must have already been resolved
+			 * into a concrete version.
 			 */
 			$version_is_concrete = is_string( $version )
 				&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
@@ -1273,7 +1281,10 @@ class FontAwesome {
 	}
 
 	/**
-	 * Reports the version of Font Awesome assets being loaded, which may be "latest".
+	 * Reports the version of Font Awesome assets being loaded, which may have
+	 * a symbolic value like "latest" (deprecated), "5.x", or "6.x" if configured
+	 * for a kit. If not configured for a kit, the version is guaranteed to be
+	 * a concrete, semver parseable value, like 5.15.3.
 	 *
 	 * Your theme or plugin can call this method in order to determine
 	 * whether all of the icons used in your templates will be available,
@@ -1290,44 +1301,30 @@ class FontAwesome {
 	 * version happens internal to the kit's own loading logic, which is
 	 * outside the scope of this plugin.
 	 *
-	 * If your code needs to resolve what that concrete version will _probably_
-	 * be at runtime, you can take some extra steps after invoking this method
-	 * and seeing that it returns "latest".
+	 * Before the release of Font Awesome 6.0.0-beta1, the symbolic version "latest"
+	 * on a kit always meant: "the latest stable release with major version 5."
+	 * Using "latest" for kits has been deprecated, but where it is still present
+	 * on a kit, it will continue to mean just "the latest stable release with
+	 * major version 5."
 	 *
-	 * - `fa()->latest_version()` will only ever return the latest known
-	 *     concrete version of Font Awesome, as recently as the last time the
-	 *     releases metadata was queried from the Font Awesome API server.
+	 * New symbolic major version ranges have been introduced instead "5.x" and "6.x".
+	 * These mean, respectively: "the latest stable release with major version 5",
+	 * and "the latest stable release with major version 6, when available, otherwise
+	 * the latest pre-release with major version 6."
 	 *
-	 * - `fa()->releases_refreshed_at()` will return the time when releases
-	 *     metadata was last refreshed.
-	 *
-	 * Releases are refreshed when the admin user loads the Font Awesome settings
-	 * page if it's been longer than the {@see FortAwesome\FontAwesome::RELEASES_REFRESH_INTERVAL}.
-	 *
-	 * If you think the releases metadata should be refreshed, the best approach
-	 * would be to alert the user in the admin dashboard, requesting that they
-	 * refresh releases by simply re-loading the Font Awesome settings page.
-	 *
-	 * It is still possible that by the time the page loads in the browser,
-	 * a new release of Font Awesome will have become available since the last
-	 * refresh of releases metadata, and will have been loaded as the "latest"
-	 * version for the kit. There's no way to guarantee that the latest version
-	 * you resolve by this method will be the one loaded at runtime. The race
-	 * condition is always possible. However, it is very unlikely, since these
-	 * are sub-second windows of time, and new versions of Font Awesome tend to
-	 * be released only approximately once per month.
-	 *
-	 * (We want to avoid making a synchronous network request to the API server
-	 * on normal front end page loads, so there's currently no supported way in
-	 * this API to programatically force the reload of metadata.)
+	 * These "5.x" and "6.x" symbolic versions should not be relied upon
+	 * as API at this time, because this schema may change. Suffice it to say
+	 * that if this function does not return a semver parseable version, then
+	 * it probably means that it's one of these symbolic versions, and there's
+	 * currently no way to reliably, programmatically convert that symbolic
+	 * version into the concrete version that will be loaded by the kit.
 	 *
 	 * @since 4.0.0
 	 * @see FontAwesome::latest_version()
 	 * @see FontAwesome::releases_refreshed_at()
 	 * @throws ConfigCorruptionException
 	 * @return string|null null if no version has yet been saved in the options
-	 * in the db. Otherwise, a valid version string, which may be either a
-	 * concrete version like "5.12.0" or the string "latest".
+	 * in the db. Otherwise, a version string.
 	 */
 	public function version() {
 		$options = $this->options();
