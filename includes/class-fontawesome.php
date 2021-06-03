@@ -2580,16 +2580,16 @@ EOT;
 			$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 		}
 
-		$classes = rtrim( implode( ' ', array( $prefix_and_name_classes, $atts['class'] ) ) );
+		$classes    = rtrim( implode( ' ', array( $prefix_and_name_classes, $atts['class'] ) ) );
 		$class_attr = "class=\"$classes\"";
 
 		$tag_attrs = array( $class_attr );
 
-		if (isset($atts['style']) && is_string($atts['style'])) {
+		if ( isset( $atts['style'] ) && is_string( $atts['style'] ) ) {
 			array_push( $tag_attrs, 'style="' . $atts['style'] . '"' );
 		}
 
-		return '<i ' . implode(' ', $tag_attrs) . '></i>';
+		return '<i ' . implode( ' ', $tag_attrs ) . '></i>';
 	}
 
 	/**
