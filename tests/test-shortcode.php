@@ -29,5 +29,32 @@ class ShortcodeTest extends \WP_UnitTestCase {
 			'/<i class="fas fa-coffee" style="color: red;">.*?<\/i>/',
 			do_shortcode( '[icon style="color: red;" name="coffee" /]' )
 		);
+
+		$content = do_shortcode( '[icon role="img" aria-label="blah" aria-labelledby="foo" aria-hidden="true" title="coffee" name="coffee" /]' );
+
+		$this->assertRegExp(
+			'/<i.*?\sclass="fas fa-coffee".*?>.*?<\/i>/',
+			$content
+		);
+		$this->assertRegExp(
+			'/<i.*?\srole="img".*?>.*?<\/i>/',
+			$content
+		);
+		$this->assertRegExp(
+			'/<i.*?\stitle="coffee".*?>.*?<\/i>/',
+			$content
+		);
+		$this->assertRegExp(
+			'/<i.*?\saria-hidden="true".*?>.*?<\/i>/',
+			$content
+		);
+		$this->assertRegExp(
+			'/<i.*?\saria-labelledby="foo".*?>.*?<\/i>/',
+			$content
+		);
+		$this->assertRegExp(
+			'/<i.*?\saria-label="blah".*?>.*?<\/i>/',
+			$content
+		);
 	}
 }

@@ -2550,10 +2550,15 @@ EOT;
 		 */
 		$atts = shortcode_atts(
 			array(
-				'name'   => '',
-				'prefix' => self::DEFAULT_PREFIX,
-				'class'  => '',
-				'style'  => null,
+				'name'            => '',
+				'prefix'          => self::DEFAULT_PREFIX,
+				'class'           => '',
+				'style'           => null,
+				'aria-hidden'     => null,
+				'aria-label'      => null,
+				'aria-labelledby' => null,
+				'title'           => null,
+				'role'            => null,
 			),
 			$params,
 			self::SHORTCODE_TAG
@@ -2585,8 +2590,10 @@ EOT;
 
 		$tag_attrs = array( $class_attr );
 
-		if ( isset( $atts['style'] ) && is_string( $atts['style'] ) ) {
-			array_push( $tag_attrs, 'style="' . $atts['style'] . '"' );
+		foreach ( array( 'style', 'aria-hidden', 'role', 'title', 'aria-label', 'aria-labelledby' ) as $attr_name ) {
+			if ( isset( $atts[ $attr_name ] ) ) {
+				array_push( $tag_attrs, $attr_name . '="' . $atts[ $attr_name ] . '"' );
+			}
 		}
 
 		return '<i ' . implode( ' ', $tag_attrs ) . '></i>';
