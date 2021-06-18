@@ -43,7 +43,7 @@ function font_awesome_block_init() {
 	 */
 	wp_localize_script(
 		'font-awesome-block-editor',
-		'__FontAwesomeOfficialPlugin_BlockEditorConfig__',
+		'__FontAwesomeOfficialPlugin_EditorSupportConfig__',
 		array(
 			'version' => fa()->version(),
 			'usingPro' => fa()->pro() ? true : false,

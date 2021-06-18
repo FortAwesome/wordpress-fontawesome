@@ -42,7 +42,7 @@ export default class FontAwesomeIconChooser extends Component {
   }
 
   search(query) {
-    const { version, usingPro } = window['__FontAwesomeOfficialPlugin_BlockEditorConfig__']
+    const { version, usingPro } = window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']
 
     axios.post(
       `https://api.fontawesome.com`,
