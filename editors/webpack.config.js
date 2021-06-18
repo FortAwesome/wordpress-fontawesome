@@ -2,11 +2,12 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-    block: './font-awesome/index.js'
+    block: './block/js/index.js',
+    tinymce: './tinymce/js/index.js'
   },
 	output: {
 		path: __dirname,
-    filename: './editor-support.js',
+    filename: './build/editor-support.[name].js',
   },
   externals: {
     react: 'React'
