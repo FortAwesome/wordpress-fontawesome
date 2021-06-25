@@ -114,6 +114,8 @@ x-wordpress-defaults: &wordpress_defaults
     - "dockerhost:169.254.254.254"
   command:
     - apache2-custom.sh
+  environment:
+    - WORDPRESS_DEBUG: true
 
 x-wordpress-dev-defaults: &wordpress_dev_defaults
   <<: *wordpress_defaults

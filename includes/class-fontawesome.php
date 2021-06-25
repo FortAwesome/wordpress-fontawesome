@@ -816,6 +816,7 @@ class FontAwesome {
 	 */
 	public function initialize_admin() {
 		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'editors/block/block-editor-init.php';
+		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'editors/tinymce/tinymce-init.php';
 		$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {

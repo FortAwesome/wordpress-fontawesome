@@ -9,9 +9,6 @@ module.exports = {
 		path: __dirname,
     filename: './build/editor-support.[name].js',
   },
-  externals: {
-    react: 'React'
-  },
   plugins: [
     // For now, we just want a single static JS bundle that can be enqueued via
     // wp_enqueue_script.
@@ -30,6 +27,10 @@ module.exports = {
             presets: ['@babel/preset-env']
           }
         }
+      },
+      {
+        test: /\.css$/i,
+        use: ["css-loader"]
       }
     ]
   },
