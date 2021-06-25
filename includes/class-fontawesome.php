@@ -1444,6 +1444,18 @@ class FontAwesome {
 							$this->common_data_for_js_bundle()
 						);
 					}
+
+					wp_add_inline_script(
+						self::ADMIN_RESOURCE_HANDLE,
+						'window.__originalsBeforeFontAwesome = { react: window.React, lodash: window._ };',
+						'before'
+					);
+
+					wp_add_inline_script(
+						self::ADMIN_RESOURCE_HANDLE,
+						'if(window.__originalsBeforeFontAwesome.react){window.React = window.__originalsBeforeFontAwesome.react} if(window.__originalsBeforeFontAwesome.lodash){window._ = window.__originalsBeforeFontAwesome.lodash}',
+						'after'
+					);
 				} catch ( Exception $e ) {
 					notify_admin_fatal_error( $e );
 				} catch ( Error $e ) {
