@@ -636,12 +636,12 @@ class FontAwesome {
 	 *
 	 * ```
 	 * wp.apiFetch( {
-	 *		path: '/font-awesome/v1/api',
-	 *		method: 'POST',
-	 *		body: 'query { release(version: "5.x") { version } }'
-	 *	} ).then( res => {
-	 *		console.log( res );
-	 *	} )
+	 *      path: '/font-awesome/v1/api',
+	 *      method: 'POST',
+	 *      body: 'query { release(version: "5.x") { version } }'
+	 *  } ).then( res => {
+	 *      console.log( res );
+	 *  } )
 	 * ```
 	 *
 	 * Or you could issue your own `POST` request directly `api.fontawesome.com`.
