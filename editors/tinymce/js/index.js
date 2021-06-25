@@ -14,6 +14,7 @@ import get from 'lodash/get'
   if(!mediaButton) return
   const container = document.querySelector(`#${ICON_CHOOSER_CONTAINER_ID}`)
   if(!container) return
+  if(!window.tinymce) return
 
   let wpComponentsStyleAdded = false
 
@@ -47,6 +48,19 @@ import get from 'lodash/get'
     document.head.appendChild(style)
     wpComponentsStyleAdded = true
   } 
+
+  // TODO: consider how to add Font Awesome to the Tiny MCE visual pane.
+  // But there maybe unexpected behaviors.
+  /*
+  const editor = tinymce.activeEditor
+
+  editor.on('init', e => {
+    const script = editor.dom.doc.createElement('script')
+    script.setAttribute('src', 'https://kit.fontawesome.com/fakekit.js')
+    script.setAttribute('crossorigin', 'anonymous')
+    editor.dom.doc.head.appendChild(script)
+  })
+  */
 
   const IconChooserModal = () => {
     const [ isOpen, setOpen ] = useState( false )

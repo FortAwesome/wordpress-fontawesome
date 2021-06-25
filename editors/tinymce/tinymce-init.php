@@ -2,7 +2,7 @@
 
 namespace FortAwesome;
 
-add_filter( 'mce_external_plugins', function( $plugin_array) {
+add_filter( 'mce_external_plugins', function( $plugin_array ) {
 	$js_file = 'editor-support.tinymce.js';
 
 	$plugin_array['font-awesome-official'] = plugins_url( $js_file, trailingslashit( FONTAWESOME_DIR_PATH ) . "editors/build/$js_file" );
