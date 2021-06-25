@@ -1345,7 +1345,7 @@ class FontAwesome {
 		$options = $this->options();
 		$this->validate_options( $options );
 
-		return isset($options['kitToken']) ? $options['kitToken'] : null;
+		return isset( $options['kitToken'] ) ? $options['kitToken'] : null;
 	}
 
 	/**
