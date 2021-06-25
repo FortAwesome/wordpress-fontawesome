@@ -397,15 +397,7 @@ class FontAwesome {
 			if ( $this->using_kit() ) {
 				$this->enqueue_kit( $this->options()['kitToken'] );
 			} else {
-				$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
-					$this->options()['version'],
-					array(
-						'use_pro'  => $this->pro(),
-						'use_svg'  => 'svg' === $this->technology(),
-						'use_shim' => $this->v4_compatibility(),
-					)
-				);
-
+				$resource_collection = $this->cdn_resource_collection_for_current_options();
 				$this->enqueue_cdn( $this->options(), $resource_collection );
 			}
 		} catch ( Exception $e ) {
@@ -413,6 +405,25 @@ class FontAwesome {
 		} catch ( Error $e ) {
 			notify_admin_fatal_error( $e );
 		}
+	}
+
+	/**
+	 * Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @throws ConfigCorruptionException
+	 * @return array
+	 */
+	public function cdn_resource_collection_for_current_options() {
+		return FontAwesome_Release_Provider::get_resource_collection(
+			$this->options()['version'],
+			array(
+				'use_pro'  => $this->pro(),
+				'use_svg'  => 'svg' === $this->technology(),
+				'use_shim' => $this->v4_compatibility(),
+			)
+		);
 	}
 
 	/**
