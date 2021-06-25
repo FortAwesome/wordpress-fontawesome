@@ -1,11 +1,6 @@
 <?php
 
-// add new buttons
-add_filter( 'mce_buttons', function ( $buttons ) {
-	error_log("DEBUG: buttons: " . print_r($buttons, true) );
-   array_push( $buttons, 'separator', 'font-awesome-official' );
-   return $buttons;
-} );
+namespace FortAwesome;
 
 add_filter( 'mce_external_plugins', function( $plugin_array) {
 	$js_file = 'editor-support.tinymce.js';
@@ -21,3 +16,19 @@ add_action( 'media_buttons', function() {
 add_action( 'after_wp_tiny_mce', function() {
 	printf( '<div id="font-awesome-icon-chooser-container"></div>');
 }, 99);
+
+wp_localize_script(
+	'wp-tinymce',
+	'__FontAwesomeOfficialPlugin_EditorSupportConfig__',
+	array(
+		'version'  => fa()->version(),
+		'usingPro' => fa()->pro() ? true : false,
+		'usingKit' => fa()->using_kit() ? true : false,
+		// TODO: replace with the kitToken() API method when available.
+		'kitToken' => fa()->options()['kitToken'],
+		// TODO: replace this placeholder cdnUrl with a real computation, based on what's happening in fa()->enqueue_cdn()
+		'cdnUrl'   => fa()->technology() === 'webfont' ? 'https://example.com/all.css' : 'https://example.com/all.js',
+		'apiNonce' => wp_create_nonce( 'wp_rest' ),
+		'apiUrl'   => rest_url( FontAwesome::REST_API_NAMESPACE )
+	)
+);

@@ -9,6 +9,7 @@ import css from '@wordpress/components/build-style/style.css'
 import get from 'lodash/get'
 
 ( function() {
+  // TODO: decide what to do about these early-return error conditions.
   const mediaButton = document.querySelector(`#${ICON_CHOOSER_MEDIA_BUTTON_ID}`)
   if(!mediaButton) return
   const container = document.querySelector(`#${ICON_CHOOSER_CONTAINER_ID}`)
