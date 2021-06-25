@@ -1334,6 +1334,21 @@ class FontAwesome {
 	}
 
 	/**
+	 * Returns the currently configured kit token, if the plugin is currently
+	 * configured to load a kit.
+	 *
+	 * @since 4.0.0
+	 * @throws ConfigCorruptionException
+	 * @return string|null kit token if present, or null
+	 */
+	public function kit_token() {
+		$options = $this->options();
+		$this->validate_options( $options );
+
+		return isset($options['kitToken']) ? $options['kitToken'] : null;
+	}
+
+	/**
 	 * Indicates whether Font Awesome is being loaded with version 4 compatibility.
 	 *
 	 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
