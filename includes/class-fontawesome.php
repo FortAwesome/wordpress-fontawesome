@@ -617,9 +617,38 @@ class FontAwesome {
 	 * "the latest full release of Font Awesome with major version 5." Therefore,
 	 * it may not be very useful any more as Font Awesome 6 is released.
 	 *
+	 * The recommended way to resolve the symbolic versions 'latest',
+	 * '5.x', or '6.x' into their current concrete values is to query the GraphQL
+	 * API like this:
+	 *
+	 * ```
+	 * query { release(version: "5.x") { version } }
+	 * ```
+	 *
+	 * The `version` argument on the `release` field can accept any of these symbolic
+	 * version values.  So that release's `version` field will be the corresponding
+	 * current concrete version value at the time the query is run.
+	 *
+	 * This query could be issued from a front-end script through `FontAwesome_API_Controller`
+	 * like this, assuming `@wordpress/api-fetch` is at `wp.apiFetch`,
+	 * and you've [setup a nonce](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-api-fetch/#built-in-middlewares) correctly,
+	 * and the logged in user has the appropriate permissions.
+	 *
+	 * ```
+	 * wp.apiFetch( {
+	 *		path: '/font-awesome/v1/api',
+	 *		method: 'POST',
+	 *		body: 'query { release(version: "5.x") { version } }'
+	 *	} ).then( res => {
+	 *		console.log( res );
+	 *	} )
+	 * ```
+	 *
+	 * Or you could issue your own `POST` request directly `api.fontawesome.com`.
+	 * [See the Font Awesome GraphQL API reference here](https://fontawesome.com/v5.15/how-to-use/graphql-api/intro/getting-started).
+	 *
 	 * @since 4.0.0
 	 * @deprecated
-	 * @ignore
 	 *
 	 * @return null|string
 	 */
