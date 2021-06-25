@@ -57,6 +57,10 @@ class OptionsTest extends \WP_UnitTestCase {
 		$this->assertTrue(
 			fa()->pseudo_elements()
 		);
+
+		$this->assertNull(
+			fa()->kit_token()
+		);
 	}
 
 	public function test_option_throws_when_empty() {
@@ -483,5 +487,29 @@ class OptionsTest extends \WP_UnitTestCase {
 		 */
 		get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
 		$this->assertEquals( $all_releases_query_count, 1 );
+	}
+
+	public function test_kit_options() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => '5.8.1',
+					'kitToken' => 'abc123',
+					'apiToken' => 'DEAD-BEEF'
+				]
+			)
+		);
+
+		$this->assertTrue(
+			fa()->using_kit(),
+			true
+		);
+
+		$this->assertEquals(
+			fa()->kit_token(),
+			'abc123'
+		);
 	}
 }

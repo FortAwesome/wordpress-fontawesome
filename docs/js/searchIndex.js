@@ -176,6 +176,11 @@ Search.appendIndex(
             "summary": "Returns\u0020boolean\u0020indicating\u0020whether\u0020a\u0020kit\u0020is\u0020configured.",
             "url": "classes/FortAwesome-FontAwesome.html#method_using_kit"
         },                {
+            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Alatest_version\u0028\u0029",
+            "name": "latest_version",
+            "summary": "Returns\u0020the\u0020latest\u0020available\u0020full\u0020release\u0020version\u0020of\u0020Font\u0020Awesome\u00205\u0020as\u0020a\u0020string,\nor\u0020null\u0020if\u0020the\u0020releases\u0020metadata\u0020has\u0020not\u0020yet\u0020been\u0020successfully\u0020retrieved\u0020from\u0020the\nAPI\u0020server.",
+            "url": "classes/FortAwesome-FontAwesome.html#method_latest_version"
+        },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Areleases_refreshed_at\u0028\u0029",
             "name": "releases_refreshed_at",
             "summary": "Returns\u0020the\u0020time\u0020when\u0020releases\u0020metadata\u0020was\u0020last\nrefreshed.",
@@ -200,6 +205,11 @@ Search.appendIndex(
             "name": "version",
             "summary": "Reports\u0020the\u0020version\u0020of\u0020Font\u0020Awesome\u0020assets\u0020being\u0020loaded,\u0020which\u0020may\u0020have\na\u0020symbolic\u0020value\u0020like\u0020\u0022latest\u0022\u0020\u0028deprecated\u0029,\u0020\u00225.x\u0022,\u0020or\u0020\u00226.x\u0022\u0020if\u0020configured\nfor\u0020a\u0020kit.\u0020If\u0020not\u0020configured\u0020for\u0020a\u0020kit,\u0020the\u0020version\u0020is\u0020guaranteed\u0020to\u0020be\na\u0020concrete,\u0020semver\u0020parseable\u0020value,\u0020like\u00205.15.3.",
             "url": "classes/FortAwesome-FontAwesome.html#method_version"
+        },                {
+            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Akit_token\u0028\u0029",
+            "name": "kit_token",
+            "summary": "Returns\u0020the\u0020currently\u0020configured\u0020kit\u0020token,\u0020if\u0020the\u0020plugin\u0020is\u0020currently\nconfigured\u0020to\u0020load\u0020a\u0020kit.",
+            "url": "classes/FortAwesome-FontAwesome.html#method_kit_token"
         },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Av4_compatibility\u0028\u0029",
             "name": "v4_compatibility",
