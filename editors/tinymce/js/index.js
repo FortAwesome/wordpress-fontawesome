@@ -15,9 +15,16 @@ import get from 'lodash/get'
   const container = document.querySelector(`#${ICON_CHOOSER_CONTAINER_ID}`)
   if(!container) return
   if(!window.tinymce) return
+  if(!window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']) {
+    // TODO: figure out what to do with this error message for real.
+    throw new Error('Font Awesome: missing require configuration')
+  }
+
+  const { cdnUrl, integrity, kitToken, version } = window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']
 
   let wpComponentsStyleAdded = false
 
+  // TODO: replace this hack with something like what's in class-font-awesome.php for React and lodash
   if(window._ && !window._.pluck && window._.map) {
     // Polyfill.
     // See the lodash changelog:
@@ -78,7 +85,7 @@ import get from 'lodash/get'
         <>
             { isOpen && (
                 <Modal title="Font Awesome" onRequestClose={ closeModal }>
-                  <FaIconChooser version="5.15.3" cdnUrl="https://example.com/all.js" handleQuery={ handleQuery } onFinish={ result => submitAndCloseModal(result) }></FaIconChooser>
+                  <FaIconChooser version={ version } cdnUrl={ cdnUrl } kitToken={ kitToken } integrity={ integrity } handleQuery={ handleQuery } onFinish={ result => submitAndCloseModal(result) }></FaIconChooser>
                 </Modal>
             ) }
         </>
