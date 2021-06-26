@@ -274,4 +274,56 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
+
+	public function test_cdn_url_with_src_when_using_kit() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => '5.4.1',
+					'kitToken' => 'abc123',
+					'apiToken' => 'DEAD-BEEF'
+				]
+			)
+		);
+
+		$this->assertNull(
+			fa()->cdn_url_with_sri()
+		);
+	}
+
+	/**
+	 * It's a bit of a testing hack to put these tests of fa()->cdn_url_with_sri()
+	 * here because they are technically testing a method on the FontAwesome class.
+	 * However, it requires mocking the release provider data, which is a lot of
+	 * effort that we've already got here in this test module. Tiny cheat.
+	 */
+	public function test_cdn_url_with_src_when_using_cdn() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'    => '5.4.1',
+				]
+			)
+		);
+
+		$this->assertEquals(
+			fa()->cdn_url_with_sri(),
+			array(
+				'cdnUrl' => 'https://use.fontawesome.com/releases/v5.4.1/css/all.css',
+				'integrity' => 'sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz'
+			)
+		);
+	}
 }

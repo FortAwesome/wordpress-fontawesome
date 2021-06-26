@@ -427,6 +427,29 @@ class FontAwesome {
 	}
 
 	/**
+	 * Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @throws ConfigCorruptionException
+	 * @return null|array an associative array with keys cdnUrl and integrity if
+	 * the public is configured to Use CDN, otherwise null.
+	 */
+	public function cdn_url_with_sri() {
+		if( $this->using_kit() ) {
+			return null;
+		}
+
+		$resource_collection = $this->cdn_resource_collection_for_current_options();
+		$resources = $resource_collection->resources();
+
+		return array(
+			'cdnUrl' => $resources[0]->source(),
+			'integrity' => $resources[0]->integrity_key()
+		);
+	}
+
+	/**
 	 * Detects whether upgrade is necessary and performs upgrade if so.
 	 *
 	 * Internal use only.
