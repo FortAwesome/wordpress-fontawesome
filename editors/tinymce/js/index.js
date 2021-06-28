@@ -84,7 +84,7 @@ import get from 'lodash/get'
     return (
         <>
             { isOpen && (
-                <Modal title="Font Awesome" onRequestClose={ closeModal }>
+                <Modal title="Add Font Awesome Icon" onRequestClose={ closeModal }>
                   <FaIconChooser version={ version } cdnUrl={ cdnUrl } kitToken={ kitToken } integrity={ integrity } handleQuery={ handleQuery } onFinish={ result => submitAndCloseModal(result) }></FaIconChooser>
                 </Modal>
             ) }
