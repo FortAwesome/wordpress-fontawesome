@@ -69,10 +69,18 @@ import get from 'lodash/get'
   })
   */
 
-  const IconChooserModal = () => {
+  const MODAL_OPEN_EVENT_NAME = 'fontAwesomeIconChooserOpen'
+
+  const modalOpenEvent = new Event(MODAL_OPEN_EVENT_NAME, { "bubbles": true, "cancelable": false })
+
+  mediaButton.addEventListener('click', () => {
+    document.dispatchEvent(modalOpenEvent)
+  })
+
+  const IconChooserModal = ({ openEvent }) => {
     const [ isOpen, setOpen ] = useState( false )
 
-    mediaButton.addEventListener('click', () => setOpen(true))
+    document.addEventListener(openEvent, () => setOpen(true))
 
     const closeModal = () => setOpen( false )
 
@@ -101,7 +109,7 @@ import get from 'lodash/get'
   }
 
   render(
-    <IconChooserModal/>,
+    <IconChooserModal openEvent={MODAL_OPEN_EVENT_NAME}/>,
     container
   )
 } ( ) )
