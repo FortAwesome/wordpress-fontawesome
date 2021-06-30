@@ -1,9 +1,5 @@
 import handleSubmit from './handleSubmit'
-import { handleQuery, ICON_CHOOSER_CONTAINER_ID, ICON_CHOOSER_MEDIA_BUTTON_ID } from '../../shared'
-import React from 'react'
-import { Modal } from '@wordpress/components'
-import { useState } from '@wordpress/element'
-import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react'
+import { IconChooserModal, ICON_CHOOSER_CONTAINER_ID, ICON_CHOOSER_MEDIA_BUTTON_ID, MODAL_OPEN_EVENT } from '../../shared'
 import { createElement, render } from '@wordpress/element'
 import css from '@wordpress/components/build-style/style.css'
 import get from 'lodash/get'
@@ -15,12 +11,6 @@ import get from 'lodash/get'
   const container = document.querySelector(`#${ICON_CHOOSER_CONTAINER_ID}`)
   if(!container) return
   if(!window.tinymce) return
-  if(!window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']) {
-    // TODO: figure out what to do with this error message for real.
-    throw new Error('Font Awesome: missing require configuration')
-  }
-
-  const { cdnUrl, integrity, kitToken, usingPro, version } = window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']
 
   let wpComponentsStyleAdded = false
 
@@ -69,47 +59,12 @@ import get from 'lodash/get'
   })
   */
 
-  const MODAL_OPEN_EVENT_NAME = 'fontAwesomeIconChooserOpen'
-
-  const modalOpenEvent = new Event(MODAL_OPEN_EVENT_NAME, { "bubbles": true, "cancelable": false })
-
   mediaButton.addEventListener('click', () => {
-    document.dispatchEvent(modalOpenEvent)
+    document.dispatchEvent(MODAL_OPEN_EVENT)
   })
 
-  const IconChooserModal = ({ openEvent }) => {
-    const [ isOpen, setOpen ] = useState( false )
-
-    document.addEventListener(openEvent, () => setOpen(true))
-
-    const closeModal = () => setOpen( false )
-
-    const submitAndCloseModal = (result) => {
-      handleSubmit(result)
-      closeModal()
-    }
-  
-    return (
-        <>
-            { isOpen && (
-                <Modal title="Add Font Awesome Icon" onRequestClose={ closeModal }>
-                  <FaIconChooser
-                    version={ version }
-                    pro={ usingPro === "1" }
-                    cdnUrl={ cdnUrl }
-                    kitToken={ kitToken }
-                    integrity={ integrity }
-                    handleQuery={ handleQuery }
-                    onFinish={ result => submitAndCloseModal(result) }
-                  ></FaIconChooser>
-                </Modal>
-            ) }
-        </>
-    )
-  }
-
   render(
-    <IconChooserModal openEvent={MODAL_OPEN_EVENT_NAME}/>,
+    <IconChooserModal onSubmit={ handleSubmit }/>,
     container
   )
 } ( ) )
