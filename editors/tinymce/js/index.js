@@ -1,6 +1,6 @@
 import handleSubmit from './handleSubmit'
 import { IconChooserModal, ICON_CHOOSER_CONTAINER_ID, ICON_CHOOSER_MEDIA_BUTTON_ID, MODAL_OPEN_EVENT } from '../../shared'
-import { createElement, render } from '@wordpress/element'
+import { createElement as fallbackCreateElement, render as fallbackRender} from '@wordpress/element'
 import css from '@wordpress/components/build-style/style.css'
 import get from 'lodash/get'
 
@@ -32,8 +32,8 @@ import get from 'lodash/get'
 
   if(!wp.element) {
     wp.element = {
-      createElement,
-      render
+      createElement: fallbackCreateElement,
+      render: fallbackRender
     }
   }
 
@@ -63,7 +63,7 @@ import get from 'lodash/get'
     document.dispatchEvent(MODAL_OPEN_EVENT)
   })
 
-  render(
+  wp.element.render(
     <IconChooserModal onSubmit={ handleSubmit }/>,
     container
   )

@@ -1,8 +1,14 @@
-import apiFetch from '@wordpress/api-fetch'
-import React from 'react'
-import { Modal } from '@wordpress/components'
-import { useState } from '@wordpress/element'
+import { default as fallbackApiFetch } from '@wordpress/api-fetch'
+import { default as FallbackReact } from 'react'
+import { Modal as FallbackModal } from '@wordpress/components'
+import { useState as fallbackUseState } from '@wordpress/element'
 import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react' 
+import get from 'lodash/get'
+
+const React = get(window, 'React', FallbackReact)
+const useState = get(window, 'wp.element.useState', fallbackUseState)
+const Modal = get(window, 'wp.components.Modal', FallbackModal)
+const apiFetch = get(window, 'wp.apiFetch', fallbackApiFetch)
 
 export const ICON_CHOOSER_CONTAINER_ID = 'font-awesome-icon-chooser-container'
 
