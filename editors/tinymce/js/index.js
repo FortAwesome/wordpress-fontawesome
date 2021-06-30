@@ -20,7 +20,7 @@ import get from 'lodash/get'
     throw new Error('Font Awesome: missing require configuration')
   }
 
-  const { cdnUrl, integrity, kitToken, version } = window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']
+  const { cdnUrl, integrity, kitToken, usingPro, version } = window['__FontAwesomeOfficialPlugin_EditorSupportConfig__']
 
   let wpComponentsStyleAdded = false
 
@@ -85,7 +85,7 @@ import get from 'lodash/get'
         <>
             { isOpen && (
                 <Modal title="Add Font Awesome Icon" onRequestClose={ closeModal }>
-                  <FaIconChooser version={ version } cdnUrl={ cdnUrl } kitToken={ kitToken } integrity={ integrity } handleQuery={ handleQuery } onFinish={ result => submitAndCloseModal(result) }></FaIconChooser>
+                  <FaIconChooser version={ version } pro={ usingPro === "1" } cdnUrl={ cdnUrl } kitToken={ kitToken } integrity={ integrity } handleQuery={ handleQuery } onFinish={ result => submitAndCloseModal(result) }></FaIconChooser>
                 </Modal>
             ) }
         </>
