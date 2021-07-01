@@ -45,10 +45,17 @@ function font_awesome_block_init() {
 		'font-awesome-block-editor',
 		'__FontAwesomeOfficialPlugin_EditorSupportConfig__',
 		array(
-			'version' => fa()->version(),
+			'technology' => fa()->technology(),
+			'version'  => fa()->version(),
 			'usingPro' => fa()->pro() ? true : false,
 			'usingKit' => fa()->using_kit() ? true : false,
-			'technology' => fa()->technology()
+			'kitToken' => fa()->kit_token(),
+			'cdnUrl'   => $cdn_url,
+			'integrity' => $integrity,
+			'apiNonce' => wp_create_nonce( 'wp_rest' ),
+			'apiUrl'   => rest_url( FontAwesome::REST_API_NAMESPACE ),
+			'restApiNamespace' => FontAwesome::REST_API_NAMESPACE,
+			'rootUrl'  => rest_url()
 		)
 	);
 

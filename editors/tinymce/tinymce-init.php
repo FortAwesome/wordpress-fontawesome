@@ -34,7 +34,9 @@ function fa_tiny_mce_setup() {
 			'cdnUrl'   => $cdn_url,
 			'integrity' => $integrity,
 			'apiNonce' => wp_create_nonce( 'wp_rest' ),
-			'apiUrl'   => rest_url( FontAwesome::REST_API_NAMESPACE )
+			'apiUrl'   => rest_url( FontAwesome::REST_API_NAMESPACE ),
+			'restApiNamespace' => FontAwesome::REST_API_NAMESPACE,
+			'rootUrl'  => rest_url()
 		)
 	);
 }
