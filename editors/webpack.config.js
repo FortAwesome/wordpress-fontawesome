@@ -8,6 +8,7 @@ module.exports = {
 	output: {
 		path: __dirname,
     filename: './build/editor-support.[name].js',
+    publicPath: '/wp-content/plugins/font-awesome/editors/'
   },
   plugins: [
     // For now, we just want a single static JS bundle that can be enqueued via
