@@ -1670,9 +1670,7 @@ class FontAwesome {
 			 * Whether we're in WP 4, or using Classic Editor in WP 5, this will
 			 * trigger the Tiny MCE support in the Icon Chooser.
 			 */
-			add_action( 'wp_tiny_mce_init', function($mce_settings) {
-				printf("<script type=\"text/javascript\">window.tinymce && window.__FontAwesomeOfficialPlugin__ && window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser && window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()</script>");
-			} );
+			add_action( 'wp_tiny_mce_init', array($this, 'print_classic_editor_icon_chooser_setup_script') );
 		}
 
 		foreach ( $js_entrypoint_urls as $js_url ) {
@@ -2916,6 +2914,22 @@ EOT;
 		if( !is_string( $screen_id ) ) return false;
 
 		return false !== array_search( $screen_id, $this->icon_chooser_screens, true );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public function print_classic_editor_icon_chooser_setup_script() {
+	?>
+	<script type="text/javascript">
+		window.tinymce
+		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser
+		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
+	</script>
+	<?php
 	}
 }
 
