@@ -855,8 +855,6 @@ class FontAwesome {
 	 * @internal
 	 */
 	public function initialize_admin() {
-		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'editors/block/block-editor-init.php';
-		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'editors/tinymce/tinymce-init.php';
 		$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
 
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
@@ -1496,7 +1494,7 @@ class FontAwesome {
 
 				try {
 					if ( $this->detecting_conflicts() || $hook === $this->screen_id || $should_enable_icon_chooser ) {
-						$this->enqueue_admin_js_assets();
+						$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 					}
 
 					if ( $hook === $this->screen_id ) {
@@ -1582,7 +1580,7 @@ class FontAwesome {
 					$action,
 					function () {
 						try {
-							$this->enqueue_admin_js_assets();
+							$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 
 							wp_localize_script(
 								self::ADMIN_RESOURCE_HANDLE,
@@ -1617,14 +1615,16 @@ class FontAwesome {
 	 * any subsequent localization should be applied via wp_set_script_translations
 	 * or wp_localize_script.
 	 *
+	 * @param bool $with_icon_chooser
 	 * @ignore
 	 * @internal
 	 * @return string $main_js_handle
 	 */
-	private function enqueue_admin_js_assets() {
-		$asset_manifest = $this->get_webpack_asset_manifest();
-		$asset_url_base = $this->get_webpack_asset_url_base();
-		$entrypoints    = $asset_manifest['entrypoints'];
+	private function enqueue_admin_js_assets( $with_icon_chooser ) {
+		$asset_manifest      = $this->get_webpack_asset_manifest();
+		$asset_url_base      = $this->get_webpack_asset_url_base();
+		$entrypoints         = $asset_manifest['entrypoints'];
+		$enable_icon_chooser = boolval( $with_icon_chooser );
 
 		$js_entrypoints =
 					array_filter(
@@ -1647,24 +1647,32 @@ class FontAwesome {
 		$js_url_id = 0;
 		$deps      = array();
 
-		if ( function_exists( 'register_block_type' ) ) {
-			$gutenberg_deps = [
-				'wp-blocks',
-				'wp-i18n',
-				'wp-element',
-				'wp-components',
-				'wp-editor'
-			];
+		/**
+		 * If enabling the icon chooser, then our admin bundle will depend on
+		 * some other scripts.
+		 */
+		if( $enable_icon_chooser ) {
+			if ( function_exists( 'register_block_type' ) ) {
+				$gutenberg_deps = [
+					'wp-blocks',
+					'wp-i18n',
+					'wp-element',
+					'wp-components',
+					'wp-editor'
+				];
 
-			foreach ( $gutenberg_deps as $dep ) {
-				array_push( $deps, $dep );
+				foreach ( $gutenberg_deps as $dep ) {
+					array_push( $deps, $dep );
+				}
 			}
-		}
 
-		$is_v4 = substr( get_bloginfo( 'version' ), 0, 1) === '4';
-
-		if ( class_exists( 'Classic_Editor' ) || $is_v4 ) {
-			array_push( $deps, 'wp-tinymce' );
+			/**
+			 * Whether we're in WP 4, or using Classic Editor in WP 5, this will
+			 * trigger the Tiny MCE support in the Icon Chooser.
+			 */
+			add_action( 'wp_tiny_mce_init', function($mce_settings) {
+				printf("<script type=\"text/javascript\">window.tinymce && window.__FontAwesomeOfficialPlugin__ && window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser && window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()</script>");
+			} );
 		}
 
 		foreach ( $js_entrypoint_urls as $js_url ) {
