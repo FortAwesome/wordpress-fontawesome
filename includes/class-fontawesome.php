@@ -277,6 +277,12 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
+	protected $icon_chooser_screens = array( 'post.php', 'post-new.php' );
+
+	/**
+	 * @internal
+	 * @ignore
+	 */
 	protected $conflicts_by_client = null;
 
 	/**
@@ -1486,8 +1492,10 @@ class FontAwesome {
 		add_action(
 			'admin_enqueue_scripts',
 			function( $hook ) {
+				$should_enable_icon_chooser = $this->should_icon_chooser_be_enabled( $hook );
+
 				try {
-					if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
+					if ( $this->detecting_conflicts() || $hook === $this->screen_id || $should_enable_icon_chooser ) {
 						$this->enqueue_admin_js_assets();
 					}
 
@@ -1521,6 +1529,23 @@ class FontAwesome {
 									'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
 									'preferenceConflicts'  => $this->conflicts_by_option(),
 									'v3DeprecationWarning' => $this->get_v3deprecation_warning_data(),
+								)
+							)
+						);
+					} elseif ( $should_enable_icon_chooser ) {
+						$resource = fa()->cdn_url_with_sri();
+						$cdn_url = isset($resource['cdnUrl']) ? $resource['cdnUrl'] : null;
+						$integrity = isset($resource['integrity']) ? $resource['integrity'] : null;
+
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+							array_merge(
+								$this->common_data_for_js_bundle(),
+								array(
+									'mainCdnAssetUrl'       => $cdn_url,
+									'mainCdnAssetIntegrity' => $integrity,
+									'enableIconChooser'     => true
 								)
 							)
 						);
@@ -1621,6 +1646,27 @@ class FontAwesome {
 
 		$js_url_id = 0;
 		$deps      = array();
+
+		if ( function_exists( 'register_block_type' ) ) {
+			$gutenberg_deps = [
+				'wp-blocks',
+				'wp-i18n',
+				'wp-element',
+				'wp-components',
+				'wp-editor'
+			];
+
+			foreach ( $gutenberg_deps as $dep ) {
+				array_push( $deps, $dep );
+			}
+		}
+
+		$is_v4 = substr( get_bloginfo( 'version' ), 0, 1) === '4';
+
+		if ( class_exists( 'Classic_Editor' ) || $is_v4 ) {
+			array_push( $deps, 'wp-tinymce' );
+		}
+
 		foreach ( $js_entrypoint_urls as $js_url ) {
 			$cur_resource_handle = ( substr( $js_url, -1 * strlen( $js_main_url ) ) === $js_main_url )
 				? self::ADMIN_RESOURCE_HANDLE
@@ -1649,6 +1695,8 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
+			'restApiNamespace'              => FontAwesome::REST_API_NAMESPACE,
+			'rootUrl'                       => rest_url(),
 			'detectConflictsUntil'          => $this->detect_conflicts_until(),
 			'unregisteredClients'           => $this->unregistered_clients(),
 			'showConflictDetectionReporter' => $this->detecting_conflicts(),
@@ -2847,6 +2895,19 @@ EOT;
 		} else {
 			return FONTAWESOME_DIR_URL . 'admin/build';
 		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	private function should_icon_chooser_be_enabled($screen_id) {
+		if( !is_string( $screen_id ) ) return false;
+
+		return false !== array_search( $screen_id, $this->icon_chooser_screens, true );
 	}
 }
 

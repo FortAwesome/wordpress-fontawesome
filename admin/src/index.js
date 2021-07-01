@@ -7,6 +7,7 @@ import { createStore } from './store'
 import { reportDetectedConflicts } from './store/actions'
 import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
 import { __ } from '@wordpress/i18n'
+import { setupIconChooser } from './chooser'
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
 
@@ -16,7 +17,11 @@ if(! initialData){
 
 const store = createStore(initialData)
 
-const { showAdmin, showConflictDetectionReporter } = store.getState()
+const {
+  showAdmin,
+  showConflictDetectionReporter,
+  enableIconChooser
+} = store.getState()
 
 if( showAdmin ) {
   document.addEventListener('DOMContentLoaded', () => {
@@ -37,4 +42,8 @@ if( showConflictDetectionReporter ) {
     store,
     now: false
   })
+}
+
+if ( enableIconChooser ) {
+  setupIconChooser()
 }
