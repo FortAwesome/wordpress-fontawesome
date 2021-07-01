@@ -1,4 +1,4 @@
-import FontAwesomeIconChooser from './chooser'
+import { IconChooserModal, MODAL_OPEN_EVENT } from '../../shared'
 
 ( function( wp ) {
 
@@ -14,7 +14,7 @@ import FontAwesomeIconChooser from './chooser'
   } = wp.components
 
 	const __ = wp.i18n.__
-  const { insert, insertObject, registerFormatType } = window.wp.richText
+  const { insert, registerFormatType } = window.wp.richText
   const { RichTextToolbarButton } = window.wp.blockEditor
 
   const name = 'font-awesome/icon'
@@ -32,36 +32,20 @@ import FontAwesomeIconChooser from './chooser'
       constructor(props) {
         super( ...arguments )
 
-        this.addIcon = this.addIcon.bind(this)
-        this.stopAddingIcon = this.stopAddingIcon.bind(this)
         this.handleFormatButtonClick = this.handleFormatButtonClick.bind(this)
         this.handleSelect = this.handleSelect.bind(this)
-
-        this.state = {
-          addingIcon: false,
-        }
       }
 
       handleFormatButtonClick() {
-        if(this.state.addingIcon){
-          this.stopAddingIcon()
-        } else {
-          this.addIcon()
-        }
+        document.dispatchEvent(MODAL_OPEN_EVENT)
       }
 
-      addIcon() {
-        this.setState({ addingIcon: true })
-      }
-
-      stopAddingIcon() {
-        this.setState({ addingIcon: false })
-      }
-
-      handleSelect({prefix, iconName}){
+      handleSelect(event){
         const { value, onChange } = this.props
+        // TODO: this would indicate an invalid event. Do we want some error handling here?
+        if(!event.detail) return
 
-        this.stopAddingIcon()
+        const {prefix, iconName} = event.detail
 
         onChange( insert( value, `[icon prefix="${prefix}" name="${iconName}"]` ) )
         /*
@@ -98,13 +82,7 @@ import FontAwesomeIconChooser from './chooser'
               onClick={ this.handleFormatButtonClick }
               shortcutType="primary"
             />
-            { this.state.addingIcon &&
-              <Modal title="Font Awesome Icon" onRequestClose={ this.stopAddingIcon }>
-                <FontAwesomeIconChooser
-                  handleSelect={ this.handleSelect }
-                />
-              </Modal>
-            }
+            <IconChooserModal onSubmit={ this.handleSelect } />
           </Fragment>
         )
       }
