@@ -1,7 +1,6 @@
 import IconChooserModal from './IconChooserModal'
 import { render as fallbackRender} from '@wordpress/element'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
-import css from '@wordpress/components/build-style/style.css'
 import get from 'lodash/get'
 
 export function handleSubmit(event) {
@@ -30,13 +29,15 @@ export function setupClassicEditor(params) {
 
   let wpComponentsStyleAdded = false
 
-  if(!wpComponentsStyleAdded && !get(window, 'wp.components')) {
-    const style = document.createElement('style')
-    style.setAttribute('type', 'text/css')
-    const text = document.createTextNode(css.toString())
-    style.appendChild(text)
-    document.head.appendChild(style)
+  if(!wpComponentsStyleAdded) {
     wpComponentsStyleAdded = true
+
+    import('@wordpress/components/build-style/style.css')
+    .then(() => {})
+    .catch(err => {
+      // TODO: what do we want to do about this error condition?
+      console.error(err)
+    })
   } 
 
   // TODO: consider how to add Font Awesome to the Tiny MCE visual pane.
