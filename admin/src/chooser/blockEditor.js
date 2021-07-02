@@ -1,25 +1,25 @@
 import IconChooserModal from './IconChooserModal'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 
-const {
-  Fragment,
-  Component
-} = window.wp.element
-
-const {
-  SVG,
-  Path
-} = window.wp.components
-
-const __ = window.wp.i18n.__
-const { insert, registerFormatType } = window.wp.richText
-const { RichTextToolbarButton } = window.wp.blockEditor
-
-// TODO: is this the right block type name for what we're doing here?
-const name = 'font-awesome/icon'
-const title = __('Font Awesome Icon')
-
 export function setupBlockEditor (params) {
+  const {
+    Fragment,
+    Component
+  } = window.wp.element
+
+  const {
+    SVG,
+    Path
+  } = window.wp.components
+
+  const __ = window.wp.i18n.__
+  const { insert, registerFormatType } = window.wp.richText
+  const { RichTextToolbarButton } = window.wp.blockEditor
+
+  // TODO: is this the right block type name for what we're doing here?
+  const name = 'font-awesome/icon'
+  const title = __('Font Awesome Icon')
+
   const {
     modalOpenEvent,
     kitToken,
