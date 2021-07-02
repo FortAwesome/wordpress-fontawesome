@@ -26,7 +26,7 @@ export function setupBlockEditor (params) {
     cdnUrl,
     integrity,
     version,
-    usingPro,
+    pro,
     handleQuery
   } = params
 
@@ -84,7 +84,7 @@ export function setupBlockEditor (params) {
               cdnUrl={ cdnUrl }
               integrity={ integrity }
               version={ version }
-              usingPro={ usingPro }
+              pro={ pro }
               handleQuery={ handleQuery }
               onSubmit={ this.handleSelect } 
             />

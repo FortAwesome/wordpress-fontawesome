@@ -1,5 +1,5 @@
 import IconChooserModal from './IconChooserModal'
-import { render as fallbackRender} from '@wordpress/element'
+import { default as fallbackReactDom } from 'react-dom'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 import get from 'lodash/get'
 
@@ -17,9 +17,10 @@ export function setupClassicEditor(params) {
     cdnUrl,
     integrity,
     version,
-    usingPro,
+    pro,
     handleQuery
   } = params
+
   // TODO: decide what to do about these early-return error conditions.
   const mediaButton = document.querySelector(`#${iconChooserMediaButtonId}`)
   if(!mediaButton) return
@@ -57,7 +58,7 @@ export function setupClassicEditor(params) {
     document.dispatchEvent(modalOpenEvent)
   })
 
-  const render = get(window, 'wp.element.render', fallbackRender)
+  const render = get(window, 'wp.element.render', fallbackReactDom.render)
 
   render(
     <IconChooserModal
@@ -65,7 +66,7 @@ export function setupClassicEditor(params) {
       cdnUrl={ cdnUrl }
       integrity={ integrity }
       version={ version }
-      usingPro={ usingPro }
+      pro={ pro }
       modalOpenEvent={ modalOpenEvent }
       handleQuery={ handleQuery }
       onSubmit={ handleSubmit }
