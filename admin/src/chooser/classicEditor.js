@@ -1,5 +1,5 @@
 import IconChooserModal from './IconChooserModal'
-import { createElement as fallbackCreateElement, render as fallbackRender} from '@wordpress/element'
+import { render as fallbackRender} from '@wordpress/element'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 import css from '@wordpress/components/build-style/style.css'
 import get from 'lodash/get'
@@ -30,21 +30,6 @@ export function setupClassicEditor(params) {
 
   let wpComponentsStyleAdded = false
 
-  // Our bundle will expect wp.element.createElement to be available for the
-  // transforming the React JSX
-
-  // TODO: determine of this is still the case after re-organizing into the CRA build.
-  if(!window.wp) {
-    window.wp = {}
-  }
-
-  if(!window.wp.element) {
-    window.wp.element = {
-      createElement: fallbackCreateElement,
-      render: fallbackRender
-    }
-  }
-
   if(!wpComponentsStyleAdded && !get(window, 'wp.components')) {
     const style = document.createElement('style')
     style.setAttribute('type', 'text/css')
@@ -71,7 +56,9 @@ export function setupClassicEditor(params) {
     document.dispatchEvent(modalOpenEvent)
   })
 
-  window.wp.element.render(
+  const render = get(window, 'wp.element.render', fallbackRender)
+
+  render(
     <IconChooserModal
       kitToken={ kitToken }
       cdnUrl={ cdnUrl }
