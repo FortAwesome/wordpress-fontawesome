@@ -1,22 +1,31 @@
 import get from 'lodash/get'
+import { setupBlockEditor } from './blockEditor'
+import { setupClassicEditor } from './classicEditor'
 
 let classicEditorSetupComplete = false
 
-function setupGutenbergIconChooser() {
-    console.log(`\tsetupGutenbergIconChooser`)
-}
-
-function setupClassicEditorIconChooser() {
+function setupClassicEditorIconChooser(initialParams) {
   // We only want to do this once.
   if(classicEditorSetupComplete) return
   if(!window.tinymce) return
 
-  console.log(`\tsetupClassicEditorIconChooser`)
+  const params = {
+    ...initialParams,
+    iconChooserContainerId: 'font-awesome-icon-chooser-container',
+    iconChooserMediaButtonId: 'font-awesome-icon-chooser-media-button'
+  }
+
+  setupClassicEditor(params)
 
   classicEditorSetupComplete = true
 }
 
-export function setupIconChooser() {
+export function setupIconChooser(initialParams) {
+  const params = {
+    ...initialParams,
+    modalOpenEvent: new Event('fontAwesomeIconChooserOpen', { "bubbles": true, "cancelable": false })
+  }
+
   /**
    * Tiny MCE loading time: In WordPress 5, it's straightforward to enqueue
    * this script with a script dependency of wp-tinymce. But that's not available
@@ -27,16 +36,17 @@ export function setupIconChooser() {
    * We'll expose a global function from here that the later loading script
    * can invoke to set up the Tiny MCE Icon Chooser integration.
    */
-
   if(window.tinymce) {
     // If tinymce is already loaded, we can set it up now.
-    setupClassicEditorIconChooser()
+    setupClassicEditorIconChooser(params)
   }
 
-  // More likely, Tiny MCE will be loaded later, so we'll expose the global set up function.
-  window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
-
   if( get(window, 'wp.element') ) {
-    setupGutenbergIconChooser()
+    setupBlockEditor(params)
+  }
+
+  // Returns that can be used to set up global hooks
+  return {
+    setupClassicEditorIconChooser: () => setupClassicEditorIconChooser(params)
   }
 }

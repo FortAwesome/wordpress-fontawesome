@@ -1547,6 +1547,17 @@ class FontAwesome {
 								)
 							)
 						);
+
+						// TODO: DRY out these HTML id values so we aren't copying and pasting them between here and the JS code.
+
+						// These are needed for the Tiny MCE Classic Editor.
+						add_action( 'media_buttons', function() {
+							printf( '<button type="button" class="button" id="font-awesome-icon-chooser-media-button">' . '<i class="fab fa-font-awesome-flag"></i> %s' . '</button>', __( 'Add Font Awesome', 'font-awesome' ) );	
+						}, 99 );
+
+						add_action( 'before_wp_tiny_mce', function() {
+							printf( '<div id="font-awesome-icon-chooser-container"></div>');
+						}, 99);
 					} else {
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
@@ -2839,7 +2850,7 @@ EOT;
 	 */
 	private function get_webpack_asset_manifest() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://host.docker.internal:3030/asset-manifest.json' );
+			$response = wp_remote_get( 'http://host.docker.internal:3030/wp-content/plugins/font-awesome/admin/build/asset-manifest.json' );
 
 			if ( is_wp_error( $response ) ) {
 				wp_die(
@@ -2881,7 +2892,7 @@ EOT;
 		$asset_manifest = $this->get_webpack_asset_manifest();
 
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$asset_url_base = 'http://localhost:3030';
+			$asset_url_base = 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
 		} else {
 			$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
 		}
@@ -2897,7 +2908,7 @@ EOT;
 	 */
 	private function get_webpack_asset_url_base() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			return 'http://localhost:3030';
+			return 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
 		} else {
 			return FONTAWESOME_DIR_URL . 'admin/build';
 		}

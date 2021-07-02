@@ -8,6 +8,8 @@ import { reportDetectedConflicts } from './store/actions'
 import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
 import { __ } from '@wordpress/i18n'
 import { setupIconChooser } from './chooser'
+import configureQueryHandler from './chooser/handleQuery'
+import get from 'lodash/get'
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
 
@@ -45,5 +47,27 @@ if( showConflictDetectionReporter ) {
 }
 
 if ( enableIconChooser ) {
-  setupIconChooser()
+  const {
+    mainCdnAssetUrl: cdnUrl,
+		mainCdnAssetIntegrity: integrity
+  } = initialData
+
+  const kitToken = get(initialData, 'options.kitToken')
+  const version = get(initialData, 'options.version')
+
+  const params = {
+    ...initialData,
+    cdnUrl,
+    integrity,
+    kitToken,
+    version,
+    usingPro: initialData.usingPro === '1',
+  }
+
+  const handleQuery = configureQueryHandler(params)
+
+  const { setupClassicEditorIconChooser } = setupIconChooser({ ...params, handleQuery })
+
+  // The Tiny MCE will probably be loaded later, so we'll expose the global set up function.
+  window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
 }
