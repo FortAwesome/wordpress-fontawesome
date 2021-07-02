@@ -7,9 +7,9 @@ import { createStore } from './store'
 import { reportDetectedConflicts } from './store/actions'
 import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
 import { __ } from '@wordpress/i18n'
-import { setupIconChooser } from './chooser'
 import configureQueryHandler from './chooser/handleQuery'
 import get from 'lodash/get'
+import { setupIconChooser } from './chooser'
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
 
