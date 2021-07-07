@@ -76,7 +76,6 @@ export function setupBlockEditor (params) {
               }
               title={ title }
               onClick={ this.handleFormatButtonClick }
-              shortcutType="primary"
             />
             <IconChooserModal
               modalOpenEvent={ modalOpenEvent }
