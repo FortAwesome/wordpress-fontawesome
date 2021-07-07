@@ -80,8 +80,6 @@ export function setupBlockEditor (params) {
             <IconChooserModal
               modalOpenEvent={ modalOpenEvent }
               kitToken={ kitToken }
-              cdnUrl={ cdnUrl }
-              integrity={ integrity }
               version={ version }
               pro={ pro }
               handleQuery={ handleQuery }

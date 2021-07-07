@@ -63,8 +63,6 @@ export function setupClassicEditor(params) {
   render(
     <IconChooserModal
       kitToken={ kitToken }
-      cdnUrl={ cdnUrl }
-      integrity={ integrity }
       version={ version }
       pro={ pro }
       modalOpenEvent={ modalOpenEvent }
