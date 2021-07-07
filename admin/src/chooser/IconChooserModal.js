@@ -8,7 +8,7 @@ const useState = get(window, 'wp.element.useState', fallbackUseState)
 const Modal = get(window, 'wp.components.Modal', FallbackModal)
 
 const IconChooserModal = (props) => {
-  const { onSubmit, cdnUrl, integrity, kitToken, pro, version, handleQuery, modalOpenEvent } = props
+  const { onSubmit, kitToken, version, handleQuery, modalOpenEvent } = props
   const [ isOpen, setOpen ] = useState( false )
 
   document.addEventListener(modalOpenEvent.type, () => setOpen(true))
@@ -28,10 +28,7 @@ const IconChooserModal = (props) => {
               <Modal title="Add Font Awesome Icon" onRequestClose={ closeModal }>
                 <FaIconChooser
                   version={ version }
-                  pro={ pro }
-                  cdnUrl={ cdnUrl }
                   kitToken={ kitToken }
-                  integrity={ integrity }
                   handleQuery={ handleQuery }
                   onFinish={ result => submitAndCloseModal(result) }
                 ></FaIconChooser>

@@ -47,21 +47,13 @@ if( showConflictDetectionReporter ) {
 }
 
 if ( enableIconChooser ) {
-  const {
-    mainCdnAssetUrl: cdnUrl,
-		mainCdnAssetIntegrity: integrity
-  } = initialData
-
   const kitToken = get(initialData, 'options.kitToken')
   const version = get(initialData, 'options.version')
 
   const params = {
     ...initialData,
-    cdnUrl,
-    integrity,
     kitToken,
-    version,
-    pro: get(initialData, 'options.usePro')
+    version
   }
 
   const handleQuery = configureQueryHandler(params)

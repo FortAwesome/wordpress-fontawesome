@@ -433,29 +433,6 @@ class FontAwesome {
 	}
 
 	/**
-	 * Not part of this plugin's public API.
-	 *
-	 * @ignore
-	 * @internal
-	 * @throws ConfigCorruptionException
-	 * @return null|array an associative array with keys cdnUrl and integrity if
-	 * the public is configured to Use CDN, otherwise null.
-	 */
-	public function cdn_url_with_sri() {
-		if( $this->using_kit() ) {
-			return null;
-		}
-
-		$resource_collection = $this->cdn_resource_collection_for_current_options();
-		$resources = $resource_collection->resources();
-
-		return array(
-			'cdnUrl' => $resources[0]->source(),
-			'integrity' => $resources[0]->integrity_key()
-		);
-	}
-
-	/**
 	 * Detects whether upgrade is necessary and performs upgrade if so.
 	 *
 	 * Internal use only.
@@ -1531,18 +1508,12 @@ class FontAwesome {
 							)
 						);
 					} elseif ( $should_enable_icon_chooser ) {
-						$resource = fa()->cdn_url_with_sri();
-						$cdn_url = isset($resource['cdnUrl']) ? $resource['cdnUrl'] : null;
-						$integrity = isset($resource['integrity']) ? $resource['integrity'] : null;
-
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
 							array_merge(
 								$this->common_data_for_js_bundle(),
 								array(
-									'mainCdnAssetUrl'       => $cdn_url,
-									'mainCdnAssetIntegrity' => $integrity,
 									'enableIconChooser'     => true
 								)
 							)
