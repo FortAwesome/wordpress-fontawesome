@@ -53,7 +53,8 @@ if ( enableIconChooser ) {
   const params = {
     ...initialData,
     kitToken,
-    version
+    version,
+    pro: get(initialData, 'options.usePro')
   }
 
   const handleQuery = configureQueryHandler(params)
