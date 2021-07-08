@@ -14,8 +14,6 @@ export function setupClassicEditor(params) {
     iconChooserMediaButtonId,
     modalOpenEvent,
     kitToken,
-    cdnUrl,
-    integrity,
     version,
     pro,
     handleQuery

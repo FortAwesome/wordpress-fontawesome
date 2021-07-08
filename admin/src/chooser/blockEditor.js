@@ -23,8 +23,6 @@ export function setupBlockEditor (params) {
   const {
     modalOpenEvent,
     kitToken,
-    cdnUrl,
-    integrity,
     version,
     pro,
     handleQuery
