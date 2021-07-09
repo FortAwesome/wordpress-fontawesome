@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const ERROR_MSG = 'Font Awesome plugin unexpected response for Icon Chooser'
 
-export default function(url) {
+const getUrlText = (url) => {
   return axios.get(url)
     .then(response => {
       if(response.status >= 200 || response.satus <= 299) {
@@ -17,3 +17,5 @@ export default function(url) {
       return Promise.reject(e)
     })
 }
+
+export default getUrlText
