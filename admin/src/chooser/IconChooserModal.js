@@ -10,7 +10,7 @@ const Modal = get(window, 'wp.components.Modal', FallbackModal)
 const __ = get(window, 'wp.i18n.__', FallbackI18n)
 
 const IconChooserModal = (props) => {
-  const { onSubmit, kitToken, version, pro, handleQuery, modalOpenEvent } = props
+  const { onSubmit, kitToken, version, pro, handleQuery, modalOpenEvent, getUrlText } = props
   const [ isOpen, setOpen ] = useState( false )
 
   document.addEventListener(modalOpenEvent.type, () => setOpen(true))
@@ -40,6 +40,7 @@ const IconChooserModal = (props) => {
                   version={ version }
                   kitToken={ kitToken }
                   handleQuery={ handleQuery }
+                  getUrlText={ getUrlText }
                   onFinish={ result => submitAndCloseModal(result) }
                 ></FaIconChooser>
               </Modal>

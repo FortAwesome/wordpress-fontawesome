@@ -16,7 +16,8 @@ export function setupClassicEditor(params) {
     kitToken,
     version,
     pro,
-    handleQuery
+    handleQuery,
+    getUrlText
   } = params
 
   // TODO: decide what to do about these early-return error conditions.
@@ -66,6 +67,7 @@ export function setupClassicEditor(params) {
       modalOpenEvent={ modalOpenEvent }
       handleQuery={ handleQuery }
       onSubmit={ handleSubmit }
+      getUrlText={ getUrlText }
     />,
     container
   )

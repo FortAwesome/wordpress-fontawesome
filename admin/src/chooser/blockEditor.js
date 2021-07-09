@@ -25,7 +25,8 @@ export function setupBlockEditor (params) {
     kitToken,
     version,
     pro,
-    handleQuery
+    handleQuery,
+    getUrlText
   } = params
 
   registerFormatType(name, {
@@ -82,6 +83,7 @@ export function setupBlockEditor (params) {
               pro={ pro }
               handleQuery={ handleQuery }
               onSubmit={ this.handleSelect } 
+              getUrlText={ getUrlText }
             />
           </Fragment>
         )

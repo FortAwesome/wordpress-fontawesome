@@ -8,6 +8,7 @@ import { reportDetectedConflicts } from './store/actions'
 import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
 import { __ } from '@wordpress/i18n'
 import configureQueryHandler from './chooser/handleQuery'
+import getUrlText from './chooser/getUrlText'
 import get from 'lodash/get'
 import { setupIconChooser } from './chooser'
 
@@ -54,6 +55,7 @@ if ( enableIconChooser ) {
     ...initialData,
     kitToken,
     version,
+    getUrlText,
     pro: get(initialData, 'options.usePro')
   }
 
