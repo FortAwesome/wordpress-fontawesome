@@ -9,7 +9,7 @@ export default function(url) {
         return response.data
       } else {
         console.error(response)
-        throw new Error(ERROR_MSG)
+        return Promise.reject(ERROR_MSG)
       }
     })
     .catch(e => {
