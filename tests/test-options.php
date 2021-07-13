@@ -150,7 +150,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				'v4Compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3
+				'dataVersion' => 3,
 			),
 			fa()->options()
 		);
@@ -220,7 +220,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				'v4Compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3
+				'dataVersion' => 3,
 			),
 			fa()->options()
 		);
@@ -236,7 +236,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				'v4Compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3
+				'dataVersion' => 3,
 			),
 			fa()->convert_options_from_v1(
 				array (
@@ -277,7 +277,7 @@ class OptionsTest extends \WP_UnitTestCase {
 				'v4Compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3
+				'dataVersion' => 3,
 			),
 			fa()->convert_options_from_v1(
 				array (

@@ -233,9 +233,9 @@ composer install
 
 In one terminal window, `cd admin`, and then:
 
-  (a) `yarn`
+  (a) `npm install`
 
-  (b) `yarn start` to fire up webpack development server, if you want to run in development mode with
+  (b) `npm run start` to fire up webpack development server, if you want to run in development mode with
       hot module reloading and such.
       This will start up another web server that serves up the assets for the React app separately from
       the WordPress site, so leave it running while you develop.
@@ -784,7 +784,7 @@ You'll probably just need to `kill` that `pid` and re-launch it.
 Or to avoid the timeout hassle, just do:
 ```bash
 cd docsrv
-yarn
+npm install
 node index.js
 ```
 
