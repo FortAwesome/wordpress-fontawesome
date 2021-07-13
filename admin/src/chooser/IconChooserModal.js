@@ -45,7 +45,14 @@ const IconChooserModal = (props) => {
                   handleQuery={ handleQuery }
                   getUrlText={ getUrlText }
                   onFinish={ result => submitAndCloseModal(result) }
+                  searchInputPlaceholder={__('Search for icons by name, category, or keyword', 'font-awesome')}
                 >
+                  <span slot='fatal-error-heading'>
+                    { __('Well, this is awkward...', 'font-awesome') }
+                  </span>
+                  <span slot='fatal-error-detail'>
+                    { __('Something has gone horribly wrong. Check the console for additional error information.', 'font-awesome') }
+                  </span>
                   <span slot="start-view-heading">
                     {__( "Font Awesome is the web's most popular icon set, with tons of icons in a variety of styles.", 'font-awesome' ) }
                   </span>
@@ -58,6 +65,49 @@ const IconChooserModal = (props) => {
                         }
                       )
                     } 
+                  </span>
+                  <span slot='search-field-label'>
+                    {__('Search Font Awesome Icons', 'font-awesome')}
+                  </span>
+                  <span slot='searching'>
+                    {__('Searching', 'font-awesome')}
+                  </span>
+                  <span slot='light-requires-pro'>
+                    {__('You need to use a Pro kit to get Light icons.', 'font-awesome')}
+                  </span>
+                  <span slot='thin-requires-pro'>
+                    {__('You need to use a Pro kit with Version 6 to get Thin icons.', 'font-awesome')}
+                  </span>
+                  <span slot='duotone-requires-pro'>
+                    {__('You need to use a Pro kit with Version 5.10 or later to get Duotone icons.', 'font-awesome')}
+                  </span>
+                  <span slot='uploaded-requires-pro'>
+                    {__('You need to use a Pro kit to get Uploaded icons.', 'font-awesome')}
+                  </span>
+                  <span slot='kit-has-no-uploaded-icons'>
+                    {__('This kit contains no uploaded icons.', 'font-awesome')}
+                  </span>
+                  <span slot='no-search-results-heading'>
+                    {__("Sorry, we couldn't find anything for that.", 'font-awesome')}
+                  </span>
+                  <span slot='no-search-results-detail'>
+                    {__('You might try a different search...', 'font-awesome')}
+                  </span>
+                  <span slot='get-fontawesome-pro'>
+                    {
+                      createInterpolateElement(
+                        __( 'Or <a>get Font Awesome Pro</a> and upload your own icon!', 'font-awesome'),
+                        {
+                        a: <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/" />
+                        }
+                      )
+                    }
+                  </span>
+                  <span slot='initial-loading-view-heading'>
+                    {__('Fetching icons', 'font-awesome') }
+                  </span>
+                  <span slot='initial-loading-view-detail'>
+                    {__('When this thing gets up to 88 mph...', 'font-awesome')}
                   </span>
                 </FaIconChooser>
               </Modal>
