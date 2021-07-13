@@ -98,6 +98,7 @@ const IconChooserModal = (props) => {
                       createInterpolateElement(
                         __( 'Or <a>get Font Awesome Pro</a> and upload your own icon!', 'font-awesome'),
                         {
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content
                         a: <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/" />
                         }
                       )
