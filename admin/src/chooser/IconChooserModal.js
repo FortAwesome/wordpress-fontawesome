@@ -3,6 +3,7 @@ import { Modal as FallbackModal } from '@wordpress/components'
 import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react'
 import { __ as FallbackI18n } from '@wordpress/i18n'
 import get from 'lodash/get'
+import { createInterpolateElement } from '@wordpress/element'
 
 const React = get(window, 'React', FallbackReact)
 const useState = get(window, 'wp.element.useState', fallbackUseState)
@@ -44,7 +45,21 @@ const IconChooserModal = (props) => {
                   handleQuery={ handleQuery }
                   getUrlText={ getUrlText }
                   onFinish={ result => submitAndCloseModal(result) }
-                ></FaIconChooser>
+                >
+                  <span slot="start-view-heading">
+                    {__( "Font Awesome is the web's most popular icon set, with tons of icons in a variety of styles.", 'font-awesome' ) }
+                  </span>
+                  <span slot="start-view-detail">
+                    {
+                      createInterpolateElement(
+                        __( "Not sure where to start? Here are some favorites, or try a search for <strong>spinners</strong>, <strong>animals</strong>, <strong>food</strong>, or <strong>whatever you're looking for</strong>.", 'font-awesome'),
+                        {
+                          strong: <strong/>
+                        }
+                      )
+                    } 
+                  </span>
+                </FaIconChooser>
               </Modal>
           ) }
       </>
