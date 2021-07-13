@@ -1,6 +1,6 @@
 import { default as FallbackReact, useState as fallbackUseState } from 'react'
 import { Modal as FallbackModal } from '@wordpress/components'
-import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react' 
+import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react'
 import { __ as FallbackI18n } from '@wordpress/i18n'
 import get from 'lodash/get'
 
@@ -10,7 +10,7 @@ const Modal = get(window, 'wp.components.Modal', FallbackModal)
 const __ = get(window, 'wp.i18n.__', FallbackI18n)
 
 const IconChooserModal = (props) => {
-  const { onSubmit, kitToken, version, pro, handleQuery, modalOpenEvent, getUrlText } = props
+  const { onSubmit, kitToken, version, pro, handleQuery, modalOpenEvent, getUrlText, settingsPageUrl } = props
   const [ isOpen, setOpen ] = useState( false )
 
   document.addEventListener(modalOpenEvent.type, () => setOpen(true))
@@ -29,11 +29,13 @@ const IconChooserModal = (props) => {
   return (
       <>
           { isOpen && (
-              <Modal title="Add Font Awesome Icon" onRequestClose={ closeModal }>
+              <Modal title="Add a Font Awesome Icon" onRequestClose={ closeModal }>
                 {
                   isProCdn &&
-                  <div>
-                    { __( 'UX TODO: mention the Pro icons are only available in the Icon Chooser when the WordPress plugin is configured ot use a Pro *Kit* (not Pro CDN).', 'font-awesome' ) }
+                  <div style={{ margin: '1em', backgroundColor: '#FFD200', padding: '1em', borderRadius: '.5em', fontSize: '15px'}}>
+                    {__( 'Looking for Pro icons and styles? You’ll need to use a kit. ', 'font-awesome' ) }
+
+                    <a href={settingsPageUrl}>{__('Go to Font Awesome Plugin Settings', 'font-awesome')}</a>
                   </div>
                 }
                 <FaIconChooser

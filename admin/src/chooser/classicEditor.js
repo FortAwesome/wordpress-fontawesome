@@ -17,7 +17,8 @@ export function setupClassicEditor(params) {
     version,
     pro,
     handleQuery,
-    getUrlText
+    getUrlText,
+    settingsPageUrl
   } = params
 
   // TODO: decide what to do about these early-return error conditions.
@@ -38,7 +39,7 @@ export function setupClassicEditor(params) {
       // TODO: what do we want to do about this error condition?
       console.error(err)
     })
-  } 
+  }
 
   // TODO: consider how to add Font Awesome to the Tiny MCE visual pane.
   // But there maybe unexpected behaviors.
@@ -66,6 +67,7 @@ export function setupClassicEditor(params) {
       pro={ pro }
       modalOpenEvent={ modalOpenEvent }
       handleQuery={ handleQuery }
+      settingsPageUrl={ settingsPageUrl }
       onSubmit={ handleSubmit }
       getUrlText={ getUrlText }
     />,
