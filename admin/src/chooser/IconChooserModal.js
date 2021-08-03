@@ -45,7 +45,7 @@ const IconChooserModal = (props) => {
                   handleQuery={ handleQuery }
                   getUrlText={ getUrlText }
                   onFinish={ result => submitAndCloseModal(result) }
-                  searchInputPlaceholder={__('Search for icons by name, category, or keyword', 'font-awesome')}
+                  searchInputPlaceholder={__('Find icons by name, category, or keyword', 'font-awesome')}
                 >
                   <span slot='fatal-error-heading'>
                     { __('Well, this is awkward...', 'font-awesome') }
@@ -59,7 +59,7 @@ const IconChooserModal = (props) => {
                   <span slot="start-view-detail">
                     {
                       createInterpolateElement(
-                        __( "Not sure where to start? Here are some favorites, or try a search for <strong>spinners</strong>, <strong>animals</strong>, <strong>food</strong>, or <strong>whatever you're looking for</strong>.", 'font-awesome'),
+                        __( "Not sure where to start? Here are some favorites, or try a search for <strong>spinners</strong>, <strong>shopping</strong>, <strong>food</strong>, or <strong>whatever you're looking for</strong>.", 'font-awesome'),
                         {
                           strong: <strong/>
                         }
