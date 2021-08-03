@@ -66,11 +66,17 @@ const IconChooserModal = (props) => {
                       )
                     } 
                   </span>
-                  <span slot='search-field-label'>
-                    {__('Search Font Awesome Icons', 'font-awesome')}
+                  <span slot='search-field-label-free'>
+                    {__('Search Font Awesome Free Icons in Version', 'font-awesome')}
                   </span>
-                  <span slot='searching'>
-                    {__('Searching', 'font-awesome')}
+                  <span slot='search-field-label-pro'>
+                    {__('Search Font Awesome Pro Icons in Version', 'font-awesome')}
+                  </span>
+                  <span slot='searching-free'>
+                    {__("You're searching Font Awesome Free icons in version", 'font-awesome')}
+                  </span>
+                  <span slot='searching-pro'>
+                    {__("You're searching Font Awesome Pro icons in version", 'font-awesome')}
                   </span>
                   <span slot='light-requires-pro'>
                     {__('You need to use a Pro kit to get Light icons.', 'font-awesome')}
@@ -93,10 +99,21 @@ const IconChooserModal = (props) => {
                   <span slot='no-search-results-detail'>
                     {__('You might try a different search...', 'font-awesome')}
                   </span>
+                  <span slot="suggest-icon-upload">
+                    {
+                      createInterpolateElement(
+                        __( 'Or <a>upload your own icon</a> to a Pro kit!', 'font-awesome'),
+                        {
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content
+                        a: <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/v5.15/how-to-use/on-the-web/using-kits/uploading-icons" />
+                        }
+                      )
+                    }
+                  </span>
                   <span slot='get-fontawesome-pro'>
                     {
                       createInterpolateElement(
-                        __( 'Or <a>get Font Awesome Pro</a> and upload your own icon!', 'font-awesome'),
+                        __( 'Or <a>use Font Awesome Pro</a> for more icons and styles!', 'font-awesome'),
                         {
                         // eslint-disable-next-line jsx-a11y/anchor-has-content
                         a: <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/" />
