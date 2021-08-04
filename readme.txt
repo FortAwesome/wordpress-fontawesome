@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.0.0-rc23
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.7.2
+Tested up to: 5.8
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,12 +14,6 @@ The official way to use Font Awesome Free or Pro icons on your site, brought to 
 
 The official way to use Font Awesome Free or Pro icons on your site, brought to you by the Font Awesome team.
 
-= New Plugin, Replacing an Old Plugin =
-
-The official release of the new, completely re-written plugin, tested with the latest WordPress and Font Awesome versions is out! Add Font Awesome icons in your content easily, use a Kit or CDN to power your icons, find and fix issues with icon loading. And if you have Font Awesome Pro, you can now use Version 6 icons and styles!
-
-This release officially replaces the older plugin formerly occupying this space in the WordPress plugins directory, which was no longer being maintained. (Many thanks to Rachel Baker and the team behind the former plugin for getting the original plugin started and allowing us to carry it forward.)
-
 = Features =
 
 Our official plugin lets you use Font Awesome the way you want:
@@ -28,8 +22,10 @@ Our official plugin lets you use Font Awesome the way you want:
 * Leverage the latest release or a specific version of our icons.
 * Choose the tech, either SVG or Web Font.
 * Take your pick of loading your icons from our classic Font Awesome CDN, or use Font Awesome Kits - the easiest and most efficient way to use Font Awesome icons on the web.
-* Turn on automatic compatibility for Font Awesome Version 4 if you’re still using Version 4 syntax.
+* Turn on automatic compatibility for Font Awesome Version 4 if you - or your plugins - are still using Version 4 syntax.
 * Troubleshoot and resolve issues when multiple versions of Font Awesome are loading on your site from other plugins/themes, which can cause unexpected icon display or technical issues.
+* Make things even awesomer using icons from Font Awesome Version 6.
+* Use your uploaded icons from your Pro Kits.
 
 *Note: The plugin is not compatible on WordPress multisite at this time.*
 
@@ -39,7 +35,7 @@ Our official plugin lets you use Font Awesome the way you want:
 (See the Installation tab for details)
 
 **Add icons to your pages and posts**
-Once you’ve set up your plugin, you add icons to your pages and posts by choosing the Font Awesome option in the editing bar from any text block, or [using their names](https://fontawesome.com/icons?d=gallery) in shortcodes or HTML.
+Once you’ve set up your plugin, you add icons to your pages and posts by choosing the Font Awesome option in the format bar from any text block, or [using their names](https://fontawesome.com/icons?d=gallery) in shortcodes or HTML. Works with either the block editor or the classic editor.
 
 When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the icon will default to the Solid style.
 
@@ -105,7 +101,7 @@ You can get more information about using the plugin, details for available setti
 
 == Upgrade Notice ==
 = 4.0 =
-The 4.0 official release from the Font Awesome team is a major upgrade from the previous 3.x plugin. We definitely recommend upgrading to get the easiest set up, the best performance, and the most icons! See Changelog for details.
+The 4.0 official release from the Font Awesome team is a major upgrade from the previous 3.x plugin, but has no breaking changes from the previous 4.0 release candidate. Adds an Icon Chooser feature. See Changelog for details.
 
 = 4.0.0-rc22 =
 
@@ -159,6 +155,8 @@ You can get more information about all the available settings and troubleshootin
 * OFFICIAL 4.0.0 STABLE RELEASE 
 * FEATURES: Includes all the features from the early 4.0.0 release candidates (details below)
 * FEATURE: Visual icon chooser lets you search and easily insert the correct shortcode.
+* Fixed regression on overriding global lodash version.
+* Added PHP API method to get current Kit token.
 
 = 4.0.0-rc23 =
 
