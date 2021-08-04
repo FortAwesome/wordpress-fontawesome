@@ -52,8 +52,8 @@
     ]
   },
   "devDependencies": {
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.0",
     "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.0",
     "redux-mock-store": "^1.5.4"
   },
   "homepage": "/wp-content/plugins/font-awesome/admin/build"
