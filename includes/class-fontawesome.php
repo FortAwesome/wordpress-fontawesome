@@ -1519,13 +1519,19 @@ class FontAwesome {
 							)
 						);
 
-						// TODO: DRY out these HTML id values so we aren't copying and pasting them between here and the JS code.
-
 						// These are needed for the Tiny MCE Classic Editor.
 						add_action(
 							'media_buttons',
 							function() {
-								printf( '<button type="button" class="button" id="font-awesome-icon-chooser-media-button">' . '<i class="fab fa-font-awesome-flag"></i> %s' . '</button>', __( 'Add Font Awesome', 'font-awesome' ) );
+								printf(
+									/* translators: 1: open button tag and icon tag 2: close button tag */
+									esc_html__(
+										'%1$sAdd Font Awesome%2$s',
+										'font-awesome'
+									),
+									'<button type="button" class="button" id="font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+									'</button'
+								);
 							},
 							99
 						);
