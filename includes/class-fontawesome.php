@@ -473,7 +473,7 @@ class FontAwesome {
 			$should_upgrade = true;
 		}
 
-		if( $should_upgrade ) {
+		if ( $should_upgrade ) {
 			$this->validate_options( $upgraded_options );
 
 			/**
@@ -1514,7 +1514,7 @@ class FontAwesome {
 							array_merge(
 								$this->common_data_for_js_bundle(),
 								array(
-									'enableIconChooser'     => true
+									'enableIconChooser' => true,
 								)
 							)
 						);
@@ -1522,13 +1522,21 @@ class FontAwesome {
 						// TODO: DRY out these HTML id values so we aren't copying and pasting them between here and the JS code.
 
 						// These are needed for the Tiny MCE Classic Editor.
-						add_action( 'media_buttons', function() {
-							printf( '<button type="button" class="button" id="font-awesome-icon-chooser-media-button">' . '<i class="fab fa-font-awesome-flag"></i> %s' . '</button>', __( 'Add Font Awesome', 'font-awesome' ) );	
-						}, 99 );
+						add_action(
+							'media_buttons',
+							function() {
+								printf( '<button type="button" class="button" id="font-awesome-icon-chooser-media-button">' . '<i class="fab fa-font-awesome-flag"></i> %s' . '</button>', __( 'Add Font Awesome', 'font-awesome' ) );
+							},
+							99
+						);
 
-						add_action( 'before_wp_tiny_mce', function() {
-							printf( '<div id="font-awesome-icon-chooser-container"></div>');
-						}, 99);
+						add_action(
+							'before_wp_tiny_mce',
+							function() {
+								printf( '<div id="font-awesome-icon-chooser-container"></div>' );
+							},
+							99
+						);
 					} else {
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
@@ -1633,15 +1641,15 @@ class FontAwesome {
 		 * If enabling the icon chooser, then our admin bundle will depend on
 		 * some other scripts.
 		 */
-		if( $enable_icon_chooser ) {
+		if ( $enable_icon_chooser ) {
 			if ( function_exists( 'register_block_type' ) ) {
-				$gutenberg_deps = [
+				$gutenberg_deps = array(
 					'wp-blocks',
 					'wp-i18n',
 					'wp-element',
 					'wp-components',
-					'wp-editor'
-				];
+					'wp-editor',
+				);
 
 				foreach ( $gutenberg_deps as $dep ) {
 					array_push( $deps, $dep );
@@ -1652,7 +1660,7 @@ class FontAwesome {
 			 * Whether we're in WP 4, or using Classic Editor in WP 5, this will
 			 * trigger the Tiny MCE support in the Icon Chooser.
 			 */
-			add_action( 'wp_tiny_mce_init', array($this, 'print_classic_editor_icon_chooser_setup_script') );
+			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 		}
 
 		foreach ( $js_entrypoint_urls as $js_url ) {
@@ -1683,7 +1691,7 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
-			'restApiNamespace'              => FontAwesome::REST_API_NAMESPACE,
+			'restApiNamespace'              => self::REST_API_NAMESPACE,
 			'rootUrl'                       => rest_url(),
 			'detectConflictsUntil'          => $this->detect_conflicts_until(),
 			'unregisteredClients'           => $this->unregistered_clients(),
@@ -2892,8 +2900,10 @@ EOT;
 	 * @ignore
 	 * @return bool
 	 */
-	private function should_icon_chooser_be_enabled($screen_id) {
-		if( !is_string( $screen_id ) ) return false;
+	private function should_icon_chooser_be_enabled( $screen_id ) {
+		if ( ! is_string( $screen_id ) ) {
+			return false;
+		}
 
 		return false !== array_search( $screen_id, $this->icon_chooser_screens, true );
 	}
@@ -2905,13 +2915,13 @@ EOT;
 	 * @ignore
 	 */
 	public function print_classic_editor_icon_chooser_setup_script() {
-	?>
+		?>
 	<script type="text/javascript">
 		window.tinymce
 		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser
 		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
 	</script>
-	<?php
+		<?php
 	}
 }
 
