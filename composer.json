@@ -56,10 +56,10 @@
         "phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
         "test": "vendor/bin/phpunit",
         "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip",
-        "build.admin": "cd admin; yarn; yarn build",
+        "build.admin": "cd admin; npm install; npm run build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
         "docs": "vendor/bin/phpdoc",
-        "docsrv": "cd docsrv && yarn && node index.js",
+        "docsrv": "cd docsrv && npm install && node index.js",
         "dist": "composer clean && composer build.admin && bin/make-wp-dist",
         "dist2trunk": "bin/dist-to-trunk.sh"
     }
