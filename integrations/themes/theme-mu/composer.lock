@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "6199bb044e7686405c9ddc63799d6913ba121d2c"
+                "reference": "736df2f19d56ab51208817f77bc7238dcb2f418c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/6199bb044e7686405c9ddc63799d6913ba121d2c",
-                "reference": "6199bb044e7686405c9ddc63799d6913ba121d2c",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/736df2f19d56ab51208817f77bc7238dcb2f418c",
+                "reference": "736df2f19d56ab51208817f77bc7238dcb2f418c",
                 "shasum": ""
             },
             "archive": {
@@ -115,7 +115,7 @@
                 "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/master",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2021-04-07T18:43:01+00:00"
+            "time": "2021-08-05T18:19:27+00:00"
         }
     ],
     "packages-dev": [],
