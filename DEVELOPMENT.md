@@ -630,7 +630,7 @@ that was created in the previous step.
         - `bin/wp -c com.fontawesome.wordpress-latest-integration plugin uninstall font-awesome`
 
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome-releases`
 
             These should now be empty as well.
 
