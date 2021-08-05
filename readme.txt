@@ -108,7 +108,7 @@ You can get more information about using the plugin, details for available setti
 
 == Upgrade Notice ==
 = 4.0 =
-The 4.0 official release from the Font Awesome team is a major upgrade from the previous 3.x plugin, but has no breaking changes from the previous 4.0 release candidate. Adds an Icon Chooser feature. See Changelog for details.
+The 4.0 official release from the Font Awesome team is a major upgrade from the previous 3.x plugin. Only one breaking change from previous release candidate: plugin no longer adds a filter to process shortcodes in widget text. Adds an Icon Chooser feature. See Changelog for details.
 
 = 4.0.0-rc22 =
 
@@ -164,6 +164,13 @@ You can get more information about all the available settings and troubleshootin
 * FEATURE: Visual icon chooser lets you search and easily insert the correct shortcode.
 * Fixed regression on overriding global lodash version.
 * Added PHP API method to get current Kit token.
+* Removed the filter to process all shortcodes in widget text. This seems to have been
+  an overly eager approach on our part. If you want shortcodes to be processed
+  in widget text - all shortcodes, not just this plugin's icon shortcode - you can
+  add a line like this to your theme's functions.php file:
+  ```
+  add_filter( 'widget_text', 'do_shortcode' );
+  ```
 
 = 4.0.0-rc23 =
 

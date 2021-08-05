@@ -377,8 +377,6 @@ class FontAwesome {
 				array( $this, 'process_shortcode' )
 			);
 
-			add_filter( 'widget_text', 'do_shortcode' );
-
 			$this->validate_options( fa()->options() );
 
 			try {
