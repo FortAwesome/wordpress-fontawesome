@@ -541,8 +541,22 @@ that was created in the previous step.
     - Re-run the conflict detector (plugin-gamma and plugin-delta should both be active)
     - make sure the conflict scanner detects the same conflicts
       now when using a kit as it did when we used CDN.
-- ( If you know how to properly test with `plugin-sigma`--it's more complicated--go for it. )
-- verify that we're not overriding `window._` (lodash), `window.React` (or any other [relevant globals](https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/)). See also [this forum topic](https://wordpress.org/support/topic/lodash-overrides-window-_-underscore-js-variable/).
+- Use the Icon Chooser
+    - Insert an icon into a post using the Icon Chooser from the block editor
+    - Install the Classic Editor plugin and insert an icon into a post using the Icon Chooser from the classic editor
+    - Ideally, do each of the both under all of the following conditions:
+        1. Use with CDN, Free
+        1. Use with CDN, Pro (expect a UI message in the Icon Chooser notifying that Pro icons are only available in the Icon Chooser for Pro _Kits_)
+        1. Use with Kit, Free
+        1. Use with Kit, Pro (expect to see all styles and Pro icons)
+    - Spin up a separate WordPress 4.7 container, install the plugin in that, and insert an icon into a post using the Icon Chooser in the classic editor
+- If you know how to properly test with `plugin-sigma`--it's more complicated--go for it.
+- Verify that we're not overriding `window._` (lodash), `window.React` (or any other [relevant globals](https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/)).
+    - This can be done in the block editor:
+        1. create a new post in the block editor
+        1. open the browser's JavaScript console
+        1. look at the value of the globals: `window._.VERSION` and `window.React.version`. They should be the same as whatever this version of WordPress ships with--not the versions that may be used in our admin JS bundle, if different.
+    - See also [this forum topic](https://wordpress.org/support/topic/lodash-overrides-window-_-underscore-js-variable/).
 - **Test loader lifecycle scenarios involving composer packages**
     - under `integrations/plugins/plugin-sigma` and `integrations/themes/theme-mu`, make sure the `composer.json` in each case points to a relevant version of this repo's composer package (a particular development branch on GitHub, for example)
     - make sure that `composer update` has been run recently to ensure that those components load the version of the package that you intend to be testing
