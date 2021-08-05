@@ -35,9 +35,11 @@ Our official plugin lets you use Font Awesome the way you want:
 (See the Installation tab for details)
 
 **Add icons to your pages and posts**
-Once you’ve set up your plugin, you add icons to your pages and posts by choosing the Font Awesome option in the format bar from any text block, or [using their names](https://fontawesome.com/icons?d=gallery) in shortcodes or HTML. Works with either the block editor or the classic editor.
+Adding icons works in both the block editor and the classic editor. 
 
-When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the icon will default to the Solid style.
+Once you’ve set up your plugin, you can search and add icons to your pages and posts by choosing the Font Awesome option in the format bar from any text block to open the Icon Chooser. (If you want to search and add Pro icons in the Icon Chooser, you'll need to use a Pro Kit.) 
+
+Or you can [use the icon names in shortcodes or HTML](https://fontawesome.com/icons?d=gallery). When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the icon will default to the Solid style.
 
 The shortcode for an icon looks like this:
 
@@ -53,7 +55,11 @@ You can also use basic HTML with [standard Font Awesome syntax](https://fontawes
 
 
 **Using Pro Icons and Features**
-To enable Pro icons with the CDN, you will need to add your domain to the list allowed domains on your [Font Awesome account CDN Settings page](https://fontawesome.com/account/cdn). To configure a Kit, get your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens).
+To use a Kit, create a [Kit on FontAwesome.com](https://fontawesome.com/kits) and select "Pro icons" in the settings. Then grab your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens) to add into the WordPress Kit settings. 
+
+To add Pro icons with the CDN, you'll need to add your domain to the list allowed domains on your [Font Awesome account CDN Settings page](https://fontawesome.com/account/cdn) and use shortcodes or HTML to add the icons into your content. 
+
+If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can only search and add Free icons - use shortcodes or HTML to add Pro icons when using the CDN).
 
 
 **Troubleshooting with the Plugin**
@@ -86,6 +92,7 @@ If you used the old plugin or are still using Version 3 of Font Awesome, we've t
 4. Use a Font Awesome Kit to power your site's icons
 5. Or use the Font Awesome CDN
 6. Detect and fix issues with conflicting versions of Font Awesome running on your site
+7. Add icons in Classic Editor as well
 
 == See Also ==
 
