@@ -8,6 +8,8 @@ import { __ } from '@wordpress/i18n'
 import has from 'lodash/has'
 import sliceJson from '../util/sliceJson'
 
+const restApiAxios = axios.create()
+
 // How far into the future from "now" until the conflict detection scanner
 // will be enabled.
 export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
@@ -127,7 +129,7 @@ function preprocessResponse( response ) {
   }
 }
 
-axios.interceptors.response.use(
+restApiAxios.interceptors.response.use(
   response => preprocessResponse( response ),
   error => {
     if( error.response ) {
@@ -234,7 +236,7 @@ export function submitPendingUnregisteredClientDeletions() {
       })
     }
 
-    return axios.delete(
+    return restApiAxios.delete(
       `${apiUrl}/conflict-detection/conflicts`,
       {
         data: deleteList,
@@ -283,7 +285,7 @@ export function submitPendingBlocklist() {
       })
     }
 
-    return axios.put(
+    return restApiAxios.put(
       `${apiUrl}/conflict-detection/conflicts/blocklist`,
       blocklist,
       {
@@ -321,7 +323,7 @@ export function checkPreferenceConflicts() {
       })
     }
 
-    return axios.post(
+    return restApiAxios.post(
       `${apiUrl}/preference-check`,
       { ...options, ...pendingOptions },
       {
@@ -386,7 +388,7 @@ export function queryKits() {
       })
     }
 
-    return axios.post(
+    return restApiAxios.post(
       `${apiUrl}/api`,
       `query {
         me {
@@ -471,7 +473,7 @@ export function queryKits() {
 
       dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-      return axios.put(
+      return restApiAxios.put(
         `${apiUrl}/config`,
         { 
           options: {
@@ -513,7 +515,7 @@ export function submitPendingOptions() {
       })
     }
 
-    return axios.put(
+    return restApiAxios.put(
       `${apiUrl}/config`,
       { options: { ...options, ...pendingOptions }},
       {
@@ -552,7 +554,7 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
       })
     }
 
-    return axios.put(
+    return restApiAxios.put(
       `${apiUrl}/config`,
       { options: { ...options, apiToken }},
       {
@@ -620,7 +622,7 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
         })
       }
 
-      return axios.post(
+      return restApiAxios.post(
         `${apiUrl}/conflict-detection/conflicts`,
         payload,
         {
@@ -668,7 +670,7 @@ export function snoozeV3DeprecationWarning() {
       })
     }
 
-    return axios.put(
+    return restApiAxios.put(
       `${apiUrl}/v3deprecation`,
       { snooze: true },
       {
@@ -724,7 +726,7 @@ export function setConflictDetectionScanner({ enable = true }) {
       })
     }
 
-    return axios.put(
+    return restApiAxios.put(
       `${apiUrl}/conflict-detection/until`,
       enable
         ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)

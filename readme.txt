@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.0.0-rc23
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.7.2
+Tested up to: 5.8
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,10 +14,6 @@ The official way to use Font Awesome Free or Pro icons on your site, brought to 
 
 The official way to use Font Awesome Free or Pro icons on your site, brought to you by the Font Awesome team.
 
-= New Plugin, Replacing an Old Plugin =
-
-This is a new, completely re-written plugin, tested with the latest WordPress and Font Awesome versions. It replaces the older plugin formerly occupying this space in the WordPress plugins directory, which was no longer being maintained. Many thanks to Rachel Baker and the team behind the former plugin for getting the original plugin started and allowing us to carry it forward.
-
 = Features =
 
 Our official plugin lets you use Font Awesome the way you want:
@@ -25,75 +21,94 @@ Our official plugin lets you use Font Awesome the way you want:
 * Use Pro or Free icons.
 * Leverage the latest release or a specific version of our icons.
 * Choose the tech, either SVG or Web Font.
-* Take your pick of loading your icons from our classic Font Awesome CDN, or use Font Awesome kits - the easiest and most robust way to use our icons on the web.
-* And, if you haven’t had the chance to update your project in a long while, you can turn on automatic compatibility for Font Awesome Version 4.
+* Take your pick of loading your icons from our classic Font Awesome CDN, or use Font Awesome Kits - the easiest and most efficient way to use Font Awesome icons on the web.
+* Turn on automatic compatibility for Font Awesome Version 4 if you - or your plugins - are still using Version 4 syntax.
+* Troubleshoot and resolve issues when multiple versions of Font Awesome are loading on your site from other plugins/themes, which can cause unexpected icon display or technical issues.
+* Make things even awesomer using icons from Font Awesome Version 6.
+* Use your uploaded icons from your Pro Kits.
 
-But that’s not all... our official plugin can troubleshoot and help you resolve when multiple versions of Font Awesome are loading on your site from other plugins/themes and causing display or technical issues.
+*Note: The plugin is not compatible on WordPress multisite at this time.*
 
-
-== Usage ==
+== How to Use ==
 
 **Install and enable the plugin**
 (See the Installation tab for details)
 
 **Add icons to your pages and posts**
-Once you’ve set up your plugin, you add icons to your pages and posts by [using their names](https://fontawesome.com/icons?d=gallery) in shortcodes or HTML.
+Adding icons works in both the block editor and the classic editor. 
 
-When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the style will default to Solid. 
+Once you’ve set up your plugin, you can search and add icons to your pages and posts by choosing the Font Awesome option in the format bar from any text block to open the Icon Chooser. (If you want to search and add Pro icons in the Icon Chooser, you'll need to use a Pro Kit.) 
 
-The shortcode for an icon looks like this: 
+Or you can [use the icon names in shortcodes or HTML](https://fontawesome.com/icons?d=gallery). When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the icon will default to the Solid style.
+
+The shortcode for an icon looks like this:
 
 `[icon name="stroopwafel"]`
 
 `[icon name="stroopwafel" prefix="fal"]`
 
-Or you can use basic HTML with [standard Font Awesome syntax](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use):
+Get the details on all the shortcode options in the [Font Awesome WordPress docs](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress#add-icons).
+
+You can also use basic HTML with [standard Font Awesome syntax](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use), like this:
 
 `<i class="fas fa-stroopwafel"></i>`
 
+
 **Using Pro Icons and Features**
-To enable Pro icons with the CDN, you will need to add your domain to the list allowed domains on your [Font Awesome CDN Settings page](https://fontawesome.com/account/cdn). To configure a kit, get your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens).
+To use a Kit, create a [Kit on FontAwesome.com](https://fontawesome.com/kits) and select "Pro icons" in the settings. Then grab your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens) to add into the WordPress Kit settings. 
+
+To add Pro icons with the CDN, you'll need to add your domain to the list allowed domains on your [Font Awesome account CDN Settings page](https://fontawesome.com/account/cdn) and use shortcodes or HTML to add the icons into your content. 
+
+If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can only search and add Free icons - use shortcodes or HTML to add Pro icons when using the CDN).
 
 
 **Troubleshooting with the Plugin**
-Font Awesome icons are popular, so lots of themes and plugins also load Font Awesome, and sometimes their version can conflict with yours. So we created a way to help you find and prevent those conflicting versions from affecting your icons: **The Conflict Detection Scanner**. 
+Font Awesome icons are popular, so lots of themes and plugins also load Font Awesome, and sometimes their version can conflict with yours. So we created a way to help you find and prevent those conflicting versions from affecting your icons: **The Conflict Detection Scanner**.
 
-If the plugin seems to be set up correctly and your icons still aren’t loading and you're not sure why, head over to the Troubleshoot tab, which has two parts: 
+If the plugin seems to be set up correctly and your icons still aren’t loading and you're not sure why, head over to the Troubleshoot tab, which has two parts:
 
 * _Detect Conflicts with Other Versions of Font Awesome_ - which lets you start the conflict detection scanner to find versions of Font Awesome loading on your site.
-* _Versions of Font Awesome Active on Your Site_ - which lists any other versions of Font Awesome being used on your site and lets you prevent conflicting versions from loading.
+* _Versions of Font Awesome Active on Your Site_ - which shows the results of the scanner and lets  you prevent any conflicting versions from loading other versions of Font Awesome on your site.
 
-Get more information about using the scanner for troubleshooting on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress#troubleshooting).
+Get more information about using the scanner for troubleshooting on the [Font Awesome WordPress docs](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress#troubleshooting).
 
 
 = Configuring =
 
-The plugin is set to serve Font Awesome Free icons as a Web Font via the Font Awesome CDN by default. You can change the CDN settings right in the plugin. In the simplest case, no additional configuration is required. 
+The plugin is set to serve Font Awesome Free icons as a Web Font via the Font Awesome CDN by default. You can change the CDN settings right in the plugin. If you want just the basic Free icons, you probably don't need to make any changes to the default configuration.
 
-*Note: The plugin is not compatible on WordPress multisite at this time.*
-
-You can get more information about all the available settings and troubleshooting on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
-
+You can get more information about all the available settings and troubleshooting on the [Font Awesome WordPress docs](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
 
 
 = Upgrading from the Old Versions =
 
 If you used the old plugin or are still using Version 3 of Font Awesome, we've tried to smooth the upgrade path for you by keeping `[icon]` shortcode compatibility for Font Awesome 3 names used with the old plugin. But we plan to remove version 3 naming support from this plugin soon so don't wait too long to update your code!
 
+== Screenshots ==
+
+1. Add icons in any text block from the editing bar
+2. Search and add icons from Font Awesome Free or Pro (with subscription)
+3. View the icons in Preview mode or in published pages and posts
+4. Use a Font Awesome Kit to power your site's icons
+5. Or use the Font Awesome CDN
+6. Detect and fix issues with conflicting versions of Font Awesome running on your site
+7. Add icons in Classic Editor as well
 
 == See Also ==
 
-The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub which has details for WordPress site owners and developers.
+The [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) on GitHub has details for WordPress site owners and developers.
 
-The [API docs](https://fortawesome.github.io/wordpress-fontawesome/) for developers.
+And there are [API docs](https://fortawesome.github.io/wordpress-fontawesome/) for developers.
 
 
 == Frequently Asked Questions ==
 
-You can get more information about using the plugin, details for available settings, and answers to frequently asked questions on the [WordPress page on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
+You can get more information about using the plugin, details for available settings, and answers to frequently asked questions on the [WordPress docs on Font Awesome](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
 
 
 == Upgrade Notice ==
+= 4.0 =
+The 4.0 official release from the Font Awesome team is a major upgrade from the previous 3.x plugin. Only one breaking change from previous release candidate: plugin no longer adds a filter to process shortcodes in widget text. Adds an Icon Chooser feature. See Changelog for details.
 
 = 4.0.0-rc22 =
 
@@ -105,7 +120,7 @@ Security update. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately
 
 = 4.0.0-rc15 =
 
-MAJOR UPDATE, some breaking changes for developers. Improves conflict detection, adds support for kits and internationalization. See Changelog for important details.
+MAJOR UPDATE, some breaking changes for developers. Improves conflict detection, adds support for Kits and internationalization. See Changelog for important details.
 
 = 4.0.0-rc1 =
 
@@ -119,7 +134,7 @@ From the "Add Plugins" page in WordPress admin:
 
 1. Search the plugins directory by `author: fontawesome`
 
-2. Click "Install" on this plugin in the search results
+2. Click "Install" on the Font Awesome plugin in the search results
 
 3. Click "Activate"
 
@@ -131,14 +146,35 @@ From the "Add Plugins" page in WordPress admin:
 
 = Access Font Awesome Plugin Settings =
 
-Once you activate the Font Awesome plugin, you will see a top-level menu item for Font Awesome in your WordPress admin area, or you can click "Settings" on the plugin's entry on the Plugins page.
+Once you activate the Font Awesome plugin, you will see Font Awesome in the Settings menu in your WordPress admin area, or you can click "Settings" on the plugin listing on the Plugins page.
+
+The plugin is set to serve Font Awesome Free icons as a Web Font via the Font Awesome CDN by default. You can change the CDN settings right in the plugin. If you want just the basic Free icons, you probably don't need to make any changes to the default configuration.
+
+**Using Pro Icons and Features**
+To enable Pro icons with the CDN, you will need to add your domain to the list allowed domains on your [Font Awesome CDN Settings page](https://fontawesome.com/account/cdn). To configure a Kit, get your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens).
+
+You can get more information about all the available settings and troubleshooting on the [Font Awesome WordPress docs](https://fontawesome.com/how-to-use/on-the-web/using-with/wordpress).
 
 
 == Changelog ==
 
+= 4.0.0 =
+* OFFICIAL 4.0.0 STABLE RELEASE 
+* FEATURES: Includes all the features from the early 4.0.0 release candidates (details below)
+* FEATURE: Visual icon chooser lets you search and easily insert the correct shortcode.
+* Fixed regression on overriding global lodash version.
+* Added PHP API method to get current Kit token.
+* Removed the filter to process all shortcodes in widget text. This seems to have been
+  an overly eager approach on our part. If you want shortcodes to be processed
+  in widget text - all shortcodes, not just this plugin's icon shortcode - you can
+  add a line like this to your theme's functions.php file:
+  ```
+  add_filter( 'widget_text', 'do_shortcode' );
+  ```
+
 = 4.0.0-rc23 =
 
-* FIX: plugin now handles kits with version "5.x" or "6.x"
+* FIX: plugin now handles Kits with version "5.x" or "6.x"
 
 * FEATURE: shortcode supports attributes: style, role, title, aria-hidden,
   aria-label, aria-labelledby
@@ -148,11 +184,11 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 * Metadata about available Font Awesome releases is now stored as a normal option
   in the WordPress database, instead of as a transient. Thus, it does not expire
   and does not disappear if the transient cache is purged.
-  
+
   This is in part to avoid the scenario where a request to the Font Awesome API
   server may be required to refresh metadata in response to a front end page load
   when that transient expires.
-  
+
   Some site owners had occassionally experienced problems where a sudden burst of
   requests to the API server from many WordPress sites caused this plugin to fail
   when making a request with an error like 'An unexpected response was received
@@ -168,9 +204,9 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 * optimize normal page loads by loading much less metadata from the database (GitHub #96)
 * move the Font Awesome settings link from the main admin nav menu back down under Settings, where it used to be
-* update the version of the conflict detection script to one that also detects conflicting kits
+* update the version of the conflict detection script to one that also detects conflicting Kits
 * minor maintenance changes to keep JavaScript dependencies up to date
-* fix a bug involving the pseudo-elements setting when moving back and forth between using a kit and using CDN (GitHub #82)
+* fix a bug involving the pseudo-elements setting when moving back and forth between using a Kit and using CDN (GitHub #82)
 
 = 4.0.0-rc20 =
 
@@ -186,7 +222,7 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 = 4.0.0-rc17 =
 
-**SECURITY:** fixes a vulnerability in how API tokens were being stored, when configured to use a kit. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. Find more details and instructions for updating your API Token on the [Font Awesome blog](https://blog.fontawesome.com/font-awesome-wordpress-plugin-api-token-vulnerability-fixed).
+**SECURITY:** fixes a vulnerability in how API tokens were being stored, when configured to use a Kit. All users of 4.0.0-rc15 or 4.0.0-rc16 should update immediately. Find more details and instructions for updating your API Token on the [Font Awesome blog](https://blog.fontawesome.com/font-awesome-wordpress-plugin-api-token-vulnerability-fixed).
 
 * a minor bug in how network errors are handled
 
@@ -196,16 +232,16 @@ Once you activate the Font Awesome plugin, you will see a top-level menu item fo
 
 = 4.0.0-rc15 =
 
-**MAJOR UPDATE**, some breaking changes for developers. Improves conflict detection, adds support for kits and internationalization.
+**MAJOR UPDATE**, some breaking changes for developers. Improves conflict detection, adds support for Kits and internationalization.
 
 * Includes auto-upgrade logic so that most users can upgrade with no impact, except those that have "registered client" themes or plugins. Users who had previously enabled the "remove unregistered clients" option should verify that the auto-upgrade worked successfully - check that your icons are appearing correctly. If not, run the Conflict Scanner from the Troubleshoot tab.
-* New conflict detection and resolution: The new conflict detection scanner can be enabled to more precisely discover conflicting versions of Font Awesome and provides more granular conflict resolution. 
+* New conflict detection and resolution: The new conflict detection scanner can be enabled to more precisely discover conflicting versions of Font Awesome and provides more granular conflict resolution.
 * Expanded error handling with detailed reports in the web console for more advanced diagnostics.
 * Adds support for Kits.
 * Adds comprehensive internationalization in both PHP and JavaScript.
 * New design of the admin UI.
 * **Developers:** Significant changes to the way the settings are handled internally: Font Awesome will always load in the way the WordPress admin chooses. Registered themes or plugins may register preferences (which are displayed to the admin), but the site admin will determine the configuration.
-* **Developers:** Registered client plugins and themes need to be updated before they will work as expected. 
+* **Developers:** Registered client plugins and themes need to be updated before they will work as expected.
 * **Developers:** The PHP API contains significant changes. See the GitHub [README](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/README.md) for an overview and the [PHP API docs](https://fortawesome.github.io/wordpress-fontawesome/) for details. _This release is intended as a final API-changing release before stabilizing the API at 4.0.0. Once 4.0.0 is released, it will follow semantic versioning best practices._
 
 = 4.0.0-rc13 =

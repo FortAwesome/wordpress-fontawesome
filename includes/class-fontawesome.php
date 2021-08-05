@@ -277,6 +277,12 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
+	protected $icon_chooser_screens = array( 'post.php', 'post-new.php' );
+
+	/**
+	 * @internal
+	 * @ignore
+	 */
 	protected $conflicts_by_client = null;
 
 	/**
@@ -371,8 +377,6 @@ class FontAwesome {
 				array( $this, 'process_shortcode' )
 			);
 
-			add_filter( 'widget_text', 'do_shortcode' );
-
 			$this->validate_options( fa()->options() );
 
 			try {
@@ -397,15 +401,7 @@ class FontAwesome {
 			if ( $this->using_kit() ) {
 				$this->enqueue_kit( $this->options()['kitToken'] );
 			} else {
-				$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
-					$this->options()['version'],
-					array(
-						'use_pro'  => $this->pro(),
-						'use_svg'  => 'svg' === $this->technology(),
-						'use_shim' => $this->v4_compatibility(),
-					)
-				);
-
+				$resource_collection = $this->cdn_resource_collection_for_current_options();
 				$this->enqueue_cdn( $this->options(), $resource_collection );
 			}
 		} catch ( Exception $e ) {
@@ -413,6 +409,25 @@ class FontAwesome {
 		} catch ( Error $e ) {
 			notify_admin_fatal_error( $e );
 		}
+	}
+
+	/**
+	 * Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @throws ConfigCorruptionException
+	 * @return array
+	 */
+	public function cdn_resource_collection_for_current_options() {
+		return FontAwesome_Release_Provider::get_resource_collection(
+			$this->options()['version'],
+			array(
+				'use_pro'  => $this->pro(),
+				'use_svg'  => 'svg' === $this->technology(),
+				'use_shim' => $this->v4_compatibility(),
+			)
+		);
 	}
 
 	/**
@@ -431,15 +446,33 @@ class FontAwesome {
 	public function try_upgrade() {
 		$options = get_option( self::OPTIONS_KEY );
 
+		$should_upgrade = false;
+
+		$upgraded_options = array();
+
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
 				$this->old_remove_unregistered_clients = true;
 			}
 
-			$upgraded_options = $this->convert_options_from_v1( $options );
+			$upgraded_options = array_merge( $upgraded_options, $this->convert_options_from_v1( $options ) );
 
 			$this->upgrade_for_4_0_0_rc22();
+
+			/**
+			 * If the version is still not set for some reason, set it to a
+			 * default of the latest available version.
+			 */
+			if ( ! isset( $upgraded_options['version'] ) ) {
+				$upgraded_options['version'] = fa()->latest_version();
+			}
+
+			$should_upgrade = true;
+		}
+
+		if ( $should_upgrade ) {
+			$this->validate_options( $upgraded_options );
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -453,17 +486,6 @@ class FontAwesome {
 			if ( ! delete_option( self::OPTIONS_KEY ) ) {
 				throw UpgradeException::main_option_delete();
 			}
-
-			/**
-			 * If the version is still not set for some reason, set it to a
-			 * default of the latest available version.
-			 */
-			if ( ! isset( $upgraded_options['version'] ) ) {
-				$upgraded_options['version'] = fa()->latest_version();
-			}
-
-			// Final check: validate it.
-			$this->validate_options( $upgraded_options );
 
 			update_option( self::OPTIONS_KEY, $upgraded_options );
 
@@ -1443,9 +1465,11 @@ class FontAwesome {
 		add_action(
 			'admin_enqueue_scripts',
 			function( $hook ) {
+				$should_enable_icon_chooser = $this->should_icon_chooser_be_enabled( $hook );
+
 				try {
-					if ( $this->detecting_conflicts() || $hook === $this->screen_id ) {
-						$this->enqueue_admin_js_assets();
+					if ( $this->detecting_conflicts() || $hook === $this->screen_id || $should_enable_icon_chooser ) {
+						$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 					}
 
 					if ( $hook === $this->screen_id ) {
@@ -1481,6 +1505,42 @@ class FontAwesome {
 								)
 							)
 						);
+					} elseif ( $should_enable_icon_chooser ) {
+						wp_localize_script(
+							self::ADMIN_RESOURCE_HANDLE,
+							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
+							array_merge(
+								$this->common_data_for_js_bundle(),
+								array(
+									'enableIconChooser' => true,
+								)
+							)
+						);
+
+						// These are needed for the Tiny MCE Classic Editor.
+						add_action(
+							'media_buttons',
+							function() {
+								printf(
+									/* translators: 1: open button tag and icon tag 2: close button tag */
+									esc_html__(
+										'%1$sAdd Font Awesome%2$s',
+										'font-awesome'
+									),
+									'<button type="button" class="button" id="font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+									'</button'
+								);
+							},
+							99
+						);
+
+						add_action(
+							'before_wp_tiny_mce',
+							function() {
+								printf( '<div id="font-awesome-icon-chooser-container"></div>' );
+							},
+							99
+						);
 					} else {
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
@@ -1514,7 +1574,7 @@ class FontAwesome {
 					$action,
 					function () {
 						try {
-							$this->enqueue_admin_js_assets();
+							$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 
 							wp_localize_script(
 								self::ADMIN_RESOURCE_HANDLE,
@@ -1549,14 +1609,16 @@ class FontAwesome {
 	 * any subsequent localization should be applied via wp_set_script_translations
 	 * or wp_localize_script.
 	 *
+	 * @param bool $with_icon_chooser
 	 * @ignore
 	 * @internal
 	 * @return string $main_js_handle
 	 */
-	private function enqueue_admin_js_assets() {
-		$asset_manifest = $this->get_webpack_asset_manifest();
-		$asset_url_base = $this->get_webpack_asset_url_base();
-		$entrypoints    = $asset_manifest['entrypoints'];
+	private function enqueue_admin_js_assets( $with_icon_chooser ) {
+		$asset_manifest      = $this->get_webpack_asset_manifest();
+		$asset_url_base      = $this->get_webpack_asset_url_base();
+		$entrypoints         = $asset_manifest['entrypoints'];
+		$enable_icon_chooser = boolval( $with_icon_chooser );
 
 		$js_entrypoints =
 					array_filter(
@@ -1578,6 +1640,33 @@ class FontAwesome {
 
 		$js_url_id = 0;
 		$deps      = array();
+
+		/**
+		 * If enabling the icon chooser, then our admin bundle will depend on
+		 * some other scripts.
+		 */
+		if ( $enable_icon_chooser ) {
+			if ( function_exists( 'register_block_type' ) ) {
+				$gutenberg_deps = array(
+					'wp-blocks',
+					'wp-i18n',
+					'wp-element',
+					'wp-components',
+					'wp-editor',
+				);
+
+				foreach ( $gutenberg_deps as $dep ) {
+					array_push( $deps, $dep );
+				}
+			}
+
+			/**
+			 * Whether we're in WP 4, or using Classic Editor in WP 5, this will
+			 * trigger the Tiny MCE support in the Icon Chooser.
+			 */
+			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
+		}
+
 		foreach ( $js_entrypoint_urls as $js_url ) {
 			$cur_resource_handle = ( substr( $js_url, -1 * strlen( $js_main_url ) ) === $js_main_url )
 				? self::ADMIN_RESOURCE_HANDLE
@@ -1606,6 +1695,8 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
+			'restApiNamespace'              => self::REST_API_NAMESPACE,
+			'rootUrl'                       => rest_url(),
 			'detectConflictsUntil'          => $this->detect_conflicts_until(),
 			'unregisteredClients'           => $this->unregistered_clients(),
 			'showConflictDetectionReporter' => $this->detecting_conflicts(),
@@ -2742,7 +2833,7 @@ EOT;
 	 */
 	private function get_webpack_asset_manifest() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://host.docker.internal:3030/asset-manifest.json' );
+			$response = wp_remote_get( 'http://host.docker.internal:3030/wp-content/plugins/font-awesome/admin/build/asset-manifest.json' );
 
 			if ( is_wp_error( $response ) ) {
 				wp_die(
@@ -2784,7 +2875,7 @@ EOT;
 		$asset_manifest = $this->get_webpack_asset_manifest();
 
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$asset_url_base = 'http://localhost:3030';
+			$asset_url_base = 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
 		} else {
 			$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
 		}
@@ -2800,10 +2891,41 @@ EOT;
 	 */
 	private function get_webpack_asset_url_base() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			return 'http://localhost:3030';
+			return 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
 		} else {
 			return FONTAWESOME_DIR_URL . 'admin/build';
 		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	private function should_icon_chooser_be_enabled( $screen_id ) {
+		if ( ! is_string( $screen_id ) ) {
+			return false;
+		}
+
+		return false !== array_search( $screen_id, $this->icon_chooser_screens, true );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public function print_classic_editor_icon_chooser_setup_script() {
+		?>
+	<script type="text/javascript">
+		window.tinymce
+		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser
+		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
+	</script>
+		<?php
 	}
 }
 

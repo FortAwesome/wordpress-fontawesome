@@ -24,11 +24,11 @@ jobs:
       uses: actions/cache@v2
       with:
         path: admin/node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/yarn.lock') }}
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
 
     - name: Install node dependencies
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
-      run: cd admin && yarn install
+      run: cd admin && npm install
 
     - name: Run Jest
-      run: cd admin && yarn test
+      run: cd admin && npm run test

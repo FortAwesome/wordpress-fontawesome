@@ -31,6 +31,8 @@ const axios = {
   delete: DEFAULT_DELETE
 }
 
+axios.create = () => axios
+
 export function respondWith ({ url, method = "GET", response }) {
   responses = set(responses, [url, method.toUpperCase()], response)
 }
