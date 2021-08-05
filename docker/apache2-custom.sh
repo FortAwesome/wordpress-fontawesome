@@ -4,4 +4,8 @@
 
 chown -Rf www-data:www-data /var/www/html/
 
-exec apache2-foreground
+if [ "$FONTAWESOME_ENV" = "development" ]; then
+	exec apache2-foreground -DDEVELOPMENT
+else
+	exec apache2-foreground
+fi
