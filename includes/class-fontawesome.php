@@ -1476,10 +1476,11 @@ class FontAwesome {
 						$this->maybe_refresh_releases();
 
 						if ( FONTAWESOME_ENV !== 'development' ) {
+							$asset_manifest = $this->get_webpack_asset_manifest();
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 							wp_enqueue_style(
-								self::ADMIN_RESOURCE_HANDLE . '-css',
-								$this->get_webpack_asset_url( 'main.css' ),
+								self::ADMIN_RESOURCE_HANDLE,
+								$asset_manifest['files']['main.css'],
 								array(),
 								null,
 								'all'
@@ -2863,24 +2864,6 @@ EOT;
 			}
 			return json_decode( $contents, true );
 		}
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	private function get_webpack_asset_url( $asset = '' ) {
-		$asset_manifest = $this->get_webpack_asset_manifest();
-
-		if ( FONTAWESOME_ENV === 'development' ) {
-			$asset_url_base = 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
-		} else {
-			$asset_url_base = FONTAWESOME_DIR_URL . 'admin/build';
-		}
-
-		return $asset_url_base . $asset_manifest['files'][ $asset ];
 	}
 
 	/**
