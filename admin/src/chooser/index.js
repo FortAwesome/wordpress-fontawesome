@@ -36,7 +36,7 @@ export function setupIconChooser(initialParams) {
    * in WP 4, and there doesn't seem to be any way to ensure that the Tiny MCE
    * script has been loaded before this, other than to add a script after the
    * Tiny MCE scripts have been printed.
-   * 
+   *
    * So what we'll do instead is simply export this function that can be exposed
    * as a global function, and in our back end PHP code, we'll add an inline script
    * to invoke that global for tinyMCE setup if and when it is necessary.
