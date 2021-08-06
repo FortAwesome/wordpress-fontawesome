@@ -1550,15 +1550,48 @@ class FontAwesome {
 						);
 					}
 
-					wp_add_inline_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						'window.__originalsBeforeFontAwesome = { react: window.React, lodash: window._ };',
-						'before'
+					/**
+					 * There are some vendor dependencies in WP5 that create globals
+					 * as side effects. We might use those in our JS bundle and
+					 * we need to make sure that we don't accidently change the global
+					 * version that other themes or plugins might be depending upon.
+					 *
+					 * Here's the recommendation we're following here:
+					 * https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/
+					 */
+					$vendor_globals = ['_', 'React', 'ReactDOM', 'moment'];
+
+					$originals_global = '__originalsBeforeFontAwesome';
+
+					$originals = array_map(
+						function ( $var ) {
+							return "$var: window.$var";
+						},
+						$vendor_globals
+					);
+
+					$capture_vendor_global_originals_script = sprintf(
+						'window.%1$s = { %2$s }',
+						$originals_global,
+						implode(',', $originals)
 					);
 
 					wp_add_inline_script(
 						self::ADMIN_RESOURCE_HANDLE,
-						'if(window.__originalsBeforeFontAwesome.react){window.React = window.__originalsBeforeFontAwesome.react} if(window.__originalsBeforeFontAwesome.lodash){window._ = window.__originalsBeforeFontAwesome.lodash}',
+						$capture_vendor_global_originals_script,
+						'before'
+					);
+
+					$original_restore_conditions = array_map(
+						function ( $var ) {
+							return "if(window.__originalsBeforeFontAwesome.$var){window.$var = window.__originalsBeforeFontAwesome.$var}";
+						},
+						$vendor_globals
+					);
+
+					wp_add_inline_script(
+						self::ADMIN_RESOURCE_HANDLE,
+						implode(' ', $original_restore_conditions),
 						'after'
 					);
 				} catch ( Exception $e ) {
