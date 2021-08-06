@@ -1559,7 +1559,7 @@ class FontAwesome {
 					 * Here's the recommendation we're following here:
 					 * https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/
 					 */
-					$vendor_globals = ['_', 'React', 'ReactDOM', 'moment'];
+					$vendor_globals = array( '_', 'React', 'ReactDOM', 'moment' );
 
 					$originals_global = '__originalsBeforeFontAwesome';
 
@@ -1573,7 +1573,7 @@ class FontAwesome {
 					$capture_vendor_global_originals_script = sprintf(
 						'window.%1$s = { %2$s }',
 						$originals_global,
-						implode(',', $originals)
+						implode( ',', $originals )
 					);
 
 					wp_add_inline_script(
@@ -1591,7 +1591,7 @@ class FontAwesome {
 
 					wp_add_inline_script(
 						self::ADMIN_RESOURCE_HANDLE,
-						implode(' ', $original_restore_conditions),
+						implode( ' ', $original_restore_conditions ),
 						'after'
 					);
 				} catch ( Exception $e ) {
@@ -1683,7 +1683,7 @@ class FontAwesome {
 			 * If we're on a Gutenberg page, whether we're in WP 5 or WP 4, this function will exist,
 			 * and we'll declare the corresponding dependencies.
 			 */
-			if( $this->is_gutenberg_page() ) {
+			if ( $this->is_gutenberg_page() ) {
 				$gutenberg_deps = array(
 					'wp-blocks',
 					'wp-i18n',
@@ -1701,7 +1701,7 @@ class FontAwesome {
 				 * page load. For now, we're eliminating that case because
 				 * some customers experienced Gutenberg failures on pages where both
 				 * editors were active.
-				 * 
+				 *
 				 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
 				 * then we want to enable our TinyMCE integration. We'll initialize it
 				 * on the wp_tiny_mce_init action hook.
@@ -2969,7 +2969,7 @@ EOT;
 			return true;
 		}
 
-		return false;		
+		return false;
 	}
 
 	/**
