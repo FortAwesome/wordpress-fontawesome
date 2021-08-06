@@ -56,7 +56,11 @@ if ( enableIconChooser ) {
     kitToken,
     version,
     getUrlText,
-    pro: get(initialData, 'options.usePro')
+    pro: get(initialData, 'options.usePro'),
+    // We need to use the global React and ReactDOM if they're present,
+    // otherwise we'll use our own.
+    React: get(window, 'React', React),
+    ReactDOM: get(window, 'ReactDOM', ReactDOM)
   }
 
   const handleQuery = configureQueryHandler(params)
