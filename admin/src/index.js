@@ -61,8 +61,9 @@ if ( enableIconChooser ) {
 
   const handleQuery = configureQueryHandler(params)
 
-  const { setupClassicEditorIconChooser } = setupIconChooser({ ...params, handleQuery })
-
-  // The Tiny MCE will probably be loaded later, so we'll expose the global set up function.
-  window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
+  setupIconChooser({ ...params, handleQuery })
+  .then(({ setupClassicEditorIconChooser }) => {
+    // The Tiny MCE will probably be loaded later, so we'll expose the global set up function.
+    window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
+  })
 }
