@@ -196,7 +196,7 @@ routes, not to the Font Awesome GraphQL API at <code class="prettyprint">api.fon
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_VERSION">PLUGIN_VERSION</a>
     <span>
-        &nbsp;= &#039;4.0.0&#039;                    </span>
+        &nbsp;= &#039;4.0.1&#039;                    </span>
 </dt>
 <dd>The version of this WordPress plugin.</dd>
 
@@ -329,6 +329,13 @@ refreshed.</dd>
 a symbolic value like &quot;latest&quot; (deprecated), &quot;5.x&quot;, or &quot;6.x&quot; if configured
 for a kit. If not configured for a kit, the version is guaranteed to be
 a concrete, semver parseable value, like 5.15.3.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a href="classes/FortAwesome-FontAwesome.html#method_is_gutenberg_page">is_gutenberg_page()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Internal use only, not part of this plugin&#039;s public API.</dd>
 
         </dl>
 
@@ -484,7 +491,7 @@ a concrete, semver parseable value, like 5.15.3.</dd>
     <span class="phpdocumentor-signature__visibility">public</span>
     <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">PLUGIN_VERSION</span>
-    = <span class="phpdocumentor-signature__default-value">&#039;4.0.0&#039;</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;4.0.1&#039;</span>
 </code>
 
 
@@ -1091,7 +1098,7 @@ are always inherently supported by the CSS/Webfont technology.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2681</span>
+    <span class="phpdocumentor-element-found-in__line">2747</span>
 </aside>
 
         <p class="phpdocumentor-summary">Runs a GraphQL query against the Font Awesome GraphQL API.</p>
@@ -1306,7 +1313,7 @@ has a HTTP 200 status.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2535</span>
+    <span class="phpdocumentor-element-found-in__line">2601</span>
 </aside>
 
         <p class="phpdocumentor-summary">Registers client preferences. This is the &quot;front door&quot; for registered clients,
@@ -1829,6 +1836,46 @@ version into the concrete version that will be loaded by the kit.</p>
             <section class="phpdocumentor-description"><p>null if no version has yet been saved in the options
 in the db. Otherwise, a version string.</p>
 </section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_is_gutenberg_page">
+        is_gutenberg_page()
+        <a href="classes/FortAwesome-FontAwesome.html#method_is_gutenberg_page" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">2974</span>
+</aside>
+
+        <p class="phpdocumentor-summary">Internal use only, not part of this plugin&#039;s public API.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                <span class="phpdocumentor-signature__name">is_gutenberg_page</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+        <section class="phpdocumentor-description"><p>Code borrowed from Freemius SDK by way of Benjamin Intal on Stack Overflow,
+under GPL. Thanks Benjamin! Hey everybody, get the Stackable plugin to do
+cool stuff with Font Awesome in your Blocks!</p>
+<p>See: https://github.com/Freemius/wordpress-sdk
+See: https://wordpress.stackexchange.com/questions/309862/check-if-gutenberg-is-currently-in-use
+See: https://wordpress.org/plugins/stackable-ultimate-gutenberg-blocks/</p>
+</section>
+
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"></section>
 
     
 </article>
