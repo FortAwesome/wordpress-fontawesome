@@ -1727,7 +1727,7 @@ class FontAwesome {
 				 * which is what we want.
 				 */
 				// TODO: re-enable the TinyMCE IconChooser integration for WP 4.
-				if( $this->is_wp_5() ) {
+				if ( $this->is_wp_5() ) {
 					add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 				}
 			}
@@ -3009,7 +3009,7 @@ EOT;
 	 */
 	private function is_wp_5() {
 		global $wp_version;
-		return '5' === substr( $wp_version[0], 0, 1);
+		return '5' === substr( $wp_version[0], 0, 1 );
 	}
 }
 
