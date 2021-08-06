@@ -26,26 +26,21 @@ export function setupIconChooser(initialParams) {
     modalOpenEvent: new Event('fontAwesomeIconChooserOpen', { "bubbles": true, "cancelable": false })
   }
 
+  if( get(window, 'wp.element') ) {
+    setupBlockEditor(params)
+  }
+
   /**
    * Tiny MCE loading time: In WordPress 5, it's straightforward to enqueue
    * this script with a script dependency of wp-tinymce. But that's not available
    * in WP 4, and there doesn't seem to be any way to ensure that the Tiny MCE
    * script has been loaded before this, other than to add a script after the
-   * Tiny MCE scripts have been printed. So that's what we'll do.
-   *
-   * We'll expose a global function from here that the later loading script
-   * can invoke to set up the Tiny MCE Icon Chooser integration.
+   * Tiny MCE scripts have been printed.
+   * 
+   * So what we'll do instead is simply export this function that can be exposed
+   * as a global function, and in our back end PHP code, we'll add an inline script
+   * to invoke that global for tinyMCE setup if and when it is necessary.
    */
-  if(window.tinymce) {
-    // If tinymce is already loaded, we can set it up now.
-    setupClassicEditorIconChooser(params)
-  }
-
-  if( get(window, 'wp.element') ) {
-    setupBlockEditor(params)
-  }
-
-  // Returns that can be used to set up global hooks
   return {
     setupClassicEditorIconChooser: () => setupClassicEditorIconChooser(params)
   }
