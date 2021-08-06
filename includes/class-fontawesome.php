@@ -1524,7 +1524,7 @@ class FontAwesome {
 						 * This is an initial fix for GitHub Issue: #133
 						 * https://github.com/FortAwesome/wordpress-fontawesome/issues/133
 						 */
-						if ( !$this->is_gutenberg_page() ) {
+						if ( ! $this->is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
 							add_action(
 								'media_buttons',
