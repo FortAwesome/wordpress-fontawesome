@@ -1518,30 +1518,38 @@ class FontAwesome {
 							)
 						);
 
-						// These are needed for the Tiny MCE Classic Editor.
-						add_action(
-							'media_buttons',
-							function() {
-								printf(
-									/* translators: 1: open button tag and icon tag 2: close button tag */
-									esc_html__(
-										'%1$sAdd Font Awesome%2$s',
-										'font-awesome'
-									),
-									'<button type="button" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
-									'</button>'
-								);
-							},
-							99
-						);
+						/**
+						 * TODO: re-enable the possibility of integrating with TinyMCE
+						 * even on pages where Gutenberg is also present.
+						 * This is an initial fix for GitHub Issue: #133
+						 * https://github.com/FortAwesome/wordpress-fontawesome/issues/133
+						 */
+						if ( ! $this->is_gutenberg_page() ) {
+							// These are needed for the Tiny MCE Classic Editor.
+							add_action(
+								'media_buttons',
+								function() {
+									printf(
+										/* translators: 1: open button tag and icon tag 2: close button tag */
+										esc_html__(
+											'%1$sAdd Font Awesome%2$s',
+											'font-awesome'
+										),
+										'<button type="button" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+										'</button>'
+									);
+								},
+								99
+							);
 
-						add_action(
-							'before_wp_tiny_mce',
-							function() {
-								printf( '<div id="font-awesome-icon-chooser-container"></div>' );
-							},
-							99
-						);
+							add_action(
+								'before_wp_tiny_mce',
+								function() {
+									printf( '<div id="font-awesome-icon-chooser-container"></div>' );
+								},
+								99
+							);
+						}
 					} else {
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
