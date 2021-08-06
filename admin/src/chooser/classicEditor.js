@@ -1,5 +1,4 @@
 import IconChooserModal from './IconChooserModal'
-import { default as fallbackReactDom } from 'react-dom'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 import get from 'lodash/get'
 
@@ -18,7 +17,8 @@ export function setupClassicEditor(params) {
     pro,
     handleQuery,
     getUrlText,
-    settingsPageUrl
+    settingsPageUrl,
+    ReactDOM
   } = params
 
   // TODO: decide what to do about these early-return error conditions.
@@ -60,9 +60,7 @@ export function setupClassicEditor(params) {
     })
   }
 
-  const render = get(window, 'wp.element.render', fallbackReactDom.render)
-
-  render(
+  ReactDOM.render(
     <IconChooserModal
       kitToken={ kitToken }
       version={ version }

@@ -56,14 +56,18 @@ if ( enableIconChooser ) {
     kitToken,
     version,
     getUrlText,
-    pro: get(initialData, 'options.usePro')
+    pro: get(initialData, 'options.usePro'),
+    // We need to use the global React and ReactDOM if they're present,
+    // otherwise we'll use our own.
+    React: get(window, 'React', React),
+    ReactDOM: get(window, 'ReactDOM', ReactDOM)
   }
 
   const handleQuery = configureQueryHandler(params)
 
   setupIconChooser({ ...params, handleQuery })
-  .then(({ setupClassicEditorIconChooser }) => {
+  .then(result => {
     // The Tiny MCE will probably be loaded later, so we'll expose the global set up function.
-    window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
+    window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = get(result, 'setupClassicEditorIconChooser')
   })
 }
