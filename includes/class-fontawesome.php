@@ -1528,7 +1528,7 @@ class FontAwesome {
 										'%1$sAdd Font Awesome%2$s',
 										'font-awesome'
 									),
-									'<button type="button" class="button" id="font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+									'<button type="button" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
 									'</button>'
 								);
 							},
@@ -1550,15 +1550,48 @@ class FontAwesome {
 						);
 					}
 
-					wp_add_inline_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						'window.__originalsBeforeFontAwesome = { react: window.React, lodash: window._ };',
-						'before'
+					/**
+					 * There are some vendor dependencies in WP5 that create globals
+					 * as side effects. We might use those in our JS bundle and
+					 * we need to make sure that we don't accidently change the global
+					 * version that other themes or plugins might be depending upon.
+					 *
+					 * Here's the recommendation we're following here:
+					 * https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/
+					 */
+					$vendor_globals = array( '_', 'React', 'ReactDOM', 'moment' );
+
+					$originals_global = '__originalsBeforeFontAwesome';
+
+					$originals = array_map(
+						function ( $var ) {
+							return "$var: window.$var";
+						},
+						$vendor_globals
+					);
+
+					$capture_vendor_global_originals_script = sprintf(
+						'window.%1$s = { %2$s }',
+						$originals_global,
+						implode( ',', $originals )
 					);
 
 					wp_add_inline_script(
 						self::ADMIN_RESOURCE_HANDLE,
-						'if(window.__originalsBeforeFontAwesome.react){window.React = window.__originalsBeforeFontAwesome.react} if(window.__originalsBeforeFontAwesome.lodash){window._ = window.__originalsBeforeFontAwesome.lodash}',
+						$capture_vendor_global_originals_script,
+						'before'
+					);
+
+					$original_restore_conditions = array_map(
+						function ( $var ) {
+							return "if(window.__originalsBeforeFontAwesome.$var){window.$var = window.__originalsBeforeFontAwesome.$var}";
+						},
+						$vendor_globals
+					);
+
+					wp_add_inline_script(
+						self::ADMIN_RESOURCE_HANDLE,
+						implode( ' ', $original_restore_conditions ),
 						'after'
 					);
 				} catch ( Exception $e ) {
@@ -1642,12 +1675,15 @@ class FontAwesome {
 		$js_url_id = 0;
 		$deps      = array();
 
-		/**
-		 * If enabling the icon chooser, then our admin bundle will depend on
-		 * some other scripts.
-		 */
 		if ( $enable_icon_chooser ) {
-			if ( function_exists( 'register_block_type' ) ) {
+			/**
+			 * If enabling the icon chooser, then our admin bundle will depend on
+			 * some other scripts.
+			 *
+			 * If we're on a Gutenberg page, whether we're in WP 5 or WP 4, this function will exist,
+			 * and we'll declare the corresponding dependencies.
+			 */
+			if ( $this->is_gutenberg_page() ) {
 				$gutenberg_deps = array(
 					'wp-blocks',
 					'wp-i18n',
@@ -1659,13 +1695,29 @@ class FontAwesome {
 				foreach ( $gutenberg_deps as $dep ) {
 					array_push( $deps, $dep );
 				}
+			} else {
+				/**
+				 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
+				 * page load. For now, we're eliminating that case because
+				 * some customers experienced Gutenberg failures on pages where both
+				 * editors were active.
+				 *
+				 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
+				 * then we want to enable our TinyMCE integration. We'll initialize it
+				 * on the wp_tiny_mce_init action hook.
+				 *
+				 * According to the docs:
+				 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
+				 *
+				 * So we expect this to only fire once, even if multiple instances of the editor
+				 * are added to a single page.
+				 *
+				 * If TinyMCE is not present or not active, then this action hook will
+				 * never be fired and thus our TinyMCE integration will never be setup,
+				 * which is what we want.
+				 */
+				add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 			}
-
-			/**
-			 * Whether we're in WP 4, or using Classic Editor in WP 5, this will
-			 * trigger the Tiny MCE support in the Icon Chooser.
-			 */
-			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 		}
 
 		foreach ( $js_entrypoint_urls as $js_url ) {
@@ -2893,6 +2945,31 @@ EOT;
 		}
 
 		return false !== array_search( $screen_id, $this->icon_chooser_screens, true );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * Code borrowed from Freemius SDK by way of Benjamin Intal on Stack Overflow,
+	 * under GPL. Thanks Benjamin! Hey everybody, get the Stackable plugin to do
+	 * cool stuff with Font Awesome in your Blocks!
+	 *
+	 * See: https://github.com/Freemius/wordpress-sdk
+	 * See: https://wordpress.stackexchange.com/questions/309862/check-if-gutenberg-is-currently-in-use
+	 * See: https://wordpress.org/plugins/stackable-ultimate-gutenberg-blocks/
+	 */
+	private function is_gutenberg_page() {
+		if ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) {
+			// The Gutenberg plugin is on.
+			return true;
+		}
+		$current_screen = get_current_screen();
+		if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
+			// Gutenberg page on 5+.
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
