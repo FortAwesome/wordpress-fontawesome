@@ -11,7 +11,7 @@ export function handleSubmit(event) {
 export function setupClassicEditor(params) {
   const {
     iconChooserContainerId,
-    iconChooserMediaButtonId,
+    iconChooserMediaButtonClass,
     modalOpenEvent,
     kitToken,
     version,
@@ -22,8 +22,8 @@ export function setupClassicEditor(params) {
   } = params
 
   // TODO: decide what to do about these early-return error conditions.
-  const mediaButton = document.querySelector(`#${iconChooserMediaButtonId}`)
-  if(!mediaButton) return
+  const mediaButtons = document.querySelectorAll(`.${iconChooserMediaButtonClass}`)
+  if(!mediaButtons || 0 === mediaButtons.length) return
   const container = document.querySelector(`#${iconChooserContainerId}`)
   if(!container) return
   if(!window.tinymce) return
@@ -54,9 +54,11 @@ export function setupClassicEditor(params) {
   })
   */
 
-  mediaButton.addEventListener('click', () => {
-    document.dispatchEvent(modalOpenEvent)
-  })
+  for(const button of mediaButtons) {
+    button.addEventListener('click', () => {
+      document.dispatchEvent(modalOpenEvent)
+    })
+  }
 
   const render = get(window, 'wp.element.render', fallbackReactDom.render)
 

@@ -12,7 +12,7 @@ function setupClassicEditorIconChooser(initialParams) {
   const params = {
     ...initialParams,
     iconChooserContainerId: 'font-awesome-icon-chooser-container',
-    iconChooserMediaButtonId: 'font-awesome-icon-chooser-media-button'
+    iconChooserMediaButtonClass: 'font-awesome-icon-chooser-media-button'
   }
 
   setupClassicEditor(params)
