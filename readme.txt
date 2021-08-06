@@ -107,6 +107,9 @@ You can get more information about using the plugin, details for available setti
 
 
 == Upgrade Notice ==
+= 4.0.1 =
+Fixes bugs in the editor integration with the new Icon Chooser, introduced in 4.0.0. Temporarily disables Icon Chooser integration from Classic Editor in WordPress 4. See Changelog.
+
 = 4.0 =
 The 4.0 official release from the Font Awesome team is a major upgrade from the previous 3.x plugin. Only one breaking change from previous release candidate: plugin no longer adds a filter to process shortcodes in widget text. Adds an Icon Chooser feature. See Changelog for details.
 
@@ -157,6 +160,27 @@ You can get more information about all the available settings and troubleshootin
 
 
 == Changelog ==
+
+= 4.0.1 =
+* FIX: In scenarios where both Gutenberg (Block) and TinyMCE (Classic)
+  editors were being loaded onto the same page, the Gutenberg editor was not
+  displaying properly.
+  Now, in that multi-editor situation, the Icon Chooser integration is only enabled
+  for the block editor.
+  In those cases, you can still use icon shortcodes or HTML in
+  the TinyMCE editor boxes; those editors just won't have the "Add Font Awesome"
+  media button for opening the Icon Chooser.
+  The Icon Chooser is still available from the Classic Editor when the block editor
+  is not present on the page.
+* FIX: In scenarios where there are multiple TinyMCE editor instances on the same page,
+  such as WooCommerce product editing pages, only the "Add Font Awesome" media
+  button on the first of those editors was working correctly. Now all of them work
+  correctly.
+* FIX: In the Classic Editor, when other themes or plugins added media buttons after
+  the "Add Font Awesome" button, those buttons were showing up as combined together
+  and not working properly. Now they're separated and working great.
+* The Icon Chooser integration for the Classic Editor in WordPress 4 has been temporarily
+  disabled. Everything else works as before in WP4, just not the new Icon Chooser.
 
 = 4.0.0 =
 * OFFICIAL 4.0.0 STABLE RELEASE 
