@@ -20,7 +20,7 @@ function setupClassicEditorIconChooser(initialParams) {
   classicEditorSetupComplete = true
 }
 
-export async function setupIconChooser(initialParams) {
+export function setupIconChooser(initialParams) {
   const params = {
     ...initialParams,
     modalOpenEvent: new Event('fontAwesomeIconChooserOpen', { "bubbles": true, "cancelable": false })
