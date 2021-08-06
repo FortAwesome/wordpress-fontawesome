@@ -43,6 +43,7 @@ x-dev_env_volumes: &dev_env_volumes
     - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
     - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
     - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-nu:/var/www/html/wp-content/plugins/plugin-nu
 
     # Explicitly ignore various subdirectories like this, listing the target path
     # on the container filesystem. The result will be that the directory will exist
@@ -95,6 +96,7 @@ x-integration_env_volumes: &integration_env_volumes
     - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
     - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
     - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    - ./integrations/plugins/plugin-nu:/var/www/html/wp-content/plugins/plugin-nu
     # ignores (see notes above)
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/bin
