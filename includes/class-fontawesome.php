@@ -1529,7 +1529,7 @@ class FontAwesome {
 										'font-awesome'
 									),
 									'<button type="button" class="button" id="font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
-									'</button'
+									'</button>'
 								);
 							},
 							99
