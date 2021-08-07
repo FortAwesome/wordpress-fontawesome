@@ -1523,10 +1523,8 @@ class FontAwesome {
 						 * even on pages where Gutenberg is also present.
 						 * This is an initial fix for GitHub Issue: #133
 						 * https://github.com/FortAwesome/wordpress-fontawesome/issues/133
-						 *
-						 * TODO: re-enable the Icon Chooser integration for WP 4.
 						 */
-						if ( $this->is_wp_5() && ! $this->is_gutenberg_page() ) {
+						if ( ! $this->is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
 							add_action(
 								'media_buttons',
@@ -1690,10 +1688,13 @@ class FontAwesome {
 			 * If enabling the icon chooser, then our admin bundle will depend on
 			 * some other scripts.
 			 *
-			 * If we're on a Gutenberg page, whether we're in WP 5 or WP 4, this function will exist,
-			 * and we'll declare the corresponding dependencies.
+			 * The current Gutenberg plugin does not support WP 4, so we're ruling
+			 * out the possibility that we're in WP 4 on a Gutenberg page.
+			 *
+			 * If we're on a Gutenberg page in WP 5, then these WP Core JavaScript
+			 * dependencies will be available, and we'll declare that we need them.
 			 */
-			if ( $this->is_gutenberg_page() ) {
+			if ( $this->is_wp_5() && $this->is_gutenberg_page() ) {
 				$gutenberg_deps = array(
 					'wp-blocks',
 					'wp-i18n',
@@ -1726,10 +1727,7 @@ class FontAwesome {
 				 * never be fired and thus our TinyMCE integration will never be setup,
 				 * which is what we want.
 				 */
-				// TODO: re-enable the TinyMCE IconChooser integration for WP 4.
-				if ( $this->is_wp_5() ) {
-					add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
-				}
+				add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 			}
 		}
 
