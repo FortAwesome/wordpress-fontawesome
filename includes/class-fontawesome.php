@@ -1480,7 +1480,7 @@ class FontAwesome {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 							wp_enqueue_style(
 								self::ADMIN_RESOURCE_HANDLE,
-								$asset_manifest['files']['main.css'],
+								trailingslashit( FONTAWESOME_DIR_URL ) . $asset_manifest['files']['main.css'],
 								array(),
 								null,
 								'all'
@@ -1670,15 +1670,8 @@ class FontAwesome {
 						}
 					);
 
-		$js_entrypoint_urls = array_map(
-			function ( $e ) use ( $asset_url_base ) {
-				return trailingslashit( $asset_url_base ) . $e;
-			},
-			$js_entrypoints
-		);
-
 		// Which one represents main.js?
-		$js_main_url = $asset_manifest['files']['main.js'];
+		$js_main_entrypoint = $asset_manifest['files']['main.js'];
 
 		$js_url_id = 0;
 		$deps      = array();
@@ -1731,14 +1724,14 @@ class FontAwesome {
 			}
 		}
 
-		foreach ( $js_entrypoint_urls as $js_url ) {
-			$cur_resource_handle = ( substr( $js_url, -1 * strlen( $js_main_url ) ) === $js_main_url )
+		foreach ( $js_entrypoints as $js_url_rel ) {
+			$cur_resource_handle = ( substr( $js_url_rel, -1 * strlen( $js_main_entrypoint ) + 1 ) === substr( $js_main_entrypoint, 1 ) )
 				? self::ADMIN_RESOURCE_HANDLE
 				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
 
 			wp_enqueue_script(
 				$cur_resource_handle,
-				$js_url,
+				trailingslashit( $asset_url_base ) . $js_url_rel,
 				$deps,
 				self::PLUGIN_VERSION,
 				true
@@ -2897,7 +2890,7 @@ EOT;
 	 */
 	private function get_webpack_asset_manifest() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://host.docker.internal:3030/wp-content/plugins/font-awesome/admin/build/asset-manifest.json' );
+			$response = wp_remote_get( 'http://host.docker.internal:3030/asset-manifest.json' );
 
 			if ( is_wp_error( $response ) ) {
 				wp_die(
@@ -2937,7 +2930,7 @@ EOT;
 	 */
 	private function get_webpack_asset_url_base() {
 		if ( FONTAWESOME_ENV === 'development' ) {
-			return 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
+			return 'http://localhost:3030';
 		} else {
 			return FONTAWESOME_DIR_URL . 'admin/build';
 		}
