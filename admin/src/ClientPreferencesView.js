@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
 import styles from './ClientPreferencesView.module.css'
 import sharedStyles from './App.module.css'
