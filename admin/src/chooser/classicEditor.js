@@ -17,8 +17,7 @@ export function setupClassicEditor(params) {
     pro,
     handleQuery,
     getUrlText,
-    settingsPageUrl,
-    ReactDOM
+    settingsPageUrl
   } = params
 
   // TODO: decide what to do about these early-return error conditions.
