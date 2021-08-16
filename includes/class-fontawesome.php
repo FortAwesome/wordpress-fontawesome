@@ -1480,7 +1480,7 @@ class FontAwesome {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 							wp_enqueue_style(
 								self::ADMIN_RESOURCE_HANDLE,
-								trailingslashit( FONTAWESOME_DIR_URL ) . $asset_manifest['files']['main.css'],
+								trailingslashit( $this->get_webpack_asset_url_base() ) . $asset_manifest['files']['main.css'],
 								array(),
 								null,
 								'all'
@@ -1724,14 +1724,14 @@ class FontAwesome {
 			}
 		}
 
-		foreach ( $js_entrypoints as $js_url_rel ) {
-			$cur_resource_handle = ( substr( $js_url_rel, -1 * strlen( $js_main_entrypoint ) + 1 ) === substr( $js_main_entrypoint, 1 ) )
+		foreach ( $js_entrypoints as $js_entrypoint_cur ) {
+			$cur_resource_handle = ( false !== strpos( $js_main_entrypoint, $js_entrypoint_cur ) )
 				? self::ADMIN_RESOURCE_HANDLE
 				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
 
 			wp_enqueue_script(
 				$cur_resource_handle,
-				trailingslashit( $asset_url_base ) . $js_url_rel,
+				trailingslashit( $asset_url_base ) . $js_entrypoint_cur,
 				$deps,
 				self::PLUGIN_VERSION,
 				true
@@ -1760,6 +1760,7 @@ class FontAwesome {
 			'settingsPageUrl'               => $this->settings_page_url(),
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
+			'webpackPublicPath'             => trailingslashit(FONTAWESOME_DIR_URL) . 'admin/build/'
 		);
 	}
 
@@ -2932,7 +2933,7 @@ EOT;
 		if ( FONTAWESOME_ENV === 'development' ) {
 			return 'http://localhost:3030';
 		} else {
-			return FONTAWESOME_DIR_URL . 'admin/build';
+			return FONTAWESOME_DIR_URL;
 		}
 	}
 
