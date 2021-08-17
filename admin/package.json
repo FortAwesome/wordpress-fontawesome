@@ -19,7 +19,6 @@
     "@wordpress/rich-text": "4.1.5",
     "axios": "^0.21.0",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.21",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "0.63.4",
@@ -31,10 +30,20 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "build": "node ./scripts/build-rewire.js",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:md:docs": "wp-scripts lint-md-docs",
+    "lint:md:js": "wp-scripts lint-md-js",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "packages-update": "wp-scripts packages-update",
+    "start": "wp-scripts start --webpack-no-externals",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js",
+    "test": "npm run test:unit"
   },
   "eslintConfig": {
     "extends": [
@@ -58,12 +67,13 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@wordpress/scripts": "^17.1.0",
+    "babel-plugin-lodash": "^3.3.4",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.0",
     "react-test-renderer": "16.13.1",
     "redux-mock-store": "^1.5.4",
     "rewire": "^5.0.0",
     "webpack-dynamic-public-path": "^1.0.7"
-  },
-  "homepage": "."
+  }
 }

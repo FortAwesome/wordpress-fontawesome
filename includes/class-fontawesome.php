@@ -1475,18 +1475,6 @@ class FontAwesome {
 					if ( $hook === $this->screen_id ) {
 						$this->maybe_refresh_releases();
 
-						if ( FONTAWESOME_ENV !== 'development' ) {
-							$asset_manifest = $this->get_webpack_asset_manifest();
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-							wp_enqueue_style(
-								self::ADMIN_RESOURCE_HANDLE,
-								trailingslashit( $this->get_webpack_asset_url_base() ) . $asset_manifest['files']['main.css'],
-								array(),
-								null,
-								'all'
-							);
-						}
-
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
@@ -1657,24 +1645,9 @@ class FontAwesome {
 	 * @return string $main_js_handle
 	 */
 	private function enqueue_admin_js_assets( $with_icon_chooser ) {
-		$asset_manifest      = $this->get_webpack_asset_manifest();
-		$asset_url_base      = $this->get_webpack_asset_url_base();
-		$entrypoints         = $asset_manifest['entrypoints'];
 		$enable_icon_chooser = boolval( $with_icon_chooser );
 
-		$js_entrypoints =
-					array_filter(
-						$entrypoints,
-						function( $e ) {
-							return '.js' === substr( $e, -3 );
-						}
-					);
-
-		// Which one represents main.js?
-		$js_main_entrypoint = $asset_manifest['files']['main.js'];
-
-		$js_url_id = 0;
-		$deps      = array();
+		$deps = array();
 
 		if ( $enable_icon_chooser ) {
 			/**
@@ -1688,6 +1661,7 @@ class FontAwesome {
 			 * dependencies will be available, and we'll declare that we need them.
 			 */
 			if ( $this->is_wp_5() && $this->is_gutenberg_page() ) {
+				// TODO: use the index.assets.php for this now with wp-scripts.
 				$gutenberg_deps = array(
 					'wp-blocks',
 					'wp-i18n',
@@ -1724,22 +1698,13 @@ class FontAwesome {
 			}
 		}
 
-		foreach ( $js_entrypoints as $js_entrypoint_cur ) {
-			$cur_resource_handle = ( false !== strpos( $js_main_entrypoint, $js_entrypoint_cur ) )
-				? self::ADMIN_RESOURCE_HANDLE
-				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
-
-			wp_enqueue_script(
-				$cur_resource_handle,
-				trailingslashit( $asset_url_base ) . $js_entrypoint_cur,
-				$deps,
-				self::PLUGIN_VERSION,
-				true
-			);
-
-			++$js_url_id;
-			array_push( $deps, $cur_resource_handle );
-		}
+		wp_enqueue_script(
+			self::ADMIN_RESOURCE_HANDLE,
+			trailingslashit( $this->get_webpack_asset_url_base() ) . 'index.js',
+			$deps,
+			self::PLUGIN_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -2889,52 +2854,8 @@ EOT;
 	 * @internal
 	 * @ignore
 	 */
-	private function get_webpack_asset_manifest() {
-		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://host.docker.internal:3030/asset-manifest.json' );
-
-			if ( is_wp_error( $response ) ) {
-				wp_die(
-					esc_html(
-						__(
-							"You're running in dev mode (FONTAWESOME_ENV === 'development'), but we got an error trying to wp_remote_get the admin UI's asset manifest. That usually means you haven't started up the webpack dev server for admin. Make sure that's running. You can start it under the 'admin/' dir with 'yarn start'.",
-							'font-awesome'
-						)
-					)
-				);
-			}
-
-			if ( 200 !== $response['response']['code'] ) {
-				return null;
-			}
-
-			return json_decode( $response['body'], true );
-		} else {
-			$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
-			if ( ! file_exists( $asset_manifest_file ) ) {
-				return null;
-			}
-			// phpcs:ignore WordPress.WP.AlternativeFunctions
-			$contents = file_get_contents( $asset_manifest_file );
-			if ( empty( $contents ) ) {
-				return null;
-			}
-			return json_decode( $contents, true );
-		}
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
 	private function get_webpack_asset_url_base() {
-		if ( FONTAWESOME_ENV === 'development' ) {
-			return 'http://localhost:3030';
-		} else {
-			return FONTAWESOME_DIR_URL;
-		}
+		return trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build';
 	}
 
 	/**
@@ -2980,15 +2901,24 @@ EOT;
 	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
+	 * We can't guarantee the timing of when this global hook will be set.
+	 * So if we find that it's already set, we'll invoke it. Otherwise, we'll
+	 * assign a truthy value to it to indicate that it should be invoked as
+	 * soon as the hook is ready.
+	 *
 	 * @internal
 	 * @ignore
 	 */
 	public function print_classic_editor_icon_chooser_setup_script() {
 		?>
 	<script type="text/javascript">
-		window.tinymce
-		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser
-		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
+		if( window.tinymce ) {
+			if( window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser ) {
+				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
+			} else {
+				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser = true
+			}
+		}
 	</script>
 		<?php
 	}
