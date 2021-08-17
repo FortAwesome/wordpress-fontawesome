@@ -1,0 +1,44 @@
+{
+  "name": "fa-wp4-compat",
+  "version": "4.0.1",
+  "private": true,
+  "dependencies": {
+    "@wordpress/api-fetch": "^5.1.1",
+    "@wordpress/components": "14.1.10",
+    "@wordpress/compose": "4.1.5",
+    "@wordpress/data": "5.1.5",
+    "@wordpress/element": "3.1.1",
+    "@wordpress/i18n": "^3.16.0",
+    "@wordpress/icons": "4.0.2",
+    "@wordpress/primitives": "2.1.1",
+    "@wordpress/rich-text": "4.1.5",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "0.63.4"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^17.1.0",
+    "babel-plugin-lodash": "^3.3.4"
+  },
+  "scripts": {
+    "build": "wp-scripts build --webpack-no-externals"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
