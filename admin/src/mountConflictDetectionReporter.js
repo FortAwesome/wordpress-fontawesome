@@ -2,13 +2,14 @@ import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
 import retargetEvents from 'react-shadow-dom-retarget-events'
+import React from 'react'
+import ReactDOM from 'react-dom'
 
 export const CONFLICT_DETECTION_SHADOW_HOST_ID = 'font-awesome-plugin-conflict-detection-shadow-host'
 // store: the redux store
 // now: boolean (default = false) to mount now, synchronously. If false,
 //     we'll mount on DOMContentLoaded.
 export function mountConflictDetectionReporter({ store, now = false }) {
-  const { ReactDOM } = window.__Font_Awesome_Webpack_Externals__
 
   const doMount = () => {
     const conflictDetectionShadowRootElement = document.createElement('DIV')

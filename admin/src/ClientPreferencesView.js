@@ -6,6 +6,7 @@ import has from 'lodash/has'
 import size from 'lodash/size'
 import classnames from 'classnames'
 import { __, sprintf } from '@wordpress/i18n'
+import React from 'react'
 
 const UNSPECIFIED_INDICATOR = '-'
 
