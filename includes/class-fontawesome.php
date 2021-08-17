@@ -1649,31 +1649,34 @@ class FontAwesome {
 
 		$deps = array();
 
-		if ( $enable_icon_chooser ) {
-			/**
-			 * If enabling the icon chooser, then our admin bundle will depend on
-			 * some other scripts.
-			 *
-			 * The current Gutenberg plugin does not support WP 4, so we're ruling
-			 * out the possibility that we're in WP 4 on a Gutenberg page.
-			 *
-			 * If we're on a Gutenberg page in WP 5, then these WP Core JavaScript
-			 * dependencies will be available, and we'll declare that we need them.
-			 */
-			if ( $this->is_wp_5() && $this->is_gutenberg_page() ) {
-				// TODO: use the index.assets.php for this now with wp-scripts.
-				$gutenberg_deps = array(
-					'wp-blocks',
-					'wp-i18n',
-					'wp-element',
-					'wp-components',
-					'wp-editor',
-				);
+		/**
+		 * The current Gutenberg plugin does not support WP 4, so we're ruling
+		 * out the possibility that we're in WP 4 on a Gutenberg page.
+		 *
+		 * If we're on a Gutenberg page in WP 5, then the WP Core JavaScript
+		 * dependencies will be available, and we'll declare that we need them.
+		 */
+		if ( $this->is_wp_5() ) {
+			$deps = array_merge( $deps, [ 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components' ]);
 
-				foreach ( $gutenberg_deps as $dep ) {
-					array_push( $deps, $dep );
-				}
-			} else {
+			if( $this->is_gutenberg_page() ) {
+				$deps = array_merge( $deps, [ 'wp-blocks', 'wp-editor' ]);
+			}
+		} else {
+			$wp4_compat_resource_handle = self::ADMIN_RESOURCE_HANDLE . '-compat';
+
+			wp_enqueue_script(
+				$wp4_compat_resource_handle,
+				trailingslashit( FONTAWESOME_DIR_URL ) . 'wp4-compat-js/build/compat.js',
+				[],
+				self::PLUGIN_VERSION,
+				true
+			);
+
+			// We need our main bundle to depend on the compat bundle.
+			array_push( $deps, $wp4_compat_resource_handle );
+
+			if ( $enable_icon_chooser ) {
 				/**
 				 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
 				 * page load. For now, we're eliminating that case because
