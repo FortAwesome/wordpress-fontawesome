@@ -1659,7 +1659,7 @@ class FontAwesome {
 		if ( $this->is_wp_5() ) {
 			$deps = array_merge( $deps, [ 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components' ]);
 
-			if( $this->is_gutenberg_page() ) {
+			if( $enable_icon_chooser ) {
 				$deps = array_merge( $deps, [ 'wp-blocks', 'wp-editor' ]);
 			}
 		} else {
@@ -1675,30 +1675,30 @@ class FontAwesome {
 
 			// We need our main bundle to depend on the compat bundle.
 			array_push( $deps, $wp4_compat_resource_handle );
+		}
 
-			if ( $enable_icon_chooser ) {
-				/**
-				 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
-				 * page load. For now, we're eliminating that case because
-				 * some customers experienced Gutenberg failures on pages where both
-				 * editors were active.
-				 *
-				 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
-				 * then we want to enable our TinyMCE integration. We'll initialize it
-				 * on the wp_tiny_mce_init action hook.
-				 *
-				 * According to the docs:
-				 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
-				 *
-				 * So we expect this to only fire once, even if multiple instances of the editor
-				 * are added to a single page.
-				 *
-				 * If TinyMCE is not present or not active, then this action hook will
-				 * never be fired and thus our TinyMCE integration will never be setup,
-				 * which is what we want.
-				 */
-				add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
-			}
+		if ( $enable_icon_chooser ) {
+			/**
+			 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
+			 * page load. For now, we're eliminating that case because
+			 * some customers experienced Gutenberg failures on pages where both
+			 * editors were active.
+			 *
+			 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
+			 * then we want to enable our TinyMCE integration. We'll initialize it
+			 * on the wp_tiny_mce_init action hook.
+			 *
+			 * According to the docs:
+			 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
+			 *
+			 * So we expect this to only fire once, even if multiple instances of the editor
+			 * are added to a single page.
+			 *
+			 * If TinyMCE is not present or not active, then this action hook will
+			 * never be fired and thus our TinyMCE integration will never be setup,
+			 * which is what we want.
+			 */
+			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 		}
 
 		wp_enqueue_script(
