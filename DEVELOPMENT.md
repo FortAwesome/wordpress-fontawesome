@@ -232,14 +232,34 @@ composer install
 
 ## 8. OPTIONAL: start the admin React app's development build (in development)
 
+### The main admin JS bundle
+
 In one terminal window, `cd admin`, and then:
 
   (a) `npm install`
 
-  (b) `npm run start` to fire up webpack development server, if you want to run in development mode with
-      hot module reloading and such.
-      This will start up another web server that serves up the assets for the React app separately from
-      the WordPress site, so leave it running while you develop.
+  (b) `npm run start` to fire up webpack.
+  
+      This uses wp-scripts (webpack under the hood) to build the static assets under
+      `admin/build`. There's no webpack dev server any more. Webpack will notice
+      changes to the JavaScript files and rebuild on the fly, but it won't reload
+      in the browser automatically. Just refresh your browser page.
+
+### The WordPress 4 compat bundle
+
+This will probably not change very much, so it may not be necessary to rebuild at all.
+And if you're doing development work only in WordPress 5, you can skip this altogether.
+
+If you do need to update what's in this bundle, though, then you just build another
+static production build like this:
+```
+$ cd wp-compat-v4
+$ npm run build
+```
+
+This will create `wp-compat-v4/build/compat.js`, which the plugin looks for and
+enqueues automatically when it detects that it's running under WordPress 4.
+
 
 ## 9. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
 
