@@ -1,9 +1,6 @@
 import { useSelector } from 'react-redux'
 import styles from './ClientPreferencesView.module.css'
 import sharedStyles from './App.module.css'
-import find from 'lodash/find'
-import has from 'lodash/has'
-import size from 'lodash/size'
 import classnames from 'classnames'
 import { __, sprintf } from '@wordpress/i18n'
 
@@ -24,8 +21,8 @@ function formatVersionPreference(versionPreference = []) {
 export default function ClientPreferencesView() {
   const clientPreferences = useSelector(state => state.clientPreferences)
   const conflicts = useSelector(state => state.preferenceConflicts)
-  const hasAdditionalClients = size(clientPreferences)
-  const hasConflicts = size(conflicts)
+  const hasAdditionalClients = _.size(clientPreferences)
+  const hasConflicts = _.size(conflicts)
 
   return <div className={ styles['client-requirements'] }>
     <h3 className={ sharedStyles['section-title'] }>{ __( 'Registered themes or plugins', 'font-awesome' ) }</h3>
@@ -61,7 +58,7 @@ export default function ClientPreferencesView() {
             <tbody>
             {
               Object.values(clientPreferences).map((client, index)  => {
-                const clientHasConflict = optionName => !!find(conflicts[optionName], c => c === client.name)
+                const clientHasConflict = optionName => !!_.find(conflicts[optionName], c => c === client.name)
 
                 return <tr key={ index }>
                   <td>{ client.name }</td>
@@ -69,35 +66,35 @@ export default function ClientPreferencesView() {
                     className={
                       classnames({ [styles.conflicted]: clientHasConflict('usePro') })
                     }>
-                    { has(client, 'usePro')
+                    { _.has(client, 'usePro')
                       ? client.usePro ? 'Pro' : 'Free'
                       : UNSPECIFIED_INDICATOR
                     }
                   </td>
                   <td
                     className={ classnames({ [styles.conflicted]: clientHasConflict('technology') }) }>
-                    { has(client, 'technology')
+                    { _.has(client, 'technology')
                       ? client.technology
                       : UNSPECIFIED_INDICATOR
                     }
                   </td>
                   <td
                     className={ classnames({ [styles.conflicted]: clientHasConflict('version') }) }>
-                    { has(client, 'version')
+                    { _.has(client, 'version')
                       ? formatVersionPreference(client.version)
                       : UNSPECIFIED_INDICATOR
                     }
                   </td>
                   <td
                     className={ classnames({ [styles.conflicted]: clientHasConflict('v4Compat') }) }>
-                    { has(client, 'v4Compat')
+                    { _.has(client, 'v4Compat')
                       ? client.v4Compat ? 'true' : 'false'
                       : UNSPECIFIED_INDICATOR
                     }
                   </td>
                   <td
                     className={ classnames({ [styles.conflicted]: clientHasConflict('pseudoElements') }) }>
-                    { has(client, 'pseudoElements')
+                    { _.has(client, 'pseudoElements')
                       ? client.pseudoElements ? 'true' : 'false'
                       : UNSPECIFIED_INDICATOR
                     }

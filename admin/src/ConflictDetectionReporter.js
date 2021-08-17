@@ -5,8 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faCog, faExclamationTriangle, faGrin, faSkull, faThumbsUp, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { ADMIN_TAB_TROUBLESHOOT } from './store/reducers'
 import ConflictDetectionTimer from './ConflictDetectionTimer'
-import size from 'lodash/size'
-import has from 'lodash/has'
 import { __ } from '@wordpress/i18n'
 import ErrorBoundary from './ErrorBoundary'
 
@@ -225,7 +223,7 @@ function ConflictDetectionReporter() {
       return STATUS.expired
     } else if (scannerReady) {
       return STATUS.ready
-    } else if ( success && 0 === size( unregisteredClients ) ) {
+    } else if ( success && 0 === _.size( unregisteredClients ) ) {
       return STATUS.none
     } else if ( success ) {
       return STATUS.done
@@ -249,7 +247,7 @@ function ConflictDetectionReporter() {
 
   const expiredOrStoppedDiv = 
     <div>
-        <h2 style={ STYLES.tally }><span>{ size( unregisteredClients ) }</span> <span>&nbsp;{ __( 'Results to Review', 'font-awesome' ) }</span></h2>
+        <h2 style={ STYLES.tally }><span>{ _.size( unregisteredClients ) }</span> <span>&nbsp;{ __( 'Results to Review', 'font-awesome' ) }</span></h2>
         <p style={ STYLES.p }>
           {
             currentlyOnTroubleshootTab
@@ -313,8 +311,8 @@ function ConflictDetectionReporter() {
                 <div style={ STYLES.status }>
                   <h2 style={ STYLES.h2 }><FontAwesomeIcon icon={ faCheckCircle } size="sm" /> <span>{ __( 'Page scan complete', 'font-awesome' ) }</span></h2>
                 </div>
-                <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( Object.keys( recentConflictsDetected ).filter(k => ! has(unregisteredClientsBeforeDetection, k) ) ) }</span> <span>{ __( 'new conflicts found on this page', 'font-awesome' ) }</span></p>
-                <p style={ STYLES.tally }><span style={ STYLES.count }>{ size( unregisteredClients ) }</span> <span>total found</span>
+                <p style={ STYLES.tally }><span style={ STYLES.count }>{ _.size( Object.keys( recentConflictsDetected ).filter(k => ! _.has(unregisteredClientsBeforeDetection, k) ) ) }</span> <span>{ __( 'new conflicts found on this page', 'font-awesome' ) }</span></p>
+                <p style={ STYLES.tally }><span style={ STYLES.count }>{ _.size( unregisteredClients ) }</span> <span>total found</span>
                 {
                   currentlyOnTroubleshootTab ?
                   <span>&nbsp;({ __( 'manage conflicts here on the Troubleshoot tab', 'font-awesome' ) })</span>

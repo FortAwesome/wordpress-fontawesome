@@ -5,14 +5,11 @@ import styles from './KitSelectView.module.css'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import Alert from './Alert'
-import get from 'lodash/get'
-import has from 'lodash/has'
-import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 import { createInterpolateElement } from '@wordpress/element'
 
 export default function KitConfigView({ kitToken }) {
-  const kitTokenIsActive = useSelector(state => get(state, 'options.kitToken') === kitToken)
+  const kitTokenIsActive = useSelector(state => _.get(state, 'options.kitToken') === kitToken)
   const kitTokenApiData = useSelector(state => (state.kits || []).find(k => k.token === kitToken))
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
   const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
@@ -45,10 +42,10 @@ export default function KitConfigView({ kitToken }) {
   )
 
   function getDetectionStatusForOption(option) {
-    if ( hasChecked && preferenceCheckSuccess && has(pendingOptionConflicts, option) ) {
+    if ( hasChecked && preferenceCheckSuccess && _.has(pendingOptionConflicts, option) ) {
       return <Alert title={ __( 'Preference Conflict', 'font-awesome' ) } type='warning'>
         {
-          size(pendingOptionConflicts[option]) > 1
+          _.size(pendingOptionConflicts[option]) > 1
           ? <div>
             { __( 'This change might cause problems for these themes or plugins:', 'font-awesome' ) } { pendingOptionConflicts[option].join(', ') }.
           </div>
