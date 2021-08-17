@@ -27,12 +27,6 @@ RUN /tmp/install-wp-tests-docker.sh latest
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000
 
-# Setup for webpack dev server
-COPY ./proxy-webpack-dev.conf /etc/apache2/conf-available
-RUN a2enmod proxy
-RUN a2enmod proxy_http
-RUN a2enconf proxy-webpack-dev
-
 # See: https://github.com/docker-library/wordpress/issues/205
 COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
 
