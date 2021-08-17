@@ -22,6 +22,7 @@ import styles from './KitSelectView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
+import size from 'lodash/size'
 import { sprintf, __ } from '@wordpress/i18n'
 
 export default function KitSelectView({ useOption, masterSubmitButtonShowing, setMasterSubmitButtonShowing }) {
@@ -262,7 +263,7 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
           ? STATUS.querying
           : kitsQueryStatus.hasSubmitted
             ? kitsQueryStatus.success
-              ? _.size(kits) > 0
+              ? size(kits) > 0
                 ? STATUS.kitSelection
                 : STATUS.noKitsFoundAfterQuery
               : STATUS.networkError
@@ -275,7 +276,7 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
       <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faRedo } title="refresh" alt="refresh" />
       <span>
       {
-        0 === _.size(kits)
+        0 === size(kits)
         ? __( 'Get latest kits data', 'font-awesome' )
         : __( 'Refresh kits data', 'font-awesome' )
       }

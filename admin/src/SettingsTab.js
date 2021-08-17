@@ -15,8 +15,10 @@ import {
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
+import has from 'lodash/has'
 import { addPendingOption, submitPendingOptions, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
 import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
+import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 
 export default function SettingsTab() {
@@ -34,7 +36,7 @@ export default function SettingsTab() {
 
   function useOption(option) {
     return useSelector(state => 
-      _.has(state.pendingOptions, option)
+      has(state.pendingOptions, option)
       ? state.pendingOptions[option]
       : state.options[option]
     )
@@ -160,7 +162,7 @@ export default function SettingsTab() {
           id="submit"
           className="button button-primary"
           value={ __( 'Save Changes', 'font-awesome' ) }
-          disabled={ _.size(pendingOptions) === 0 }
+          disabled={ size(pendingOptions) === 0 }
           onClick={ handleSubmit }
         />
         { hasSubmitted 
@@ -185,7 +187,7 @@ export default function SettingsTab() {
             </span>
           : isChecking
             ? <CheckingOptionStatusIndicator/>
-            : _.size(pendingOptions) > 0
+            : size(pendingOptions) > 0
               ? <span className={ sharedStyles['submit-status'] }>{ __( 'you have pending changes', 'font-awesome' ) }</span>
               : null
         }

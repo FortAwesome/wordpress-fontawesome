@@ -17,6 +17,7 @@ import {
   faSkull,
   faSpinner } from '@fortawesome/free-solid-svg-icons'
 import classnames from 'classnames'
+import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 
 export default function TroubleshootTab() {
@@ -27,8 +28,8 @@ export default function TroubleshootTab() {
   const blocklistUpdateStatus = useSelector(state => state.blocklistUpdateStatus)
   const unregisteredClientsDeletionStatus = useSelector(state => state.unregisteredClientsDeletionStatus)
 
-  const showSubmitButton = _.size( unregisteredClients ) > 0
-  const hasPendingChanges = null !== blocklistUpdateStatus.pending || _.size( unregisteredClientsDeletionStatus.pending ) > 0
+  const showSubmitButton = size( unregisteredClients ) > 0
+  const hasPendingChanges = null !== blocklistUpdateStatus.pending || size( unregisteredClientsDeletionStatus.pending ) > 0
   const hasSubmitted = unregisteredClientsDeletionStatus.hasSubmitted || blocklistUpdateStatus.hasSubmitted
   const isSubmitting = unregisteredClientsDeletionStatus.isSubmitting || blocklistUpdateStatus.isSubmitting
 
@@ -46,7 +47,7 @@ export default function TroubleshootTab() {
       dispatch(resetPendingBlocklistSubmissionStatus())
     }
 
-    if ( _.size( unregisteredClientsDeletionStatus.pending ) > 0 ) {
+    if ( size( unregisteredClientsDeletionStatus.pending ) > 0 ) {
       dispatch(submitPendingUnregisteredClientDeletions())
     } else {
       dispatch(resetUnregisteredClientsDeletionStatus())

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
 import sharedStyles from './App.module.css'
+import padStart from 'lodash/padStart'
+import dropWhile from 'lodash/dropWhile'
 import { __, sprintf } from '@wordpress/i18n'
 
 const SECONDS_PER_DAY = 60 * 60 * 24
@@ -14,12 +16,12 @@ export function timerString(durationSeconds) {
   const minutes = Math.floor((durationSeconds - (days * SECONDS_PER_DAY + hours * SECONDS_PER_HOUR)) / SECONDS_PER_MINUTE)
   const seconds = durationSeconds - (days * SECONDS_PER_DAY + hours * SECONDS_PER_HOUR + minutes * SECONDS_PER_MINUTE)
 
-  return _.dropWhile(
+  return dropWhile(
     [days, hours, minutes, seconds].reduce((acc, unit, index) => {
       if(0 === index && unit !== 0){
         acc.push(unit.toString())
       } else {
-        acc.push(_.padStart(unit.toString(), 2, '0'))
+        acc.push(padStart(unit.toString(), 2, '0'))
       }
       return acc
     }, []),

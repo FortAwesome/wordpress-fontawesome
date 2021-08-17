@@ -12,8 +12,11 @@ import { faCircle, faSquare } from '@fortawesome/free-regular-svg-icons'
 import styles from './CdnConfigView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
+import has from 'lodash/has'
+import size from 'lodash/size'
 import Alert from './Alert'
 import PropTypes from 'prop-types'
+import get from 'lodash/get'
 import { __ } from '@wordpress/i18n'
 
 const UNSPECIFIED = ''
@@ -47,7 +50,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const dispatch = useDispatch()
 
   function handleOptionChange(change = {}, check = true) {
-    const pendingTechnology = _.get( change, 'technology' )
+    const pendingTechnology = get( change, 'technology' )
 
     const adjustedChange = pendingTechnology
       ? 'webfont' === pendingTechnology
@@ -60,15 +63,15 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   }
 
   function getDetectionStatusForOption(option) {
-    if(_.has(pendingOptions, option)) {
+    if(has(pendingOptions, option)) {
       if ( hasChecked && ! preferenceCheckSuccess ) {
         return <Alert title={ __( 'Error checking preferences', 'font-awesome' ) } type='warning'>
           <p>{ preferenceCheckMessage }</p>
         </Alert>
-      } else if (_.has(pendingOptionConflicts, option)) {
+      } else if (has(pendingOptionConflicts, option)) {
         return <Alert title={ __( 'Preference Conflict', 'font-awesome' ) } type='warning'>
             {
-              _.size(pendingOptionConflicts[option]) > 1
+              size(pendingOptionConflicts[option]) > 1
               ? <div>
                 { __( 'This change might cause problems for these themes or plugins', 'font-awesome' ) }: { pendingOptionConflicts[option].join(', ') }.
               </div>

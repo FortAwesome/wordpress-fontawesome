@@ -14,12 +14,18 @@ import {
   faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import {
     faSquare } from '@fortawesome/free-regular-svg-icons'
+import get from 'lodash/get'
+import truncate from 'lodash/truncate'
+import size from 'lodash/size'
+import isEqual from 'lodash/isEqual'
+import sortedUnique from 'lodash/sortedUniq'
+import difference from 'lodash/difference'
 import { __ } from '@wordpress/i18n'
 import { createInterpolateElement } from '@wordpress/element'
 
 function excerpt( content ) {
   if( !! content ) {
-    return _.truncate( content, { length: 100 } )
+    return truncate( content, { length: 100 } )
   } else {
     return null
   }
@@ -37,11 +43,11 @@ export default function UnregisteredClientsView() {
     }
   })
   const deleteList = useSelector( state => state.unregisteredClientsDeletionStatus.pending)
-  const detectedUnregisteredClients = _.size(Object.keys(unregisteredClients)) > 0
+  const detectedUnregisteredClients = size(Object.keys(unregisteredClients)) > 0
   const allDetectedConflictsSelectedForBlocking = 
-              _.isEqual(Object.keys(unregisteredClients).sort(), [...(blocklist || [])].sort())
+              isEqual(Object.keys(unregisteredClients).sort(), [...(blocklist || [])].sort())
   const allDetectedConflictsSelectedForRemoval = 
-              _.isEqual(Object.keys(unregisteredClients).sort(), [...(deleteList || [])].sort())
+              isEqual(Object.keys(unregisteredClients).sort(), [...(deleteList || [])].sort())
   const allDetectedConflicts = Object.keys(unregisteredClients)
 
   function isCheckedForBlocking(md5) {
@@ -73,13 +79,13 @@ export default function UnregisteredClientsView() {
         ? blocklist.filter(x => x !== md5)
         : [...blocklist, md5]
 
-    const orig = _.sortedUnique( savedBlocklist )
-    const updated = _.sortedUnique( newBlocklist )
+    const orig = sortedUnique( savedBlocklist )
+    const updated = sortedUnique( newBlocklist )
 
     if(
       orig.length === updated.length &&
-      0 === _.size( _.difference(orig, updated) ) &&
-      0 === _.size( _.difference(updated, orig) )
+      0 === size( difference(orig, updated) ) &&
+      0 === size( difference(updated, orig) )
     ) {
       dispatch(updatePendingBlocklist(null))
     } else {
@@ -102,7 +108,7 @@ export default function UnregisteredClientsView() {
               <th>
               <div className={ styles['column-label'] }>{ __( 'Block', 'font-awesome' ) }</div>
                 {
-                  _.size( allDetectedConflicts ) > 1 &&
+                  size( allDetectedConflicts ) > 1 &&
                   <div className={ styles['block-all-container'] }>
                     <input
                       id='block_all_detected_conflicts'
@@ -146,7 +152,7 @@ export default function UnregisteredClientsView() {
               <th>
                 <div className={ styles['column-label'] }>{ __( 'Clear', 'font-awesome' ) }</div>
                 {
-                  _.size( allDetectedConflicts ) > 1 &&
+                  size( allDetectedConflicts ) > 1 &&
                   <div className={ styles['remove-all-container'] }>
                     <input
                       id='remove_all_detected_conflicts'
@@ -211,7 +217,7 @@ export default function UnregisteredClientsView() {
                     </label>
                   </td>
                   <td>
-                    {_.get(unregisteredClients[md5], 'tagName', 'unknown').toLowerCase()}
+                    {get(unregisteredClients[md5], 'tagName', 'unknown').toLowerCase()}
                   </td>
                   <td>
                     {
@@ -227,7 +233,7 @@ export default function UnregisteredClientsView() {
                                File starts with: <code>{ content }</code>
                               </>
                               : ''
-                          ) ( excerpt( _.get(unregisteredClients[md5], 'innerText') ) )
+                          ) ( excerpt( get(unregisteredClients[md5], 'innerText') ) )
                         }
                       )
                     }
