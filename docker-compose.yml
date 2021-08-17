@@ -51,10 +51,8 @@ x-dev_env_volumes: &dev_env_volumes
     # in sync between the host and container.
     #
     # ignores for the local plugin repo and working directory
-    - /var/www/html/wp-content/plugins/font-awesome/blocks/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/wp4-compat-js/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
-    - /var/www/html/wp-content/plugins/font-awesome/admin/config
-    - /var/www/html/wp-content/plugins/font-awesome/admin/scripts
     - /var/www/html/wp-content/plugins/font-awesome/docs
     - /var/www/html/wp-content/plugins/font-awesome/docsrv
     - /var/www/html/wp-content/plugins/font-awesome/phpdoc-data
@@ -104,6 +102,7 @@ x-integration_env_volumes: &integration_env_volumes
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/wp4-compat-js/src
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
