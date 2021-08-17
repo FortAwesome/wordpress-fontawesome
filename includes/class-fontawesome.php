@@ -1673,10 +1673,10 @@ class FontAwesome {
 		 * dependencies will be available, and we'll declare that we need them.
 		 */
 		if ( $this->is_wp_5() ) {
-			$deps = array_merge( $deps, [ 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components' ]);
+			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components' ) );
 
-			if( $enable_icon_chooser ) {
-				$deps = array_merge( $deps, [ 'wp-blocks', 'wp-editor' ]);
+			if ( $enable_icon_chooser ) {
+				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
 			}
 		} else {
 			$wp4_compat_resource_handle = self::ADMIN_RESOURCE_HANDLE . '-compat';
@@ -1684,7 +1684,7 @@ class FontAwesome {
 			wp_enqueue_script(
 				$wp4_compat_resource_handle,
 				trailingslashit( FONTAWESOME_DIR_URL ) . 'wp4-compat-js/build/compat.js',
-				[],
+				array(),
 				self::PLUGIN_VERSION,
 				true
 			);
@@ -1744,7 +1744,7 @@ class FontAwesome {
 			'settingsPageUrl'               => $this->settings_page_url(),
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
-			'webpackPublicPath'             => trailingslashit(FONTAWESOME_DIR_URL) . 'admin/build/'
+			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
 		);
 	}
 
