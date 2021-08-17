@@ -22,6 +22,7 @@
 - [Special Notes on plugin-sigma](#special-notes-on-plugin-sigma)
 - [Remote Debugging with VSCode](#remote-debugging-with-vscode)
 - [Redis Cache Setup](#redis-cache-setup)
+- [Analyze Webpack Bundle](#analyze-webpack-bundle)
 
 <!-- tocstop -->
 
@@ -880,4 +881,13 @@ bin/env /bin/bash
 
 ```bash
 wp --allow-root core update --version=5.4 /tmp/wordpress-5.4-latest.zip
+```
+
+# Analyze Webpack Bundle
+
+```
+$ cd admin
+$ npm install
+$ npx webpack --profile --json > webpack-stats.json
+$ npx webpack-bundle-analyzer webpack-stats.json
 ```
