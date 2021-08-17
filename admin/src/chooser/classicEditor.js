@@ -1,6 +1,8 @@
 import IconChooserModal from './IconChooserModal'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 import get from 'lodash/get'
+import ReactDOM from 'react-dom'
+import React from 'react'
 
 export function handleSubmit(event) {
   const insert = get(window, 'wp.media.editor.insert')
@@ -34,10 +36,12 @@ export function setupClassicEditor(params) {
 
     import('@wordpress/components/build-style/style.css')
     .then(() => {})
-    .catch(err => {
-      // TODO: what do we want to do about this error condition?
-      console.error(err)
-    })
+    .catch(err =>
+      console.error(
+        'Font Awesome Plugin failed to load styles for the Icon Chooser in the Classic Editor',
+        err
+      )
+    )
   }
 
   // TODO: consider how to add Font Awesome to the Tiny MCE visual pane.
