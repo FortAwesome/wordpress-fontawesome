@@ -43,7 +43,6 @@ if( get(initialData, 'showConflictDetectionReporter') ) {
  * externals.
  */
 if( !window.__Font_Awesome_Webpack_Externals__ ) {
-  // TODO: add some error handling to make diagnostics more robust
   window.__Font_Awesome_Webpack_Externals__ = {
     React: get(window, 'React'),
     ReactDOM: get(window, 'ReactDOM'),

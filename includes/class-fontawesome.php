@@ -1511,6 +1511,22 @@ class FontAwesome {
 						 * even on pages where Gutenberg is also present.
 						 * This is an initial fix for GitHub Issue: #133
 						 * https://github.com/FortAwesome/wordpress-fontawesome/issues/133
+						 *
+						 * UPATE: Now that the bundles are building differently
+						 * and external dependencies are working correctly, this
+						 * is close to working (try loading a new post in Gutenberg
+						 * with integration plugin-nu enabled). It requires disabling
+						 * the dynamic import of the components style.css. In the
+						 * case where we're already on Gutenberg page, it is not
+						 * necessary to load it, so it should be easy to check for that.
+						 *
+						 * The remaining issue seems to be just determining into
+						 * which editor the shortcode should be inserted. When
+						 * running plugin-nu, activating the Icon Chooser from either
+						 * Gutenberg or the plugin-nu's TinyMCE editor, the shortcode
+						 * is always inserted into to the TinyMCE editors. Seems
+						 * like that should be easy to resolve when there's time
+						 * and priority to continue investigating.
 						 */
 						if ( ! $this->is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
