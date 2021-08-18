@@ -473,7 +473,7 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 3. Update the plugin version const in `includes/class-fontawesome.php`
 
-4. Update the version in `admin/package.json`
+4. Update the versions in `admin/package.json` and `wp4-compat-js/package.json`
 
 5. Wait on changing the "Stable Tag" in `readme.txt` until after we've made the changes in the `svn` repo below.
 
