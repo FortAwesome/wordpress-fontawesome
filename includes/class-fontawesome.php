@@ -1673,7 +1673,7 @@ class FontAwesome {
 		 * dependencies will be available, and we'll declare that we need them.
 		 */
 		if ( $this->is_wp_5() ) {
-			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components' ) );
+			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
 
 			if ( $enable_icon_chooser ) {
 				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
