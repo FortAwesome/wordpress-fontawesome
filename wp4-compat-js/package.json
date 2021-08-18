@@ -1,6 +1,6 @@
 {
   "name": "fa-wp4-compat",
-  "version": "4.0.1",
+  "version": "4.0.2-rc1",
   "private": true,
   "dependencies": {
     "@wordpress/api-fetch": "^5.1.1",
