@@ -9,7 +9,8 @@ import get from 'lodash/get'
 import has from 'lodash/has'
 import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
-import { createInterpolateElement } from '@wordpress/element'
+import { __experimentalCreateInterpolateElement, createInterpolateElement as stableCreateInterpolateElement } from '@wordpress/element'
+const createInterpolateElement = stableCreateInterpolateElement || __experimentalCreateInterpolateElement
 
 export default function KitConfigView({ kitToken }) {
   const kitTokenIsActive = useSelector(state => get(state, 'options.kitToken') === kitToken)
