@@ -1,13 +1,17 @@
-import i18n from '@wordpress/i18n'
-
 describe('checkCompatibility', () => {
   const originalConsoleError = console.error
   const originalConsoleWarn = console.warn
+
+  let i18n = null
 
   beforeEach(() => {
     console.error = jest.fn()
     console.warn = jest.fn()
     window.__Font_Awesome_Webpack_Externals__ = undefined
+    i18n = {
+      __: jest.fn(),
+      sprintf: jest.fn(),
+    }
   })
 
   afterEach(() => {
