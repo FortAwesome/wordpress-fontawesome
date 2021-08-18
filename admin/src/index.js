@@ -71,7 +71,7 @@ const {
 const compatible = checkCompatibility()
 
 if( !compatible ) {
-  console.warn( __( 'Font Awesome Plugin: some features are incompatible with your installation of WordPress. Upgrading to at least WordPress 5.4.1 will probably resolve this.', 'font-awesome' ) )
+  console.warn( __( 'Font Awesome Plugin: some features are incompatible with your installation of WordPress. Upgrading to at least WordPress 5.4.6 will probably resolve this.', 'font-awesome' ) )
 }
 
 if( showAdmin ) {
