@@ -158,9 +158,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-latest-dev"
 
@@ -178,9 +175,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php7.2-dev"
 
@@ -198,9 +192,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php7.1-dev"
 
@@ -218,9 +209,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php5.6-dev"
 
@@ -240,6 +228,23 @@ services:
        WORDPRESS_DB_NAME: wordpress
      container_name: "com.fontawesome.wordpress-latest-integration"
 
+   wordpress-5.0.0-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-5.0.0
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-5.0.0-dev"
+
    wordpress-4.9.8-dev:
      <<:
        - *wordpress_defaults
@@ -254,9 +259,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-4.9.8-dev"
 
