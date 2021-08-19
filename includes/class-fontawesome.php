@@ -1646,14 +1646,8 @@ class FontAwesome {
 	}
 
 	/**
-	 * Enqueues all js assets in the webpack asset manifest, according to their
-	 * dependency relationships: those appearing later in the asset manifest
-	 * depend on those appearing earlier.
-	 *
-	 * Expects that one of the resources corresponds to main.js and assigns
-	 * the handle ADMIN_RESOURCE_HANDLE to that one. This is the handle to which
-	 * any subsequent localization should be applied via wp_set_script_translations
-	 * or wp_localize_script.
+	 * Enqueues the entrypoint JavaScript index.js, and declares relevant js
+	 * dependencies.
 	 *
 	 * @param bool $with_icon_chooser
 	 * @ignore
@@ -1666,8 +1660,8 @@ class FontAwesome {
 		$deps = array();
 
 		/**
-		 * The current Gutenberg plugin does not support WP 4, so we're ruling
-		 * out the possibility that we're in WP 4 on a Gutenberg page.
+		 * The current Gutenberg plugin does not support WP 4, so we do not
+		 * expect to be in the situation where were in WP 4 on a Gutenberg page.
 		 *
 		 * If we're on a Gutenberg page in WP 5, then the WP Core JavaScript
 		 * dependencies will be available, and we'll declare that we need them.
