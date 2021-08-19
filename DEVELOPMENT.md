@@ -49,7 +49,7 @@ activated to help with testing and exploring interaction with the plugin at run 
 ## 0. Install PHP
 
 Most of our PHP code will run inside a Docker container under the version of PHP installed within that container.
-However, some tools for building or running composer will run outside container, in the host environment,
+However, some tools for building or running composer will run outside the container, in the host environment,
 so you'll need a workable version of PHP installed in your host environment.
 
 You could run this to see what version of php is used in the `wordpress:latest` docker
