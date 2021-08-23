@@ -1677,7 +1677,7 @@ class FontAwesome {
 
 			wp_enqueue_script(
 				$wp4_compat_resource_handle,
-				trailingslashit( FONTAWESOME_DIR_URL ) . 'wp4-compat-js/build/compat.js',
+				trailingslashit( FONTAWESOME_DIR_URL ) . 'compat-js/build/compat.js',
 				array(),
 				self::PLUGIN_VERSION,
 				true

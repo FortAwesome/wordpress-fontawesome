@@ -1,5 +1,5 @@
 {
-  "name": "fa-wp4-compat",
+  "name": "fa-compat-js",
   "version": "4.0.2-rc1",
   "private": true,
   "dependencies": {
