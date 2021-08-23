@@ -1,3 +1,4 @@
+import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './Alert.module.css'
 import classnames from 'classnames'
@@ -7,7 +8,6 @@ import {
   faThumbsUp,
   faSpinner,
   faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
-import React from 'react'
 
 function getIcon(props = {}){
   switch(props.type){

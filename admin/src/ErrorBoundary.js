@@ -1,6 +1,6 @@
+import React from 'react'
 import ErrorFallbackView from './ErrorFallbackView'
 import { ERROR_REPORT_PREAMBLE } from './util/reportRequestError'
-import React from 'react'
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

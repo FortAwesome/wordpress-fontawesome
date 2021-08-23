@@ -1,8 +1,8 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
 import IconChooserModal from './IconChooserModal'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 import get from 'lodash/get'
-import ReactDOM from 'react-dom'
-import React from 'react'
 
 export function handleSubmit(event) {
   const insert = get(window, 'wp.media.editor.insert')

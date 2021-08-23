@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSelector } from 'react-redux'
 import styles from './ClientPreferencesView.module.css'
 import sharedStyles from './App.module.css'
@@ -6,7 +7,6 @@ import has from 'lodash/has'
 import size from 'lodash/size'
 import classnames from 'classnames'
 import { __, sprintf } from '@wordpress/i18n'
-import React from 'react'
 
 const UNSPECIFIED_INDICATOR = '-'
 

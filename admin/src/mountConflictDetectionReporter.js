@@ -1,9 +1,9 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
 import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
 import retargetEvents from 'react-shadow-dom-retarget-events'
-import React from 'react'
-import ReactDOM from 'react-dom'
 
 export const CONFLICT_DETECTION_SHADOW_HOST_ID = 'font-awesome-plugin-conflict-detection-shadow-host'
 // store: the redux store

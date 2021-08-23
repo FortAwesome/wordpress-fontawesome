@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   addPendingOption,
@@ -17,7 +18,6 @@ import size from 'lodash/size'
 import Alert from './Alert'
 import PropTypes from 'prop-types'
 import get from 'lodash/get'
-import React from 'react'
 import { __ } from '@wordpress/i18n'
 
 const UNSPECIFIED = ''
