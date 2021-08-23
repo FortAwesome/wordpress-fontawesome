@@ -2926,7 +2926,7 @@ EOT;
 		?>
 	<script type="text/javascript">
 		if( window.tinymce ) {
-			if( window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser ) {
+			if( typeof window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser === 'function' ) {
 				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
 			} else {
 				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser = true
