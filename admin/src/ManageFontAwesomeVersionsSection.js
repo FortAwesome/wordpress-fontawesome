@@ -4,8 +4,7 @@ import sharedStyles from './App.module.css'
 import ClientPreferencesView from './ClientPreferencesView'
 import classnames from 'classnames'
 import { __ } from '@wordpress/i18n'
-import { __experimentalCreateInterpolateElement, createInterpolateElement as stableCreateInterpolateElement } from '@wordpress/element'
-const createInterpolateElement = stableCreateInterpolateElement || __experimentalCreateInterpolateElement
+import createInterpolateElement from './createInterpolateElement'
 
 export default function ManageFontAwesomeVersionsSection() {
   return <div className={ classnames(sharedStyles['explanation'], styles['font-awesome-versions-section']) }>
