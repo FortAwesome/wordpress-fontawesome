@@ -1,18 +1,59 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import ErrorBoundary from './ErrorBoundary'
-import FontAwesomeAdminView from './FontAwesomeAdminView'
-import { Provider } from 'react-redux'
 import { createStore } from './store'
-import { reportDetectedConflicts } from './store/actions'
-import { mountConflictDetectionReporter } from './mountConflictDetectionReporter'
-import { __ } from '@wordpress/i18n'
-import configureQueryHandler from './chooser/handleQuery'
-import getUrlText from './chooser/getUrlText'
 import get from 'lodash/get'
-import { setupIconChooser } from './chooser'
+
+let hasDomLoaded = false
+
+document.addEventListener('DOMContentLoaded', () => {
+  hasDomLoaded = true
+})
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
+__webpack_public_path__ = get(initialData, 'webpackPublicPath')
+const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport'
+/**
+ * This will start out as falsy, when there's a report, we'll set it with those
+ * params. This is to handle timing issues where the reporting event could possibly
+ * (though unlikely) occur before we listen for that event below. So we'll do both:
+ * set this module-scoped variable, and dispatch an event. So the listening code
+ * below can first check whether the report is already available, and if not, listen
+ * for the later reporting event.
+ */
+let conflictDetectionReport = null
+
+if( get(initialData, 'showConflictDetectionReporter') ) {
+  const reportEvent = new Event(CONFLICT_DETECTION_REPORT_EVENT_TYPE, { "bubbles": true, "cancelable": false })
+
+  /**
+   * If we're doing conflict detection, we must set this up before DOMContentLoaded,
+   * to ensure that the report hook is ready to go.
+   */
+  window.FontAwesomeDetection = {
+    ...(window.FontAwesomeDetection || {}),
+    report: params => {
+      conflictDetectionReport = params
+      document.dispatchEvent(reportEvent)
+    }
+  }
+}
+
+/**
+ * First, we need to resolve whether we're using external dependencies available
+ * in WordPress 5 core, or whether we've loaded our WordPress 4 compatibility
+ * bundle. Regardless, the webpack config will use this global for settting up
+ * externals.
+ */
+if( !window.__Font_Awesome_Webpack_Externals__ ) {
+  window.__Font_Awesome_Webpack_Externals__ = {
+    React: get(window, 'React'),
+    ReactDOM: get(window, 'ReactDOM'),
+    i18n: get(window, 'wp.i18n'),
+    apiFetch: get(window, 'wp.apiFetch'),
+    components: get(window, 'wp.components'),
+    element: get(window, 'wp.element')
+  }
+}
+
+const { __ } = __Font_Awesome_Webpack_Externals__.i18n
 
 if(! initialData){
   console.error( __( 'Font Awesome plugin is broken: initial state data missing.', 'font-awesome' ) )
@@ -23,50 +64,83 @@ const store = createStore(initialData)
 const {
   showAdmin,
   showConflictDetectionReporter,
-  enableIconChooser
+  enableIconChooser,
+  usingCompatJs,
+  isGutenbergPage
 } = store.getState()
 
 if( showAdmin ) {
-  document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
-      <ErrorBoundary>
-        <Provider store={ store }>
-          <FontAwesomeAdminView/>
-        </Provider>
-      </ErrorBoundary>,
-      document.getElementById('font-awesome-admin')
-    )
+  import('./mountAdminView')
+  .then(({ default: mountAdminView }) => {
+    mountAdminView(store, hasDomLoaded)
   })
 }
 
 if( showConflictDetectionReporter ) {
-  mountConflictDetectionReporter({
-    report: params => store.dispatch(reportDetectedConflicts(params)),
-    store,
-    now: false
+  Promise.all([
+    import('./store/actions'),
+    import('./mountConflictDetectionReporter')
+  ])
+  .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
+    const report = params => store.dispatch(reportDetectedConflicts(params))
+
+    /**
+     * If the conflict detection report is already available, just use it;
+     * otherwise, listen for the reporting event.
+     */
+    if( conflictDetectionReport ) {
+      report(conflictDetectionReport)
+    } else {
+      document.addEventListener(
+        CONFLICT_DETECTION_REPORT_EVENT_TYPE,
+        _event => report(conflictDetectionReport)
+      )
+    }
+
+    mountConflictDetectionReporter({
+      store,
+      now: hasDomLoaded
+    })
   })
 }
 
 if ( enableIconChooser ) {
-  const kitToken = get(initialData, 'options.kitToken')
-  const version = get(initialData, 'options.version')
+  if ( usingCompatJs && isGutenbergPage ) {
+    console.warn( __( 'Font Awesome Plugin cannot enable the Icon Chooser on a page that includes the block editor (Gutenberg) because it is not compatible with your WordPress installation. Upgrading to at least WordPress 5.4.6 will probably resolve this.', 'font-awesome' ) )
+  } else {
+    Promise.all([
+      import('./chooser'),
+      import('./chooser/handleQuery'),
+      import('./chooser/getUrlText')
+    ])
+    .then(([{ setupIconChooser }, { default: configureQueryHandler }, { default: getUrlText } ]) => {
+      const kitToken = get(initialData, 'options.kitToken')
+      const version = get(initialData, 'options.version')
 
-  const params = {
-    ...initialData,
-    kitToken,
-    version,
-    getUrlText,
-    pro: get(initialData, 'options.usePro'),
-    // We need to use the global React and ReactDOM if they're present,
-    // otherwise we'll use our own.
-    React: get(window, 'React', React),
-    ReactDOM: get(window, 'ReactDOM', ReactDOM)
+      const params = {
+        ...initialData,
+        kitToken,
+        version,
+        getUrlText,
+        pro: get(initialData, 'options.usePro')
+      }
+
+      const handleQuery = configureQueryHandler(params)
+
+      const { setupClassicEditorIconChooser } = setupIconChooser({ ...params, handleQuery })
+
+      /**
+       * Tiny MCE will probably be loaded later, but since this code runs async,
+       * we can't guarantee the timing. So if this runs first, it will set this
+       * global to a function that the post-tiny-mce inline code can invoke.
+       * But if that code runs first, it will set this global to some truthy value,
+       * which tells us to invoke this setup immediately.
+       */
+      if( window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] ) {
+        setupClassicEditorIconChooser()
+      } else {
+        window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
+      }
+    })
   }
-
-  const handleQuery = configureQueryHandler(params)
-
-  const { setupClassicEditorIconChooser } = setupIconChooser({ ...params, handleQuery })
-
-  // The Tiny MCE will probably be loaded later, so we'll expose the global set up function.
-  window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
 }

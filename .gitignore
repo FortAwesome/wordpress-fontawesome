@@ -14,3 +14,4 @@ volumes/
 !/**/.gitkeep
 .vscode/
 tmp/
+webpack-stats.json

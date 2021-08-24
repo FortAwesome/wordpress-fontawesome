@@ -51,10 +51,8 @@ x-dev_env_volumes: &dev_env_volumes
     # in sync between the host and container.
     #
     # ignores for the local plugin repo and working directory
-    - /var/www/html/wp-content/plugins/font-awesome/blocks/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/wp4-compat-js/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
-    - /var/www/html/wp-content/plugins/font-awesome/admin/config
-    - /var/www/html/wp-content/plugins/font-awesome/admin/scripts
     - /var/www/html/wp-content/plugins/font-awesome/docs
     - /var/www/html/wp-content/plugins/font-awesome/docsrv
     - /var/www/html/wp-content/plugins/font-awesome/phpdoc-data
@@ -104,6 +102,7 @@ x-integration_env_volumes: &integration_env_volumes
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/wp4-compat-js/src
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
@@ -139,6 +138,18 @@ services:
        - db_data-latest:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-latest"
 
+   db-5.0.0:
+     <<: *mysql_defaults
+     volumes:
+       - db_data-5.0.0:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-5.0.0"
+
+   db-5.4.2:
+     <<: *mysql_defaults
+     volumes:
+       - db_data-5.4.2:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-5.4.2"
+
    db-4.9.8:
      <<: *mysql_defaults
      volumes:
@@ -159,9 +170,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-latest-dev"
 
@@ -179,9 +187,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php7.2-dev"
 
@@ -199,9 +204,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php7.1-dev"
 
@@ -219,9 +221,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-php5.6-dev"
 
@@ -241,6 +240,56 @@ services:
        WORDPRESS_DB_NAME: wordpress
      container_name: "com.fontawesome.wordpress-latest-integration"
 
+   wordpress-5.0.0-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-5.0.0
+     image: wordpress-fontawesome-dev-5.0.0
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-5.0.0:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-5.0.0-dev"
+
+   wordpress-5.4.2-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-5.4.2
+     image: wordpress-fontawesome-dev-5.4.2
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-5.4.2:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-5.4.2-dev"
+
+   wordpress-5.4.2-integration:
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
+     image: wordpress-fontawesome-dev-5.4.2
+     depends_on:
+       - db-5.4.2
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-5.4.2:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+     container_name: "com.fontawesome.wordpress-5.4.2-integration"
+
    wordpress-4.9.8-dev:
      <<:
        - *wordpress_defaults
@@ -255,9 +304,6 @@ services:
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-       # FONTAWESOME_ENV controls whether the React assets are loaded from webpack dev server or the
-       # static production ones in the admin/build dir.
-       # If this is "development", you get webpack. Otherwise, admin/build.
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-4.9.8-dev"
 
@@ -276,6 +322,9 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
      container_name: "com.fontawesome.wordpress-4.9.8-integration"
+
 volumes:
     db_data-latest:
     db_data-4.9.8:
+    db_data-5.0.0:
+    db_data-5.4.2:

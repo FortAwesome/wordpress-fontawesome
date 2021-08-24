@@ -21,7 +21,7 @@ import isEqual from 'lodash/isEqual'
 import sortedUnique from 'lodash/sortedUniq'
 import difference from 'lodash/difference'
 import { __ } from '@wordpress/i18n'
-import { createInterpolateElement } from '@wordpress/element'
+import createInterpolateElement from './createInterpolateElement'
 
 function excerpt( content ) {
   if( !! content ) {

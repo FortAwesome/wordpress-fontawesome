@@ -126,7 +126,7 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.0.1';
+	const PLUGIN_VERSION = '4.0.2-rc1';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
@@ -1475,18 +1475,6 @@ class FontAwesome {
 					if ( $hook === $this->screen_id ) {
 						$this->maybe_refresh_releases();
 
-						if ( FONTAWESOME_ENV !== 'development' ) {
-							$asset_manifest = $this->get_webpack_asset_manifest();
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-							wp_enqueue_style(
-								self::ADMIN_RESOURCE_HANDLE,
-								$asset_manifest['files']['main.css'],
-								array(),
-								null,
-								'all'
-							);
-						}
-
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
@@ -1523,6 +1511,22 @@ class FontAwesome {
 						 * even on pages where Gutenberg is also present.
 						 * This is an initial fix for GitHub Issue: #133
 						 * https://github.com/FortAwesome/wordpress-fontawesome/issues/133
+						 *
+						 * UPATE: Now that the bundles are building differently
+						 * and external dependencies are working correctly, this
+						 * is close to working (try loading a new post in Gutenberg
+						 * with integration plugin-nu enabled). It requires disabling
+						 * the dynamic import of the components style.css. In the
+						 * case where we're already on Gutenberg page, it is not
+						 * necessary to load it, so it should be easy to check for that.
+						 *
+						 * The remaining issue seems to be just determining into
+						 * which editor the shortcode should be inserted. When
+						 * running plugin-nu, activating the Icon Chooser from either
+						 * Gutenberg or the plugin-nu's TinyMCE editor, the shortcode
+						 * is always inserted into to the TinyMCE editors. Seems
+						 * like that should be easy to resolve when there's time
+						 * and priority to continue investigating.
 						 */
 						if ( ! $this->is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
@@ -1642,14 +1646,8 @@ class FontAwesome {
 	}
 
 	/**
-	 * Enqueues all js assets in the webpack asset manifest, according to their
-	 * dependency relationships: those appearing later in the asset manifest
-	 * depend on those appearing earlier.
-	 *
-	 * Expects that one of the resources corresponds to main.js and assigns
-	 * the handle ADMIN_RESOURCE_HANDLE to that one. This is the handle to which
-	 * any subsequent localization should be applied via wp_set_script_translations
-	 * or wp_localize_script.
+	 * Enqueues the entrypoint JavaScript index.js, and declares relevant js
+	 * dependencies.
 	 *
 	 * @param bool $with_icon_chooser
 	 * @ignore
@@ -1657,96 +1655,73 @@ class FontAwesome {
 	 * @return string $main_js_handle
 	 */
 	private function enqueue_admin_js_assets( $with_icon_chooser ) {
-		$asset_manifest      = $this->get_webpack_asset_manifest();
-		$asset_url_base      = $this->get_webpack_asset_url_base();
-		$entrypoints         = $asset_manifest['entrypoints'];
+		global $wp_version;
+
 		$enable_icon_chooser = boolval( $with_icon_chooser );
 
-		$js_entrypoints =
-					array_filter(
-						$entrypoints,
-						function( $e ) {
-							return '.js' === substr( $e, -3 );
-						}
-					);
+		$deps = array();
 
-		$js_entrypoint_urls = array_map(
-			function ( $e ) use ( $asset_url_base ) {
-				return trailingslashit( $asset_url_base ) . $e;
-			},
-			$js_entrypoints
-		);
-
-		// Which one represents main.js?
-		$js_main_url = $asset_manifest['files']['main.js'];
-
-		$js_url_id = 0;
-		$deps      = array();
-
-		if ( $enable_icon_chooser ) {
-			/**
-			 * If enabling the icon chooser, then our admin bundle will depend on
-			 * some other scripts.
-			 *
-			 * The current Gutenberg plugin does not support WP 4, so we're ruling
-			 * out the possibility that we're in WP 4 on a Gutenberg page.
-			 *
-			 * If we're on a Gutenberg page in WP 5, then these WP Core JavaScript
-			 * dependencies will be available, and we'll declare that we need them.
-			 */
-			if ( $this->is_wp_5() && $this->is_gutenberg_page() ) {
-				$gutenberg_deps = array(
-					'wp-blocks',
-					'wp-i18n',
-					'wp-element',
-					'wp-components',
-					'wp-editor',
-				);
-
-				foreach ( $gutenberg_deps as $dep ) {
-					array_push( $deps, $dep );
-				}
-			} else {
-				/**
-				 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
-				 * page load. For now, we're eliminating that case because
-				 * some customers experienced Gutenberg failures on pages where both
-				 * editors were active.
-				 *
-				 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
-				 * then we want to enable our TinyMCE integration. We'll initialize it
-				 * on the wp_tiny_mce_init action hook.
-				 *
-				 * According to the docs:
-				 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
-				 *
-				 * So we expect this to only fire once, even if multiple instances of the editor
-				 * are added to a single page.
-				 *
-				 * If TinyMCE is not present or not active, then this action hook will
-				 * never be fired and thus our TinyMCE integration will never be setup,
-				 * which is what we want.
-				 */
-				add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
-			}
-		}
-
-		foreach ( $js_entrypoint_urls as $js_url ) {
-			$cur_resource_handle = ( substr( $js_url, -1 * strlen( $js_main_url ) ) === $js_main_url )
-				? self::ADMIN_RESOURCE_HANDLE
-				: self::ADMIN_RESOURCE_HANDLE . "-dep-$js_url_id";
+		/**
+		 * If we're on a recent enough version of WordPress 5, then the supporting
+		 * libraries are adequate for us to use as externals.
+		 *
+		 * For earlier versions, we'll need to load our own compatibility bundle,
+		 * and disable Gutenberg integration, since our compatibility bundle
+		 * uses a newer version of React than what would be available in WordPress
+		 * Core in that earlier version.
+		 */
+		if ( $this->compat_js_required() ) {
+			$wp4_compat_resource_handle = self::ADMIN_RESOURCE_HANDLE . '-compat';
 
 			wp_enqueue_script(
-				$cur_resource_handle,
-				$js_url,
-				$deps,
+				$wp4_compat_resource_handle,
+				trailingslashit( FONTAWESOME_DIR_URL ) . 'compat-js/build/compat.js',
+				array(),
 				self::PLUGIN_VERSION,
 				true
 			);
 
-			++$js_url_id;
-			array_push( $deps, $cur_resource_handle );
+			// We need our main bundle to depend on the compat bundle.
+			array_push( $deps, $wp4_compat_resource_handle );
+		} else {
+			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
+
+			if ( $enable_icon_chooser ) {
+				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
+			}
 		}
+
+		if ( $enable_icon_chooser ) {
+			/**
+			 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
+			 * page load. For now, we're eliminating that case because
+			 * some customers experienced Gutenberg failures on pages where both
+			 * editors were active.
+			 *
+			 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
+			 * then we want to enable our TinyMCE integration. We'll initialize it
+			 * on the wp_tiny_mce_init action hook.
+			 *
+			 * According to the docs:
+			 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
+			 *
+			 * So we expect this to only fire once, even if multiple instances of the editor
+			 * are added to a single page.
+			 *
+			 * If TinyMCE is not present or not active, then this action hook will
+			 * never be fired and thus our TinyMCE integration will never be setup,
+			 * which is what we want.
+			 */
+			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
+		}
+
+		wp_enqueue_script(
+			self::ADMIN_RESOURCE_HANDLE,
+			trailingslashit( $this->get_webpack_asset_url_base() ) . 'index.js',
+			$deps,
+			self::PLUGIN_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -1767,6 +1742,9 @@ class FontAwesome {
 			'settingsPageUrl'               => $this->settings_page_url(),
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
+			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
+			'usingCompatJs'                 => $this->compat_js_required(),
+			'isGutenbergPage'               => $this->is_gutenberg_page(),
 		);
 	}
 
@@ -2895,52 +2873,8 @@ EOT;
 	 * @internal
 	 * @ignore
 	 */
-	private function get_webpack_asset_manifest() {
-		if ( FONTAWESOME_ENV === 'development' ) {
-			$response = wp_remote_get( 'http://host.docker.internal:3030/wp-content/plugins/font-awesome/admin/build/asset-manifest.json' );
-
-			if ( is_wp_error( $response ) ) {
-				wp_die(
-					esc_html(
-						__(
-							"You're running in dev mode (FONTAWESOME_ENV === 'development'), but we got an error trying to wp_remote_get the admin UI's asset manifest. That usually means you haven't started up the webpack dev server for admin. Make sure that's running. You can start it under the 'admin/' dir with 'yarn start'.",
-							'font-awesome'
-						)
-					)
-				);
-			}
-
-			if ( 200 !== $response['response']['code'] ) {
-				return null;
-			}
-
-			return json_decode( $response['body'], true );
-		} else {
-			$asset_manifest_file = FONTAWESOME_DIR_PATH . 'admin/build/asset-manifest.json';
-			if ( ! file_exists( $asset_manifest_file ) ) {
-				return null;
-			}
-			// phpcs:ignore WordPress.WP.AlternativeFunctions
-			$contents = file_get_contents( $asset_manifest_file );
-			if ( empty( $contents ) ) {
-				return null;
-			}
-			return json_decode( $contents, true );
-		}
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
 	private function get_webpack_asset_url_base() {
-		if ( FONTAWESOME_ENV === 'development' ) {
-			return 'http://localhost:3030/wp-content/plugins/font-awesome/admin/build';
-		} else {
-			return FONTAWESOME_DIR_URL . 'admin/build';
-		}
+		return trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build';
 	}
 
 	/**
@@ -2986,15 +2920,24 @@ EOT;
 	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
+	 * We can't guarantee the timing of when this global hook will be set.
+	 * So if we find that it's already set, we'll invoke it. Otherwise, we'll
+	 * assign a truthy value to it to indicate that it should be invoked as
+	 * soon as the hook is ready.
+	 *
 	 * @internal
 	 * @ignore
 	 */
 	public function print_classic_editor_icon_chooser_setup_script() {
 		?>
 	<script type="text/javascript">
-		window.tinymce
-		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser
-		&& window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
+		if( window.tinymce ) {
+			if( typeof window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser === 'function' ) {
+				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
+			} else {
+				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser = true
+			}
+		}
 	</script>
 		<?php
 	}
@@ -3005,9 +2948,10 @@ EOT;
 	 * @internal
 	 * @ignore
 	 */
-	private function is_wp_5() {
+	private function compat_js_required() {
 		global $wp_version;
-		return '5' === substr( $wp_version[0], 0, 1 );
+
+		return ! version_compare( $wp_version, '5.4', '>=' );
 	}
 }
 

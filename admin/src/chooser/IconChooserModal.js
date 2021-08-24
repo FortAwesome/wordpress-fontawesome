@@ -3,7 +3,7 @@ import { Modal as FallbackModal } from '@wordpress/components'
 import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react'
 import { __ as FallbackI18n } from '@wordpress/i18n'
 import get from 'lodash/get'
-import { createInterpolateElement } from '@wordpress/element'
+import createInterpolateElement from '../createInterpolateElement'
 
 const React = get(window, 'React', FallbackReact)
 const useState = get(window, 'wp.element.useState', fallbackUseState)

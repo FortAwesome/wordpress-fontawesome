@@ -7,7 +7,7 @@ import styles from './V3DeprecationWarning.module.css'
 import classnames from 'classnames'
 import Alert from './Alert'
 import { __, sprintf } from '@wordpress/i18n'
-import { createInterpolateElement } from '@wordpress/element'
+import createInterpolateElement from './createInterpolateElement'
 
 export default function V3DeprecationWarning() {
   const { snooze, atts, v5name, v5prefix } = useSelector(state => state.v3DeprecationWarning)

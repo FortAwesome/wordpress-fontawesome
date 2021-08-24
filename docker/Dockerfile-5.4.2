@@ -1,9 +1,9 @@
-FROM wordpress:php5.6
-# this uses WordPress 5.0.2
+FROM wordpress:5.4.2
 
 # Install packages
+
 RUN apt-get update && \
-    apt-get -y install vim subversion default-mysql-client less
+    apt-get -y install vim subversion less
 
 # Install wp-cli
 RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /usr/local/bin/wp && chmod +x /usr/local/bin/wp
@@ -12,15 +12,18 @@ RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
 RUN groupadd -r user && useradd --no-log-init -r -g user user
 
 # Install phpunit
-RUN curl -L -s  https://phar.phpunit.de/phpunit-5.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
+RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 
 COPY ./install-wp-tests-docker.sh /tmp
 
-RUN /tmp/install-wp-tests-docker.sh latest
+RUN /tmp/install-wp-tests-docker.sh 5.4.2
+
+# Xdebug environment variables
+ENV XDEBUG_PORT 9000
 
 # See: https://github.com/docker-library/wordpress/issues/205
 COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
 
 COPY ./add-hosts.sh /tmp
 
-CMD ["docker-entrypoint.sh"]
+CMD ["apache2-foreground"]

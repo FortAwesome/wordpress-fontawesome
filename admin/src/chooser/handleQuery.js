@@ -1,7 +1,4 @@
-import { default as fallbackApiFetch } from '@wordpress/api-fetch'
-import get from 'lodash/get'
-
-const apiFetch = get(window, 'wp.apiFetch', fallbackApiFetch)
+import apiFetch from '@wordpress/api-fetch'
 
 const configureQueryHandler = params => async (query) => {
   try {

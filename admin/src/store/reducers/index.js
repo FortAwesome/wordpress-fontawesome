@@ -482,5 +482,8 @@ export default combineReducers({
   unregisteredClientsDeletionStatus, 
   userAttemptedToStopScanner,
   v3DeprecationWarning,
-  v3DeprecationWarningStatus
+  v3DeprecationWarningStatus,
+  webpackPublicPath: simple,
+  isGutenbergPage: coerceBool,
+  usingCompatJs: coerceBool
 })

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheck, faSkull } from '@fortawesome/free-solid-svg-icons'
 import { mountConflictDetectionReporter, isConflictDetectionReporterMounted } from './mountConflictDetectionReporter'
 import { __, sprintf } from '@wordpress/i18n'
-import { createInterpolateElement } from '@wordpress/element'
+import createInterpolateElement from './createInterpolateElement'
 
 export default function ConflictDetectionScannerSection() {
   const dispatch = useDispatch()
