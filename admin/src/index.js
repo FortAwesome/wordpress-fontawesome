@@ -1,6 +1,5 @@
 import { createStore } from './store'
 import get from 'lodash/get'
-import checkCompatibility from './checkCompatibility'
 
 let hasDomLoaded = false
 
@@ -65,61 +64,49 @@ const store = createStore(initialData)
 const {
   showAdmin,
   showConflictDetectionReporter,
-  enableIconChooser
+  enableIconChooser,
+  usingCompatJs,
+  isGutenbergPage
 } = store.getState()
 
-const compatible = checkCompatibility()
-
-if( !compatible ) {
-  console.warn( __( 'Font Awesome Plugin: some features are incompatible with your installation of WordPress. Upgrading to at least WordPress 5.4.6 will probably resolve this.', 'font-awesome' ) )
-}
-
 if( showAdmin ) {
-  if( !compatible ) {
-    console.error( __( 'Font Awesome Plugin cannot show the admin page because it is not compatible with your WordPress installation.', 'font-awesome' ) )
-  } else {
-    import('./mountAdminView')
-    .then(({ default: mountAdminView }) => {
-      mountAdminView(store, hasDomLoaded)
-    })
-  }
+  import('./mountAdminView')
+  .then(({ default: mountAdminView }) => {
+    mountAdminView(store, hasDomLoaded)
+  })
 }
 
 if( showConflictDetectionReporter ) {
-  if( !compatible ) {
-    console.error( __( 'Font Awesome Plugin cannot load the conflict detection scanner because it is not compatible with your WordPress installation.', 'font-awesome' ) )
-  } else {
-    Promise.all([
-      import('./store/actions'),
-      import('./mountConflictDetectionReporter')
-    ])
-    .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
-      const report = params => store.dispatch(reportDetectedConflicts(params))
+  Promise.all([
+    import('./store/actions'),
+    import('./mountConflictDetectionReporter')
+  ])
+  .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
+    const report = params => store.dispatch(reportDetectedConflicts(params))
 
-      /**
-       * If the conflict detection report is already available, just use it;
-       * otherwise, listen for the reporting event.
-       */
-      if( conflictDetectionReport ) {
-        report(conflictDetectionReport)
-      } else {
-        document.addEventListener(
-          CONFLICT_DETECTION_REPORT_EVENT_TYPE,
-          _event => report(conflictDetectionReport)
-        )
-      }
+    /**
+     * If the conflict detection report is already available, just use it;
+     * otherwise, listen for the reporting event.
+     */
+    if( conflictDetectionReport ) {
+      report(conflictDetectionReport)
+    } else {
+      document.addEventListener(
+        CONFLICT_DETECTION_REPORT_EVENT_TYPE,
+        _event => report(conflictDetectionReport)
+      )
+    }
 
-      mountConflictDetectionReporter({
-        store,
-        now: hasDomLoaded
-      })
+    mountConflictDetectionReporter({
+      store,
+      now: hasDomLoaded
     })
-  }
+  })
 }
 
 if ( enableIconChooser ) {
-  if( !compatible ) {
-    console.warn( __( 'Font Awesome Plugin cannot enable the Icon Chooser because it is not compatible with your WordPress installation.', 'font-awesome' ) )
+  if ( usingCompatJs && isGutenbergPage ) {
+    console.warn( __( 'Font Awesome Plugin cannot enable the Icon Chooser on a page that includes the block editor (Gutenberg) because it is not compatible with your WordPress installation. Upgrading to at least WordPress 5.4.6 will probably resolve this.', 'font-awesome' ) )
   } else {
     Promise.all([
       import('./chooser'),

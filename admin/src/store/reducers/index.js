@@ -484,4 +484,6 @@ export default combineReducers({
   v3DeprecationWarning,
   v3DeprecationWarningStatus,
   webpackPublicPath: simple,
+  isGutenbergPage: coerceBool,
+  usingCompatJs: coerceBool
 })

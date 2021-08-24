@@ -1655,24 +1655,22 @@ class FontAwesome {
 	 * @return string $main_js_handle
 	 */
 	private function enqueue_admin_js_assets( $with_icon_chooser ) {
+		global $wp_version;
+
 		$enable_icon_chooser = boolval( $with_icon_chooser );
 
 		$deps = array();
 
 		/**
-		 * The current Gutenberg plugin does not support WP 4, so we do not
-		 * expect to be in the situation where were in WP 4 on a Gutenberg page.
+		 * If we're on a recent enough version of WordPress 5, then the supporting
+		 * libraries are adequate for us to use as externals.
 		 *
-		 * If we're on a Gutenberg page in WP 5, then the WP Core JavaScript
-		 * dependencies will be available, and we'll declare that we need them.
+		 * For earlier versions, we'll need to load our own compatibility bundle,
+		 * and disable Gutenberg integration, since our compatibility bundle
+		 * uses a newer version of React than what would be available in WordPress
+		 * Core in that earlier version.
 		 */
-		if ( $this->is_wp_5() ) {
-			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
-
-			if ( $enable_icon_chooser ) {
-				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
-			}
-		} else {
+		if ( $this->compat_js_required() ) {
 			$wp4_compat_resource_handle = self::ADMIN_RESOURCE_HANDLE . '-compat';
 
 			wp_enqueue_script(
@@ -1685,6 +1683,12 @@ class FontAwesome {
 
 			// We need our main bundle to depend on the compat bundle.
 			array_push( $deps, $wp4_compat_resource_handle );
+		} else {
+			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
+
+			if ( $enable_icon_chooser ) {
+				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
+			}
 		}
 
 		if ( $enable_icon_chooser ) {
@@ -1739,6 +1743,8 @@ class FontAwesome {
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
+			'usingCompatJs'					=> $this->compat_js_required(),
+			'isGutenbergPage'				=> $this->is_gutenberg_page()
 		);
 	}
 
@@ -2942,9 +2948,10 @@ EOT;
 	 * @internal
 	 * @ignore
 	 */
-	private function is_wp_5() {
+	private function compat_js_required() {
 		global $wp_version;
-		return '5' === substr( $wp_version[0], 0, 1 );
+
+		return !version_compare($wp_version, '5.4', '>=');
 	}
 }
 
