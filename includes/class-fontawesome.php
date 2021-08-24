@@ -1743,8 +1743,8 @@ class FontAwesome {
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
-			'usingCompatJs'					=> $this->compat_js_required(),
-			'isGutenbergPage'				=> $this->is_gutenberg_page()
+			'usingCompatJs'                 => $this->compat_js_required(),
+			'isGutenbergPage'               => $this->is_gutenberg_page(),
 		);
 	}
 
@@ -2951,7 +2951,7 @@ EOT;
 	private function compat_js_required() {
 		global $wp_version;
 
-		return !version_compare($wp_version, '5.4', '>=');
+		return ! version_compare( $wp_version, '5.4', '>=' );
 	}
 }
 
