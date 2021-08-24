@@ -68,7 +68,7 @@
     "enzyme-adapter-react-16": "^1.15.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "0.63.4",
+    "react-native": "0.64.1",
     "react-test-renderer": "16.13.1",
     "redux-mock-store": "^1.5.4",
     "rewire": "^5.0.0",
