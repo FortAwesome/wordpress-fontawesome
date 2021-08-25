@@ -532,33 +532,33 @@ that was created in the previous step.
 
 Run through the following, with the JavaScript console open, looking for any warnings or errors:
 
-    1. Load the plugin settings page.
-    1. Change from Web Font to SVG and save.
-    1. Create a new post (which will be in the Classic Editor)
-    1. Click the "Add Font Awesome" button
-    1. Search for something, and click to insert an icon from the results
+1. Load the plugin settings page.
+1. Change from Web Font to SVG and save.
+1. Create a new post (which will be in the Classic Editor)
+1. Click the "Add Font Awesome" button
+1. Search for something, and click to insert an icon from the results
 
 **WordPress 5.0**
 
 Setup the integration environment as above, but also do the following editor
 integration tests intead:
 
-    1. Install the Classic Editor plugin
-    1. Create a post with the Classic Editor
-    1. Click the "Add Font Awesome" media button
-    1. Search for something, and click to insert an icon from the results
-    1. Create a new post, switching to the Gutenberg / Block Editor
-    1. Expect to see a compatibility warning that the Icon Chooser is not enabled,
-        but otherwise expect the Block Editor to function normally
+1. Install the Classic Editor plugin
+1. Create a post with the Classic Editor
+1. Click the "Add Font Awesome" media button
+1. Search for something, and click to insert an icon from the results
+1. Create a new post, switching to the Gutenberg / Block Editor
+1. Expect to see a compatibility warning that the Icon Chooser is not enabled,
+    but otherwise expect the Block Editor to function normally
 
 **WordPress 5.4**
 
 Setup the integration environment as above. Do the same tests as on 5.0, but also
 expect the Icon Chooser to be enabled within the Block Editor:
 
-    1. Create a post with the Block Editor
-    1. Activate the Icon Chooser
-    1. Search for something, and click to insert an icon from the results
+1. Create a post with the Block Editor
+1. Activate the Icon Chooser
+1. Search for something, and click to insert an icon from the results
 
 **WordPress latest**
 
@@ -624,7 +624,38 @@ bin/setup
         1. create a new post in the block editor
         1. open the browser's JavaScript console
         1. look at the value of the globals: `window._.VERSION` and `window.React.version`. They should be the same as whatever this version of WordPress ships with--not the versions that may be used in our admin JS bundle, if different.
+    - To be more comprehensive, check it also in each of the following scenarios:
+        1. When running the Conflict Detector
+        1. On the admin settings page
+
     - See also [this forum topic](https://wordpress.org/support/topic/lodash-overrides-window-_-underscore-js-variable/).
+        **HEADS UP!** This tricky issue has come up, been fixed, and regressed more than once. So
+        this investigation is especially important any time the JavaScript build
+        process is adjusted. Reason: if code splitting is being used in the JavaScript build, then _any_
+        chunk that's loaded could possibly introduce this problem.
+
+        Currently (as of plugin v4.0.2), the webpack config uses `babel-plugin-lodash` to
+        rewrite lodash imports throughout the whole codebase (and we're including `node_modules` in that)
+        in order to convert any thing like:
+
+        ```
+        import { get } from 'lodash'
+        ```
+
+        to something like:
+
+        ```
+        import get from 'lodash/get'
+        ```
+
+        which avoids the `lodash.js` module import that is responsible for the global assignment side
+        effect (at least in the current version of lodash!)
+
+        Other components in the WordPress ecosystem may depend on the particular, globally available
+        version of lodash that ships in WordPress Core. So the impact of this bug
+        regressing will be that this plugin causes some other plugin or theme to break.
+        In the past, this has included Visual Composer, or themes based on the popular
+        starter theme [Underscores](https://underscores.me/).
 - **Test loader lifecycle scenarios involving composer packages**
     - under `integrations/plugins/plugin-sigma` and `integrations/themes/theme-mu`, make sure the `composer.json` in each case points to a relevant version of this repo's composer package (a particular development branch on GitHub, for example)
     - make sure that `composer update` has been run recently to ensure that those components load the version of the package that you intend to be testing
@@ -762,14 +793,6 @@ You can do `svn delete` on lots of files with that status at once like this:
 ```bash
 $ svn stat | grep '^\!' | sed 's/^\![\ ]*trunk/trunk/' | xargs svn delete
 ```
-
-We don't need the index.html under the admin subdir in the release, so it can be
-snipped out instead of being added to svn:
-```bash
-$ rm trunk/admin/build/index.html
-```
-
-(It would be nice to stop `react-scripts` from including it in the build.)
 
 If there are files with `?` status, that indicates they are being added and you should do `svn add` on each of them.
 

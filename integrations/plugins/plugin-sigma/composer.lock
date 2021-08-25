@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/wordpress-fontawesome.git",
-                "reference": "736df2f19d56ab51208817f77bc7238dcb2f418c"
+                "reference": "7fe152c08f01d180dcbe0e8aa8fc19008891a3f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/736df2f19d56ab51208817f77bc7238dcb2f418c",
-                "reference": "736df2f19d56ab51208817f77bc7238dcb2f418c",
+                "url": "https://api.github.com/repos/FortAwesome/wordpress-fontawesome/zipball/7fe152c08f01d180dcbe0e8aa8fc19008891a3f5",
+                "reference": "7fe152c08f01d180dcbe0e8aa8fc19008891a3f5",
                 "shasum": ""
             },
             "archive": {
@@ -72,7 +72,10 @@
                     "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip"
                 ],
                 "build.admin": [
-                    "cd admin; yarn; yarn build"
+                    "cd admin; npm install && npm run build"
+                ],
+                "build.compat": [
+                    "cd compat-js; npm install && npm run build"
                 ],
                 "cleandocs": [
                     "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs"
@@ -81,10 +84,10 @@
                     "vendor/bin/phpdoc"
                 ],
                 "docsrv": [
-                    "cd docsrv && yarn && node index.js"
+                    "cd docsrv && npm install && node index.js"
                 ],
                 "dist": [
-                    "composer clean && composer build.admin && bin/make-wp-dist"
+                    "composer clean && composer build.admin && composer build.compat && bin/make-wp-dist"
                 ],
                 "dist2trunk": [
                     "bin/dist-to-trunk.sh"
@@ -115,7 +118,7 @@
                 "source": "https://github.com/FortAwesome/wordpress-fontawesome/tree/master",
                 "issues": "https://github.com/FortAwesome/wordpress-fontawesome/issues"
             },
-            "time": "2021-08-05T18:19:27+00:00"
+            "time": "2021-08-25T20:43:38+00:00"
         }
     ],
     "packages-dev": [],
