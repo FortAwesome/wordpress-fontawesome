@@ -161,6 +161,18 @@ You can get more information about all the available settings and troubleshootin
 
 == Changelog ==
 
+= 4.0.2 =
+* FIX: re-enable the Icon Chooser in the Classic Editor on WordPress 4.
+* FIX: in some cases where the path to the plugin was a non-standard
+  location--such as when installed via composer--the admin settings page and
+  Icon Chooser would not load correctly. Fixed.
+* FIX: the global version of the lodash JavaScript library was again being overwritten
+  by the version used by this plugin. Fixed.
+* The Icon Chooser's integration with the Block Editor (Gutenberg) has been disabled
+  for Wordpress 5.0, 5.1, 5.2, and 5.3, due to incomptabile JavaScript libraries.
+  All other features of the plugin work normally on those versions, including
+  Icon Chooser integration with the Classic Editor.
+
 = 4.0.1 =
 * FIX: In scenarios where both Gutenberg (Block) and TinyMCE (Classic)
   editors were being loaded onto the same page, the Gutenberg editor was not
