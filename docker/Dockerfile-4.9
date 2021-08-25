@@ -1,0 +1,41 @@
+FROM wordpress:4.9
+
+# Install packages
+RUN apt-get update && \
+    apt-get -y install vim subversion mysql-client less
+
+# Install wp-cli
+RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /usr/local/bin/wp && chmod +x /usr/local/bin/wp
+
+# Add non-privileged user, best for using wp-cli
+RUN groupadd -r user && useradd --no-log-init -r -g user user
+
+# DEBUG is not set up for 4.9
+# To enable this would require setting up a different docker-php-ext-xdebug.ini
+# that refers to the specific .so file that is installed by by this pecl command.
+# Install xdebug
+#RUN pecl install xdebug
+## Copy in our php.ini debug configuration
+#COPY ./docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d
+
+# Install redis php extension
+# The echo is to avoid the terminal prompt on install
+RUN echo "\n" | pecl install redis
+COPY ./docker-php-ext-redis.ini /usr/local/etc/php/conf.d
+
+# Install phpunit
+RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
+
+COPY ./install-wp-tests-docker.sh /tmp
+
+RUN /tmp/install-wp-tests-docker.sh 4.9
+
+# Xdebug environment variables
+ENV XDEBUG_PORT 9000
+
+# See: https://github.com/docker-library/wordpress/issues/205
+COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
+
+COPY ./add-hosts.sh /tmp
+
+CMD ["apache2-foreground"]

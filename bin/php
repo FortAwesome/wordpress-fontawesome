@@ -2,6 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
+source $DIR/.resolve-container.bash
 
 # To run something like "php -a", you will probably need to do this:
 #

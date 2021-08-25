@@ -1,4 +1,4 @@
-FROM wordpress:5.0.0
+FROM wordpress:4.7
 
 # Install packages
 RUN apt-get update && \
@@ -10,17 +10,12 @@ RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
 # Add non-privileged user, best for using wp-cli
 RUN groupadd -r user && useradd --no-log-init -r -g user user
 
-# Install redis php extension
-# The echo is to avoid the terminal prompt on install
-RUN echo "\n" | pecl install redis
-COPY ./docker-php-ext-redis.ini /usr/local/etc/php/conf.d
-
 # Install phpunit
 RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
 
 COPY ./install-wp-tests-docker.sh /tmp
 
-RUN /tmp/install-wp-tests-docker.sh 5.0.0
+RUN /tmp/install-wp-tests-docker.sh 4.7
 
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000

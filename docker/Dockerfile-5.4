@@ -1,4 +1,4 @@
-FROM wordpress:5.4.2
+FROM wordpress:5.4
 
 # Install packages
 
@@ -16,7 +16,7 @@ RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit 
 
 COPY ./install-wp-tests-docker.sh /tmp
 
-RUN /tmp/install-wp-tests-docker.sh 5.4.2
+RUN /tmp/install-wp-tests-docker.sh 5.4
 
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000

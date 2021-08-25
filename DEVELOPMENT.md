@@ -29,7 +29,7 @@
 # Introduction
 
 This repo provides a multi-dimensional Docker-based development environment to help developers work with the `font-awesome`
-plugin under a variety of conditions: WordPress version tags `4.9.8` and `latest`,
+plugin under a variety of conditions: WordPress version tags `4.9` and `latest`,
 crossed with `development` and `integration`.
 
 The `development` option mounts this plugin code as a read-write volume inside a container, and also
@@ -80,11 +80,11 @@ Dockerfiles in `docker/`.
 
 For example, to build two images:
 ```bash
-$ bin/build-docker-images 4.9.8 latest
+$ bin/build-docker-images 4.9 latest
 ```
 
 Once you build these, you won't need to rebuild them unless something changes in the underlying
-image dependencies. For a historic WordPress release like `4.9.8` that may never occur.
+image dependencies.
 
 For `latest`, this could happen if you see that the [`wordpress:latest` tag on Docker Hub](https://hub.docker.com/_/wordpress)
 is updated. When a new version of WordPress is released, it can take a little while before a new Docker image
@@ -181,7 +181,7 @@ This table shows the matrix for running each container environment:
 
 | version tag  | development | integration |
 | --- | --- | --- |
-| 4.9.8 | `$ bin/dev 4.9.8` | `$ bin/integration 4.9.8` |
+| 4.9 | `$ bin/dev 4.9` | `$ bin/integration 4.9` |
 | latest | `$ bin/dev latest` | `$ bin/integration latest` |
 
 Run one of these from the top-level directory that contains the `docker-compose.yml` config file.
@@ -519,10 +519,56 @@ can be included in the composer package (which is really just a pull of this rep
 
 8. Run through some manual acceptance testing
 
-Load up the `integration` WordPress environment in this repo (see above for how to do that).
+**WordPress 4.7, 4.8, 4.9**
 
-Install the Font Awesome plugin from the admin dashboard by uploading the `font-awesome.zip` file
+For each of these 4.x environments, run and setup the corresponding integration container, like:
+```
+bin/integration 4.7
+bin/setup -c com.fontawesome.wordpress-4.7-integration
+```
+
+Install and activate the Font Awesome plugin from the admin dashboard by uploading the `font-awesome.zip` file
 that was created in the previous step.
+
+Run through the following, with the JavaScript console open, looking for any warnings or errors:
+
+    1. Load the plugin settings page.
+    1. Change from Web Font to SVG and save.
+    1. Create a new post (which will be in the Classic Editor)
+    1. Click the "Add Font Awesome" button
+    1. Search for something, and click to insert an icon from the results
+
+**WordPress 5.0**
+
+Setup the integration environment as above, but also do the following editor
+integration tests intead:
+
+    1. Install the Classic Editor plugin
+    1. Create a post with the Classic Editor
+    1. Click the "Add Font Awesome" media button
+    1. Search for something, and click to insert an icon from the results
+    1. Create a new post, switching to the Gutenberg / Block Editor
+    1. Expect to see a compatibility warning that the Icon Chooser is not enabled,
+        but otherwise expect the Block Editor to function normally
+
+**WordPress 5.4**
+
+Setup the integration environment as above. Do the same tests as on 5.0, but also
+expect the Icon Chooser to be enabled within the Block Editor:
+
+    1. Create a post with the Block Editor
+    1. Activate the Icon Chooser
+    1. Search for something, and click to insert an icon from the results
+
+**WordPress latest**
+
+Again, fire up and setup the integration container for `latest`:
+```
+bin/integration
+bin/setup
+```
+
+...and install the plugin via the newly built `font-awesome.zip` file.
 
 - activate and deactivate the plugin: expect no errors
     - upon deactivation, site transients like `font-awesome-last-used-release` should be deleted
@@ -834,7 +880,7 @@ In order to activate it you must first run `composer install --prefer-dist` from
 
 # Remote Debugging with VSCode
 
-(Only the "latest" WordPress docker image has the xdebug extension. Hack `Dockerfile-4.9.8` if you need it in the 4.9.8 image as well.)
+(Only the "latest" WordPress docker image has the xdebug extension. Hack `Dockerfile-4.9` if you need it in the 4.9 image as well.)
 
 1. Install the PHP Debug (Felix Becker) extension in VSCode
 1. Restart VSCode

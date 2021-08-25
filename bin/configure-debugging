@@ -3,6 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/../.env
 source $DIR/.common.bash
+source $DIR/.resolve-container.bash
 
 wp_cli() {
   $DOCKER exec -it -e "WP_CLI_CACHE_DIR=${WP_CLI_CACHE_DIR}" -e "COLUMNS=`tput cols`" -e "LINES=`tput lines`" -e "TERM=xterm-256color" -w /var/www/html -u root:www-data $WP_CONTAINER wp --allow-root $@

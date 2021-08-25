@@ -21,9 +21,9 @@ copy($plugin_dir . '/admin/index.php', $dist_dir . '/admin/index.php');
 rcp($plugin_dir . '/admin/build', $dist_dir . '/admin/build');
 rcp($plugin_dir . '/admin/views', $dist_dir . '/admin/views');
 
-$wp4_compat_dist_dir = $dist_dir . '/wp4-compat-js';
-if (! file_exists($wp4_compat_dist_dir)) mkdir($wp4_compat_dist_dir);
-rcp($plugin_dir . '/wp4-compat-js/build', $wp4_compat_dist_dir . '/build');
+$compat_js_dist_dir = $dist_dir . '/compat-js';
+if (! file_exists($compat_js_dist_dir)) mkdir($compat_js_dist_dir);
+rcp($plugin_dir . '/compat-js/build', $compat_js_dist_dir . '/build');
 
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
 copy($plugin_dir . '/defines.php', $dist_dir . '/defines.php');

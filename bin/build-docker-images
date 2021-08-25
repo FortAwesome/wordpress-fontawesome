@@ -2,13 +2,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DOCKER_DIR="$DIR/../docker"
-
-DOCKER=`which docker`
-
-if [ ! -x "$DOCKER" ]; then
-  echo "ERROR: docker not found. Make sure it's installed and available in your PATH."
-  exit 1
-fi
+source $DIR/../.env
+source $DIR/.common.bash
 
 if [ "x" = "x$*" ]; then
 	echo "USAGE: $0 <tag1> [<tag2>...]"

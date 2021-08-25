@@ -51,7 +51,7 @@ x-dev_env_volumes: &dev_env_volumes
     # in sync between the host and container.
     #
     # ignores for the local plugin repo and working directory
-    - /var/www/html/wp-content/plugins/font-awesome/wp4-compat-js/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/compat-js/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/docs
     - /var/www/html/wp-content/plugins/font-awesome/docsrv
@@ -102,7 +102,7 @@ x-integration_env_volumes: &integration_env_volumes
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
-    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/wp4-compat-js/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/compat-js/src
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
@@ -138,23 +138,35 @@ services:
        - db_data-latest:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-latest"
 
-   db-5.0.0:
+   db-5.0:
      <<: *mysql_defaults
      volumes:
-       - db_data-5.0.0:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-5.0.0"
+       - db_data-5.0:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-5.0"
 
-   db-5.4.2:
+   db-5.4:
      <<: *mysql_defaults
      volumes:
-       - db_data-5.4.2:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-5.4.2"
+       - db_data-5.4:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-5.4"
 
-   db-4.9.8:
+   db-4.9:
      <<: *mysql_defaults
      volumes:
-       - db_data-4.9.8:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-4.9.8"
+       - db_data-4.9:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-4.9"
+
+   db-4.7:
+     <<: *mysql_defaults
+     volumes:
+       - db_data-4.7:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-4.7"
+
+   db-4.8:
+     <<: *mysql_defaults
+     volumes:
+       - db_data-4.8:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-4.8"
 
    wordpress-latest-dev:
      <<:
@@ -240,91 +252,175 @@ services:
        WORDPRESS_DB_NAME: wordpress
      container_name: "com.fontawesome.wordpress-latest-integration"
 
-   wordpress-5.0.0-dev:
+   wordpress-5.0-dev:
      <<:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-5.0.0
-     image: wordpress-fontawesome-dev-5.0.0
+       - db-5.0
+     image: wordpress-fontawesome-dev-5.0
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.0.0:3306
+       WORDPRESS_DB_HOST: db-5.0:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-     container_name: "com.fontawesome.wordpress-5.0.0-dev"
+     container_name: "com.fontawesome.wordpress-5.0-dev"
 
-   wordpress-5.4.2-dev:
+   wordpress-5.4-dev:
      <<:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-5.4.2
-     image: wordpress-fontawesome-dev-5.4.2
+       - db-5.4
+     image: wordpress-fontawesome-dev-5.4
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.4.2:3306
+       WORDPRESS_DB_HOST: db-5.4:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-     container_name: "com.fontawesome.wordpress-5.4.2-dev"
+     container_name: "com.fontawesome.wordpress-5.4-dev"
 
-   wordpress-5.4.2-integration:
+   wordpress-5.0-integration:
      <<:
        - *wordpress_defaults
        - *integration_env_volumes
-     image: wordpress-fontawesome-dev-5.4.2
+     image: wordpress-fontawesome-dev-5.0
      depends_on:
-       - db-5.4.2
+       - db-5.0
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.4.2:3306
+       WORDPRESS_DB_HOST: db-5.0:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-     container_name: "com.fontawesome.wordpress-5.4.2-integration"
+     container_name: "com.fontawesome.wordpress-5.0-integration"
 
-   wordpress-4.9.8-dev:
+   wordpress-5.4-integration:
      <<:
        - *wordpress_defaults
-       - *dev_env_volumes
-     image: wordpress-fontawesome-dev-4.9.8
+       - *integration_env_volumes
+     image: wordpress-fontawesome-dev-5.4
      depends_on:
-       - db-4.9.8
+       - db-5.4
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-4.9.8:3306
+       WORDPRESS_DB_HOST: db-5.4:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+     container_name: "com.fontawesome.wordpress-5.4-integration"
+
+   wordpress-4.9-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     image: wordpress-fontawesome-dev-4.9
+     depends_on:
+       - db-4.9
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-4.9:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-     container_name: "com.fontawesome.wordpress-4.9.8-dev"
+     container_name: "com.fontawesome.wordpress-4.9-dev"
 
-   wordpress-4.9.8-integration:
+   wordpress-4.9-integration:
      <<:
        - *wordpress_defaults
        - *integration_env_volumes
-     image: wordpress-fontawesome-dev-4.9.8
+     image: wordpress-fontawesome-dev-4.9
      depends_on:
-       - db-4.9.8
+       - db-4.9
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-4.9.8:3306
+       WORDPRESS_DB_HOST: db-4.9:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
-     container_name: "com.fontawesome.wordpress-4.9.8-integration"
+     container_name: "com.fontawesome.wordpress-4.9-integration"
+
+   wordpress-4.7-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     image: wordpress-fontawesome-dev-4.7
+     depends_on:
+       - db-4.7
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-4.7:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-4.7-dev"
+
+   wordpress-4.7-integration:
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
+     image: wordpress-fontawesome-dev-4.7
+     depends_on:
+       - db-4.7
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-4.7:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+     container_name: "com.fontawesome.wordpress-4.7-integration"
+
+   wordpress-4.8-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     image: wordpress-fontawesome-dev-4.8
+     depends_on:
+       - db-4.8
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-4.8:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-4.8-dev"
+
+   wordpress-4.8-integration:
+     <<:
+       - *wordpress_defaults
+       - *integration_env_volumes
+     image: wordpress-fontawesome-dev-4.8
+     depends_on:
+       - db-4.8
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-4.8:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+     container_name: "com.fontawesome.wordpress-4.8-integration"
 
 volumes:
     db_data-latest:
-    db_data-4.9.8:
-    db_data-5.0.0:
-    db_data-5.4.2:
+    db_data-4.7:
+    db_data-4.8:
+    db_data-4.9:
+    db_data-5.0:
+    db_data-5.4:

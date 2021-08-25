@@ -2,6 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
+source $DIR/.resolve-container.bash
 ENV_LOCAL=$DIR/../.env.local
 
 if [ -f $ENV_LOCAL ]; then 
