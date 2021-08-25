@@ -952,9 +952,9 @@ wp --allow-root core update --version=5.4 /tmp/wordpress-5.4-latest.zip
 
 # Analyze Webpack Bundle
 
-```
-$ cd admin
-$ npm install
-$ npx webpack --profile --json > webpack-stats.json
-$ npx webpack-bundle-analyzer webpack-stats.json
-```
+The webpack configs for both `admin/` and `compat-js/` include the `BundleAnalyzerPlugin`,
+which produces a corresponding `webpack-stats.html` file in the corresponding
+directory on each build.
+
+Just open that html file in a web browser to see the analysis of what's actually
+in the bundle.

@@ -1,8 +1,13 @@
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' )
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const get = require('lodash/get')
 
 module.exports = {
   ...defaultConfig,
+  plugins: [
+    ...defaultConfig.plugins,
+    new BundleAnalyzerPlugin({ analyzerMode: 'static', reportFilename: '../webpack-stats.html', openAnalyzer: false })
+  ],
   module: {
     ...defaultConfig.module,
     /**
