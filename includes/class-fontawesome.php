@@ -126,7 +126,7 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.0.2';
+	const PLUGIN_VERSION = '4.0.3-rc1';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
