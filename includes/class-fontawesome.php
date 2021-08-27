@@ -1686,7 +1686,14 @@ class FontAwesome {
 		} else {
 			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
 
-			if ( $enable_icon_chooser ) {
+			/**
+			 * We don't need these Gutenberg dependencies unless we're on a Gutenberg
+			 * page. Declaring them unnecessarily (when not on a Gutenberg page)
+			 * has resulted in conflict for at least one other plugin: RankMath.
+			 *
+			 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
+			 */
+			if ( $enable_icon_chooser && $this->is_gutenberg_page() ) {
 				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
 			}
 		}
