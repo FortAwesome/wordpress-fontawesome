@@ -49,7 +49,9 @@ if( !window.__Font_Awesome_Webpack_Externals__ ) {
     i18n: get(window, 'wp.i18n'),
     apiFetch: get(window, 'wp.apiFetch'),
     components: get(window, 'wp.components'),
-    element: get(window, 'wp.element')
+    element: get(window, 'wp.element'),
+    richText: get(window, 'wp.richText'),
+    blockEditor: get(window, 'wp.blockEditor')
   }
 }
 

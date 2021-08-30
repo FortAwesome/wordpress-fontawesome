@@ -26,7 +26,11 @@ export function setupIconChooser(initialParams) {
     modalOpenEvent: new Event('fontAwesomeIconChooserOpen', { "bubbles": true, "cancelable": false })
   }
 
-  if( get(window, 'wp.element') ) {
+  window['__FontAwesomeOfficialPlugin__openIconChooserModal'] = () => {
+    document.dispatchEvent(params.modalOpenEvent)
+  }
+
+  if( !! get(initialParams, 'isGutenbergPage') ) {
     setupBlockEditor(params)
   }
 

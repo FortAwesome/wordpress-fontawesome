@@ -1,21 +1,12 @@
 import IconChooserModal from './IconChooserModal'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
+import { Fragment, Component } from '@wordpress/element'
+import { SVG, Path } from '@wordpress/components'
+import { __ } from '@wordpress/i18n'
+import { insert, registerFormatType } from '@wordpress/rich-text'
+import { RichTextToolbarButton } from '@wordpress/block-editor'
 
 export function setupBlockEditor (params) {
-  const {
-    Fragment,
-    Component
-  } = window.wp.element
-
-  const {
-    SVG,
-    Path
-  } = window.wp.components
-
-  const __ = window.wp.i18n.__
-  const { insert, registerFormatType } = window.wp.richText
-  const { RichTextToolbarButton } = window.wp.blockEditor
-
   // TODO: is this the right block type name for what we're doing here?
   const name = 'font-awesome/icon'
   const title = __('Font Awesome Icon')

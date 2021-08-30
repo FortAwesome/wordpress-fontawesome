@@ -1,14 +1,8 @@
-import { default as FallbackReact, useState as fallbackUseState } from 'react'
-import { Modal as FallbackModal } from '@wordpress/components'
+import React, { useState } from 'react'
+import { Modal } from '@wordpress/components'
 import { FaIconChooser } from '@fortawesome/fa-icon-chooser-react'
-import { __ as FallbackI18n } from '@wordpress/i18n'
-import get from 'lodash/get'
+import { __ } from '@wordpress/i18n'
 import createInterpolateElement from '../createInterpolateElement'
-
-const React = get(window, 'React', FallbackReact)
-const useState = get(window, 'wp.element.useState', fallbackUseState)
-const Modal = get(window, 'wp.components.Modal', FallbackModal)
-const __ = get(window, 'wp.i18n.__', FallbackI18n)
 
 const IconChooserModal = (props) => {
   const { onSubmit, kitToken, version, pro, handleQuery, modalOpenEvent, getUrlText, settingsPageUrl } = props

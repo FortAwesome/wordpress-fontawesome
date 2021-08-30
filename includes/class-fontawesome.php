@@ -126,7 +126,7 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.0.3-rc1';
+	const PLUGIN_VERSION = '4.0.3-rc2';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
@@ -1539,7 +1539,7 @@ class FontAwesome {
 											'%1$sAdd Font Awesome%2$s',
 											'font-awesome'
 										),
-										'<button type="button" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+										'<button type="button" onclick="__FontAwesomeOfficialPlugin__openIconChooserModal()" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
 										'</button>'
 									);
 								},
@@ -1694,7 +1694,7 @@ class FontAwesome {
 			 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
 			 */
 			if ( $enable_icon_chooser && $this->is_gutenberg_page() ) {
-				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
+				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
 			}
 		}
 
