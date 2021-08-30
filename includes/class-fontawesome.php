@@ -1694,7 +1694,7 @@ class FontAwesome {
 			 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
 			 */
 			if ( $enable_icon_chooser && $this->is_gutenberg_page() ) {
-				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor' ) );
+				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
 			}
 		}
 
