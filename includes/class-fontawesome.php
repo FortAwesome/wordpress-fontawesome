@@ -1539,7 +1539,7 @@ class FontAwesome {
 											'%1$sAdd Font Awesome%2$s',
 											'font-awesome'
 										),
-										'<button type="button" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+										'<button type="button" onclick="__FontAwesomeOfficialPlugin__openIconChooserModal()" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
 										'</button>'
 									);
 								},
