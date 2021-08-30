@@ -1,18 +1,10 @@
 import IconChooserModal from './IconChooserModal'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
+import { Fragment, Component } from '@wordpress/element'
+import { SVG, Path } from '@wordpress/components'
+import { __ } from '@wordpress/i18n'
 
 export function setupBlockEditor (params) {
-  const {
-    Fragment,
-    Component
-  } = window.wp.element
-
-  const {
-    SVG,
-    Path
-  } = window.wp.components
-
-  const __ = window.wp.i18n.__
   const { insert, registerFormatType } = window.wp.richText
   const { RichTextToolbarButton } = window.wp.blockEditor
 
