@@ -612,6 +612,11 @@ bin/setup
 - Use the Icon Chooser
     - Insert an icon into a post using the Icon Chooser from the block editor
     - Install the Classic Editor plugin and insert an icon into a post using the Icon Chooser from the classic editor
+    - On a post editing page with the Classic Editor, open the JavaScript console and check the following:
+        - `!!wp.editor.mediaUpload` should be `false` (because we should not be loading `wp-editor`, aka `@wordpress/editor` here. [See forum topic.](https://wordpress.org/support/topic/plugin-conflicts-with-rankmath/))
+        - `!!wp.blockEditor` should be `false` for the same reason (`wp-block-editor` aka `@wordpress/block-editor`)
+        - `!!wp.blocks` should be `false` for the same reason (`wp-block` aka `@wordpress/blocks`)
+        - (TODO: we should add automated testing for these regression tests.)
     - Ideally, do each of the both under all of the following conditions:
         1. Use with CDN, Free
         1. Use with CDN, Pro (expect a UI message in the Icon Chooser notifying that Pro icons are only available in the Icon Chooser for Pro _Kits_)
