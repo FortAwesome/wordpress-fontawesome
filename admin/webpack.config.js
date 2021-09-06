@@ -119,6 +119,8 @@ module.exports = {
           return callback(null, 'root __Font_Awesome_Webpack_Externals__.richText')
         case '@wordpress/block-editor':
           return callback(null, 'root __Font_Awesome_Webpack_Externals__.blockEditor')
+        case '@wordpress/dom-ready':
+          return callback(null, 'root __Font_Awesome_Webpack_Externals__.domReady')
         default:
           return callback()
       }

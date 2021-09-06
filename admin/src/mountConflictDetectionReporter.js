@@ -4,14 +4,11 @@ import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
 import retargetEvents from 'react-shadow-dom-retarget-events'
+import domReady from '@wordpress/dom-ready'
 
 export const CONFLICT_DETECTION_SHADOW_HOST_ID = 'font-awesome-plugin-conflict-detection-shadow-host'
-// store: the redux store
-// now: boolean (default = false) to mount now, synchronously. If false,
-//     we'll mount on DOMContentLoaded.
-export function mountConflictDetectionReporter({ store, now = false }) {
-
-  const doMount = () => {
+export function mountConflictDetectionReporter(store) {
+  domReady(() => {
     const conflictDetectionShadowRootElement = document.createElement('DIV')
     conflictDetectionShadowRootElement.setAttribute('id', CONFLICT_DETECTION_SHADOW_HOST_ID)
     document.body.appendChild(conflictDetectionShadowRootElement)
@@ -37,13 +34,7 @@ export function mountConflictDetectionReporter({ store, now = false }) {
       </Provider>,
       shadowContainer
     )
-  }
-
-  if(now) {
-    doMount()
-  } else {
-    document.addEventListener('DOMContentLoaded', doMount)
-  }
+  })
 }
 
 export function isConflictDetectionReporterMounted() {

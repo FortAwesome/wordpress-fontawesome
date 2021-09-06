@@ -1,12 +1,6 @@
 import { createStore } from './store'
 import get from 'lodash/get'
 
-let hasDomLoaded = false
-
-document.addEventListener('DOMContentLoaded', () => {
-  hasDomLoaded = true
-})
-
 const initialData = window['__FontAwesomeOfficialPlugin__']
 __webpack_public_path__ = get(initialData, 'webpackPublicPath')
 const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport'
@@ -51,7 +45,8 @@ if( !window.__Font_Awesome_Webpack_Externals__ ) {
     components: get(window, 'wp.components'),
     element: get(window, 'wp.element'),
     richText: get(window, 'wp.richText'),
-    blockEditor: get(window, 'wp.blockEditor')
+    blockEditor: get(window, 'wp.blockEditor'),
+    domReady: get(window, 'wp.domReady')
   }
 }
 
@@ -74,7 +69,10 @@ const {
 if( showAdmin ) {
   import('./mountAdminView')
   .then(({ default: mountAdminView }) => {
-    mountAdminView(store, hasDomLoaded)
+    mountAdminView(store)
+  })
+  .catch(error => {
+    console.error( __( 'Font Awesome plugin error when initializing admin settings view', 'font-awesome' ), error )
   })
 }
 
@@ -99,10 +97,10 @@ if( showConflictDetectionReporter ) {
       )
     }
 
-    mountConflictDetectionReporter({
-      store,
-      now: hasDomLoaded
-    })
+    mountConflictDetectionReporter(store)
+  })
+  .catch(error => {
+    console.error( __( 'Font Awesome plugin error when initializing conflict detection scanner', 'font-awesome' ), error )
   })
 }
 
@@ -143,6 +141,9 @@ if ( enableIconChooser ) {
       } else {
         window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
       }
+    })
+    .catch(error => {
+      console.error( __( 'Font Awesome plugin error when initializing Icon Chooser', 'font-awesome' ), error )
     })
   }
 }
