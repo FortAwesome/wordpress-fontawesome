@@ -1118,11 +1118,13 @@ function ConflictDetectionScannerSection() {
   const store = Object(react_redux__WEBPACK_IMPORTED_MODULE_2__["useStore"])();
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
     if (showConflictDetectionReporter && !Object(_mountConflictDetectionReporter__WEBPACK_IMPORTED_MODULE_7__["isConflictDetectionReporterMounted"])()) {
-      Object(_mountConflictDetectionReporter__WEBPACK_IMPORTED_MODULE_7__["mountConflictDetectionReporter"])({
-        report: params => store.dispatch(Object(_store_actions__WEBPACK_IMPORTED_MODULE_3__["reportDetectedConflicts"])(params)),
-        store,
-        now: true
-      });
+      // We are not setting up the reporting hook, because the conflict scanner
+      // script is not actually going to run when it's initially activated from
+      // this view. The conflict scanner box will appear to alert the user,
+      // but the actual functionality will not be enabled until the next page
+      // load, when the conflict detection JavaScript will be enqueued and loaded
+      // in the page.
+      Object(_mountConflictDetectionReporter__WEBPACK_IMPORTED_MODULE_7__["mountConflictDetectionReporter"])(store);
     }
   }, [showConflictDetectionReporter, store]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h2", {
