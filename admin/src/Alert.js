@@ -25,7 +25,7 @@ function getIcon(props = {}){
 }
 
 function Alert(props = {}) {
-  return<div className={ classnames(styles['alert'], styles[`alert-${ props.type }`]) } role="alert">
+  return <div className={ classnames(styles['alert'], styles[`alert-${ props.type }`]) } role="alert">
     <div className={ styles['alert-icon'] }>
       { getIcon(props) }
     </div>
