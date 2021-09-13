@@ -126,7 +126,7 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.0.3';
+	const PLUGIN_VERSION = '4.0.4-rc2';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
@@ -2909,6 +2909,9 @@ EOT;
 	 * See: https://github.com/Freemius/wordpress-sdk
 	 * See: https://wordpress.stackexchange.com/questions/309862/check-if-gutenberg-is-currently-in-use
 	 * See: https://wordpress.org/plugins/stackable-ultimate-gutenberg-blocks/
+	 *
+	 * @internal
+	 * @ignore
 	 */
 	private function is_gutenberg_page() {
 		if ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) {
