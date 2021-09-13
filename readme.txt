@@ -161,6 +161,12 @@ You can get more information about all the available settings and troubleshootin
 
 == Changelog ==
 
+= 4.0.4 =
+* FIX: add hash values to JavaScript chunk file names to resolve the problem where
+  sometimes an old cached version of a JavaScript file would load in the browser
+  instead of the intended updated one. This caused some users to see a blank
+  settings page after upgrading from a previous version of the plugin.
+
 = 4.0.3 =
 * FIX: When in the Classic Editor in WordPress 5, do not load block editor
   script dependencies that assign to the global wp.editor object.
