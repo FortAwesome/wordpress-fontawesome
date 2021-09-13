@@ -231,11 +231,6 @@ Search.appendIndex(
             "summary": "Runs\u0020a\u0020GraphQL\u0020query\u0020against\u0020the\u0020Font\u0020Awesome\u0020GraphQL\u0020API.",
             "url": "classes/FortAwesome-FontAwesome.html#method_query"
         },                {
-            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Ais_gutenberg_page\u0028\u0029",
-            "name": "is_gutenberg_page",
-            "summary": "Internal\u0020use\u0020only,\u0020not\u0020part\u0020of\u0020this\u0020plugin\u0027s\u0020public\u0020API.",
-            "url": "classes/FortAwesome-FontAwesome.html#method_is_gutenberg_page"
-        },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003ASHORTCODE_TAG",
             "name": "SHORTCODE_TAG",
             "summary": "Name\u0020of\u0020this\u0020plugin\u0027s\u0020shortcode\u0020tag.",
