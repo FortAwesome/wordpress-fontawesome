@@ -34,11 +34,12 @@ jobs:
 
     strategy:
         matrix:
-          php: [7.1, 7.2, 7.3, 7.4]
+          #php: [7.1, 7.2, 7.3, 7.4]
+          php: [7.4]
           wordpress: [latest]
           include:
-            - php: 5.6
-              wordpress: 5.2.5
+            #- php: 5.6
+            #  wordpress: 5.2.5
             - php: 7.4
               wordpress: trunk
 
