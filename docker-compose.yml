@@ -122,7 +122,8 @@ x-wordpress-dev-defaults: &wordpress_dev_defaults
   <<: *wordpress_defaults
 
 x-mysql-defaults: &mysql_defaults
-  image: mysql:5.7
+  # using mariadb as a drop-in replacement for mysql for better compatibility on M1 dev machines.
+  image: mariadb:10.5.8
   ports:
     - "3306:3306"
   environment:
