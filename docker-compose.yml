@@ -225,12 +225,12 @@ services:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-latest
+       - db-5.0
      image: wordpress-fontawesome-dev-php5.6
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_HOST: db-5.0:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
