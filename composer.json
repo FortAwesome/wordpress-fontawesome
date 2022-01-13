@@ -63,5 +63,12 @@
         "docsrv": "cd docsrv && npm install && node index.js",
         "dist": "composer clean && composer build.admin && composer build.compat && bin/make-wp-dist",
         "dist2trunk": "bin/dist-to-trunk.sh"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "symfony/flex": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
