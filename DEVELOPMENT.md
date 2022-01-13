@@ -254,12 +254,12 @@ If you do need to update what's in this bundle, though, then you just build anot
 static production build like this:
 
 ```
-$ cd wp-compat-v4
+$ cd compat-js
 $ npm install
 $ npm run build
 ```
 
-This will create `wp-compat-v4/build/compat.js`, which the plugin looks for and
+This will create `compat-js/build/compat.js`, which the plugin looks for and
 enqueues automatically when it detects that it's running under WordPress 4.
 
 ## 9. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
