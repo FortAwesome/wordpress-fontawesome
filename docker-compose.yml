@@ -186,6 +186,23 @@ services:
        FONTAWESOME_ENV: development
      container_name: "com.fontawesome.wordpress-latest-dev"
 
+   wordpress-php7.3-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-php7.3
+     env_file:
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_NAME: wordpress
+       FONTAWESOME_ENV: development
+     container_name: "com.fontawesome.wordpress-php7.3-dev"
+
    wordpress-php7.2-dev:
      <<:
        - *wordpress_defaults
