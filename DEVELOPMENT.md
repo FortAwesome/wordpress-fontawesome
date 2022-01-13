@@ -46,31 +46,6 @@ activated to help with testing and exploring interaction with the plugin at run 
 
 # Development Setup
 
-## 0. Install PHP
-
-Most of our PHP code will run inside a Docker container under the version of PHP installed within that container.
-However, some tools for building or running composer will run outside the container, in the host environment,
-so you'll need a workable version of PHP installed in your host environment.
-
-You could run this to see what version of php is used in the `wordpress:latest` docker
-image:
-
-```
-$ docker run --rm wordpress:latest php --version
-```
-
-Otherwise, install php in a way appropriate to your host environment. On macOS, use:
-
-`$ brew install php`
-
-### asdf is a nightmare for PHP
-
-While Font Awesome's development environments normally use asdf to help standardize runtime configurations, getting
-the PHP plugin for asdf to work successfully on macOS is probably not worth it at this time. The original plugin
-has apparently [been abandoned](https://github.com/odarriba/asdf-php#why-using-this-plug-in), and the maintainer of the
-current plugin doesn't use it any longer, and thinks that it's ["near to a nightmare"](https://github.com/odarriba/asdf-php/issues/8#issuecomment-362911209)
-on macOS.
-
 ## 1. Make sure Docker is installed
 
 ## 2. Build any number of docker _images_ for the environments you want
@@ -218,11 +193,92 @@ $ docker-compose down
 You could also be a little more ninja-ish and use `docker ps` to find the running containers you know
 you want to stop, find the container ID for each, and then for each one do `docker container stop <container_id>`.
 
-## 6. Install composer (PHP package manager)
+## 6. Run `bin/setup`
+
+This does the initial WordPress admin setup that happens first on any freshly installed WordPress
+site. We're just doing it from the command line with the script to be quick and convenient.
+
+It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
+
+By default, it will use the container named `com.fontawesome.wordpress-latest-dev`, which will be the container made from the `latest` image.
+
+You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
+
+After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://wp.test:8765](http://wp.test:8765).
+
+You can login to the admin dashboard at [http://wp.test:8765/wp-admin](http://wp.test:8765/wp-admin) with admin username and password as found in `.env`.
+
+## 7. OPTIONAL: Install PHP (when you need to run composer commands)
+
+Most of our PHP code will run inside a Docker container under the version of PHP installed within that container.
+So for most of your dev workflows, it doesn't matter what version of php you have installed in your local
+host environment.
+
+However, it's the php in your host environment that will be used any time you do any of the `composer` tasks,
+like building the release bundle, running code style sniffing, or rebuilding the docs. You could probably skip
+setting up an appropriate version of php in your host environment until you need it for one of those workflows.
+
+### Install the same PHP as the WordPress image
+
+If you don't have any other reason to prefer what version of php is installed and active on your host system,
+it may be easiest to install the same version that's used inside the WordPress docker container.
+
+For the `wordpress:latest` image (which you're probably doing to be using mostly), you could determine that version of php like this:
+
+```
+$ docker run --rm wordpress:latest php --version
+```
+
+As of WordPress 5.8.3, the `wordpress:latest` image uses php 7.4.27, even though the latest
+available PHP is currently 8.1.1.
+
+To install PHP 7.4 via brew:
+
+```
+$ brew install php@7.4
+```
+
+If you've got multiple versions of php installed via brew, you can make 7.4 the active one like this:
+
+```
+$ brew unlink php
+$ brew link php@7.4
+```
+
+### Multiple Versions of PHP and version-specific composer.json files
+
+There are multiple variations of composer.json files in this repo, each corresponding to different versions of php.
+Our GitHub Actions configuration runs the automated tests across a matrix of different versions of php that
+that this plugin should support. Some of the dependencies in composer.json are sensitive to the version of php
+in use. So when we run tests against, say, php 5.6, we run with the php 5.6 specific composer.json, like this:
+
+```
+$ COMPOSER=composer-php5.6.json composer install
+```
+
+That's how you can specify a particular composer config file, instead of the default one called `composer.json`.
+
+The default `composer.json` and `composer.lock` files don't have version numbers in them, but they _will_ have been built with a particular version of php. They should be symlinks to php version specific files.
+
+So if you have installed php `8.1` and the default `composer.json` symlinks to `composer-php7.4.json` it may
+well be that simply running `composer install` produces various compatibility warnings or errors.
+
+Thefore, when executing `composer` commands in your local host development environment, or in GitHub Actions,
+make sure that composer is using the version of composer.json that corresponds to the active version
+of php in that environment.
+
+### asdf is a nightmare for PHP
+
+While Font Awesome's development environments normally use asdf to help standardize runtime configurations, getting
+the PHP plugin for asdf to work successfully on macOS is probably not worth it at this time. The original plugin
+has apparently [been abandoned](https://github.com/odarriba/asdf-php#why-using-this-plug-in), and the maintainer of the
+current plugin doesn't use it any longer, and thinks that it's ["near to a nightmare"](https://github.com/odarriba/asdf-php/issues/8#issuecomment-362911209)
+on macOS.
+## 8. OPTIONAL: Install composer (PHP package manager)
 
 On macOS, it can be installed via `brew install composer`
 
-## 7. Update composer dependencies
+## 9. OPTIONAL: Update composer dependencies
 
 From the top-level directory that contains `composer.json`:
 
@@ -230,7 +286,10 @@ From the top-level directory that contains `composer.json`:
 composer install
 ```
 
-## 8. OPTIONAL: start the admin React app's development build (in development)
+(But see above about installing the right PHP version and making sure you pair the run time version of php
+with the appropriate php version-specific composer config.)
+
+## 10. OPTIONAL: start the admin React app's development build (in development)
 
 ### The main admin JS bundle
 
@@ -262,7 +321,7 @@ $ npm run build
 This will create `compat-js/build/compat.js`, which the plugin looks for and
 enqueues automatically when it detects that it's running under WordPress 4.
 
-## 9. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
+## 11. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
 
 The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
 
@@ -288,22 +347,7 @@ Here are some of the operations that require the container to talk back to the h
 - Webpack dev server port for React hot module reloading
 - Font Awesome GraphQL API (when running that service locally)
 
-## 10. Run `bin/setup`
-
-This does the initial WordPress admin setup that happens first on any freshly installed WordPress
-site. We're just doing it from the command line with the script to be quick and convenient.
-
-It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
-
-By default, it will use the container named `com.fontawesome.wordpress-latest-dev`, which will be the container made from the `latest` image.
-
-You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
-
-After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://wp.test:8765](http://wp.test:8765).
-
-You can login to the admin dashboard at [http://wp.test:8765/wp-admin](http://wp.test:8765/wp-admin) with admin username and password as found in `.env`.
-
-## 11. OPTIONAL: configure debugging
+## 12. OPTIONAL: configure debugging
 
 ```bash
 bin/configure-debugging
@@ -313,7 +357,7 @@ This will set up debugging configuration in `wp-config.php` inside the container
 and will also install several plugins to power the debug bar available from the
 upper right-hand nav bar when logged into WordPress as admin.
 
-## 12. Install and/or Activate the Font Awesome plugin
+## 13. OPTIONAL: Install and/or Activate the Font Awesome plugin (only in integration environment)
 
 If you're running the `bin/dev` environment, you'll find in the admin dashboard that the
 Font Awesome is already installed, because the source code in this repo is mounted as a volume
