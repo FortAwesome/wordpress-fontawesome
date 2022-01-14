@@ -6,7 +6,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class ShortcodeTest
  */
 class ShortcodeTest extends TestCase {
-	public static function setUpBeforeClass() {
+	public static function set_up_before_class() {
 		add_shortcode(
 			FontAwesome::SHORTCODE_TAG,
 			array( fa(), 'process_shortcode' )
