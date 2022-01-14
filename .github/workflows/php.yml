@@ -213,7 +213,7 @@ jobs:
         if [ "7.4" == ${{ matrix.php }} ]; then
           PHP_UNIT_ARGS=""
         else
-          PHP_UNIT_ARGS="--exclude-group output"
+          PHP_UNIT_ARGS="--exclude-group output --exclude-group nolegacy"
         fi
 
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit $PHP_UNIT_ARGS
