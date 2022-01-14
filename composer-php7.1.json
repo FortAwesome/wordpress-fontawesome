@@ -50,7 +50,8 @@
       "symfony/polyfill-ctype": "1.19.0",
       "symfony/yaml": "3.4.46",
       "phpunit/php-token-stream": "1.4.12",
-      "yoast/phpunit-polyfills": "^1.0"
+      "yoast/phpunit-polyfills": "^1.0",
+      "yoast/wp-test-utils": "^1.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
