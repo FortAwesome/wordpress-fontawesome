@@ -11,13 +11,14 @@ require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class ReleaseProviderTest
  *
  * @group api
  */
-class ReleaseProviderTest extends \WP_UnitTestCase {
+class ReleaseProviderTest extends TestCase {
 	protected $known_versions_sorted_desc = array(
 		'5.4.1',
 		'5.3.1',
@@ -36,7 +37,8 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		'5.0.1',
 	);
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 	}
