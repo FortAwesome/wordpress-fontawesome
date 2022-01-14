@@ -13,15 +13,17 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
 
 use \Exception, \WP_Error;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
- * Class ReleaseProviderTest
+ * Class MetadataProviderTest
  *
  * @group api
  */
-class MetadataProviderTest extends \WP_UnitTestCase {
+class MetadataProviderTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		fa_api_settings()->remove();
 		FontAwesome_Metadata_Provider::reset();
 		remove_all_filters( 'pre_http_request' );

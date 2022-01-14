@@ -7,11 +7,12 @@ use function FortAwesome\unknown_error_500;
 use function FortAwesome\fa_400;
 use function FortAwesome\fa_500;
 use \Exception, \Error;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class ErrorUtilTest
  */
-class ErrorUtilTest extends \WP_UnitTestCase {
+class ErrorUtilTest extends TestCase {
 	public function test_wpe_fontawesome_unknown_error_with_exception() {
 		$message = 'foo';
 		$code    = 'fontawesome_unknown_error';

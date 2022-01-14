@@ -2,6 +2,7 @@
 namespace FortAwesome;
 
 use \WP_Error;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Tests the release provider, integrated with the main Font Awesome class simulating loading and
@@ -19,8 +20,9 @@ require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php
 /**
  * Class ReleaseProviderIntegrationTest
  */
-class ReleaseProviderIntegrationTest extends \WP_UnitTestCase {
-	public function setUp() {
+class ReleaseProviderIntegrationTest extends TestCase {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters(
