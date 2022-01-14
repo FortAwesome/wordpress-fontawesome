@@ -6,7 +6,9 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
- * Class ActivationTest
+ * Class DeactivationTest
+ *
+ * @group nolegacy
  */
 class DeactivationTest extends TestCase {
 
