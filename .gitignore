@@ -16,3 +16,4 @@ volumes/
 tmp/
 webpack-stats.html
 webpack-stats.json
+.phpunit.result.cache
