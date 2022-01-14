@@ -50,7 +50,8 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "phpdocumentor/phpdocumentor": "^3.0.0",
         "phpunit/phpunit": "^7.4.5",
-        "yoast/phpunit-polyfills": "^1.0"
+        "yoast/phpunit-polyfills": "^1.0",
+        "yoast/wp-test-utils": "^1.0"
     },
     "scripts": {
         "phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist",
