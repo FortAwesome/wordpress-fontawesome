@@ -13,10 +13,12 @@ use \WP_Error, \InvalidArgumentException;
 use FortAwesome\ApiTokenMissingException;
 use FortAwesome\ApiTokenInvalidException;
 
+use Yoast\WPTestUtils\WPIntegration\TestCase;
+
 /**
  * ApiSettingsTest class
  */
-class ApiSettingsTest extends \WP_UnitTestCase {
+class ApiSettingsTest extends TestCase {
 
 	public function setUp() {
 		reset_db();
