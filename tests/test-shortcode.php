@@ -1,10 +1,11 @@
 <?php
 namespace FortAwesome;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class ShortcodeTest
  */
-class ShortcodeTest extends \WP_UnitTestCase {
+class ShortcodeTest extends TestCase {
 	public static function setUpBeforeClass() {
 		add_shortcode(
 			FontAwesome::SHORTCODE_TAG,
