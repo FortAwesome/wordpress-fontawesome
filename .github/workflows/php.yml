@@ -34,17 +34,19 @@ jobs:
 
     strategy:
         matrix:
-          php: [7.1, 7.2, 7.3, 7.4]
-          wordpress: [latest]
-          include:
-            - php: 5.6
-              wordpress: 5.2.5
-            - php: 7.4
-              wordpress: trunk
-            - php: 8.0.14
-              wordpress: trunk
-            - php: 8.1
-              wordpress: trunk
+          php: [8.0]
+          wordpress: [trunk]
+          #php: [7.1, 7.2, 7.3, 7.4]
+          #wordpress: [latest]
+          #include:
+          #  - php: 5.6
+          #    wordpress: 5.2.5
+          #  - php: 7.4
+          #    wordpress: trunk
+          #  - php: 8.0.14
+          #    wordpress: trunk
+          #  - php: 8.1
+          #    wordpress: trunk
 
     steps:
     - uses: actions/checkout@v2
