@@ -35,7 +35,7 @@ jobs:
     strategy:
         matrix:
           php: [8.0.14]
-          wordpress: [trunk]
+          wordpress: [5.9-RC2]
           #php: [7.1, 7.2, 7.3, 7.4]
           #wordpress: [latest]
           #include:
