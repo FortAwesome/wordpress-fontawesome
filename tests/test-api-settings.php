@@ -20,7 +20,8 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class ApiSettingsTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		delete_option( FontAwesome_API_Settings::OPTIONS_KEY );

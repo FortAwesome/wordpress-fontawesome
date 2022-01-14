@@ -12,7 +12,9 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class ActivationTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
+
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();

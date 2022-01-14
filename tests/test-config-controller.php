@@ -22,7 +22,8 @@ class ConfigControllerTest extends TestCase {
 	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/config';
 	protected $fa;
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 
@@ -56,7 +57,8 @@ class ConfigControllerTest extends TestCase {
 		do_action( 'rest_api_init' );
 	}
 
-	public function tearDown() {
+	public function tear_down() {
+		parent::tear_down();
 		remove_all_actions( 'rest_api_init' );
 	}
 
