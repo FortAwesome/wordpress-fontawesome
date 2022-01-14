@@ -19,8 +19,9 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-resourcecollection.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
-class EnqueueTest extends \WP_UnitTestCase {
+class EnqueueTest extends TestCase {
 
 	const OUTPUT_MATCH_FAILURE_MESSAGE = 'Failed output match.';
 
@@ -28,7 +29,8 @@ class EnqueueTest extends \WP_UnitTestCase {
 
 	protected $admin_user;
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
