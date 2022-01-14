@@ -7,13 +7,11 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class DeactivationTest
- *
- * @group nolegacy
  */
 class DeactivationTest extends TestCase {
 
 	public function set_up() {
-		parent::setup();
+		parent::set_up();
 		reset_db();
 		remove_all_filters( 'option_' . FontAwesome_Release_Provider::OPTIONS_KEY );
 	}
