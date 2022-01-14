@@ -3,13 +3,15 @@ namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-deactivator.php';
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class ActivationTest
  */
-class DeactivationTest extends \WP_UnitTestCase {
+class DeactivationTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::setup();
 		reset_db();
 		remove_all_filters( 'option_' . FontAwesome_Release_Provider::OPTIONS_KEY );
 	}

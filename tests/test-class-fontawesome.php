@@ -12,10 +12,12 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-release-provi
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone, \Exception;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
-class FontAwesomeTest extends \WP_UnitTestCase {
+class FontAwesomeTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
