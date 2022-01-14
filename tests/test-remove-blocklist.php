@@ -6,11 +6,13 @@ namespace FortAwesome;
  */
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class RemoveBlocklistTest
+ * @group nolegacy
  */
-class RemoveBlocklistTest extends \WP_UnitTestCase {
+class RemoveBlocklistTest extends TestCase {
 	// TODO: add testing for removal of blocked inline scripts and styles.
 	protected $fake_unregistered_clients = array(
 		'3c937b6d9b50371df1e78b5d70e11512' => array(
@@ -31,12 +33,8 @@ class RemoveBlocklistTest extends \WP_UnitTestCase {
 		return array_keys( $this->fake_unregistered_clients );
 	}
 
-	/**
-	 * Resets test data.
-	 *
-	 * @before
-	 */
-	protected function reset() {
+	public function set_up() {
+		parent::set_up();
 		FontAwesome::instance()->reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
