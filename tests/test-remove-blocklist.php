@@ -10,7 +10,6 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class RemoveBlocklistTest
- * @group nolegacy
  */
 class RemoveBlocklistTest extends TestCase {
 	// TODO: add testing for removal of blocked inline scripts and styles.
@@ -35,6 +34,7 @@ class RemoveBlocklistTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
+		reset_db();
 		FontAwesome::instance()->reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
