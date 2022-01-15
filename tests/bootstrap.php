@@ -4,7 +4,7 @@ use Yoast\WPTestUtils\WPIntegration;
 if ( getenv( 'WP_PLUGIN_DIR' ) !== false ) {
     define( 'WP_PLUGIN_DIR', getenv( 'WP_PLUGIN_DIR' ) );
 } else {
-    define( 'WP_PLUGIN_DIR', '/var/www/html/wp-content/plugins' );
+    define( 'WP_PLUGIN_DIR',  dirname( __DIR__ )  . '/../' );
 }
 
 $GLOBALS['wp_tests_options'] = [
