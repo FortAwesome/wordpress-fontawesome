@@ -177,6 +177,7 @@ services:
        - db-latest
      image: wordpress-fontawesome-dev-latest
      env_file:
+       - ".env"
        - ".env.local"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
@@ -184,6 +185,7 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
+       COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
      container_name: "com.fontawesome.wordpress-latest-dev"
 
    wordpress-php8.1-dev:
@@ -194,14 +196,15 @@ services:
        - db-latest
      image: wordpress-fontawesome-dev-php8.1
      env_file:
+       - ".env"
        - ".env.local"
-       - ".env.php8.1"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
+       COMPOSER: ${WP_FA_DIR}/composer-php8.1.json
      container_name: "com.fontawesome.wordpress-php8.1-dev"
 
    wordpress-php8.0-dev:
@@ -212,14 +215,15 @@ services:
        - db-latest
      image: wordpress-fontawesome-dev-php8.0
      env_file:
+       - ".env"
        - ".env.local"
-       - ".env.php8.0"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
+       COMPOSER: ${WP_FA_DIR}/composer-php8.0.14.json
      container_name: "com.fontawesome.wordpress-php8.0-dev"
 
    wordpress-php7.3-dev:
