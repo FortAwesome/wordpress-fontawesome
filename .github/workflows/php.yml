@@ -225,6 +225,8 @@ jobs:
           PHP_UNIT_ARGS=""
         fi
 
+        ls .
+
         WP_PLUGIN_DIR="$(pwd)" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
         vendor/bin/phpunit $PHP_UNIT_ARGS
