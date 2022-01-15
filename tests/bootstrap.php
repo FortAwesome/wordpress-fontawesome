@@ -4,8 +4,10 @@ use Yoast\WPTestUtils\WPIntegration;
 if ( getenv( 'WP_PLUGIN_DIR' ) !== false ) {
     define( 'WP_PLUGIN_DIR', getenv( 'WP_PLUGIN_DIR' ) );
 } else {
-    define( 'WP_PLUGIN_DIR',  dirname( __DIR__ )  . '/../' );
+    define( 'WP_PLUGIN_DIR',  dirname( __DIR__ )  . '/..' );
 }
+
+print "\n\nWP_PLUGIN_DIR: " . WP_PLUGIN_DIR . "\n\n";
 
 $GLOBALS['wp_tests_options'] = [
     'active_plugins' => [ 'font-awesome/index.php' ],
