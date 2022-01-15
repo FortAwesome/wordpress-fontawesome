@@ -43,8 +43,8 @@ jobs:
               wordpress: trunk
             - php: 8.0.14
               wordpress: 5.9-RC2
-            #- php: 8.1
-            #  wordpress: 5.9-RC2
+            - php: 8.1
+              wordpress: 5.9-RC2
 
     steps:
     - uses: actions/checkout@v2
