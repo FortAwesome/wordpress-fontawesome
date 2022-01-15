@@ -11,7 +11,12 @@ $GLOBALS['wp_tests_options'] = array(
 	'active_plugins' => array( 'index.php' ),
 );
 
-require_once dirname( __DIR__ ) . '/vendor/yoast/wp-test-utils/src/WPIntegration/bootstrap-functions.php';
+if ( ! getenv( 'COMPOSER_VENDOR_DIR' ) ) {
+	echo PHP_EOL, 'ERROR: COMPOSER_VENDOR_DIR env var must be set.', PHP_EOL;
+	exit( 1 );
+}
+
+require_once getenv( 'COMPOSER_VENDOR_DIR' ) . '/yoast/wp-test-utils/src/WPIntegration/bootstrap-functions.php';
 
 /*
  * Bootstrap WordPress. This will also load the Composer autoload file, the PHPUnit Polyfills
