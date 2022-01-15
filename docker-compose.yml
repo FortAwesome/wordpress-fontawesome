@@ -195,6 +195,7 @@ services:
      image: wordpress-fontawesome-dev-php8.1
      env_file:
        - ".env.local"
+       - ".env.php8.1"
      environment:
        WORDPRESS_DB_HOST: db-latest:3306
        WORDPRESS_DB_USER: wordpress
