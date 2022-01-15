@@ -219,6 +219,7 @@ jobs:
       # only run the output tests on the newer versions of php and phpunit, cause
       # they're trickier
       run: |
+        WP_PLUGIN_DIR=/home/runner/work/wordpress-fontawesome
         if [ "5.6" == ${{ matrix.php }} ] || [ "7.1" == ${{ matrix.php }} ] || [ "7.2" == ${{ matrix.php }} ] || [ "7.3" == ${{ matrix.php }} ]; then
           PHP_UNIT_ARGS="--exclude-group output"
         else
