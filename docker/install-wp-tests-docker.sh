@@ -2,9 +2,7 @@
 
 WP_VERSION=${1-latest}
 
-# We'll probably re-use the db container called "latest" most of the time
-# but it could be overriden here with the second optional arg
-WP_VERSION_FOR_DB_HOST=${2-latest}
+DB_HOST=${2-db-latest:3306}
 
 # These are hardcoded to be the same as those defined for the db container in docker-compose.yml
 # We'll use the same wordpress database for the test environment. Since the wp-tests-config.php
@@ -13,7 +11,6 @@ WP_VERSION_FOR_DB_HOST=${2-latest}
 DB_NAME=wordpress
 DB_USER=wordpress
 DB_PASS=wordpress
-DB_HOST=db-${WP_VERSION_FOR_DB_HOST}:3306
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")

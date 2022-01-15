@@ -141,33 +141,53 @@ services:
 
    db-5.0:
      <<: *mysql_defaults
+     ports:
+       - "3307:3307"
+     environment:
+       MYSQL_TCP_PORT: 3307
      volumes:
        - db_data-5.0:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-5.0"
 
    db-5.4:
      <<: *mysql_defaults
+     ports:
+       - "3308:3308"
+     environment:
+       MYSQL_TCP_PORT: 3308
      volumes:
        - db_data-5.4:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-5.4"
 
    db-4.9:
      <<: *mysql_defaults
+     ports:
+       - "3309:3309"
+     environment:
+       MYSQL_TCP_PORT: 3309
      volumes:
        - db_data-4.9:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-4.9"
 
-   db-4.7:
-     <<: *mysql_defaults
-     volumes:
-       - db_data-4.7:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-4.7"
-
    db-4.8:
      <<: *mysql_defaults
+     ports:
+       - "3310:3310"
+     environment:
+       MYSQL_TCP_PORT: 3310
      volumes:
        - db_data-4.8:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-4.8"
+
+   db-4.7:
+     <<: *mysql_defaults
+     ports:
+       - "3311:3311"
+     environment:
+       MYSQL_TCP_PORT: 3311
+     volumes:
+       - db_data-4.7:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-4.7"
 
    wordpress-latest-dev:
      <<:
@@ -261,7 +281,7 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-       COMPOSER: ${WP_FA_DIR}/composer-php7.3.json
+       COMPOSER: ${WP_FA_DIR}/composer-php7.2.json
      container_name: "com.fontawesome.wordpress-php7.2-dev"
 
    wordpress-php7.1-dev:
@@ -291,13 +311,15 @@ services:
        - db-5.0
      image: wordpress-fontawesome-dev-php5.6
      env_file:
+       - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.0:3306
+       WORDPRESS_DB_HOST: db-5.0:3307
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
+       COMPOSER: ${WP_FA_DIR}/composer-php5.6.json
      container_name: "com.fontawesome.wordpress-php5.6-dev"
 
    wordpress-latest-integration:
@@ -324,13 +346,15 @@ services:
        - db-5.0
      image: wordpress-fontawesome-dev-5.0
      env_file:
+       - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.0:3306
+       WORDPRESS_DB_HOST: db-5.0:3307
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
+       COMPOSER: ${WP_FA_DIR}/composer-php7.2.json
      container_name: "com.fontawesome.wordpress-5.0-dev"
 
    wordpress-5.4-dev:
@@ -341,9 +365,10 @@ services:
        - db-5.4
      image: wordpress-fontawesome-dev-5.4
      env_file:
+       - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.4:3306
+       WORDPRESS_DB_HOST: db-5.4:3308
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
@@ -360,7 +385,7 @@ services:
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.0:3306
+       WORDPRESS_DB_HOST: db-5.0:3307
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
@@ -376,7 +401,7 @@ services:
      env_file:
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.4:3306
+       WORDPRESS_DB_HOST: db-5.4:3308
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
@@ -390,9 +415,10 @@ services:
      depends_on:
        - db-4.9
      env_file:
+       - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-4.9:3306
+       WORDPRESS_DB_HOST: db-4.9:3309
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
@@ -423,9 +449,10 @@ services:
      depends_on:
        - db-4.7
      env_file:
+       - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-4.7:3306
+       WORDPRESS_DB_HOST: db-4.7:3311
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
@@ -456,9 +483,10 @@ services:
      depends_on:
        - db-4.8
      env_file:
+       - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-4.8:3306
+       WORDPRESS_DB_HOST: db-4.8:3310
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
