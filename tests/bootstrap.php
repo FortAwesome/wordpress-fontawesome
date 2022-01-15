@@ -7,8 +7,6 @@ if ( getenv( 'WP_PLUGIN_DIR' ) !== false ) {
     define( 'WP_PLUGIN_DIR',  dirname( __FILE__ )  . '/../..' );
 }
 
-print "\n\nWP_PLUGIN_DIR: " . WP_PLUGIN_DIR . "\n\n";
-
 $GLOBALS['wp_tests_options'] = [
     'active_plugins' => [ 'index.php' ],
 ];
