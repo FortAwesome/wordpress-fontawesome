@@ -130,7 +130,7 @@ function build_wp_error( $e, $code ) {
 	} else {
 		try {
 			$as_string = (
-				( is_object($e) && method_exists( $e, '__toString' ) ) ||
+				( is_object( $e ) && method_exists( $e, '__toString' ) ) ||
 				is_string( $e ) ||
 				is_numeric( $e )
 			) ? strval( $e ) : null;

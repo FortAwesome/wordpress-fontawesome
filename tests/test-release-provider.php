@@ -117,11 +117,11 @@ class ReleaseProviderTest extends TestCase {
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
 		$versions = $farp->versions();
-		rsort($versions);
+		rsort( $versions );
 
 		$this->assertCount( count( $this->known_versions_sorted_desc ), $versions );
 
-		$this->assertEquals($this->known_versions_sorted_desc, $versions);
+		$this->assertEquals( $this->known_versions_sorted_desc, $versions );
 	}
 
 	public function test_5_0_all_free_shimless() {

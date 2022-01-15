@@ -27,7 +27,7 @@ class ActivationTest extends TestCase {
 				),
 			)
 		);
-    }
+	}
 
 	public function test_before_activation() {
 		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
