@@ -19,7 +19,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * @group api
  */
 class ReleaseProviderTest extends TestCase {
-	// sorted descending the way rsort would sort, lexically, not semver
+	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
 		'5.4.1',
 		'5.3.1',
