@@ -225,7 +225,7 @@ jobs:
           PHP_UNIT_ARGS=""
         fi
 
-        WP_PLUGIN_DIR="$(pwd)/wordpress-fontawesome/wordpress-fontawesome \
+        WP_PLUGIN_DIR="$(pwd)/wordpress-fontawesome/wordpress-fontawesome" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
         vendor/bin/phpunit $PHP_UNIT_ARGS
 
