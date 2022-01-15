@@ -143,8 +143,8 @@ jobs:
           echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
         fi
 
-        if [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+\-(beta|RC)[0-9]+$ ]]; then
-          WP_BRANCH=${WP_VERSION%\-*}
+        if [[ $VERSION =~ ^[0-9]+\.[0-9]+\-(beta|RC)[0-9]+$ ]]; then
+          WP_BRANCH=${VERSION%\-*}
           echo "::set-output name=WP_TESTS_TAG::branches/$WP_BRANCH"
         elif [[ $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
           echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
