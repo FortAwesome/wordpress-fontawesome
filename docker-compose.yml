@@ -354,7 +354,7 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-       COMPOSER: ${WP_FA_DIR}/composer-php7.2.json
+       COMPOSER: ${WP_FA_DIR}/composer-wp5.0.json
      container_name: "com.fontawesome.wordpress-5.0-dev"
 
    wordpress-5.4-dev:
