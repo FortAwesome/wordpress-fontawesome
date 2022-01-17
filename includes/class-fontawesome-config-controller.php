@@ -227,9 +227,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			throw ConfigSchemaException::concrete_version_expected();
 		}
 
-		/**
-		 * v6 is not supported on Pro CDN.
-		 */
+		// V6 is not supported on Pro CDN.
 		if ( 1 === preg_match( '/^6\./', $item['version'] ) && boolval( $item['usePro'] ) && ! is_string( $given_options['kitToken'] ) ) {
 			throw ConfigSchemaException::v6_pro_cdn_not_supported();
 		}
