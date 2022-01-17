@@ -320,9 +320,9 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 			)
 		);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @internal
 	 * @ignore
 	 */
