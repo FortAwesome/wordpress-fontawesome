@@ -342,6 +342,20 @@ class OptionsTest extends TestCase {
 		fa()->technology();
 	}
 
+	public function test_options_invalid_pro_v6_cdn() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '6.0.0-beta3',
+				'usePro'  => true
+			]
+		);
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->validate_options( $options );
+	}
+
 	public function test_options_missing_pro() {
 		$options = array_merge(
 			FontAwesome::DEFAULT_USER_OPTIONS,

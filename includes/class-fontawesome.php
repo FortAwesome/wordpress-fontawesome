@@ -960,6 +960,10 @@ class FontAwesome {
 		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
 		$version   = isset( $options['version'] ) ? $options['version'] : null;
 
+		if ( ! isset( $options['usePro'] ) || ! is_bool( $options['usePro'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
 		if ( $using_kit ) {
 			if ( ! boolval( $api_token ) ) {
 				throw new ConfigCorruptionException();
@@ -984,13 +988,21 @@ class FontAwesome {
 			if ( ! $version_is_concrete ) {
 				throw new ConfigCorruptionException();
 			}
+
+			$version_is_v6 = is_string( $version )
+				&& 1 === preg_match( '/^6\./', $version );
+
+			$is_pro = boolval( $options['usePro'] );
+
+			/**
+			 * Pro Version 6 CDN is not supported.
+			 */
+			if ( $version_is_v6 && $is_pro ) {
+				throw new ConfigCorruptionException();
+			}
 		}
 
 		if ( ! isset( $options['v4Compat'] ) || ! is_bool( $options['v4Compat'] ) ) {
-			throw new ConfigCorruptionException();
-		}
-
-		if ( ! isset( $options['usePro'] ) || ! is_bool( $options['usePro'] ) ) {
 			throw new ConfigCorruptionException();
 		}
 
