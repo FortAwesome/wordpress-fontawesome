@@ -606,4 +606,80 @@ class ConfigControllerTest extends TestCase {
 		// Version unchanged
 		$this->assertEquals( '5.3.1', fa()->version() );
 	}
+
+	public function test_update_with_nonkit_v6_beta3_free() {
+		// Start with the version being something else.
+		$this->set_version( '5.0.13' );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => false,
+					'v4Compat' => true,
+					'technology' => 'webfont',
+					'pseudoElements' => true,
+					'detectConflictsUntil' => 0,
+					'blocklist' => [],
+					'kitToken' => null,
+					'apiToken' => false,
+					'version' => '6.0.0-beta3',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+		$request->set_body( wp_json_encode( $request_body ) );
+		
+		$response = $this->server->dispatch( $request );
+		$this->assertNotNull( fa()->latest_version() );
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'conflicts', $data );
+		$this->assertArrayHasKey( 'options', $data );
+		$this->assertEquals( '6.0.0-beta3', $data['options']['version']);
+		$this->assertEquals( '6.0.0-beta3', fa()->version() );
+	}
+
+	public function test_update_with_nonkit_v6_beta3_pro() {
+		// Start with the version being something else.
+		$this->set_version( '5.0.13' );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => true,
+					'v4Compat' => true,
+					'technology' => 'webfont',
+					'pseudoElements' => true,
+					'detectConflictsUntil' => 0,
+					'blocklist' => [],
+					'kitToken' => null,
+					'apiToken' => false,
+					'version' => '6.0.0-beta3',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+		$request->set_body( wp_json_encode( $request_body ) );
+		
+		$response = $this->server->dispatch( $request );
+		$this->assertNotNull( fa()->latest_version() );
+		// Can't use v6 via Pro CDN
+		$this->assertEquals( 400, $response->get_status() );
+		// Version unchanged
+		$this->assertEquals( '5.0.13', fa()->version() );
+		$data = $response->get_data();
+
+		$this->assertInstanceOf( \WP_Error::class, $data );
+		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
+	}
 }
