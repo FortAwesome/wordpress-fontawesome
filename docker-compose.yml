@@ -424,6 +424,7 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
+       COMPOSER: ${WP_FA_DIR}/composer-wp4.9.json
      container_name: "com.fontawesome.wordpress-4.9-dev"
 
    wordpress-4.9-integration:
