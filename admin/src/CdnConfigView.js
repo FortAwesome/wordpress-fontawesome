@@ -28,6 +28,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const version = useOption('version')
   const v4Compat = useOption('v4Compat')
   const pseudoElements = useOption('pseudoElements')
+  const isVersion6 = !!version.match(/^6\./)
 
   const pendingOptions = useSelector(state => state.pendingOptions)
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
@@ -155,6 +156,13 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
               </div>
             </div>
             { usePro &&
+              isVersion6 &&
+              <Alert title={ __( 'Heads up! Pro Version 6 is not available from CDN', 'font-awesome' ) } type='info'>
+                <p>You can, however, use a Kit. Make sure you have a paid subscription and select "Use a Kit" above. We'll walk you through the other details from there.</p>
+              </Alert>
+            }
+            { usePro &&
+              !isVersion6 &&
               <Alert title={ __( 'Heads up! Pro requires a Font Awesome subscription', 'font-awesome' ) } type='info'>
               <p>And you need to add your WordPress site to the allowed domains for your CDN.</p>
                 <ul>
