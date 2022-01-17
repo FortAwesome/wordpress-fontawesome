@@ -320,6 +320,20 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 			)
 		);
 	}
+	
+	/**
+	 * 
+	 * @internal
+	 * @ignore
+	 */
+	public static function v6_pro_cdn_not_supported() {
+		return new static(
+			esc_html__(
+				'Heads up! Font Awesome Pro Version 6 is not available from CDN. You can, however, use a Kit. Make sure you have a paid subscription and select \"Use a Kit\" above. We\'ll walk you through the other details from there.',
+				'font-awesome'
+			)
+		);
+	}
 }
 
 /**

@@ -194,9 +194,6 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		if ( isset( $given_options['pseudoElements'] ) ) {
 			$item['pseudoElements'] = $given_options['pseudoElements'];
 		}
-		if ( isset( $given_options['usePro'] ) ) {
-			$item['usePro'] = $given_options['usePro'];
-		}
 
 		$version_is_symbolic_latest = isset( $given_options['version'] )
 			&& 'latest' === $given_options['version'];
@@ -228,6 +225,13 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			$item['version'] = $given_options['version'];
 		} else {
 			throw ConfigSchemaException::concrete_version_expected();
+		}
+
+		/**
+		 * v6 is not supported on Pro CDN.
+		 */
+		if ( 1 === preg_match( '/^6\./', $item['version'] ) && boolval( $item['usePro'] ) && !is_string( $given_options['kitToken'] ) ) {
+			throw ConfigSchemaException::v6_pro_cdn_not_supported();
 		}
 
 		if (
