@@ -35,6 +35,8 @@ foreach( ['wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts'
   <p class="group-icon"><code>:before</code> pseudo-element should match <code>fas fa-users</code>: <i class="fas fa-users"></i></p>
   <p class="facebook-icon"><code>:before</code> pseudo-element should match <code>fab fa-facebook</code>: <i class="fab fa-facebook"></i></p>
   <p class="hand-scissors-icon"><code>:before</code> pseudo-element should match <code>far fa-hand-scissors</code>: <i class="far fa-hand-scissors"></i></p>
+  <p class="gem-icon"><code>:before</code> pseudo-element should match <code>far fa-gem</code>: <i class="far fa-gem"></i></p>
+  <p>This should look like the suit of diamonds, not the precious stone: <i class="fas fa-diamond"></i></p>
 </div>
 EOT;
 
