@@ -321,7 +321,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
         </div>
         <hr className={ styles['option-divider'] }/>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
-          <div className={ styles['option-header'] }>Version 4 Compatibility</div>
+          <div className={ styles['option-header'] }>Older Version Compatibility</div>
           <div className={ styles['option-choice-container'] }>
             <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
