@@ -157,7 +157,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
             </div>
             { usePro &&
               isVersion6 &&
-              <Alert title={ __( 'Heads up! Pro Version 6 is not available from CDN', 'font-awesome' ) } type='info'>
+              <Alert title={ __( 'Heads up! Pro Version 6 is not available from CDN', 'font-awesome' ) } type='warning'>
                 <p>You can, however, use a Kit. Make sure you have a paid subscription and select "Use a Kit" above. We'll walk you through the other details from there.</p>
               </Alert>
             }
