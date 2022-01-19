@@ -47,6 +47,43 @@ activated to help with testing and exploring interaction with the plugin at run 
 
 # Development Setup
 
+## 0. TLDR
+
+First time:
+
+```
+bin/build-docker-images
+```
+
+Each time, leave running in one terminal, and CTRL-C to stop:
+
+```
+bin/dev
+```
+
+First time, after `bin/dev` is running, in a separate terminal:
+
+```
+bin/setup
+```
+
+### When modifying JavaScript/CSS assets under `admin/`
+
+First time:
+
+```
+cd admin
+npm install
+```
+
+Each time:
+```
+cd admin
+npm run start
+```
+
+Leave that running in a separate terminal.
+
 ## 1. Make sure Docker is installed
 
 ## 2. Install Node.js
