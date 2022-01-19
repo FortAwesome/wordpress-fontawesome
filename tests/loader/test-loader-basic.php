@@ -1,13 +1,15 @@
 <?php
 namespace FortAwesome;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * FontAwesomeLoaderTestBasic class
  *
  * @runTestsInSeparateProcesses
  */
-class FontAwesomeLoaderTestBasic extends \WP_UnitTestCase {
-	public function setUp() {
+class FontAwesomeLoaderTestBasic extends TestCase {
+	public function set_up() {
+		parent::set_up();
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_a/index.php';
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_b/index.php';
 

@@ -1,13 +1,15 @@
 <?php
 namespace FortAwesome;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * FontAwesomeLoaderTestRedundantVersions class
  *
  * @runTestsInSeparateProcesses
  */
-class FontAwesomeLoaderTestRedundantVersions extends \WP_UnitTestCase {
-	public function setUp() {
+class FontAwesomeLoaderTestRedundantVersions extends TestCase {
+	public function set_up() {
+		parent::set_up();
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_a/index.php';
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_c/index.php';
 		// Trigger the load of the plugin.
@@ -15,7 +17,8 @@ class FontAwesomeLoaderTestRedundantVersions extends \WP_UnitTestCase {
 		\set_site_transient( 'font-awesome-releases', 42 );
 	}
 
-	public function tearDown() {
+	public function tear_down() {
+		parent::tear_down();
 		\delete_site_transient( 'font-awesome-releases' );
 	}
 

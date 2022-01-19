@@ -1,13 +1,15 @@
 <?php
 namespace FortAwesome;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * FontAwesomeLoaderTestLifecycle class
  *
  * @runTestsInSeparateProcesses
  */
-class FontAwesomeLoaderTestLifecycle extends \WP_UnitTestCase {
-	public function setUp() {
+class FontAwesomeLoaderTestLifecycle extends TestCase {
+	public function set_up() {
+		parent::set_up();
 		\delete_site_transient( 'font-awesome-releases' );
 		\delete_option( 'font-awesome' );
 		require_once dirname( __FILE__ ) . '/mock_installations/ver_c/index.php';
