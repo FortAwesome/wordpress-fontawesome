@@ -134,7 +134,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => false,
 				'use_svg'  => false,
-				'use_shim' => false,
+				'use_compatibility' => false,
 			)
 		);
 
@@ -160,7 +160,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
-				'use_shim' => false,
+				'use_compatibility' => false,
 			)
 		);
 
@@ -185,7 +185,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
-				'use_shim' => true,
+				'use_compatibility' => true,
 			)
 		);
 	}
@@ -200,7 +200,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
-				'use_shim' => false,
+				'use_compatibility' => false,
 			)
 		);
 
@@ -221,7 +221,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => false,
 				'use_svg'  => false,
-				'use_shim' => true,
+				'use_compatibility' => true,
 			)
 		);
 
@@ -242,7 +242,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => true,
-				'use_shim' => true,
+				'use_compatibility' => true,
 			)
 		);
 
@@ -266,7 +266,7 @@ class ReleaseProviderTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
-				'use_shim' => false,
+				'use_compatibility' => false,
 			)
 		);
 

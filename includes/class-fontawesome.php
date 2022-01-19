@@ -241,13 +241,13 @@ class FontAwesome {
 	 */
 	const DEFAULT_USER_OPTIONS = array(
 		'usePro'         => false,
-		'v4Compat'       => true,
+		'compat'         => true,
 		'technology'     => 'webfont',
 		'pseudoElements' => true,
 		'kitToken'       => null,
 		// whether the token is present, not the token's value.
 		'apiToken'       => false,
-		'dataVersion'    => 3,
+		'dataVersion'    => 4,
 	);
 
 	/**
@@ -425,7 +425,7 @@ class FontAwesome {
 			array(
 				'use_pro'  => $this->pro(),
 				'use_svg'  => 'svg' === $this->technology(),
-				'use_shim' => $this->v4_compatibility(),
+				'use_compatibility' => $this->v4_compatibility(),
 			)
 		);
 	}
@@ -448,17 +448,13 @@ class FontAwesome {
 
 		$should_upgrade = false;
 
-		$upgraded_options = array();
-
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
 				$this->old_remove_unregistered_clients = true;
 			}
 
-			$upgraded_options = array_merge( $upgraded_options, $this->convert_options_from_v1( $options ) );
-
-			$this->upgrade_for_4_0_0_rc22();
+			$upgraded_options = $this->convert_options_from_v1( $options );
 
 			/**
 			 * If the version is still not set for some reason, set it to a
@@ -469,10 +465,33 @@ class FontAwesome {
 			}
 
 			$should_upgrade = true;
+
+			$options = $upgraded_options;
+		}
+
+		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 4 ) {
+
+			if( !isset( $options['compat'] ) && isset( $options['v4Compat'] ) ) {
+				$v4_compat =  boolval( $options['v4Compat'] );
+				$options['compat'] = $v4_compat;
+				unset( $options['v4Compat'] );
+			} else {
+				$options['compat'] = self::DEFAULT_USER_OPTIONS['compat'];
+			}
+
+			if ( isset( $options['v4Compat'] ) ) {
+				unset( $options['v4Compat'] );
+			}
+
+			$options['dataVersion'] = 4;
+
+			$should_upgrade = true;
 		}
 
 		if ( $should_upgrade ) {
-			$this->validate_options( $upgraded_options );
+			$this->validate_options( $options );
+
+			$this->reset_releases_metadata_for_upgrade();
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -487,16 +506,6 @@ class FontAwesome {
 				throw UpgradeException::main_option_delete();
 			}
 
-			update_option( self::OPTIONS_KEY, $upgraded_options );
-
-			$options = $upgraded_options;
-		}
-
-		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 3 ) {
-			$this->upgrade_for_4_0_0_rc22();
-
-			$options['dataVersion'] = 3;
-
 			update_option( self::OPTIONS_KEY, $options );
 		}
 	}
@@ -507,11 +516,16 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	private function upgrade_for_4_0_0_rc22() {
-		// Delete the old release metadata transient.
+	private function reset_releases_metadata_for_upgrade() {
+		/**
+		 * Delete the old release metadata transient, if it exists,
+		 * which would not yet have been a site transient.
+		 */
 		delete_transient( 'font-awesome-releases' );
 
-		delete_site_transient( 'font-awesome-releases' );
+		// Delete the current site transients.
+		delete_site_transient( FontAwesome_Release_Provider::OPTIONS_KEY );
+		delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
 
 		/**
 		 * This is one exception to the rule about not loading release metadata
@@ -1002,7 +1016,7 @@ class FontAwesome {
 			}
 		}
 
-		if ( ! isset( $options['v4Compat'] ) || ! is_bool( $options['v4Compat'] ) ) {
+		if ( ! isset( $options['compat'] ) || ! is_bool( $options['compat'] ) ) {
 			throw new ConfigCorruptionException();
 		}
 
@@ -1093,6 +1107,8 @@ class FontAwesome {
 
 		if ( isset( $options['usePro'] ) ) {
 			$converted_options['usePro'] = $options['usePro'];
+		} else {
+			$converted_options['usePro'] = self::DEFAULT_USER_OPTIONS['usePro'];
 		}
 
 		if ( isset( $options['version'] ) ) {
@@ -1117,14 +1133,14 @@ class FontAwesome {
 							: false
 					);
 
-			$converted_options['v4Compat'] = $options['lockedLoadSpec']['v4shim'];
+			$converted_options['compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
 			$converted_options['technology'] = $options['adminClientLoadSpec']['method'];
 
 			$converted_options['pseudoElements'] = 'svg' === $options['adminClientLoadSpec']['method']
 				&& $options['adminClientLoadSpec']['pseudoElements'];
 
-			$converted_options['v4Compat'] = $options['adminClientLoadSpec']['v4shim'];
+			$converted_options['compat'] = $options['adminClientLoadSpec']['v4shim'];
 		}
 
 		return $converted_options;
@@ -1418,13 +1434,28 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 * @throws ConfigCorruptionException
+	 * @deprecated
 	 *
 	 * @return boolean
 	 */
 	public function v4_compatibility() {
+		return $this->compatibility();
+	}
+
+	/**
+	 * Indicates whether Font Awesome is being loaded with older version compatibility.
+	 *
+	 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
+	 *
+	 * @since 4.1.0
+	 * @throws ConfigCorruptionException
+	 *
+	 * @return boolean
+	 */
+	public function compatibility() {
 		$options = $this->options();
 		$this->validate_options( $options );
-		return $options['v4Compat'];
+		return $options['compat'];
 	}
 
 	/**
@@ -1969,13 +2000,13 @@ EOT;
 				2
 			);
 
-			if ( ! array_key_exists( 'v4Compat', $options ) ) {
+			if ( ! array_key_exists( 'compat', $options ) ) {
 				throw new ConfigCorruptionException();
 			}
 
 			$version = $resource_collection->version();
 
-			if ( $options['v4Compat'] ) {
+			if ( $options['compat'] ) {
 				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
@@ -1996,6 +2027,8 @@ EOT;
 									self::RESOURCE_HANDLE_V4SHIM,
 									$font_face_content
 								);
+							} else {
+
 							}
 						},
 						PHP_INT_MAX
@@ -2067,7 +2100,7 @@ EOT;
 				2
 			);
 
-			if ( $options['v4Compat'] ) {
+			if ( $options['compat'] ) {
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
@@ -2411,8 +2444,8 @@ EOT;
 	 * ```php
 	 *   array(
 	 *     'technology'        => 'svg', // "svg" or "webfont"
-	 *     'v4Compat'          => true, // true or false
-	 *     'pseudoElements' => false, // true or false
+	 *     'compat'            => true, // true or false
+	 *     'pseudoElements'    => false, // true or false
 	 *     'name'              => 'Foo Plugin', // (required)
 	 *     'version'           => [
 	 *                              [ '5.10.0', '>=']
@@ -2532,7 +2565,9 @@ EOT;
 	 *
 	 * <h3>Additional Notes on Specific Preferences</h3>
 	 *
-	 * - `v4Compat`
+	 * - `compat`
+	 * 
+	 *   This was previously called 'v4Compat'. If older code uses v4Compat, it will be taken as the value for v4Compat.
 	 *
 	 *   There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
 	 *   It's best to upgrade name references to the version 5 names,
@@ -2544,8 +2579,23 @@ EOT;
 	 *   Another common pattern out there on the web (not a recommended practice these days, though) is to place
 	 *   icons as pseudo-elements where the unicode is specific in CSS as `content` and `"FontAwesome"` is specified
 	 *   as the `font-family`. The main problem here is that the `font-family` name has changed for Font Awesome 5,
-	 *   and there are multiple `font-family` names. So the v4Compat feature of this plugin also "shims" those
+	 *   and there are multiple `font-family` names. So the compat feature of this plugin also "shims" those
 	 *   hardcoded version 4 `font-family` names so that they will use the corresponding Font Awesome 5 webfont files.
+	 *
+	 *   There have been some changes across major versions at the level of unicode differences. For example, 
+ 	 *   the glyph associated with the v4 icon named "diamond" with unicode f219 appears in FA5 and FA6
+ 	 *   as the icon named "gem" with unicode f3a5. That glyph looked like the "precious stone" diamond.
+ 	 * 
+ 	 *   The glyph associated with the icon named "diamond" and unicode f3a5 in FA5 and FA6 is
+ 	 *   like the diamond as a suit in playing cards.
+ 	 *
+ 	 *   Without all of the compatibility assets to fix up such mappings, any old pseudo-elements that
+ 	 *   used the v4 font-family of "FontAwesome" with a unicode of f219, when rendered using the FA5 or
+ 	 *   FA6 fonts, will get the "suit" diamond instead of the "precious stone" diamond.
+	 *
+	 *   In general, a key improvement in v6 is much more comprehensive compatibility with pseudo-elements that may
+	 *   have been defined using font-family or unicode values from older versions. This option enables all of
+	 *   the various compatibility accommodations.
 	 *
 	 * - `pseudoElements`
 	 *
@@ -2564,7 +2614,23 @@ EOT;
 			throw new ClientPreferencesSchemaException();
 		}
 
-		$this->client_preferences[ $client_preferences['name'] ] = $client_preferences;
+		$updated_client_preferences = $client_preferences;
+
+		if ( array_key_exists( 'v4Compat', $client_preferences ) ) {
+			$v4_compat = $client_preferences['v4Compat'];
+
+			if ( array_key_exists( 'compat', $client_preferences ) ) {
+				$compat = $client_preferences['compat'];
+
+				if ( $compat !== $v4_compat ) {
+					throw new ClientPreferencesSchemaException();
+				}
+			}
+
+			$updated_client_preferences['compat'] = $v4_compat;
+		}
+
+		$this->client_preferences[ $client_preferences['name'] ] = $updated_client_preferences;
 	}
 
 	/**

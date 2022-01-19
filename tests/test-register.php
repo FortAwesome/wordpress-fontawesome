@@ -39,7 +39,7 @@ class RegisterTest extends TestCase {
 		fa()->register(
 			array(
 				'technology' => 'svg',
-				'v4Compat' => true
+				'compat' => true
 			)
 		);
 	}
@@ -49,9 +49,22 @@ class RegisterTest extends TestCase {
 			array(
 				'name'   => 'test',
 				'technology' => 'svg',
-				'v4Compat' => true,
+				'compat' => true,
 			)
 		);
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'technology' => 'svg',
+				'compat' => true,
+			)
+		);
+
+		$registered_test_clients = array_filter(fa()->client_preferences(), function( $client ) { return 'test' === $client['name']; });
+		$this->assertEquals( 1, count( $registered_test_clients ) );
+	}
+
+	public function test_v4_compat_translated_to_compat() {
 		fa()->register(
 			array(
 				'name'   => 'test',
@@ -62,6 +75,64 @@ class RegisterTest extends TestCase {
 
 		$registered_test_clients = array_filter(fa()->client_preferences(), function( $client ) { return 'test' === $client['name']; });
 		$this->assertEquals( 1, count( $registered_test_clients ) );
+		$this->assertTrue( array_key_exists( 'compat', $registered_test_clients['test'] ) );
+		$this->assertTrue( $registered_test_clients['test']['compat'] );
+	}
+
+	// If a client specifies both, they must have the same value.
+	public function test_v4_compat_and_compat_must_be_equal() {
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'technology' => 'svg',
+				'v4Compat' => true,
+				'compat' => true,
+			)
+		);
+
+		$registered_test_clients = array_filter(fa()->client_preferences(), function( $client ) { return 'test' === $client['name']; });
+		$this->assertEquals( 1, count( $registered_test_clients ) );
+		$this->assertTrue( array_key_exists( 'compat', $registered_test_clients['test'] ) );
+		$this->assertTrue( $registered_test_clients['test']['compat'] );
+
+		// If they differ, it's an exception.
+		$this->expectException( ClientPreferencesSchemaException::class );
+		fa()->register(
+			array(
+				'name'   => 'test2',
+				'technology' => 'svg',
+				'v4Compat' => false,
+				'compat' => true,
+			)
+		);
+	}
+
+	public function test_compat_may_be_false() {
+		fa()->register(
+			array(
+				'name'   => 'test',
+				'technology' => 'svg',
+				'compat' => false,
+			)
+		);
+
+		$registered_test_clients = array_filter(fa()->client_preferences(), function( $client ) { return 'test' === $client['name']; });
+		$this->assertEquals( 1, count( $registered_test_clients ) );
+		$this->assertTrue( array_key_exists( 'compat', $registered_test_clients['test'] ) );
+		$this->assertFalse( $registered_test_clients['test']['compat'] );
+
+		fa()->register(
+			array(
+				'name'   => 'test2',
+				'technology' => 'svg',
+				'v4Compat' => false,
+			)
+		);
+
+		$registered_test_clients = array_filter(fa()->client_preferences(), function( $client ) { return 'test2' === $client['name']; });
+		$this->assertEquals( 1, count( $registered_test_clients ) );
+		$this->assertTrue( array_key_exists( 'compat', $registered_test_clients['test2'] ) );
+		$this->assertFalse( $registered_test_clients['test2']['compat'] );
 	}
 
 	public function client_preference_exists( $name, $prefs ) {

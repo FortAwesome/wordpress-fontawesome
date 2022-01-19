@@ -185,8 +185,14 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		if ( isset( $given_options['usePro'] ) ) {
 			$item['usePro'] = $given_options['usePro'];
 		}
-		if ( isset( $given_options['v4Compat'] ) ) {
-			$item['v4Compat'] = $given_options['v4Compat'];
+
+		/**
+		 * The new option key is "compat", overriding the old v4Compat key.
+		 */
+		if ( isset( $given_options['compat'] ) ) {
+			$item['compat'] = $given_options['compat'];
+		} elseif ( isset( $given_options['v4Compat'] ) ) {
+			$item['compat'] = $given_options['v4Compat'];
 		}
 		if ( isset( $given_options['technology'] ) ) {
 			$item['technology'] = $given_options['technology'];

@@ -172,7 +172,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
-				'use_shim' => false,
+				'use_compatibility' => false,
 			)
 		);
 
@@ -185,7 +185,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			array(
 				'use_pro'  => true,
 				'use_svg'  => false,
-				'use_shim' => false,
+				'use_compatibility' => false,
 			)
 		);
 

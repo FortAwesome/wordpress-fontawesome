@@ -105,7 +105,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'kitToken' => '778ccf8260',
@@ -143,7 +143,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'kitToken' => '778ccf8260',
@@ -173,7 +173,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'kitToken' => '778ccf8260',
@@ -206,7 +206,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'kitToken' => '778ccf8260',
@@ -239,7 +239,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => false,
 					'detectConflictsUntil' => 0,
@@ -275,7 +275,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => false,
-					'v4Compat' => false,
+					'compat' => false,
 					'technology' => 'webfont',
 					'pseudoElements' => false,
 					'kitToken' 	=> null,
@@ -308,7 +308,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => false,
 					'detectConflictsUntil' => 0,
@@ -343,7 +343,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => false,
 					'kitToken' => null,
@@ -376,7 +376,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => false,
 					'kitToken' => null,
@@ -409,7 +409,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'detectConflictsUntil' => 0,
@@ -470,7 +470,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'svg',
 					'pseudoElements' => true,
 					'kitToken' => null,
@@ -498,7 +498,7 @@ class ConfigControllerTest extends TestCase {
 		$this->assertTrue( $data['options']['usePro'] );
 		$this->assertTrue( fa()->pro() );
 		
-		$this->assertTrue( $data['options']['v4Compat'] );
+		$this->assertTrue( $data['options']['compat'] );
 		$this->assertTrue( fa()->v4_compatibility() );
 
 		$this->assertEquals( 'svg', $data['options']['technology'] );
@@ -523,7 +523,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'svg',
 					'pseudoElements' => true,
 					'kitToken' => 'abc123',
@@ -551,7 +551,7 @@ class ConfigControllerTest extends TestCase {
 		$this->assertTrue( $data['options']['usePro'] );
 		$this->assertTrue( fa()->pro() );
 
-		$this->assertTrue( $data['options']['v4Compat'] );
+		$this->assertTrue( $data['options']['compat'] );
 		$this->assertTrue( fa()->v4_compatibility() );
 
 		$this->assertEquals( 'svg', $data['options']['technology'] );
@@ -578,7 +578,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'svg',
 					'pseudoElements' => true,
 					'detectConflictsUntil' => $detect_conflicts_until,
@@ -614,7 +614,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => false,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'detectConflictsUntil' => 0,
@@ -651,7 +651,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array(
 				'options' => array(
 					'usePro' => true,
-					'v4Compat' => true,
+					'compat' => true,
 					'technology' => 'webfont',
 					'pseudoElements' => true,
 					'detectConflictsUntil' => 0,
@@ -681,5 +681,75 @@ class ConfigControllerTest extends TestCase {
 
 		$this->assertInstanceOf( \WP_Error::class, $data );
 		$this->assertEquals( 'fontawesome_client_exception', $data->get_error_code() );
+	}
+
+	public function test_update_with_v4_compat_or_compat() {
+		// Start with the version being something else.
+		$this->set_version( '5.0.13' );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => false,
+					'v4Compat' => true,
+					'technology' => 'webfont',
+					'pseudoElements' => true,
+					'detectConflictsUntil' => 0,
+					'blocklist' => [],
+					'kitToken' => null,
+					'apiToken' => false,
+					'version' => '6.0.0-beta3',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+		$request->set_body( wp_json_encode( $request_body ) );
+		
+		$response = $this->server->dispatch( $request );
+		$this->assertNotNull( fa()->latest_version() );
+		$this->assertEquals( 200, $response->get_status() );
+		// Version changed
+		$this->assertEquals( '6.0.0-beta3', fa()->version() );
+		$data = $response->get_data();
+
+		$this->assertArrayHasKey( 'options', $data );
+		$this->assertTrue( $data['options']['compat']);
+		$this->assertTrue( fa()->compatibility() );
+		$this->assertTrue( fa()->v4_compatibility() );
+
+		$request_body = array(
+				'options' => array(
+					'usePro' => false,
+					'compat' => false,
+					'technology' => 'webfont',
+					'pseudoElements' => true,
+					'detectConflictsUntil' => 0,
+					'blocklist' => [],
+					'kitToken' => null,
+					'apiToken' => false,
+					'version' => '6.0.0-beta3',
+				),
+				'conflicts' => array()
+			);
+
+		$request  = new \WP_REST_Request(
+			'PUT',
+			$this->namespaced_route
+		);
+
+    	$request->add_header('Content-Type', 'application/json');
+		$request->set_body( wp_json_encode( $request_body ) );
+		
+		$response = $this->server->dispatch( $request );
+		$data = $response->get_data();
+		$this->assertArrayHasKey( 'options', $data );
+		$this->assertFalse( $data['options']['compat']);
+		$this->assertFalse( fa()->compatibility() );
+		$this->assertFalse( fa()->v4_compatibility() );
 	}
 }

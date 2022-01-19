@@ -308,7 +308,7 @@ EOD;
 	 * query.
 	 *
 	 * @param string $version
-	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
+	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_compatibility' => true)
 	 * @throws ReleaseMetadataMissingException
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
@@ -319,7 +319,7 @@ EOD;
 	public static function get_resource_collection( $version, $flags = array(
 		'use_pro'  => false,
 		'use_svg'  => false,
-		'use_shim' => true,
+		'use_compatibility' => true,
 	) ) {
 		$resources = array();
 
@@ -327,7 +327,7 @@ EOD;
 			throw new ConfigCorruptionException();
 		}
 
-		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
+		if ( $flags['use_compatibility'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
 			throw ConfigSchemaException::webfont_v4compat_introduced_later();
 		}
 
@@ -340,7 +340,7 @@ EOD;
 				$version === $last_used_transient['version']
 				&& $flags['use_pro'] === $last_used_transient['use_pro']
 				&& $flags['use_svg'] === $last_used_transient['use_svg']
-				&& $flags['use_shim'] === $last_used_transient['use_shim']
+				&& $flags['use_compatibility'] === $last_used_transient['use_compatibility']
 				&& is_array( $last_used_transient['resources'] )
 			) {
 				return new FontAwesome_ResourceCollection( $version, $last_used_transient['resources'] );
@@ -354,7 +354,7 @@ EOD;
 		}
 
 		array_push( $resources, $provider->build_resource( $version, 'all', $flags ) );
-		if ( $flags['use_shim'] ) {
+		if ( $flags['use_compatibility'] ) {
 			array_push( $resources, $provider->build_resource( $version, 'v4-shims', $flags ) );
 		}
 
@@ -362,7 +362,7 @@ EOD;
 			'version'   => $version,
 			'use_pro'   => $flags['use_pro'],
 			'use_svg'   => $flags['use_svg'],
-			'use_shim'  => $flags['use_shim'],
+			'use_compatibility'  => $flags['use_compatibility'],
 			'resources' => $resources,
 		);
 
