@@ -7,38 +7,12 @@
     "authors": [
         {
             "name": "Mike Wilkerson",
-            "email": "mwlkerson@gmail.com",
+            "email": "mwilkerson@gmail.com",
             "role": "Developer"
         }
     ],
     "support": {
         "email": "hello@fontawesome.com"
-    },
-    "archive": {
-        "exclude": [
-            "/images",
-            "/integrations",
-            "/tests",
-            ".gitattributes",
-            ".github",
-            ".gitignore",
-            ".travis.yml",
-            "/images",
-            "phpunit.xml.dist",
-            "phpcs.xml.dist",
-            "/.git",
-            "proxy-webpack-dev.conf",
-            "readme.txt",
-            "docker-php-ext-xdebug.ini",
-            "docker-compose.yml",
-            "/bin",
-            "admin/config",
-            "admin/src",
-            "admin/scripts",
-            "Dockerfile",
-            ".env",
-            "DEVELOPMENT.md"
-        ]
     },
     "require-dev": {
       "phpunit/phpunit": "5.7.27",
@@ -54,6 +28,6 @@
       "yoast/wp-test-utils": "^1.0"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "phpunit"
     }
 }

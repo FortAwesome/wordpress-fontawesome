@@ -7,7 +7,7 @@
     "authors": [
         {
             "name": "Mike Wilkerson",
-            "email": "mwlkerson@gmail.com",
+            "email": "mwilkerson@gmail.com",
             "role": "Developer"
         }
     ],
@@ -28,17 +28,21 @@
             "phpunit.xml.dist",
             "phpcs.xml.dist",
             "/.git",
-            "proxy-webpack-dev.conf",
             "readme.txt",
             "docker-php-ext-xdebug.ini",
             "docker-compose.yml",
             "/bin",
-            "admin/config",
             "admin/src",
+            "admin/src/webpack.config.js",
+            "compat-js/src",
+            "webpack.config.js",
+            "compat-js/src/webpack.config.js",
             "admin/scripts",
             "Dockerfile",
+            "docker/",
             ".env",
-            "DEVELOPMENT.md"
+            "DEVELOPMENT.md",
+            "docs/"
         ]
     },
     "require-dev": {
@@ -54,14 +58,14 @@
         "yoast/wp-test-utils": "^1.0"
     },
     "scripts": {
-        "phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist",
-        "phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
-        "test": "vendor/bin/phpunit",
+        "phpcs": "phpcs --standard=phpcs.xml.dist",
+        "phpcbf": "phpcbf --standard=phpcs.xml.dist",
+        "test": "phpunit",
         "clean": "rm -fR wp-dist; rm -fR admin/build; rm -fR vendor; rm -f font-awesome.zip",
         "build.admin": "cd admin; npm install && npm run build",
         "build.compat": "cd compat-js; npm install && npm run build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
-        "docs": "vendor/bin/phpdoc",
+        "docs": "phpdoc",
         "docsrv": "cd docsrv && npm install && node index.js",
         "dist": "composer clean && composer build.admin && composer build.compat && bin/make-wp-dist",
         "dist2trunk": "bin/dist-to-trunk.sh"
