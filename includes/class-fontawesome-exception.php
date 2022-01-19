@@ -315,7 +315,7 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 	public static function webfont_v4compat_introduced_later() {
 		return new static(
 			esc_html__(
-				'Whoops! You found a corner case here. Version 4 compatibility for our webfont technology was not introduced until Font Awesome 5.1.0. Try using a newer version, disabling version 4 compatibility, or switch to SVG.',
+				'Whoops! You found a corner case here. Older Version Compatibility for our webfont technology was not introduced until Font Awesome 5.1.0. Try using a newer version, disabling version 4 compatibility, or switch to SVG.',
 				'font-awesome'
 			)
 		);
