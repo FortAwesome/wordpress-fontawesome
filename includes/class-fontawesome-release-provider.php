@@ -342,6 +342,12 @@ EOD;
 				&& $flags['use_svg'] === $last_used_transient['use_svg']
 				&& $flags['use_compatibility'] === $last_used_transient['use_compatibility']
 				&& is_array( $last_used_transient['resources'] )
+				/**
+				 * Checking for all because we only want to use a newer transient whose
+				 * resources is key/value array. So if it's the older version that is
+				 * just a list, we'll fall through and rebuild it below.
+				 */
+				&& isset( $last_used_transient['resources']['all'] )
 			) {
 				return new FontAwesome_ResourceCollection( $version, $last_used_transient['resources'] );
 			}
@@ -353,9 +359,15 @@ EOD;
 			throw new ReleaseMetadataMissingException();
 		}
 
-		array_push( $resources, $provider->build_resource( $version, 'all', $flags ) );
+		$resources['all'] = $provider->build_resource( $version, 'all', $flags );
+
 		if ( $flags['use_compatibility'] ) {
-			array_push( $resources, $provider->build_resource( $version, 'v4-shims', $flags ) );
+			$resources['v4-shims'] = $provider->build_resource( $version, 'v4-shims', $flags );
+
+			if ( version_compare( $version, '6.0.0-beta3', '>=' ) ) {
+				$resources['v4-font-face'] = $provider->build_resource( $version, 'v4-font-face', $flags );
+				$resources['v5-font-face'] = $provider->build_resource( $version, 'v5-font-face', $flags );
+			}
 		}
 
 		$transient_value = array(

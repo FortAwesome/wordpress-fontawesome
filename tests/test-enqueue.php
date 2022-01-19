@@ -49,6 +49,8 @@ class EnqueueTest extends TestCase {
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
+		wp_style_is( FontAwesome::RESOURCE_HANDLE_V4_FONT_FACE , 'enqueued' ) && wp_dequeue_style( FontAwesome::RESOURCE_HANDLE_V4_FONT_FACE );
+		wp_style_is( FontAwesome::RESOURCE_HANDLE_V5_FONT_FACE , 'enqueued' ) && wp_dequeue_style( FontAwesome::RESOURCE_HANDLE_V5_FONT_FACE );
 		delete_option( FontAwesome::OPTIONS_KEY );
 		FontAwesome_Activator::activate();
 	}
@@ -60,21 +62,30 @@ class EnqueueTest extends TestCase {
 
 		$technology_path_part = boolval( $options['technology'] === 'svg' ) ? 'js' : 'css';
 
-		$resources = [
-			new FontAwesome_Resource(
-				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/all.${technology_path_part}",
-				'sha384-fake123'
-			)
-		];
+		$resources = array();
+
+		$resources['all'] = new FontAwesome_Resource(
+			"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/all.${technology_path_part}",
+			'sha384-fake123'
+		);
 
 		if( boolval( $options['compat'] ) ) {
-			array_push(
-				$resources,
-				new FontAwesome_Resource(
-					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
-					'sha384-fake246'
-				)
+			$resources['v4-shims'] = new FontAwesome_Resource(
+				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
+				'sha384-fake246'
 			);
+
+			if ( version_compare( $version, '6.0.0-beta3', '>=' ) ) {
+				$resources['v4-font-face'] = new FontAwesome_Resource(
+					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-font-face.${technology_path_part}",
+					'sha384-fake357'
+				);
+
+				$resources['v5-font-face'] = new FontAwesome_Resource(
+					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v5-font-face.${technology_path_part}",
+					'sha384-fake479'
+				);
+			}
 		}
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
@@ -122,6 +133,38 @@ class EnqueueTest extends TestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
+	}
+
+	public function assert_webfont_v4_font_face($output, $license_subdomain, $version, $refute = false){
+		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
+		$this->assertEquals(
+			$refute ? 0 : 1,
+			preg_match(
+				"/<link[\s]+${ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4-font-face-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/v4-font-face\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake357\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
+				$output
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	public function refute_webfont_v4_font_face($output, $license_subdomain, $version, $refute = false){
+		$this->assert_webfont_v4_font_face($output, $license_subdomain, $version, true);
+	}
+
+	public function assert_webfont_v5_font_face($output, $license_subdomain, $version, $refute = false){
+		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
+		$this->assertEquals(
+			$refute ? 0 : 1,
+			preg_match(
+				"/<link[\s]+${ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v5-font-face-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/v5-font-face\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake479\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
+				$output
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	public function refute_webfont_v5_font_face($output, $license_subdomain, $version, $refute = false){
+		$this->assert_webfont_v5_font_face($output, $license_subdomain, $version, true);
 	}
 
 	public function refute_webfont_v4shim($output, $license_subdomain, $version ) {

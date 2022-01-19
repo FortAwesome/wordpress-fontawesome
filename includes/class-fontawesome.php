@@ -165,6 +165,20 @@ class FontAwesome {
 	const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
 	/**
+	 * The handle used when enqueuing v4-font-face.css.
+	 *
+	 * @since 4.1.0
+	 */
+	const RESOURCE_HANDLE_V4_FONT_FACE = 'font-awesome-official-v4-font-face';
+
+	/**
+	 * The handle used when enqueuing v5-font-face.css.
+	 *
+	 * @since 4.1.0
+	 */
+	const RESOURCE_HANDLE_V5_FONT_FACE = 'font-awesome-official-v5-font-face';
+
+	/**
 	 * The handle used when enqueuing the conflict detector.
 	 *
 	 * @ignore
@@ -1969,13 +1983,21 @@ EOT;
 			$this->apply_detection_ignore_attr();
 		}
 
+		if ( ! isset( $resources['all'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
+		$all_source = $resources['all']->source();
+		$all_integrity = $resources['all']->integrity_key();
+
 		if ( 'webfont' === $options['technology'] ) {
+
 			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () use ( $resources ) {
+					function () use ( $all_source ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_style( self::RESOURCE_HANDLE, $resources[0]->source(), null, null );
+						wp_enqueue_style( self::RESOURCE_HANDLE, $all_source, null, null );
 					}
 				);
 			}
@@ -1983,11 +2005,11 @@ EOT;
 			// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 			add_filter(
 				'style_loader_tag',
-				function( $html, $handle ) use ( $resources ) {
+				function( $html, $handle ) use ( $all_integrity ) {
 					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
 								return preg_replace(
 									'/\/>$/',
-									'integrity="' . $resources[0]->integrity_key() .
+									'integrity="' . $all_integrity .
 									'" crossorigin="anonymous" />',
 									$html,
 									1
@@ -2007,6 +2029,19 @@ EOT;
 			$version = $resource_collection->version();
 
 			if ( $options['compat'] ) {
+				if ( ! isset( $resources['v4-shims'] ) ) {
+					throw new ConfigCorruptionException();
+				}
+
+				$v4_shims_source = $resources['v4-shims']->source();
+				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
+
+				$v4_font_face_shim_source = isset( $resources['v4-font-face'] ) && $resources['v4-font-face']->source();
+				$v4_font_face_shim_integrity = isset( $reintegrity_keys['v4-font-face'] ) && $reintegrity_keys['v4-font-face']->integrity_key();
+
+				$v5_font_face_shim_source = isset( $resources['v5-font-face'] ) && $resources['v5-font-face']->source();
+				$v5_font_face_shim_integrity = isset( $reintegrity_keys['v5-font-face'] ) && $reintegrity_keys['v5-font-face']->integrity_key();
+
 				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
@@ -2015,9 +2050,9 @@ EOT;
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
-						function () use ( $resources, $options, $version ) {
+						function () use ( $v4_shims_source, $v4_shims_integrity, $v4_font_face_shim_source, $v4_font_face_shim_integrity, $v5_font_face_shim_source, $v5_font_face_shim_integrity, $options, $version ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null );
+							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null );
 
 							// Version 6 Beta 3 is when new compatibility assets were introduced and available via Free CDN.
 							if ( version_compare( $version, '6.0.0-beta3', '<' ) ) {
@@ -2028,6 +2063,10 @@ EOT;
 									$font_face_content
 								);
 							} else {
+								// TODO: continue here:
+								// 1. update the resource collection to be indexed by resource name instead of array indices.
+								// 2. then retrieve each of the relevant things here.
+								// 3. then also update the integrity key below. Maybe need to refactor to handle that in a more DRY way.
 
 							}
 						},
@@ -2038,14 +2077,14 @@ EOT;
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
 				// that don't.
-				if ( ! is_null( $resources[1]->integrity_key() ) ) {
+				if ( ! is_null( $v4_shims_integrity ) ) {
 					add_filter(
 						'style_loader_tag',
-						function ( $html, $handle ) use ( $resources ) {
+						function ( $html, $handle ) use ( $v4_shims_integrity ) {
 							if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
 								return preg_replace(
 									'/\/>$/',
-									'integrity="' . $resources[1]->integrity_key() .
+									'integrity="' . $v4_shims_integrity .
 									'" crossorigin="anonymous" />',
 									$html,
 									1
@@ -2063,9 +2102,9 @@ EOT;
 			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () use ( $resources, $options ) {
+					function () use ( $all_source, $options ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_script( self::RESOURCE_HANDLE, $resources[0]->source(), null, null, false );
+						wp_enqueue_script( self::RESOURCE_HANDLE, $all_source, null, null, false );
 
 						if ( $options['pseudoElements'] ) {
 							wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
@@ -2077,12 +2116,12 @@ EOT;
 			// Filter the <script> tag to add additional attributes for integrity, crossorigin, defer.
 			add_filter(
 				'script_loader_tag',
-				function ( $tag, $handle ) use ( $resources ) {
+				function ( $tag, $handle ) use ( $all_integrity ) {
 					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
 						$extra_tag_attributes = 'defer crossorigin="anonymous"';
 
-						if ( ! is_null( $resources[0]->integrity_key() ) ) {
-							$extra_tag_attributes .= ' integrity="' . $resources[0]->integrity_key() . '"';
+						if ( ! is_null( $all_integrity ) ) {
+							$extra_tag_attributes .= ' integrity="' . $all_integrity . '"';
 						}
 						$modified_script_tag = preg_replace(
 							// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -2101,23 +2140,30 @@ EOT;
 			);
 
 			if ( $options['compat'] ) {
+				if ( ! isset( $resources['v4-shims'] ) ) {
+					throw new ConfigCorruptionException();
+				}
+
+				$v4_shims_source = $resources['v4-shims']->source();
+				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
+
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
-						function () use ( $resources ) {
+						function () use ( $v4_shims_source ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null, false );
+							wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null, false );
 						}
 					);
 				}
 
 				add_filter(
 					'script_loader_tag',
-					function ( $tag, $handle ) use ( $resources ) {
+					function ( $tag, $handle ) use ( $v4_shims_integrity ) {
 						if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
 							$extra_tag_attributes = 'defer crossorigin="anonymous"';
-							if ( ! is_null( $resources[1]->integrity_key() ) ) {
-								$extra_tag_attributes .= ' integrity="' . $resources[1]->integrity_key() . '"';
+							if ( ! is_null( $v4_shims_integrity ) ) {
+								$extra_tag_attributes .= ' integrity="' . $v4_shims_integrity . '"';
 							}
 							$modified_script_tag = preg_replace(
 								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
