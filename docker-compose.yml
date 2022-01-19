@@ -205,7 +205,7 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-       COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
+       COMPOSER: ${WP_FA_DIR}/composer.json
      container_name: "com.fontawesome.wordpress-latest-dev"
 
    wordpress-php8.1-dev:
@@ -373,7 +373,7 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
        FONTAWESOME_ENV: development
-       COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
+       COMPOSER: ${WP_FA_DIR}/composer.json
      container_name: "com.fontawesome.wordpress-5.4-dev"
 
    wordpress-5.0-integration:

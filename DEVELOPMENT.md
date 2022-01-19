@@ -392,10 +392,11 @@ $ COMPOSER=composer-php5.6.json composer install
 
 That's how you can specify a particular composer config file, instead of the default one called `composer.json`.
 
-The default `composer.json` and `composer.lock` files don't have version numbers in them, but they _will_ have been built with a particular version of php. They should be symlinks to php version specific files.
+The default `composer.json` and `composer.lock` files are intended to match the environment of the `wordpress:latest` docker image
+at any given point in time. As of WordPress 5.8.3 being `latest`, the image has php 7.4.
 
-So if you have installed php `8.1` and the default `composer.json` symlinks to `composer-php7.4.json` it may
-well be that simply running `composer install` produces various compatibility warnings or errors.
+So if you have installed php `8.1` on your host system and you just run `composer install` or `composer update`, you may see
+various compatibility problems, since it will use `composer.json` by default. Only do that with a version of php that matches what's in the `wordpress:latest` image.
 
 Thefore, when executing `composer` commands in your local host development environment, or in GitHub Actions,
 make sure that composer is using the version of composer.json that corresponds to the active version
