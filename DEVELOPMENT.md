@@ -6,6 +6,7 @@
 
 - [Introduction](#introduction)
 - [Development Setup](#development-setup)
+- [Optional Development Setup Steps](#optional-development-setup-steps)
 - [Run phpunit](#run-phpunit)
   * [Pass arguments to phpunit](#pass-arguments-to-phpunit)
 - [Use wp-cli within your Docker environment](#use-wp-cli-within-your-docker-environment)
@@ -32,8 +33,8 @@ This repo provides a multi-dimensional Docker-based development environment to h
 plugin under a variety of conditions: WordPress version tags `4.9` and `latest`,
 crossed with `development` and `integration`.
 
-The `development` option mounts this plugin code as a read-write volume inside a container, and also
-sets up the environment for the React admin app to do hot module loading through the webpack dev server.
+The `development` option mounts this plugin code as a read-write volume inside a container and sets up composer
+to install any development dependencies inside the container.
 
 The `integration` option does _not_ mount this plugin code in the container. Instead, it expects you
 to install the plugin. You could do so by uploading a zip file on the Add New Plugin page in
@@ -61,15 +62,25 @@ $ bin/build-docker-images 4.9 latest
 Once you build these, you won't need to rebuild them unless something changes in the underlying
 image dependencies.
 
-For `latest`, this could happen if you see that the [`wordpress:latest` tag on Docker Hub](https://hub.docker.com/_/wordpress)
-is updated. When a new version of WordPress is released, it can take a little while before a new Docker image
-is available for it. So in this development environment, `latest` refers primarily to the the `wordpress:latest`
-image on DockerHub, not always as current as the latest WordPress release.
-
 Each image is a pre-requisite for its corresponding container environment.
 So if you want to be able to run `bin/dev latest`, you have to first make sure you've built the underlying
 docker image with `bin/build-docker-images latest`.
 
+<details>
+<summary>Which versions are available in containers?</summary>
+Look in the `docker/` subdirectory for any `Dockerfile-*`. Each corresponds to an image that can be build with the `bin/build-docker-images` script. And the `docker-compose.yml` file will define one or two containers using each image: `dev`, and sometimes also `integration`.
+</details>
+
+<details>
+<summary>What actual WordPress version is latest?</summary>
+For `latest`, this could happen if you see that the [`wordpress:latest` tag on Docker Hub](https://hub.docker.com/_/wordpress)
+is updated. When a new version of WordPress is released, it can take a little while before a new Docker image
+is available for it. So in this development environment, `latest` refers primarily to the the `wordpress:latest`
+image on DockerHub, not always as current as the latest WordPress release.
+</details>
+
+<details>
+<summary>Heads Up: version of WordPress vs. version of WordPress test suite</summary>
 _BEWARE_: there's one place where this difference in "latest" might shoot us in the foot:
 The `docker/install-wp-tests-docker.sh` script runs during the image build process to
 install the core WordPress testing files that are important for our `phpunit` test run to work.
@@ -77,6 +88,7 @@ It takes a _WordPress_ version tag as an argument. So when the WordPress "latest
 and the DockerHub "latest" version are temporarily out of sync, you could be in a state where
 the WordPress `5.0.0` (in our example) is running, but with tests tagged for WordPress `5.0.1` are
 installed. Probably this won't cause a real problem, but beware.
+</details>
 
 ## 3. Set up .env.local
 
@@ -92,44 +104,6 @@ from this local install of WordPress, if it sends any (it tends not to).
 
 This file is not checked into git. It's listed in `.gitignore`.
 
-### Redis Cache Extra Steps
-
-If you know that you'll be installing the WP Redis plugin to test behavior with caching,
-then you'll need to add at least the following environment variable to `.env.local` as well:
-
-```bash
-CACHE_HOST=host.docker.internal
-```
-
-This assumes that your version of Docker supports the `host.docker.internal`
-special host name to route from the container to the host. If you have some
-other configuration, you should set it accordingly here.
-
-The following are optional:
-```bash
-CACHE_PORT=1111 # default: 6379
-CACHE_AUTH=1111 # default: 12345
-CACHE_DB=1111 # default: 0
-```
-
-### Font Awesome Internal Extra steps
-
-Designers and developers internal to Font Awesome can also run local instances of
-the Font Awesome, Font Awesome API, and kit edge apps.
-
-1. make sure the `devenv` is up-to-date
-1. in the `devenv` repo, run `bin/dev-wordpress`
-1. add entries for the following to your `.env.local` (replacing the URLs with the appropriate ones if they change)
-    ```bash
-    FONTAWESOME_API_URL=http://host.docker.internal:4543
-    FONTAWESOME_KIT_LOADER_BASE_URL=https://fa.test:4243
-    ```
-
-    *Heads Up!* make sure to use `host.docker.internal` in that API URL, because
-    the WordPress server needs to be able to reach the API server from inside the docker container.
-    That KIT_LOADER_BASE one needs to be `fa.test` because this is a URL that the
-    browser (running in the host) will need to reach.
-1. run `bin/dev` in the `fontawesome` repo if you need to do things with kit configs or API Tokens
 
 ## 4. Add the wp.test host name
 
@@ -152,12 +126,26 @@ $ bin/dev latest
 $ bin/dev
 ```
 
-This table shows the matrix for running each container environment:
+This table shows some of the available containers and environments, for example. There are several more:
 
 | version tag  | development | integration |
 | --- | --- | --- |
-| 4.9 | `$ bin/dev 4.9` | `$ bin/integration 4.9` |
 | latest | `$ bin/dev latest` | `$ bin/integration latest` |
+| 4.9 | `$ bin/dev 4.9` | `$ bin/integration 4.9` |
+| php7.2 | `$ bin/dev php7.2` | - |
+| php8.0 | `$ bin/dev php8.0` | - |
+
+<details>
+<summary>About container version numbers</summary>
+When the container has just a version number like "4.9", that's the WordPress version. To see what php
+version is running in there, check `php --version` within that container. When the container version has
+a php version like `php7.2`, this is a container intended especially for running the phpunit test suite
+against that version of php. You can see what version of WordPress is used in that container usually by
+looking at the `FROM` directive on the top line of the corresponding `Dockerfile`.
+
+There are Docker image and container versions set up for most minor point releases of php and key milestone
+releases of WordPress for local testing. Not all of these appear in the GitHub Actions test matrix.
+</details>
 
 Run one of these from the top-level directory that contains the `docker-compose.yml` config file.
 
@@ -208,15 +196,73 @@ After setup completes, WordPress is ready and initialized in the docker containe
 
 You can login to the admin dashboard at [http://wp.test:8765/wp-admin](http://wp.test:8765/wp-admin) with admin username and password as found in `.env`.
 
-## 7. OPTIONAL: Install PHP (when you need to run composer commands)
+## 7. Start the admin React app's development build (in development)
 
-Most of our PHP code will run inside a Docker container under the version of PHP installed within that container.
-So for most of your dev workflows, it doesn't matter what version of php you have installed in your local
-host environment.
+If you're doing development in `latest` (probably), then do this:
 
-However, it's the php in your host environment that will be used any time you do any of the `composer` tasks,
-like building the release bundle, running code style sniffing, or rebuilding the docs. You could probably skip
-setting up an appropriate version of php in your host environment until you need it for one of those workflows.
+In a separate terminal window, `cd admin`, and then:
+
+  (a) `npm install`
+
+  (b) `npm run start` to fire up webpack.
+
+<details>
+<summary>What is webpack doing? And how do I refresh to see my changes?</summary>
+This uses `wp-scripts` (webpack under the hood) to build the static assets under
+`admin/build`. There's no webpack dev server. Webpack will watch the JavaScript and CSS source files, notice changes to them, and rebuild those static assets on the fly. However, it won't trigger a reload
+in the browser automatically. Just refresh your browser page to load the re-built assets after making a change.
+</details>
+
+## Optional Development Setup Steps
+<details>
+<summary>Redis Cache Extra Steps</summary>
+
+If you know that you'll be installing the WP Redis plugin to test behavior with caching,
+then you'll need to add at least the following environment variable to `.env.local` as well:
+
+```bash
+CACHE_HOST=host.docker.internal
+```
+
+This assumes that your version of Docker supports the `host.docker.internal`
+special host name to route from the container to the host. If you have some
+other configuration, you should set it accordingly here.
+
+The following are optional:
+```bash
+CACHE_PORT=1111 # default: 6379
+CACHE_AUTH=1111 # default: 12345
+CACHE_DB=1111 # default: 0
+```
+</details>
+
+<details>
+<summary>Font Awesome Internal Extra steps</summary>
+
+Designers and developers internal to Font Awesome can also run local instances of
+the Font Awesome, Font Awesome API, and kit edge apps.
+
+1. make sure the `devenv` is up-to-date
+1. in the `devenv` repo, run `bin/dev-wordpress`
+1. add entries for the following to your `.env.local` (replacing the URLs with the appropriate ones if they change)
+    ```bash
+    FONTAWESOME_API_URL=http://host.docker.internal:4543
+    FONTAWESOME_KIT_LOADER_BASE_URL=https://fa.test:4243
+    ```
+
+    *Heads Up!* make sure to use `host.docker.internal` in that API URL, because
+    the WordPress server needs to be able to reach the API server from inside the docker container.
+    That KIT_LOADER_BASE one needs to be `fa.test` because this is a URL that the
+    browser (running in the host) will need to reach.
+1. run `bin/dev` in the `fontawesome` repo if you need to do things with kit configs or API Tokens
+</details>
+
+<details>
+<summary>Install PHP in Your Host Environment</summary>
+You normally will not need to install PHP in your host environment, because the
+container system is designed to run specific versions php within each container.
+
+So for most of your dev workflows, it doesn't matter what version of php, if any, you have installed in your local host environment. There are no workflows that require you to have php installed in your host environment. So this is only if you know you why you want to run some stuff--maybe phpcs code sniffing--from within the host environment.
 
 ### Install the same PHP as the WordPress image
 
@@ -238,12 +284,15 @@ To install PHP 7.4 via brew:
 $ brew install php@7.4
 ```
 
-If you've got multiple versions of php installed via brew, you can make 7.4 the active one like this:
+Dealing with managing multiple versions of php via homebrew is an exercise left to the reader ;-)
 
-```
-$ brew unlink php
-$ brew link php@7.4
-```
+### asdf is a nightmare for PHP
+
+While Font Awesome's development environments normally use asdf to help standardize runtime configurations, getting
+the PHP plugin for asdf to work successfully on macOS is probably not worth it at this time. The original plugin
+has apparently [been abandoned](https://github.com/odarriba/asdf-php#why-using-this-plug-in), and the maintainer of the
+current plugin doesn't use it any longer, and thinks that it's ["near to a nightmare"](https://github.com/odarriba/asdf-php/issues/8#issuecomment-362911209)
+on macOS.
 
 ### Multiple Versions of PHP and version-specific composer.json files
 
@@ -267,47 +316,26 @@ Thefore, when executing `composer` commands in your local host development envir
 make sure that composer is using the version of composer.json that corresponds to the active version
 of php in that environment.
 
-### asdf is a nightmare for PHP
+The containers for each version of php have the `COMPOSER` environment variable appropriately so that, within a given container, you can just run `composer` and it will inherit that env var and use the appropriate composer config file. (These are set in the `.env` and `docker-compose.yml` declarations.)
 
-While Font Awesome's development environments normally use asdf to help standardize runtime configurations, getting
-the PHP plugin for asdf to work successfully on macOS is probably not worth it at this time. The original plugin
-has apparently [been abandoned](https://github.com/odarriba/asdf-php#why-using-this-plug-in), and the maintainer of the
-current plugin doesn't use it any longer, and thinks that it's ["near to a nightmare"](https://github.com/odarriba/asdf-php/issues/8#issuecomment-362911209)
-on macOS.
-## 8. OPTIONAL: Install composer (PHP package manager)
+</details>
+<details>
+<summary>Install composer (PHP package manager)</summary>
+Again, just as you would normally never need to install PHP in your host environment, you probably don't need to install `composer` in your host environment. For normal workflows in this repo, running composer--using the configuration set up within each php-version-specific container--is preferable.
 
-On macOS, it can be installed via `brew install composer`
-
-## 9. OPTIONAL: Update composer dependencies
-
-From the top-level directory that contains `composer.json`:
-
+But if you know why you need, and you're on macOS, it can be installed via homebrew:
 ```
-composer install
+brew install composer
 ```
+</details>
 
-(But see above about installing the right PHP version and making sure you pair the run time version of php
-with the appropriate php version-specific composer config.)
+<details>
+<summary>The WordPress 4 compat bundle</summary>
+For older versions of WordPress, we build and load this separate "compat-js" bundle. It includes some WordPress dependencies that are available at runtime on newer versions of WordPress, but which this plugin provides itself when it detects that
+it's being loaded on older versions of WordPress.
 
-## 10. OPTIONAL: start the admin React app's development build (in development)
-
-### The main admin JS bundle
-
-In one terminal window, `cd admin`, and then:
-
-  (a) `npm install`
-
-  (b) `npm run start` to fire up webpack.
-
-      This uses wp-scripts (webpack under the hood) to build the static assets under
-      `admin/build`. There's no webpack dev server any more. Webpack will notice
-      changes to the JavaScript files and rebuild on the fly, but it won't reload
-      in the browser automatically. Just refresh your browser page.
-
-### The WordPress 4 compat bundle
-
-This will probably not change very much, so it may not be necessary to rebuild at all.
-And if you're doing development work only in WordPress 5, you can skip this altogether.
+This bundle will probably not change very much, so it may not be necessary to rebuild at all.
+If you're doing development work only in WordPress 5, you can skip this altogether.
 
 If you do need to update what's in this bundle, though, then you just build another
 static production build like this:
@@ -320,6 +348,7 @@ $ npm run build
 
 This will create `compat-js/build/compat.js`, which the plugin looks for and
 enqueues automatically when it detects that it's running under WordPress 4.
+</details>
 
 ## 11. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
 
