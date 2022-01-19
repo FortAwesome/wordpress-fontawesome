@@ -524,10 +524,11 @@ bin/phpunit -c com.fontawesome.wordpress-php7.1-dev
 </details>
 <details>
 <summary>Run loader tests</summary>
-To run the loader tests, use this alternate test config:
+To run the loader tests, use this alternate test config. And because of how they run, each should be run separately,
+for example, using a `--filter`:
 
 ```bash
-bin/phpunit --config phpunit-loader.xml.dist
+bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestLifecycle
 ```
 </details>
 
