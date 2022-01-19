@@ -1,13 +1,13 @@
 # Development
 
-> Font Awesome 5 Official WordPress Plugin DEVELOPMENT
+> Font Awesome 6 Official WordPress Plugin DEVELOPMENT
 
 <!-- toc -->
 
 - [Introduction](#introduction)
 - [Development Setup](#development-setup)
 - [Optional Development Setup Steps](#optional-development-setup-steps)
-- [Run phpunit](#run-phpunit)
+- [Run tests with phpunit](#run-tests-with-phpunit)
   * [Pass arguments to phpunit](#pass-arguments-to-phpunit)
 - [Use wp-cli within your Docker environment](#use-wp-cli-within-your-docker-environment)
 - [Run anything else within your Docker environment](#run-anything-else-within-your-docker-environment)
@@ -177,23 +177,30 @@ Leave it running in one terminal window and do the rest of the workflow in some 
 *Setup Required*
 
 At this point, everything is running, but when it's the first time you've run it (or since you
-cleared the docker data volume), WordPress has not yet been set up. There's a script for that below.
+cleared the docker data volume), WordPress has not yet been set up. See the `bin/setup` script for that below.
 
-*Stopping the Environment*
+<details>
+<summary>Stopping the Environment</summary>
 
 When you're ready to stop this environment, use `CTRL-C` in that terminal window where it's running.
+</details>
 
-*Restarting*
+<details>
+<summary>Restarting</summary>
 
 To bring back up the same environment later, just run the same `bin/dev` or `bin/integration` command.
+</details>
 
-*Start a Different Environment*
+<details>
+<summary>Start a Different Environment</summary>
 
 To run a _different_ environment, you'll need to first make sure the containers from one environment
 are stopped, before starting a new environment. This because the port numbers used for web and db are
 the same regardless of environment, so you can only have one running at a time.
+</details>
 
-*Stop an Environment's Containers*
+<details>
+<summary>Stop an Environment's Containers</summary>
 
 You can make sure all containers are stopped like this:
 
@@ -203,25 +210,43 @@ $ docker-compose down
 
 You could also be a little more ninja-ish and use `docker ps` to find the running containers you know
 you want to stop, find the container ID for each, and then for each one do `docker container stop <container_id>`.
+</details>
 
 ## 6. Run `bin/setup`
 
-This does the initial WordPress admin setup that happens first on any freshly installed WordPress
-site. We're just doing it from the command line with the script to be quick and convenient.
+After starting a fresh container, WordPress needs to be set up. This setup is not required when stopping and restarting a container that's already been set up.
 
-It also adds some configs to `wp-config.php` for debugging: `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`.
+If you're running the default `latest` `dev` container, just do this in a separate terminal window:
 
-By default, it will use the container named `com.fontawesome.wordpress-latest-dev`, which will be the container made from the `latest` image.
+```
+bin/setup
+```
 
-You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
+Once it succeeds, WordPress is up and running and ready to start doing stuff.
 
+<details>
+<summary>connecting to the running WordPress instance</summary>
 After setup completes, WordPress is ready and initialized in the docker container and reachable at [http://wp.test:8765](http://wp.test:8765).
 
 You can login to the admin dashboard at [http://wp.test:8765/wp-admin](http://wp.test:8765/wp-admin) with admin username and password as found in `.env`.
+</details>
+<details>
+
+<summary>what is this set up?</summary>
+This does the initial WordPress admin setup that happens first on any freshly installed WordPress
+site. We're just doing it from the command line with the script to be quick and convenient.
+</details>
+
+<details>
+<summary>setting up non-default containers</summary>
+By default, it will use the container named `com.fontawesome.wordpress-latest-dev`, which will be the container made from the `latest` image.
+
+You can use a `-c <container_id>` argument to connect to run the command against a different container. This pattern is consistent across most of the scripts under `bin/`, such as `bin/wp` and `bin/php`.
+</details>
 
 ## 7. Start the admin React app's development build (in development)
 
-If you're doing development in `latest` (probably), then do this:
+If you're doing development and making changes to JavaScript or CSS assets that are in the React admin app, you should keep webpack running while you're working:
 
 In a separate terminal window, `cd admin`, and then:
 
@@ -373,7 +398,8 @@ This will create `compat-js/build/compat.js`, which the plugin looks for and
 enqueues automatically when it detects that it's running under WordPress 4.
 </details>
 
-## 11. OPTIONAL: If you have an older version of Docker or one that doesn't support host.docker.internal
+<details>
+<summary>If you have an older version of Docker or one that doesn't support host.docker.internal</summary>
 
 The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
 
@@ -398,8 +424,10 @@ Here are some of the operations that require the container to talk back to the h
 - PHP debugging port via remote xdebug
 - Webpack dev server port for React hot module reloading
 - Font Awesome GraphQL API (when running that service locally)
+</details>
 
-## 12. OPTIONAL: configure debugging
+<details>
+<summary>configure debugging</summary>
 
 ```bash
 bin/configure-debugging
@@ -408,8 +436,10 @@ bin/configure-debugging
 This will set up debugging configuration in `wp-config.php` inside the container
 and will also install several plugins to power the debug bar available from the
 upper right-hand nav bar when logged into WordPress as admin.
+</details>
 
-## 13. OPTIONAL: Install and/or Activate the Font Awesome plugin (only in integration environment)
+<details>
+<summary>Install and/or Activate the Font Awesome plugin (only in integration environment)</summary>
 
 If you're running the `bin/dev` environment, you'll find in the admin dashboard that the
 Font Awesome is already installed, because the source code in this repo is mounted as a volume
@@ -424,21 +454,62 @@ After activating the plugin you can access the Font Awesome admin page here:
 `http://wp.test:8765/wp-admin/options-general.php?page=font-awesome`
 
 Or you'll find it linked on the left sidebar under Settings.
+</details>
 
-# Run phpunit
+# Run tests with phpunit
+
+PHPUnit will be run within a given container, specific to some version of php.
+
+This also means that the `composer` bundle must be built within that container first:
 
 ```bash
-$ bin/phpunit
+bin/composer install
+bin/phpunit
 ```
 
 This runs `phpunit` in the default docker container. It's just a docker wrapper around the normal `phpunit` command,
 so you can pass any normal `phpunit` command line arguments you might like.
 
+You can skip `compose install` for subsequent `composer` or `phpunit` unit commands within that particular container,
+unless the corresponding composer config changes.
+
+<details>
+<summary>Example in a non-default container</summary>
+Suppose you want to run the tests against php 7.1, and you've build the corresponding `php7.1` image and started its
+dev container:
+
+```bash
+bin/composer -c com.fontawesome.wordpress-php7.1-dev install
+bin/phpunit -c com.fontawesome.wordpress-php7.1-dev
+```
+
+</details>
+<details>
+<summary>Run loader tests</summary>
 To run the loader tests, use this alternate test config:
 
 ```bash
-$ bin/phpunit --config phpunit-loader.xml.dist
+bin/phpunit --config phpunit-loader.xml.dist
 ```
+</details>
+
+<details>
+<summary>filter which tests to run</summary>
+The `bin/phpunit` script will pass through command-line arguments to `phpunit` within the container. So you can do something this:
+
+```bash
+bin/phpunit --filter EnqueueTest
+```
+
+When specifying a container with `-c`, to add additional command-line arguments, you also need to add `--` like this:
+
+```bash
+bin/phpunit -c com.fontawesome.wordpress-php7.1-dev -- --filter EnqueueTest
+```
+
+Everything before the `--` are the options do the `bin/phpunit` script, and everything after the `--` are what get passed through 
+to the `phpunit` command inside the container.
+</details>
 
 # Use WP-CLI within your Docker environment
 
