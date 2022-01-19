@@ -3,11 +3,12 @@ namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 use \WP_REST_Response;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * RestResponseTest class
  */
-class RestResponseTest extends \WP_UnitTestCase {
+class RestResponseTest extends TestCase {
 	public function test_defaults() {
 		$r = new FontAwesome_REST_Response();
 

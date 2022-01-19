@@ -9,7 +9,9 @@ namespace FortAwesome;
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-command.php';
 
-class CommandTest extends \WP_UnitTestCase {
+use Yoast\WPTestUtils\WPIntegration\TestCase;
+
+class CommandTest extends TestCase {
 	public function test_command_basic() {
 		$val = 42;
 		$cmd = new FontAwesome_Command(

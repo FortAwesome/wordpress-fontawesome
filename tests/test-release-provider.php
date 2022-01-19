@@ -11,32 +11,35 @@ require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class ReleaseProviderTest
  *
  * @group api
  */
-class ReleaseProviderTest extends \WP_UnitTestCase {
+class ReleaseProviderTest extends TestCase {
+	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
 		'5.4.1',
 		'5.3.1',
 		'5.2.0',
 		'5.1.1',
 		'5.1.0',
-		'5.0.13',
-		'5.0.12',
-		'5.0.10',
 		'5.0.9',
 		'5.0.8',
 		'5.0.6',
 		'5.0.4',
 		'5.0.3',
 		'5.0.2',
+		'5.0.13',
+		'5.0.12',
+		'5.0.10',
 		'5.0.1',
 	);
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 	}
@@ -114,8 +117,11 @@ class ReleaseProviderTest extends \WP_UnitTestCase {
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
 		$versions = $farp->versions();
+		rsort( $versions );
+
 		$this->assertCount( count( $this->known_versions_sorted_desc ), $versions );
-		$this->assertArraySubset( $this->known_versions_sorted_desc, $versions );
+
+		$this->assertEquals( $this->known_versions_sorted_desc, $versions );
 	}
 
 	public function test_5_0_all_free_shimless() {

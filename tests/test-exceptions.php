@@ -3,11 +3,12 @@ namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 use \WP_Error, \WP_HTTP_Response;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * ExceptionsTest class
  */
-class ExceptionsTest extends \WP_UnitTestCase {
+class ExceptionsTest extends TestCase {
 	public function test_api_token_missing_exception() {
 		$e1 = new ApiTokenMissingException();
 

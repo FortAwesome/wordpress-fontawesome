@@ -2,6 +2,8 @@
 
 WP_VERSION=${1-latest}
 
+DB_HOST=${2-db-latest:3306}
+
 # These are hardcoded to be the same as those defined for the db container in docker-compose.yml
 # We'll use the same wordpress database for the test environment. Since the wp-tests-config.php
 # that is set up by this script uses a different table prefix for the test tables, the tables for
@@ -9,7 +11,6 @@ WP_VERSION=${1-latest}
 DB_NAME=wordpress
 DB_USER=wordpress
 DB_PASS=wordpress
-DB_HOST=db-${WP_VERSION}:3306
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")
@@ -24,7 +25,11 @@ download() {
     fi
 }
 
-if [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
+if [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+\-(beta|RC)[0-9]+$ ]]; then
+	WP_BRANCH=${WP_VERSION%\-*}
+	WP_TESTS_TAG="branches/$WP_BRANCH"
+
+elif [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
 	WP_TESTS_TAG="branches/$WP_VERSION"
 elif [[ $WP_VERSION =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
 	if [[ $WP_VERSION =~ [0-9]+\.[0-9]+\.[0] ]]; then
@@ -46,7 +51,6 @@ else
 	fi
 	WP_TESTS_TAG="tags/$LATEST_VERSION"
 fi
-
 set -ex
 
 install_wp() {
@@ -58,10 +62,10 @@ install_wp() {
 	mkdir -p $WP_CORE_DIR
 
 	if [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
-		mkdir -p $TMPDIR/wordpress-nightly
-		download https://wordpress.org/nightly-builds/wordpress-latest.zip  $TMPDIR/wordpress-nightly/wordpress-nightly.zip
-		unzip -q $TMPDIR/wordpress-nightly/wordpress-nightly.zip -d $TMPDIR/wordpress-nightly/
-		mv $TMPDIR/wordpress-nightly/wordpress/* $WP_CORE_DIR
+		mkdir -p $TMPDIR/wordpress-trunk
+		rm -rf $TMPDIR/wordpress-trunk/*
+		svn export --quiet https://core.svn.wordpress.org/trunk $TMPDIR/wordpress-trunk/wordpress
+		mv $TMPDIR/wordpress-trunk/wordpress/* $WP_CORE_DIR
 	else
 		if [ $WP_VERSION == 'latest' ]; then
 			local ARCHIVE_NAME='latest'
@@ -94,7 +98,7 @@ install_wp() {
 install_test_suite() {
 	# portable in-place argument for both GNU sed and Mac OSX sed
 	if [[ $(uname -s) == 'Darwin' ]]; then
-		local ioption='-i .bak'
+		local ioption='-i.bak'
 	else
 		local ioption='-i'
 	fi
@@ -103,19 +107,9 @@ install_test_suite() {
 	if [ ! -d $WP_TESTS_DIR ]; then
 		# set up testing suite
 		mkdir -p $WP_TESTS_DIR
-		svn co --non-interactive --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
-
-		if [ 0 -ne $? ]; then
-		  svn cleanup $WP_TESTS_DIR/includes
-		  svn up $WP_TESTS_DIR/includes
-		fi
-
-		svn co --non-interactive --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
-
-		if [ 0 -ne $? ]; then
-		  svn cleanup $WP_TESTS_DIR/data
-		  svn up $WP_TESTS_DIR/data
-		fi
+		rm -rf $WP_TESTS_DIR/{includes,data}
+		svn export --quiet --ignore-externals https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR/includes
+		svn export --quiet --ignore-externals https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $WP_TESTS_DIR/data
 	fi
 
 	if [ ! -f wp-tests-config.php ]; then
@@ -123,6 +117,7 @@ install_test_suite() {
 		# remove all forward slashes in the end
 		WP_CORE_DIR=$(echo $WP_CORE_DIR | sed "s:/\+$::")
 		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_DIR"/wp-tests-config.php
+		sed $ioption "s:__DIR__ . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_DIR"/wp-tests-config.php
 		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
 		sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
 		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php

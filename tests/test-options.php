@@ -9,15 +9,12 @@ namespace FortAwesome;
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
-class OptionsTest extends \WP_UnitTestCase {
+class OptionsTest extends TestCase {
 
-	/**
-	 * Reset test state.
-	 *
-	 * @before
-	 */
-	protected function reset() {
+	public function set_up() {
+		parent::set_up();
 		wp_cache_delete ( 'alloptions', 'options' );
 		delete_option( FontAwesome::OPTIONS_KEY );
 

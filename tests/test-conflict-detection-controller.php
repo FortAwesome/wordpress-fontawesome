@@ -11,11 +11,12 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
 use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class ConflictDetectionControllerTest
  */
-class ConflictDetectionControllerTest extends \WP_UnitTestCase {
+class ConflictDetectionControllerTest extends TestCase {
 	protected $server;
 	protected $admin_user;
 	protected $namespaced_conflicts_route = "/" . FontAwesome::REST_API_NAMESPACE . '/conflict-detection/conflicts';
@@ -23,7 +24,8 @@ class ConflictDetectionControllerTest extends \WP_UnitTestCase {
 	protected $namespaced_blocklist_route = "/" . FontAwesome::REST_API_NAMESPACE . '/conflict-detection/conflicts/blocklist';
 	protected $fa;
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();

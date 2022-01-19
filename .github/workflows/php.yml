@@ -41,6 +41,11 @@ jobs:
               wordpress: 5.2.5
             - php: 7.4
               wordpress: trunk
+            - php: 8.0.14
+              wordpress: 5.9-RC2
+            # There are test errors in CI that aren't happening locally. What's different?
+            # - php: 8.1
+            #   wordpress: 5.9-RC2
 
     steps:
     - uses: actions/checkout@v2
@@ -137,7 +142,10 @@ jobs:
           echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
         fi
 
-        if [[ $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
+        if [[ $VERSION =~ ^[0-9]+\.[0-9]+\-(beta|RC)[0-9]+$ ]]; then
+          WP_BRANCH=${VERSION%\-*}
+          echo "::set-output name=WP_TESTS_TAG::branches/$WP_BRANCH"
+        elif [[ $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
           echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
         elif [[ $VERSION =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
           if [[ $VERSION =~ [0-9]+\.[0-9]+\.[0] ]]; then
@@ -206,17 +214,37 @@ jobs:
         sed -i "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
         sed -i "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
 
-    - name: Run PHPUnit
+    - name: Run PHPUnit Main Tests
       # only run the output tests on the newer versions of php and phpunit, cause
       # they're trickier
       run: |
-        if [ "7.4" == ${{ matrix.php }} ]; then
-          PHP_UNIT_ARGS=""
-        else
+        if [ "5.6" == ${{ matrix.php }} ] || [ "7.1" == ${{ matrix.php }} ] || [ "7.2" == ${{ matrix.php }} ] || [ "7.3" == ${{ matrix.php }} ]; then
           PHP_UNIT_ARGS="--exclude-group output"
+        else
+          PHP_UNIT_ARGS=""
         fi
 
-        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} vendor/bin/phpunit $PHP_UNIT_ARGS
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit $PHP_UNIT_ARGS
+
+    - name: Run PHPUnit Loader Tests
+      run: |
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestLifecycle
+
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestRedundantVersions
+
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestBasic
 
     - name: Maybe run phpcs
       run: |

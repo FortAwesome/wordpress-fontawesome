@@ -3,11 +3,12 @@
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-v3mapper.php';
 
 use FortAwesome\FontAwesome_V3Mapper;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class V3MapperTest
  */
-class V3MapperTest extends WP_UnitTestCase {
+class V3MapperTest extends TestCase {
 
 	public function test_icons() {
 		$obj = FontAwesome_V3Mapper::instance();

@@ -2,17 +2,19 @@
 namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class V3DeprecationControllerTest
  */
-class V3DeprecationControllerTest extends \WP_UnitTestCase {
+class V3DeprecationControllerTest extends TestCase {
 	protected $server;
 	protected $admin_user;
 	protected $namespaced_route = '/' . FontAwesome::REST_API_NAMESPACE . '/v3deprecation';
 	protected $fa;
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();

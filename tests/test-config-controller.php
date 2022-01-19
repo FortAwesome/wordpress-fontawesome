@@ -1,5 +1,6 @@
 <?php
 namespace FortAwesome;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class RequirementsTest
@@ -15,13 +16,14 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 * Thanks to Josh Pollock for a helpful guide to testing this controller:
 * https://torquemag.io/2017/01/testing-api-endpoints/
 */
-class ConfigControllerTest extends \WP_UnitTestCase {
+class ConfigControllerTest extends TestCase {
 	protected $server;
 	protected $admin_user;
 	protected $namespaced_route = "/" . FontAwesome::REST_API_NAMESPACE . '/config';
 	protected $fa;
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 
@@ -55,7 +57,8 @@ class ConfigControllerTest extends \WP_UnitTestCase {
 		do_action( 'rest_api_init' );
 	}
 
-	public function tearDown() {
+	public function tear_down() {
+		parent::tear_down();
 		remove_all_actions( 'rest_api_init' );
 	}
 

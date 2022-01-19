@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
 <phpunit
-	bootstrap="tests/bootstrap-loader.php"
+	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	convertErrorsToExceptions="true"
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
+	<php>
+  		<const name="LOAD_PLUGIN" value="false"/>
+	</php>
 	<testsuites>
 		<testsuite name="Default Test Suite">
 			<directory prefix="test-" suffix=".php">./tests/loader</directory>

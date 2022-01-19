@@ -13,12 +13,15 @@ use \WP_Error, \InvalidArgumentException;
 use FortAwesome\ApiTokenMissingException;
 use FortAwesome\ApiTokenInvalidException;
 
+use Yoast\WPTestUtils\WPIntegration\TestCase;
+
 /**
  * ApiSettingsTest class
  */
-class ApiSettingsTest extends \WP_UnitTestCase {
+class ApiSettingsTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		delete_option( FontAwesome_API_Settings::OPTIONS_KEY );

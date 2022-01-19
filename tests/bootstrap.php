@@ -1,39 +1,34 @@
 <?php
-/**
- * PHPUnit bootstrap file
- *
- * @package Font_Awesome
- * @noinspection PhpCSValidationInspection
- */
+use Yoast\WPTestUtils\WPIntegration;
 
-define( 'FONTAWESOME_ENV', 'test' );
-
-// phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
-// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
-
-if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+if ( getenv( 'WP_PLUGIN_DIR' ) !== false ) {
+	define( 'WP_PLUGIN_DIR', getenv( 'WP_PLUGIN_DIR' ) );
+} else {
+	define( 'WP_PLUGIN_DIR', dirname( __FILE__ ) . '/../..' );
 }
 
-if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-	error_log( "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL );
+$active_plugins = ( defined( 'LOAD_PLUGIN' ) && boolval( LOAD_PLUGIN ) )
+	? array( 'index.php' )
+	: array();
+
+$GLOBALS['wp_tests_options'] = array(
+	'active_plugins' => $active_plugins,
+);
+
+if ( ! getenv( 'COMPOSER_VENDOR_DIR' ) ) {
+	echo PHP_EOL, 'ERROR: COMPOSER_VENDOR_DIR env var must be set.', PHP_EOL;
 	exit( 1 );
 }
 
-// Give access to tests_add_filter() function.
-/** @noinspection PhpIncludeInspection */
-require_once $_tests_dir . '/includes/functions.php';
+require_once getenv( 'COMPOSER_VENDOR_DIR' ) . '/yoast/wp-test-utils/src/WPIntegration/bootstrap-functions.php';
 
-/**
- * Manually load the plugin being tested.
+/*
+ * Bootstrap WordPress. This will also load the Composer autoload file, the PHPUnit Polyfills
+ * and the custom autoloader for the TestCase and the mock object classes.
  */
-function _manually_load_plugin() {
-	require_once dirname( dirname( __FILE__ ) ) . '/index.php';
-}
-set_include_path( get_include_path() . PATH_SEPARATOR . dirname( dirname( __FILE__ ) . '../' ) );
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+WPIntegration\bootstrap_it();
 
-// Start up the WP testing environment.
-/** @noinspection PhpIncludeInspection */
-require_once $_tests_dir . '/includes/bootstrap.php';
+if ( ! defined( 'WP_PLUGIN_DIR' ) || file_exists( WP_PLUGIN_DIR . '/index.php' ) === false ) {
+	echo PHP_EOL, 'ERROR: Please check whether the WP_PLUGIN_DIR environment variable is set and set to the correct value. The integration test suite won\'t be able to run without it.', PHP_EOL;
+	exit( 1 );
+}

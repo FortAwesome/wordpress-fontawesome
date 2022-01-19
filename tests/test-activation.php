@@ -5,12 +5,16 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 
+use Yoast\WPTestUtils\WPIntegration\TestCase;
+
 /**
  * Class ActivationTest
  */
-class ActivationTest extends \WP_UnitTestCase {
+class ActivationTest extends TestCase {
 
-	public function setUp() {
+	public function set_up() {
+		parent::set_up();
+
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();

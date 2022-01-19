@@ -2,13 +2,14 @@
 namespace FortAwesome;
 
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-preference-conflict-detector.php';
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * Class PreferenceConflictDetectorTest
  *
  * @noinspection PhpCSValidationInspection
  */
-class PreferenceConflictDetectorTest extends \WP_UnitTestCase {
+class PreferenceConflictDetectorTest extends TestCase {
 
 	public function test_when_all_prefs_match() {
 		$options = array(

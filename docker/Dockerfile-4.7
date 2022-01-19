@@ -10,8 +10,8 @@ RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
 # Add non-privileged user, best for using wp-cli
 RUN groupadd -r user && useradd --no-log-init -r -g user user
 
-# Install phpunit
-RUN curl -L -s  https://phar.phpunit.de/phpunit-6.phar > /usr/local/bin/phpunit && chmod +x /usr/local/bin/phpunit
+# Install composer
+RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
 
 COPY ./install-wp-tests-docker.sh /tmp
 

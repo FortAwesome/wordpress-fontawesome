@@ -1,5 +1,4 @@
-FROM wordpress:php5.6
-# this uses WordPress 5.0
+FROM wordpress:beta-5.9-php8.0
 
 # Install packages
 RUN apt-get update && \
@@ -11,12 +10,12 @@ RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
 # Add non-privileged user, best for using wp-cli
 RUN groupadd -r user && useradd --no-log-init -r -g user user
 
-# Install composer
-RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
-
 COPY ./install-wp-tests-docker.sh /tmp
 
-RUN /tmp/install-wp-tests-docker.sh 5.0 db-5.0:3307
+RUN /tmp/install-wp-tests-docker.sh 5.9-RC2
+
+# Install composer
+RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
 
 # See: https://github.com/docker-library/wordpress/issues/205
 COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
