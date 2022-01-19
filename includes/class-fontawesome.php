@@ -2128,7 +2128,7 @@ EOT;
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle ) use ( $all_integrity ) {
-					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
+					if ( $handle == self::RESOURCE_HANDLE ) {
 						$extra_tag_attributes = 'defer crossorigin="anonymous"';
 
 						if ( ! is_null( $all_integrity ) ) {
@@ -2171,7 +2171,7 @@ EOT;
 				add_filter(
 					'script_loader_tag',
 					function ( $tag, $handle ) use ( $v4_shims_integrity ) {
-						if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
+						if ( $handle == self::RESOURCE_HANDLE_V4SHIM ) {
 							$extra_tag_attributes = 'defer crossorigin="anonymous"';
 							if ( ! is_null( $v4_shims_integrity ) ) {
 								$extra_tag_attributes .= ' integrity="' . $v4_shims_integrity . '"';
