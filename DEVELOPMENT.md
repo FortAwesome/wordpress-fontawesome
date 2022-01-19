@@ -49,6 +49,29 @@ activated to help with testing and exploring interaction with the plugin at run 
 
 ## 1. Make sure Docker is installed
 
+## 2. Install Node.js
+
+Preferably your host environment will run the version of Node.js that's indicated in the `.tool-versions` file in this repo.
+
+That's the version that we'd normally install via `asdf`.
+
+You can install it however you'd normally install node.
+
+<details>
+<summary>Installing via asdf</summary>
+Font Awesome development normally uses [`asdf`](https://asdf-vm.com/) for managing versions of various environments like Node.js.
+
+[ASDF Get Started Guide](https://asdf-vm.com/guide/getting-started.html#_1-install-dependencies)
+
+If you don't already have the version of nodejs mentioned in `.tool-versions`, and you've already installed `asdf`, then from this repo's directory, do:
+
+```
+export NODEJS_CHECK_SIGNATURES=no
+asdf plugin-add nodejs
+asdf install nodejs
+```
+</details>
+
 ## 2. Build any number of docker _images_ for the environments you want
 
 Run `bin/build-docker-images` with one or more version tags corresponding to
