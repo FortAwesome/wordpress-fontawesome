@@ -4,8 +4,6 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
  * FontAwesomeLoaderTestRedundantVersions class
- *
- * @runTestsInSeparateProcesses
  */
 class FontAwesomeLoaderTestRedundantVersions extends TestCase {
 	public function set_up() {

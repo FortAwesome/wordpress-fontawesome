@@ -7,6 +7,9 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	>
+	<php>
+  		<const name="LOAD_PLUGIN" value="true"/>
+	</php>
 	<testsuites>
 		<testsuite name="Default Test Suite">
 			<directory prefix="test-" suffix=".php">./tests/</directory>

@@ -7,8 +7,12 @@ if ( getenv( 'WP_PLUGIN_DIR' ) !== false ) {
 	define( 'WP_PLUGIN_DIR', dirname( __FILE__ ) . '/../..' );
 }
 
+$active_plugins = ( defined( 'LOAD_PLUGIN' ) && boolval( LOAD_PLUGIN ) )
+	? array( 'index.php' )
+	: array();
+
 $GLOBALS['wp_tests_options'] = array(
-	'active_plugins' => array( 'index.php' ),
+	'active_plugins' => $active_plugins
 );
 
 if ( ! getenv( 'COMPOSER_VENDOR_DIR' ) ) {
