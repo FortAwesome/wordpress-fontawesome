@@ -1,5 +1,6 @@
 <?php
 namespace FortAwesome;
+
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

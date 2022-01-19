@@ -12,7 +12,7 @@ $active_plugins = ( defined( 'LOAD_PLUGIN' ) && boolval( LOAD_PLUGIN ) )
 	: array();
 
 $GLOBALS['wp_tests_options'] = array(
-	'active_plugins' => $active_plugins
+	'active_plugins' => $active_plugins,
 );
 
 if ( ! getenv( 'COMPOSER_VENDOR_DIR' ) ) {
