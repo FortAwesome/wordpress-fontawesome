@@ -142,11 +142,11 @@ class ReleaseProviderTest extends TestCase {
 		$this->assertCount( 1, $resource_collection->resources() );
 		$this->assertEquals(
 			'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
-			$resource_collection->resources()[0]->source()
+			$resource_collection->resources()['all']->source()
 		);
 		$this->assertEquals(
 			'sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp',
-			$resource_collection->resources()[0]->integrity_key()
+			$resource_collection->resources()['all']->integrity_key()
 		);
 	}
 
@@ -166,8 +166,8 @@ class ReleaseProviderTest extends TestCase {
 
 		$this->assertFalse( is_null( $resource_collection ) );
 		$this->assertCount( 1, $resource_collection->resources() );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/css/all.css', $resource_collection->resources()[0]->source() );
-		$this->assertEquals( 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG', $resource_collection->resources()[0]->integrity_key() );
+		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/css/all.css', $resource_collection->resources()['all']->source() );
+		$this->assertEquals( 'sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG', $resource_collection->resources()['all']->integrity_key() );
 	}
 
 	/**
@@ -206,8 +206,8 @@ class ReleaseProviderTest extends TestCase {
 
 		$this->assertFalse( is_null( $resource_collection ) );
 		$this->assertCount( 1, $resource_collection->resources() );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection->resources()[0]->source() );
-		$this->assertEquals( 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs', $resource_collection->resources()[0]->integrity_key() );
+		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection->resources()['all']->source() );
+		$this->assertEquals( 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs', $resource_collection->resources()['all']->integrity_key() );
 	}
 
 	// TODO: when 5.1.1 is released, add a test to make sure there is a v4-shims.css integrity key.
@@ -227,9 +227,9 @@ class ReleaseProviderTest extends TestCase {
 
 		$this->assertFalse( is_null( $resource_collection ) );
 		$this->assertCount( 2, $resource_collection->resources() );
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection->resources()[0]->source() );
-		$this->assertEquals( 'sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt', $resource_collection->resources()[0]->integrity_key() );
-		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection->resources()[1]->source() );
+		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/all.css', $resource_collection->resources()['all']->source() );
+		$this->assertEquals( 'sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt', $resource_collection->resources()['all']->integrity_key() );
+		$this->assertEquals( 'https://use.fontawesome.com/releases/v5.1.0/css/v4-shims.css', $resource_collection->resources()['v4-shims']->source() );
 	}
 
 	public function test_5_0_all_svg_pro_shim() {
@@ -248,10 +248,10 @@ class ReleaseProviderTest extends TestCase {
 
 		$this->assertFalse( is_null( $resource_collection ) );
 		$this->assertCount( 2, $resource_collection->resources() );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/all.js', $resource_collection->resources()[0]->source() );
-		$this->assertEquals( 'sha384-d84LGg2pm9KhR4mCAs3N29GQ4OYNy+K+FBHX8WhimHpPm86c839++MDABegrZ3gn', $resource_collection->resources()[0]->integrity_key() );
-		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/v4-shims.js', $resource_collection->resources()[1]->source() );
-		$this->assertEquals( 'sha384-LDfu/SrM7ecLU6uUcXDDIg59Va/6VIXvEDzOZEiBJCh148mMGba7k3BUFp1fo79X', $resource_collection->resources()[1]->integrity_key() );
+		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/all.js', $resource_collection->resources()['all']->source() );
+		$this->assertEquals( 'sha384-d84LGg2pm9KhR4mCAs3N29GQ4OYNy+K+FBHX8WhimHpPm86c839++MDABegrZ3gn', $resource_collection->resources()['all']->integrity_key() );
+		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/v4-shims.js', $resource_collection->resources()['v4-shims']->source() );
+		$this->assertEquals( 'sha384-LDfu/SrM7ecLU6uUcXDDIg59Va/6VIXvEDzOZEiBJCh148mMGba7k3BUFp1fo79X', $resource_collection->resources()['v4-shims']->integrity_key() );
 	}
 
 	public function test_invalid_version_exception() {
