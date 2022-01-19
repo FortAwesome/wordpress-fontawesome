@@ -214,7 +214,7 @@ jobs:
         sed -i "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
         sed -i "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
 
-    - name: Run PHPUnit
+    - name: Run PHPUnit Main Tests
       # only run the output tests on the newer versions of php and phpunit, cause
       # they're trickier
       run: |
@@ -228,6 +228,23 @@ jobs:
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
         vendor/bin/phpunit $PHP_UNIT_ARGS
+
+    - name: Run PHPUnit Loader Tests
+      run: |
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestLifecycle
+
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestRedundantVersions
+
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestBasic
 
     - name: Maybe run phpcs
       run: |
