@@ -21,6 +21,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class ReleaseProviderTest extends TestCase {
 	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
+		'6.0.0-beta3',
 		'5.4.1',
 		'5.3.1',
 		'5.2.0',
@@ -210,7 +211,6 @@ class ReleaseProviderTest extends TestCase {
 		$this->assertEquals( 'sha384-87DrmpqHRiY8hPLIr7ByqhPIywuSsjuQAfMXAE0sMUpY3BM7nXjf+mLIUSvhDArs', $resource_collection->resources()['all']->integrity_key() );
 	}
 
-	// TODO: when 5.1.1 is released, add a test to make sure there is a v4-shims.css integrity key.
 	public function test_5_1_0_missing_webfont_free_shim_integrity() {
 		$mock_response = self::build_success_response();
 
@@ -252,6 +252,32 @@ class ReleaseProviderTest extends TestCase {
 		$this->assertEquals( 'sha384-d84LGg2pm9KhR4mCAs3N29GQ4OYNy+K+FBHX8WhimHpPm86c839++MDABegrZ3gn', $resource_collection->resources()['all']->integrity_key() );
 		$this->assertEquals( 'https://pro.fontawesome.com/releases/v5.0.13/js/v4-shims.js', $resource_collection->resources()['v4-shims']->source() );
 		$this->assertEquals( 'sha384-LDfu/SrM7ecLU6uUcXDDIg59Va/6VIXvEDzOZEiBJCh148mMGba7k3BUFp1fo79X', $resource_collection->resources()['v4-shims']->integrity_key() );
+	}
+
+	public function test_6_0_0_beta3_has_added_compat_assets() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
+			'6.0.0-beta3', // version.
+			array(
+				'use_pro'  => false,
+				'use_svg'  => false,
+				'use_compatibility' => true,
+			)
+		);
+
+		$this->assertFalse( is_null( $resource_collection ) );
+		$this->assertCount( 4, $resource_collection->resources() );
+		$this->assertEquals( 'https://use.fontawesome.com/releases/v6.0.0-beta3/css/all.css', $resource_collection->resources()['all']->source() );
+		$this->assertEquals( 'sha384-5e2ESR8Ycmos6g3gAKr1Jvwye8sW4U1u/cAKulfVJnkakCcMqhOudbtPnvJ+nbv7', $resource_collection->resources()['all']->integrity_key() );
+		$this->assertEquals( 'https://use.fontawesome.com/releases/v6.0.0-beta3/css/v4-shims.css', $resource_collection->resources()['v4-shims']->source() );
+		$this->assertEquals( 'sha384-zCIuCI9fw3QOcUPL5/7JfB3Qw6sjEimma+57eLWmHPHyVgqGmX5XLwGi3Ak5fLzQ', $resource_collection->resources()['v4-shims']->integrity_key() );
+		$this->assertEquals( 'https://use.fontawesome.com/releases/v6.0.0-beta3/css/v4-font-face.css', $resource_collection->resources()['v4-font-face']->source() );
+		$this->assertEquals( 'sha384-LJQ43yQLnfgXK8pn645vHWEmSJrVqisZaieRPj7NGV7cCzlL/B67BDv8gMRBS53i', $resource_collection->resources()['v4-font-face']->integrity_key() );
+		$this->assertEquals( 'https://use.fontawesome.com/releases/v6.0.0-beta3/css/v5-font-face.css', $resource_collection->resources()['v5-font-face']->source() );
+		$this->assertEquals( 'sha384-W7b35mq2oJvzl9StEqMDWhapHEgwLh3/iohOpz2RopU0+3/eOmb8eubYCz0OwUcj', $resource_collection->resources()['v5-font-face']->integrity_key() );
 	}
 
 	public function test_invalid_version_exception() {
