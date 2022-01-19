@@ -18,6 +18,7 @@
     "archive": {
         "exclude": [
             "/images",
+            "/assets",
             "/integrations",
             "/tests",
             "/.git",
@@ -44,7 +45,8 @@
             ".env",
             "DEVELOPMENT.md",
             "/composer-php*.json",
-            "/composer-php*.lock"
+            "/composer-php*.lock",
+            ".editorconfig"
         ]
     },
     "require-dev": {

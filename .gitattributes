@@ -9,6 +9,8 @@
 /docker                   export-ignore
 /docsrv                   export-ignore
 /tests                    export-ignore
+/docs                     export-ignore
+/assets                   export-ignore
 /.git                     export-ignore
 .gitattributes            export-ignore
 .gitignore                export-ignore
@@ -16,12 +18,16 @@
 phpunit.xml.dist          export-ignore
 phpcs.xml.dist            export-ignore
 phpdoc.dist.xml           export-ignore
+phpunit-loader.xml.dist   export-ignore
 proxy-webpack-dev.conf    export-ignore
-/composer-php*.json       export-ignore
-/composer-php*.lock       export-ignore
+/composer-*.json          export-ignore
+/composer-*.lock          export-ignore
 readme.txt                export-ignore
 docker-php-ext-xdebug.ini export-ignore
 docker-compose.yml        export-ignore
 webpack.config.js         export-ignore
 .env                      export-ignore
 DEVELOPMENT.md            export-ignore
+.tool-versions            export-ignore
+.git-keep                 export-ignore
+.editorconfig             export-ignore
