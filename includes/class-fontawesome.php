@@ -2036,11 +2036,11 @@ EOT;
 				$v4_shims_source = $resources['v4-shims']->source();
 				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
 
-				$v4_font_face_shim_source = isset( $resources['v4-font-face'] ) && $resources['v4-font-face']->source();
-				$v4_font_face_shim_integrity = isset( $reintegrity_keys['v4-font-face'] ) && $reintegrity_keys['v4-font-face']->integrity_key();
+				$v4_font_face_shim_source = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->source() : null;
+				$v4_font_face_shim_integrity = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->integrity_key() : null;
 
-				$v5_font_face_shim_source = isset( $resources['v5-font-face'] ) && $resources['v5-font-face']->source();
-				$v5_font_face_shim_integrity = isset( $reintegrity_keys['v5-font-face'] ) && $reintegrity_keys['v5-font-face']->integrity_key();
+				$v5_font_face_shim_source = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->source() : null;
+				$v5_font_face_shim_integrity = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->integrity_key() : null;
 
 				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
@@ -2063,28 +2063,39 @@ EOT;
 									$font_face_content
 								);
 							} else {
-								// TODO: continue here:
-								// 1. update the resource collection to be indexed by resource name instead of array indices.
-								// 2. then retrieve each of the relevant things here.
-								// 3. then also update the integrity key below. Maybe need to refactor to handle that in a more DRY way.
-
+								wp_enqueue_style( self::RESOURCE_HANDLE_V4_FONT_FACE, $v4_font_face_shim_source, null, null );
+								wp_enqueue_style( self::RESOURCE_HANDLE_V5_FONT_FACE, $v5_font_face_shim_source, null, null );
 							}
 						},
 						PHP_INT_MAX
 					);
 				}
 
+				$resource_integrity_keys = array();
+
+				if ( ! is_null( $v4_shims_integrity ) ) {
+					$resource_integrity_keys[self::RESOURCE_HANDLE_V4SHIM] = $v4_shims_integrity;
+				}
+
+				if ( ! is_null( $v4_font_face_shim_integrity ) ) {
+					$resource_integrity_keys[self::RESOURCE_HANDLE_V4_FONT_FACE] = $v4_font_face_shim_integrity;
+				}
+
+				if ( ! is_null( $v5_font_face_shim_integrity ) ) {
+					$resource_integrity_keys[self::RESOURCE_HANDLE_V5_FONT_FACE] = $v5_font_face_shim_integrity;
+				}
+
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
 				// that don't.
-				if ( ! is_null( $v4_shims_integrity ) ) {
+				foreach ( $resource_integrity_keys as $compat_handle => $integrity ) {
 					add_filter(
 						'style_loader_tag',
-						function ( $html, $handle ) use ( $v4_shims_integrity ) {
-							if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
+						function ( $html, $handle ) use ( $compat_handle, $integrity ) {
+							if ( $handle == $compat_handle ) {
 								return preg_replace(
 									'/\/>$/',
-									'integrity="' . $v4_shims_integrity .
+									'integrity="' . $integrity .
 									'" crossorigin="anonymous" />',
 									$html,
 									1
@@ -2202,7 +2213,7 @@ EOT;
 					in_array(
 						$handle,
 						array_merge(
-							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ),
+							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_V4_FONT_FACE, self::RESOURCE_HANDLE_V5_FONT_FACE),
 							handles_ignored_for_conflict_detection()
 						),
 						true
