@@ -34,7 +34,7 @@ rc=`curl \
   --data-urlencode "pw_weak=1"`
 
 if [ "$rc" == "200" ]; then
-  echo "SUCCESS initializing WordPress"
+  echo "SUCCESS initializing WordPress\n\tAdmin dashboard here:\n\thttp://$WP_DOMAIN/wp-admin"
 else
   echo "FAIL with HTTP $rc"
   exit 1
