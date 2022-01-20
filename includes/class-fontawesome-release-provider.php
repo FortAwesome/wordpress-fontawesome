@@ -363,11 +363,6 @@ EOD;
 
 		if ( $flags['use_compatibility'] ) {
 			$resources['v4-shims'] = $provider->build_resource( $version, 'v4-shims', $flags );
-
-			if ( version_compare( $version, '6.0.0-beta3', '>=' ) ) {
-				$resources['v4-font-face'] = $provider->build_resource( $version, 'v4-font-face', $flags );
-				$resources['v5-font-face'] = $provider->build_resource( $version, 'v5-font-face', $flags );
-			}
 		}
 
 		$transient_value = array(

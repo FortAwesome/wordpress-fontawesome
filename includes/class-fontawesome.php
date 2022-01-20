@@ -165,20 +165,6 @@ class FontAwesome {
 	const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
 	/**
-	 * The handle used when enqueuing v4-font-face.css.
-	 *
-	 * @since 4.1.0
-	 */
-	const RESOURCE_HANDLE_V4_FONT_FACE = 'font-awesome-official-v4-font-face';
-
-	/**
-	 * The handle used when enqueuing v5-font-face.css.
-	 *
-	 * @since 4.1.0
-	 */
-	const RESOURCE_HANDLE_V5_FONT_FACE = 'font-awesome-official-v5-font-face';
-
-	/**
 	 * The handle used when enqueuing the conflict detector.
 	 *
 	 * @ignore
@@ -2036,12 +2022,6 @@ EOT;
 				$v4_shims_source    = $resources['v4-shims']->source();
 				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
 
-				$v4_font_face_shim_source    = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->source() : null;
-				$v4_font_face_shim_integrity = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->integrity_key() : null;
-
-				$v5_font_face_shim_source    = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->source() : null;
-				$v5_font_face_shim_integrity = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->integrity_key() : null;
-
 				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
@@ -2050,11 +2030,14 @@ EOT;
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
-						function () use ( $v4_shims_source, $v4_shims_integrity, $v4_font_face_shim_source, $v4_font_face_shim_integrity, $v5_font_face_shim_source, $v5_font_face_shim_integrity, $options, $version ) {
+						function () use ( $v4_shims_source, $v4_shims_integrity, $options, $version ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null );
 
-							// Version 6 Beta 3 is when new compatibility assets were introduced and available via Free CDN.
+							/**
+							 * Version 6 Beta 3 is when some new compatiblity accommodations were introduced, built into all.css.
+							 * So this @font-face override is only useful for enqueuing V5. The new stuff in V6 supercedes it.
+							 */
 							if ( version_compare( $version, '6.0.0-beta3', '<' ) ) {
 								$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
 								$font_face_content = $this->build_legacy_font_face_overrides_for_v4( $license_subdomain, $version );
@@ -2062,42 +2045,23 @@ EOT;
 									self::RESOURCE_HANDLE_V4SHIM,
 									$font_face_content
 								);
-							} else {
-								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_style( self::RESOURCE_HANDLE_V4_FONT_FACE, $v4_font_face_shim_source, null, null );
-								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-								wp_enqueue_style( self::RESOURCE_HANDLE_V5_FONT_FACE, $v5_font_face_shim_source, null, null );
 							}
 						},
 						PHP_INT_MAX
 					);
 				}
 
-				$resource_integrity_keys = array();
-
-				if ( ! is_null( $v4_shims_integrity ) ) {
-					$resource_integrity_keys[ self::RESOURCE_HANDLE_V4SHIM ] = $v4_shims_integrity;
-				}
-
-				if ( ! is_null( $v4_font_face_shim_integrity ) ) {
-					$resource_integrity_keys[ self::RESOURCE_HANDLE_V4_FONT_FACE ] = $v4_font_face_shim_integrity;
-				}
-
-				if ( ! is_null( $v5_font_face_shim_integrity ) ) {
-					$resource_integrity_keys[ self::RESOURCE_HANDLE_V5_FONT_FACE ] = $v5_font_face_shim_integrity;
-				}
-
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
 				// that don't.
-				foreach ( $resource_integrity_keys as $compat_handle => $integrity ) {
+				if ( ! is_null( $v4_shims_integrity ) ) {
 					add_filter(
 						'style_loader_tag',
-						function ( $html, $handle ) use ( $compat_handle, $integrity ) {
-							if ( $handle === $compat_handle ) {
+						function ( $html, $handle ) use ( $v4_shims_integrity ) {
+							if ( $handle === self::RESOURCE_HANDLE_V4SHIM ) {
 								return preg_replace(
 									'/\/>$/',
-									'integrity="' . $integrity .
+									'integrity="' . $v4_shims_integrity .
 									'" crossorigin="anonymous" />',
 									$html,
 									1
@@ -2215,7 +2179,7 @@ EOT;
 					in_array(
 						$handle,
 						array_merge(
-							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_V4_FONT_FACE, self::RESOURCE_HANDLE_V5_FONT_FACE ),
+							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM ),
 							handles_ignored_for_conflict_detection()
 						),
 						true

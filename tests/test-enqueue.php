@@ -49,8 +49,6 @@ class EnqueueTest extends TestCase {
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
-		wp_style_is( FontAwesome::RESOURCE_HANDLE_V4_FONT_FACE , 'enqueued' ) && wp_dequeue_style( FontAwesome::RESOURCE_HANDLE_V4_FONT_FACE );
-		wp_style_is( FontAwesome::RESOURCE_HANDLE_V5_FONT_FACE , 'enqueued' ) && wp_dequeue_style( FontAwesome::RESOURCE_HANDLE_V5_FONT_FACE );
 		delete_option( FontAwesome::OPTIONS_KEY );
 		FontAwesome_Activator::activate();
 	}
@@ -74,18 +72,6 @@ class EnqueueTest extends TestCase {
 				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
 				'sha384-fake246'
 			);
-
-			if ( version_compare( $version, '6.0.0-beta3', '>=' ) ) {
-				$resources['v4-font-face'] = new FontAwesome_Resource(
-					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-font-face.${technology_path_part}",
-					'sha384-fake357'
-				);
-
-				$resources['v5-font-face'] = new FontAwesome_Resource(
-					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v5-font-face.${technology_path_part}",
-					'sha384-fake479'
-				);
-			}
 		}
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
@@ -133,38 +119,6 @@ class EnqueueTest extends TestCase {
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
 		);
-	}
-
-	public function assert_webfont_v4_font_face($output, $license_subdomain, $version, $refute = false){
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
-		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<link[\s]+${ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4-font-face-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/v4-font-face\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake357\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
-		);
-	}
-
-	public function refute_webfont_v4_font_face($output, $license_subdomain, $version, $refute = false){
-		$this->assert_webfont_v4_font_face($output, $license_subdomain, $version, true);
-	}
-
-	public function assert_webfont_v5_font_face($output, $license_subdomain, $version, $refute = false){
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
-		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<link[\s]+${ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v5-font-face-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/v5-font-face\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake479\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
-		);
-	}
-
-	public function refute_webfont_v5_font_face($output, $license_subdomain, $version, $refute = false){
-		$this->assert_webfont_v5_font_face($output, $license_subdomain, $version, true);
 	}
 
 	public function refute_webfont_v4shim($output, $license_subdomain, $version ) {
@@ -232,7 +186,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			1,
 			preg_match(
-				"/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css.*?<link.+?font-awesome-official-v4-font-face-css.*?<link.+font-awesome-official-v5-font-face-css/s",
+				"/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -277,8 +231,6 @@ class EnqueueTest extends TestCase {
 		$this->assert_webfont_v4shim( $output, 'use', $version );
 		$this->assert_font_face_overrides( $output, 'use', $version );
 		$this->assert_webfont_compatibility_load_order_legacy_font_face($output);
-		$this->refute_webfont_v4_font_face( $output, 'use', $version );
-		$this->refute_webfont_v5_font_face( $output, 'use', $version );
 	}
 
 	public function test_webfont_6_0_0_beta3_with_compat() {
@@ -297,17 +249,13 @@ class EnqueueTest extends TestCase {
 
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4_FONT_FACE, 'enqueued' ) );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V5_FONT_FACE, 'enqueued' ) );
 
 		$this->refute_svg( $output, 'use', $version );
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
-		// This should be present because the v4-font-face and v5-font-face assets should be present instead.
+		// This should be present because it's not necessary for v6.
 		$this->refute_font_face_overrides( $output, 'use', $version );
 		$this->assert_webfont_compatibility_load_order_font_face_assets($output);
-		$this->assert_webfont_v4_font_face( $output, 'use', $version );
-		$this->assert_webfont_v5_font_face( $output, 'use', $version );
 	}
 
 	public function test_webfont_6_0_0_beta3_with_compat_and_conflict_detection() {
@@ -340,17 +288,13 @@ class EnqueueTest extends TestCase {
 
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
 		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4_FONT_FACE, 'enqueued' ) );
-		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V5_FONT_FACE, 'enqueued' ) );
 
 		$this->refute_svg( $output, 'use', $version );
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
-		// This should be present because the v4-font-face and v5-font-face assets should be present instead.
+		// This should be present because it's not necessary for v6.
 		$this->refute_font_face_overrides( $output, 'use', $version );
 		$this->assert_webfont_compatibility_load_order_font_face_assets($output);
-		$this->assert_webfont_v4_font_face( $output, 'use', $version );
-		$this->assert_webfont_v5_font_face( $output, 'use', $version );
 	}
 
 	public function test_webfont_without_compat() {
@@ -374,8 +318,6 @@ class EnqueueTest extends TestCase {
 		$this->assert_webfont( $output, 'use', $version );
 		$this->refute_webfont_v4shim( $output, 'use', $version );
 		$this->refute_font_face_overrides( $output, 'use', $version );
-		$this->refute_webfont_v4_font_face( $output, 'use', $version );
-		$this->refute_webfont_v5_font_face( $output, 'use', $version );
 	}
 
 	public function test_pro_webfont_non_latest() {
@@ -403,9 +345,6 @@ class EnqueueTest extends TestCase {
 		$this->assert_webfont_v4shim( $output, 'pro', $version );
 		// This should be present because version is < 6.0.0-beta3
 		$this->assert_font_face_overrides( $output, 'pro', $version );
-		// These should not be present because version is < 6.0.0-beta3
-		$this->refute_webfont_v4_font_face( $output, 'use', $version );
-		$this->refute_webfont_v5_font_face( $output, 'use', $version );
 	}
 
 	public function test_svg_default() {
@@ -565,8 +504,6 @@ class EnqueueTest extends TestCase {
 
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
-		$this->refute_webfont_v4_font_face( $output, 'use', $version );
-		$this->refute_webfont_v5_font_face( $output, 'use', $version );
 
 		/**
 		 * We do not test the v4 font face shim inline style has the detection ignore
