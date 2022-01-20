@@ -26,7 +26,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const usePro = useOption('usePro')
   const technology = useOption('technology')
   const version = useOption('version')
-  const v4Compat = useOption('v4Compat')
+  const compat = useOption('compat')
   const pseudoElements = useOption('pseudoElements')
   const isVersion6 = !!version.match(/^6\./)
 
@@ -326,15 +326,15 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
             <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
                 <input
-                  id="code_edit_v4compat_on"
-                  name="code_edit_v4compat_on"
+                  id="code_edit_compat_on"
+                  name="code_edit_compat_on"
                   type="radio"
-                  value={ v4Compat }
-                  checked={ v4Compat }
-                  onChange={ () => handleOptionChange({ v4Compat: ! v4Compat }) }
+                  value={ compat }
+                  checked={ compat }
+                  onChange={ () => handleOptionChange({ compat: ! compat }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
-                <label htmlFor="code_edit_v4compat_on" className={ styles['option-label'] }>
+                <label htmlFor="code_edit_compat_on" className={ styles['option-label'] }>
                   <span className={ sharedStyles['relative'] }>
                     <FontAwesomeIcon
                       icon={ faDotCircle }
@@ -359,9 +359,9 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_v4_compat_off"
                   name="code_edit_v4_compat_off"
                   type="radio"
-                  value={ ! v4Compat }
-                  checked={ ! v4Compat }
-                  onChange={ () => handleOptionChange({ v4Compat: ! v4Compat }) }
+                  value={ ! compat }
+                  checked={ ! compat }
+                  onChange={ () => handleOptionChange({ compat: ! compat }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_v4_compat_off" className={ styles['option-label'] }>
@@ -385,7 +385,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                 </label>
               </div>
             </div>
-            { getDetectionStatusForOption('v4Compat') }
+            { getDetectionStatusForOption('compat') }
           </div>
         </div>
       </form>

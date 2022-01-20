@@ -32,9 +32,9 @@ export default function KitConfigView({ kitToken }) {
       : kitTokenApiData.licenseSelected === 'pro'
   )
 
-  const v4Compat = useSelector(state =>
+  const compat = useSelector(state =>
     kitTokenIsActive
-      ? state.options.v4Compat
+      ? state.options.compat
       : kitTokenApiData.shimEnabled
   )
 
@@ -95,8 +95,8 @@ export default function KitConfigView({ kitToken }) {
             <tr>
               <th className={ styles['label'] }>{ __( 'Older Version Compatibility', 'font-awesome' ) }</th>
               <td className={ styles['value'] }>
-                { v4Compat ? 'On' : 'Off' }
-                { getDetectionStatusForOption('v4Compat') }
+                { compat ? 'On' : 'Off' }
+                { getDetectionStatusForOption('compat') }
               </td>
             </tr>
           </tbody>

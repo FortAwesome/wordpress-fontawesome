@@ -85,7 +85,7 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
         kitToken,
         technology: 'svg' === selectedKit.technologySelected ? 'svg' : 'webfont',
         usePro: 'pro' === selectedKit.licenseSelected,
-        v4Compat: selectedKit.shimEnabled,
+        compat: selectedKit.shimEnabled,
         version: selectedKit.version,
         // At the time this is being implemented, kits don't yet support
         // toggling pseudoElement support for SVG, but it's implicitly supported for webfont.
