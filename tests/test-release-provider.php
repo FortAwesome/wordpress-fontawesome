@@ -133,8 +133,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
-				'use_pro'  => false,
-				'use_svg'  => false,
+				'use_pro'           => false,
+				'use_svg'           => false,
 				'use_compatibility' => false,
 			)
 		);
@@ -159,8 +159,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
-				'use_pro'  => true,
-				'use_svg'  => false,
+				'use_pro'           => true,
+				'use_svg'           => false,
 				'use_compatibility' => false,
 			)
 		);
@@ -184,8 +184,8 @@ class ReleaseProviderTest extends TestCase {
 		FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
-				'use_pro'  => true,
-				'use_svg'  => false,
+				'use_pro'           => true,
+				'use_svg'           => false,
 				'use_compatibility' => true,
 			)
 		);
@@ -199,8 +199,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.1.0', // version.
 			array(
-				'use_pro'  => true,
-				'use_svg'  => false,
+				'use_pro'           => true,
+				'use_svg'           => false,
 				'use_compatibility' => false,
 			)
 		);
@@ -219,8 +219,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.1.0', // version.
 			array(
-				'use_pro'  => false,
-				'use_svg'  => false,
+				'use_pro'           => false,
+				'use_svg'           => false,
 				'use_compatibility' => true,
 			)
 		);
@@ -240,8 +240,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.0.13', // version.
 			array(
-				'use_pro'  => true,
-				'use_svg'  => true,
+				'use_pro'           => true,
+				'use_svg'           => true,
 				'use_compatibility' => true,
 			)
 		);
@@ -262,8 +262,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'6.0.0-beta3', // version.
 			array(
-				'use_pro'  => false,
-				'use_svg'  => false,
+				'use_pro'           => false,
+				'use_svg'           => false,
 				'use_compatibility' => true,
 			)
 		);
@@ -290,8 +290,8 @@ class ReleaseProviderTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'4.0.13', // invalid version.
 			array(
-				'use_pro'  => true,
-				'use_svg'  => false,
+				'use_pro'           => true,
+				'use_svg'           => false,
 				'use_compatibility' => false,
 			)
 		);

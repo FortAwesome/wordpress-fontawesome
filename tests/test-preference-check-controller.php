@@ -83,8 +83,8 @@ class PreferenceCheckControllerTest extends TestCase {
 			array_merge(
 				FontAwesome::DEFAULT_USER_OPTIONS,
 				array(
-					'compat' => false,
-					'version'  => '53.1.3',
+					'compat'  => false,
+					'version' => '53.1.3',
 				)
 			);
 		$request->set_body(
@@ -109,7 +109,7 @@ class PreferenceCheckControllerTest extends TestCase {
 
 		fa()->register(
 			array(
-				'name'     => 'beta',
+				'name'   => 'beta',
 				'compat' => ! FontAwesome::DEFAULT_USER_OPTIONS['compat'],
 			)
 		);
@@ -133,8 +133,8 @@ class PreferenceCheckControllerTest extends TestCase {
 		$data = $response->get_data();
 		$this->assertEquals(
 			array(
-				'version'  => array( 'alpha' ),
-				'compat' => array( 'beta' ),
+				'version' => array( 'alpha' ),
+				'compat'  => array( 'beta' ),
 			),
 			$data
 		);

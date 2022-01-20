@@ -437,8 +437,8 @@ class FontAwesome {
 		return FontAwesome_Release_Provider::get_resource_collection(
 			$this->options()['version'],
 			array(
-				'use_pro'  => $this->pro(),
-				'use_svg'  => 'svg' === $this->technology(),
+				'use_pro'           => $this->pro(),
+				'use_svg'           => 'svg' === $this->technology(),
 				'use_compatibility' => $this->v4_compatibility(),
 			)
 		);
@@ -485,8 +485,8 @@ class FontAwesome {
 
 		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 4 ) {
 
-			if( !isset( $options['compat'] ) && isset( $options['v4Compat'] ) ) {
-				$v4_compat =  boolval( $options['v4Compat'] );
+			if ( ! isset( $options['compat'] ) && isset( $options['v4Compat'] ) ) {
+				$v4_compat         = boolval( $options['v4Compat'] );
 				$options['compat'] = $v4_compat;
 				unset( $options['v4Compat'] );
 			} else {
@@ -1987,7 +1987,7 @@ EOT;
 			throw new ConfigCorruptionException();
 		}
 
-		$all_source = $resources['all']->source();
+		$all_source    = $resources['all']->source();
 		$all_integrity = $resources['all']->integrity_key();
 
 		if ( 'webfont' === $options['technology'] ) {
@@ -2033,13 +2033,13 @@ EOT;
 					throw new ConfigCorruptionException();
 				}
 
-				$v4_shims_source = $resources['v4-shims']->source();
+				$v4_shims_source    = $resources['v4-shims']->source();
 				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
 
-				$v4_font_face_shim_source = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->source() : null;
+				$v4_font_face_shim_source    = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->source() : null;
 				$v4_font_face_shim_integrity = isset( $resources['v4-font-face'] ) ? $resources['v4-font-face']->integrity_key() : null;
 
-				$v5_font_face_shim_source = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->source() : null;
+				$v5_font_face_shim_source    = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->source() : null;
 				$v5_font_face_shim_integrity = isset( $resources['v5-font-face'] ) ? $resources['v5-font-face']->integrity_key() : null;
 
 				/**
@@ -2057,7 +2057,7 @@ EOT;
 							// Version 6 Beta 3 is when new compatibility assets were introduced and available via Free CDN.
 							if ( version_compare( $version, '6.0.0-beta3', '<' ) ) {
 								$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
-								$font_face_content = $this->build_legacy_font_face_overrides_for_v4($license_subdomain, $version);
+								$font_face_content = $this->build_legacy_font_face_overrides_for_v4( $license_subdomain, $version );
 								wp_add_inline_style(
 									self::RESOURCE_HANDLE_V4SHIM,
 									$font_face_content
@@ -2074,15 +2074,15 @@ EOT;
 				$resource_integrity_keys = array();
 
 				if ( ! is_null( $v4_shims_integrity ) ) {
-					$resource_integrity_keys[self::RESOURCE_HANDLE_V4SHIM] = $v4_shims_integrity;
+					$resource_integrity_keys[ self::RESOURCE_HANDLE_V4SHIM ] = $v4_shims_integrity;
 				}
 
 				if ( ! is_null( $v4_font_face_shim_integrity ) ) {
-					$resource_integrity_keys[self::RESOURCE_HANDLE_V4_FONT_FACE] = $v4_font_face_shim_integrity;
+					$resource_integrity_keys[ self::RESOURCE_HANDLE_V4_FONT_FACE ] = $v4_font_face_shim_integrity;
 				}
 
 				if ( ! is_null( $v5_font_face_shim_integrity ) ) {
-					$resource_integrity_keys[self::RESOURCE_HANDLE_V5_FONT_FACE] = $v5_font_face_shim_integrity;
+					$resource_integrity_keys[ self::RESOURCE_HANDLE_V5_FONT_FACE ] = $v5_font_face_shim_integrity;
 				}
 
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
@@ -2155,7 +2155,7 @@ EOT;
 					throw new ConfigCorruptionException();
 				}
 
-				$v4_shims_source = $resources['v4-shims']->source();
+				$v4_shims_source    = $resources['v4-shims']->source();
 				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
 
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
@@ -2213,7 +2213,7 @@ EOT;
 					in_array(
 						$handle,
 						array_merge(
-							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_V4_FONT_FACE, self::RESOURCE_HANDLE_V5_FONT_FACE),
+							array( self::RESOURCE_HANDLE, self::RESOURCE_HANDLE_V4SHIM, self::RESOURCE_HANDLE_V4_FONT_FACE, self::RESOURCE_HANDLE_V5_FONT_FACE ),
 							handles_ignored_for_conflict_detection()
 						),
 						true
@@ -2623,7 +2623,7 @@ EOT;
 	 * <h3>Additional Notes on Specific Preferences</h3>
 	 *
 	 * - `compat`
-	 * 
+	 *
 	 *   This was previously called 'v4Compat'. If older code uses v4Compat, it will be taken as the value for v4Compat.
 	 *
 	 *   There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
@@ -2639,16 +2639,16 @@ EOT;
 	 *   and there are multiple `font-family` names. So the compat feature of this plugin also "shims" those
 	 *   hardcoded version 4 `font-family` names so that they will use the corresponding Font Awesome 5 webfont files.
 	 *
-	 *   There have been some changes across major versions at the level of unicode differences. For example, 
- 	 *   the glyph associated with the v4 icon named "diamond" with unicode f219 appears in FA5 and FA6
- 	 *   as the icon named "gem" with unicode f3a5. That glyph looked like the "precious stone" diamond.
- 	 * 
- 	 *   The glyph associated with the icon named "diamond" and unicode f3a5 in FA5 and FA6 is
- 	 *   like the diamond as a suit in playing cards.
- 	 *
- 	 *   Without all of the compatibility assets to fix up such mappings, any old pseudo-elements that
- 	 *   used the v4 font-family of "FontAwesome" with a unicode of f219, when rendered using the FA5 or
- 	 *   FA6 fonts, will get the "suit" diamond instead of the "precious stone" diamond.
+	 *   There have been some changes across major versions at the level of unicode differences. For example,
+	 *   the glyph associated with the v4 icon named "diamond" with unicode f219 appears in FA5 and FA6
+	 *   as the icon named "gem" with unicode f3a5. That glyph looked like the "precious stone" diamond.
+	 *
+	 *   The glyph associated with the icon named "diamond" and unicode f3a5 in FA5 and FA6 is
+	 *   like the diamond as a suit in playing cards.
+	 *
+	 *   Without all of the compatibility assets to fix up such mappings, any old pseudo-elements that
+	 *   used the v4 font-family of "FontAwesome" with a unicode of f219, when rendered using the FA5 or
+	 *   FA6 fonts, will get the "suit" diamond instead of the "precious stone" diamond.
 	 *
 	 *   In general, a key improvement in v6 is much more comprehensive compatibility with pseudo-elements that may
 	 *   have been defined using font-family or unicode values from older versions. This option enables all of
@@ -3077,7 +3077,7 @@ EOT;
 	 * @internal
 	 * @ignore
 	 */
-	private function build_legacy_font_face_overrides_for_v4($license_subdomain, $version) {
+	private function build_legacy_font_face_overrides_for_v4( $license_subdomain, $version ) {
 		return <<< EOT
 @font-face {
 font-family: "FontAwesome";

@@ -317,8 +317,8 @@ EOD;
 	 * @return array
 	 */
 	public static function get_resource_collection( $version, $flags = array(
-		'use_pro'  => false,
-		'use_svg'  => false,
+		'use_pro'           => false,
+		'use_svg'           => false,
 		'use_compatibility' => true,
 	) ) {
 		$resources = array();
@@ -371,11 +371,11 @@ EOD;
 		}
 
 		$transient_value = array(
-			'version'   => $version,
-			'use_pro'   => $flags['use_pro'],
-			'use_svg'   => $flags['use_svg'],
-			'use_compatibility'  => $flags['use_compatibility'],
-			'resources' => $resources,
+			'version'           => $version,
+			'use_pro'           => $flags['use_pro'],
+			'use_svg'           => $flags['use_svg'],
+			'use_compatibility' => $flags['use_compatibility'],
+			'resources'         => $resources,
 		);
 
 		set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );

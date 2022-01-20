@@ -2105,73 +2105,73 @@ function graphql_releases_query_fixture() {
 						2  =>
 						array(
 							'path'  => 'css/fontawesome.css',
-							'value' => 'sha384-RAtjHVFRUZs4Tif4stxk4r1UN31mhO2m2ii67jtwlyWDXls6IDZ6/N2bHxt3bA48'
+							'value' => 'sha384-RAtjHVFRUZs4Tif4stxk4r1UN31mhO2m2ii67jtwlyWDXls6IDZ6/N2bHxt3bA48',
 						),
 						3  =>
 						array(
 							'path'  => 'css/regular.css',
-							'value' => 'sha384-TvfVCWnd24+5zZ+qmyScSguhYpT7YtOajZ0b4IVLn3+T3dFYzXkgu/EE/Nrf2km5'
+							'value' => 'sha384-TvfVCWnd24+5zZ+qmyScSguhYpT7YtOajZ0b4IVLn3+T3dFYzXkgu/EE/Nrf2km5',
 						),
 						4  =>
 						array(
 							'path'  => 'css/solid.css',
-							'value' => 'sha384-4veAyGk1Tas2qyx7CD/29iLDa8aarX6vdaWWVPD7K/m8FdvH9ae9yFNbWOxmP1hZ'
+							'value' => 'sha384-4veAyGk1Tas2qyx7CD/29iLDa8aarX6vdaWWVPD7K/m8FdvH9ae9yFNbWOxmP1hZ',
 						),
 						5  =>
 						array(
 							'path'  => 'css/svg-with-js.css',
-							'value' => 'sha384-MLxC4sgXwbw5k1vFBDb68XNAF7UdJ7e1ibhu+ySJnAakTpweYCcq7jCcQpd5nJjU'
+							'value' => 'sha384-MLxC4sgXwbw5k1vFBDb68XNAF7UdJ7e1ibhu+ySJnAakTpweYCcq7jCcQpd5nJjU',
 						),
 						6  =>
 						array(
 							'path'  => 'css/v4-shims.css',
-							'value' => 'sha384-zCIuCI9fw3QOcUPL5/7JfB3Qw6sjEimma+57eLWmHPHyVgqGmX5XLwGi3Ak5fLzQ'
+							'value' => 'sha384-zCIuCI9fw3QOcUPL5/7JfB3Qw6sjEimma+57eLWmHPHyVgqGmX5XLwGi3Ak5fLzQ',
 						),
 						7  =>
 						array(
 							'path'  => 'css/v4-font-face.css',
-							'value' => 'sha384-LJQ43yQLnfgXK8pn645vHWEmSJrVqisZaieRPj7NGV7cCzlL/B67BDv8gMRBS53i'
+							'value' => 'sha384-LJQ43yQLnfgXK8pn645vHWEmSJrVqisZaieRPj7NGV7cCzlL/B67BDv8gMRBS53i',
 						),
 						8  =>
 						array(
 							'path'  => 'css/v5-font-face.css',
-							'value' => 'sha384-W7b35mq2oJvzl9StEqMDWhapHEgwLh3/iohOpz2RopU0+3/eOmb8eubYCz0OwUcj'
+							'value' => 'sha384-W7b35mq2oJvzl9StEqMDWhapHEgwLh3/iohOpz2RopU0+3/eOmb8eubYCz0OwUcj',
 						),
 						9  =>
 						array(
 							'path'  => 'js/all.js',
-							'value' => 'sha384-6e7nA5mhBVXnMIAtGPETl10C7oipDhu2IN/lyxyjAJG+KzNtRLqrqFJN5wJ+6/qU'
+							'value' => 'sha384-6e7nA5mhBVXnMIAtGPETl10C7oipDhu2IN/lyxyjAJG+KzNtRLqrqFJN5wJ+6/qU',
 						),
-						10  =>
+						10 =>
 						array(
 							'path'  => 'js/brands.js',
-							'value' => 'sha384-zY1eKUaz/NWcOf6xnU5eePxV3anVtTTAlu33RytBcT9jGz8dstwzZbVpp2l609NT'
+							'value' => 'sha384-zY1eKUaz/NWcOf6xnU5eePxV3anVtTTAlu33RytBcT9jGz8dstwzZbVpp2l609NT',
 						),
-						11  =>
+						11 =>
 						array(
 							'path'  => 'js/fontawesome.js',
-							'value' => 'sha384-W1qlouWJA+8MQIORaSCnwNHhaPuAMwQGosDEwU/g4kkawDb4WwLy3ZWVpa/KtRXb'
+							'value' => 'sha384-W1qlouWJA+8MQIORaSCnwNHhaPuAMwQGosDEwU/g4kkawDb4WwLy3ZWVpa/KtRXb',
 						),
 						12 =>
 						array(
 							'path'  => 'js/regular.js',
-							'value' => 'sha384-Axuj5+DJ+mQA38QqwpWCujH6bCefx3brdTdN+ffhy6oxdqSvs1evxn4iX828SSe6'
+							'value' => 'sha384-Axuj5+DJ+mQA38QqwpWCujH6bCefx3brdTdN+ffhy6oxdqSvs1evxn4iX828SSe6',
 						),
 						13 =>
 						array(
 							'path'  => 'js/solid.js',
-							'value' => 'sha384-9d1SM0Z1PczSHlc0bwe5j/n1kjp14H06SgMcxbmNkp6ZSQa6CqneEHKQkfVGPcR7'
+							'value' => 'sha384-9d1SM0Z1PczSHlc0bwe5j/n1kjp14H06SgMcxbmNkp6ZSQa6CqneEHKQkfVGPcR7',
 						),
 						14 =>
 						array(
 							'path'  => 'js/v4-shims.js',
-							'value' => 'sha384-ZkRpffzN60bZU7hfI/zFR3Nv603593UFKpz6QAm3FUAUqGa60uzGmuEGLB5BZNsY'
+							'value' => 'sha384-ZkRpffzN60bZU7hfI/zFR3Nv603593UFKpz6QAm3FUAUqGa60uzGmuEGLB5BZNsY',
 						),
 						15 =>
 						array(
 							'path'  => 'js/conflict-detection.js',
-							'value' => 'sha384-rN+BHnX2WMsUD7VYL6PykWIyqG6SyEu6IdhgM42fLyWqC7JlY2k76ufmZvMFU43a'
-						)
+							'value' => 'sha384-rN+BHnX2WMsUD7VYL6PykWIyqG6SyEu6IdhgM42fLyWqC7JlY2k76ufmZvMFU43a',
+						),
 					),
 				),
 				'version'       => '6.0.0-beta3',

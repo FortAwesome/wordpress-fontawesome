@@ -226,7 +226,7 @@ class RemoveBlocklistTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'usePro'         => false,
-				'compat'       => true,
+				'compat'         => true,
 				'technology'     => 'svg',
 				'pseudoElements' => true,
 				'version'        => '5.12.0',
