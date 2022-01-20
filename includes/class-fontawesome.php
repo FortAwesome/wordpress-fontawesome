@@ -2063,7 +2063,9 @@ EOT;
 									$font_face_content
 								);
 							} else {
+								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 								wp_enqueue_style( self::RESOURCE_HANDLE_V4_FONT_FACE, $v4_font_face_shim_source, null, null );
+								// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 								wp_enqueue_style( self::RESOURCE_HANDLE_V5_FONT_FACE, $v5_font_face_shim_source, null, null );
 							}
 						},
@@ -2092,7 +2094,7 @@ EOT;
 					add_filter(
 						'style_loader_tag',
 						function ( $html, $handle ) use ( $compat_handle, $integrity ) {
-							if ( $handle == $compat_handle ) {
+							if ( $handle === $compat_handle ) {
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $integrity .
@@ -2128,7 +2130,7 @@ EOT;
 			add_filter(
 				'script_loader_tag',
 				function ( $tag, $handle ) use ( $all_integrity ) {
-					if ( $handle == self::RESOURCE_HANDLE ) {
+					if ( self::RESOURCE_HANDLE === $handle ) {
 						$extra_tag_attributes = 'defer crossorigin="anonymous"';
 
 						if ( ! is_null( $all_integrity ) ) {
@@ -2171,7 +2173,7 @@ EOT;
 				add_filter(
 					'script_loader_tag',
 					function ( $tag, $handle ) use ( $v4_shims_integrity ) {
-						if ( $handle == self::RESOURCE_HANDLE_V4SHIM ) {
+						if ( self::RESOURCE_HANDLE_V4SHIM === $handle ) {
 							$extra_tag_attributes = 'defer crossorigin="anonymous"';
 							if ( ! is_null( $v4_shims_integrity ) ) {
 								$extra_tag_attributes .= ' integrity="' . $v4_shims_integrity . '"';
