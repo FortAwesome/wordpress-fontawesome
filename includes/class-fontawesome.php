@@ -2058,7 +2058,7 @@ EOT;
 					add_filter(
 						'style_loader_tag',
 						function ( $html, $handle ) use ( $v4_shims_integrity ) {
-							if ( $handle === self::RESOURCE_HANDLE_V4SHIM ) {
+							if ( self::RESOURCE_HANDLE_V4SHIM === $handle ) {
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $v4_shims_integrity .
