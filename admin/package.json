@@ -29,7 +29,7 @@
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",
     "start": "wp-scripts start --webpack-no-externals",
-    "test:e2e": "wp-scripts test-e2e",
+    "test:e2e": "WP_BASE_URL=http://wp.test:8765 WP_USERNAME=admin WP_PASSWORD=password wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
     "test": "npm run test:unit"
   },
@@ -56,6 +56,7 @@
     "@wordpress/components": "14.1.10",
     "@wordpress/compose": "4.1.5",
     "@wordpress/data": "5.1.5",
+    "@wordpress/e2e-test-utils": "^5.4.10",
     "@wordpress/element": "3.1.1",
     "@wordpress/i18n": "^3.16.0",
     "@wordpress/icons": "4.0.2",
