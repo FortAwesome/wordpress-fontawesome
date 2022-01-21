@@ -1,4 +1,4 @@
-import { visitAdminPage, __experimentalActivatePlugin } from '@wordpress/e2e-test-utils'
+import { visitAdminPage } from '@wordpress/e2e-test-utils'
 import { resetOptions } from '../testUtil'
 
 describe('changeTechnology', () => {
