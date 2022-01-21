@@ -1,36 +1,10 @@
 import { visitAdminPage, __experimentalActivatePlugin } from '@wordpress/e2e-test-utils'
-
-async function resetOptions() {
-  return page.evaluate(() => {
-    const { apiUrl, apiNonce} = window.__FontAwesomeOfficialPlugin__
-
-    let DEFAULT_OPTIONS = {
-      options:{
-        usePro:false,
-        compat:true,
-        technology:"webfont",
-        pseudoElements:true,
-        kitToken:null,
-        apiToken:true,
-        version:"6.0.0-beta3"
-      }
-    }
-
-    return fetch(`${apiUrl}/config`, {
-      method: 'PUT',
-      headers: {
-        'X-WP-Nonce': apiNonce,
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(DEFAULT_OPTIONS)
-    })
-  })
-}
+import { resetOptions } from '../testUtil'
 
 describe('changeTechnology', () => {
   beforeAll(async () => {
     await visitAdminPage('options-general.php', 'page=font-awesome')
-    await resetOptions()
+    await resetOptions(page)
     await page.reload()
   })
 
