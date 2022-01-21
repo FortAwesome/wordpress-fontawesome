@@ -8,6 +8,10 @@ describe('changeTechnology', () => {
     await page.reload()
   })
 
+  afterAll(async () => {
+    await resetOptions(page)
+  })
+
   test('works', async () => {
     const useCdnInput = await page.$('#select_use_cdn')
     const useKitInput = await page.$('#select_use_kits')
