@@ -37,6 +37,7 @@
             "docker-php-ext-xdebug.ini",
             "docker-compose.yml",
             "/admin/src/*",
+            "jest-e2e.config.js",
             "admin/webpack.config.js",
             "admin/package*.json",
             "/compat-js",

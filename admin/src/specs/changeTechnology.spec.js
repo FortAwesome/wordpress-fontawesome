@@ -1,6 +1,6 @@
 import { visitAdminPage, __experimentalActivatePlugin } from '@wordpress/e2e-test-utils'
 
-function resetOptions() {
+async function resetOptions() {
   return page.evaluate(() => {
     const { apiUrl, apiNonce} = window.__FontAwesomeOfficialPlugin__
 
