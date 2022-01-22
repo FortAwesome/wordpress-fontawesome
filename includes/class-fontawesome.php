@@ -1661,7 +1661,7 @@ class FontAwesome {
 			foreach ( array( 'wp_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () {
+					function () use( $should_enable_icon_chooser ) {
 						try {
 							$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 
