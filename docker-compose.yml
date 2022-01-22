@@ -159,6 +159,16 @@ services:
        - db_data-5.4:/var/lib/mysql
      container_name: "com.fontawesome.wpdb-5.4"
 
+   db-5.9:
+     <<: *mysql_defaults
+     ports:
+       - "3312:3312"
+     environment:
+       MYSQL_TCP_PORT: 3312
+     volumes:
+       - db_data-5.9:/var/lib/mysql
+     container_name: "com.fontawesome.wpdb-5.9"
+
    db-4.9:
      <<: *mysql_defaults
      ports:
@@ -232,13 +242,13 @@ services:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-latest
+       - db-5.9
      image: wordpress-fontawesome-dev-php8.0
      env_file:
        - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-latest:3306
+       WORDPRESS_DB_HOST: db-5.9:3312
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
        WORDPRESS_DB_NAME: wordpress
@@ -518,3 +528,4 @@ volumes:
     db_data-4.9:
     db_data-5.0:
     db_data-5.4:
+    db_data-5.9:
