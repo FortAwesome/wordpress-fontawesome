@@ -2986,7 +2986,7 @@ EOT;
 			return true;
 		}
 		$current_screen = get_current_screen();
-		if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
+		if ( is_object( $current_screen ) && method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
 			// Gutenberg page on 5+.
 			return true;
 		}
