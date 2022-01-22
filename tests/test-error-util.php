@@ -120,7 +120,7 @@ class ErrorUtilTest extends TestCase {
 	}
 
 	public function test_notify_admin_fatal_error_when_user_is_privileged() {
-		$admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
 
 		wp_set_current_user( $admin_user->ID, $admin_user->user_login );
 
@@ -144,7 +144,7 @@ class ErrorUtilTest extends TestCase {
 				if ( isset( $cur['function'] ) ) {
 					$class = is_object( $cur['function'][0] ) ? get_class( $cur['function'][0] ) : null;
 
-					if( is_string( $class ) && 1 === preg_match( "/^FortAwesome\\\\FontAwesome_Command.*/", $class ) ) {
+					if ( is_string( $class ) && 1 === preg_match( '/^FortAwesome\\\\FontAwesome_Command.*/', $class ) ) {
 						return true;
 					}
 				}
