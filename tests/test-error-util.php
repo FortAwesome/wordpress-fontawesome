@@ -115,7 +115,7 @@ class ErrorUtilTest extends TestCase {
 		notify_admin_fatal_error( $e );
 
 		global $wp_filter;
-		$this->assertTrue( $this->filter_has_fa_command( $wp_filter['admin_notices'] ) );
+		$this->assertFalse( $this->filter_has_fa_command( $wp_filter['admin_notices'] ) );
 		$this->assertFalse( $this->filter_has_fa_command( $wp_filter['wp_print_scripts'] ) );
 	}
 

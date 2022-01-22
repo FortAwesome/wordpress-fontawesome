@@ -11,6 +11,10 @@ require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-command.php';
  * @internal
  */
 function notify_admin_fatal_error( $e ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
 	if ( method_exists( 'FortAwesome\FontAwesome_Loader', 'emit_admin_error_output' ) ) {
 		$command = new FontAwesome_Command(
 			function() use ( $e ) {
@@ -24,7 +28,7 @@ function notify_admin_fatal_error( $e ) {
 		);
 	}
 
-	if ( current_user_can( 'manage_options' ) && method_exists( 'FortAwesome\FontAwesome_Loader', 'emit_error_output_to_console' ) ) {
+	if ( method_exists( 'FortAwesome\FontAwesome_Loader', 'emit_error_output_to_console' ) ) {
 		$command = new FontAwesome_Command(
 			function() use ( $e ) {
 				FontAwesome_Loader::emit_error_output_to_console( $e );
