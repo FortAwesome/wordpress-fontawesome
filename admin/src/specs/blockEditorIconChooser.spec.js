@@ -1,10 +1,13 @@
-import { insertBlock, createNewPost, enablePageDialogAccept, pressKeyTimes, clickBlockToolbarButton, getAllBlocks } from '@wordpress/e2e-test-utils'
+import { insertBlock, createNewPost, enablePageDialogAccept, pressKeyTimes, clickBlockToolbarButton, getAllBlocks, loginUser } from '@wordpress/e2e-test-utils'
+
+jest.setTimeout(15000)
 
 let config = null
 
 describe('blockEditorIconChooser', () => {
   beforeAll(async () => {
-    await enablePageDialogAccept()
+    enablePageDialogAccept()
+    await loginUser(process.env.WP_USERNAME, process.env.WP_PASSWORD)
   })
 
   beforeEach(async () => {
