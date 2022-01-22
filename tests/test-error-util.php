@@ -106,4 +106,51 @@ class ErrorUtilTest extends TestCase {
 
 		$this->assertEquals( array( 'fontawesome_server_exception', 'previous_exception' ), $result->get_error_codes() );
 	}
+
+	public function test_notify_admin_fatal_error_when_user_is_not_privileged() {
+		$e = new Exception( 'foobar' );
+
+		$this->assertEquals( current_user_can( 'manage_options' ), false );
+
+		notify_admin_fatal_error( $e );
+
+		global $wp_filter;
+		$this->assertTrue( $this->filter_has_fa_command( $wp_filter['admin_notices'] ) );
+		$this->assertFalse( $this->filter_has_fa_command( $wp_filter['wp_print_scripts'] ) );
+	}
+
+	public function test_notify_admin_fatal_error_when_user_is_privileged() {
+		$admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+
+		wp_set_current_user( $admin_user->ID, $admin_user->user_login );
+
+		$this->assertEquals( current_user_can( 'manage_options' ), true );
+
+		$e = new Exception( 'foobar' );
+
+		notify_admin_fatal_error( $e );
+		global $wp_filter;
+		$this->assertTrue( $this->filter_has_fa_command( $wp_filter['admin_notices'] ) );
+		$this->assertTrue( $this->filter_has_fa_command( $wp_filter['wp_print_scripts'] ) );
+	}
+
+	public function filter_has_fa_command( $filter ) {
+		if ( ! $filter ) {
+			return false;
+		}
+
+		foreach ( $filter as $priority => $pri_callbacks ) {
+			foreach ( $pri_callbacks as $cur ) {
+				if ( isset( $cur['function'] ) ) {
+					$class = is_object( $cur['function'][0] ) ? get_class( $cur['function'][0] ) : null;
+
+					if( is_string( $class ) && 1 === preg_match( "/^FortAwesome\\\\FontAwesome_Command.*/", $class ) ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
 }
