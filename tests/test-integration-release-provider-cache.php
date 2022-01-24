@@ -29,7 +29,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY
 		);
 		remove_all_filters(
-			'pre_site_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
+			'pre_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
 		);
 	}
 
@@ -144,7 +144,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		);
 
 		add_filter(
-			'pre_site_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+			'pre_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
 			function() use ( &$last_used_release_query_count ) {
 				$last_used_release_query_count++;
 				return false;
@@ -197,8 +197,8 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		 * Ensure no false positives by asserting that the count would have
 		 * been incremented if the query had been attempted.
 		 */
-		get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
-		get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
+		FontAwesome_Release_Provider::get_option();
+		FontAwesome_Release_Provider::get_last_used_release();
 
 		$this->assertEquals( 3, $last_used_release_query_count );
 		$this->assertEquals( 4, $all_releases_query_count );
