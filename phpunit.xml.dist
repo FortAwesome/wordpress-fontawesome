@@ -14,6 +14,7 @@
 		<testsuite name="Default Test Suite">
 			<directory prefix="test-" suffix=".php">./tests/</directory>
 			<exclude>./tests/loader/</exclude>
+			<exclude>./tests/test-multisite-activation.php</exclude>
 		</testsuite>
 	</testsuites>
 </phpunit>
