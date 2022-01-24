@@ -365,7 +365,13 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				return '';
 			}
 
-			$result = preg_replace( '/\'/', "\\'", $content );
+			$result = $content;
+
+			// JavaScript unicode escapes.
+			$result = preg_replace( '/\\\\x/', '\x5Cx', $result );
+			$result = preg_replace( '/\\\\u/', '\x5Cu', $result );
+			// Other stuff.
+			$result = preg_replace( '/\'/', "\\'", $result );
 			$result = preg_replace( '/\"/', '\\"', $result );
 			$result = preg_replace( '/\n/', '\\n', $result );
 
