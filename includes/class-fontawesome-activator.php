@@ -49,20 +49,14 @@ class FontAwesome_Activator {
 
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog( function( $blog_id ) use ( $force ) {
-				self::initialize_current_blog( $force );
+				self::initialize_current_site( $force );
 			});
 		} else {
-			self::initialize_current_blog( $force );
+			self::initialize_current_site( $force );
 		}
 	}
 
-	private static function initialize_current_blog( $force ) {
-		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
-
-		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
-			self::initialize_release_metadata();
-		}
-
+	private static function initialize_current_site( $force ) {
 		if ( $force || ! get_option( FontAwesome::OPTIONS_KEY ) ) {
 			self::initialize_user_options();
 		}
