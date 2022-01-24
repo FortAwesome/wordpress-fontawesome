@@ -9,6 +9,7 @@
 	>
 	<php>
   		<const name="LOAD_PLUGIN" value="true"/>
+  		<const name="WP_ALLOW_MULTISITE" value="true"/>
   		<const name="MULTISITE" value="true"/>
   		<const name="WP_NETWORK_ADMIN" value="true"/>
 	</php>
