@@ -45,6 +45,24 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
+		if ( is_multisite() && is_network_admin() ) {
+			error_log("ACTIVATE as network_admin");
+			global $wpdb;
+			$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+			$original_blog_id = get_current_blog_id();
+		
+			foreach ( $blog_ids as $blog_id ) {
+				switch_to_blog( $blog_id );
+				self::initialize_current_blog( $force );
+			}
+
+			switch_to_blog( $original_blog_id );
+		} else {
+			self::initialize_current_blog( $force );
+		}
+	}
+
+	private static function initialize_current_blog( $force ) {
 		if ( $force || ! get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
 			self::initialize_release_metadata();
 		}
