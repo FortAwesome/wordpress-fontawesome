@@ -246,6 +246,16 @@ jobs:
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
         vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestBasic
 
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader-multisite.xml.dist
+
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-loader-multisite-network-admin.xml.dist
+
     - name: Maybe run phpcs
       run: |
         if [ ${{ matrix.php }} == 7.4 ] && [ ${{ matrix.wordpress }} == latest ]; then
