@@ -46,17 +46,9 @@ class FontAwesome_Activator {
 	 */
 	public static function initialize( $force = false ) {
 		if ( is_multisite() && is_network_admin() ) {
-			error_log("ACTIVATE as network_admin");
-			global $wpdb;
-			$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
-			$original_blog_id = get_current_blog_id();
-		
-			foreach ( $blog_ids as $blog_id ) {
-				switch_to_blog( $blog_id );
+			for_each_blog( function( $blog_id ) use ( $force ) {
 				self::initialize_current_blog( $force );
-			}
-
-			switch_to_blog( $original_blog_id );
+			});
 		} else {
 			self::initialize_current_blog( $force );
 		}
