@@ -332,7 +332,7 @@ EOD;
 		}
 
 		// If this is the same query as last time, then our LAST_USED_RELEASE_TRANSIENT should be current.
-		$last_used_transient = get_site_transient( self::LAST_USED_RELEASE_TRANSIENT );
+		$last_used_transient = self::get_last_used_release();
 
 		if ( $last_used_transient ) {
 			// For simplicity, we're require that it's exactly what we're looking for, else we'll re-build and overwrite it.
@@ -373,7 +373,7 @@ EOD;
 			'resources'         => $resources,
 		);
 
-		set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+		update_last_used_release( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
@@ -442,6 +442,36 @@ EOD;
 		} else {
 			return delete_option( self::OPTIONS_KEY );
 		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function get_last_used_release() {
+		return get_transient( self::LAST_USED_RELEASE_TRANSIENT );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function update_last_used_release() {
+		return set_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function delete_last_used_release() {
+		return delete_transient( self::LAST_USED_RELEASE_TRANSIENT );
 	}
 }
 
