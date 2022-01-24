@@ -428,6 +428,21 @@ EOD;
 			return get_option( self::OPTIONS_KEY );
 		}
 	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function delete_option() {
+		if ( is_multisite() ) {
+			$network_id = get_current_network_id();
+			return delete_network_option( $network_id, self::OPTIONS_KEY );
+		} else {
+			return delete_option( self::OPTIONS_KEY );
+		}
+	}
 }
 
 /**
