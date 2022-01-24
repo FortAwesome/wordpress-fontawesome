@@ -45,6 +45,25 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
+		self::initialize_release_metadata();
+
+		if ( is_multisite() && is_network_admin() ) {
+			global $wpdb;
+			$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+			$original_blog_id = get_current_blog_id();
+		
+			foreach ( $blog_ids as $blog_id ) {
+				switch_to_blog( $blog_id );
+				self::initialize_current_blog( $force );
+			}
+
+			switch_to_blog( $original_blog_id );
+		} else {
+			self::initialize_current_blog( $force );
+		}
+	}
+
+	private static function initialize_current_blog( $force ) {
 		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
 
 		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
@@ -69,8 +88,12 @@ class FontAwesome_Activator {
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 */
-	private static function initialize_release_metadata() {
-		FontAwesome_Release_Provider::load_releases();
+	private static function initialize_release_metadata( $force = false ) {
+		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
+			FontAwesome_Release_Provider::load_releases();
+		}
 	}
 
 	/**
