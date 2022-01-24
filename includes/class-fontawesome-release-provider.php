@@ -373,7 +373,7 @@ EOD;
 			'resources'         => $resources,
 		);
 
-		update_last_used_release( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+		self::update_last_used_release( $transient_value );
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
@@ -460,7 +460,7 @@ EOD;
 	 * @internal
 	 * @ignore
 	 */
-	public static function update_last_used_release() {
+	public static function update_last_used_release( $transient_value ) {
 		return set_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
 	}
 
