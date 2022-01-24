@@ -46,7 +46,7 @@ class FontAwesome_Deactivator {
 
 	private static function delete_options() {
 		delete_option( FontAwesome::OPTIONS_KEY );
-		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		FontAwesome_Release_Provider::delete_option();
 		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 		delete_option( FontAwesome_API_Settings::OPTIONS_KEY );
 	}
