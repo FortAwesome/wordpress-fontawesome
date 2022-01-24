@@ -79,6 +79,7 @@ class FontAwesome_Activator {
 		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
 
 		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
+
 			FontAwesome_Release_Provider::load_releases();
 		}
 	}
