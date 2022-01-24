@@ -137,7 +137,7 @@ class FontAwesome_API_Settings {
 	public function initialize() {
 		$this->prepare_encryption();
 
-		$option = get_option( self::OPTIONS_KEY );
+		$option = $this->get_option();
 
 		if (
 			! is_array( $option ) ||
@@ -189,7 +189,7 @@ class FontAwesome_API_Settings {
 			'access_token_expiration_time' => $new_access_token_expiration_time,
 		);
 
-		$old_option_value = get_option( self::OPTIONS_KEY );
+		$old_option_value = $this->get_option();
 
 		if (
 			is_array( $old_option_value ) &&
@@ -212,10 +212,7 @@ class FontAwesome_API_Settings {
 			@unlink( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' );
 		}
 
-		return update_option(
-			self::OPTIONS_KEY,
-			$new_option_value
-		);
+		return $this->update_option( $new_option_value );
 	}
 
 	/**
@@ -492,6 +489,29 @@ class FontAwesome_API_Settings {
 	 */
 	protected function post( $args ) {
 		return wp_remote_post( FONTAWESOME_API_URL . '/token', $args );
+	}
+
+	/**
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function get_option() {
+		return get_option( self::OPTIONS_KEY );
+	}
+
+	/**
+	 * Internal use only. Not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function update_option( $new_option_value ) {
+		return update_option(
+			self::OPTIONS_KEY,
+			$new_option_value
+		);
 	}
 }
 
