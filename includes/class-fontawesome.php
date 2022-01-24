@@ -547,6 +547,18 @@ class FontAwesome {
 		}
 
 		/**
+		 * Delete the old release metadata transient, if it exists.
+		 * It's no longer stored as a transient.
+		 */
+		delete_transient( 'font-awesome-releases' );
+
+		/**
+		 * Delete the old font-awesome-last-used-release site transient, if it exists.
+		 * It's no longer stored as a site (network-wide) transient.
+		 */
+		delete_site_transient( 'font-awesome-last-used-release' );
+
+		/**
 		 * Now we'll reset the release provider.
 		 *
 		 * If we've fallen through to this point, and we haven't found the release
