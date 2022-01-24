@@ -203,4 +203,55 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		$this->assertEquals( 3, $last_used_release_query_count );
 		$this->assertEquals( 4, $all_releases_query_count );
 	}
+
+	/**
+	 * When there exists an old 'font-awesome-last-used-release' site transient
+	 * that has not been cleaned up, it should not cause a problem when instantiating
+	 * a new ReleaseProvider that uses a normal transient. The old one will just expire
+	 * eventually;
+	 */
+	public function test_no_conflict_with_old_site_transient() {
+		/**
+		 * We used to use a site_transient for this setting.
+		 * This simulates that old behavior, as if the plugin was updated
+		 * to use the new behavior but did not delete the previous un-expired transient.
+		 */
+		set_site_transient(
+			FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+			array('foo' => 42 ),
+			3600
+		);
+
+		/**
+		 * This will activate the plugin, which would initialize the ReleaseProvider option.
+		 * That process is expected to write the option and new transient.
+		 */
+		$this->prepare(
+			array(
+				self::build_success_response(),
+			)
+		);
+
+		$this->assertTrue( !! FontAwesome_Release_Provider::get_option() );
+
+		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
+			'5.4.1',
+			array(
+				'use_pro'           => true,
+				'use_svg'           => false,
+				'use_compatibility' => false,
+			)
+		);
+
+		$this->assertTrue( !! $resource_collection );
+
+		$this->assertEquals(
+			get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ),
+			array( 'foo' => 42 )
+		);
+
+		$this->assertTrue(
+			is_array( get_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) )
+		);
+	}
 }
