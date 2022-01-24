@@ -533,6 +533,24 @@ bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestLifec
 </details>
 
 <details>
+<summary>Run multisite tests without network admin</summary>
+This would simulate the multisite environment, but where actions like activation or deactivation of the plugin
+are initiated from within a particular site's dashboard, rather than from the network dashboard.
+```bash
+bin/phpunit --config phpunit-multisite.xml.dist
+```
+</details>
+
+<details>
+<summary>Run multisite tests as network admin</summary>
+This would simulate the multisite environment where actions like activation or deactivation of the plugin
+are initiated from the network admin dashboard.
+```bash
+bin/phpunit --config phpunit-multisite-network-admin.xml.dist
+```
+</details>
+
+<details>
 <summary>filter which tests to run</summary>
 The `bin/phpunit` script will pass through command-line arguments to `phpunit` within the container. So you can do something this:
 
@@ -1186,3 +1204,15 @@ directory on each build.
 
 Just open that html file in a web browser to see the analysis of what's actually
 in the bundle.
+
+# Setup Multisite
+
+See [guide here](https://wordpress.org/support/article/create-a-network/)
+
+1. `bin/wp config set WP_ALLOW_MULTISITE true`
+
+## Hack for Running Network Uninstall in Development Mode
+
+```
+wp --allow-root eval 'require_once "wp-content/plugins/font-awesome/includes/class-fontawesome-deactivator.php"; use FortAwesome\FontAwesome_Deactivator; define("WP_NETWORK_ADMIN", true); FontAwesome_Deactivator::uninstall();'
+```
