@@ -47,14 +47,14 @@ class FontAwesome_Activator {
 	public static function initialize( $force = false ) {
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog( function( $blog_id ) use ( $force ) {
-				self::initialize_current_blog( $force );
+				self::initialize_current_site( $force );
 			});
 		} else {
-			self::initialize_current_blog( $force );
+			self::initialize_current_site( $force );
 		}
 	}
 
-	private static function initialize_current_blog( $force ) {
+	private static function initialize_current_site( $force ) {
 		if ( $force || ! get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
 			self::initialize_release_metadata();
 		}
