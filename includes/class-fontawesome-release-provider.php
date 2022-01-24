@@ -121,7 +121,7 @@ class FontAwesome_Release_Provider {
 	 * @throws ReleaseMetadataMissingException
 	 */
 	private function __construct() {
-		$option_value = get_option( self::OPTIONS_KEY );
+		$option_value = self::get_option();
 
 		if ( $option_value ) {
 			$this->releases       = $option_value['data']['releases'];
@@ -200,7 +200,7 @@ EOD;
 			),
 		);
 
-		update_option( self::OPTIONS_KEY, $option_value, false );
+		self::update_option( $option_value );
 	}
 
 	/**
@@ -391,6 +391,42 @@ EOD;
 	 */
 	public function latest_version() {
 		return $this->latest_version;
+	}
+
+	/**
+	 * In multisite mode, we will store the releases metadata just once for the
+	 * whole network in a network option.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function update_option( $option_value ) {
+		if ( is_multisite() ) {
+			$network_id = get_current_network_id();
+			return update_network_option( $network_id, self::OPTIONS_KEY, $option_value );
+		} else {
+			return update_option( self::OPTIONS_KEY, $option_value, false );
+		}
+	}
+
+	/**
+	 * In multisite mode, we will store the releases metadata just once for the
+	 * whole network in a network option.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function get_option() {
+		if ( is_multisite() ) {
+			$network_id = get_current_network_id();
+			return get_network_option( $network_id, self::OPTIONS_KEY );
+		} else {
+			return get_option( self::OPTIONS_KEY );
+		}
 	}
 }
 
