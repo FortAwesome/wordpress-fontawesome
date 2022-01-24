@@ -27,7 +27,7 @@ class FontAwesome_Deactivator {
 	}
 
 	private static function delete_transients() {
-		delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
+		FontAwesome_Release_Provider::delete_last_used_release();
 		delete_transient( FontAwesome::V3DEPRECATION_TRANSIENT );
 	}
 
