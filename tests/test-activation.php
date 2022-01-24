@@ -24,7 +24,7 @@ class ActivationTest extends TestCase {
 	public function test_before_activation() {
 		$this->assertFalse( get_option( FontAwesome::OPTIONS_KEY ) );
 		$this->assertFalse( get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ) );
-		$this->assertFalse( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) );
+		$this->assertFalse( FontAwesome_Release_Provider::get_option() );
 	}
 
 	public function test_activation_creates_default_config() {
@@ -33,7 +33,7 @@ class ActivationTest extends TestCase {
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 		$this->assertEquals( $expected_options, $actual_options );
 
-		$releases = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		$releases = FontAwesome_Release_Provider::get_option();
 		$this->assertTrue( boolval( $releases ) );
 
 		$this->assertEquals(
