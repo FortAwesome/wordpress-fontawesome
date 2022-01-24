@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<php>
+  		<const name="LOAD_PLUGIN" value="true"/>
+  		<const name="MULTISITE" value="true"/>
+  		<const name="WP_NETWORK_ADMIN" value="true"/>
+	</php>
+	<testsuites>
+		<testsuite name="Default Test Suite">
+			<directory prefix="test-multisite-" suffix=".php">./tests/</directory>
+			<exclude>./tests/loader/</exclude>
+		</testsuite>
+	</testsuites>
+</phpunit>
