@@ -45,6 +45,8 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
+		self::initialize_release_metadata();
+
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog( function( $blog_id ) use ( $force ) {
 				self::initialize_current_site( $force );
@@ -55,10 +57,6 @@ class FontAwesome_Activator {
 	}
 
 	private static function initialize_current_site( $force ) {
-		if ( $force || ! get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
-			self::initialize_release_metadata();
-		}
-
 		if ( $force || ! get_option( FontAwesome::OPTIONS_KEY ) ) {
 			self::initialize_user_options();
 		}
@@ -77,8 +75,12 @@ class FontAwesome_Activator {
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 */
-	private static function initialize_release_metadata() {
-		FontAwesome_Release_Provider::load_releases();
+	private static function initialize_release_metadata( $force = false ) {
+		$option = FontAwesome_Release_Provider::get_option();
+
+		if ( $force || ! $option ) {
+			FontAwesome_Release_Provider::load_releases();
+		}
 	}
 
 	/**
