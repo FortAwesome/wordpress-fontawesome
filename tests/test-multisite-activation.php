@@ -17,7 +17,7 @@ class MultisiteActivationTest extends TestCase {
 		parent::set_up();
 
 		if ( ! is_multisite() ) {
-			throw new Error();
+			throw new \Exception();
 		}
 
 		reset_db();
@@ -37,7 +37,7 @@ class MultisiteActivationTest extends TestCase {
 			$site_id = wp_insert_site( [ 'domain' => $domain ] );
 
 			if ( is_wp_error( $site_id ) ) {
-				throw new Error();
+				throw new \Exception();
 			}
 
 			array_push( $this->_sub_sites, $site_id );
