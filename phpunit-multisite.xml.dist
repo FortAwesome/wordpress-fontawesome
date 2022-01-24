@@ -8,6 +8,7 @@
 	convertWarningsToExceptions="true"
 	>
 	<php>
+  		<const name="WP_ALLOW_MULTISITE" value="true"/>
   		<const name="LOAD_PLUGIN" value="true"/>
   		<const name="MULTISITE" value="true"/>
 	</php>
