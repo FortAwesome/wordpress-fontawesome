@@ -1,0 +1,7 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd )"
+
+echo "DIR: $DIR"
+
+# See Getting Started on https://www.phpdoc.org/
+docker run --rm -it -v ${DIR}:/data phpdoc/phpdoc:3 run

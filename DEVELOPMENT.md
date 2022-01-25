@@ -686,13 +686,8 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 6. Build the API docs
 
-- make sure you have `graphviz` installed (on macOS, you can do this with `brew install graphviz`)
 - run `composer cleandocs` if you want to make sure that you're building from scratch
-- run `composer install --dev` to install the dev-only phpDocumentor package
-- run `composer docs` to build the docs into the `docs/` directory
-
-  This command will incrementally rebuild docs with any updates you make to the phpDoc
-  in the source code files.
+- run `bin/phpdoc` to build the docs into the `docs/` directory
 
   See also: [Run a Local Docs Server](#run-a-local-docs-server)
 
@@ -1089,20 +1084,19 @@ them into `master` as a single commit.
 
 # Run a Local Docs Server
 
-If you want to preview the built docs with a web server, you can run `composer docsrv` and then
-point a web browser at `http://localhost:3000`. Composer has a default `process-timeout` of 300
-seconds, so if you leave `docsrv` running for a while, composer will kill it and orphan
-the node process. On macOS, you can find that process id with the shell command:
- ```
- lsof -t -i :3000
- ```
-You'll probably just need to `kill` that `pid` and re-launch it.
-Or to avoid the timeout hassle, just do:
-```bash
+If you want to preview the built docs with a web server, first build the docs:
+```
+bin/phpdoc
+```
+
+Then go into the `docsrv` directory and run the doc server:
+```
 cd docsrv
 npm install
 node index.js
 ```
+
+Point a web browser at `http://localhost:3000`.
 
 # Special Notes on plugin-sigma
 
