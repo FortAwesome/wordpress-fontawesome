@@ -287,11 +287,11 @@ class ReleaseProviderTest extends TestCase {
 
 		// We'll just make a copy of the first release and hack it to have version 6.0.0.
 		$data['latest']['version'] = '6.0.0';
-		$any_release = $data['releases'][0];
-		$any_release['version'] = '6.0.0';
+		$any_release               = $data['releases'][0];
+		$any_release['version']    = '6.0.0';
 		array_push( $data['releases'], $any_release );
 
-		// Add 6.0.0 along with 6.0.0-beta3 and make it latest
+		// Add 6.0.0 along with 6.0.0-beta3 and make it latest.
 		$mock_response = wp_json_encode(
 			array(
 				'data' => $data,
