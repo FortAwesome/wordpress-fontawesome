@@ -1,6 +1,26 @@
 Search.appendIndex(
     [
                 {
+            "fqsen": "\\FONTAWESOME_DIR_PATH",
+            "name": "FONTAWESOME_DIR_PATH",
+            "summary": "Active\u0020Font\u0020Awesome\u0020plugin\u0020installation\u0020directory\u0020path.",
+            "url": "namespaces/default.html#constant_FONTAWESOME_DIR_PATH"
+        },                {
+            "fqsen": "\\FONTAWESOME_DIR_URL",
+            "name": "FONTAWESOME_DIR_URL",
+            "summary": "",
+            "url": "namespaces/default.html#constant_FONTAWESOME_DIR_URL"
+        },                {
+            "fqsen": "\\FONTAWESOME_PLUGIN_FILE",
+            "name": "FONTAWESOME_PLUGIN_FILE",
+            "summary": "Name\u0020of\u0020this\u0020plugin\u0027s\u0020entrypoint\u0020file.",
+            "url": "namespaces/default.html#constant_FONTAWESOME_PLUGIN_FILE"
+        },                {
+            "fqsen": "\\FONTAWESOME_MIN_PHP_VERSION",
+            "name": "FONTAWESOME_MIN_PHP_VERSION",
+            "summary": "Minimum\u0020PHP\u0020VERSION\u0020required",
+            "url": "namespaces/default.html#constant_FONTAWESOME_MIN_PHP_VERSION"
+        },                {
             "fqsen": "\\FortAwesome\\FontAwesome_Loader",
             "name": "FontAwesome_Loader",
             "summary": "Loader\u0020class,\u0020a\u0020Singleton.\u0020Coordinates\u0020potentially\u0020multiple\u0020installations\u0020of\nthe\u0020Font\u0020Awesome\u0020plugin\u0020code,\u0020and\u0020ensures\u0020that\u0020the\u0020latest\u0020available\u0020semantic\nversion\u0020is\u0020selected\u0020for\u0020execution\u0020at\u0020runtime.\u0020Exposes\u0020a\u0020few\u0020public\u0020API\nmethods\u0020for\u0020initialization\u0020\u0028activation\u0029,\u0020deactivation,\u0020and\u0020uninstallation\nof\u0020plugin\u0020code.",
@@ -215,6 +235,11 @@ Search.appendIndex(
             "name": "v4_compatibility",
             "summary": "Indicates\u0020whether\u0020Font\u0020Awesome\u0020is\u0020being\u0020loaded\u0020with\u0020version\u00204\u0020compatibility.",
             "url": "classes/FortAwesome-FontAwesome.html#method_v4_compatibility"
+        },                {
+            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Acompatibility\u0028\u0029",
+            "name": "compatibility",
+            "summary": "Indicates\u0020whether\u0020Font\u0020Awesome\u0020is\u0020being\u0020loaded\u0020with\u0020older\u0020version\u0020compatibility.",
+            "url": "classes/FortAwesome-FontAwesome.html#method_compatibility"
         },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Apseudo_elements\u0028\u0029",
             "name": "pseudo_elements",
