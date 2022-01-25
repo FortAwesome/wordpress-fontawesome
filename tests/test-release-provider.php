@@ -280,4 +280,29 @@ class ReleaseProviderTest extends TestCase {
 
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
+
+	// Ensure that the ReleaseProvider sorts versions semantically.
+	public function test_versions_with_6_0_0() {
+		$data = graphql_releases_query_fixture();
+
+		// We'll just make a copy of the first release and hack it to have version 6.0.0.
+		$data['latest']['version'] = '6.0.0';
+		$any_release = $data['releases'][0];
+		$any_release['version'] = '6.0.0';
+		array_push( $data['releases'], $any_release );
+
+		// Add 6.0.0 along with 6.0.0-beta3 and make it latest
+		$mock_response = wp_json_encode(
+			array(
+				'data' => $data,
+			)
+		);
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		$versions = $farp->versions();
+
+		$this->assertEquals( '6.0.0', $farp->versions()[0] );
+		$this->assertEquals( '6.0.0', $farp->latest_version() );
+	}
 }
