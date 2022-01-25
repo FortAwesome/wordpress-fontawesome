@@ -226,13 +226,13 @@ class RemoveBlocklistTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'usePro'         => false,
-				'v4Compat'       => true,
+				'compat'         => true,
 				'technology'     => 'svg',
 				'pseudoElements' => true,
 				'version'        => '5.12.0',
 				'kitToken'       => null,
 				'apiToken'       => false,
-				'dataVersion'    => 3,
+				'dataVersion'    => 4,
 			),
 			fa()->options()
 		);

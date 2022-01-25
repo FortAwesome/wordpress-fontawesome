@@ -241,13 +241,13 @@ class FontAwesome {
 	 */
 	const DEFAULT_USER_OPTIONS = array(
 		'usePro'         => false,
-		'v4Compat'       => true,
+		'compat'         => true,
 		'technology'     => 'webfont',
 		'pseudoElements' => true,
 		'kitToken'       => null,
 		// whether the token is present, not the token's value.
 		'apiToken'       => false,
-		'dataVersion'    => 3,
+		'dataVersion'    => 4,
 	);
 
 	/**
@@ -423,9 +423,9 @@ class FontAwesome {
 		return FontAwesome_Release_Provider::get_resource_collection(
 			$this->options()['version'],
 			array(
-				'use_pro'  => $this->pro(),
-				'use_svg'  => 'svg' === $this->technology(),
-				'use_shim' => $this->v4_compatibility(),
+				'use_pro'           => $this->pro(),
+				'use_svg'           => 'svg' === $this->technology(),
+				'use_compatibility' => $this->v4_compatibility(),
 			)
 		);
 	}
@@ -448,17 +448,13 @@ class FontAwesome {
 
 		$should_upgrade = false;
 
-		$upgraded_options = array();
-
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
 		if ( isset( $options['lockedLoadSpec'] ) || isset( $options['adminClientLoadSpec'] ) ) {
 			if ( isset( $options['removeUnregisteredClients'] ) && $options['removeUnregisteredClients'] ) {
 				$this->old_remove_unregistered_clients = true;
 			}
 
-			$upgraded_options = array_merge( $upgraded_options, $this->convert_options_from_v1( $options ) );
-
-			$this->upgrade_for_4_0_0_rc22();
+			$upgraded_options = $this->convert_options_from_v1( $options );
 
 			/**
 			 * If the version is still not set for some reason, set it to a
@@ -469,10 +465,33 @@ class FontAwesome {
 			}
 
 			$should_upgrade = true;
+
+			$options = $upgraded_options;
+		}
+
+		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 4 ) {
+
+			if ( ! isset( $options['compat'] ) && isset( $options['v4Compat'] ) ) {
+				$v4_compat         = boolval( $options['v4Compat'] );
+				$options['compat'] = $v4_compat;
+				unset( $options['v4Compat'] );
+			} else {
+				$options['compat'] = self::DEFAULT_USER_OPTIONS['compat'];
+			}
+
+			if ( isset( $options['v4Compat'] ) ) {
+				unset( $options['v4Compat'] );
+			}
+
+			$options['dataVersion'] = 4;
+
+			$should_upgrade = true;
 		}
 
 		if ( $should_upgrade ) {
-			$this->validate_options( $upgraded_options );
+			$this->validate_options( $options );
+
+			$this->reset_releases_metadata_for_upgrade();
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -487,16 +506,6 @@ class FontAwesome {
 				throw UpgradeException::main_option_delete();
 			}
 
-			update_option( self::OPTIONS_KEY, $upgraded_options );
-
-			$options = $upgraded_options;
-		}
-
-		if ( ! isset( $options['dataVersion'] ) || $options['dataVersion'] < 3 ) {
-			$this->upgrade_for_4_0_0_rc22();
-
-			$options['dataVersion'] = 3;
-
 			update_option( self::OPTIONS_KEY, $options );
 		}
 	}
@@ -507,11 +516,16 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	private function upgrade_for_4_0_0_rc22() {
-		// Delete the old release metadata transient.
+	private function reset_releases_metadata_for_upgrade() {
+		/**
+		 * Delete the old release metadata transient, if it exists,
+		 * which would not yet have been a site transient.
+		 */
 		delete_transient( 'font-awesome-releases' );
 
-		delete_site_transient( 'font-awesome-releases' );
+		// Delete the current site transients.
+		delete_site_transient( FontAwesome_Release_Provider::OPTIONS_KEY );
+		delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
 
 		/**
 		 * This is one exception to the rule about not loading release metadata
@@ -960,6 +974,10 @@ class FontAwesome {
 		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
 		$version   = isset( $options['version'] ) ? $options['version'] : null;
 
+		if ( ! isset( $options['usePro'] ) || ! is_bool( $options['usePro'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
 		if ( $using_kit ) {
 			if ( ! boolval( $api_token ) ) {
 				throw new ConfigCorruptionException();
@@ -984,13 +1002,21 @@ class FontAwesome {
 			if ( ! $version_is_concrete ) {
 				throw new ConfigCorruptionException();
 			}
+
+			$version_is_v6 = is_string( $version )
+				&& 1 === preg_match( '/^6\./', $version );
+
+			$is_pro = boolval( $options['usePro'] );
+
+			/**
+			 * Pro Version 6 CDN is not supported.
+			 */
+			if ( $version_is_v6 && $is_pro ) {
+				throw new ConfigCorruptionException();
+			}
 		}
 
-		if ( ! isset( $options['v4Compat'] ) || ! is_bool( $options['v4Compat'] ) ) {
-			throw new ConfigCorruptionException();
-		}
-
-		if ( ! isset( $options['usePro'] ) || ! is_bool( $options['usePro'] ) ) {
+		if ( ! isset( $options['compat'] ) || ! is_bool( $options['compat'] ) ) {
 			throw new ConfigCorruptionException();
 		}
 
@@ -1081,6 +1107,8 @@ class FontAwesome {
 
 		if ( isset( $options['usePro'] ) ) {
 			$converted_options['usePro'] = $options['usePro'];
+		} else {
+			$converted_options['usePro'] = self::DEFAULT_USER_OPTIONS['usePro'];
 		}
 
 		if ( isset( $options['version'] ) ) {
@@ -1105,14 +1133,14 @@ class FontAwesome {
 							: false
 					);
 
-			$converted_options['v4Compat'] = $options['lockedLoadSpec']['v4shim'];
+			$converted_options['compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
 			$converted_options['technology'] = $options['adminClientLoadSpec']['method'];
 
 			$converted_options['pseudoElements'] = 'svg' === $options['adminClientLoadSpec']['method']
 				&& $options['adminClientLoadSpec']['pseudoElements'];
 
-			$converted_options['v4Compat'] = $options['adminClientLoadSpec']['v4shim'];
+			$converted_options['compat'] = $options['adminClientLoadSpec']['v4shim'];
 		}
 
 		return $converted_options;
@@ -1406,13 +1434,28 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 * @throws ConfigCorruptionException
+	 * @deprecated
 	 *
 	 * @return boolean
 	 */
 	public function v4_compatibility() {
+		return $this->compatibility();
+	}
+
+	/**
+	 * Indicates whether Font Awesome is being loaded with older version compatibility.
+	 *
+	 * Its result is valid only after the `font_awesome_enqueued` has been triggered.
+	 *
+	 * @since 4.1.0
+	 * @throws ConfigCorruptionException
+	 *
+	 * @return boolean
+	 */
+	public function compatibility() {
 		$options = $this->options();
 		$this->validate_options( $options );
-		return $options['v4Compat'];
+		return $options['compat'];
 	}
 
 	/**
@@ -1618,7 +1661,7 @@ class FontAwesome {
 			foreach ( array( 'wp_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () {
+					function () use ( $should_enable_icon_chooser ) {
 						try {
 							$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 
@@ -1926,13 +1969,21 @@ EOT;
 			$this->apply_detection_ignore_attr();
 		}
 
+		if ( ! isset( $resources['all'] ) ) {
+			throw new ConfigCorruptionException();
+		}
+
+		$all_source    = $resources['all']->source();
+		$all_integrity = $resources['all']->integrity_key();
+
 		if ( 'webfont' === $options['technology'] ) {
+
 			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () use ( $resources ) {
+					function () use ( $all_source ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_style( self::RESOURCE_HANDLE, $resources[0]->source(), null, null );
+						wp_enqueue_style( self::RESOURCE_HANDLE, $all_source, null, null );
 					}
 				);
 			}
@@ -1940,11 +1991,11 @@ EOT;
 			// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 			add_filter(
 				'style_loader_tag',
-				function( $html, $handle ) use ( $resources ) {
+				function( $html, $handle ) use ( $all_integrity ) {
 					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
 								return preg_replace(
 									'/\/>$/',
-									'integrity="' . $resources[0]->integrity_key() .
+									'integrity="' . $all_integrity .
 									'" crossorigin="anonymous" />',
 									$html,
 									1
@@ -1957,13 +2008,20 @@ EOT;
 				2
 			);
 
-			if ( ! array_key_exists( 'v4Compat', $options ) ) {
+			if ( ! array_key_exists( 'compat', $options ) ) {
 				throw new ConfigCorruptionException();
 			}
 
 			$version = $resource_collection->version();
 
-			if ( $options['v4Compat'] ) {
+			if ( $options['compat'] ) {
+				if ( ! isset( $resources['v4-shims'] ) ) {
+					throw new ConfigCorruptionException();
+				}
+
+				$v4_shims_source    = $resources['v4-shims']->source();
+				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
+
 				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
@@ -1972,53 +2030,22 @@ EOT;
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
-						function () use ( $resources, $options, $version ) {
+						function () use ( $v4_shims_source, $v4_shims_integrity, $options, $version ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null );
+							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null );
 
-							$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
-
-							$font_face = <<< EOT
-@font-face {
-font-family: "FontAwesome";
-font-display: block;
-src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.woff2") format("woff2"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.woff") format("woff"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.ttf") format("truetype"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.svg#fontawesome") format("svg");
-}
-
-@font-face {
-font-family: "FontAwesome";
-font-display: block;
-src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff2") format("woff2"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff") format("woff"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.ttf") format("truetype"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.svg#fontawesome") format("svg");
-}
-
-@font-face {
-font-family: "FontAwesome";
-font-display: block;
-src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.eot"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.eot?#iefix") format("embedded-opentype"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.woff2") format("woff2"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.woff") format("woff"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.ttf") format("truetype"),
-		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.svg#fontawesome") format("svg");
-unicode-range: U+F004-F005,U+F007,U+F017,U+F022,U+F024,U+F02E,U+F03E,U+F044,U+F057-F059,U+F06E,U+F070,U+F075,U+F07B-F07C,U+F080,U+F086,U+F089,U+F094,U+F09D,U+F0A0,U+F0A4-F0A7,U+F0C5,U+F0C7-F0C8,U+F0E0,U+F0EB,U+F0F3,U+F0F8,U+F0FE,U+F111,U+F118-F11A,U+F11C,U+F133,U+F144,U+F146,U+F14A,U+F14D-F14E,U+F150-F152,U+F15B-F15C,U+F164-F165,U+F185-F186,U+F191-F192,U+F1AD,U+F1C1-F1C9,U+F1CD,U+F1D8,U+F1E3,U+F1EA,U+F1F6,U+F1F9,U+F20A,U+F247-F249,U+F24D,U+F254-F25B,U+F25D,U+F267,U+F271-F274,U+F279,U+F28B,U+F28D,U+F2B5-F2B6,U+F2B9,U+F2BB,U+F2BD,U+F2C1-F2C2,U+F2D0,U+F2D2,U+F2DC,U+F2ED,U+F328,U+F358-F35B,U+F3A5,U+F3D1,U+F410,U+F4AD;
-}
-EOT;
-
-							wp_add_inline_style(
-								self::RESOURCE_HANDLE_V4SHIM,
-								$font_face
-							);
-
+							/**
+							 * Version 6 Beta 3 is when some new compatiblity accommodations were introduced, built into all.css.
+							 * So this @font-face override is only useful for enqueuing V5. The new stuff in V6 supercedes it.
+							 */
+							if ( version_compare( $version, '6.0.0-beta3', '<' ) ) {
+								$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
+								$font_face_content = $this->build_legacy_font_face_overrides_for_v4( $license_subdomain, $version );
+								wp_add_inline_style(
+									self::RESOURCE_HANDLE_V4SHIM,
+									$font_face_content
+								);
+							}
 						},
 						PHP_INT_MAX
 					);
@@ -2027,14 +2054,14 @@ EOT;
 				// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 				// Not all resources have an integrity_key for all versions of Font Awesome, so we'll skip this for those
 				// that don't.
-				if ( ! is_null( $resources[1]->integrity_key() ) ) {
+				if ( ! is_null( $v4_shims_integrity ) ) {
 					add_filter(
 						'style_loader_tag',
-						function ( $html, $handle ) use ( $resources ) {
-							if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
+						function ( $html, $handle ) use ( $v4_shims_integrity ) {
+							if ( self::RESOURCE_HANDLE_V4SHIM === $handle ) {
 								return preg_replace(
 									'/\/>$/',
-									'integrity="' . $resources[1]->integrity_key() .
+									'integrity="' . $v4_shims_integrity .
 									'" crossorigin="anonymous" />',
 									$html,
 									1
@@ -2052,9 +2079,9 @@ EOT;
 			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () use ( $resources, $options ) {
+					function () use ( $all_source, $options ) {
 						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-						wp_enqueue_script( self::RESOURCE_HANDLE, $resources[0]->source(), null, null, false );
+						wp_enqueue_script( self::RESOURCE_HANDLE, $all_source, null, null, false );
 
 						if ( $options['pseudoElements'] ) {
 							wp_add_inline_script( self::RESOURCE_HANDLE, 'FontAwesomeConfig = { searchPseudoElements: true };', 'before' );
@@ -2066,12 +2093,12 @@ EOT;
 			// Filter the <script> tag to add additional attributes for integrity, crossorigin, defer.
 			add_filter(
 				'script_loader_tag',
-				function ( $tag, $handle ) use ( $resources ) {
-					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
+				function ( $tag, $handle ) use ( $all_integrity ) {
+					if ( self::RESOURCE_HANDLE === $handle ) {
 						$extra_tag_attributes = 'defer crossorigin="anonymous"';
 
-						if ( ! is_null( $resources[0]->integrity_key() ) ) {
-							$extra_tag_attributes .= ' integrity="' . $resources[0]->integrity_key() . '"';
+						if ( ! is_null( $all_integrity ) ) {
+							$extra_tag_attributes .= ' integrity="' . $all_integrity . '"';
 						}
 						$modified_script_tag = preg_replace(
 							// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -2089,24 +2116,31 @@ EOT;
 				2
 			);
 
-			if ( $options['v4Compat'] ) {
+			if ( $options['compat'] ) {
+				if ( ! isset( $resources['v4-shims'] ) ) {
+					throw new ConfigCorruptionException();
+				}
+
+				$v4_shims_source    = $resources['v4-shims']->source();
+				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
+
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 					add_action(
 						$action,
-						function () use ( $resources ) {
+						function () use ( $v4_shims_source ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-							wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $resources[1]->source(), null, null, false );
+							wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null, false );
 						}
 					);
 				}
 
 				add_filter(
 					'script_loader_tag',
-					function ( $tag, $handle ) use ( $resources ) {
-						if ( in_array( $handle, array( self::RESOURCE_HANDLE_V4SHIM ), true ) ) {
+					function ( $tag, $handle ) use ( $v4_shims_integrity ) {
+						if ( self::RESOURCE_HANDLE_V4SHIM === $handle ) {
 							$extra_tag_attributes = 'defer crossorigin="anonymous"';
-							if ( ! is_null( $resources[1]->integrity_key() ) ) {
-								$extra_tag_attributes .= ' integrity="' . $resources[1]->integrity_key() . '"';
+							if ( ! is_null( $v4_shims_integrity ) ) {
+								$extra_tag_attributes .= ' integrity="' . $v4_shims_integrity . '"';
 							}
 							$modified_script_tag = preg_replace(
 								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -2433,8 +2467,8 @@ EOT;
 	 * ```php
 	 *   array(
 	 *     'technology'        => 'svg', // "svg" or "webfont"
-	 *     'v4Compat'          => true, // true or false
-	 *     'pseudoElements' => false, // true or false
+	 *     'compat'            => true, // true or false
+	 *     'pseudoElements'    => false, // true or false
 	 *     'name'              => 'Foo Plugin', // (required)
 	 *     'version'           => [
 	 *                              [ '5.10.0', '>=']
@@ -2554,7 +2588,9 @@ EOT;
 	 *
 	 * <h3>Additional Notes on Specific Preferences</h3>
 	 *
-	 * - `v4Compat`
+	 * - `compat`
+	 *
+	 *   This was previously called 'v4Compat'. If older code uses v4Compat, it will be taken as the value for v4Compat.
 	 *
 	 *   There were major changes between Font Awesome 4 and Font Awesome 5, including some re-named icons.
 	 *   It's best to upgrade name references to the version 5 names,
@@ -2566,8 +2602,23 @@ EOT;
 	 *   Another common pattern out there on the web (not a recommended practice these days, though) is to place
 	 *   icons as pseudo-elements where the unicode is specific in CSS as `content` and `"FontAwesome"` is specified
 	 *   as the `font-family`. The main problem here is that the `font-family` name has changed for Font Awesome 5,
-	 *   and there are multiple `font-family` names. So the v4Compat feature of this plugin also "shims" those
+	 *   and there are multiple `font-family` names. So the compat feature of this plugin also "shims" those
 	 *   hardcoded version 4 `font-family` names so that they will use the corresponding Font Awesome 5 webfont files.
+	 *
+	 *   There have been some changes across major versions at the level of unicode differences. For example,
+	 *   the glyph associated with the v4 icon named "diamond" with unicode f219 appears in FA5 and FA6
+	 *   as the icon named "gem" with unicode f3a5. That glyph looked like the "precious stone" diamond.
+	 *
+	 *   The glyph associated with the icon named "diamond" and unicode f3a5 in FA5 and FA6 is
+	 *   like the diamond as a suit in playing cards.
+	 *
+	 *   Without all of the compatibility assets to fix up such mappings, any old pseudo-elements that
+	 *   used the v4 font-family of "FontAwesome" with a unicode of f219, when rendered using the FA5 or
+	 *   FA6 fonts, will get the "suit" diamond instead of the "precious stone" diamond.
+	 *
+	 *   In general, a key improvement in v6 is much more comprehensive compatibility with pseudo-elements that may
+	 *   have been defined using font-family or unicode values from older versions. This option enables all of
+	 *   the various compatibility accommodations.
 	 *
 	 * - `pseudoElements`
 	 *
@@ -2586,7 +2637,23 @@ EOT;
 			throw new ClientPreferencesSchemaException();
 		}
 
-		$this->client_preferences[ $client_preferences['name'] ] = $client_preferences;
+		$updated_client_preferences = $client_preferences;
+
+		if ( array_key_exists( 'v4Compat', $client_preferences ) ) {
+			$v4_compat = $client_preferences['v4Compat'];
+
+			if ( array_key_exists( 'compat', $client_preferences ) ) {
+				$compat = $client_preferences['compat'];
+
+				if ( $compat !== $v4_compat ) {
+					throw new ClientPreferencesSchemaException();
+				}
+			}
+
+			$updated_client_preferences['compat'] = $v4_compat;
+		}
+
+		$this->client_preferences[ $client_preferences['name'] ] = $updated_client_preferences;
 	}
 
 	/**
@@ -2919,7 +2986,7 @@ EOT;
 			return true;
 		}
 		$current_screen = get_current_screen();
-		if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
+		if ( is_object( $current_screen ) && method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
 			// Gutenberg page on 5+.
 			return true;
 		}
@@ -2962,6 +3029,56 @@ EOT;
 		global $wp_version;
 
 		return ! version_compare( $wp_version, '5.4', '>=' );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * This builds font-face rules to override the v4 font-family
+	 * name of "FontAwesome", pointing to current assets. This is only
+	 * needed for CDN setups in FA5. FA 5 kits have their own built-in
+	 * version of this. FA6 (since beta3) has improved compatibility handling
+	 * that does this and more, both in FA6 kits and Free CDN.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	private function build_legacy_font_face_overrides_for_v4( $license_subdomain, $version ) {
+		return <<< EOT
+@font-face {
+font-family: "FontAwesome";
+font-display: block;
+src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.woff2") format("woff2"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.woff") format("woff"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.ttf") format("truetype"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-brands-400.svg#fontawesome") format("svg");
+}
+
+@font-face {
+font-family: "FontAwesome";
+font-display: block;
+src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff2") format("woff2"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.woff") format("woff"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.ttf") format("truetype"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-solid-900.svg#fontawesome") format("svg");
+}
+
+@font-face {
+font-family: "FontAwesome";
+font-display: block;
+src: url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.eot"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.eot?#iefix") format("embedded-opentype"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.woff2") format("woff2"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.woff") format("woff"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.ttf") format("truetype"),
+		url("https://${license_subdomain}.fontawesome.com/releases/v${version}/webfonts/fa-regular-400.svg#fontawesome") format("svg");
+unicode-range: U+F004-F005,U+F007,U+F017,U+F022,U+F024,U+F02E,U+F03E,U+F044,U+F057-F059,U+F06E,U+F070,U+F075,U+F07B-F07C,U+F080,U+F086,U+F089,U+F094,U+F09D,U+F0A0,U+F0A4-F0A7,U+F0C5,U+F0C7-F0C8,U+F0E0,U+F0EB,U+F0F3,U+F0F8,U+F0FE,U+F111,U+F118-F11A,U+F11C,U+F133,U+F144,U+F146,U+F14A,U+F14D-F14E,U+F150-F152,U+F15B-F15C,U+F164-F165,U+F185-F186,U+F191-F192,U+F1AD,U+F1C1-F1C9,U+F1CD,U+F1D8,U+F1E3,U+F1EA,U+F1F6,U+F1F9,U+F20A,U+F247-F249,U+F24D,U+F254-F25B,U+F25D,U+F267,U+F271-F274,U+F279,U+F28B,U+F28D,U+F2B5-F2B6,U+F2B9,U+F2BB,U+F2BD,U+F2C1-F2C2,U+F2D0,U+F2D2,U+F2DC,U+F2ED,U+F328,U+F358-F35B,U+F3A5,U+F3D1,U+F410,U+F4AD;
+}
+EOT;
 	}
 }
 

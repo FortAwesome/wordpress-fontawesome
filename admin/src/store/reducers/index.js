@@ -35,7 +35,7 @@ export function options(state = {}, action = {}) {
           options: {
             technology,
             usePro,
-            v4Compat,
+            compat,
             pseudoElements,
             version,
             kitToken,
@@ -49,7 +49,7 @@ export function options(state = {}, action = {}) {
           kitToken,
           apiToken,
           usePro: coerceBool(usePro),
-          v4Compat: coerceBool(v4Compat),
+          compat: coerceBool(compat),
           pseudoElements: coerceBool(pseudoElements)
         }
       }

@@ -15,3 +15,24 @@
     content: '\f257';
     color: red;
 }
+
+/**
+ * The glyph associated with the v4 icon named "diamond" with unicode f219 appears in FA5 and FA6
+ * as the icon named "gem" with unicode f3a5. That glyph looked like the "precious stone" diamond.
+ * 
+ * The glyph associated with the icon named "diamond" and unicode f3a5 in FA5 and FA6 is
+ * like the diamond as a suit in playing cards.
+ *
+ * Without all of the compatibility assets to fix up such mappings, any old pseudo-elements that
+ * used the v4 font-family of "FontAwesome" with a unicode of f219, when rendered using the FA5 or
+ * FA6 fonts, will get the "suit" diamond instead of the "precious stone" diamond.
+ *
+ * See:
+ * https://fontawesome.com/v4.7/cheatsheet/
+ * https://fontawesome.com/v5.15/how-to-use/on-the-web/setup/upgrading-from-version-4
+ */
+.gem-icon:before {
+    font-family: "FontAwesome";
+    content: '\f219';
+    color: red;
+}

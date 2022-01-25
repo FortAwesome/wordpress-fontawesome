@@ -465,10 +465,10 @@ export function queryKits() {
         optionsUpdate.version = currentKitRefreshed.version
       }
 
-      if( options.v4Compat && !currentKitRefreshed.shimEnabled ) {
-        optionsUpdate.v4Compat = false
-      } else if( !options.v4Compat && currentKitRefreshed.shimEnabled ) {
-        optionsUpdate.v4Compat = true
+      if( options.compat && !currentKitRefreshed.shimEnabled ) {
+        optionsUpdate.compat = false
+      } else if( !options.compat && currentKitRefreshed.shimEnabled ) {
+        optionsUpdate.compat = true
       }
 
       dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})

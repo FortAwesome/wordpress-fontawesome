@@ -73,10 +73,10 @@ class OptionsTest extends TestCase {
 				'pseudoElements' => true,
 				'technology' => 'svg',
 				'usePro' => true,
-				'v4Compat' => true,
+				'compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3
+				'dataVersion' => 4
 			),
 			fa()->convert_options_from_v1(
 				array (
@@ -144,10 +144,10 @@ class OptionsTest extends TestCase {
 				'pseudoElements' => true,
 				'technology' => 'svg',
 				'usePro' => true,
-				'v4Compat' => true,
+				'compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3,
+				'dataVersion' => 4,
 			),
 			fa()->options()
 		);
@@ -179,10 +179,45 @@ class OptionsTest extends TestCase {
 				'pseudoElements' => true,
 				'technology' => 'svg',
 				'usePro' => true,
+				'compat' => true,
+				'kitToken' => null,
+				'apiToken' => false,
+				'dataVersion' => 4
+			),
+			fa()->options()
+		);
+
+		$releases_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		$this->assertTrue(boolval($releases_option));
+	}
+
+	public function test_try_upgrade_from_v4_compat_to_compat_option() {
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
 				'v4Compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3
+			)
+		);
+
+		fa()->try_upgrade();
+
+		$this->assertEquals(
+			array(
+				'version' => '5.8.1',
+				'pseudoElements' => true,
+				'technology' => 'svg',
+				'usePro' => true,
+				'compat' => true,
+				'kitToken' => null,
+				'apiToken' => false,
+				'dataVersion' => 4
 			),
 			fa()->options()
 		);
@@ -214,10 +249,10 @@ class OptionsTest extends TestCase {
 				'pseudoElements' => true,
 				'technology' => 'svg',
 				'usePro' => true,
-				'v4Compat' => true,
+				'compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3,
+				'dataVersion' => 4,
 			),
 			fa()->options()
 		);
@@ -230,10 +265,10 @@ class OptionsTest extends TestCase {
 				'pseudoElements' => true,
 				'technology' => 'webfont',
 				'usePro' => true,
-				'v4Compat' => true,
+				'compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3,
+				'dataVersion' => 4,
 			),
 			fa()->convert_options_from_v1(
 				array (
@@ -271,10 +306,10 @@ class OptionsTest extends TestCase {
 				'pseudoElements' => true,
 				'technology' => 'webfont',
 				'usePro' => true,
-				'v4Compat' => true,
+				'compat' => true,
 				'kitToken' => null,
 				'apiToken' => false,
-				'dataVersion' => 3,
+				'dataVersion' => 4,
 			),
 			fa()->convert_options_from_v1(
 				array (
@@ -340,6 +375,20 @@ class OptionsTest extends TestCase {
 		$this->expectException( ConfigCorruptionException::class );
 
 		fa()->technology();
+	}
+
+	public function test_options_invalid_pro_v6_cdn() {
+		$options = array_merge(
+			FontAwesome::DEFAULT_USER_OPTIONS,
+			[
+				'version' => '6.0.0-beta3',
+				'usePro'  => true
+			]
+		);
+
+		$this->expectException( ConfigCorruptionException::class );
+
+		fa()->validate_options( $options );
 	}
 
 	public function test_options_missing_pro() {
@@ -416,7 +465,7 @@ class OptionsTest extends TestCase {
 			]
 		);
 
-		unset( $options['v4Compat'] );
+		unset( $options['compat'] );
 
 		update_option( FontAwesome::OPTIONS_KEY, $options );
 
@@ -430,7 +479,7 @@ class OptionsTest extends TestCase {
 			FontAwesome::DEFAULT_USER_OPTIONS,
 			[
 				'version' => '5.3.1',
-				'v4Compat' => 42
+				'compat' => 42
 			]
 		);
 

@@ -30,13 +30,23 @@ add_action(
 	}
 );
 
-add_action('wp_print_footer_scripts', function() use($pre_content) {
+add_action('wp_print_footer_scripts', function() {
 ?>
+<style>
+	.beta-ambulance {
+		font-family: 'Font Awesome 5 Free';
+		font-weight: 900;
+	}
+	.beta-ambulance::before {
+		content: '\f0f9';
+	}
+</style>
 <div class="plugin-beta-content" style="border: 1px solid grey;">
   <h2>Plugin Beta</h2>
   <p>Expected by plugin-beta: "fab fa-font-awesome": <i class="fab fa-font-awesome"></i></p>
   <p>Shim icon (using the v4 class name): "fa fa-arrows": <i class="fa fa-arrows"></i></p>
   <p>Icon introduced in 5.1.0: "fas fa-angry": <i class="fas fa-angry"></i></p>
+  <p>This ambulance pseudo-element would show only if using v5 pseudo-elements or v6 with v5 compatibility: <span class="beta-ambulance"></span></p>
 </div>
 <?php
 });

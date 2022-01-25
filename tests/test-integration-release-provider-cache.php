@@ -170,9 +170,9 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
 			array(
-				'use_pro'  => true,
-				'use_svg'  => false,
-				'use_shim' => false,
+				'use_pro'           => true,
+				'use_svg'           => false,
+				'use_compatibility' => false,
 			)
 		);
 
@@ -183,9 +183,9 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
 			array(
-				'use_pro'  => true,
-				'use_svg'  => false,
-				'use_shim' => false,
+				'use_pro'           => true,
+				'use_svg'           => false,
+				'use_compatibility' => false,
 			)
 		);
 

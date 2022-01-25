@@ -13,6 +13,7 @@
 /assets                   export-ignore
 /.git                     export-ignore
 .gitattributes            export-ignore
+jest-e2e.config.js        export-ignore
 .gitignore                export-ignore
 .travis.yml               export-ignore
 phpunit.xml.dist          export-ignore

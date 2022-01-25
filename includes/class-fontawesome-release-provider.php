@@ -308,7 +308,7 @@ EOD;
 	 * query.
 	 *
 	 * @param string $version
-	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_shim' => true)
+	 * @param array  $flags boolean flags, defaults: array('use_pro' => false, 'use_svg' => false, 'use_compatibility' => true)
 	 * @throws ReleaseMetadataMissingException
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
@@ -317,9 +317,9 @@ EOD;
 	 * @return array
 	 */
 	public static function get_resource_collection( $version, $flags = array(
-		'use_pro'  => false,
-		'use_svg'  => false,
-		'use_shim' => true,
+		'use_pro'           => false,
+		'use_svg'           => false,
+		'use_compatibility' => true,
 	) ) {
 		$resources = array();
 
@@ -327,7 +327,7 @@ EOD;
 			throw new ConfigCorruptionException();
 		}
 
-		if ( $flags['use_shim'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
+		if ( $flags['use_compatibility'] && ! $flags['use_svg'] && version_compare( '5.1.0', $version, '>' ) ) {
 			throw ConfigSchemaException::webfont_v4compat_introduced_later();
 		}
 
@@ -340,8 +340,14 @@ EOD;
 				$version === $last_used_transient['version']
 				&& $flags['use_pro'] === $last_used_transient['use_pro']
 				&& $flags['use_svg'] === $last_used_transient['use_svg']
-				&& $flags['use_shim'] === $last_used_transient['use_shim']
+				&& $flags['use_compatibility'] === $last_used_transient['use_compatibility']
 				&& is_array( $last_used_transient['resources'] )
+				/**
+				 * Checking for all because we only want to use a newer transient whose
+				 * resources is key/value array. So if it's the older version that is
+				 * just a list, we'll fall through and rebuild it below.
+				 */
+				&& isset( $last_used_transient['resources']['all'] )
 			) {
 				return new FontAwesome_ResourceCollection( $version, $last_used_transient['resources'] );
 			}
@@ -353,17 +359,18 @@ EOD;
 			throw new ReleaseMetadataMissingException();
 		}
 
-		array_push( $resources, $provider->build_resource( $version, 'all', $flags ) );
-		if ( $flags['use_shim'] ) {
-			array_push( $resources, $provider->build_resource( $version, 'v4-shims', $flags ) );
+		$resources['all'] = $provider->build_resource( $version, 'all', $flags );
+
+		if ( $flags['use_compatibility'] ) {
+			$resources['v4-shims'] = $provider->build_resource( $version, 'v4-shims', $flags );
 		}
 
 		$transient_value = array(
-			'version'   => $version,
-			'use_pro'   => $flags['use_pro'],
-			'use_svg'   => $flags['use_svg'],
-			'use_shim'  => $flags['use_shim'],
-			'resources' => $resources,
+			'version'           => $version,
+			'use_pro'           => $flags['use_pro'],
+			'use_svg'           => $flags['use_svg'],
+			'use_compatibility' => $flags['use_compatibility'],
+			'resources'         => $resources,
 		);
 
 		set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );

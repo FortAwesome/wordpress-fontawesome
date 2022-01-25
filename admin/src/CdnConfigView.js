@@ -26,8 +26,9 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const usePro = useOption('usePro')
   const technology = useOption('technology')
   const version = useOption('version')
-  const v4Compat = useOption('v4Compat')
+  const compat = useOption('compat')
   const pseudoElements = useOption('pseudoElements')
+  const isVersion6 = !!version.match(/^6\./)
 
   const pendingOptions = useSelector(state => state.pendingOptions)
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
@@ -155,6 +156,13 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
               </div>
             </div>
             { usePro &&
+              isVersion6 &&
+              <Alert title={ __( 'Heads up! Pro Version 6 is not available from CDN', 'font-awesome' ) } type='warning'>
+                <p>You can, however, use a Kit. Make sure you have a paid subscription and select "Use a Kit" above. We'll walk you through the other details from there.</p>
+              </Alert>
+            }
+            { usePro &&
+              !isVersion6 &&
               <Alert title={ __( 'Heads up! Pro requires a Font Awesome subscription', 'font-awesome' ) } type='info'>
               <p>And you need to add your WordPress site to the allowed domains for your CDN.</p>
                 <ul>
@@ -313,20 +321,20 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
         </div>
         <hr className={ styles['option-divider'] }/>
         <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
-          <div className={ styles['option-header'] }>Version 4 Compatibility</div>
+          <div className={ styles['option-header'] }>Older Version Compatibility</div>
           <div className={ styles['option-choice-container'] }>
             <div className={ styles['option-choices'] }>
               <div className={ styles['option-choice'] }>
                 <input
-                  id="code_edit_v4compat_on"
-                  name="code_edit_v4compat_on"
+                  id="code_edit_compat_on"
+                  name="code_edit_compat_on"
                   type="radio"
-                  value={ v4Compat }
-                  checked={ v4Compat }
-                  onChange={ () => handleOptionChange({ v4Compat: ! v4Compat }) }
+                  value={ compat }
+                  checked={ compat }
+                  onChange={ () => handleOptionChange({ compat: ! compat }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
-                <label htmlFor="code_edit_v4compat_on" className={ styles['option-label'] }>
+                <label htmlFor="code_edit_compat_on" className={ styles['option-label'] }>
                   <span className={ sharedStyles['relative'] }>
                     <FontAwesomeIcon
                       icon={ faDotCircle }
@@ -351,9 +359,9 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                   id="code_edit_v4_compat_off"
                   name="code_edit_v4_compat_off"
                   type="radio"
-                  value={ ! v4Compat }
-                  checked={ ! v4Compat }
-                  onChange={ () => handleOptionChange({ v4Compat: ! v4Compat }) }
+                  value={ ! compat }
+                  checked={ ! compat }
+                  onChange={ () => handleOptionChange({ compat: ! compat }) }
                   className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
                 />
                 <label htmlFor="code_edit_v4_compat_off" className={ styles['option-label'] }>
@@ -377,7 +385,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                 </label>
               </div>
             </div>
-            { getDetectionStatusForOption('v4Compat') }
+            { getDetectionStatusForOption('compat') }
           </div>
         </div>
       </form>

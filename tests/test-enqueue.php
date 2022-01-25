@@ -60,20 +60,17 @@ class EnqueueTest extends TestCase {
 
 		$technology_path_part = boolval( $options['technology'] === 'svg' ) ? 'js' : 'css';
 
-		$resources = [
-			new FontAwesome_Resource(
-				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/all.${technology_path_part}",
-				'sha384-fake123'
-			)
-		];
+		$resources = array();
 
-		if( boolval( $options['v4Compat'] ) ) {
-			array_push(
-				$resources,
-				new FontAwesome_Resource(
-					"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
-					'sha384-fake246'
-				)
+		$resources['all'] = new FontAwesome_Resource(
+			"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/all.${technology_path_part}",
+			'sha384-fake123'
+		);
+
+		if( boolval( $options['compat'] ) ) {
+			$resources['v4-shims'] = new FontAwesome_Resource(
+				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
+				'sha384-fake246'
 			);
 		}
 
@@ -174,11 +171,22 @@ class EnqueueTest extends TestCase {
 		$this->assert_font_face_overrides($output, $license_subdomain, $version, true);
 	}
 
-	public function assert_webfont_v4_compatibility_load_order($output){
+	public function assert_webfont_compatibility_load_order_legacy_font_face($output){
 		$this->assertEquals(
 			1,
 			preg_match(
 				"/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css.*?font-face {\n.*?font-family: \"FontAwesome\"/s",
+				$output
+			),
+			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		);
+	}
+
+	public function assert_webfont_compatibility_load_order_font_face_assets($output){
+		$this->assertEquals(
+			1,
+			preg_match(
+				"/<link.+?font-awesome-official-css.+?>.+?<link.+?font-awesome-official-v4shim-css/s",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -222,11 +230,75 @@ class EnqueueTest extends TestCase {
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
 		$this->assert_font_face_overrides( $output, 'use', $version );
-		$this->assert_webfont_v4_compatibility_load_order($output);
+		$this->assert_webfont_compatibility_load_order_legacy_font_face($output);
 	}
 
-	public function test_webfont_without_v4_compat() {
-		$options = wp_parse_args( ['v4Compat' => false], fa()->options() );
+	public function test_webfont_6_0_0_beta3_with_compat() {
+		$options = wp_parse_args( ['compat' => true, 'version' => '6.0.0-beta3' ], fa()->options() );
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
+
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->refute_svg( $output, 'use', $version );
+		$this->assert_webfont( $output, 'use', $version );
+		$this->assert_webfont_v4shim( $output, 'use', $version );
+		// This should be present because it's not necessary for v6.
+		$this->refute_font_face_overrides( $output, 'use', $version );
+		$this->assert_webfont_compatibility_load_order_font_face_assets($output);
+	}
+
+	public function test_webfont_6_0_0_beta3_with_compat_and_conflict_detection() {
+		$options = wp_parse_args( ['compat' => true, 'version' => '6.0.0-beta3' ], fa()->options() );
+
+		$now = time();
+		// ten minutes later
+		$later = $now + (10 * 60);
+
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array(
+					'detectConflictsUntil' => $later
+				)
+			)
+		);
+
+		$resource_collection = $this->build_mock_resource_collection( $options );
+
+		$version = $resource_collection->version();
+
+		fa()->enqueue_cdn( $options, $resource_collection );
+
+		$this->expectOutputRegex("/awesome/");
+		wp_head(); // generates the output
+
+		$output = $this->getActualOutput();
+
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE, 'enqueued' ) );
+		$this->assertTrue( wp_style_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
+
+		$this->refute_svg( $output, 'use', $version );
+		$this->assert_webfont( $output, 'use', $version );
+		$this->assert_webfont_v4shim( $output, 'use', $version );
+		// This should be present because it's not necessary for v6.
+		$this->refute_font_face_overrides( $output, 'use', $version );
+		$this->assert_webfont_compatibility_load_order_font_face_assets($output);
+	}
+
+	public function test_webfont_without_compat() {
+		$options = wp_parse_args( ['compat' => false], fa()->options() );
 
 		$resource_collection = $this->build_mock_resource_collection( $options );
 
@@ -271,6 +343,7 @@ class EnqueueTest extends TestCase {
 		$this->refute_svg( $output, 'pro', $version );
 		$this->assert_webfont( $output, 'pro', $version );
 		$this->assert_webfont_v4shim( $output, 'pro', $version );
+		// This should be present because version is < 6.0.0-beta3
 		$this->assert_font_face_overrides( $output, 'pro', $version );
 	}
 
@@ -304,14 +377,14 @@ class EnqueueTest extends TestCase {
 		$this->refute_pseudo_elements( $output );
 	}
 
-	public function test_svg_pro_no_v4_compat_with_pseudo_elements_non_default_version() {
+	public function test_svg_pro_no_compat_with_pseudo_elements_non_default_version() {
 		$options = array_merge(
 			FontAwesome::DEFAULT_USER_OPTIONS,
 			[
 				'technology'     => 'svg',
 				'pseudoElements' => true,
 				'usePro'         => true,
-				'v4Compat'       => false,
+				'compat'       => false,
 				'version'        => '5.1.1'
 			]
 		);
@@ -338,7 +411,7 @@ class EnqueueTest extends TestCase {
 
 	public function test_svg_with_pseudo_elements() {
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'usePro' => true, 'v4Compat' => false, 'pseudoElements' => true ],
+			[ 'technology' => 'svg', 'usePro' => true, 'compat' => false, 'pseudoElements' => true ],
 			fa()->options()
 		);
 
@@ -378,7 +451,7 @@ class EnqueueTest extends TestCase {
 		);
 
 		$options = wp_parse_args(
-			[ 'technology' => 'svg', 'version' => '5.1.1', 'v4Compat' => true, 'pseudoElements' => true ],
+			[ 'technology' => 'svg', 'version' => '5.1.1', 'compat' => true, 'pseudoElements' => true ],
 			fa()->options()
 		);
 		$resource_collection = $this->build_mock_resource_collection( $options );
@@ -414,7 +487,7 @@ class EnqueueTest extends TestCase {
 		);
 
 		$options = wp_parse_args(
-			[ 'version' => '5.1.1', 'v4Compat' => true ],
+			[ 'version' => '5.1.1', 'compat' => true ],
 			fa()->options()
 		);
 		$resource_collection = $this->build_mock_resource_collection( $options );
