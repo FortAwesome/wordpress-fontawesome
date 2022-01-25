@@ -161,6 +161,26 @@ You can get more information about all the available settings and troubleshootin
 
 == Changelog ==
 
+= 4.1.0 =
+* Added support for using Font Awesome Version 6 Free with CDN. In order to use
+  Version 6 Pro with this plugin, it's still necessary to use a Kit,
+  since Version 6 Pro is not available on the classic CDN.
+* Renamed the "Version 4 Compatibility" option as "Older Version Compatibility",
+  since compatibility features may now involve both Version 4 and Version 5.
+* Devel
+* FIX: in some cases, when running the conflict detector on the back end,
+  there was an error about an undefined variable called $should_enable_icon_chooser.
+  Fixed.
+* FIX: in some cases, when running php 8.0 or higher, there was an error related to
+  calling method_exists(). Fixed.
+* **Developers:** The v4_compatibility() method has been deprecated and will be removed
+  in a future release. It's now just compatibility().
+* **Developers:** The preference named "v4Compat" in the array argument to the register()
+  method has been deprecated and renamed "compat". Any uses of "v4Compat" are automatically
+  translated to "compat".
+* **Developers:** There are no breaking changes. Any code that uses the above deprecated
+  features will continue to work the same without modification in this release.
+
 = 4.0.4 =
 * FIX: add hash values to JavaScript chunk file names to resolve the problem where
   sometimes an old cached version of a JavaScript file would load in the browser
