@@ -1661,8 +1661,11 @@ class FontAwesome {
 			foreach ( array( 'wp_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function () use ( $should_enable_icon_chooser ) {
+					function () {
 						try {
+							$current_screen = get_current_screen();
+							$should_enable_icon_chooser = $this->should_icon_chooser_be_enabled( $current_screen );
+
 							$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
 
 							wp_localize_script(
