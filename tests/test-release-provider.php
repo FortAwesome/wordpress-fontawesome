@@ -298,7 +298,8 @@ class ReleaseProviderTest extends TestCase {
 			)
 		);
 
-		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+		$this->create_release_provider_with_mock_metadata( $mock_response );
+		$farp = FontAwesome_Release_Provider::reset();
 
 		$versions = $farp->versions();
 
