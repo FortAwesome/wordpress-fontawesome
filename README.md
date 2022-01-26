@@ -312,7 +312,7 @@ Here are some relevant APIs:
 ## `<i>` tags
 
 Your templates can use standard `<i>` tags in the all the ways described in the
-[Font Awesome quick start](https://fontawesome.com/v6.0/docs/web/setup/quick-start).
+[Font Awesome quick start](https://fontawesome.com/v6.0/docs/web/setup/get-started).
 
 If Font Awesome is configured to use SVG technology, you can also use all of the
 SVG-only features, like [Power Transforms](https://fontawesome.com/v6.0/docs/web/style/power-transform).
