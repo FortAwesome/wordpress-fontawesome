@@ -167,7 +167,7 @@ You can get more information about all the available settings and troubleshootin
   since Version 6 Pro is not available on the classic CDN.
 * Renamed the "Version 4 Compatibility" option as "Older Version Compatibility",
   since compatibility features may now involve both Version 4 and Version 5.
-* Devel
+* Updated version of the conflict detection script used when configured for CDN.
 * FIX: in some cases, when running the conflict detector on the back end,
   there was an error about an undefined variable called $should_enable_icon_chooser.
   Fixed.
