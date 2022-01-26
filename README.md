@@ -303,8 +303,8 @@ works the same as if you had included this package via composer.
 
 Here are some relevant APIs:
 - [PHP API](https://fortawesome.github.io/wordpress-fontawesome/index.html): any theme or plugin developer probably needs this
-- [GraphQL API](https://fontawesome.com/v6.0/docs/apis/graphql/get-started): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
-- [JavaScript API](https://fontawesome.com/v6.0/docs/apis/javascript/get-started): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
+- [GraphQL API](https://fontawesome.com/docs/apis/graphql/get-started): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
+- [JavaScript API](https://fontawesome.com/docs/apis/javascript/get-started): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
 - [react-fontawesome component](https://github.com/FortAwesome/react-fontawesome): you might prefer this instead of doing low-level JS/SVG rendering
 
 # Usage in Pages, Posts, and Templates
@@ -312,10 +312,10 @@ Here are some relevant APIs:
 ## `<i>` tags
 
 Your templates can use standard `<i>` tags in the all the ways described in the
-[Font Awesome quick start](https://fontawesome.com/v6.0/docs/web/setup/get-started).
+[Font Awesome quick start](https://fontawesome.com/docs/web/setup/get-started).
 
 If Font Awesome is configured to use SVG technology, you can also use all of the
-SVG-only features, like [Power Transforms](https://fontawesome.com/v6.0/docs/web/style/power-transform).
+SVG-only features, like [Power Transforms](https://fontawesome.com/docs/web/style/power-transform).
 
 ## `[icon]` shortcode
 
@@ -367,7 +367,7 @@ Here are some considerations for you as you determine your approach:
 
 ## `i2svg` auto-replaces `<i>` elements with `<svg>` elements
 
-The [default configuration](https://fontawesome.com/v6.0/docs/apis/javascript/configuration) of the SVG with JavaScript technology that is loaded by this
+The [default configuration](https://fontawesome.com/docs/apis/javascript/configuration) of the SVG with JavaScript technology that is loaded by this
 package, whether via CDN or Kit, is `autoReplaceSvg: true`. This means that:
 
 1. When the DOM loads, any `<i>` tags that look like Font Awesome icons are replaced with their correspoding `<svg>` elements.
@@ -387,7 +387,7 @@ The WordPress admin may have enabled Web Font technology instead of SVG.
 
 This is not necessarily a problem, as long as your Gutenberg code is only rendering
 icons `<i>` elements anyway, and you're not using any SVG-only features like
-[Power Transforms](https://fontawesome.com/v6.0/docs/web/style/power-transform), or [Text, Layers, or Counters](https://fontawesome.com/v6.0/docs/web/style/layer).
+[Power Transforms](https://fontawesome.com/docs/web/style/power-transform), or [Text, Layers, or Counters](https://fontawesome.com/docs/web/style/layer).
 
 It just means that your rendred `<i>` elements will remain `<i>` elements in the
 DOM and not replaced by `<svg>` elements.
@@ -412,7 +412,7 @@ code respond accordingly.
 In the WordPress server PHP code, you can call `fa()->technology()` and expect
 it to return `"svg"`.
 
-In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/v6.0/docs/apis/javascript/get-started#in-the-browser) will be present on the global `FontAwesome`
+In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/docs/apis/javascript/get-started#in-the-browser) will be present on the global `FontAwesome`
 object only when SVG with JavaScript is loaded.
 
 You should also register a preference for SVG in your `font_awesome_preferences`
@@ -444,7 +444,7 @@ WordPress user.
 If `all.js` is loaded, and it is when `fa()->technology() === "svg"` and
 `fa()->using_kit()` is `false`, then the `IconDefinition` objects for all icons
 in the installed version of Font Awesome may be looked up
-with [`findIconDefinition()`](https://fontawesome.com/v6.0/docs/apis/javascript/methods#findicondefinition-params).
+with [`findIconDefinition()`](https://fontawesome.com/docs/apis/javascript/methods#findicondefinition-params).
 
 If `fa()->pro()` is also `true` then the `fal` style prefix will also be available.
 So the following
@@ -522,7 +522,7 @@ const lightCoffeeComponent = <FontAwesomeIcon icon={ faLightCoffee } />
 ## Font Awesome CSS Required
 
 While icons may be pre-rendered as HTML or rendered as DOM objects using abstracts,
-as in the above examples, they still depend upon the [Font Awesome CSS](https://fontawesome.com/v6.0/docs/apis/javascript/methods#dom-css)
+as in the above examples, they still depend upon the [Font Awesome CSS](https://fontawesome.com/docs/apis/javascript/methods#dom-css)
 being inserted into the DOM separately.
 
 This is done automatically when the SVG with JavaScript technology is loaded via
@@ -738,7 +738,7 @@ then rely on the presence of Font Awesome Pro for the version indicated by
 
 # Query the Font Awesome GraphQL API
 
-The Font Awesome [GraphQL API](https://fontawesome.com/v6.0/docs/apis/graphql/get-started) allows you to query and search icon metadata.
+The Font Awesome [GraphQL API](https://fontawesome.com/docs/apis/graphql/get-started) allows you to query and search icon metadata.
 
 See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/classes/FortAwesome.FontAwesome.html#method_query) method.
 
