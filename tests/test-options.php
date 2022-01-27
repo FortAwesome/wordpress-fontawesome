@@ -281,7 +281,11 @@ class OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_try_upgrade_when_upgraded_with_prior_releases_metadata_transient() {
+	public function try_upgrade_when_upgraded_with_prior_releases_metadata_transient( $initialize ) {
+		if ( !is_callable( $initialize ) ) {
+			throw new \Exception();
+		}
+
 		// First, establish what's expected.
 		FontAwesome_Release_Provider::load_releases();
 		$expected = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
@@ -308,8 +312,7 @@ class OptionsTest extends TestCase {
 			)
 		);
 
-		// Simulate storing it in this alternative location.
-		set_transient( 'font-awesome-releases', $expected );
+		$initialize( $expected );
 
 		// Now try to upgrade.
 		fa()->try_upgrade();
@@ -318,6 +321,15 @@ class OptionsTest extends TestCase {
 		$this->assertTrue( boolval( FontAwesome_Release_Provider::reset() ) );
 
 		$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $expected ) {
+				// Simulate storing it in this alternative location.
+				set_transient( 'font-awesome-releases', $expected );
+			}
+		);
 	}
 
 	/**
