@@ -102,7 +102,14 @@ function reset_db() {
 	if ( ! delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
 		if ( get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
-			throw new Exception( 'Unsuccessful clearing the Last Used Releases transient.' );
+			throw new Exception( 'Unsuccessful clearing the Last Used Release site transient.' );
+		}
+	}
+
+	if ( ! delete_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
+		// false could mean either that it doesn't exist, or that the delete wasn't successful.
+		if ( get_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
+			throw new Exception( 'Unsuccessful clearing the Last Used Release transient.' );
 		}
 	}
 }

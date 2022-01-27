@@ -439,6 +439,7 @@ class FontAwesome {
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
+	 * @throws ReleaseMetadataMissingException
 	 * @throws ConfigCorruptionException if options are invalid
 	 * @internal
 	 * @ignore
@@ -491,7 +492,9 @@ class FontAwesome {
 		if ( $should_upgrade ) {
 			$this->validate_options( $options );
 
-			$this->reset_releases_metadata_for_upgrade();
+			$this->maybe_update_last_used_release_schema_for_upgrade();
+
+			$this->maybe_move_release_metadata_for_upgrade();
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -511,28 +514,70 @@ class FontAwesome {
 	}
 
 	/**
+	 * Some upgrades have involved changing how we store release metadata.
+	 *
+	 * If the plugin's backing data was in a valid sate before upgrade, then
+	 * it should always be possible to apply any fixups to how the release
+	 * metadata are stored without issuing a request to the API server for
+	 * fresh metadata. Since issuing such a blocking request upon upgrade
+	 * is known to cause load problems and request timeouts, let's never
+	 * do it on upgrade.
+	 *
 	 * Internal use only.
 	 *
+	 * @throws ReleaseMetadataMissingException
 	 * @ignore
 	 * @internal
 	 */
-	private function reset_releases_metadata_for_upgrade() {
-		/**
-		 * Delete the old release metadata transient, if it exists,
-		 * which would not yet have been a site transient.
-		 */
-		delete_transient( 'font-awesome-releases' );
+	private function maybe_move_release_metadata_for_upgrade() {
+		if ( boolval( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) ) {
+			// If this option is set, then we're all caught up.
+			return;
+		}
 
-		// Delete the current site transients.
-		delete_site_transient( FontAwesome_Release_Provider::OPTIONS_KEY );
-		delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
+		// It used to be stored in one of these.
+		$release_metadata = get_site_transient( 'font-awesome-releases' );
+		if ( ! $release_metadata ) {
+			$release_metadata = get_transient( 'font-awesome-releases' );
+		}
+
+		// Move it into where it belongs now.
+		if ( boolval( $release_metadata ) ) {
+			update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $release_metadata, false );
+		}
 
 		/**
-		 * This is one exception to the rule about not loading release metadata
-		 * on front end page loads. But this would only happen on the first page
-		 * load after upgrading from a particular range of earlier versions.
+		 * Now we'll reset the release provider.
+		 *
+		 * If we've fallen through to this point, and we haven't found the release
+		 * metadata stored in one of the previous locations, then this will throw an
+		 * exception.
 		 */
-		FontAwesome_Release_Provider::load_releases();
+		FontAwesome_Release_Provider::reset();
+	}
+
+	/**
+	 * With 4.1.0, the name of one of the keys in the LAST_USED_RELEASE_TRANSIENT changed.
+	 * We can fix it up.
+	 *
+	 * Internal use only.
+	 *
+	 * @throws ReleaseMetadataMissingException
+	 * @ignore
+	 * @internal
+	 */
+	private function maybe_update_last_used_release_schema_for_upgrade() {
+		$last_used_transient = get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
+		if ( ! $last_used_transient ) {
+			$last_used_transient = get_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
+		}
+
+		if ( $last_used_transient && isset( $last_used_transient['use_shim'] ) ) {
+			$compat = $last_used_transient['use_shim'];
+			unset( $last_used_transient['use_shim'] );
+			$last_used_transient['use_compatibility'] = $compat;
+			set_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT, $last_used_transient, FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+		}
 	}
 
 	/**

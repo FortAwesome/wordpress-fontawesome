@@ -16,6 +16,7 @@ class OptionsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 		wp_cache_delete ( 'alloptions', 'options' );
+		reset_db();
 		delete_option( FontAwesome::OPTIONS_KEY );
 
 		FontAwesome::reset();
@@ -40,6 +41,21 @@ class OptionsTest extends TestCase {
 
 		remove_all_filters(
 			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY
+		);
+	}
+
+	public function tear_down() {
+		FontAwesome_Metadata_Provider::reset();
+	}
+
+	protected function block_metadata_query() {
+		mock_singleton_method(
+			$this,
+			FontAwesome_Metadata_Provider::class,
+			'metadata_query',
+			function( $method ) {
+				$method->willThrowException( new \Exception('unexpected: metadata_query was invoked') );
+			}
 		);
 	}
 
@@ -108,6 +124,9 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_required_from_pre_rc13() {
+		FontAwesome_Release_Provider::load_releases();
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array (
@@ -158,6 +177,9 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_required_from_post_rc13_pre_rc22() {
+		FontAwesome_Release_Provider::load_releases();
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array(
@@ -193,6 +215,9 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_from_v4_compat_to_compat_option() {
+		FontAwesome_Release_Provider::load_releases();
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array(
@@ -228,6 +253,8 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_not_required() {
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
@@ -256,6 +283,137 @@ class OptionsTest extends TestCase {
 			),
 			fa()->options()
 		);
+	}
+
+	public function try_upgrade_when_upgraded_with_prior_releases_metadata_transient( $initialize, $assert_expectations ) {
+		if ( !is_callable( $initialize ) || !is_callable( $assert_expectations )) {
+			throw new \Exception();
+		}
+
+		// First, establish what's expected.
+		FontAwesome_Release_Provider::load_releases();
+		$expected = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		// Now, clear it all away and start clean.
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		delete_site_transient( 'font-awesome-releases' );
+		delete_transient( 'font-awesome-releases' );
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		// And block to ensure no query is issued during upgrade.
+		$this->block_metadata_query();
+
+		// Setup a scenario that requires upgrade.
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'     => '5.12.0',
+					'v4Compat'    => false,
+					'dataVersion' => 3
+				]
+			)
+		);
+
+		$initialize( $expected );
+
+		// Now try to upgrade.
+		fa()->try_upgrade();
+
+		// If we can reset without throwing an exception, it means we migrated *something*.
+		$this->assertTrue( boolval( FontAwesome_Release_Provider::reset() ) );
+
+		$assert_expectations( $expected );
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $expected ) {
+				// Simulate storing it in this alternative location.
+				set_transient( 'font-awesome-releases', $expected );
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+			}
+		);
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_site_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $expected ) {
+				// Simulate storing it in this alternative location.
+				set_site_transient( 'font-awesome-releases', $expected );
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+			}
+		);
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient_and_old_last_used_release_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $releases_option_value ) {
+				update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value );
+
+				set_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+					// A partial value is good enough here.
+					array(
+						'use_shim' => true
+					)
+				);
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+		
+				$t = get_site_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
+				);
+
+				$this->assertTrue( isset( $t['use_compatibility'] ) );
+				$this->assertTrue( $t['use_compatibility'] );
+				$this->assertFalse( isset( $t['use_shim'] ) );
+			}
+		);
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient_and_old_last_used_release_site_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $releases_option_value ) {
+				update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value );
+				set_site_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+					// A partial value is good enough here.
+					array(
+						'use_shim' => true
+					)
+				);
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+		
+				$t = get_site_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
+				);
+
+				$this->assertTrue( isset( $t['use_compatibility'] ) );
+				$this->assertTrue( $t['use_compatibility'] );
+				$this->assertFalse( isset( $t['use_shim'] ) );
+			}
+		);
+	}
+
+	/**
+	 * This tests our block_metadata_query(), making sure that if metadata_query is invoked
+	 * after being blocked, then we get an exception.
+	 */
+	public function test_block_metadata_query() {
+		$this->block_metadata_query();
+
+		$this->expectException( \Exception::class );
+
+		FontAwesome_Release_Provider::load_releases();
 	}
 
 	public function test_convert_options_from_v1_coerce_pseudo_elements_true_for_webfont() {
