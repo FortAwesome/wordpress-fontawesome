@@ -332,6 +332,15 @@ class OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_site_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $expected ) {
+				// Simulate storing it in this alternative location.
+				set_site_transient( 'font-awesome-releases', $expected );
+			}
+		);
+	}
+
 	/**
 	 * This tests our block_metadata_query(), making sure that if metadata_query is invoked
 	 * after being blocked, then we get an exception.
