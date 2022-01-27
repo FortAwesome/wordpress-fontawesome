@@ -537,7 +537,7 @@ class FontAwesome {
 
 		// It used to be stored in one of these.
 		$release_metadata = get_site_transient( 'font-awesome-releases' );
-		if ( !$release_metadata ) {
+		if ( ! $release_metadata ) {
 			$release_metadata = get_transient( 'font-awesome-releases' );
 		}
 
@@ -568,7 +568,7 @@ class FontAwesome {
 	 */
 	private function maybe_update_last_used_release_schema_for_upgrade() {
 		$last_used_transient = get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
-		if ( !$last_used_transient ) {
+		if ( ! $last_used_transient ) {
 			$last_used_transient = get_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
 		}
 
