@@ -320,6 +320,7 @@ services:
        - ".env"
        - ".env.local"
      environment:
+       FONTAWESOME_ENV: production
        WORDPRESS_DB_HOST: db-latest:3306
      container_name: "com.fontawesome.wordpress-latest-integration"
 
@@ -364,6 +365,7 @@ services:
        - ".env"
        - ".env.local"
      environment:
+       FONTAWESOME_ENV: production
        WORDPRESS_DB_HOST: db-5.0:3307
      container_name: "com.fontawesome.wordpress-5.0-integration"
 
@@ -378,6 +380,7 @@ services:
        - ".env"
        - ".env.local"
      environment:
+       FONTAWESOME_ENV: production
        WORDPRESS_DB_HOST: db-5.4:3308
      container_name: "com.fontawesome.wordpress-5.4-integration"
 
@@ -407,6 +410,7 @@ services:
        - ".env"
        - ".env.local"
      environment:
+       FONTAWESOME_ENV: production
        WORDPRESS_DB_HOST: db-4.9:3309
      container_name: "com.fontawesome.wordpress-4.9-integration"
 
@@ -435,6 +439,7 @@ services:
        - ".env"
        - ".env.local"
      environment:
+       FONTAWESOME_ENV: production
        WORDPRESS_DB_HOST: db-4.7:3311
      container_name: "com.fontawesome.wordpress-4.7-integration"
 
@@ -463,6 +468,7 @@ services:
        - ".env"
        - ".env.local"
      environment:
+       FONTAWESOME_ENV: production
        WORDPRESS_DB_HOST: db-4.8:3310
      container_name: "com.fontawesome.wordpress-4.8-integration"
 
