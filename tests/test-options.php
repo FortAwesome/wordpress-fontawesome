@@ -123,6 +123,8 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_required_from_pre_rc13() {
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array (
@@ -173,6 +175,8 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_required_from_post_rc13_pre_rc22() {
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array(
@@ -208,6 +212,8 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_from_v4_compat_to_compat_option() {
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array(
@@ -243,6 +249,8 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_not_required() {
+		$this->block_metadata_query();
+
 		update_option(
 			FontAwesome::OPTIONS_KEY,
 			array_merge(
