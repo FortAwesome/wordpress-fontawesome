@@ -353,9 +353,8 @@ class OptionsTest extends TestCase {
 
 	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient_and_old_last_used_release_transient() {
 		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
-			function( $expected ) {
-				// Simulate storing it in this alternative location.
-				set_transient( 'font-awesome-releases', $expected );
+			function( $releases_option_value ) {
+				update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value );
 
 				set_transient(
 					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
@@ -381,10 +380,8 @@ class OptionsTest extends TestCase {
 
 	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient_and_old_last_used_release_site_transient() {
 		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
-			function( $expected ) {
-				// Simulate storing it in this alternative location.
-				set_transient( 'font-awesome-releases', $expected );
-
+			function( $releases_option_value ) {
+				update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value );
 				set_site_transient(
 					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
 					// A partial value is good enough here.
