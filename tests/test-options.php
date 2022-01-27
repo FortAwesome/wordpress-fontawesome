@@ -281,8 +281,8 @@ class OptionsTest extends TestCase {
 		);
 	}
 
-	public function try_upgrade_when_upgraded_with_prior_releases_metadata_transient( $initialize ) {
-		if ( !is_callable( $initialize ) ) {
+	public function try_upgrade_when_upgraded_with_prior_releases_metadata_transient( $initialize, $assert_expectations ) {
+		if ( !is_callable( $initialize ) || !is_callable( $assert_expectations )) {
 			throw new \Exception();
 		}
 
@@ -320,7 +320,7 @@ class OptionsTest extends TestCase {
 		// If we can reset without throwing an exception, it means we migrated *something*.
 		$this->assertTrue( boolval( FontAwesome_Release_Provider::reset() ) );
 
-		$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+		$assert_expectations( $expected );
 	}
 
 	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient() {
@@ -328,6 +328,9 @@ class OptionsTest extends TestCase {
 			function( $expected ) {
 				// Simulate storing it in this alternative location.
 				set_transient( 'font-awesome-releases', $expected );
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
 			}
 		);
 	}
@@ -337,6 +340,9 @@ class OptionsTest extends TestCase {
 			function( $expected ) {
 				// Simulate storing it in this alternative location.
 				set_site_transient( 'font-awesome-releases', $expected );
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
 			}
 		);
 	}
