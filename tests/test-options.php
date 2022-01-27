@@ -43,6 +43,21 @@ class OptionsTest extends TestCase {
 		);
 	}
 
+	public function tear_down() {
+		FontAwesome_Metadata_Provider::reset();
+	}
+
+	protected function block_metadata_query() {
+		mock_singleton_method(
+			$this,
+			FontAwesome_Metadata_Provider::class,
+			'metadata_query',
+			function( $method ) {
+				$method->willThrowException( new \Exception('unexpected: metadata_query was invoked') );
+			}
+		);
+	}
+
 	public function test_option_defaults() {
 		FontAwesome_Activator::activate();
 
@@ -256,6 +271,18 @@ class OptionsTest extends TestCase {
 			),
 			fa()->options()
 		);
+	}
+
+	/**
+	 * This tests our block_metadata_query(), making sure that if metadata_query is invoked
+	 * after being blocked, then we get an exception.
+	 */
+	public function test_block_metadata_query() {
+		$this->block_metadata_query();
+
+		$this->expectException( \Exception::class );
+
+		FontAwesome_Release_Provider::load_releases();
 	}
 
 	public function test_convert_options_from_v1_coerce_pseudo_elements_true_for_webfont() {
