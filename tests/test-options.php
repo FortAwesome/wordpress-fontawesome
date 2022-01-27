@@ -281,6 +281,45 @@ class OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_try_upgrade_when_upgraded_with_prior_releases_metadata_transient() {
+		// First, establish what's expected.
+		FontAwesome_Release_Provider::load_releases();
+		$expected = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		// Now, clear it all away and start clean.
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		delete_site_transient( 'font-awesome-releases' );
+		delete_transient( 'font-awesome-releases' );
+		delete_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		// And block to ensure no query is issued during upgrade.
+		$this->block_metadata_query();
+
+		// Setup a scenario that requires upgrade.
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'     => '5.12.0',
+					'v4Compat'    => false,
+					'dataVersion' => 3
+				]
+			)
+		);
+
+		// Simulate storing it in this alternative location.
+		set_transient( 'font-awesome-releases', $expected );
+
+		// Now try to upgrade.
+		fa()->try_upgrade();
+
+		// If we can reset without throwing an exception, it means we migrated *something*.
+		$this->assertTrue( boolval( FontAwesome_Release_Provider::reset() ) );
+
+		$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+	}
+
 	/**
 	 * This tests our block_metadata_query(), making sure that if metadata_query is invoked
 	 * after being blocked, then we get an exception.
