@@ -16,6 +16,7 @@ class OptionsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 		wp_cache_delete ( 'alloptions', 'options' );
+		reset_db();
 		delete_option( FontAwesome::OPTIONS_KEY );
 
 		FontAwesome::reset();
@@ -123,6 +124,7 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_required_from_pre_rc13() {
+		FontAwesome_Release_Provider::load_releases();
 		$this->block_metadata_query();
 
 		update_option(
@@ -175,6 +177,7 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_when_upgrade_required_from_post_rc13_pre_rc22() {
+		FontAwesome_Release_Provider::load_releases();
 		$this->block_metadata_query();
 
 		update_option(
@@ -212,6 +215,7 @@ class OptionsTest extends TestCase {
 	}
 
 	public function test_try_upgrade_from_v4_compat_to_compat_option() {
+		FontAwesome_Release_Provider::load_releases();
 		$this->block_metadata_query();
 
 		update_option(
@@ -343,6 +347,62 @@ class OptionsTest extends TestCase {
 			},
 			function( $expected ) {
 				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+			}
+		);
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient_and_old_last_used_release_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $expected ) {
+				// Simulate storing it in this alternative location.
+				set_transient( 'font-awesome-releases', $expected );
+
+				set_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+					// A partial value is good enough here.
+					array(
+						'use_shim' => true
+					)
+				);
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+		
+				$t = get_site_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
+				);
+
+				$this->assertTrue( isset( $t['use_compatibility'] ) );
+				$this->assertTrue( $t['use_compatibility'] );
+				$this->assertFalse( isset( $t['use_shim'] ) );
+			}
+		);
+	}
+
+	public function test_upgrade_when_upgraded_with_prior_releases_metadata_transient_and_old_last_used_release_site_transient() {
+		$this->try_upgrade_when_upgraded_with_prior_releases_metadata_transient(
+			function( $expected ) {
+				// Simulate storing it in this alternative location.
+				set_transient( 'font-awesome-releases', $expected );
+
+				set_site_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+					// A partial value is good enough here.
+					array(
+						'use_shim' => true
+					)
+				);
+			},
+			function( $expected ) {
+				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
+		
+				$t = get_site_transient(
+					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
+				);
+
+				$this->assertTrue( isset( $t['use_compatibility'] ) );
+				$this->assertTrue( $t['use_compatibility'] );
+				$this->assertFalse( isset( $t['use_shim'] ) );
 			}
 		);
 	}
