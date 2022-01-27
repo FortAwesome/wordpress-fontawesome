@@ -161,6 +161,10 @@ You can get more information about all the available settings and troubleshootin
 
 == Changelog ==
 
+= 4.1.1 =
+* Simplified upgrade logic: makes the upgrade process on the first page load
+  after upgrade quicker and smoother.
+
 = 4.1.0 =
 * Added support for using Font Awesome Version 6 Free with CDN. In order to use
   Version 6 Pro with this plugin, it's still necessary to use a Kit,
