@@ -1,6 +1,6 @@
 # wordpress-fontawesome
 
-> Font Awesome 5 Official WordPress Package
+> Font Awesome 6 Official WordPress Package
 
 This guide is for developers seeking to use `wordpress-fontawesome` as a package
 in a WordPress plugin or theme.
@@ -11,41 +11,48 @@ WordPress plugin directory](https://wordpress.org/plugins/font-awesome/) for gui
 <!-- toc -->
 # Contents
 
+- [wordpress-fontawesome](#wordpress-fontawesome)
+- [Contents](#contents)
 - [Description](#description)
 - [Why Use a Package?](#why-use-a-package)
-    * [Compatibility and Troubleshooting](#compatibility-and-troubleshooting)
-    * [Enabling Font Awesome Pro](#enabling-font-awesome-pro)
-    * [Staying Current](#staying-current)
-    * [Icon Search](#icon-search)
-    * [Future Features](#future-features)
+  - [Compatibility and Troubleshooting](#compatibility-and-troubleshooting)
+  - [Enabling Font Awesome Pro](#enabling-font-awesome-pro)
+  - [Staying Current](#staying-current)
+  - [Icon Search](#icon-search)
+  - [Future Features](#future-features)
 - [Adding as a Composer Package](#adding-as-a-composer-package)
+  - [Register your code as a client](#register-your-code-as-a-client)
+  - [Register Hooks for Initialization and Cleanup](#register-hooks-for-initialization-and-cleanup)
+    - [Activation](#activation)
+    - [Deactivation](#deactivation)
+    - [Uninstallation](#uninstallation)
 - [Installing as a Separate Plugin](#installing-as-a-separate-plugin)
 - [API References](#api-references)
 - [Usage in Pages, Posts, and Templates](#usage-in-pages-posts-and-templates)
-    * [`<i>` tags](#i-tags)
-    * [`[icon]` shortcode](#icon-shortcode)
-    * [Avoid `:before` pseudo-elements](#avoid-before-pseudo-elements)
+  - [`<i>` tags](#i-tags)
+  - [`[icon]` shortcode](#icon-shortcode)
+  - [Avoid `:before` pseudo-elements](#avoid-before-pseudo-elements)
 - [Usage in Gutenberg (Blocks)](#usage-in-gutenberg-blocks)
-    * [`i2svg` auto-replaces `<i>` elements with `<svg>` elements](#i2svg-auto-replaces-i-elements-with-svg-elements)
-    * [Font Awesome might be configured for Web Font](#font-awesome-might-be-configured-for-web-font)
-    * [`<i>` elements should work under both SVG and Web Font configurations](#i-elements-should-work-under-both-svg-and-web-font-configurations)
-    * [Insisting on SVG technology](#insisting-on-svg-technology)
-    * [Using the JavaScript API directly instead of `<i>` tags](#using-the-javascript-api-directly-instead-of-i-tags)
-    * [Using `react-fontawesome`](#using-react-fontawesome)
-    * [Font Awesome CSS Required](#font-awesome-css-required)
+  - [`i2svg` auto-replaces `<i>` elements with `<svg>` elements](#i2svg-auto-replaces-i-elements-with-svg-elements)
+  - [Font Awesome might be configured for Web Font](#font-awesome-might-be-configured-for-web-font)
+  - [`<i>` elements should work under both SVG and Web Font configurations](#i-elements-should-work-under-both-svg-and-web-font-configurations)
+  - [Insisting on SVG technology](#insisting-on-svg-technology)
+  - [Using the JavaScript API directly instead of `<i>` tags](#using-the-javascript-api-directly-instead-of-i-tags)
+  - [Using `react-fontawesome`](#using-react-fontawesome)
+  - [Font Awesome CSS Required](#font-awesome-css-required)
 - [Detecting Configured Features](#detecting-configured-features)
 - [What Gets Enqueued](#what-gets-enqueued)
-    * [Use CDN](#use-cdn)
-    * [Use a Kit](#use-a-kit)
+  - [Use CDN](#use-cdn)
+  - [Use a Kit](#use-a-kit)
 - [Loading Efficiency and Subsetting](#loading-efficiency-and-subsetting)
-    * [Long-term Disk Cache](#long-term-disk-cache)
-    * [All Icons vs Subset in WordPress](#all-icons-vs-subset-in-wordpress)
-    * [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
-    * [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
+  - [Long-term Disk Cache](#long-term-disk-cache)
+  - [All Icons vs Subset in WordPress](#all-icons-vs-subset-in-wordpress)
+  - [Pro Kits Do Auto-Subsetting](#pro-kits-do-auto-subsetting)
+  - [How to Subset When You Know You Need To: Or, When Not To Use This Package](#how-to-subset-when-you-know-you-need-to-or-when-not-to-use-this-package)
 - [How to Make Pro Icons Available in Your Icon Chooser](#how-to-make-pro-icons-available-in-your-icon-chooser)
 - [Query the Font Awesome GraphQL API](#query-the-font-awesome-graphql-api)
-    * [public scope queries on `api.fontawesome.com`](#public-scope-queries-on-apifontawesomecom)
-    * [querying fields with non-public scopes](#querying-fields-with-non-public-scopes)
+  - [public scope queries on api.fontawesome.com](#public-scope-queries-on-apifontawesomecom)
+  - [querying fields with non-public scopes](#querying-fields-with-non-public-scopes)
 - [Examples](#examples)
 - [Contributing Development to this Package](#contributing-development-to-this-package)
 
@@ -80,7 +87,7 @@ out there for our users.
 
 Some WordPress site owners have been known to have a theme and three different
 plugins installed, each trying to load its own self-hosted version of Font Awesome:
-- mixing version 4 with version 5
+- mixing version 4 or 5 with version 6
 - mixing SVG with Web Font
 - sometimes even Font Awesome version 3
 
@@ -159,7 +166,7 @@ preferences to specify, because the Font Awesome Troubleshoot tab will show the
 WP admin a listing of which plugins or themes are actively using Font Awesome,
 what their preferences are, and what conflicts there may be.
 
-Do not register any preferences if you don't really need to. It will be a better 
+Do not register any preferences if you don't really need to. It will be a better
 experience for the WP admin user if your theme or plugin can adapt to their changes
 of Font Awesome preferences without complaint from your code.
 
@@ -244,7 +251,7 @@ register_deactivation_hook(
 
 A theme is deactivated when some other theme is activated instead. At that time,
 the `switch_theme` action is fired. This is an opportunity for your theme to run
-_both_ the deactivation _and_ uninstallation logic. 
+_both_ the deactivation _and_ uninstallation logic.
 Both should probably be run from that one callback, since there's no separate, subsequent uninstall
 hook for themes as there is for plugins.
 
@@ -296,8 +303,8 @@ works the same as if you had included this package via composer.
 
 Here are some relevant APIs:
 - [PHP API](https://fortawesome.github.io/wordpress-fontawesome/index.html): any theme or plugin developer probably needs this
-- [GraphQL API](https://fontawesome.com/how-to-use/graphql-api/intro/getting-started): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
-- [JavaScript API](https://fontawesome.com/how-to-use/javascript-api/setup/getting-started): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
+- [GraphQL API](https://fontawesome.com/docs/apis/graphql/get-started): you may need this if you write code to query for metadata about icons, such as when building an icon chooser
+- [JavaScript API](https://fontawesome.com/docs/apis/javascript/get-started): you may need this if you are working directly with the JavaScript objects, such as when for doing some custom SVG rendering in Gutenberg blocks
 - [react-fontawesome component](https://github.com/FortAwesome/react-fontawesome): you might prefer this instead of doing low-level JS/SVG rendering
 
 # Usage in Pages, Posts, and Templates
@@ -305,10 +312,10 @@ Here are some relevant APIs:
 ## `<i>` tags
 
 Your templates can use standard `<i>` tags in the all the ways described in the
-[Font Awesome usage guide](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use).
+[Font Awesome quick start](https://fontawesome.com/docs/web/setup/get-started).
 
 If Font Awesome is configured to use SVG technology, you can also use all of the
-SVG-only features, like [Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms).
+SVG-only features, like [Power Transforms](https://fontawesome.com/docs/web/style/power-transform).
 
 ## `[icon]` shortcode
 
@@ -332,7 +339,7 @@ You should not make any of those assumptions. It's one of the most causes of
 "my icons are broken" when WordPress users attempt to change the version of
 Font Awesome loaded on their site.
 
-Font Awesome 5 does not use the same `font-family` as Font Awesome 4 did.
+Font Awesome 5 & 6 do not use the same `font-family` as Font Awesome 4 did.
 It uses _multiple_ different `font-family` values that vary by icon style.
 
 Also, while pseudo-elements perform nicely with CSS and Web Font technology,
@@ -360,7 +367,7 @@ Here are some considerations for you as you determine your approach:
 
 ## `i2svg` auto-replaces `<i>` elements with `<svg>` elements
 
-The [default configuration](https://fontawesome.com/how-to-use/with-the-api/setup/configuration) of the SVG with JavaScript technology that is loaded by this
+The [default configuration](https://fontawesome.com/docs/apis/javascript/configuration) of the SVG with JavaScript technology that is loaded by this
 package, whether via CDN or Kit, is `autoReplaceSvg: true`. This means that:
 
 1. When the DOM loads, any `<i>` tags that look like Font Awesome icons are replaced with their correspoding `<svg>` elements.
@@ -380,7 +387,7 @@ The WordPress admin may have enabled Web Font technology instead of SVG.
 
 This is not necessarily a problem, as long as your Gutenberg code is only rendering
 icons `<i>` elements anyway, and you're not using any SVG-only features like
-[Power Transforms](https://fontawesome.com/how-to-use/on-the-web/styling/power-transforms), or [Text, Layers, or Counters](https://fontawesome.com/how-to-use/on-the-web/styling/layering).
+[Power Transforms](https://fontawesome.com/docs/web/style/power-transform), or [Text, Layers, or Counters](https://fontawesome.com/docs/web/style/layer).
 
 It just means that your rendred `<i>` elements will remain `<i>` elements in the
 DOM and not replaced by `<svg>` elements.
@@ -405,7 +412,7 @@ code respond accordingly.
 In the WordPress server PHP code, you can call `fa()->technology()` and expect
 it to return `"svg"`.
 
-In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/how-to-use/with-the-api/setup/getting-started#in-the-browser) will be present on the global `FontAwesome`
+In the browser, the [Font Awesome JavaScript API](https://fontawesome.com/docs/apis/javascript/get-started#in-the-browser) will be present on the global `FontAwesome`
 object only when SVG with JavaScript is loaded.
 
 You should also register a preference for SVG in your `font_awesome_preferences`
@@ -434,10 +441,10 @@ WordPress user.
 
 ## Using the JavaScript API directly instead of `<i>` tags
 
-If `all.js` is loaded, and it is when `fa()->technology() === "svg"` and 
+If `all.js` is loaded, and it is when `fa()->technology() === "svg"` and
 `fa()->using_kit()` is `false`, then the `IconDefinition` objects for all icons
 in the installed version of Font Awesome may be looked up
-with [`findIconDefinition()`](https://fontawesome.com/how-to-use/with-the-api/methods/findicondefinition).
+with [`findIconDefinition()`](https://fontawesome.com/docs/apis/javascript/methods#findicondefinition-params).
 
 If `fa()->pro()` is also `true` then the `fal` style prefix will also be available.
 So the following
@@ -515,7 +522,7 @@ const lightCoffeeComponent = <FontAwesomeIcon icon={ faLightCoffee } />
 ## Font Awesome CSS Required
 
 While icons may be pre-rendered as HTML or rendered as DOM objects using abstracts,
-as in the above examples, they still depend upon the [Font Awesome CSS](https://fontawesome.com/how-to-use/with-the-api/methods/dom-css)
+as in the above examples, they still depend upon the [Font Awesome CSS](https://fontawesome.com/docs/apis/javascript/methods#dom-css)
 being inserted into the DOM separately.
 
 This is done automatically when the SVG with JavaScript technology is loaded via
@@ -583,7 +590,7 @@ in newer releases of Font Awesome. You can detect those configurations
 using accessor methods on the `FontAwesome` instance from your PHP code.
 
 The `FortAwesome\fa` function provides convenient access to the `FontAwesome`
-singleton instance. The following examples assume that you've done a 
+singleton instance. The following examples assume that you've done a
 `use function FortAwesome\fa;`
 
 - `fa()->technology()` (svg or webfont)
@@ -596,12 +603,12 @@ You can use these accessors when or after the `font_awesome_enqueued` action
 hook has been been triggered.
 
 Refer to the [PHP API documentation](https://fortawesome.github.io/wordpress-fontawesome/index.html)
-for details on these accessors and any others that be available. 
+for details on these accessors and any others that be available.
 
 # What Gets Enqueued
 
 What gets enqueued depends upon whether the WordPress site owner has configured
-Font Awesome to use the CDN or Kits. (A bit of a misnomer, since kits are loaded from 
+Font Awesome to use the CDN or Kits. (A bit of a misnomer, since kits are loaded from
 CDN as well, just differently.)
 
 ## Use CDN
@@ -616,7 +623,7 @@ compatibility.
 
 Some additional inline resources may be added, depending on configuration:
 - an inline `<script>` is added to enable pseudo-element support when SVG technology is configured.
-- an inline `<style>` is added to enable additional v4 compatibility support: shimming the v4 `font-family` name 
+- an inline `<style>` is added to enable additional v4 compatibility support: shimming the v4 `font-family` name
 
 If conflict detection is enabled, an additional `<script>` is enqueued that loads
 the conflict detector from the CDN.
@@ -645,7 +652,7 @@ then this will be the main resource loaded:
 
 `https://use.fontawesome.com/releases/v5.12.1/css/all.css`
 
-It's loaded as 56KB over the network, but on subsequent loads, it does not 
+It's loaded as 56KB over the network, but on subsequent loads, it does not
 hit the network but loads from the browser's disk cache.
 
 (The CSS also causes the underlying webfont files to be loaded. The story is the
@@ -659,7 +666,7 @@ natural to ask whether one might be able to load only the subset actually used.
 
 In the WordPress ecosystem, though, it's common for site owners to install
 more than one theme or plugin that each uses Font Awesome icons, and tries
-to load its own version of Font Awesome. This causes conflicts across those 
+to load its own version of Font Awesome. This causes conflicts across those
 various themes or plugins when activated on the same WordPress site.
 
 A primary goal of this plugin package is to ease the pain for site owners to get
@@ -701,7 +708,7 @@ Suppose you're in a situation like this:
 - in the event that you do encounter an unexpected conflict, you are comfortable with investigating the WordPress resource queue and/or inspecting the browser DOM to identify and resolve the problem
 - the advantages of creating a subset are more important to you than the advantages of loading `all.css` or `all.js` from the Font Awesome CDN, or loading via Kit
 
-In that case, then you might prefer to do a [custom installation](https://fontawesome.com/how-to-use/customizing-wordpress/intro/getting-started) _instead_ of using this plugin package.
+In that case, then you might prefer to do a [manual installation](https://fontawesome.com/docs/web/use-with/wordpress/install-manually/) _instead_ of using this plugin package.
 
 You could either load exactly the resources you want from the Font Awesome CDN,
 or you could create your own subset of resources to load locally from your WordPress
@@ -731,7 +738,7 @@ then rely on the presence of Font Awesome Pro for the version indicated by
 
 # Query the Font Awesome GraphQL API
 
-The Font Awesome [GraphQL API](https://fontawesome.com/how-to-use/graphql-api/intro/getting-started) allows you to query and search icon metadata.
+The Font Awesome [GraphQL API](https://fontawesome.com/docs/apis/graphql/get-started) allows you to query and search icon metadata.
 
 See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/classes/FortAwesome.FontAwesome.html#method_query) method.
 
@@ -758,7 +765,7 @@ fetch(
 
 ## querying fields with non-public scopes
 
-Queries that include field selections on fields requiring scopes more 
+Queries that include field selections on fields requiring scopes more
 privileged than public require authorization with a Font Awesome account-holder's
 API Token.
 
@@ -818,5 +825,3 @@ There are several clients in this GitHub repo that demonstrate how your code can
 
 # Contributing Development to this Package
 See [DEVELOPMENT.md](https://github.com/FortAwesome/wordpress-fontawesome/blob/master/DEVELOPMENT.md) for instructions on how you can set up a development environment to make contributions.
-
-
