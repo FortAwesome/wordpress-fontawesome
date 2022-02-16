@@ -27,8 +27,6 @@ Our official plugin lets you use Font Awesome the way you want:
 * Make things even awesomer using icons from Font Awesome Version 6.
 * Use your uploaded icons from your Pro Kits.
 
-*Note: The plugin is not compatible on WordPress multisite at this time.*
-
 == How to Use ==
 
 **Install and enable the plugin**
