@@ -12,6 +12,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class MultisiteActivationTest extends TestCase {
 	protected $_sub_sites = array();
+	protected $_original_site_id = null;
 
 	public function set_up() {
 		parent::set_up();
@@ -19,6 +20,8 @@ class MultisiteActivationTest extends TestCase {
 		if ( ! is_multisite() ) {
 			throw new \Exception();
 		}
+
+		$this->_original_site_id = get_current_blog_id();
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
@@ -33,11 +36,16 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
-		create_subsites();
+		$sites = create_subsites();
+		foreach ( $sites as $domain => $site_id ) {
+			array_push($this->_sub_sites, $site_id);
+		}
 	}
 
 	public function tear_down() {
 		parent::tear_down();
+
+		switch_to_blog( $this->_original_site_id );
 
 		foreach( $this->_sub_sites as $site_id ) {
 			wp_delete_site( $site_id );
@@ -85,6 +93,36 @@ class MultisiteActivationTest extends TestCase {
 
 			// The network wide release metadata will have been initialized.
 			$this->assertTrue( boolval( get_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
+		}
+	}
+
+	public function test_site_created_after_network_activation() {
+		if ( ! is_network_admin() ) {
+			// do nothing when we're not in network admin mode
+			$this->assertTrue( true );
+			return;
+		}
+
+		$test_obj = $this;
+
+		FontAwesome_Activator::initialize();
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
+
+		for_each_blog( function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+			$actual_options = fa()->options();
+			$test_obj->assertEquals( $expected_options, $actual_options );
+		});
+
+		// Create a new site after the initial network activation above.
+		$sites = create_subsites(['gamma.example.com']);
+
+		// Now switch to it and access the options to ensure that it has been initialized properly.
+		switch_to_blog( $sites['gamma.example.com'] );
+
+		try {
+			$this->assertEquals( $expected_options, fa()->options() );
+		} catch ( FontAwesome_Exception $e ) {
+			$this->assertTrue( false );
 		}
 	}
 }
