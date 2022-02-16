@@ -574,6 +574,7 @@ bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestLifec
 <summary>Run multisite tests without network admin</summary>
 This would simulate the multisite environment, but where actions like activation or deactivation of the plugin
 are initiated from within a particular site's dashboard, rather than from the network dashboard.
+
 ```bash
 bin/phpunit --config phpunit-multisite.xml.dist
 ```
@@ -583,6 +584,7 @@ bin/phpunit --config phpunit-multisite.xml.dist
 <summary>Run multisite tests as network admin</summary>
 This would simulate the multisite environment where actions like activation or deactivation of the plugin
 are initiated from the network admin dashboard.
+
 ```bash
 bin/phpunit --config phpunit-multisite-network-admin.xml.dist
 ```
