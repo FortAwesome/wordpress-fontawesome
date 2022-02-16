@@ -33,15 +33,7 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
-		foreach( ['alpha.example.com', 'beta.example.com'] as $domain ) {
-			$site_id = wp_insert_site( [ 'domain' => $domain ] );
-
-			if ( is_wp_error( $site_id ) ) {
-				throw new \Exception();
-			}
-
-			array_push( $this->_sub_sites, $site_id );
-		}
+		create_subsites();
 	}
 
 	public function tear_down() {
