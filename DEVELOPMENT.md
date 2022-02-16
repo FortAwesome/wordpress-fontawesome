@@ -300,6 +300,44 @@ in the browser automatically. Just refresh your browser page to load the re-buil
 
 ## Optional Development Setup Steps
 <details>
+<summary>Multisite Setup</summary>
+
+Maybe this whole development environment should be adjusted to work with multisite "out of the box".
+But for now, you have to bend over backwards.
+
+We still have phpunit tests that can run locally and are configured to run in CI. So there will
+still be test coverage of the important multisite cases, even if you don't do this setup. But if
+you want to manually explore how the plugin works within the multisite context, then here's how
+you'd do it. (And this is only for the `latest` container.)
+
+[Here's a guide](https://wordpress.org/support/article/create-a-network/) for how to set up a WordPress network (aka multisite). The following summarizes.
+
+1. add some subdomain hosts like `alpha.wp.test` and `beta.wp.test` to your `/etc/hosts`
+1. change the `WP_DOMAIN` env var in `.env` temporarily to be `wp.test:80`
+
+    (because WordPress multisite won't access ports like `wp.test:8765`)
+1. change the `docker-compose.yml` configuration for the service you intend to run, like `wordpress-latest-dev` to override the default `ports`, making it use port 80 both inside and outside the container.
+
+    ```
+     ports:
+       - "80:80"
+    ```
+1. After running the service in the normal way, shell into it and modify `/var/www/html/wp-config.php` to define `WP_ALLOW_MULTISITE` as `true`
+1. Go the `wp-admin` dashboard, look for Tools->Network Setup
+1. Set it up for subdomain use
+1. copy the new `defines` it gives you into `wp-config.php`
+1. update the `/var/www/html/.htaccess` inside the running container with the configuration stuff that WordPress admin console tells you to use.
+1. Reload the `wp-admin` dashboard and find that you now go to "My Sites" from the top nav bar.
+
+    Under "My Sites", go to Network Admin -> Sites.
+    Create the sub-sites, like `alpha.wp.test` and `beta.wp.test`
+
+That's it.
+
+Now, if you're using a `-dev` container, you've already got the Font Awesome plugin mounted (i.e. installed) under Plugins and you can activate it network-wide from the Network Admin plugins page. Or you could activate site-by-site within each of their site-specific Plugins pages.
+</details>
+
+<details>
 <summary>Redis Cache Extra Steps</summary>
 
 If you know that you'll be installing the WP Redis plugin to test behavior with caching,
