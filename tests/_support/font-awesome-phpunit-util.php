@@ -107,3 +107,22 @@ function reset_db() {
 	}
 }
 
+function create_subsites($domains = ['alpha.example.com', 'beta.example.com']) {
+	if ( ! is_multisite() ) {
+		throw new \Exception("expected to be in multisite mode");
+	}
+
+	$results = array();
+
+	foreach( $domains as $domain ) {
+		$site_id = wp_insert_site( [ 'domain' => $domain ] );
+
+		if ( is_wp_error( $site_id ) ) {
+			throw new \Exception();
+		}
+
+		$results[$domain] = $site_id;
+	}
+
+	return $results;
+}
