@@ -107,3 +107,8 @@ class FontAwesome_Activator {
 	}
 }
 
+if ( is_multisite() ) {
+	add_action('wp_initialize_site', function () {
+		FontAwesome_Activator::initialize();
+	});
+}
