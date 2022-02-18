@@ -3213,3 +3213,15 @@ function for_each_blog( $cb ) {
 function fa() {
 	return FontAwesome::instance();
 }
+
+/**
+ * This hook ensures that when we're in multisite mode, and a new site is activated
+ * after an initial plugin activation, that the plugin is initialized for that newly
+ * created site.
+ */
+if ( is_multisite() ) {
+	add_action('wp_initialize_site', function () {
+		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
+		FontAwesome_Activator::activate();
+	});
+}
