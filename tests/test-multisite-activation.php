@@ -12,16 +12,23 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class MultisiteActivationTest extends TestCase {
 	protected $_sub_sites = array();
-	protected $_original_site_id = null;
+	protected $_original_blog_id = null;
 
 	public function set_up() {
 		parent::set_up();
+		/**
+		 * We need this to be defined for this test, though it's normally defined in
+		 * the top-level loader file that is not being included in this test configuration.
+		 */
+		if ( ! defined( 'FONTAWESOME_PLUGIN_FILE' ) ) {
+			define( 'FONTAWESOME_PLUGIN_FILE', 'font-awesome/index.php' );
+		}
 
 		if ( ! is_multisite() ) {
 			throw new \Exception();
 		}
 
-		$this->_original_site_id = get_current_blog_id();
+		$this->_original_blog_id = get_current_blog_id();
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
@@ -45,10 +52,10 @@ class MultisiteActivationTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
-		switch_to_blog( $this->_original_site_id );
+		switch_to_blog( $this->_original_blog_id );
 
-		foreach( $this->_sub_sites as $site_id ) {
-			wp_delete_site( $site_id );
+		foreach( $this->_sub_sites as $blog_id ) {
+			wp_delete_site( $blog_id );
 		}
 	}
 
@@ -87,8 +94,8 @@ class MultisiteActivationTest extends TestCase {
 			switch_to_blog( $this->_sub_sites[0] );
 			$this->assertFalse( boolval( get_option( FontAwesome::OPTIONS_KEY ) ) );
 
-			// The main site will not have been initialized.
-			switch_to_blog( get_main_site_id() );
+			// The original site will not have been initialized.
+			switch_to_blog( $this->_original_blog_id );
 			$this->assertFalse( boolval( get_option( FontAwesome::OPTIONS_KEY ) ) );
 
 			// The network wide release metadata will have been initialized.

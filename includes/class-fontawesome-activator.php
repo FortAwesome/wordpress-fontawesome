@@ -56,7 +56,13 @@ class FontAwesome_Activator {
 		}
 	}
 
-	private static function initialize_current_site( $force ) {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public static function initialize_current_site( $force ) {
 		if ( $force || ! get_option( FontAwesome::OPTIONS_KEY ) ) {
 			self::initialize_user_options();
 		}
