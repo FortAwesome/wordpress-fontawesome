@@ -112,7 +112,9 @@ class MultisiteActivationTest extends TestCase {
 
 		$test_obj = $this;
 
-		FontAwesome_Activator::initialize();
+		// This activates network wide, for all sites that exist at the time.
+		activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true);
+
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 
 		for_each_blog( function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
