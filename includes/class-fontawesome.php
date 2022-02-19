@@ -3217,11 +3217,18 @@ function fa() {
 /**
  * This hook ensures that when we're in multisite mode, and a new site is activated
  * after an initial plugin activation, that the plugin is initialized for that newly
- * created site.
+ * created site, but only if this plugin is otherwise network activated.
+ *
+ * If the plugin is only activated on a per-site basis, then creating a new site should
+ * not result in this plugin automatically being activated for it.
  */
 if ( is_multisite() ) {
-	add_action('wp_initialize_site', function () {
+	add_action('wp_initialize_site', function ( $site ) {
+		if( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) return;
+
 		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
-		FontAwesome_Activator::activate();
-	});
+		switch_to_blog( $site->blog_id );
+		FontAwesome_Activator::initialize_current_site( false );
+		restore_current_blog();
+	}, 99, 1);
 }
