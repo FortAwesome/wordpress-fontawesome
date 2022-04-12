@@ -19,6 +19,7 @@ class FontAwesome_Activator {
 	 * @since 4.0.0
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
+	 * @throws ActivationException
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function activate() {
@@ -42,10 +43,19 @@ class FontAwesome_Activator {
 	 * @internal
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
+	 * @throws ActivationException
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
 		self::initialize_release_metadata();
+
+		if ( is_multisite() ) {
+			global $wp_version;
+
+			if ( version_compare( $wp_version, '5.1.0', '<' ) ) {
+				throw ActivationException::multisite_requires_at_least_5_1_0();
+			}
+		}
 
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog( function( $blog_id ) use ( $force ) {
