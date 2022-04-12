@@ -3189,14 +3189,16 @@ EOT;
 function for_each_blog( $cb ) {
 	global $wpdb;
 	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
-	$original_blog_id = get_current_blog_id();
 
 	foreach ( $blog_ids as $blog_id ) {
 		switch_to_blog( $blog_id );
-		$cb( $blog_id );
-	}
 
-	switch_to_blog( $original_blog_id );
+		try {
+			$cb( $blog_id );
+		} finally {
+			restore_current_blog();
+		}
+	}
 }
 
 /**
