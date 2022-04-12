@@ -150,4 +150,14 @@ class MultisiteActivationTest extends TestCase {
 			$this->assertTrue( false );
 		}
 	}
+
+	public function test_activation_exception_when_incompatible_wp_version() {
+		if ( $this->is_wp_version_compatible() ) {
+			return;
+		}
+
+		$this->expectException( ActivationException::class );
+
+		FontAwesome_Activator::initialize();
+	}
 }
