@@ -114,6 +114,11 @@ function create_subsites($domains = ['alpha.example.com', 'beta.example.com']) {
 
 	$results = array();
 
+	if ( ! function_exists('wp_insert_site') ) {
+		global $wp_version;
+		throw new \Exception("wp_insert_site was not introduced until WordPress 5.1.0, but you're on: $wp_version");
+	}
+
 	foreach( $domains as $domain ) {
 		$site_id = wp_insert_site( [ 'domain' => $domain ] );
 
