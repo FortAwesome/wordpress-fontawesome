@@ -43,9 +43,11 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
-		$sites = create_subsites();
-		foreach ( $sites as $domain => $site_id ) {
-			array_push($this->_sub_sites, $site_id);
+		if( $this->is_wp_version_compatible() ) {
+			$sites = create_subsites();
+			foreach ( $sites as $domain => $site_id ) {
+				array_push($this->_sub_sites, $site_id);
+			}
 		}
 	}
 
@@ -59,7 +61,17 @@ class MultisiteActivationTest extends TestCase {
 		}
 	}
 
+	public function is_wp_version_compatible() {
+		global $wp_version;
+
+		return version_compare( $wp_version, '5.1.0', '>=' );
+	}
+
 	public function test_multisite_activation() {
+		if ( ! $this->is_wp_version_compatible() ) {
+			return;
+		}
+
 		if ( is_network_admin() ) {
 			FontAwesome_Activator::initialize();
 			$site_count = 0;
@@ -104,6 +116,10 @@ class MultisiteActivationTest extends TestCase {
 	}
 
 	public function test_site_created_after_network_activation() {
+		if ( ! $this->is_wp_version_compatible() ) {
+			return;
+		}
+
 		if ( ! is_network_admin() ) {
 			// do nothing when we're not in network admin mode
 			$this->assertTrue( true );
