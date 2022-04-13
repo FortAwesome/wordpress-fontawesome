@@ -32,7 +32,7 @@ class MultisiteActivationTest extends TestCase {
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		remove_all_filters('wp_is_large_network');
+		remove_all_filters( 'wp_is_large_network' );
 		FontAwesome::reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
@@ -196,9 +196,14 @@ class MultisiteActivationTest extends TestCase {
 			return;
 		}
 
-		add_filter( 'wp_is_large_network', function() {
-			return true;
-		}, 10, 0 );
+		add_filter(
+			'wp_is_large_network',
+			function() {
+				return true;
+			},
+			10,
+			0
+		);
 
 		$this->expectException( ActivationException::class );
 
