@@ -3228,33 +3228,15 @@ if ( is_multisite() ) {
 	add_action(
 		'wp_initialize_site',
 		function ( $site ) {
-			print("\nDEBUG: in wp_initialize_site action hook with site: ");
-			print_r($site);
-
-			$plugins = get_site_option( 'active_sitewide_plugins' );
-			print("\nDEBUG: active_sitewide_plugins:\n");
-			print_r($plugins);
-
-			$network_admin = is_network_admin() ? 'true' : 'false';
-			$wp_network_admin = WP_NETWORK_ADMIN ? 'true' : 'false';
-			print("\nDEBUG: from action hook, network_admin: $network_admin, WP_NETWORK_ADMIN: $wp_network_admin\n");
-
-			//if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
 			if ( ! is_network_admin( FONTAWESOME_PLUGIN_FILE ) ) {
-				print("\nDEBUG: in wp_initialize_site action hook and plugin is not active for network");
 				return;
 			}
-			print("\nDEBUG: in wp_initialize_site action hook and plugin IS active for network");
 
 			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
 			switch_to_blog( $site->blog_id );
 
-			print("\nDEBUG: wp_initialize_site with blog_id: $site->blog_id\n");
-
 			try {
 				FontAwesome_Activator::initialize_current_site( false );
-				print("\nDEBUG: after initialization, options are: ");
-				print_r(fa()->options());
 			} finally {
 				restore_current_blog();
 			}

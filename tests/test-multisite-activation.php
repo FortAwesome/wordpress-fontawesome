@@ -136,11 +136,7 @@ class MultisiteActivationTest extends TestCase {
 
 		$test_obj = $this;
 
-		$network_admin = is_network_admin() ? 'true' : 'false';
-		print("\nDEBUG: from test, network_admin: $network_admin, options_for_main_blog_id: $this->original_blog_id\n");
-
 		// This activates network wide, for all sites that exist at the time.
-		//activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true );
 		FontAwesome_Activator::initialize();
 
 		switch_to_blog( $this->original_blog_id );
@@ -158,15 +154,10 @@ class MultisiteActivationTest extends TestCase {
 
 		for_each_blog(
 			function( $blog_id ) use ( $test_obj, $expected_options ) {
-				print("\nDEBUG: options check for blog_id: $blog_id\n");
 				$actual_options = fa()->options();
 				$test_obj->assertEquals( $expected_options, $actual_options );
 			}
 		);
-
-		$network_active = is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ? 'true' : 'false';
-
-		print("\nDEBUG: in test, is network_active: $network_active\n");
 
 		// Create a new site after the initial network activation above.
 		$sites = create_subsites( array( 'gamma.example.com' ) );
