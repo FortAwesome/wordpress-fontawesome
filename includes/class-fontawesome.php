@@ -3234,8 +3234,16 @@ if ( is_multisite() ) {
 
 			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
 			switch_to_blog( $site->blog_id );
-			FontAwesome_Activator::initialize_current_site( false );
-			restore_current_blog();
+
+			print("\nDEBUG: wp_initialize_site with blog_id: $site->blog_id\n");
+
+			try {
+				FontAwesome_Activator::initialize_current_site( false );
+				print("\nDEBUG: after initialization, options are: ");
+				print_r(fa()->options());
+			} finally {
+				restore_current_blog();
+			}
 		},
 		99,
 		1
