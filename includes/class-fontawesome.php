@@ -3189,10 +3189,10 @@ EOT;
  * @ignore
  */
 function for_each_blog( $cb ) {
-	global $wpdb;
-	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$sites = get_sites();
 
-	foreach ( $blog_ids as $blog_id ) {
+	foreach ( $sites as $site ) {
+		$blog_id = $site->blog_id;
 		switch_to_blog( $blog_id );
 
 		try {
