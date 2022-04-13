@@ -144,6 +144,7 @@ class MultisiteActivationTest extends TestCase {
 
 		for_each_blog(
 			function( $blog_id ) use ( $test_obj, $expected_options ) {
+				print("\nDEBUG: options check for blog_id: $blog_id\n");
 				$actual_options = fa()->options();
 				$test_obj->assertEquals( $expected_options, $actual_options );
 			}
