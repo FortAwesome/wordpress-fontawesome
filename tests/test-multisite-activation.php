@@ -199,31 +199,41 @@ class MultisiteActivationTest extends TestCase {
 			return;
 		}
 
-		$site_names = [];
-		for ($i = 1; $i <= 205; $i++) {
-			array_push($site_names, "test_site_$i");
+		$site_names = array();
+		for ( $i = 1; $i <= 205; $i++ ) {
+			array_push( $site_names, "test_site_$i" );
 		}
 
 		// Create many more sites, more than the default limit in get_sites().
-		$sites = create_subsites( $site_names );
-		$network_id = get_current_network_id();
-		$site_count = get_sites( [ 'network_id' => $network_id, 'count' => true ] );
+		$sites             = create_subsites( $site_names );
+		$network_id        = get_current_network_id();
+		$site_count        = get_sites(
+			array(
+				'network_id' => $network_id,
+				'count'      => true,
+			)
+		);
 		$all_site_blog_ids = array_map(
 			function( $site ) {
 				return $site->blog_id;
 			},
-			get_sites( [ 'network_id' => $network_id, 'number' => 300 ] )
+			get_sites(
+				array(
+					'network_id' => $network_id,
+					'number'     => 300,
+				)
+			)
 		);
 
 		sort( $all_site_blog_ids );
 
 		$this->assertEquals( $site_count, 208 );
 
-		$visited_blog_ids = [];
+		$visited_blog_ids = array();
 
 		for_each_blog(
 			function( $blog_id ) use ( &$visited_blog_ids ) {
-				array_push($visited_blog_ids, $blog_id);
+				array_push( $visited_blog_ids, $blog_id );
 			}
 		);
 
