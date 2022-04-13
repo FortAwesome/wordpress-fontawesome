@@ -140,7 +140,8 @@ class MultisiteActivationTest extends TestCase {
 		print("\nDEBUG: from test, network_admin: $network_admin, options_for_main_blog_id: $this->original_blog_id\n");
 
 		// This activates network wide, for all sites that exist at the time.
-		activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true );
+		//activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true );
+		FontAwesome_Activator::initialize();
 
 		switch_to_blog( $this->original_blog_id );
 
