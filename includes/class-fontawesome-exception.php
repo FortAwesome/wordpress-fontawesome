@@ -352,7 +352,7 @@ class ActivationException extends FontAwesome_ClientException {
 	public static function multisite_requires_at_least_5_1_0() {
 		return new static(
 			esc_html__(
-				'Multisite support is available with this plugin only for WordPress versions 5.1.0 or newer.',
+				'This plugin supports WordPress Multisite only for WordPress versions 5.1.0 or newer.',
 				'font-awesome'
 			)
 		);
