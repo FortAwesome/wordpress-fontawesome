@@ -3231,10 +3231,15 @@ if ( is_multisite() ) {
 			print("\nDEBUG: in wp_initialize_site action hook with site: ");
 			print_r($site);
 
+			$plugins = get_site_option( 'active_sitewide_plugins' );
+			print("\nDEBUG: activate_sitewide_plugins:\n");
+			print_r($plugins);
+
 			if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
-				print("\nDEBUG: in wp_initialize_site action hook and plugin it not active for network");
+				print("\nDEBUG: in wp_initialize_site action hook and plugin is not active for network");
 				return;
 			}
+			print("\nDEBUG: in wp_initialize_site action hook and plugin IS active for network");
 
 			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
 			switch_to_blog( $site->blog_id );
