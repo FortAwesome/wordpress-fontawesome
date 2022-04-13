@@ -43,6 +43,8 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
+		FontAwesome_Release_Provider::load_releases();
+
 		if ( $this->is_wp_version_compatible() ) {
 			$sites = create_subsites();
 			foreach ( $sites as $domain => $site_id ) {
@@ -141,7 +143,7 @@ class MultisiteActivationTest extends TestCase {
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 
 		for_each_blog(
-			function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+			function( $blog_id ) use ( $test_obj, $expected_options ) {
 				$actual_options = fa()->options();
 				$test_obj->assertEquals( $expected_options, $actual_options );
 			}
