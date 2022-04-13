@@ -132,6 +132,9 @@ class MultisiteActivationTest extends TestCase {
 
 		$test_obj = $this;
 
+		$network_admin = is_network_admin() ? 'true' : 'false';
+		print("\nDEBUG: from test, network_admin: $network_admin\n");
+
 		// This activates network wide, for all sites that exist at the time.
 		activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true );
 
