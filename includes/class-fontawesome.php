@@ -3223,12 +3223,19 @@ function fa() {
  * not result in this plugin automatically being activated for it.
  */
 if ( is_multisite() ) {
-	add_action('wp_initialize_site', function ( $site ) {
-		if( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) return;
+	add_action(
+		'wp_initialize_site',
+		function ( $site ) {
+			if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
+				return;
+			}
 
-		require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
-		switch_to_blog( $site->blog_id );
-		FontAwesome_Activator::initialize_current_site( false );
-		restore_current_blog();
-	}, 99, 1);
+			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
+			switch_to_blog( $site->blog_id );
+			FontAwesome_Activator::initialize_current_site( false );
+			restore_current_blog();
+		},
+		99,
+		1
+	);
 }
