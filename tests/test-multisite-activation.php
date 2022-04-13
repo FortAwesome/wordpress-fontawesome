@@ -50,6 +50,8 @@ class MultisiteActivationTest extends TestCase {
 			foreach ( $sites as $domain => $site_id ) {
 				array_push( $this->sub_sites, $site_id );
 			}
+
+			switch_to_blog( $this->original_blog_id );
 		}
 	}
 
@@ -135,12 +137,23 @@ class MultisiteActivationTest extends TestCase {
 		$test_obj = $this;
 
 		$network_admin = is_network_admin() ? 'true' : 'false';
-		print("\nDEBUG: from test, network_admin: $network_admin\n");
+		print("\nDEBUG: from test, network_admin: $network_admin, options_for_main_blog_id: $this->original_blog_id\n");
 
 		// This activates network wide, for all sites that exist at the time.
 		activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true );
 
+		switch_to_blog( $this->original_blog_id );
+
+		$options_for_main_blog_id = fa()->options();
+
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
+
+		/**
+		 * We'll first, separately ensure that the options are initialized on the main site,
+		 * because it seems that in some runtime environments, the main site is not being
+		 * activated even when the sub-sites are.
+		 */
+		$this->assertEquals( $expected_options, $options_for_main_blog_id );
 
 		for_each_blog(
 			function( $blog_id ) use ( $test_obj, $expected_options ) {
