@@ -3237,7 +3237,8 @@ if ( is_multisite() ) {
 			$wp_network_admin = WP_NETWORK_ADMIN ? 'true' : 'false';
 			print("\nDEBUG: from action hook, network_admin: $network_admin, WP_NETWORK_ADMIN: $wp_network_admin\n");
 
-			if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
+			//if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
+			if ( ! is_network_admin( FONTAWESOME_PLUGIN_FILE ) ) {
 				print("\nDEBUG: in wp_initialize_site action hook and plugin is not active for network");
 				return;
 			}
