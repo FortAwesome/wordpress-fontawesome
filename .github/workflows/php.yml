@@ -227,7 +227,7 @@ jobs:
         WP_PLUGIN_DIR="$(pwd)" \
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
-        vendor/bin/phpunit $PHP_UNIT_ARGS
+        vendor/bin/phpunit $PHP_UNIT_ARGS --group slow
 
     - name: Run PHPUnit Loader Tests
       run: |
@@ -251,12 +251,12 @@ jobs:
         WP_PLUGIN_DIR="$(pwd)" \
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
-        vendor/bin/phpunit --config phpunit-multisite.xml.dist
+        vendor/bin/phpunit --config phpunit-multisite.xml.dist --group slow
 
         WP_PLUGIN_DIR="$(pwd)" \
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
-        vendor/bin/phpunit --config phpunit-multisite-network-admin.xml.dist
+        vendor/bin/phpunit --config phpunit-multisite-network-admin.xml.dist --group slow
 
     - name: Maybe run phpcs
       run: |
