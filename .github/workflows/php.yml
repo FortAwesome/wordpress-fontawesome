@@ -256,7 +256,7 @@ jobs:
         WP_PLUGIN_DIR="$(pwd)" \
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
-        vendor/bin/phpunit --config phpunit-multisite-network-admin.xml.dist
+        vendor/bin/phpunit --config phpunit-multisite-network-admin.xml.dist --filter test_site_created_after_network_activation
 
     - name: Maybe run phpcs
       run: |
