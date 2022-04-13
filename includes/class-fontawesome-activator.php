@@ -76,7 +76,6 @@ class FontAwesome_Activator {
 	 */
 	public static function initialize_current_site( $force ) {
 		if ( $force || ! get_option( FontAwesome::OPTIONS_KEY ) ) {
-			print("\nDEBUG: initialize_current_site\n");
 			self::initialize_user_options();
 		}
 
