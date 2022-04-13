@@ -147,6 +147,10 @@ class MultisiteActivationTest extends TestCase {
 			}
 		);
 
+		$network_active = is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ? 'true' : 'false';
+
+		print("\nDEBUG: in test, is network_active: $network_active\n");
+
 		// Create a new site after the initial network activation above.
 		$sites = create_subsites( array( 'gamma.example.com' ) );
 
