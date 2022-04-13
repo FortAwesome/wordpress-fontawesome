@@ -13,6 +13,11 @@
   		<const name="MULTISITE" value="true"/>
   		<const name="WP_NETWORK_ADMIN" value="true"/>
 	</php>
+	<groups>
+		<exclude>
+			<group>slow</group>
+		</exclude>
+	</groups>
 	<testsuites>
 		<testsuite name="Default Test Suite">
 			<directory prefix="test-multisite-" suffix=".php">./tests/</directory>
