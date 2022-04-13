@@ -3192,12 +3192,23 @@ EOT;
  */
 function for_each_blog( $cb ) {
 	$network_id = get_current_network_id();
-	$site_count = get_sites( [ 'network_id' => $network_id, 'count' => true ] );
+	$site_count = get_sites(
+		array(
+			'network_id' => $network_id,
+			'count'      => true,
+		)
+	);
 	$limit      = 100;
 	$offset     = 0;
 
 	while ( $offset < $site_count ) {
-		$sites = get_sites( [ 'network_id' => $network_id, 'offset' => $offset, 'number' => $limit ] );
+		$sites = get_sites(
+			array(
+				'network_id' => $network_id,
+				'offset'     => $offset,
+				'number'     => $limit,
+			)
+		);
 
 		foreach ( $sites as $site ) {
 			$blog_id = $site->blog_id;
