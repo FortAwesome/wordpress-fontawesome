@@ -246,6 +246,8 @@ jobs:
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
         vendor/bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestBasic
 
+    - name: Run PHPUnit Multisite Tests
+      run: |
         WP_PLUGIN_DIR="$(pwd)" \
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
