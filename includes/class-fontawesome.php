@@ -3226,7 +3226,11 @@ if ( is_multisite() ) {
 	add_action(
 		'wp_initialize_site',
 		function ( $site ) {
+			print("\nDEBUG: in wp_initialize_site action hook with site: ");
+			print_r($site);
+
 			if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
+				print("\nDEBUG: in wp_initialize_site action hook and plugin it not active for network");
 				return;
 			}
 
