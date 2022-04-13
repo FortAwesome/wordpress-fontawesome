@@ -357,21 +357,6 @@ class ActivationException extends FontAwesome_ClientException {
 			)
 		);
 	}
-
-	/**
-	 * Internal use only.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public static function multisite_network_too_large() {
-		return new static(
-			esc_html__(
-				'Your multisite network is too large to activate this plugin network-wide. You use the wp_is_large_network filter to override this.',
-				'font-awesome'
-			)
-		);
-	}
 }
 
 /**
