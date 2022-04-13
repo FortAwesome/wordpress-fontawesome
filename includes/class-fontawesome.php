@@ -3232,8 +3232,12 @@ if ( is_multisite() ) {
 			print_r($site);
 
 			$plugins = get_site_option( 'active_sitewide_plugins' );
-			print("\nDEBUG: activate_sitewide_plugins:\n");
+			print("\nDEBUG: active_sitewide_plugins:\n");
 			print_r($plugins);
+
+			$network_admin = is_network_admin() ? 'true' : 'false';
+			$wp_network_admin = WP_NETWORK_ADMIN ? 'true' : 'false';
+			print("\nDEBUG: from action hook, network_admin: $network_admin, WP_NETWORK_ADMIN: $wp_network_admin\n");
 
 			if ( ! is_plugin_active_for_network( FONTAWESOME_PLUGIN_FILE ) ) {
 				print("\nDEBUG: in wp_initialize_site action hook and plugin is not active for network");
