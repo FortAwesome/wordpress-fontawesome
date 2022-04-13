@@ -3194,17 +3194,25 @@ EOT;
  */
 function for_each_blog( $cb ) {
 	$network_id = get_current_network_id();
-	$sites      = get_sites( [ 'network_id' => $network_id ] );
+	$site_count = get_sites( [ 'network_id' => $network_id, 'count' => true ] );
+	$limit      = 100;
+	$offset     = 0;
 
-	foreach ( $sites as $site ) {
-		$blog_id = $site->blog_id;
-		switch_to_blog( $blog_id );
+	while ( $offset < $site_count ) {
+		$sites = get_sites( [ 'network_id' => $network_id, 'offset' => $offset, 'number' => $limit ] );
 
-		try {
-			$cb( $blog_id );
-		} finally {
-			restore_current_blog();
+		foreach ( $sites as $site ) {
+			$blog_id = $site->blog_id;
+			switch_to_blog( $blog_id );
+
+			try {
+				$cb( $blog_id );
+			} finally {
+				restore_current_blog();
+			}
 		}
+
+		$offset = $offset + $limit;
 	}
 }
 
