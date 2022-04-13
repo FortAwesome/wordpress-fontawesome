@@ -69,6 +69,7 @@ class MultisiteActivationTest extends TestCase {
 
 	public function test_multisite_activation() {
 		if ( ! $this->is_wp_version_compatible() ) {
+			$this->assertTrue( true );
 			return;
 		}
 
@@ -117,6 +118,7 @@ class MultisiteActivationTest extends TestCase {
 
 	public function test_site_created_after_network_activation() {
 		if ( ! $this->is_wp_version_compatible() ) {
+			$this->assertTrue( true );
 			return;
 		}
 
@@ -153,6 +155,7 @@ class MultisiteActivationTest extends TestCase {
 
 	public function test_activation_exception_when_incompatible_wp_version() {
 		if ( $this->is_wp_version_compatible() ) {
+			$this->assertTrue( true );
 			return;
 		}
 
