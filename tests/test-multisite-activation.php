@@ -11,8 +11,8 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class MultisiteActivationTest
  */
 class MultisiteActivationTest extends TestCase {
-	protected $_sub_sites        = array();
-	protected $_original_blog_id = null;
+	protected $sub_sites        = array();
+	protected $original_blog_id = null;
 
 	public function set_up() {
 		parent::set_up();
@@ -28,7 +28,7 @@ class MultisiteActivationTest extends TestCase {
 			throw new \Exception();
 		}
 
-		$this->_original_blog_id = get_current_blog_id();
+		$this->original_blog_id = get_current_blog_id();
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
@@ -46,7 +46,7 @@ class MultisiteActivationTest extends TestCase {
 		if ( $this->is_wp_version_compatible() ) {
 			$sites = create_subsites();
 			foreach ( $sites as $domain => $site_id ) {
-				array_push( $this->_sub_sites, $site_id );
+				array_push( $this->sub_sites, $site_id );
 			}
 		}
 	}
@@ -54,9 +54,9 @@ class MultisiteActivationTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
-		switch_to_blog( $this->_original_blog_id );
+		switch_to_blog( $this->original_blog_id );
 
-		foreach ( $this->_sub_sites as $blog_id ) {
+		foreach ( $this->sub_sites as $blog_id ) {
 			wp_delete_site( $blog_id );
 		}
 	}
@@ -94,10 +94,10 @@ class MultisiteActivationTest extends TestCase {
 
 			$this->assertEquals( $site_count, 3 );
 		} else {
-			$this->assertEquals( count( $this->_sub_sites ), 2 );
+			$this->assertEquals( count( $this->sub_sites ), 2 );
 
 			// Only activate on the second sub-site.
-			switch_to_blog( $this->_sub_sites[1] );
+			switch_to_blog( $this->sub_sites[1] );
 
 			FontAwesome_Activator::initialize();
 			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
@@ -106,11 +106,11 @@ class MultisiteActivationTest extends TestCase {
 			$this->assertEquals( $expected_options, get_option( FontAwesome::OPTIONS_KEY ) );
 
 			// The first sub-site will not have been initialized.
-			switch_to_blog( $this->_sub_sites[0] );
+			switch_to_blog( $this->sub_sites[0] );
 			$this->assertFalse( boolval( get_option( FontAwesome::OPTIONS_KEY ) ) );
 
 			// The original site will not have been initialized.
-			switch_to_blog( $this->_original_blog_id );
+			switch_to_blog( $this->original_blog_id );
 			$this->assertFalse( boolval( get_option( FontAwesome::OPTIONS_KEY ) ) );
 
 			// The network wide release metadata will have been initialized.
