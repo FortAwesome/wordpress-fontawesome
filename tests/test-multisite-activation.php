@@ -81,7 +81,7 @@ class MultisiteActivationTest extends TestCase {
 
 			for_each_blog(
 				function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
-					$site_count     = $site_count + 1;
+					$site_count     = ++$site_count;
 					$actual_options = get_option( FontAwesome::OPTIONS_KEY );
 					$test_obj->assertEquals( $expected_options, $actual_options );
 
@@ -125,7 +125,7 @@ class MultisiteActivationTest extends TestCase {
 		}
 
 		if ( ! is_network_admin() ) {
-			// do nothing when we're not in network admin mode
+			// Do nothing when we're not in network admin mode.
 			$this->assertTrue( true );
 			return;
 		}
