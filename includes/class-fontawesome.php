@@ -3181,13 +3181,18 @@ EOT;
 }
 
 /**
+ * Iterates through each blog in the current network, switches to it,
+ * and invokes the given callback function, restoring the current blog
+ * after each callback invocation.
+ *
  * Internal use only, not part of this plugin's public API.
  *
  * @internal
  * @ignore
  */
 function for_each_blog( $cb ) {
-	$sites = get_sites();
+	$network_id = get_current_network_id();
+	$sites      = get_sites( [ 'network_id' => $network_id ] );
 
 	foreach ( $sites as $site ) {
 		$blog_id = $site->blog_id;
