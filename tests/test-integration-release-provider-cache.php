@@ -218,7 +218,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		 */
 		set_site_transient(
 			FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
-			array('foo' => 42 ),
+			array( 'foo' => 42 ),
 			3600
 		);
 
@@ -232,7 +232,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( !! FontAwesome_Release_Provider::get_option() );
+		$this->assertTrue( ! ! FontAwesome_Release_Provider::get_option() );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
@@ -243,7 +243,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( !! $resource_collection );
+		$this->assertTrue( ! ! $resource_collection );
 
 		$this->assertEquals(
 			get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ),

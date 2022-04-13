@@ -18,9 +18,11 @@ class FontAwesome_Deactivator {
 	 */
 	public static function deactivate() {
 		if ( is_multisite() && is_network_admin() ) {
-			for_each_blog( function( $blog_id ) {
-				self::delete_transients();
-			});
+			for_each_blog(
+				function( $blog_id ) {
+					self::delete_transients();
+				}
+			);
 		} else {
 			self::delete_transients();
 		}
@@ -36,9 +38,11 @@ class FontAwesome_Deactivator {
 	 */
 	public static function uninstall() {
 		if ( is_multisite() && is_network_admin() ) {
-			for_each_blog( function( $blog_id ) {
-				self::delete_options();
-			});
+			for_each_blog(
+				function( $blog_id ) {
+					self::delete_options();
+				}
+			);
 		} else {
 			self::delete_options();
 		}

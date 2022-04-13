@@ -11,7 +11,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class MultisiteActivationTest
  */
 class MultisiteActivationTest extends TestCase {
-	protected $_sub_sites = array();
+	protected $_sub_sites        = array();
 	protected $_original_blog_id = null;
 
 	public function set_up() {
@@ -43,10 +43,10 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
-		if( $this->is_wp_version_compatible() ) {
+		if ( $this->is_wp_version_compatible() ) {
 			$sites = create_subsites();
 			foreach ( $sites as $domain => $site_id ) {
-				array_push($this->_sub_sites, $site_id);
+				array_push( $this->_sub_sites, $site_id );
 			}
 		}
 	}
@@ -56,7 +56,7 @@ class MultisiteActivationTest extends TestCase {
 
 		switch_to_blog( $this->_original_blog_id );
 
-		foreach( $this->_sub_sites as $blog_id ) {
+		foreach ( $this->_sub_sites as $blog_id ) {
 			wp_delete_site( $blog_id );
 		}
 	}
@@ -75,20 +75,22 @@ class MultisiteActivationTest extends TestCase {
 
 		if ( is_network_admin() ) {
 			FontAwesome_Activator::initialize();
-			$site_count = 0;
-			$test_obj = $this;
+			$site_count       = 0;
+			$test_obj         = $this;
 			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 
-			for_each_blog( function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
-				$site_count = $site_count + 1;
-				$actual_options = get_option( FontAwesome::OPTIONS_KEY );
-				$test_obj->assertEquals( $expected_options, $actual_options );
+			for_each_blog(
+				function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+					$site_count     = $site_count + 1;
+					$actual_options = get_option( FontAwesome::OPTIONS_KEY );
+					$test_obj->assertEquals( $expected_options, $actual_options );
 
-				$test_obj->assertEquals(
-					FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
-					get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
-				);
-			});
+					$test_obj->assertEquals(
+						FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+						get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
+					);
+				}
+			);
 
 			$this->assertEquals( $site_count, 3 );
 		} else {
@@ -131,17 +133,19 @@ class MultisiteActivationTest extends TestCase {
 		$test_obj = $this;
 
 		// This activates network wide, for all sites that exist at the time.
-		activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true);
+		activate_plugin( FONTAWESOME_PLUGIN_FILE, '', true );
 
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 
-		for_each_blog( function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
-			$actual_options = fa()->options();
-			$test_obj->assertEquals( $expected_options, $actual_options );
-		});
+		for_each_blog(
+			function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+				$actual_options = fa()->options();
+				$test_obj->assertEquals( $expected_options, $actual_options );
+			}
+		);
 
 		// Create a new site after the initial network activation above.
-		$sites = create_subsites(['gamma.example.com']);
+		$sites = create_subsites( array( 'gamma.example.com' ) );
 
 		// Now switch to it and access the options to ensure that it has been initialized properly.
 		switch_to_blog( $sites['gamma.example.com'] );
