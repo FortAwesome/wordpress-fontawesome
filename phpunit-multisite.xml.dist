@@ -12,6 +12,11 @@
   		<const name="LOAD_PLUGIN" value="true"/>
   		<const name="MULTISITE" value="true"/>
 	</php>
+	<groups>
+		<exclude>
+			<group>slow</group>
+		</exclude>
+	</groups>
 	<testsuites>
 		<testsuite name="Default Test Suite">
 			<directory prefix="test-multisite-" suffix=".php">./tests/</directory>
