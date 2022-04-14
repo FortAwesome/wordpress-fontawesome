@@ -732,12 +732,7 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 # Cut a Release
 
-Ideally, the composer commands below would all be run inside a container using the
-`wordpress:latest` image, which is the default container that would be run
-when executing `bin/dev`.
-
-To run the composer commands inside the container, it's just `bin/composer` instead
-of running it on the host with `composer`.
+## Running composer commands for the release
 
 1. Update the Changelog at the end of readme.txt
 
@@ -751,7 +746,12 @@ of running it on the host with `composer`.
 
 6. Build the API docs
 
-- run `bin/composer cleandocs` if you want to make sure that you're building from scratch
+- run `composer cleandocs` if you want to make sure that you're building from scratch
+
+    (Notice: this runs composer in the host, not the container. It's going to clean up some
+    directories that would not be mounted in the container. So you should make sure that you've
+    got some reasonable version of composer installed in your host environment.)
+
 - run `bin/phpdoc` to build the docs into the `docs/` directory
 
   See also: [Run a Local Docs Server](#run-a-local-docs-server)
@@ -770,6 +770,11 @@ of running it on the host with `composer`.
 ```bash
 bin/composer dist
 ```
+
+(Notice, this is `bin/composer`, not just `composer`. So it's going to run inside
+the default dev `latest` container, which you should be running via `bin/dev`.
+This will cause everything to be built inside the container, which will hopefully
+keep the built assets more consistent, regardless of the host environment.)
 
 This will delete the previous build assets and produce the following:
 
