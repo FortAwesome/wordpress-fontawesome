@@ -308,8 +308,11 @@ class FontAwesomeTest extends TestCase {
 					array(
 						'data' => 
 							array(
-								'latest'   => array(
+								'latest_5'   => array(
 									'version' => '5.15.2',
+								),
+								'latest_6'   => array(
+									'version' => '6.42.1',
 								),
 								'releases' =>
 								array()
@@ -324,6 +327,8 @@ class FontAwesomeTest extends TestCase {
 
 		// After
 		$this->assertEquals( '5.15.2', fa()->latest_version() );
+		$this->assertEquals( '5.15.2', fa()->latest_version_5() );
+		$this->assertEquals( '6.42.1', fa()->latest_version_6() );
 	}
 
 	public function test_latest_version() {
