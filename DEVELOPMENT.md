@@ -732,6 +732,13 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 # Cut a Release
 
+Ideally, the composer commands below would all be run inside a container using the
+`wordpress:latest` image, which is the default container that would be run
+when executing `bin/dev`.
+
+To run the composer commands inside the container, it's just `bin/composer` instead
+of running it on the host with `composer`.
+
 1. Update the Changelog at the end of readme.txt
 
 2. Update the plugin version in the header comments of `index.php`
@@ -744,7 +751,7 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 6. Build the API docs
 
-- run `composer cleandocs` if you want to make sure that you're building from scratch
+- run `bin/composer cleandocs` if you want to make sure that you're building from scratch
 - run `bin/phpdoc` to build the docs into the `docs/` directory
 
   See also: [Run a Local Docs Server](#run-a-local-docs-server)
@@ -761,22 +768,32 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 7. Build production admin app and WordPress distribution layout into `wp-dist`
 
 ```bash
-$ composer dist
+bin/composer dist
 ```
 
 This will delete the previous build assets and produce the following:
 
-`wp-dist/`: the contents of this directory should be moved into the svn repo for the WordPress plugin
-that will be published through the WordPress plugins directory.
+`wp-dist/`: the contents of this directory contains everything that will be used in
+subsequent steps to both build an installable zip file, and to copy into the
+svg repo for publishing to the WordPress plugins directory.
 
-`font-awesome.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
-This zip file can be distributed as a download for the WordPress plugin and used for installing
-the plugin by "upload" in the WordPress admin dashboard.
-
-`admin/build`: production build of the admin UI React app. This need to be committed so that it
+`admin/build`: production build of the admin UI React app. This needs to be committed so that it
 can be included in the composer package (which is really just a pull of this repo)
 
-8. Run through some manual acceptance testing
+8. Build the zip file
+
+```bash
+bin/make-wp-dist-zip
+```
+
+This builds `font-awesome.zip`, a zip file of the contents of `wp-dist` with path names fixed up.
+
+This zip file is not normally distributed, but since it's just like what would be downloaded
+when installing the plugin from the WordPress plugins directory, it's convenient to use for
+acceptance testing, and could be used as an ad-hoc pre-release, such as a binary attached to
+a GitHub release.
+
+9. Run through some manual acceptance testing
 
 **WordPress 4.7, 4.8, 4.9**
 
@@ -1017,7 +1034,7 @@ bin/setup
 
             This should be empty.
 
-9. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
+10. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
 
 To check it out initially:
 
@@ -1036,7 +1053,7 @@ $ cd ..
 10. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
 
 ```bash
-$ composer dist2trunk
+bin/dist2trunk
 ```
 
 This script will just `rm *` anything under `wp-svn/trunk/*` and `wp-svn/assets/*` to make sure that if the new dist
