@@ -21,6 +21,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class ReleaseProviderTest extends TestCase {
 	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
+		'6.1.1',
 		'6.0.0-beta3',
 		'5.4.1',
 		'5.3.1',
@@ -283,18 +284,9 @@ class ReleaseProviderTest extends TestCase {
 
 	// Ensure that the ReleaseProvider sorts versions semantically.
 	public function test_versions_with_6_0_0() {
-		$data = graphql_releases_query_fixture();
-
-		// We'll just make a copy of the first release and hack it to have version 6.0.0.
-		$data['latest']['version'] = '6.0.0';
-		$any_release               = $data['releases'][0];
-		$any_release['version']    = '6.0.0';
-		array_push( $data['releases'], $any_release );
-
-		// Add 6.0.0 along with 6.0.0-beta3 and make it latest.
 		$mock_response = wp_json_encode(
 			array(
-				'data' => $data,
+				'data' => graphql_releases_query_fixture(),
 			)
 		);
 
@@ -303,7 +295,13 @@ class ReleaseProviderTest extends TestCase {
 
 		$versions = $farp->versions();
 
-		$this->assertEquals( '6.0.0', $farp->versions()[0] );
-		$this->assertEquals( '6.0.0', $farp->latest_version() );
+		$this->assertEquals( '6.1.1', $farp->versions()[0] );
+
+		/**
+		 * The deprecated latest_version() is defined to be the latest 5.x version,
+		 * because that reflects the data available on api.fontawesome.com, even though
+		 * it's not the absolutely latest version.
+		 */
+		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
 }
