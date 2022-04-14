@@ -1436,19 +1436,23 @@ class FontAwesome {
 	 * and "the latest stable release with major version 6, when available, otherwise
 	 * the latest pre-release with major version 6."
 	 *
-	 * These "5.x" and "6.x" symbolic versions should not be relied upon
-	 * as API at this time, because this schema may change. Suffice it to say
-	 * that if this function does not return a semver parseable version, then
-	 * it probably means that it's one of these symbolic versions, and there's
-	 * currently no way to reliably, programmatically convert that symbolic
-	 * version into the concrete version that will be loaded by the kit.
+	 * So if this function does not return a semver parseable version, then
+	 * it must be one of these symbolic versions.
+	 *
+	 * The recommended way to resolve the symbolic versions 'latest',
+	 * '5.x', or '6.x' into their current concrete values is to query the GraphQL
+	 * API like this:
+	 *
+	 * ```
+	 * query { release(version: "5.x") { version } }
+	 * ```
 	 *
 	 * @since 4.0.0
 	 * @see FontAwesome::latest_version()
 	 * @see FontAwesome::releases_refreshed_at()
 	 * @throws ConfigCorruptionException
 	 * @return string|null null if no version has yet been saved in the options
-	 * in the db. Otherwise, a version string.
+	 * in the db. Otherwise, 5.x, or 6.x, or a semantic version string.
 	 */
 	public function version() {
 		$options = $this->options();
