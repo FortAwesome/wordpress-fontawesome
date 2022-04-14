@@ -66,8 +66,7 @@
         "build.admin": "cd admin; npm install && npm run build",
         "build.compat": "cd compat-js; npm install && npm run build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
-        "dist": "composer clean && composer build.admin && composer build.compat && bin/make-wp-dist",
-        "dist2trunk": "bin/dist-to-trunk.sh"
+        "dist": "composer clean && composer build.admin && composer build.compat"
     },
     "config": {
         "allow-plugins": {
