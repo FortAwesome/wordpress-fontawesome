@@ -124,9 +124,10 @@ class FontAwesome_Release_Provider {
 		$option_value = get_option( self::OPTIONS_KEY );
 
 		if ( $option_value ) {
-			$this->releases       = $option_value['data']['releases'];
-			$this->refreshed_at   = $option_value['refreshed_at'];
-			$this->latest_version = $option_value['data']['latest'];
+			$this->releases         = $option_value['data']['releases'];
+			$this->refreshed_at     = $option_value['refreshed_at'];
+			$this->latest_version_5 = $option_value['data']['latest_5'];
+			$this->latest_version_6 = $option_value['data']['latest_6'];
 		} else {
 			throw new ReleaseMetadataMissingException();
 		}
@@ -147,7 +148,10 @@ class FontAwesome_Release_Provider {
 	public static function load_releases() {
 		$query = <<< EOD
 query {
-	latest: release(version: "latest") {
+	latest_5: release(version: "5.x") {
+		version
+	}
+	latest_6: release(version: "6.x") {
 		version
 	}
 	releases {
@@ -186,16 +190,22 @@ EOD;
 		}
 
 		$refreshed_at   = time();
-		$latest_version = isset( $body['data']['latest']['version'] ) ? $body['data']['latest']['version'] : null;
+		$latest_version_5 = isset( $body['data']['latest_5']['version'] ) ? $body['data']['latest_5']['version'] : null;
+		$latest_version_6 = isset( $body['data']['latest_6']['version'] ) ? $body['data']['latest_6']['version'] : null;
 
-		if ( is_null( $latest_version ) ) {
-			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version' ) );
+		if ( is_null( $latest_version_5 ) ) {
+			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_5' ) );
+		}
+
+		if ( is_null( $latest_version_6 ) ) {
+			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_6' ) );
 		}
 
 		$option_value = array(
 			'refreshed_at' => $refreshed_at,
 			'data'         => array(
-				'latest'   => $latest_version,
+				'latest_5'   => $latest_version_5,
+				'latest_6'   => $latest_version_6,
 				'releases' => $releases,
 			),
 		);
@@ -379,18 +389,54 @@ EOD;
 	}
 
 	/**
-	 * Returns a version number corresponding to the most recent minor release.
+	 * Returns a version number corresponding to the most recent minor release
+	 * in the 5.x line.
 	 *
-	 * Internal use only. Clients should use the FontAwesome::latest_version()
-	 * public API method instead.
+	 * Internal use only. Clients should use the FontAwesome::latest_version_5()
+	 * or FontAwesome::latest_version_6() public API methods instead.
 	 *
 	 * @internal
 	 * @ignore
-	 * @return string|null most recent major.minor.patch version or null if there's
+	 * @deprecated
+	 * @return string|null most recent major.minor.patch 5.x version or null if there's
 	 *   not yet been a successful query to the API server for releases metadata.
 	 */
 	public function latest_version() {
-		return $this->latest_version;
+		return $this->latest_version_5;
+	}
+
+	/**
+	 * Returns a version number corresponding to the most recent minor release
+	 * in the 5.x line.
+	 *
+	 * Internal use only. Clients should use the FontAwesome::latest_version_5()
+	 * public API methods instead.
+	 *
+	 * @internal
+	 * @ignore
+	 * @deprecated
+	 * @return string|null most recent major.minor.patch 5.x version or null if there's
+	 *   not yet been a successful query to the API server for releases metadata.
+	 */
+	public function latest_version_5() {
+		return $this->latest_version_5;
+	}
+
+	/**
+	 * Returns a version number corresponding to the most recent minor release
+	 * in the 6.x line.
+	 *
+	 * Internal use only. Clients should use the FontAwesome::latest_version_6()
+	 * public API methods instead.
+	 *
+	 * @internal
+	 * @ignore
+	 * @deprecated
+	 * @return string|null most recent major.minor.patch 6.x version or null if there's
+	 *   not yet been a successful query to the API server for releases metadata.
+	 */
+	public function latest_version_6() {
+		return $this->latest_version_6;
 	}
 }
 

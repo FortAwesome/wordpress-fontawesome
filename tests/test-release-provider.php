@@ -282,6 +282,22 @@ class ReleaseProviderTest extends TestCase {
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
 
+	public function test_latest_version_5() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		$this->assertEquals( '5.4.1', $farp->latest_version_5() );
+	}
+
+	public function test_latest_version_6() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		$this->assertEquals( '6.1.1', $farp->latest_version_6() );
+	}
+
 	// Ensure that the ReleaseProvider sorts versions semantically.
 	public function test_versions_with_6_0_0() {
 		$mock_response = wp_json_encode(
