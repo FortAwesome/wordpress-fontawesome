@@ -64,7 +64,6 @@ x-dev_env_volumes: &dev_env_volumes
     - /var/www/html/wp-content/plugins/font-awesome/.vscode
     - /var/www/html/wp-content/plugins/font-awesome/.idea
     - /var/www/html/wp-content/plugins/font-awesome/.git
-    - /var/www/html/wp-content/plugins/font-awesome/bin
     - /var/www/html/wp-content/plugins/font-awesome/docker
     - /var/www/html/wp-content/plugins/font-awesome/integrations
     # ignores for the stuff that plugin-sigma may pull into its vendor bundle
