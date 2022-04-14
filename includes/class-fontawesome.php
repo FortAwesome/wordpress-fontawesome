@@ -462,7 +462,7 @@ class FontAwesome {
 			 * default of the latest available version.
 			 */
 			if ( ! isset( $upgraded_options['version'] ) ) {
-				$upgraded_options['version'] = fa()->latest_version();
+				$upgraded_options['version'] = fa()->latest_version_6();
 			}
 
 			$should_upgrade = true;
@@ -735,6 +735,34 @@ class FontAwesome {
 	 */
 	public function latest_version() {
 		return $this->release_provider()->latest_version();
+	}
+
+	/**
+	 * Returns the latest available full release version of Font Awesome 5 as a string,
+	 * or null if the releases metadata has not yet been successfully retrieved from the
+	 * API server.
+	 *
+	 * @since 4.2.0
+	 * @deprecated
+	 *
+	 * @return null|string
+	 */
+	public function latest_version_5() {
+		return $this->release_provider()->latest_version_5();
+	}
+
+	/**
+	 * Returns the latest available full release version of Font Awesome 6 as a string,
+	 * or null if the releases metadata has not yet been successfully retrieved from the
+	 * API server.
+	 *
+	 * @since 4.2.0
+	 * @deprecated
+	 *
+	 * @return null|string
+	 */
+	public function latest_version_6() {
+		return $this->release_provider()->latest_version_6();
 	}
 
 	/**
@@ -1578,7 +1606,8 @@ class FontAwesome {
 									'clientPreferences'    => $this->client_preferences(),
 									'releases'             => array(
 										'available'      => $this->release_provider()->versions(),
-										'latest_version' => $this->latest_version(),
+										'latest_version_5' => $this->latest_version_5(),
+										'latest_version_6' => $this->latest_version_6(),
 									),
 									'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
 									'preferenceConflicts'  => $this->conflicts_by_option(),
