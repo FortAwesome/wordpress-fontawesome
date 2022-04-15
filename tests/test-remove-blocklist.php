@@ -35,7 +35,6 @@ class RemoveBlocklistTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 		reset_db();
-		FontAwesome::instance()->reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
 				wp_json_encode(
@@ -52,6 +51,8 @@ class RemoveBlocklistTest extends TestCase {
 				),
 			)
 		);
+		FontAwesome_Release_Provider::load_releases();
+		FontAwesome::instance()->reset();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );

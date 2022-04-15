@@ -126,8 +126,24 @@ class FontAwesome_Release_Provider {
 		if ( $option_value ) {
 			$this->releases         = $option_value['data']['releases'];
 			$this->refreshed_at     = $option_value['refreshed_at'];
-			$this->latest_version_5 = $option_value['data']['latest_5'];
-			$this->latest_version_6 = $option_value['data']['latest_6'];
+
+			/**
+			 * Gracefully handle the upgrade scenario from plugin version 4.1.1 where
+			 * there was a "latest", referring to the latest 5.x, but not yet
+			 * keys for "latest_version_5" and "latest_version_6".
+			 */
+			$latest_version_5 = isset( $option_value['data']['latest_version_5'] )
+				? $option_value['data']['latest_version_5']
+				: ( isset( $option_value['data']['latest'] )
+					? $option_value['data']['latest']
+					: null
+				);
+
+			$this->latest_version_5 = $latest_version_5;
+
+			$this->latest_version_6 = isset( $option_value['data']['latest_version_6'] )
+				? $option_value['data']['latest_version_6']
+				: null;
 		} else {
 			throw new ReleaseMetadataMissingException();
 		}
@@ -148,10 +164,10 @@ class FontAwesome_Release_Provider {
 	public static function load_releases() {
 		$query = <<< EOD
 query {
-	latest_5: release(version: "5.x") {
+	latest_version_5: release(version: "5.x") {
 		version
 	}
-	latest_6: release(version: "6.x") {
+	latest_version_6: release(version: "6.x") {
 		version
 	}
 	releases {
@@ -190,8 +206,8 @@ EOD;
 		}
 
 		$refreshed_at   = time();
-		$latest_version_5 = isset( $body['data']['latest_5']['version'] ) ? $body['data']['latest_5']['version'] : null;
-		$latest_version_6 = isset( $body['data']['latest_6']['version'] ) ? $body['data']['latest_6']['version'] : null;
+		$latest_version_5 = isset( $body['data']['latest_version_5']['version'] ) ? $body['data']['latest_version_5']['version'] : null;
+		$latest_version_6 = isset( $body['data']['latest_version_6']['version'] ) ? $body['data']['latest_version_6']['version'] : null;
 
 		if ( is_null( $latest_version_5 ) ) {
 			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_5' ) );
@@ -204,8 +220,8 @@ EOD;
 		$option_value = array(
 			'refreshed_at' => $refreshed_at,
 			'data'         => array(
-				'latest_5'   => $latest_version_5,
-				'latest_6'   => $latest_version_6,
+				'latest_version_5'   => $latest_version_5,
+				'latest_version_6'   => $latest_version_6,
 				'releases' => $releases,
 			),
 		);

@@ -308,10 +308,10 @@ class FontAwesomeTest extends TestCase {
 					array(
 						'data' => 
 							array(
-								'latest_5'   => array(
+								'latest_version_5'   => array(
 									'version' => '5.15.2',
 								),
-								'latest_6'   => array(
+								'latest_version_6'   => array(
 									'version' => '6.42.1',
 								),
 								'releases' =>

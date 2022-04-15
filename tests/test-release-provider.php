@@ -320,4 +320,35 @@ class ReleaseProviderTest extends TestCase {
 		 */
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
+
+	/**
+	 * Before changing to keys latest_version_5 and latest_version_6, there was just "latest",
+	 * which referred to the latest FA 5.x release. On the first time the admin user
+	 * loads the admin page after upgrading to the new schema, the initial view will be based
+	 * the release metadata already in the database, which means that the Release Provider
+	 * must be able to be instantiated without error and load itself from that older
+	 * option schema. Once it's refreshed with a new query from the API server, it will
+	 * write the option value with the new schema.
+	 */
+	public function test_loading_from_option_schema_with_latest_key() {
+		$data = graphql_releases_query_fixture();
+
+		$latest_version_5 = $data['latest_version_5']['version'];
+
+		$option_value = array(
+			'refreshed_at' => time(),
+			'data'         => array(
+				'latest'   => $latest_version_5,
+				'releases' => $data['releases'],
+			),
+		);
+
+		update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $option_value, false );
+
+		$farp = FontAwesome_Release_Provider::reset();
+
+		$this->assertEquals( '5.4.1', $farp->latest_version_5() );
+		$this->assertNull( $farp->latest_version_6() );
+		$this->assertEquals( '5.4.1', $farp->latest_version() );
+	}
 }
