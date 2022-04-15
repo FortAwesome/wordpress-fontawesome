@@ -355,7 +355,7 @@ export function chooseAwayFromKitConfig({ activeKitToken }) {
     dispatch({
       type: 'CHOOSE_AWAY_FROM_KIT_CONFIG',
       activeKitToken,
-      concreteVersion: get(releases, 'latest_version')
+      concreteVersion: get(releases, 'latest_version_6')
     })
   }
 }

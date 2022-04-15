@@ -37,10 +37,12 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
 
   const versionOptions = useSelector(state => {
-    const { releases: { available, latest_version } } = state
+    const { releases: { available, latest_version_5, latest_version_6 } } = state
 
     return available.reduce((acc, version) => {
-      if( latest_version === version ) {
+      if( latest_version_5 === version ) {
+        acc[version] = `${ version } (latest 5.x)`
+      } else if( latest_version_6 === version ) {
         acc[version] = `${ version } (latest)`
       } else {
         acc[version] = version
