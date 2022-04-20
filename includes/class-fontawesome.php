@@ -1612,7 +1612,7 @@ class FontAwesome {
 									'onSettingsPage'       => true,
 									'clientPreferences'    => $this->client_preferences(),
 									'releases'             => array(
-										'available'      => $this->release_provider()->versions(),
+										'available'        => $this->release_provider()->versions(),
 										'latest_version_5' => $this->latest_version_5(),
 										'latest_version_6' => $this->latest_version_6(),
 									),

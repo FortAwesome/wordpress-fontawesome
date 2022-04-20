@@ -14,13 +14,13 @@ class FontAwesome_Preference_Conflict_Detector {
 		 * so it is not the *absolutely* latest, just the latest 5.x.
 		 */
 		$symbolic_versions = array(
-			"latest" => $latest_version_5,
-			"5.x" => $latest_version_5,
-			"6.x" => $latest_version_6
+			'latest' => $latest_version_5,
+			'5.x'    => $latest_version_5,
+			'6.x'    => $latest_version_6,
 		);
 
-		$resolved_version = ( is_string( $configured_option ) && isset( $symbolic_versions[$configured_option] ) )
-			? $symbolic_versions[$configured_option]
+		$resolved_version = ( is_string( $configured_option ) && isset( $symbolic_versions[ $configured_option ] ) )
+			? $symbolic_versions[ $configured_option ]
 			: $configured_option;
 
 		return self::version_satisfies( $resolved_version, $current_preference );

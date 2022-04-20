@@ -55,7 +55,7 @@ class ActivationTest extends TestCase {
 	}
 
 	public function test_initialize_when_options_with_fa5_release_metadata_schema_is_present() {
-		$mock_data = graphql_releases_query_fixture();
+		$mock_data        = graphql_releases_query_fixture();
 		$latest_version_5 = $mock_data['latest_version_5']['version'];
 		$latest_version_6 = $mock_data['latest_version_6']['version'];
 
@@ -63,7 +63,7 @@ class ActivationTest extends TestCase {
 			'refreshed_at' => time(),
 			'data'         => array(
 				'latest'   => $latest_version_5,
-				'releases' => array()
+				'releases' => array(),
 			),
 		);
 

@@ -124,8 +124,8 @@ class FontAwesome_Release_Provider {
 		$option_value = get_option( self::OPTIONS_KEY );
 
 		if ( $option_value ) {
-			$this->releases         = $option_value['data']['releases'];
-			$this->refreshed_at     = $option_value['refreshed_at'];
+			$this->releases     = $option_value['data']['releases'];
+			$this->refreshed_at = $option_value['refreshed_at'];
 
 			/**
 			 * Gracefully handle the upgrade scenario from plugin version 4.1.1 where
@@ -205,7 +205,7 @@ EOD;
 			);
 		}
 
-		$refreshed_at   = time();
+		$refreshed_at     = time();
 		$latest_version_5 = isset( $body['data']['latest_version_5']['version'] ) ? $body['data']['latest_version_5']['version'] : null;
 		$latest_version_6 = isset( $body['data']['latest_version_6']['version'] ) ? $body['data']['latest_version_6']['version'] : null;
 
@@ -220,9 +220,9 @@ EOD;
 		$option_value = array(
 			'refreshed_at' => $refreshed_at,
 			'data'         => array(
-				'latest_version_5'   => $latest_version_5,
-				'latest_version_6'   => $latest_version_6,
-				'releases' => $releases,
+				'latest_version_5' => $latest_version_5,
+				'latest_version_6' => $latest_version_6,
+				'releases'         => $releases,
 			),
 		);
 
