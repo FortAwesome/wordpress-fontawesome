@@ -814,7 +814,13 @@ class FontAwesome {
 	protected function maybe_refresh_releases() {
 		$refreshed_at = $this->releases_refreshed_at();
 
-		if ( is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERVAL ) {
+		/**
+		 * If we've just upgraded from an older plugin version that didn't have this metadata value,
+		 * then we should refresh to get it.
+		 */
+		$latest_version_6 = $this->latest_version_6();
+
+		if ( is_null( $latest_version_6 ) || is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERVAL ) {
 			return FontAwesome_Release_Provider::load_releases();
 		} else {
 			return 1;
