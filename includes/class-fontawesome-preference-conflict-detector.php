@@ -6,12 +6,21 @@ namespace FortAwesome;
  */
 class FontAwesome_Preference_Conflict_Detector {
 
-	protected static function resolve_version( $configured_option, $current_preference, $latest_version ) {
-		// If the version given as configured_option is 'latest', as it may be for
-		// a kit, then we'll resolve that 'latest' into whatever actual version
-		// is known as the latest right now.
-		$resolved_version = ( 'latest' === $configured_option && is_string( $latest_version ) )
-			? $latest_version
+	protected static function resolve_version( $configured_option, $current_preference, $latest_version_5, $latest_version_6 ) {
+		/**
+		 * If the version given as configured_option is 'latest', '5.x', or '6.x', as it may be for
+		 * a kit, then we'll resolve that symbolic version into whatever is the corresponding semantic version.
+		 * The symbolic version "latest" has been deprecated, and is defined to mean the same as "5.x",
+		 * so it is not the *absolutely* latest, just the latest 5.x.
+		 */
+		$symbolic_versions = array(
+			"latest" => $latest_version_5,
+			"5.x" => $latest_version_5,
+			"6.x" => $latest_version_6
+		);
+
+		$resolved_version = ( is_string( $configured_option ) && isset( $symbolic_versions[$configured_option] ) )
+			? $symbolic_versions[$configured_option]
 			: $configured_option;
 
 		return self::version_satisfies( $resolved_version, $current_preference );
@@ -24,10 +33,10 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * If it does, then delegate to it. We would need to delegate to it for the version option, because
 	 * clients should be able to specify an expression to represent version compatibility.
 	 *
-	 * The $latest_version param will be passed as the third argument to any resolver
-	 * functions, and should be set to the actual version number of the latest version known,
-	 * like '5.12.0', not the word 'latest'. It is the value that can be used
-	 * when checking whether a version preference is satisfied when 'latest' is the
+	 * The $latest_version_5 and $latest_version_6 params will be passed as the third argument to any resolver
+	 * functions, and should be set to the actual version numbers of the corresponding latest versions known,
+	 * like '5.12.0', not the word 'latest'. These are the values that can be used
+	 * when checking whether a version preference is satisfied when 'latest', '5.x', or '6.x' is the
 	 * configured version in a kit.
 	 *
 	 * Internal use only. Not part of this plugin's public API.
@@ -36,10 +45,10 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @ignore
 	 * @since 4.0.0
 	 */
-	public static function detect( $configured_options = array(), $client_preferences = array(), $latest_version = null ) {
+	public static function detect( $configured_options = array(), $client_preferences = array(), $latest_version_5 = null, $latest_version_6 = null ) {
 		return array_reduce(
 			array_keys( $configured_options ),
-			function( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version ) {
+			function( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version_5, $latest_version_6 ) {
 				$resolve_method_candidate = 'resolve_' . $option;
 				if ( isset( $client_preferences[ $option ] ) ) {
 					if ( method_exists( __CLASS__, $resolve_method_candidate ) ) {
@@ -47,7 +56,8 @@ class FontAwesome_Preference_Conflict_Detector {
 							array( __CLASS__, $resolve_method_candidate ),
 							$configured_options[ $option ],
 							$client_preferences[ $option ],
-							$latest_version
+							$latest_version_5,
+							$latest_version_6
 						) ? $carry : array_merge( $carry, array( $option ) );
 					} else {
 						return $configured_options[ $option ] === $client_preferences[ $option ]
