@@ -182,6 +182,114 @@ class FontAwesomeTest extends TestCase {
 		);
 	}
 
+	public function test_conflicts_by_client_when_kit_version_latest() {
+		// Simulate options for a kit configured with "latest"
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => 'latest',
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				]
+			)
+		);
+
+		FontAwesome::reset();
+
+		fa()->register(
+			array(
+				'name'     => 'beta',
+				'version'  => [ ['6.1.1', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'     => 'gamma',
+				'version'  => [ ['5.4.1', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'beta' => ['version'] ),
+			fa()->conflicts_by_client()
+		);
+	}
+
+	public function test_conflicts_by_client_when_kit_version_5x() {
+		// Simulate options for a kit configured with "latest"
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => '5.x',
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				]
+			)
+		);
+
+		FontAwesome::reset();
+
+		fa()->register(
+			array(
+				'name'     => 'beta',
+				'version'  => [ ['6.1.1', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'     => 'gamma',
+				'version'  => [ ['5.4.1', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'beta' => ['version'] ),
+			fa()->conflicts_by_client()
+		);
+	}
+
+	public function test_conflicts_by_client_when_kit_version_6x() {
+		// Simulate options for a kit configured with "latest"
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => '6.x',
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				]
+			)
+		);
+
+		FontAwesome::reset();
+
+		fa()->register(
+			array(
+				'name'     => 'beta',
+				'version'  => [ ['6.1.1', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'     => 'gamma',
+				'version'  => [ ['5.4.1', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'gamma' => ['version'] ),
+			fa()->conflicts_by_client()
+		);
+	}
+
 	public function test_unregistered_clients_option_storage_and_retrieval() {
 		// Before setting anything
 		$this->assertEquals(
