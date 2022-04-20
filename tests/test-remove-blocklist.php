@@ -52,6 +52,7 @@ class RemoveBlocklistTest extends TestCase {
 			)
 		);
 		FontAwesome_Release_Provider::load_releases();
+		FontAwesome_Release_Provider::reset();
 		FontAwesome::instance()->reset();
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );

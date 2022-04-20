@@ -47,9 +47,15 @@ class FontAwesomeTest extends TestCase {
 				)
 			)
 		);
-		FontAwesome_Activator::activate();
+		FontAwesome_Release_Provider::load_releases();
 		FontAwesome_Release_Provider::reset();
+		FontAwesome_Activator::activate();
 		FontAwesome::reset();
+	}
+
+	public function tear_down() {
+		reset_db();
+		parent::tear_down();
 	}
 
 	protected function mock_with_plugin_version($plugin_version) {
