@@ -25,7 +25,7 @@ class EnqueueTest extends TestCase {
 
 	const OUTPUT_MATCH_FAILURE_MESSAGE = 'Failed output match.';
 
-	const MOCK_LATEST_VERSION = '5.2.0';
+	const MOCK_LATEST_VERSION = '6.1.1';
 
 	protected $admin_user;
 
@@ -33,7 +33,6 @@ class EnqueueTest extends TestCase {
 		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		FontAwesome::reset();
 		(new Mock_FontAwesome_Metadata_Provider())->mock(
 			array(
 				wp_json_encode(
@@ -43,6 +42,9 @@ class EnqueueTest extends TestCase {
 				)
 			)
 		);
+		FontAwesome_Release_Provider::load_releases();
+		FontAwesome_Release_Provider::reset();
+		FontAwesome::reset();
 		$this->admin_user = get_users( [ 'role' => 'administrator' ] )[0];
 		wp_set_current_user( $this->admin_user->ID, $this->admin_user->user_login );
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
@@ -229,8 +231,11 @@ class EnqueueTest extends TestCase {
 		$this->refute_svg( $output, 'use', $version );
 		$this->assert_webfont( $output, 'use', $version );
 		$this->assert_webfont_v4shim( $output, 'use', $version );
-		$this->assert_font_face_overrides( $output, 'use', $version );
-		$this->assert_webfont_compatibility_load_order_legacy_font_face($output);
+		/**
+		 * This refutation should be present because this plugin does not add its own font face overrides
+		 * for v6. They're built into the standard v6 CSS.
+		 */
+		$this->refute_font_face_overrides( $output, 'use', $version );
 	}
 
 	public function test_webfont_6_0_0_beta3_with_compat() {
