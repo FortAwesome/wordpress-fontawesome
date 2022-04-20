@@ -78,7 +78,7 @@ class FontAwesome_Activator {
 	 * @internal
 	 */
 	private static function initialize_user_options() {
-		$version = fa()->latest_version();
+		$version = fa()->latest_version_6();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => $version ) );
 		update_option( FontAwesome::OPTIONS_KEY, $options );
 	}

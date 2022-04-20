@@ -38,7 +38,7 @@ class ActivationTest extends TestCase {
 	public function test_activation_creates_default_config() {
 		FontAwesome_Activator::activate();
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$releases = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
@@ -53,7 +53,7 @@ class ActivationTest extends TestCase {
 	public function test_initialize_from_scratch_creates_default_config() {
 		FontAwesome_Activator::initialize();
 		$actual_options   = get_option( FontAwesome::OPTIONS_KEY );
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 		$this->assertEquals( $expected_options, $actual_options );
 
 		$this->assertEquals(
@@ -124,8 +124,8 @@ class ActivationTest extends TestCase {
 			$initial_conflict_detection_option
 		);
 
-		// 5.4.1 is the latest in the mock
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => '5.4.1' ) );
+		// 6.1.1 is the latest version 6 in the mock
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => '6.1.1' ) );
 
 		FontAwesome_Activator::initialize( true );
 		$actual_options                   = get_option( FontAwesome::OPTIONS_KEY );
