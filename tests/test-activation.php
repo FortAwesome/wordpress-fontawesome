@@ -18,15 +18,7 @@ class ActivationTest extends TestCase {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		FontAwesome::reset();
-		( new Mock_FontAwesome_Metadata_Provider() )->mock(
-			array(
-				wp_json_encode(
-					array(
-						'data' => graphql_releases_query_fixture(),
-					)
-				),
-			)
-		);
+		$this->setup_metadata_provider_mock();
 	}
 
 	public function test_before_activation() {
@@ -60,6 +52,31 @@ class ActivationTest extends TestCase {
 			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
 		);
+	}
+
+	public function test_initialize_when_options_with_fa5_release_metadata_schema_is_present() {
+		$mock_data = graphql_releases_query_fixture();
+		$latest_version_5 = $mock_data['latest_version_5']['version'];
+		$latest_version_6 = $mock_data['latest_version_6']['version'];
+
+		$releases_option_value = array(
+			'refreshed_at' => time(),
+			'data'         => array(
+				'latest'   => $latest_version_5,
+				'releases' => array()
+			),
+		);
+
+		update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value, false );
+
+		$this->setup_metadata_provider_mock();
+
+		FontAwesome_Activator::initialize();
+		FontAwesome::reset();
+
+		$this->assertEquals( fa()->latest_version_6(), $latest_version_6 );
+		$this->assertEquals( fa()->latest_version_5(), $latest_version_5 );
+		$this->assertEquals( fa()->latest_version(), $latest_version_5 );
 	}
 
 	public function test_initialize_preserves_existing_options() {
@@ -136,6 +153,18 @@ class ActivationTest extends TestCase {
 		$this->assertEquals(
 			FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY )
+		);
+	}
+
+	public function setup_metadata_provider_mock() {
+		( new Mock_FontAwesome_Metadata_Provider() )->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				),
+			)
 		);
 	}
 }

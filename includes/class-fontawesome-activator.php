@@ -45,7 +45,9 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
-		if ( $force || ! get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
+		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
 			self::initialize_release_metadata();
 		}
 
