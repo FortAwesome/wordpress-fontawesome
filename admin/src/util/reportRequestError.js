@@ -1,4 +1,5 @@
 import get from 'lodash/get'
+import set from 'lodash/set'
 import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 
@@ -11,9 +12,20 @@ const OK_ERROR_PREAMBLE = __( 'The last request was successful, but it also retu
 const ONE_OF_MANY_ERRORS_GROUP_LABEL = __( 'Error', 'font-awesome' )
 const FALSE_POSITIVE_MESSAGE = __( 'WARNING: The last request contained errors, though your WordPress server reported it as a success. This usually means there\'s a problem with your theme or one of your other plugins emitting output that is causing problems.', 'font-awesome' )
 const UNCONFIRMED_RESPONSE_MESSAGE = __( 'WARNING: The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.', 'font-awesome')
+const CONFIRMED_RESPONSE_MESSAGE = __( 'CONFIRMED: The last response from your WordPress server included the confirmation header that is expected for all valid responses from the Font Awesome plugin\'s code running on your WordPress server.', 'font-awesome')
 const TRIMMED_RESPONSE_PREAMBLE = __( 'WARNING: Invalid Data Trimmed from Server Response', 'font-awesome' )
 const EXPECTED_EMPTY_MESSAGE = __( 'WARNING: We expected the last response from the server to contain no data, but it contained something unexpected.', 'font-awesome' )
 const MISSING_ERROR_DATA_MESSAGE = __( 'Your WordPress server returned an error for that last request, but there was no information about the error.', 'font-awesome' )
+const REPORT_INFO_PARAM_KEYS = [
+  'requestMethod',
+  'responseStatus',
+  'responseStatusText',
+  'requestUrl',
+  'requestData',
+  'responseHeaders',
+  'responseData',
+  'requestHeaders'
+]
 
 /**
  * This both sends appropriately formatted output to the console via console.info,
@@ -84,7 +96,7 @@ function handleSingleWpErrorOutput( wpError ) {
   return uiMessage
 }
 
-function handleAllWpErrorOutput(errorData) {
+function handleAllWpErrorOutput(errorData = {}) {
   const wpErrors = Object.keys(errorData.errors || []).map(code => {
     // get the first error message available for this code
     const message = get(errorData, `errors.${code}.0`)
@@ -123,7 +135,7 @@ function handleAllWpErrorOutput(errorData) {
 
 function report(params) {
   const {
-    error,
+    error = null,
     ok = false,
     falsePositive = false,
     confirmed = true,
@@ -141,8 +153,37 @@ function report(params) {
     console.info(FALSE_POSITIVE_MESSAGE)
   }
 
-  if( ! confirmed ) {
+  if( confirmed ) {
+    console.info(CONFIRMED_RESPONSE_MESSAGE)
+  } else {
     console.info(UNCONFIRMED_RESPONSE_MESSAGE)
+  }
+
+  // Strings to later join with newlines, making a report.
+  const info = []
+
+  for(const key of REPORT_INFO_PARAM_KEYS) {
+    const val = get(params, key)
+
+    if('undefined' !== typeof val) {
+      const valType = typeof val
+
+      if('string' === valType || 'number' === valType) {
+        info.push(`${key}: ${val}`)
+      } else if ('object' === valType){
+        info.push(`${key}:`)
+
+        for(const innerKey in val) {
+          info.push(`\t${innerKey}: ${val[innerKey].toString()}`)
+        }
+      } else {
+        console.info(`Unexpected report content type \'${valType}\' for ${key}:`, val)
+      }
+    }
+  }
+
+  if(size(info) > 0) {
+    console.info(`Extra Info:\n${info.join('\n')}`)
   }
 
   if( '' !== trimmed ) {
@@ -158,13 +199,50 @@ function report(params) {
     ? handleAllWpErrorOutput( error )
     : null
 
-  if ( null === error && trimmed === '' && confirmed ) {
+  if ( error && trimmed === '' && confirmed ) {
     console.info(MISSING_ERROR_DATA_MESSAGE)
   }
 
   console.groupEnd()
 
   return uiMessage
+}
+
+// Expects an axios Response object as an argument.
+export function redactRequestData(response = {}) {
+  const requestContentType = get(response, 'config.headers.Content-Type', '').toLowerCase()
+  const requestData = get(response, 'config.data')
+
+  let redacted = ''
+
+  if('application/json' === requestContentType) {
+    try {
+      const data = JSON.parse(requestData)
+      const apiTokenValue = get(data, 'options.apiToken')
+
+      if('bolean' !== typeof apiTokenValue && 'true' !== apiTokenValue && 'false' !== apiTokenValue) {
+        set(data, 'options.apiToken', 'REDACTED')
+      }
+
+      redacted = JSON.stringify(data)
+    } catch(e) {
+      redacted = `ERROR while redacting request data: ${e.toString()}`
+    }
+  }
+
+  return redacted
+}
+
+export function redactHeaders(headers = {}) {
+  const redacted = {...headers}
+
+  for(const key in redacted) {
+    if('x-wp-nonce' === key.toLowerCase()) {
+      redacted[key] = 'REDACTED'
+    }
+  }
+
+  return redacted
 }
 
 export default report
