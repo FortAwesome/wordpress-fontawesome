@@ -294,6 +294,21 @@ describe('redactRequestData', () => {
       expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, apiToken: true}}))
     })
   })
+
+  describe('when content-type is not application/json', () => {
+    test('no changes are made', () => {
+      const response = {
+        config: {
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          data: JSON.stringify({options: {foo: 42, beta: 43}})
+        },
+      }
+
+      expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, beta: 43}}))
+    })
+  })
 })
 
 describe('redactHeaders', () => {
