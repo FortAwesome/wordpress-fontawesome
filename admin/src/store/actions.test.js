@@ -3,7 +3,7 @@ import * as actions from './actions'
 import { submitPendingOptions, addPendingOption } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import reportRequestError, { MOCK_UI_MESSAGE } from '../util/reportRequestError'
+import reportRequestError, { MOCK_UI_MESSAGE, redactHeaders, redactRequestData } from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
 const INVALID_JSON_RESPONSE_DATA = 'foo[42]bar{123}'
@@ -695,9 +695,21 @@ describe('preprocessResponse', () => {
     let responseData = null
     let responseHeaders = null
 
+    const REDACTED_REQUEST_DATA = 'redacted_request_data'
+    const REDACTED_HEADERS = 'redacted_headers'
+
+    beforeEach(() => {
+      redactHeaders.mockClear()
+      redactRequestData.mockClear()
+      redactHeaders.mockReturnValue(REDACTED_HEADERS)
+      redactRequestData.mockReturnValue(REDACTED_REQUEST_DATA)
+    })
+
     afterEach(() => {
       responseData = null
       responseHeaders = null
+      redactHeaders.mockReset()
+      redactRequestData.mockReset()
     })
 
     describe('when response data is HTML', () => {
@@ -732,11 +744,11 @@ describe('preprocessResponse', () => {
           requestData,
           requestMethod: method,
           requestUrl: url,
-          responseHeaders,
-          requestHeaders,
           responseStatus: status,
           responseStatusText: statusText,
-          responseData
+          requestData: REDACTED_REQUEST_DATA,
+          responseHeaders: REDACTED_HEADERS,
+          requestHeaders: REDACTED_HEADERS
         }))
       })
     })
@@ -775,9 +787,9 @@ describe('preprocessResponse', () => {
           responseStatus: status,
           responseStatusText: statusText,
           responseData,
-          requestData,
-          responseHeaders,
-          requestHeaders,
+          requestData: REDACTED_REQUEST_DATA,
+          responseHeaders: REDACTED_HEADERS,
+          requestHeaders: REDACTED_HEADERS
         }))
       })
     })
