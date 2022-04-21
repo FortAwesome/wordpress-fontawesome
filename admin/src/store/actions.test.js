@@ -681,4 +681,105 @@ describe('preprocessResponse', () => {
       expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({confirmed: true}))
     })
   })
+
+  describe('when method not allowed for PUT', () => {
+    const url = `${apiUrl}/config`
+    const method = 'PUT'
+    const status = 405
+    const statusText = 'Method Not Allowed'
+    const requestData = JSON.stringify({bar: 43})
+    const requestHeaders = {
+      'Content-Type': 'application/json'
+    }
+
+    let responseData = null
+    let responseHeaders = null
+
+    afterEach(() => {
+      responseData = null
+      responseHeaders = null
+    })
+
+    describe('when response data is HTML', () => {
+      beforeEach(() => {
+        responseData = '<html><body><p>Some unexpected HTML response</p></body></html>'
+
+        responseHeaders = {
+          'access-control-allow-methods': 'GET, POST, DELETE',
+          'Content-Type': 'text/html; charset=UTF-8'
+        }
+      })
+
+      test('reports with full details including response data', () => {
+        const response = {
+          status,
+          statusText,
+          data: responseData,
+          headers: responseHeaders,
+          url,
+          config: {
+            headers: requestHeaders,
+            method,
+            url,
+            data: requestData
+          }
+        }
+
+        actions.preprocessResponse(response)
+
+        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+          confirmed: false,
+          requestData,
+          requestMethod: method,
+          requestUrl: url,
+          responseHeaders,
+          requestHeaders,
+          responseStatus: status,
+          responseStatusText: statusText,
+          responseData
+        }))
+      })
+    })
+
+    describe('when response data is empty', () => {
+      beforeEach(() => {
+        responseData = ''
+
+        responseHeaders = {
+          'access-control-allow-methods': 'GET, POST, DELETE',
+          'Content-Type': 'application/json; charset=UTF-8'
+        }
+      })
+
+      test('reports with full details including response data', () => {
+        const response = {
+          status,
+          statusText,
+          data: responseData,
+          headers: responseHeaders,
+          url,
+          config: {
+            headers: requestHeaders,
+            method,
+            url,
+            data: requestData
+          }
+        }
+
+        actions.preprocessResponse(response)
+
+        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+          confirmed: false,
+          requestMethod: method,
+          requestUrl: url,
+          responseStatus: status,
+          responseStatusText: statusText,
+          responseData,
+          requestData,
+          responseHeaders,
+          requestHeaders,
+        }))
+      })
+    })
+  })
 })
