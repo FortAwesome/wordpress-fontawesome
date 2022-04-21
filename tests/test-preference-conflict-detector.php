@@ -69,7 +69,7 @@ class PreferenceConflictDetectorTest extends TestCase {
 			'version' => array( array( '5.8.2', '>' ) ),
 		);
 
-		$this->assertEquals( array(), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0' ) );
+		$this->assertEquals( array(), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0', '6.1.1' ) );
 	}
 
 	public function test_failure_when_configured_version_is_symbolically_latest() {
@@ -82,7 +82,7 @@ class PreferenceConflictDetectorTest extends TestCase {
 			'version' => array( array( '5.8.2', '=' ) ),
 		);
 
-		$this->assertEquals( array( 'version' ), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0' ) );
+		$this->assertEquals( array( 'version' ), FontAwesome_Preference_Conflict_Detector::detect( $options, $client_preferences, '5.12.0', '6.1.1' ) );
 	}
 
 	public function test_with_empty_preference() {

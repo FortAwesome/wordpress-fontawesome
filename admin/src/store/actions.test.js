@@ -3,7 +3,7 @@ import * as actions from './actions'
 import { submitPendingOptions, addPendingOption } from './actions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import reportRequestError, { MOCK_UI_MESSAGE } from '../util/reportRequestError'
+import reportRequestError, { MOCK_UI_MESSAGE, redactHeaders, redactRequestData } from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
 const INVALID_JSON_RESPONSE_DATA = 'foo[42]bar{123}'
@@ -210,22 +210,35 @@ describe('submitPendingOptions and interceptors', () => {
 
   describe('when HTTP 400', () => {
     describe('when errors payload is absent', () => {
-        let json = null
+        const responseData = {foo: 42}
+        const url = `${apiUrl}/config`
+        const method = 'PUT'
+        const status = 400
+        const statusText = 'Bad Request'
+        const requestData = JSON.stringify({bar: 43})
+        const responseHeaders = {
+          'fontawesome-confirmation': 1
+        }
+        const requestHeaders = {
+          'Content-Type': 'application/json'
+        }
 
         beforeEach(() => {
-          json = JSON.stringify({})
-
           respondWith({
-            url: `${apiUrl}/config`,
-            method: 'PUT',
+            url,
+            method,
             response: {
-              status: 400,
-              statusText: 'Bad Request',
-              data: json,
-              headers: {
-                'fontawesome-confirmation': 1
+              status,
+              statusText,
+              data: responseData,
+              headers: responseHeaders,
+              config: {
+                method,
+                url,
+                data: requestData,
+                headers: requestHeaders
               }
-            }
+            },
           })
         })
 
@@ -234,9 +247,15 @@ describe('submitPendingOptions and interceptors', () => {
           store.dispatch(submitPendingOptions()).then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
             expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              error: null,
               confirmed: true,
-              trimmed: ''
+              requestMethod: method,
+              //requestData,
+              requestUrl: url,
+              // responseHeaders: expect.any(Object),
+              // requestHeaders: expect.any(Object),
+              responseStatus: status,
+              responseStatusText: statusText,
+              responseData
             }))
             expect(store.getActions().length).toEqual(2)
             expect(store.getActions()).toEqual(expect.arrayContaining([
@@ -641,4 +660,138 @@ describe('snoozeV3DeprecationWarning', () => {
 describe('setConflictDetectionScanner', () => {
   test.todo('success when enabling')
   test.todo('success when disabling')
+})
+
+describe('preprocessResponse', () => {
+  beforeEach(() => {
+    reportRequestError.mockClear()
+  })
+
+  describe('when fontawesome-confirmation header is set', () => {
+    test('determines confirmed as true', () => {
+      const response = {
+        status: 400,
+        headers: {
+          'fontawesome-confirmation': 1
+        }
+      }
+
+      actions.preprocessResponse(response)
+
+      expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({confirmed: true}))
+    })
+  })
+
+  describe('when method not allowed for PUT', () => {
+    const url = `${apiUrl}/config`
+    const method = 'PUT'
+    const status = 405
+    const statusText = 'Method Not Allowed'
+    const requestData = JSON.stringify({bar: 43})
+    const requestHeaders = {
+      'Content-Type': 'application/json'
+    }
+
+    let responseData = null
+    let responseHeaders = null
+
+    const REDACTED_REQUEST_DATA = 'redacted_request_data'
+    const REDACTED_HEADERS = 'redacted_headers'
+
+    beforeEach(() => {
+      redactHeaders.mockClear()
+      redactRequestData.mockClear()
+      redactHeaders.mockReturnValue(REDACTED_HEADERS)
+      redactRequestData.mockReturnValue(REDACTED_REQUEST_DATA)
+    })
+
+    afterEach(() => {
+      responseData = null
+      responseHeaders = null
+      redactHeaders.mockReset()
+      redactRequestData.mockReset()
+    })
+
+    describe('when response data is HTML', () => {
+      beforeEach(() => {
+        responseData = '<html><body><p>Some unexpected HTML response</p></body></html>'
+
+        responseHeaders = {
+          'access-control-allow-methods': 'GET, POST, DELETE',
+          'Content-Type': 'text/html; charset=UTF-8'
+        }
+      })
+
+      test('reports with full details including response data', () => {
+        const response = {
+          status,
+          statusText,
+          data: responseData,
+          headers: responseHeaders,
+          url,
+          config: {
+            headers: requestHeaders,
+            method,
+            url,
+            data: requestData
+          }
+        }
+
+        actions.preprocessResponse(response)
+
+        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+          confirmed: false,
+          requestData,
+          requestMethod: method,
+          requestUrl: url,
+          responseStatus: status,
+          responseStatusText: statusText,
+          requestData: REDACTED_REQUEST_DATA,
+          responseHeaders: REDACTED_HEADERS,
+          requestHeaders: REDACTED_HEADERS
+        }))
+      })
+    })
+
+    describe('when response data is empty', () => {
+      beforeEach(() => {
+        responseData = ''
+
+        responseHeaders = {
+          'access-control-allow-methods': 'GET, POST, DELETE',
+          'Content-Type': 'application/json; charset=UTF-8'
+        }
+      })
+
+      test('reports with full details including response data', () => {
+        const response = {
+          status,
+          statusText,
+          data: responseData,
+          headers: responseHeaders,
+          url,
+          config: {
+            headers: requestHeaders,
+            method,
+            url,
+            data: requestData
+          }
+        }
+
+        actions.preprocessResponse(response)
+
+        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
+          confirmed: false,
+          requestMethod: method,
+          requestUrl: url,
+          responseStatus: status,
+          responseStatusText: statusText,
+          responseData,
+          requestData: REDACTED_REQUEST_DATA,
+          responseHeaders: REDACTED_HEADERS,
+          requestHeaders: REDACTED_HEADERS
+        }))
+      })
+    })
+  })
 })

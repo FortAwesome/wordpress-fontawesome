@@ -14,6 +14,20 @@ require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
 use \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone, \Exception;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
+class MockFontAwesome extends FontAwesome {
+	public function __construct() {
+		// no-op
+	}
+	
+	public static function instance() {
+		self::$instance = new self();
+	}
+
+	public function mock_maybe_refresh_releases() {
+		$this->maybe_refresh_releases();
+	}
+}
+
 class FontAwesomeTest extends TestCase {
 
 	public function set_up() {
@@ -33,9 +47,15 @@ class FontAwesomeTest extends TestCase {
 				)
 			)
 		);
-		FontAwesome_Activator::activate();
+		FontAwesome_Release_Provider::load_releases();
 		FontAwesome_Release_Provider::reset();
+		FontAwesome_Activator::activate();
 		FontAwesome::reset();
+	}
+
+	public function tear_down() {
+		reset_db();
+		parent::tear_down();
 	}
 
 	protected function mock_with_plugin_version($plugin_version) {
@@ -159,6 +179,114 @@ class FontAwesomeTest extends TestCase {
 					[ 'pseudoElements' => ! FontAwesome::DEFAULT_USER_OPTIONS['pseudoElements'] ]
 				)
 			)
+		);
+	}
+
+	public function test_conflicts_by_client_when_kit_version_latest() {
+		// Simulate options for a kit configured with "latest"
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => 'latest',
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				]
+			)
+		);
+
+		FontAwesome::reset();
+
+		fa()->register(
+			array(
+				'name'     => 'beta',
+				'version'  => [ ['6.1.1', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'     => 'gamma',
+				'version'  => [ ['5.4.1', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'beta' => ['version'] ),
+			fa()->conflicts_by_client()
+		);
+	}
+
+	public function test_conflicts_by_client_when_kit_version_5x() {
+		// Simulate options for a kit configured with "latest"
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => '5.x',
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				]
+			)
+		);
+
+		FontAwesome::reset();
+
+		fa()->register(
+			array(
+				'name'     => 'beta',
+				'version'  => [ ['6.1.1', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'     => 'gamma',
+				'version'  => [ ['5.4.1', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'beta' => ['version'] ),
+			fa()->conflicts_by_client()
+		);
+	}
+
+	public function test_conflicts_by_client_when_kit_version_6x() {
+		// Simulate options for a kit configured with "latest"
+		update_option(
+			FontAwesome::OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				[
+					'version'  => '6.x',
+					'kitToken' => 'abc123',
+					'apiToken' => true
+				]
+			)
+		);
+
+		FontAwesome::reset();
+
+		fa()->register(
+			array(
+				'name'     => 'beta',
+				'version'  => [ ['6.1.1', '='] ]
+			)
+		);
+
+		fa()->register(
+			array(
+				'name'     => 'gamma',
+				'version'  => [ ['5.4.1', '='] ]
+			)
+		);
+
+		$this->assertEquals(
+			array( 'gamma' => ['version'] ),
+			fa()->conflicts_by_client()
 		);
 	}
 
@@ -308,8 +436,11 @@ class FontAwesomeTest extends TestCase {
 					array(
 						'data' => 
 							array(
-								'latest'   => array(
+								'latest_version_5'   => array(
 									'version' => '5.15.2',
+								),
+								'latest_version_6'   => array(
+									'version' => '6.42.1',
 								),
 								'releases' =>
 								array()
@@ -324,6 +455,63 @@ class FontAwesomeTest extends TestCase {
 
 		// After
 		$this->assertEquals( '5.15.2', fa()->latest_version() );
+		$this->assertEquals( '5.15.2', fa()->latest_version_5() );
+		$this->assertEquals( '6.42.1', fa()->latest_version_6() );
+	}
+
+	public function test_refresh_releases_when_latest_version_6_is_not_set() {
+        $option_value = array(
+            'refreshed_at' => time(),
+            'data'         => array(
+                'latest'   => '5.15.2',
+                'releases' => array(),
+            ),
+        );
+
+        update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $option_value, false );
+
+		/**
+		 * Re-instantiate the ReleaseProvider from the option already stored in the db.
+		 * This simulates the scenario were a site has a previous version of the plugin installed
+		 * where the release metadata did not include "latest_version_6", but only "latest".
+		 */
+		FontAwesome_Release_Provider::reset();
+
+		// Before
+		$this->assertNull( fa()->latest_version_6() );
+
+		// Now set up a mock that will return release metadata with the newer schema.
+		(new Mock_FontAwesome_Metadata_Provider())->mock(
+			array(
+				wp_json_encode(
+					array(
+						'data' => 
+							array(
+								'latest_version_5'   => array(
+									'version' => '5.15.2',
+								),
+								'latest_version_6'   => array(
+									'version' => '6.42.1',
+								),
+								'releases' =>
+								array()
+							)
+					)
+				)
+			));
+
+		// Because maybe_refresh_releases is protected, we need a subclass than can access it.
+		$mock_fa = new MockFontAwesome();
+
+		// Now invoke the code being tested here.
+		$mock_fa->mock_maybe_refresh_releases();
+
+		FontAwesome_Release_Provider::reset();
+
+		// After
+		$this->assertEquals( '5.15.2', $mock_fa->latest_version() );
+		$this->assertEquals( '5.15.2', $mock_fa->latest_version_5() );
+		$this->assertEquals( '6.42.1', $mock_fa->latest_version_6() );
 	}
 
 	public function test_latest_version() {
@@ -333,7 +521,7 @@ class FontAwesomeTest extends TestCase {
 	public function test_releases_refreshed_at() {
 		$delta = time() - fa()->releases_refreshed_at();
 		$this->assertLessThanOrEqual(1, $delta );
-  }
+  	}
 
 	public function test_using_kits_when_default() {
 		update_option(

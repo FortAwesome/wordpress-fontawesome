@@ -1,4 +1,4 @@
-import reportRequestError from './reportRequestError'
+import reportRequestError, { redactHeaders, redactRequestData } from './reportRequestError'
 
 console.group = jest.fn()
 console.groupEnd = jest.fn()
@@ -39,7 +39,7 @@ describe('reportRequestError', () => {
       expect(message).toMatch(/^Whoops/)
       // The top-level group, and then one error group
       expect(console.group).toHaveBeenCalledTimes(2)
-      expect(console.info).toHaveBeenCalledTimes(1)
+      expect(console.info).toHaveBeenCalled()
 
       expect(console.info).toHaveBeenCalledWith(
         expect.stringMatching(/message: Whoops/),
@@ -178,7 +178,7 @@ describe('reportRequestError', () => {
 
       expect(console.groupEnd).toHaveBeenCalledTimes(2)
 
-      expect(console.info).toHaveBeenCalledTimes(2)
+      expect(console.info).toHaveBeenCalled()
 
       expect(console.info).toHaveBeenCalledWith(
         expect.stringMatching(/contain no data/),
@@ -204,7 +204,7 @@ describe('reportRequestError', () => {
       expect(console.info).toHaveBeenCalledTimes(1)
 
       expect(console.info).toHaveBeenCalledWith(
-        expect.stringMatching(/there was no information about the error/),
+        expect.stringMatching(/did not include the confirmation header/),
       )
     })
   })
@@ -230,7 +230,7 @@ describe('reportRequestError', () => {
 
       expect(console.groupEnd).toHaveBeenCalledTimes(2)
 
-      expect(console.info).toHaveBeenCalledTimes(2)
+      expect(console.info).toHaveBeenCalled()
     })
   })
 
@@ -255,11 +255,72 @@ describe('reportRequestError', () => {
 
       expect(console.groupEnd).toHaveBeenCalledTimes(2)
 
-      expect(console.info).toHaveBeenCalledTimes(2)
+      expect(console.info).toHaveBeenCalled()
 
       expect(console.info).toHaveBeenCalledWith(
         expect.stringMatching(/failure console message/)
       )
     })
+  })
+})
+
+describe('redactRequestData', () => {
+  describe('when options contain string apiToken', () => {
+    test('apiToken is redacted', () => {
+      const response = {
+        config: {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify({options: {foo: 42, apiToken: 'abc123'}})
+        },
+      }
+
+      expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, apiToken: 'REDACTED'}}))
+    })
+  })
+
+  describe('when options contain boolean apiToken status', () => {
+    test('apiToken status is not redacted', () => {
+      const response = {
+        config: {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify({options: {foo: 42, apiToken: true}})
+        },
+      }
+
+      expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, apiToken: true}}))
+    })
+  })
+
+  describe('when content-type is not application/json', () => {
+    test('no changes are made', () => {
+      const response = {
+        config: {
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          data: JSON.stringify({options: {foo: 42, beta: 43}})
+        },
+      }
+
+      expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, beta: 43}}))
+    })
+  })
+})
+
+describe('redactHeaders', () => {
+  test('when x-wp-nonce is present', () => {
+    expect(redactHeaders({
+      'X-WP-NONCE': 'abc123'
+    })).toEqual({'X-WP-NONCE': 'REDACTED'})
+    expect(redactHeaders({
+      'x-wp-nonce': 'abc123'
+    })).toEqual({'x-wp-nonce': 'REDACTED'})
+    expect(redactHeaders({
+      'X-WP-Nonce': 'abc123'
+    })).toEqual({'X-WP-Nonce': 'REDACTED'})
   })
 })

@@ -21,6 +21,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class ReleaseProviderTest extends TestCase {
 	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
+		'6.1.1',
 		'6.0.0-beta3',
 		'5.4.1',
 		'5.3.1',
@@ -281,20 +282,27 @@ class ReleaseProviderTest extends TestCase {
 		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
 
+	public function test_latest_version_5() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		$this->assertEquals( '5.4.1', $farp->latest_version_5() );
+	}
+
+	public function test_latest_version_6() {
+		$mock_response = self::build_success_response();
+
+		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
+
+		$this->assertEquals( '6.1.1', $farp->latest_version_6() );
+	}
+
 	// Ensure that the ReleaseProvider sorts versions semantically.
 	public function test_versions_with_6_0_0() {
-		$data = graphql_releases_query_fixture();
-
-		// We'll just make a copy of the first release and hack it to have version 6.0.0.
-		$data['latest']['version'] = '6.0.0';
-		$any_release               = $data['releases'][0];
-		$any_release['version']    = '6.0.0';
-		array_push( $data['releases'], $any_release );
-
-		// Add 6.0.0 along with 6.0.0-beta3 and make it latest.
 		$mock_response = wp_json_encode(
 			array(
-				'data' => $data,
+				'data' => graphql_releases_query_fixture(),
 			)
 		);
 
@@ -303,7 +311,44 @@ class ReleaseProviderTest extends TestCase {
 
 		$versions = $farp->versions();
 
-		$this->assertEquals( '6.0.0', $farp->versions()[0] );
-		$this->assertEquals( '6.0.0', $farp->latest_version() );
+		$this->assertEquals( '6.1.1', $farp->versions()[0] );
+
+		/**
+		 * The deprecated latest_version() is defined to be the latest 5.x version,
+		 * because that reflects the data available on api.fontawesome.com, even though
+		 * it's not the absolutely latest version.
+		 */
+		$this->assertEquals( '5.4.1', $farp->latest_version() );
+	}
+
+	/**
+	 * Before changing to keys latest_version_5 and latest_version_6, there was just "latest",
+	 * which referred to the latest FA 5.x release. On the first time the admin user
+	 * loads the admin page after upgrading to the new schema, the initial view will be based
+	 * the release metadata already in the database, which means that the Release Provider
+	 * must be able to be instantiated without error and load itself from that older
+	 * option schema. Once it's refreshed with a new query from the API server, it will
+	 * write the option value with the new schema.
+	 */
+	public function test_loading_from_option_schema_with_latest_key() {
+		$data = graphql_releases_query_fixture();
+
+		$latest_version_5 = $data['latest_version_5']['version'];
+
+		$option_value = array(
+			'refreshed_at' => time(),
+			'data'         => array(
+				'latest'   => $latest_version_5,
+				'releases' => $data['releases'],
+			),
+		);
+
+		update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $option_value, false );
+
+		$farp = FontAwesome_Release_Provider::reset();
+
+		$this->assertEquals( '5.4.1', $farp->latest_version_5() );
+		$this->assertNull( $farp->latest_version_6() );
+		$this->assertEquals( '5.4.1', $farp->latest_version() );
 	}
 }

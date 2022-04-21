@@ -3,10 +3,13 @@ namespace FortAwesome;
 
 function graphql_releases_query_fixture() {
 	return array(
-		'latest'   => array(
+		'latest_version_5' => array(
 			'version' => '5.4.1',
 		),
-		'releases' =>
+		'latest_version_6' => array(
+			'version' => '6.1.1',
+		),
+		'releases'         =>
 		array(
 			0  =>
 			array(
@@ -2175,6 +2178,102 @@ function graphql_releases_query_fixture() {
 					),
 				),
 				'version'       => '6.0.0-beta3',
+			),
+			16 =>
+			array(
+				'date'          => '2022-03-22 00:00:00',
+				'iconCount'     =>
+				array(
+					'free' => 2009,
+					'pro'  => 14074,
+				),
+				'srisByLicense' =>
+				array(
+					'free' =>
+					array(
+						0  =>
+						array(
+							'path'  => 'css/all.css',
+							'value' => 'sha384-/frq1SRXYH/bSyou/HUp/hib7RVN1TawQYja658FEOodR/FQBKVqT9Ol+Oz3Olq5',
+						),
+						1  =>
+						array(
+							'path'  => 'css/brands.css',
+							'value' => 'sha384-GjGxypaJovIS9KvmJ0F1G5aXPEfMvk9dMgnwAAw7UOfX7zTQZMapUiXX/+8HlctD',
+						),
+						2  =>
+						array(
+							'path'  => 'css/fontawesome.css',
+							'value' => 'sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM',
+						),
+						3  =>
+						array(
+							'path'  => 'css/regular.css',
+							'value' => 'sha384-i84Ve3MkmiZYhWmYDjLPpHYYvg36qy5F11ipncNWsQMTrwZ8nGSSX3Q2QnmwEGdR',
+						),
+						4  =>
+						array(
+							'path'  => 'css/solid.css',
+							'value' => 'sha384-DhmF1FmzR9+RBLmbsAts3Sp+i6cZMWQwNTRsew7pO/e4gvzqmzcpAzhDIwllPonQ',
+						),
+						5  =>
+						array(
+							'path'  => 'css/svg-with-js.css',
+							'value' => 'sha384-ET/prSuhSJFD66MbC3j2l1MrZtW8jdamNc+wmMcmh804U+5Isyo29kVkPjr+4+9P',
+						),
+						6  =>
+						array(
+							'path'  => 'css/v4-shims.css',
+							'value' => 'sha384-4Jczmr1SlicmtiAiHGxwWtSzLJAS97HzJsKGqfC0JtZktLrPXIux1u6GJNVRRqiN',
+						),
+						7  =>
+						array(
+							'path'  => 'css/v4-font-face.css',
+							'value' => 'sha384-DPkhMKJRq9+6LzxVlr0poYa5+EQVr/onntse7iwk6coJonLqzoCBzSKF6ccKoXRm',
+						),
+						8  =>
+						array(
+							'path'  => 'css/v5-font-face.css',
+							'value' => 'sha384-QmV/KObe6h/Mb8GC5urJmE9hmFaZDtdnqpCUz9P9nDHFgMeDXyI6IARqnuDRkYu1',
+						),
+						9  =>
+						array(
+							'path'  => 'js/all.js',
+							'value' => 'sha384-xBXmu0dk1bEoiwd71wOonQLyH+VpgR1XcDH3rtxrLww5ajNTuMvBdL5SOiFZnNdp',
+						),
+						10 =>
+						array(
+							'path'  => 'js/brands.js',
+							'value' => 'sha384-jUDsa+5FKZnKIWUpGkvYZHGEx5UxPEu6XJtEMH9ZGXZZkUNVWX1vs+a51vHKs3EY',
+						),
+						11 =>
+						array(
+							'path'  => 'js/fontawesome.js',
+							'value' => 'sha384-9zErGp+biBilRrlpD1l3ExnaqXc8QLITlNpGtb4OL6W1JChl0wwmDNs4U/0UA8L8',
+						),
+						12 =>
+						array(
+							'path'  => 'js/regular.js',
+							'value' => 'sha384-5ZhDHsI9yoa8E6DaGJCLj2Lgi8w4KE42IQi4jvmqYVCaza4Iqi8/hSniWspK7fUs',
+						),
+						13 =>
+						array(
+							'path'  => 'js/solid.js',
+							'value' => 'sha384-KPytPVc+hwHwX9HXl4tA7SWJ0Sob6StzjVRoxC4Q4U0JgXujpuVrkBxR0Hsf8A25',
+						),
+						14 =>
+						array(
+							'path'  => 'js/v4-shims.js',
+							'value' => 'sha384-lUDzd+x9AFWWpLYlM0ZCD+x586cN20gzVDrjHh8HUz22j1QwqTKQGkmd64bfBeZi',
+						),
+						15 =>
+						array(
+							'path'  => 'js/conflict-detection.js',
+							'value' => 'sha384-SgqpzfPaFrGdMcCtSUb4dAD1aDr5a93AfPBL+tk14acF93aGDvasqDcPFbHe24pS',
+						),
+					),
+				),
+				'version'       => '6.1.1',
 			),
 		),
 	);

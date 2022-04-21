@@ -45,7 +45,9 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
-		if ( $force || ! get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
+		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
 			self::initialize_release_metadata();
 		}
 
@@ -78,7 +80,7 @@ class FontAwesome_Activator {
 	 * @internal
 	 */
 	private static function initialize_user_options() {
-		$version = fa()->latest_version();
+		$version = fa()->latest_version_6();
 		$options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => $version ) );
 		update_option( FontAwesome::OPTIONS_KEY, $options );
 	}

@@ -3,7 +3,7 @@ import toPairs from 'lodash/toPairs'
 import size from 'lodash/size'
 import get from 'lodash/get'
 import find from 'lodash/find'
-import reportRequestError from '../util/reportRequestError'
+import reportRequestError, { redactRequestData, redactHeaders } from '../util/reportRequestError'
 import { __ } from '@wordpress/i18n'
 import has from 'lodash/has'
 import sliceJson from '../util/sliceJson'
@@ -21,13 +21,14 @@ export const CONFLICT_DETECTION_SCANNER_DURATION_MIN = 10
 const CONFLICT_DETECTION_SCANNER_DEACTIVATION_DELTA_MS = 1
 
 const COULD_NOT_SAVE_CHANGES_MESSAGE = __( 'Couldn\'t save those changes', 'font-awesome' )
+const REJECTED_METHOD_COULD_NOT_SAVE_CHANGES_MESSAGE = __( 'Changes not saved because your WordPress server does not allow this kind of request. Look for details in the browser console.', 'font-awesome' )
 const COULD_NOT_CHECK_PREFERENCES_MESSAGE = __( 'Couldn\'t check preferences', 'font-awesome' )
 const NO_RESPONSE_MESSAGE = __( 'A request to your WordPress server never received a response', 'font-awesome' )
 const REQUEST_FAILED_MESSAGE = __( 'A request to your WordPress server failed', 'font-awesome' )
 const COULD_NOT_START_SCANNER_MESSAGE = __( 'Couldn\'t start the scanner', 'font-awesome' )
 const COULD_NOT_SNOOZE_MESSAGE = __( 'Couldn\'t snooze', 'font-awesome' )
  
-function preprocessResponse( response ) {
+export function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
 
   if ( 204 === response.status && '' !== response.data ) {
@@ -35,7 +36,7 @@ function preprocessResponse( response ) {
       // clean it up
       response.data = {}
       return response
-  } 
+  }
 
   const data = get(response, 'data', null)
 
@@ -47,12 +48,7 @@ function preprocessResponse( response ) {
   
   // Fixup the response data if garbage was fixed
   if ( foundUnexpectedData) {
-    if ( null === sliced ) {
-      reportRequestError({ error: null, confirmed, trimmed: data })
-      // clean it up
-      response.data = {}
-      return response
-    } else {
+    if ( sliced ) {
       response.data = get(sliced, 'parsed')
     }
   }
@@ -67,9 +63,32 @@ function preprocessResponse( response ) {
       // This is just a normal error response.
       response.uiMessage = reportRequestError({ error: response.data, confirmed, trimmed })
     } else {
-      // This error response has a bad schema
-      response.uiMessage = reportRequestError({ error: null, confirmed, trimmed })
+      const requestMethod = get(response, 'config.method', '').toUpperCase()
+      const requestUrl = get(response, 'config.url')
+      const responseStatus = response.status
+      const responseStatusText = get(response, 'statusText')
+      const requestData = redactRequestData(response)
+      const responseHeaders = redactHeaders(get(response, 'headers', {}))
+      const requestHeaders = redactHeaders(get(response, 'config.headers', {}))
+      const responseData = get(response, 'data')
+
+      response.uiMessage = reportRequestError({
+        confirmed,
+        requestData,
+        requestMethod,
+        requestUrl,
+        responseHeaders,
+        requestHeaders,
+        responseStatus,
+        responseStatusText,
+        responseData
+      })
+
+      if (405 === responseStatus) {
+        response.uiMessage = REJECTED_METHOD_COULD_NOT_SAVE_CHANGES_MESSAGE
+      }
     }
+
     return response
   }
 
@@ -91,7 +110,7 @@ function preprocessResponse( response ) {
    * which we maybe had to fix up.
    *
    * Now we need to detect whether it contains any errors to identify false positives,
-   * or cases where its legitmate for the controller to return an otherwise
+   * or cases where it's legitmate for the controller to return an otherwise
    * successful response that also includes some error data for extra diagnostics.
    */
   if ( errors ) {
@@ -355,7 +374,7 @@ export function chooseAwayFromKitConfig({ activeKitToken }) {
     dispatch({
       type: 'CHOOSE_AWAY_FROM_KIT_CONFIG',
       activeKitToken,
-      concreteVersion: get(releases, 'latest_version')
+      concreteVersion: get(releases, 'latest_version_6')
     })
   }
 }

@@ -178,7 +178,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v6.0.0-beta3/js/conflict-detection.js';
+	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v6.1.1/js/conflict-detection.js';
 
 	/**
 	 * The custom data attribute added to script, link, and style elements enqueued
@@ -462,7 +462,7 @@ class FontAwesome {
 			 * default of the latest available version.
 			 */
 			if ( ! isset( $upgraded_options['version'] ) ) {
-				$upgraded_options['version'] = fa()->latest_version();
+				$upgraded_options['version'] = fa()->latest_version_6();
 			}
 
 			$should_upgrade = true;
@@ -738,6 +738,34 @@ class FontAwesome {
 	}
 
 	/**
+	 * Returns the latest available full release version of Font Awesome 5 as a string,
+	 * or null if the releases metadata has not yet been successfully retrieved from the
+	 * API server.
+	 *
+	 * @since 4.2.0
+	 * @deprecated
+	 *
+	 * @return null|string
+	 */
+	public function latest_version_5() {
+		return $this->release_provider()->latest_version_5();
+	}
+
+	/**
+	 * Returns the latest available full release version of Font Awesome 6 as a string,
+	 * or null if the releases metadata has not yet been successfully retrieved from the
+	 * API server.
+	 *
+	 * @since 4.2.0
+	 * @deprecated
+	 *
+	 * @return null|string
+	 */
+	public function latest_version_6() {
+		return $this->release_provider()->latest_version_6();
+	}
+
+	/**
 	 * Queries the Font Awesome API to load releases metadata. Results are stored
 	 * in the wp database.
 	 *
@@ -786,7 +814,13 @@ class FontAwesome {
 	protected function maybe_refresh_releases() {
 		$refreshed_at = $this->releases_refreshed_at();
 
-		if ( is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERVAL ) {
+		/**
+		 * If we've just upgraded from an older plugin version that didn't have this metadata value,
+		 * then we should refresh to get it.
+		 */
+		$latest_version_6 = $this->latest_version_6();
+
+		if ( is_null( $latest_version_6 ) || is_null( $refreshed_at ) || ( time() - $refreshed_at ) > self::RELEASES_REFRESH_INTERVAL ) {
 			return FontAwesome_Release_Provider::load_releases();
 		} else {
 			return 1;
@@ -1313,7 +1347,8 @@ class FontAwesome {
 				$current_conflicts = FontAwesome_Preference_Conflict_Detector::detect(
 					$options_for_comparison,
 					$client_preferences,
-					$this->latest_version()
+					$this->latest_version_5(),
+					$this->latest_version_6()
 				);
 				if ( count( $current_conflicts ) > 0 ) {
 					$conflicts[ $client_name ] = $current_conflicts;
@@ -1436,19 +1471,23 @@ class FontAwesome {
 	 * and "the latest stable release with major version 6, when available, otherwise
 	 * the latest pre-release with major version 6."
 	 *
-	 * These "5.x" and "6.x" symbolic versions should not be relied upon
-	 * as API at this time, because this schema may change. Suffice it to say
-	 * that if this function does not return a semver parseable version, then
-	 * it probably means that it's one of these symbolic versions, and there's
-	 * currently no way to reliably, programmatically convert that symbolic
-	 * version into the concrete version that will be loaded by the kit.
+	 * So if this function does not return a semver parseable version, then
+	 * it must be one of these symbolic versions.
+	 *
+	 * The recommended way to resolve the symbolic versions 'latest',
+	 * '5.x', or '6.x' into their current concrete values is to query the GraphQL
+	 * API like this:
+	 *
+	 * ```
+	 * query { release(version: "5.x") { version } }
+	 * ```
 	 *
 	 * @since 4.0.0
 	 * @see FontAwesome::latest_version()
 	 * @see FontAwesome::releases_refreshed_at()
 	 * @throws ConfigCorruptionException
 	 * @return string|null null if no version has yet been saved in the options
-	 * in the db. Otherwise, a version string.
+	 * in the db. Otherwise, 5.x, or 6.x, or a semantic version string.
 	 */
 	public function version() {
 		$options = $this->options();
@@ -1573,8 +1612,9 @@ class FontAwesome {
 									'onSettingsPage'       => true,
 									'clientPreferences'    => $this->client_preferences(),
 									'releases'             => array(
-										'available'      => $this->release_provider()->versions(),
-										'latest_version' => $this->latest_version(),
+										'available'        => $this->release_provider()->versions(),
+										'latest_version_5' => $this->latest_version_5(),
+										'latest_version_6' => $this->latest_version_6(),
 									),
 									'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
 									'preferenceConflicts'  => $this->conflicts_by_option(),
