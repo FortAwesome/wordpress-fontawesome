@@ -1,4 +1,4 @@
-import reportRequestError from './reportRequestError'
+import reportRequestError, { redactHeaders, redactRequestData } from './reportRequestError'
 
 console.group = jest.fn()
 console.groupEnd = jest.fn()
@@ -261,5 +261,51 @@ describe('reportRequestError', () => {
         expect.stringMatching(/failure console message/)
       )
     })
+  })
+})
+
+describe('redactRequestData', () => {
+  describe('when options contain string apiToken', () => {
+    test('apiToken is redacted', () => {
+      const response = {
+        config: {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify({options: {foo: 42, apiToken: 'abc123'}})
+        },
+      }
+
+      expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, apiToken: 'REDACTED'}}))
+    })
+  })
+
+  describe('when options contain boolean apiToken status', () => {
+    test('apiToken status is not redacted', () => {
+      const response = {
+        config: {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify({options: {foo: 42, apiToken: true}})
+        },
+      }
+
+      expect(redactRequestData(response)).toEqual(JSON.stringify({options: {foo: 42, apiToken: true}}))
+    })
+  })
+})
+
+describe('redactHeaders', () => {
+  test('when x-wp-nonce is present', () => {
+    expect(redactHeaders({
+      'X-WP-NONCE': 'abc123'
+    })).toEqual({'X-WP-NONCE': 'REDACTED'})
+    expect(redactHeaders({
+      'x-wp-nonce': 'abc123'
+    })).toEqual({'x-wp-nonce': 'REDACTED'})
+    expect(redactHeaders({
+      'X-WP-Nonce': 'abc123'
+    })).toEqual({'X-WP-Nonce': 'REDACTED'})
   })
 })
