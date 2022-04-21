@@ -211,7 +211,7 @@ function report(params) {
 // Expects an axios Response object as an argument.
 export function redactRequestData(response = {}) {
   const requestContentType = get(response, 'config.headers.Content-Type', '').toLowerCase()
-  const requestData = get(response, 'config.data')
+  const requestData = get(response, 'config.data', '')
 
   let redacted = ''
 
@@ -220,7 +220,14 @@ export function redactRequestData(response = {}) {
       const data = JSON.parse(requestData)
       const apiTokenValue = get(data, 'options.apiToken')
 
-      if('bolean' !== typeof apiTokenValue && 'true' !== apiTokenValue && 'false' !== apiTokenValue) {
+      /**
+       * When a kit is configured, and options are submitted for any request, other than the
+       * initial request to save the API token, the value of the apiToken property is just a
+       * boolean indicating whether an API token has been saved. We don't need to redact
+       * that boolean. It's useful to leave it so the error report indicates whether an
+       * apiToken has been successfully saved.
+       */
+      if('boolean' !== typeof apiTokenValue) {
         set(data, 'options.apiToken', 'REDACTED')
       }
 
