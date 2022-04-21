@@ -48,12 +48,7 @@ export function preprocessResponse( response ) {
   
   // Fixup the response data if garbage was fixed
   if ( foundUnexpectedData) {
-    if ( null === sliced ) {
-      reportRequestError({ error: null, confirmed, trimmed: data })
-      // clean it up
-      response.data = {}
-      return response
-    } else {
+    if ( sliced ) {
       response.data = get(sliced, 'parsed')
     }
   }
@@ -93,6 +88,7 @@ export function preprocessResponse( response ) {
         response.uiMessage = REJECTED_METHOD_COULD_NOT_SAVE_CHANGES_MESSAGE
       }
     }
+
     return response
   }
 
@@ -114,7 +110,7 @@ export function preprocessResponse( response ) {
    * which we maybe had to fix up.
    *
    * Now we need to detect whether it contains any errors to identify false positives,
-   * or cases where its legitmate for the controller to return an otherwise
+   * or cases where it's legitmate for the controller to return an otherwise
    * successful response that also includes some error data for extra diagnostics.
    */
   if ( errors ) {
