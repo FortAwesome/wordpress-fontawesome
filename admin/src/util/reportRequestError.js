@@ -138,7 +138,7 @@ function report(params) {
     error = null,
     ok = false,
     falsePositive = false,
-    confirmed = true,
+    confirmed = false,
     expectEmpty = false,
     trimmed = ''
   } = params
