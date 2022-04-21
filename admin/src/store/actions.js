@@ -28,7 +28,7 @@ const REQUEST_FAILED_MESSAGE = __( 'A request to your WordPress server failed', 
 const COULD_NOT_START_SCANNER_MESSAGE = __( 'Couldn\'t start the scanner', 'font-awesome' )
 const COULD_NOT_SNOOZE_MESSAGE = __( 'Couldn\'t snooze', 'font-awesome' )
  
-function preprocessResponse( response ) {
+export function preprocessResponse( response ) {
   const confirmed = has( response, 'headers.fontawesome-confirmation' )
 
   if ( 204 === response.status && '' !== response.data ) {
