@@ -235,9 +235,11 @@ export function redactRequestData(response = {}) {
     } catch(e) {
       redacted = `ERROR while redacting request data: ${e.toString()}`
     }
-  }
 
-  return redacted
+    return redacted
+  } else {
+    return requestData
+  }
 }
 
 export function redactHeaders(headers = {}) {
