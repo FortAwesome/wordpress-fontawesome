@@ -1,5 +1,5 @@
 <?php namespace FontAwesomeCleanup;
-$font_awesome_official_cleanup_nonce = wp_create_nonce( 'font_awesome_official_cleanup_nonce' ); 
+$font_awesome_cleanup_nonce = wp_create_nonce( 'font_awesome_cleanup_nonce' ); 
 $status = isset( $_GET['status'] ) ? $_GET['status'] : null;
 ?>
 
@@ -18,7 +18,7 @@ $status = isset( $_GET['status'] ) ? $_GET['status'] : null;
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="font_awesome_official_cleanup">
-					<input type="hidden" name="font_awesome_official_cleanup_nonce" value="<?= $font_awesome_official_cleanup_nonce ?>" />
+					<input type="hidden" name="font_awesome_cleanup_nonce" value="<?= $font_awesome_cleanup_nonce ?>" />
 					<?php submit_button('Clean Up!'); ?>
 				</form>
 			<?php } ?>
