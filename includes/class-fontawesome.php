@@ -743,7 +743,6 @@ class FontAwesome {
 	 * API server.
 	 *
 	 * @since 4.2.0
-	 * @deprecated
 	 *
 	 * @return null|string
 	 */
@@ -757,7 +756,6 @@ class FontAwesome {
 	 * API server.
 	 *
 	 * @since 4.2.0
-	 * @deprecated
 	 *
 	 * @return null|string
 	 */
