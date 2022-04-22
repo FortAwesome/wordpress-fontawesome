@@ -1,6 +1,6 @@
 <?php namespace FontAwesomeOfficialCleanup;
 
-$font_awesome_official_cleanup_meta_nonce = wp_create_nonce( 'font_awesome_official_cleanup_meta_nonce' ); 
+$font_awesome_official_cleanup_nonce = wp_create_nonce( 'font_awesome_official_cleanup_nonce' ); 
 
 ?>
 
@@ -14,7 +14,7 @@ $font_awesome_official_cleanup_meta_nonce = wp_create_nonce( 'font_awesome_offic
 
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="font_awesome_official_cleanup">
-			<input type="hidden" name="font_awesome_official_cleanup_meta_nonce" value="<?= $font_awesome_official_cleanup_meta_nonce ?>" />
+			<input type="hidden" name="font_awesome_official_cleanup_nonce" value="<?= $font_awesome_official_cleanup_nonce ?>" />
 			<?php submit_button('Clean Up!'); ?>
 		</form>
 	<?php } ?>
