@@ -68,13 +68,12 @@ function cleanup() {
 	$nonce = sanitize_text_field($_POST['font_awesome_official_cleanup_nonce']);
 
 	if( 1 !== wp_verify_nonce( $nonce, 'font_awesome_official_cleanup_nonce') || ! current_user_can( 'manage_options' ) ) {
-		header('Location:'.$_SERVER["HTTP_REFERER"].'?error=unauthenticated');
+		header('Location:'.$_SERVER["HTTP_REFERER"].'&status=nope');
         exit();
 	}
 
-	?>
-	<p>CLEANED UP!</p>
-	<?php
+	header('Location:'.$_SERVER["HTTP_REFERER"].'&status=done');
+	exit();
 }
 
 function font_awesome_plugin_is_active() {
