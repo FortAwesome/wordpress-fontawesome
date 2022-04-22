@@ -1,4 +1,4 @@
-<?php namespace FontAwesomeOfficialCleanup;
+<?php namespace FontAwesomeCleanup;
 $font_awesome_official_cleanup_nonce = wp_create_nonce( 'font_awesome_official_cleanup_nonce' ); 
 $status = isset( $_GET['status'] ) ? $_GET['status'] : null;
 ?>

@@ -1,5 +1,5 @@
 <?php
-namespace FontAwesomeOfficialCleanup;
+namespace FontAwesomeCleanup;
 
 /**
  * Plugin Name:       Font Awesome Official Cleanup
@@ -37,7 +37,7 @@ function admin_page_init() {
 }
 
 function initialize_admin() {
-	add_action('admin_post_font_awesome_official_cleanup', 'FontAwesomeOfficialCleanup\cleanup');
+	add_action('admin_post_font_awesome_official_cleanup', 'FontAwesomeCleanup\cleanup');
 
 	add_action('admin_enqueue_scripts', function(){
 		wp_enqueue_style( plugin_name(), plugin_dir_url() . 'css/style.css', array(), plugin_version(), 'all' );
@@ -49,11 +49,11 @@ function initialize_admin() {
 		'Font Awesome Official Cleanup',
 		'manage_options',
 		plugin_name(),
-		'FontAwesomeOfficialCleanup\create_admin_page'
+		'FontAwesomeCleanup\create_admin_page'
 		);
 	});
 
-	add_action('admin_init', 'FontAwesomeOfficialCleanup\admin_page_init');
+	add_action('admin_init', 'FontAwesomeCleanup\admin_page_init');
 
 	add_filter( 'plugin_action_links_' . trailingslashit(plugin_name()) . plugin_name() . '.php',
 		function($links){
@@ -188,12 +188,12 @@ function filter_action_links( $links ) {
 
 add_filter(
 	'network_admin_plugin_action_links_' . plugin_file(),
-	'FontAwesomeOfficialCleanup\filter_action_links'	
+	'FontAwesomeCleanup\filter_action_links'	
 );
 
 add_filter(
 	'plugin_action_links_' . plugin_file(),
-	'FontAwesomeOfficialCleanup\filter_action_links'	
+	'FontAwesomeCleanup\filter_action_links'	
 );
 
 if( is_admin() ){
