@@ -28,7 +28,7 @@ add_action(
 	}
 );
 
-add_action('wp_print_footer_scripts', function() use($pre_content) {
+add_action('wp_print_footer_scripts', function() {
 ?>
 <div class="plugin-zeta-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Zeta</h2>

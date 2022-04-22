@@ -43,7 +43,7 @@ add_action(
 	}
 );
 
-add_action('wp_print_footer_scripts', function() use($pre_content) {
+add_action('wp_print_footer_scripts', function() {
 ?>
 <div class="<?php echo esc_html__(plugin_eta_fa_classes(), 'font-awesome'); ?>" style="border: 1px solid grey;">
   <h2>Plugin Eta</h2>
