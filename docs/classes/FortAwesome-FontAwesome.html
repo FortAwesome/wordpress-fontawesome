@@ -213,7 +213,7 @@ routes, not to the Font Awesome GraphQL API at <code class="prettyprint">api.fon
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_VERSION">PLUGIN_VERSION</a>
     <span>
-        &nbsp;= &#039;4.1.1&#039;                            </span>
+        &nbsp;= &#039;4.2.0&#039;                            </span>
 </dt>
 <dd>The version of this WordPress plugin.</dd>
 
@@ -282,6 +282,24 @@ configured to load a kit.</dd>
                                 &nbsp;: null|string    </span>
 </dt>
 <dd>Returns the latest available full release version of Font Awesome 5 as a string,
+or null if the releases metadata has not yet been successfully retrieved from the
+API server.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_5">latest_version_5()</a>
+    <span>
+                                &nbsp;: null|string    </span>
+</dt>
+<dd>Returns the latest available full release version of Font Awesome 5 as a string,
+or null if the releases metadata has not yet been successfully retrieved from the
+API server.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_6">latest_version_6()</a>
+    <span>
+                                &nbsp;: null|string    </span>
+</dt>
+<dd>Returns the latest available full release version of Font Awesome 6 as a string,
 or null if the releases metadata has not yet been successfully retrieved from the
 API server.</dd>
 
@@ -512,7 +530,7 @@ a concrete, semver parseable value, like 5.15.3.</dd>
     <span class="phpdocumentor-signature__visibility">public</span>
         <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">PLUGIN_VERSION</span>
-    = <span class="phpdocumentor-signature__default-value">&#039;4.1.1&#039;</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;4.2.0&#039;</span>
 </code>
 
 
@@ -689,7 +707,7 @@ a concrete, semver parseable value, like 5.15.3.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1090</span>
+    <span class="phpdocumentor-element-found-in__line">1122</span>
 
     </aside>
 
@@ -739,7 +757,7 @@ Font Awesome that the site owner has chosen to block from being enqueued.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1500</span>
+    <span class="phpdocumentor-element-found-in__line">1537</span>
 
     </aside>
 
@@ -899,7 +917,7 @@ to run the client-side conflict detection scanner.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1468</span>
+    <span class="phpdocumentor-element-found-in__line">1505</span>
 
     </aside>
 
@@ -1033,6 +1051,104 @@ and the logged in user has the appropriate permissions.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_latest_version_5">
+        latest_version_5()
+        <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_5" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">749</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns the latest available full release version of Font Awesome 5 as a string,
+or null if the releases metadata has not yet been successfully retrieved from the
+API server.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">latest_version_5</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">null|string</span></code>
+
+    
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.2.0</span>
+                                                                                
+                                             
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">null|string</span>
+            &mdash;
+        
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_latest_version_6">
+        latest_version_6()
+        <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_6" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">762</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns the latest available full release version of Font Awesome 6 as a string,
+or null if the releases metadata has not yet been successfully retrieved from the
+API server.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">latest_version_6</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">null|string</span></code>
+
+    
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.2.0</span>
+                                                                                
+                                             
+                                    </dd>
+                        </dl>
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">null|string</span>
+            &mdash;
+        
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_pro">
         pro()
         <a href="classes/FortAwesome-FontAwesome.html#method_pro" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1040,7 +1156,7 @@ and the logged in user has the appropriate permissions.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1386</span>
+    <span class="phpdocumentor-element-found-in__line">1419</span>
 
     </aside>
 
@@ -1097,7 +1213,7 @@ and the logged in user has the appropriate permissions.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1522</span>
+    <span class="phpdocumentor-element-found-in__line">1559</span>
 
     </aside>
 
@@ -1166,7 +1282,7 @@ are always inherently supported by the CSS/Webfont technology.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2845</span>
+    <span class="phpdocumentor-element-found-in__line">2883</span>
 
     </aside>
 
@@ -1375,7 +1491,7 @@ has a HTTP 200 status.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2683</span>
+    <span class="phpdocumentor-element-found-in__line">2721</span>
 
     </aside>
 
@@ -1586,7 +1702,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">773</span>
+    <span class="phpdocumentor-element-found-in__line">799</span>
 
     </aside>
 
@@ -1636,7 +1752,7 @@ refreshed.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1400</span>
+    <span class="phpdocumentor-element-found-in__line">1433</span>
 
     </aside>
 
@@ -1750,7 +1866,7 @@ Yet this is a valid way to determine that.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1486</span>
+    <span class="phpdocumentor-element-found-in__line">1523</span>
 
     </aside>
 
@@ -1814,7 +1930,7 @@ Yet this is a valid way to determine that.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1453</span>
+    <span class="phpdocumentor-element-found-in__line">1490</span>
 
     </aside>
 
@@ -1848,12 +1964,13 @@ major version 5.&quot;</p>
 These mean, respectively: &quot;the latest stable release with major version 5&quot;,
 and &quot;the latest stable release with major version 6, when available, otherwise
 the latest pre-release with major version 6.&quot;</p>
-<p>These &quot;5.x&quot; and &quot;6.x&quot; symbolic versions should not be relied upon
-as API at this time, because this schema may change. Suffice it to say
-that if this function does not return a semver parseable version, then
-it probably means that it's one of these symbolic versions, and there's
-currently no way to reliably, programmatically convert that symbolic
-version into the concrete version that will be loaded by the kit.</p>
+<p>So if this function does not return a semver parseable version, then
+it must be one of these symbolic versions.</p>
+<p>The recommended way to resolve the symbolic versions 'latest',
+'5.x', or '6.x' into their current concrete values is to query the GraphQL
+API like this:</p>
+<pre class="prettyprint"><code class="prettyprint">query { release(version: &quot;5.x&quot;) { version } }
+</code></pre>
 </section>
 
     
@@ -1901,7 +2018,7 @@ version into the concrete version that will be loaded by the kit.</p>
     <span class="phpdocumentor-signature__response_type">string|null</span>
             &mdash;
             <section class="phpdocumentor-description"><p>null if no version has yet been saved in the options
-in the db. Otherwise, a version string.</p>
+in the db. Otherwise, 5.x, or 6.x, or a semantic version string.</p>
 </section>
 
     
