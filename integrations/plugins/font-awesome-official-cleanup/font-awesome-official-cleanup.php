@@ -72,7 +72,7 @@ function cleanup() {
         exit();
 	}
 
-	if ( is_plugin_active_for_network( plugin_name() . '/' . plugin_name() . '.php' ) ) {
+	if ( is_plugin_active_for_network( plugin_file() ) ) {
 		for_each_blog(
 			function( ) {
 				cleanup_site();
@@ -173,6 +173,28 @@ function font_awesome_plugin_is_active() {
 		);
 	})) > 0;
 }
+
+function plugin_file() {
+	return plugin_name() . '/' . plugin_name() . '.php';
+}
+
+function filter_action_links( $links ) {
+	$mylinks = array(
+		'<a href="' . settings_page_url() . '">' . 'Go Clean Up' . '</a>',
+	);
+
+	return array_merge( $links, $mylinks );
+}
+
+add_filter(
+	'network_admin_plugin_action_links_' . plugin_file(),
+	'FontAwesomeOfficialCleanup\filter_action_links'	
+);
+
+add_filter(
+	'plugin_action_links_' . plugin_file(),
+	'FontAwesomeOfficialCleanup\filter_action_links'	
+);
 
 if( is_admin() ){
     initialize_admin();
