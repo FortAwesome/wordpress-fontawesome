@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.1.1
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 5.9
+Tested up to: 5.9.3
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -160,6 +160,13 @@ You can get more information about all the available settings and troubleshootin
 
 
 == Changelog ==
+
+= 4.2.0 =
+* Make Font Awesome 6 the default version on new activations.
+* On the version selection dropdown, distinguish between the latest 5.x and the latest 6.x.
+* Maintenance updates to JavaScript dependencies.
+* Developers: the latest_version() method has been deprecated and replaced by two alternatives:
+  latest_version_5() and latest_version_6().
 
 = 4.1.1 =
 * Simplified upgrade logic: makes the upgrade process on the first page load
