@@ -113,7 +113,7 @@ function for_each_blog( $cb ) {
 			switch_to_blog( $blog_id );
 
 			try {
-				$cb( $blog_id );
+				$cb( $site );
 			} finally {
 				restore_current_blog();
 			}
@@ -188,10 +188,52 @@ add_filter(
 	'FontAwesomeCleanup\filter_action_links'	
 );
 
+function display_cleanup_scope() {
+	$is_cleanup_network_active = is_plugin_active_for_network( plugin_file() );
+
+	$sites = [];
+
+	if ( $is_cleanup_network_active ) {
+		$network_id = get_current_network_id();
+
+		for_each_blog(
+			function( $site ) use (&$sites) {
+				array_push( $sites, $site );
+			}
+		);
+		?>
+		<p>Cleaning ALL sites in network with network_id: <?= $network_id ?>.</p>
+		<p>To clean up only one site, activate this cleanup plugin only on that one site instead of activating it network-wide.</p>
+		<?php
+	} else {
+		array_push( $sites, get_site() );
+		$site = get_site();
+		?>
+		<p>Cleaning ONLY the current site. </p>
+		<p>To clean up all sites in the network, activate this cleanup plugin network-wide instead of activating it only on this site.</p>
+		<?php
+	}
+	?>
+
+	<table>
+		<thead><th>site_id</th><th>domain</th><th>path</th></thead>
+		<tbody>
+			<?php foreach($sites as $site) { ?>
+				<tr>
+					<td><?= $site->blog_id ?></td>
+					<td><?= $site->domain ?></td>
+					<td><?= $site->path ?></td>
+				</tr>
+			<?php }	?>
+		</tbody>
+	</table>
+
+	<?php
+}
+
 function create_admin_page() {
 	$font_awesome_cleanup_nonce = wp_create_nonce( 'font_awesome_cleanup_nonce' ); 
 	$status = isset( $_GET['status'] ) ? $_GET['status'] : null;
-
 	?>
 		<div class="<?= plugin_name() ?>-wrapper">
 			<?php if ( current_user_can( 'manage_options' ) ) { ?>
@@ -204,7 +246,9 @@ function create_admin_page() {
 					<?php } else if ( 'nope' === $status ) { ?>
 						Security check failed. Maybe logout and login again before retrying?
 					<?php } else { ?>
-						Clean up all Font Awesome Official plugin data in the WordPress database.
+						<p>Clean up all Font Awesome plugin data in the WordPress database.</p>
+
+						<?php display_cleanup_scope() ?>
 
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 							<input type="hidden" name="action" value="font_awesome_cleanup">
