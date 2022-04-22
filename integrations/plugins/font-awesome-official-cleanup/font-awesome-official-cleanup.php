@@ -70,6 +70,20 @@ function cleanup() {
 	<?php
 }
 
+function font_awesome_plugin_is_active() {
+	$active_plugins = array_merge(
+		wp_get_active_and_valid_plugins(),
+		wp_get_active_network_plugins()
+	);
+
+	return count(array_filter($active_plugins, function($plugin_name) {
+		return 1 === preg_match(
+			"/font-awesome\/index\.php$/",
+			$plugin_name
+		);
+	})) > 0;
+}
+
 if( is_admin() ){
     initialize_admin();
 }
