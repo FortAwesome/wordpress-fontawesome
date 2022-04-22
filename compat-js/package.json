@@ -1,6 +1,6 @@
 {
   "name": "fa-compat-js",
-  "version": "4.2.0",
+  "version": "4.3.0-1",
   "private": true,
   "dependencies": {
     "@wordpress/api-fetch": "^5.1.1",
