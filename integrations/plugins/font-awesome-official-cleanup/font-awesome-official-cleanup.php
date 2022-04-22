@@ -72,8 +72,92 @@ function cleanup() {
         exit();
 	}
 
+	if ( is_plugin_active_for_network( plugin_name() . '/' . plugin_name() . '.php' ) ) {
+		for_each_blog(
+			function( ) {
+				cleanup_site();
+			}
+		);
+	} else {
+		cleanup_site();
+	}
+
 	header('Location:'.$_SERVER["HTTP_REFERER"].'&status=done');
 	exit();
+}
+
+/**
+ * Iterates through each blog in the current network, switches to it,
+ * and invokes the given callback function, restoring the current blog
+ * after each callback invocation.
+ *
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @internal
+ * @ignore
+ */
+function for_each_blog( $cb ) {
+	$network_id = get_current_network_id();
+	$site_count = get_sites(
+		array(
+			'network_id' => $network_id,
+			'count'      => true,
+		)
+	);
+	$limit      = 100;
+	$offset     = 0;
+
+	while ( $offset < $site_count ) {
+		$sites = get_sites(
+			array(
+				'network_id' => $network_id,
+				'offset'     => $offset,
+				'number'     => $limit,
+			)
+		);
+
+		foreach ( $sites as $site ) {
+			$blog_id = $site->blog_id;
+			switch_to_blog( $blog_id );
+
+			try {
+				$cb( $blog_id );
+			} finally {
+				restore_current_blog();
+			}
+		}
+
+		$offset = $offset + $limit;
+	}
+}
+
+function get_options() {
+	return [
+		'font-awesome',
+		'font-awesome-releases',
+		'font-awesome-conflict-detection',
+		'font-awesome-api-settings'
+	];
+}
+
+function get_transients() {
+	return [
+		'font-awesome-releases',
+		'font-awesome-v3-deprecation-data',
+		'font-awesome-last-used-release'
+	];
+}
+
+function cleanup_site() {
+	foreach(get_options() as $option) {
+		delete_option( $option );
+		delete_site_option( $option );
+	}
+
+	foreach(get_transients() as $transient) {
+		delete_transient($transient);
+		delete_site_transient($transient);
+	}
 }
 
 function font_awesome_plugin_is_active() {
