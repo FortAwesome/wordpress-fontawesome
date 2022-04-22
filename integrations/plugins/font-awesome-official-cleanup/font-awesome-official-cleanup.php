@@ -15,7 +15,7 @@ defined( 'WPINC' ) || die;
 
 function plugin_version() { return '0.0.1'; }
 
-function plugin_name() { return 'font-awesome-official-cleanup'; }
+function plugin_name() { return 'font-awesome-cleanup'; }
 
 function plugin_dir_url() { return \plugin_dir_url( __FILE__ ); }
 
