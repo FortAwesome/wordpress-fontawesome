@@ -17,7 +17,7 @@ $status = isset( $_GET['status'] ) ? $_GET['status'] : null;
 				Clean up all Font Awesome Official plugin data in the WordPress database.
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-					<input type="hidden" name="action" value="font_awesome_official_cleanup">
+					<input type="hidden" name="action" value="font_awesome_cleanup">
 					<input type="hidden" name="font_awesome_cleanup_nonce" value="<?= $font_awesome_cleanup_nonce ?>" />
 					<?php submit_button('Clean Up!'); ?>
 				</form>
