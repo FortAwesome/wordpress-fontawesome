@@ -39,10 +39,6 @@ function admin_page_init() {
 function initialize_admin() {
 	add_action('admin_post_font_awesome_cleanup', 'FontAwesomeCleanup\cleanup');
 
-	add_action('admin_enqueue_scripts', function(){
-		wp_enqueue_style( plugin_name(), plugin_dir_url() . 'css/style.css', array(), plugin_version(), 'all' );
-	});
-
 	add_action('admin_menu', function(){
 		add_options_page(
 		'Font Awesome Official Cleanup',
