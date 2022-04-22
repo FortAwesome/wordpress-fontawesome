@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+$repo_dir = dirname(__DIR__);
+$zip_filename = $repo_dir . '/font-awesome-cleanup.zip';
+
+$zip = new ZipArchive();
+if ($zip->open($zip_filename, ZipArchive::CREATE)!==TRUE) {
+  exit("cannot open <$zip_filename>\n");
+} else {
+    $options = array( 'remove_path' => 'integrations/plugins');
+
+    $zip->addGlob(
+        'integrations/plugins/font-awesome-cleanup/index.php',
+        0,
+        $options
+    );
+
+    $zip->close();
+}
