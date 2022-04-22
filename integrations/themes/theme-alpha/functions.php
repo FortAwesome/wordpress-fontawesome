@@ -10,7 +10,7 @@ define('THEME_ALPHA_LOG_PREFIX', 'theme-alpha');
 define('THEME_ALPHA_VERSION', '0.0.1');
 
 add_action( 'wp_enqueue_scripts', function (){
-  $parent_style = 'twentyseventeen';
+  $parent_style = 'twentytwentytwo';
   // parent
   wp_enqueue_style( $parent_style, get_template_directory_uri() . '/style.css' );
   // child

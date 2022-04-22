@@ -7,7 +7,7 @@
  * @link https://developer.wordpress.org/themes/basics/template-files/#template-partials
  *
  * @package WordPress
- * @subpackage Twenty_Seventeen
+ * @subpackage Twenty_Twenty_Two
  * @since 1.0
  * @version 1.0
  */
@@ -25,7 +25,7 @@ use function FortAwesome\fa;
 
 <body <?php body_class(); ?>>
 <div id="page" class="site">
-	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'twentyseventeen' ); ?></a>
+	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'twentytwentytwo' ); ?></a>
 
 	<header id="masthead" class="site-header" role="banner">
 
@@ -41,9 +41,9 @@ use function FortAwesome\fa;
 
 	<?php
 	// If a regular post or page, and not the front page, show the featured image.
-	if ( has_post_thumbnail() && ( is_single() || ( is_page() && ! twentyseventeen_is_frontpage() ) ) ) :
+	if ( has_post_thumbnail() && ( is_single() || ( is_page() && ! twentytwentytwo_is_frontpage() ) ) ) :
 		echo '<div class="single-featured-image-header">';
-		the_post_thumbnail( 'twentyseventeen-featured-image' );
+		the_post_thumbnail( 'twentytwentytwo-featured-image' );
 		echo '</div><!-- .single-featured-image-header -->';
 	endif;
 	?>
