@@ -251,6 +251,18 @@ jobs:
         WP_PLUGIN_DIR="$(pwd)" \
         COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
         WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-multisite.xml.dist
+
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
+        vendor/bin/phpunit --config phpunit-multisite-network-admin.xml.dist
+
+    - name: Run PHPUnit Multisite SLOW Tests
+      run: |
+        WP_PLUGIN_DIR="$(pwd)" \
+        COMPOSER_VENDOR_DIR="$WP_PLUGIN_DIR/vendor" \
+        WP_TESTS_DIR=${{ steps.wordpress-version.outputs.WP_TESTS_DIR }} \
         vendor/bin/phpunit --config phpunit-multisite.xml.dist --group slow
 
         WP_PLUGIN_DIR="$(pwd)" \

@@ -44,8 +44,6 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
-		FontAwesome_Release_Provider::load_releases();
-
 		if ( $this->is_wp_version_compatible() ) {
 			$sites = create_subsites();
 			foreach ( $sites as $domain => $site_id ) {
@@ -105,7 +103,7 @@ class MultisiteActivationTest extends TestCase {
 			switch_to_blog( $this->sub_sites[1] );
 
 			FontAwesome_Activator::initialize();
-			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
+			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 
 			// It is active there on the second sub-site.
 			$this->assertEquals( $expected_options, get_option( FontAwesome::OPTIONS_KEY ) );
