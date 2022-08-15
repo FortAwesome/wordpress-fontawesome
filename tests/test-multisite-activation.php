@@ -45,7 +45,7 @@ class MultisiteActivationTest extends TestCase {
 					array(
 						'data' => graphql_releases_query_fixture(),
 					)
-				)
+				),
 			)
 		);
 
@@ -87,7 +87,7 @@ class MultisiteActivationTest extends TestCase {
 			FontAwesome_Activator::initialize();
 			$site_count       = 0;
 			$test_obj         = $this;
-			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
+			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version() ) );
 
 			for_each_blog(
 				function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
