@@ -44,6 +44,8 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 
+		FontAwesome_Release_Provider::load_releases();
+
 		if ( $this->is_wp_version_compatible() ) {
 			$sites = create_subsites();
 			foreach ( $sites as $domain => $site_id ) {
