@@ -41,6 +41,11 @@ class MultisiteActivationTest extends TestCase {
 						'data' => graphql_releases_query_fixture(),
 					)
 				),
+				wp_json_encode(
+					array(
+						'data' => graphql_releases_query_fixture(),
+					)
+				)
 			)
 		);
 
