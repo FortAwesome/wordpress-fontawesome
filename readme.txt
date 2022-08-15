@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.2.0
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 6.0
+Tested up to: 6.0.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -26,8 +26,6 @@ Our official plugin lets you use Font Awesome the way you want:
 * Troubleshoot and resolve issues when multiple versions of Font Awesome are loading on your site from other plugins/themes, which can cause unexpected icon display or technical issues.
 * Make things even awesomer using icons from Font Awesome Version 6.
 * Use your uploaded icons from your Pro Kits.
-
-*Note: The plugin is not compatible on WordPress multisite at this time.*
 
 == How to Use ==
 

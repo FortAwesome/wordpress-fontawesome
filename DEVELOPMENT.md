@@ -300,6 +300,44 @@ in the browser automatically. Just refresh your browser page to load the re-buil
 
 ## Optional Development Setup Steps
 <details>
+<summary>Multisite Setup</summary>
+
+Maybe this whole development environment should be adjusted to work with multisite "out of the box".
+But for now, you have to bend over backwards.
+
+We still have phpunit tests that can run locally and are configured to run in CI. So there will
+still be test coverage of the important multisite cases, even if you don't do this setup. But if
+you want to manually explore how the plugin works within the multisite context, then here's how
+you'd do it. (And this is only for the `latest` container.)
+
+[Here's a guide](https://wordpress.org/support/article/create-a-network/) for how to set up a WordPress network (aka multisite). The following summarizes.
+
+1. add some subdomain hosts like `alpha.wp.test` and `beta.wp.test` to your `/etc/hosts`
+1. change the `WP_DOMAIN` env var in `.env` temporarily to be `wp.test:80`
+
+    (because WordPress multisite won't access ports like `wp.test:8765`)
+1. change the `docker-compose.yml` configuration for the service you intend to run, like `wordpress-latest-dev` to override the default `ports`, making it use port 80 both inside and outside the container.
+
+    ```
+     ports:
+       - "80:80"
+    ```
+1. After running the service in the normal way, shell into it and modify `/var/www/html/wp-config.php` to define `WP_ALLOW_MULTISITE` as `true`
+1. Go the `wp-admin` dashboard, look for Tools->Network Setup
+1. Set it up for subdomain use
+1. copy the new `defines` it gives you into `wp-config.php`
+1. update the `/var/www/html/.htaccess` inside the running container with the configuration stuff that WordPress admin console tells you to use.
+1. Reload the `wp-admin` dashboard and find that you now go to "My Sites" from the top nav bar.
+
+    Under "My Sites", go to Network Admin -> Sites.
+    Create the sub-sites, like `alpha.wp.test` and `beta.wp.test`
+
+That's it.
+
+Now, if you're using a `-dev` container, you've already got the Font Awesome plugin mounted (i.e. installed) under Plugins and you can activate it network-wide from the Network Admin plugins page. Or you could activate site-by-site within each of their site-specific Plugins pages.
+</details>
+
+<details>
 <summary>Redis Cache Extra Steps</summary>
 
 If you know that you'll be installing the WP Redis plugin to test behavior with caching,
@@ -533,6 +571,26 @@ bin/phpunit --config phpunit-loader.xml.dist --filter FontAwesomeLoaderTestLifec
 </details>
 
 <details>
+<summary>Run multisite tests without network admin</summary>
+This would simulate the multisite environment, but where actions like activation or deactivation of the plugin
+are initiated from within a particular site's dashboard, rather than from the network dashboard.
+
+```bash
+bin/phpunit --config phpunit-multisite.xml.dist
+```
+</details>
+
+<details>
+<summary>Run multisite tests as network admin</summary>
+This would simulate the multisite environment where actions like activation or deactivation of the plugin
+are initiated from the network admin dashboard.
+
+```bash
+bin/phpunit --config phpunit-multisite-network-admin.xml.dist
+```
+</details>
+
+<details>
 <summary>filter which tests to run</summary>
 The `bin/phpunit` script will pass through command-line arguments to `phpunit` within the container. So you can do something this:
 
@@ -674,6 +732,8 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 # Cut a Release
 
+## Running composer commands for the release
+
 1. Update the Changelog at the end of readme.txt
 
 2. Update the plugin version in the header comments of `index.php`
@@ -687,6 +747,11 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 6. Build the API docs
 
 - run `composer cleandocs` if you want to make sure that you're building from scratch
+
+    (Notice: this runs composer in the host, not the container. It's going to clean up some
+    directories that would not be mounted in the container. So you should make sure that you've
+    got some reasonable version of composer installed in your host environment.)
+
 - run `bin/phpdoc` to build the docs into the `docs/` directory
 
   See also: [Run a Local Docs Server](#run-a-local-docs-server)
@@ -703,22 +768,37 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 7. Build production admin app and WordPress distribution layout into `wp-dist`
 
 ```bash
-$ composer dist
+bin/composer dist
 ```
+
+(Notice, this is `bin/composer`, not just `composer`. So it's going to run inside
+the default dev `latest` container, which you should be running via `bin/dev`.
+This will cause everything to be built inside the container, which will hopefully
+keep the built assets more consistent, regardless of the host environment.)
 
 This will delete the previous build assets and produce the following:
 
-`wp-dist/`: the contents of this directory should be moved into the svn repo for the WordPress plugin
-that will be published through the WordPress plugins directory.
+`wp-dist/`: the contents of this directory contains everything that will be used in
+subsequent steps to both build an installable zip file, and to copy into the
+svg repo for publishing to the WordPress plugins directory.
 
-`font-awesome.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
-This zip file can be distributed as a download for the WordPress plugin and used for installing
-the plugin by "upload" in the WordPress admin dashboard.
-
-`admin/build`: production build of the admin UI React app. This need to be committed so that it
+`admin/build`: production build of the admin UI React app. This needs to be committed so that it
 can be included in the composer package (which is really just a pull of this repo)
 
-8. Run through some manual acceptance testing
+8. Build the zip file
+
+```bash
+bin/make-wp-dist-zip
+```
+
+This builds `font-awesome.zip`, a zip file of the contents of `wp-dist` with path names fixed up.
+
+This zip file is not normally distributed, but since it's just like what would be downloaded
+when installing the plugin from the WordPress plugins directory, it's convenient to use for
+acceptance testing, and could be used as an ad-hoc pre-release, such as a binary attached to
+a GitHub release.
+
+9. Run through some manual acceptance testing
 
 **WordPress 4.7, 4.8, 4.9**
 
@@ -959,7 +1039,7 @@ bin/setup
 
             This should be empty.
 
-9. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
+10. Check out and update the plugin svn repo into `wp-svn` (the scripts expect to find a subdirectory with exactly that name in that location)
 
 To check it out initially:
 
@@ -978,7 +1058,7 @@ $ cd ..
 10. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
 
 ```bash
-$ composer dist2trunk
+bin/dist2trunk
 ```
 
 This script will just `rm *` anything under `wp-svn/trunk/*` and `wp-svn/assets/*` to make sure that if the new dist
@@ -1186,3 +1266,15 @@ directory on each build.
 
 Just open that html file in a web browser to see the analysis of what's actually
 in the bundle.
+
+# Setup Multisite
+
+See [guide here](https://wordpress.org/support/article/create-a-network/)
+
+1. `bin/wp config set WP_ALLOW_MULTISITE true`
+
+## Hack for Running Network Uninstall in Development Mode
+
+```
+wp --allow-root eval 'require_once "wp-content/plugins/font-awesome/includes/class-fontawesome-deactivator.php"; use FortAwesome\FontAwesome_Deactivator; define("WP_NETWORK_ADMIN", true); FontAwesome_Deactivator::uninstall();'
+```

@@ -19,6 +19,7 @@ class FontAwesome_Activator {
 	 * @since 4.0.0
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
+	 * @throws ActivationException
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function activate() {
@@ -42,15 +43,38 @@ class FontAwesome_Activator {
 	 * @internal
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
+	 * @throws ActivationException
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function initialize( $force = false ) {
-		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+		self::initialize_release_metadata();
 
-		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
-			self::initialize_release_metadata();
+		if ( is_multisite() ) {
+			global $wp_version;
+
+			if ( version_compare( $wp_version, '5.1.0', '<' ) ) {
+				throw ActivationException::multisite_requires_at_least_5_1_0();
+			}
 		}
 
+		if ( is_multisite() && is_network_admin() ) {
+			for_each_blog(
+				function( $blog_id ) use ( $force ) {
+					self::initialize_current_site( $force );
+				}
+			);
+		} else {
+			self::initialize_current_site( $force );
+		}
+	}
+
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public static function initialize_current_site( $force ) {
 		if ( $force || ! get_option( FontAwesome::OPTIONS_KEY ) ) {
 			self::initialize_user_options();
 		}
@@ -69,8 +93,13 @@ class FontAwesome_Activator {
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 */
-	private static function initialize_release_metadata() {
-		FontAwesome_Release_Provider::load_releases();
+	private static function initialize_release_metadata( $force = false ) {
+		$release_provider_option = get_option( FontAwesome_Release_Provider::OPTIONS_KEY );
+
+		if ( $force || ! $release_provider_option || ! isset( $release_provider_option['data']['latest_version_6'] ) ) {
+
+			FontAwesome_Release_Provider::load_releases();
+		}
 	}
 
 	/**

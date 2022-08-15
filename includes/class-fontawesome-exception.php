@@ -256,7 +256,7 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
 }
 
 /**
- * Thrown when a an options configuration is attempted that does not pass validation.
+ * Thrown when an options configuration is attempted that does not pass validation.
  *
  * @since 4.0.0
  */
@@ -330,6 +330,29 @@ class ConfigSchemaException extends FontAwesome_ClientException {
 		return new static(
 			esc_html__(
 				'Whoops! Font Awesome Pro Version 6 is not available from CDN. Please use a Kit.',
+				'font-awesome'
+			)
+		);
+	}
+}
+
+/**
+ * Thrown when the plugin is activated on a site that does not meet
+ * compatibility requirements.
+ *
+ * @since 4.2.0
+ */
+class ActivationException extends FontAwesome_ClientException {
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function multisite_requires_at_least_5_1_0() {
+		return new static(
+			esc_html__(
+				'This plugin supports WordPress Multisite only for WordPress versions 5.1.0 or newer.',
 				'font-awesome'
 			)
 		);

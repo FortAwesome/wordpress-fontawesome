@@ -126,7 +126,7 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.2.0';
+	const PLUGIN_VERSION = '4.3.0-1';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
@@ -545,6 +545,18 @@ class FontAwesome {
 		if ( boolval( $release_metadata ) ) {
 			update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $release_metadata, false );
 		}
+
+		/**
+		 * Delete the old release metadata transient, if it exists.
+		 * It's no longer stored as a transient.
+		 */
+		delete_transient( 'font-awesome-releases' );
+
+		/**
+		 * Delete the old font-awesome-last-used-release site transient, if it exists.
+		 * It's no longer stored as a site (network-wide) transient.
+		 */
+		delete_site_transient( 'font-awesome-last-used-release' );
 
 		/**
 		 * Now we'll reset the release provider.
@@ -3169,6 +3181,51 @@ EOT;
 }
 
 /**
+ * Iterates through each blog in the current network, switches to it,
+ * and invokes the given callback function, restoring the current blog
+ * after each callback invocation.
+ *
+ * Internal use only, not part of this plugin's public API.
+ *
+ * @internal
+ * @ignore
+ */
+function for_each_blog( $cb ) {
+	$network_id = get_current_network_id();
+	$site_count = get_sites(
+		array(
+			'network_id' => $network_id,
+			'count'      => true,
+		)
+	);
+	$limit      = 100;
+	$offset     = 0;
+
+	while ( $offset < $site_count ) {
+		$sites = get_sites(
+			array(
+				'network_id' => $network_id,
+				'offset'     => $offset,
+				'number'     => $limit,
+			)
+		);
+
+		foreach ( $sites as $site ) {
+			$blog_id = $site->blog_id;
+			switch_to_blog( $blog_id );
+
+			try {
+				$cb( $blog_id );
+			} finally {
+				restore_current_blog();
+			}
+		}
+
+		$offset = $offset + $limit;
+	}
+}
+
+/**
  * Convenience global function to get a singleton instance of the main Font Awesome
  * class.
  *
@@ -3179,4 +3236,34 @@ EOT;
  */
 function fa() {
 	return FontAwesome::instance();
+}
+
+/**
+ * This hook ensures that when we're in multisite mode, and a new site is activated
+ * after an initial plugin activation, that the plugin is initialized for that newly
+ * created site, but only if this plugin is otherwise network activated.
+ *
+ * If the plugin is only activated on a per-site basis, then creating a new site should
+ * not result in this plugin automatically being activated for it.
+ */
+if ( is_multisite() ) {
+	add_action(
+		'wp_initialize_site',
+		function ( $site ) {
+			if ( ! is_network_admin( FONTAWESOME_PLUGIN_FILE ) ) {
+				return;
+			}
+
+			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
+			switch_to_blog( $site->blog_id );
+
+			try {
+				FontAwesome_Activator::initialize_current_site( false );
+			} finally {
+				restore_current_blog();
+			}
+		},
+		99,
+		1
+	);
 }

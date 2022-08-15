@@ -1,6 +1,6 @@
 {
   "name": "font-awesome-admin",
-  "version": "4.2.0",
+  "version": "4.3.0-1",
   "private": true,
   "dependencies": {
     "@fortawesome/fa-icon-chooser-react": "0.3.0",
@@ -71,10 +71,10 @@
     "enzyme-adapter-react-16": "^1.15.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "0.63.4",
     "react-test-renderer": "16.13.1",
     "redux-mock-store": "^1.5.4",
     "rewire": "^5.0.0",
+    "terser": "4.8.1",
     "webpack-bundle-analyzer": "^4.4.2"
   }
 }

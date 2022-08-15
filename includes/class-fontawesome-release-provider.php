@@ -121,7 +121,7 @@ class FontAwesome_Release_Provider {
 	 * @throws ReleaseMetadataMissingException
 	 */
 	private function __construct() {
-		$option_value = get_option( self::OPTIONS_KEY );
+		$option_value = self::get_option();
 
 		if ( $option_value ) {
 			$this->releases     = $option_value['data']['releases'];
@@ -226,7 +226,7 @@ EOD;
 			),
 		);
 
-		update_option( self::OPTIONS_KEY, $option_value, false );
+		self::update_option( $option_value );
 	}
 
 	/**
@@ -358,7 +358,7 @@ EOD;
 		}
 
 		// If this is the same query as last time, then our LAST_USED_RELEASE_TRANSIENT should be current.
-		$last_used_transient = get_site_transient( self::LAST_USED_RELEASE_TRANSIENT );
+		$last_used_transient = self::get_last_used_release();
 
 		if ( $last_used_transient ) {
 			// For simplicity, we're require that it's exactly what we're looking for, else we'll re-build and overwrite it.
@@ -399,7 +399,7 @@ EOD;
 			'resources'         => $resources,
 		);
 
-		set_site_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+		self::update_last_used_release( $transient_value );
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
 	}
@@ -453,6 +453,87 @@ EOD;
 	 */
 	public function latest_version_6() {
 		return $this->latest_version_6;
+	}
+
+	/**
+	 * In multisite mode, we will store the releases metadata just once for the
+	 * whole network in a network option.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function update_option( $option_value ) {
+		if ( is_multisite() ) {
+			$network_id = get_current_network_id();
+			return update_network_option( $network_id, self::OPTIONS_KEY, $option_value );
+		} else {
+			return update_option( self::OPTIONS_KEY, $option_value, false );
+		}
+	}
+
+	/**
+	 * In multisite mode, we will store the releases metadata just once for the
+	 * whole network in a network option.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function get_option() {
+		if ( is_multisite() ) {
+			$network_id = get_current_network_id();
+			return get_network_option( $network_id, self::OPTIONS_KEY );
+		} else {
+			return get_option( self::OPTIONS_KEY );
+		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function delete_option() {
+		if ( is_multisite() ) {
+			$network_id = get_current_network_id();
+			return delete_network_option( $network_id, self::OPTIONS_KEY );
+		} else {
+			return delete_option( self::OPTIONS_KEY );
+		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function get_last_used_release() {
+		return get_transient( self::LAST_USED_RELEASE_TRANSIENT );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function update_last_used_release( $transient_value ) {
+		return set_transient( self::LAST_USED_RELEASE_TRANSIENT, $transient_value, self::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function delete_last_used_release() {
+		return delete_transient( self::LAST_USED_RELEASE_TRANSIENT );
 	}
 }
 

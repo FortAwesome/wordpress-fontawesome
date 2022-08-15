@@ -92,25 +92,42 @@ function reset_db() {
 		}
 	}
 
-	if ( ! delete_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
+	if ( ! FontAwesome_Release_Provider::delete_option()  ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) {
+		if ( FontAwesome_Release_Provider::get_option() ) {
 			throw new Exception( 'Unsuccessful clearing the Releases option.' );
 		}
 	}
 
-	if ( ! delete_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
+	if ( ! FontAwesome_Release_Provider::delete_last_used_release() ) {
 		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
-			throw new Exception( 'Unsuccessful clearing the Last Used Release site transient.' );
-		}
-	}
-
-	if ( ! delete_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
-		// false could mean either that it doesn't exist, or that the delete wasn't successful.
-		if ( get_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ) ) {
+		if ( FontAwesome_Release_Provider::get_last_used_release() ) {
 			throw new Exception( 'Unsuccessful clearing the Last Used Release transient.' );
 		}
 	}
 }
 
+function create_subsites($domains = ['alpha.example.com', 'beta.example.com']) {
+	if ( ! is_multisite() ) {
+		throw new \Exception("expected to be in multisite mode");
+	}
+
+	$results = array();
+
+	if ( ! function_exists('wp_insert_site') ) {
+		global $wp_version;
+		throw new \Exception("wp_insert_site was not introduced until WordPress 5.1.0, but you're on: $wp_version");
+	}
+
+	foreach( $domains as $domain ) {
+		$site_id = wp_insert_site( [ 'domain' => $domain ] );
+
+		if ( is_wp_error( $site_id ) ) {
+			throw new \Exception();
+		}
+
+		$results[$domain] = $site_id;
+	}
+
+	return $results;
+}
