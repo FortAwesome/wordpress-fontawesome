@@ -16,7 +16,9 @@
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
     "web-vitals": "^1.0.1",
-    "use-subscription": "1.5.1"
+    "use-subscription": "1.5.1",
+    "moment": "^2.29.4",
+    "moment-timezone": "0.5.35"
   },
   "scripts": {
     "build": "wp-scripts build --webpack-no-externals",
