@@ -1,1 +1,0 @@
-(window.webpackJsonp_font_awesome_admin=window.webpackJsonp_font_awesome_admin||[]).push([[18],{287:function(e,o,n){"use strict";n.r(o);var s=n(171),t=n.n(s);o.default=e=>t.a.get(e).then(e=>e.status>=200||e.satus<=299?e.data:(console.error(e),Promise.reject("Font Awesome plugin unexpected response for Icon Chooser"))).catch(e=>(console.error(e),Promise.reject(e)))}}]);
