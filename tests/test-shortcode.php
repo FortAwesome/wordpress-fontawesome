@@ -58,5 +58,7 @@ class ShortcodeTest extends TestCase {
 			'/<i.*?\saria-label="blah".*?>.*?<\/i>/',
 			$content
 		);
+
+		$this->assertMatchesRegularExpression( '/<i class="fass fa-coffee">.*?<\/i>/', do_shortcode( '[icon prefix="fass" name="coffee"/]' ) );
 	}
 }
