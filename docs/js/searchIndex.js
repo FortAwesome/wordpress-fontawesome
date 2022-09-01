@@ -108,8 +108,13 @@ Search.appendIndex(
         },                {
             "fqsen": "\\FortAwesome\\ConfigSchemaException",
             "name": "ConfigSchemaException",
-            "summary": "Thrown\u0020when\u0020a\u0020an\u0020options\u0020configuration\u0020is\u0020attempted\u0020that\u0020does\u0020not\u0020pass\u0020validation.",
+            "summary": "Thrown\u0020when\u0020an\u0020options\u0020configuration\u0020is\u0020attempted\u0020that\u0020does\u0020not\u0020pass\u0020validation.",
             "url": "classes/FortAwesome-ConfigSchemaException.html"
+        },                {
+            "fqsen": "\\FortAwesome\\ActivationException",
+            "name": "ActivationException",
+            "summary": "Thrown\u0020when\u0020the\u0020plugin\u0020is\u0020activated\u0020on\u0020a\u0020site\u0020that\u0020does\u0020not\u0020meet\ncompatibility\u0020requirements.",
+            "url": "classes/FortAwesome-ActivationException.html"
         },                {
             "fqsen": "\\FortAwesome\\PreferenceRegistrationException",
             "name": "PreferenceRegistrationException",
