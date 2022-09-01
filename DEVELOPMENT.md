@@ -778,12 +778,10 @@ keep the built assets more consistent, regardless of the host environment.)
 
 This will delete the previous build assets and produce the following:
 
-`wp-dist/`: the contents of this directory contains everything that will be used in
-subsequent steps to both build an installable zip file, and to copy into the
-svg repo for publishing to the WordPress plugins directory.
-
-`admin/build`: production build of the admin UI React app. This needs to be committed so that it
+`admin/build`: production build of the admin UI React app. This needs to be committed, so that it
 can be included in the composer package (which is really just a pull of this repo)
+
+`compat-js/build`: production build of the compatibility JS bundled. This also needs to be committed.
 
 8. Build the zip file
 
@@ -791,7 +789,13 @@ can be included in the composer package (which is really just a pull of this rep
 bin/make-wp-dist-zip
 ```
 
-This builds `font-awesome.zip`, a zip file of the contents of `wp-dist` with path names fixed up.
+This builds the following:
+
+`wp-dist/`: the contents of this directory contains everything that will be used in
+subsequent steps to both build an installable zip file, and to copy into the
+svg repo for publishing to the WordPress plugins directory.
+
+`font-awesome.zip`: a zip file of the contents of `wp-dist` with path names fixed up.
 
 This zip file is not normally distributed, but since it's just like what would be downloaded
 when installing the plugin from the WordPress plugins directory, it's convenient to use for
