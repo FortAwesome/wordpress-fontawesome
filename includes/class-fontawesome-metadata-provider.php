@@ -109,6 +109,7 @@ class FontAwesome_Metadata_Provider {
 				'Content-Type' => 'application/json',
 			),
 			'body'    => '{"query": ' . wp_json_encode( $query_string ) . '}',
+			'timeout' => 10, // seconds.
 		);
 
 		if ( ! $ignore_auth ) {
