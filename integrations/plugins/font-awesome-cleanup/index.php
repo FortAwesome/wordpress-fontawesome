@@ -191,6 +191,12 @@ add_filter(
 );
 
 function display_cleanup_scope() {
+	if ( is_multisite() ) {
+		display_cleanup_scope_multisite();
+	}
+}
+
+function display_cleanup_scope_multisite() {
 	$is_cleanup_network_active = is_plugin_active_for_network( plugin_file() );
 
 	$sites = [];
