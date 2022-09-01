@@ -5,7 +5,7 @@ namespace FontAwesomeCleanup;
  * Plugin Name:       Font Awesome Cleanup
  * Plugin URI:        https://fontawesome.com/
  * Description:       Cleans out Font Awesome plugin settings from the WordPress database, including any child sites in multisite.
- * Version:           0.0.2
+ * Version:           0.0.3
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
  * License:           GPLv2 (or later)
@@ -13,7 +13,9 @@ namespace FontAwesomeCleanup;
 
 defined( 'WPINC' ) || die;
 
-function plugin_version() { return '0.0.2'; }
+require_once trailingslashit( __DIR__ ) . 'utils.php';
+
+function plugin_version() { return '0.0.3'; }
 
 function plugin_name() { return 'font-awesome-cleanup'; }
 
@@ -154,8 +156,8 @@ function cleanup_site() {
 
 function font_awesome_plugin_is_active() {
 	$active_plugins = array_merge(
-		wp_get_active_and_valid_plugins(),
-		wp_get_active_network_plugins()
+		fa_get_active_and_valid_plugins(),
+		fa_get_active_network_plugins()
 	);
 
 	return count(array_filter($active_plugins, function($plugin_name) {
@@ -189,6 +191,12 @@ add_filter(
 );
 
 function display_cleanup_scope() {
+	if ( is_multisite() ) {
+		display_cleanup_scope_multisite();
+	}
+}
+
+function display_cleanup_scope_multisite() {
 	$is_cleanup_network_active = is_plugin_active_for_network( plugin_file() );
 
 	$sites = [];

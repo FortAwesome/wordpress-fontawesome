@@ -10,7 +10,7 @@ if ($zip->open($zip_filename, ZipArchive::CREATE)!==TRUE) {
     $options = array( 'remove_path' => 'integrations/plugins');
 
     $zip->addGlob(
-        'integrations/plugins/font-awesome-cleanup/index.php',
+        'integrations/plugins/font-awesome-cleanup/*.php',
         0,
         $options
     );
