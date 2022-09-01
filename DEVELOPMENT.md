@@ -1120,7 +1120,15 @@ password. After the first `svn ci` caches the credentials, you probably won't ne
 
 [See also tips on using SVN with WordPress Plugins](https://developer.wordpress.org/plugins/wordpress-org/how-to-use-subversion/#editing-existing-files).
 
-13. Create the new svn release tag
+13. OPTIONAL: Test Installation from WordPress Plugins Directory
+
+Once the trunk has been committed above, this new version is available as the current "Development Version",
+available for download as a ZIP file from the plugin's [Advanced View](https://wordpress.org/plugins/font-awesome/advanced/). (See the dropdown under the header: "Please select a specific version to download.")
+
+To try it out, you could start up a clean integration environment from this repo, and then
+install the plugin using that downloaded ZIP file.
+
+14. Create the new svn release tag
 
 First, make sure `svn stat` is clean. We want to make sure that the trunk is all committed and clean before we take a
 snapshot of it for the release tag.
@@ -1131,7 +1139,7 @@ This will snapshot `trunk` as a new release tag. Replace the example tag name wi
 svn cp trunk tags/42.1.2
 ```
 
-14. Update `Stable tag` and `Tested up to` tags in `readme.txt`
+15. Update `Stable tag` and `Tested up to` tags in `readme.txt`
 
 We've now got three copies of `readme.txt` that should all be updated with new tag values:
 
@@ -1139,7 +1147,7 @@ We've now got three copies of `readme.txt` that should all be updated with new t
 - `wp-svn/tags/<new_tag_name>/readme.txt`
 - `readme.txt` (in the git repo)
 
-15. Check in the latest changes to svn.
+16. Check in the latest changes to svn.
 
 (Again, use the real version number)
 
@@ -1149,7 +1157,7 @@ From the `wp-svn` dir:
 svn ci -m 'Release 42.1.2'
 ```
 
-16. `git add` and `git commit` all that would have been changed so far:
+17. `git add` and `git commit` all that would have been changed so far:
 
 - `docs/`
 - `admin/build`
@@ -1158,12 +1166,12 @@ svn ci -m 'Release 42.1.2'
 - `admin/package.json`
 - `readme.txt`
 
-17. `git push` to GitHub remote
+18. `git push` to GitHub remote
 
 Single release commits can be pushed directly to `master`. If there are several commits, push to a topic branch and squash/merge
 them into `master` as a single commit.
 
-18. Create a GitHub release that tags that new release commit
+19. Create a GitHub release that tags that new release commit
 
 # Run a Local Docs Server
 
