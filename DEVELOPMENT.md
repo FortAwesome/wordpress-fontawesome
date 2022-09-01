@@ -1072,8 +1072,7 @@ they will show up as file changes when you do `svn stat`.
 11. Make sure the svn trunk makes sense with respect to added or removed files
 
 ```bash
-$ cd wp-svn
-$ svn stat
+cd wp-svn && svn stat
 ```
 
 If there are files with `!` status, that indicates they no longer exist and you should do `svn delete` on each of them.
@@ -1081,7 +1080,7 @@ If there are files with `!` status, that indicates they no longer exist and you 
 You can do `svn delete` on lots of files with that status at once like this:
 
 ```bash
-$ svn stat | grep '^\!' | sed 's/^\![\ ]*trunk/trunk/' | xargs svn delete
+svn stat | grep '^\!' | sed 's/^\![\ ]*trunk/trunk/' | xargs svn delete
 ```
 
 If there are files with `?` status, that indicates they are being added and you should do `svn add` on each of them.
@@ -1100,7 +1099,7 @@ change. So you'll end up removing the old ones and adding the new ones.
 If there's an editor dotfile or other directory that should be ignored by `svn`, you can do something like this:
 
 ```bash
-$ svn propset svn:ignore .idea .
+svn propset svn:ignore .idea .
 ```
 
 12. Check in the new trunk
@@ -1113,7 +1112,7 @@ It should point to the previous release that has a subdirectory under `tags/`.
 `svn ci` is what publishes the plugin code to the WordPress plugins directory, making it public.
 
 ```bash
-$ svn ci -m 'Update trunk for release 42.1.2'
+svn ci -m 'Update trunk for release 42.1.2'
 ```
 
 If you're not already authenticated to `svn`, add the `--username` option to `svn ci` and it will prompt you for your
@@ -1129,7 +1128,7 @@ snapshot of it for the release tag.
 This will snapshot `trunk` as a new release tag. Replace the example tag name with the real release tag name.
 
 ```bash
-$ svn cp trunk tags/42.1.2
+svn cp trunk tags/42.1.2
 ```
 
 14. Update `Stable tag` and `Tested up to` tags in `readme.txt`
@@ -1147,7 +1146,7 @@ We've now got three copies of `readme.txt` that should all be updated with new t
 From the `wp-svn` dir:
 
 ```bash
-$ svn ci -m 'Release 42.1.2'
+svn ci -m 'Release 42.1.2'
 ```
 
 16. `git add` and `git commit` all that would have been changed so far:
