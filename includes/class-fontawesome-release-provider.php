@@ -466,7 +466,7 @@ EOD;
 	 */
 	public static function update_option( $option_value ) {
 		if ( is_multisite() ) {
-			$network_id = get_current_network_id();
+			$network_id = get_main_network_id();
 			return update_network_option( $network_id, self::OPTIONS_KEY, $option_value );
 		} else {
 			return update_option( self::OPTIONS_KEY, $option_value, false );
@@ -484,7 +484,7 @@ EOD;
 	 */
 	public static function get_option() {
 		if ( is_multisite() ) {
-			$network_id = get_current_network_id();
+			$network_id = get_main_network_id();
 			return get_network_option( $network_id, self::OPTIONS_KEY );
 		} else {
 			return get_option( self::OPTIONS_KEY );
