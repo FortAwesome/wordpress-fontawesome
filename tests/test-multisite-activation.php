@@ -31,13 +31,13 @@ class MultisiteActivationTest extends TestCase {
 			throw new \Exception();
 		}
 
-		$this->original_blog_id = get_current_blog_id();
+		$this->original_blog_id    = get_current_blog_id();
 		$this->original_network_id = get_current_network_id();
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters( 'wp_is_large_network' );
-		add_action( 'add_network', [$this, 'handle_add_network'], 99, 2 );
+		add_action( 'add_network', array( $this, 'handle_add_network' ), 99, 2 );
 		FontAwesome::reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
@@ -73,16 +73,16 @@ class MultisiteActivationTest extends TestCase {
 
 		switch_to_blog( $this->original_blog_id );
 
-		// Delete all sites on the non-original network
+		// Delete all sites on the non-original network.
 		foreach ( $this->added_network_ids as $network_id ) {
 			\switch_to_network( $network_id );
 			$sites = get_sites(
 				array(
-					'network_id' => $network_id
+					'network_id' => $network_id,
 				)
 			);
 
-			foreach( $sites as $site ) {
+			foreach ( $sites as $site ) {
 				wp_delete_site( $site->ID );
 			}
 		}
@@ -287,44 +287,44 @@ class MultisiteActivationTest extends TestCase {
 		// This activates network wide, for all sites that exist at the time.
 		FontAwesome_Activator::initialize();
 
-		// Now create a new network
+		// Now create a new network.
 		$new_network_id = self::add_network();
 
-		// switch to it
+		// Switch to it.
 		\switch_to_network( $new_network_id );
 
 		FontAwesome_Release_Provider::reset();
 
 		// This should not throw an exception, despite switching networks.
 		$ver = fa()->latest_version_6();
-		$this->assertEquals($ver, "6.1.1");
+		$this->assertEquals( $ver, '6.1.1' );
 	}
 
 	public static function add_network() {
-		$sub_domain = dechex(rand(PHP_INT_MIN, PHP_INT_MAX));
-		$domain = "$sub_domain.example.com";
-		$path = "/";
+		$sub_domain = dechex( wp_rand( PHP_INT_MIN, PHP_INT_MAX ) );
+		$domain     = "$sub_domain.example.com";
+		$path       = '/';
 
-		$admin_user = get_users( [ 'role' => 'administrator' ] )[0];
-		$result = \add_network(
+		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
+		$result     = \add_network(
 			array(
 				'domain'           => $domain,
 				'path'             => '/',
 				'site_name'        => $domain,
 				'network_name'     => $domain,
 				'user_id'          => $admin_user->ID,
-				'network_admin_id' => $admin_user->ID
+				'network_admin_id' => $admin_user->ID,
 			)
 		);
 
 		if ( is_wp_error( $result ) ) {
-			throw new \Exception("failed creating network . \n" . print_r($result, true));
+			throw new \Exception( 'failed creating network' );
 		}
 
 		return $result;
 	}
 
-	public function handle_add_network($network_id, $params) {
+	public function handle_add_network( $network_id, $params ) {
 		array_push( $this->added_network_ids, $network_id );
 	}
 }
