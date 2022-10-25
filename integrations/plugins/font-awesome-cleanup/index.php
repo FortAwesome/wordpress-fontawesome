@@ -72,6 +72,10 @@ function cleanup() {
 				cleanup_site();
 			}
 		);
+
+		foreach ( get_options() as $option ) {
+			delete_network_option( get_current_network_id(), $option );
+		}
 	} else {
 		cleanup_site();
 	}
@@ -204,6 +208,8 @@ function display_cleanup_scope_multisite() {
 	if ( $is_cleanup_network_active ) {
 		$network_id = get_current_network_id();
 
+		$networks = get_networks();
+
 		for_each_blog(
 			function( $site ) use (&$sites) {
 				array_push( $sites, $site );
@@ -212,6 +218,10 @@ function display_cleanup_scope_multisite() {
 		?>
 		<p>Cleaning ALL sites in network with network_id: <?= $network_id ?>.</p>
 		<p>To clean up only one site, activate this cleanup plugin only on that one site instead of activating it network-wide.</p>
+		<?php if ( count( $networks ) > 0 ) { ?>
+		<p>There are <?php echo count( $networks ) - 1 ?> other networks that will not be affected by this cleanup.</p>
+		<p>To clean up multiple <em>networks</em>, network activate this cleanup plugin for each network, and run this cleanup for each network.</p>
+		<?php } ?>
 		<?php
 	} else {
 		array_push( $sites, get_site() );
