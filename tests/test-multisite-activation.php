@@ -4,6 +4,7 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once dirname( __FILE__ ) . '/_support/wp-multi-network-functions.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
@@ -11,8 +12,10 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class MultisiteActivationTest
  */
 class MultisiteActivationTest extends TestCase {
-	protected $sub_sites        = array();
-	protected $original_blog_id = null;
+	protected $sub_sites           = array();
+	protected $original_blog_id    = null;
+	protected $original_network_id = null;
+	protected $added_network_ids   = array();
 
 	public function set_up() {
 		parent::set_up();
@@ -29,10 +32,12 @@ class MultisiteActivationTest extends TestCase {
 		}
 
 		$this->original_blog_id = get_current_blog_id();
+		$this->original_network_id = get_current_network_id();
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters( 'wp_is_large_network' );
+		add_action( 'add_network', [$this, 'handle_add_network'], 99, 2 );
 		FontAwesome::reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
@@ -64,7 +69,25 @@ class MultisiteActivationTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
+		remove_all_actions( 'add_network' );
+
 		switch_to_blog( $this->original_blog_id );
+
+		// Delete all sites on the non-original network
+		foreach ( $this->added_network_ids as $network_id ) {
+			\switch_to_network( $network_id );
+			$sites = get_sites(
+				array(
+					'network_id' => $network_id
+				)
+			);
+
+			foreach( $sites as $site ) {
+				wp_delete_site( $site->ID );
+			}
+		}
+
+		\switch_to_network( $this->original_network_id );
 
 		foreach ( $this->sub_sites as $blog_id ) {
 			wp_delete_site( $blog_id );
@@ -245,5 +268,59 @@ class MultisiteActivationTest extends TestCase {
 		sort( $visited_blog_ids );
 
 		$this->assertEquals( $all_site_blog_ids, $visited_blog_ids );
+	}
+
+	public function test_add_network_after_activation() {
+		if ( ! $this->is_wp_version_compatible() ) {
+			$this->assertTrue( true );
+			return;
+		}
+
+		if ( ! is_network_admin() ) {
+			// Do nothing when we're not in network admin mode.
+			$this->assertTrue( true );
+			return;
+		}
+
+		$test_obj = $this;
+
+		// This activates network wide, for all sites that exist at the time.
+		FontAwesome_Activator::initialize();
+
+		// Now create a new network
+		$new_network_id = self::add_network();
+
+		// switch to it
+		\switch_to_network( $new_network_id );
+
+		fa()->latest_version_6();
+	}
+
+	public static function add_network() {
+		$sub_domain = dechex(rand(PHP_INT_MIN, PHP_INT_MAX));
+		$domain = "$sub_domain.example.com";
+		$path = "/";
+
+		$admin_user = get_users( [ 'role' => 'administrator' ] )[0];
+		$result = \add_network(
+			array(
+				'domain'           => $domain,
+				'path'             => '/',
+				'site_name'        => $domain,
+				'network_name'     => $domain,
+				'user_id'          => $admin_user->ID,
+				'network_admin_id' => $admin_user->ID
+			)
+		);
+
+		if ( is_wp_error( $result ) ) {
+			throw new \Exception("failed creating network . \n" . print_r($result, true));
+		}
+
+		return $result;
+	}
+
+	public function handle_add_network($network_id, $params) {
+		array_push( $this->added_network_ids, $network_id );
 	}
 }
