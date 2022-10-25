@@ -499,7 +499,7 @@ EOD;
 	 */
 	public static function delete_option() {
 		if ( is_multisite() ) {
-			$network_id = get_current_network_id();
+			$network_id = get_main_network_id();
 			return delete_network_option( $network_id, self::OPTIONS_KEY );
 		} else {
 			return delete_option( self::OPTIONS_KEY );
