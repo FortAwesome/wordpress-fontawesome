@@ -293,7 +293,11 @@ class MultisiteActivationTest extends TestCase {
 		// switch to it
 		\switch_to_network( $new_network_id );
 
-		fa()->latest_version_6();
+		FontAwesome_Release_Provider::reset();
+
+		// This should not throw an exception, despite switching networks.
+		$ver = fa()->latest_version_6();
+		$this->assertEquals($ver, "6.1.1");
 	}
 
 	public static function add_network() {
