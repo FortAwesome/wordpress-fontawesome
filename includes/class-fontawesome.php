@@ -489,12 +489,28 @@ class FontAwesome {
 			$should_upgrade = true;
 		}
 
+		if ( is_multisite() && ! boolval( get_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY ) ) ) {
+			/**
+			 * Handle possible multisite upgrade from 4.3.1.
+			 * In 4.3.1 the release metadata might have been stored in a network
+			 * option associated with a non-main network. As of 4.3.2, it's
+			 * always stored on a network option associated with the main network.
+			 * So if we're in multisite mode and we don't find the release metadata
+			 * on a network option associated with the main network, we need to fix it up.
+			 */
+			$should_upgrade = true;
+		}
+
 		if ( $should_upgrade ) {
 			$this->validate_options( $options );
 
 			$this->maybe_update_last_used_release_schema_for_upgrade();
 
-			$this->maybe_move_release_metadata_for_upgrade();
+			if ( is_multisite() ) {
+				$this->maybe_move_release_metadata_for_upgrade_multisite();
+			} else {
+				$this->maybe_move_release_metadata_for_upgrade_single_site();
+			}
 
 			/**
 			 * Delete the main option to make sure it's removed entirely, including
@@ -529,7 +545,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	private function maybe_move_release_metadata_for_upgrade() {
+	private function maybe_move_release_metadata_for_upgrade_single_site() {
 		if ( boolval( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) ) {
 			// If this option is set, then we're all caught up.
 			return;
@@ -557,6 +573,68 @@ class FontAwesome {
 		 * It's no longer stored as a site (network-wide) transient.
 		 */
 		delete_site_transient( 'font-awesome-last-used-release' );
+
+		/**
+		 * Now we'll reset the release provider.
+		 *
+		 * If we've fallen through to this point, and we haven't found the release
+		 * metadata stored in one of the previous locations, then this will throw an
+		 * exception.
+		 */
+		FontAwesome_Release_Provider::reset();
+	}
+
+	/**
+	 * If upgrading from 4.3.1 to 4.3.2 or beyond, and we don't have the release
+	 * metadata stored on a network option associated with the main network,
+	 * we need to find it on a non-main network and move it to main network.
+	 *
+	 * If we can't find it on a non-main network, either, then that's an
+	 * exception. We intentionally will not query the API server, since
+	 * issuing a blocking request on upgrade is known to cause load problems
+	 * and request timeouts.
+	 *
+	 * Internal use only.
+	 *
+	 * @throws ReleaseMetadataMissingException
+	 * @ignore
+	 * @internal
+	 */
+	private function maybe_move_release_metadata_for_upgrade_multisite() {
+		if ( ! is_multisite() ) {
+			return;
+		}
+
+		if ( boolval( get_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY ) ) ) {
+			// If there's already release metadata on a network option for the main network, we're done.
+			return;
+		}
+
+		foreach ( get_networks() as $network ) {
+			$option_value = get_network_option( $network->id, FontAwesome_Release_Provider::OPTIONS_KEY );
+
+			if ( is_array( $option_value ) ) {
+				$result = update_network_option( get_main_network_id(),  FontAwesome_Release_Provider::OPTIONS_KEY, $option_value );
+
+				if ( ! $result ) {
+					throw UpgradeException::multisite_network_option_update();
+				}
+
+				delete_network_option( $network->id, FontAwesome_Release_Provider::OPTIONS_KEY );
+
+				/**
+				 * Return early, once we've found what we're looking for.
+				 * While it's possible that there are additional non-main networks that also
+				 * have options with release metadata, it's unlikely. Regardless,
+				 * since this upgrade process happens on a normal front-end page load,
+				 * we don't want to do any unnecessary processing here. The only reason
+				 * to go searching through other network options would be to clean up
+				 * any additional obsolete data. We'll leave that clean up to the plugin's
+				 * uninstall logic.
+				 */
+				return;
+			}
+		}
 
 		/**
 		 * Now we'll reset the release provider.
