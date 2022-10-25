@@ -57,48 +57,14 @@ class MultisiteUpgradeTest extends TestCase {
 	}
 
 	public function test_try_upgrade_on_main_network_when_release_metatdata_stored_in_non_main_network() {
-		if ( ! is_multisite() ) {
-			throw new \Exception();
-		}
-
-		/**
-		 * As of 4.3.2, the initialize() that will have run in the set_up() above will have put the release metadata
-		 * in a network option associated with the main network.
-		 * In 4.3.1, it would have been stored in a network option associated with the *current* network
-		 * at the time of retrieval and storage.
-		 *
-		 * So to simulate the scenario that would have been possible in 4.3.1, we'll move it to a non-main network,
-		 * such that the release metadata are stored on an option associated with the *current* network at the time
-		 * of retrieval and storage.
-		 */
-
-		// Create a new, non-main network.
-		$new_network_id = self::add_network();
-		$main_network_id = get_main_network_id();
-
-		// Get the metadata that would have been stored on a main network option.
-		$opt = get_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY );
-
-		// Put it on an option associated with the new network.
-		update_network_option( $new_network_id, FontAwesome_Release_Provider::OPTIONS_KEY, $opt );
-
-		// And get rid of the original one on the main network.
-		delete_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY );
-
-		$this->assertFalse( get_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
-		$this->assertArrayHasKey( 'refreshed_at', get_network_option( $new_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
-
-		// Clear options cache.
-		wp_cache_delete ( 'alloptions', 'options' );
-
-		// Expecting no exception to be thrown.
-		$this->assertNull( fa()->try_upgrade() );
-
-		$this->assertFalse( get_network_option( $new_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
-		$this->assertArrayHasKey( 'refreshed_at', get_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
+		$this->run_multisite_upgrade_test( true );
 	}
 
 	public function test_try_upgrade_on_non_main_network_when_release_metatdata_stored_in_non_main_network() {
+		$this->run_multisite_upgrade_test( false );
+	}
+
+	public function run_multisite_upgrade_test($run_on_main_network = true) {
 		if ( ! is_multisite() ) {
 			throw new \Exception();
 		}
@@ -133,9 +99,11 @@ class MultisiteUpgradeTest extends TestCase {
 		// Clear options cache.
 		wp_cache_delete ( 'alloptions', 'options' );
 
-		// Now switch to that new network.
-		\switch_to_network( $new_network_id );
-	
+		if ( ! $run_on_main_network ) {
+			// Now switch to that new network.
+			\switch_to_network( $new_network_id );
+		}
+
 		// Expecting no exception to be thrown.
 		$this->assertNull( fa()->try_upgrade() );
 
