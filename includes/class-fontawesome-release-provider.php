@@ -500,7 +500,7 @@ EOD;
 	public static function delete_option() {
 		if ( is_multisite() ) {
 			$result_accumulator = true;
-		
+
 			/**
 			 * Delete the network option for all networks.
 			 * In 4.3.1, it's possible that this option could have been created in
@@ -510,7 +510,7 @@ EOD;
 			 * Starting in 4.3.2, we only store the releases metadata on an option associated with the main network.
 			 */
 			foreach ( get_networks() as $network ) {
-				$current_result = delete_network_option( $network->id, self::OPTIONS_KEY );
+				$current_result     = delete_network_option( $network->id, self::OPTIONS_KEY );
 				$result_accumulator = $result_accumulator && $current_result;
 			}
 

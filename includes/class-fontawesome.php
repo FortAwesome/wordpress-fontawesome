@@ -614,7 +614,7 @@ class FontAwesome {
 			$option_value = get_network_option( $network->id, FontAwesome_Release_Provider::OPTIONS_KEY );
 
 			if ( is_array( $option_value ) ) {
-				$result = update_network_option( get_main_network_id(),  FontAwesome_Release_Provider::OPTIONS_KEY, $option_value );
+				$result = update_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY, $option_value );
 
 				if ( ! $result ) {
 					throw UpgradeException::multisite_network_option_update();
