@@ -9,7 +9,6 @@ namespace FortAwesome;
 // phpcs:ignoreFile Generic.Commenting.DocComment.MissingShort
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once dirname( __FILE__ ) . '/_support/wp-multi-network-functions.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 class MultisiteUpgradeTest extends TestCase {
@@ -45,10 +44,9 @@ class MultisiteUpgradeTest extends TestCase {
 			)
 		);
 
-		// This activates network wide, for all sites that exist at the time.
-		FontAwesome_Activator::initialize();
+		FontAwesome_Release_Provider::load_releases();
 
-		add_action( 'add_network', array( $this, 'handle_add_network' ), 99, 2 );
+		add_action( 'add_network', curry_add_network_handler( $this->added_network_ids ), 99, 2 );
 	}
 
 	public function tear_down() {
@@ -81,7 +79,7 @@ class MultisiteUpgradeTest extends TestCase {
 		 */
 
 		// Create a new, non-main network.
-		$new_network_id = self::add_network();
+		$new_network_id = add_network();
 		$main_network_id = get_main_network_id();
 
 		// Get the metadata that would have been stored on a main network option.
@@ -104,38 +102,14 @@ class MultisiteUpgradeTest extends TestCase {
 			\switch_to_network( $new_network_id );
 		}
 
+		// This activates network wide, for all sites that exist at the time on the current network.
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
+		update_option( FontAwesome::OPTIONS_KEY, $expected_options );
+
 		// Expecting no exception to be thrown.
 		$this->assertNull( fa()->try_upgrade() );
 
 		$this->assertFalse( get_network_option( $new_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
 		$this->assertArrayHasKey( 'refreshed_at', get_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
-	}
-
-	public function handle_add_network( $network_id, $params ) {
-		array_push( $this->added_network_ids, $network_id );
-	}
-
-	public static function add_network() {
-		$sub_domain = dechex( wp_rand( PHP_INT_MIN, PHP_INT_MAX ) );
-		$domain     = "$sub_domain.example.com";
-		$path       = '/';
-
-		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
-		$result     = \add_network(
-			array(
-				'domain'           => $domain,
-				'path'             => '/',
-				'site_name'        => $domain,
-				'network_name'     => $domain,
-				'user_id'          => $admin_user->ID,
-				'network_admin_id' => $admin_user->ID,
-			)
-		);
-
-		if ( is_wp_error( $result ) ) {
-			throw new \Exception( 'failed creating network' );
-		}
-
-		return $result;
 	}
 }
