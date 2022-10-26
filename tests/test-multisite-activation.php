@@ -4,7 +4,6 @@ namespace FortAwesome;
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
 require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
 require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once dirname( __FILE__ ) . '/_support/wp-multi-network-functions.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
@@ -37,7 +36,7 @@ class MultisiteActivationTest extends TestCase {
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters( 'wp_is_large_network' );
-		add_action( 'add_network', array( $this, 'handle_add_network' ), 99, 2 );
+		add_action( 'add_network', curry_add_network_handler( $this->added_network_ids ), 99, 2 );
 		FontAwesome::reset();
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
@@ -288,7 +287,7 @@ class MultisiteActivationTest extends TestCase {
 		FontAwesome_Activator::initialize();
 
 		// Now create a new network.
-		$new_network_id = self::add_network();
+		$new_network_id = add_network();
 
 		// Switch to it.
 		\switch_to_network( $new_network_id );
@@ -301,33 +300,5 @@ class MultisiteActivationTest extends TestCase {
 
 		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 		$this->assertEquals( $expected_options, fa()->options() );
-	}
-
-	public static function add_network() {
-		$sub_domain = dechex( wp_rand( PHP_INT_MIN, PHP_INT_MAX ) );
-		$domain     = "$sub_domain.example.com";
-		$path       = '/';
-
-		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
-		$result     = \add_network(
-			array(
-				'domain'           => $domain,
-				'path'             => '/',
-				'site_name'        => $domain,
-				'network_name'     => $domain,
-				'user_id'          => $admin_user->ID,
-				'network_admin_id' => $admin_user->ID,
-			)
-		);
-
-		if ( is_wp_error( $result ) ) {
-			throw new \Exception( 'failed creating network' );
-		}
-
-		return $result;
-	}
-
-	public function handle_add_network( $network_id, $params ) {
-		array_push( $this->added_network_ids, $network_id );
 	}
 }
