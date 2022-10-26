@@ -1,6 +1,6 @@
 {
   "name": "font-awesome-admin",
-  "version": "4.3.1",
+  "version": "4.3.2-1",
   "private": true,
   "dependencies": {
     "@fortawesome/fa-icon-chooser-react": "0.4.1",

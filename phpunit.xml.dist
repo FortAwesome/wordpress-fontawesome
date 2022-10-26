@@ -15,6 +15,8 @@
 			<directory prefix="test-" suffix=".php">./tests/</directory>
 			<exclude>./tests/loader/</exclude>
 			<exclude>./tests/test-multisite-activation.php</exclude>
+			<exclude>./tests/test-multisite-deactivation.php</exclude>
+			<exclude>./tests/test-multisite-upgrade.php</exclude>
 		</testsuite>
 	</testsuites>
 </phpunit>

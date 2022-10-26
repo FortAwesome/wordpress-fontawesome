@@ -131,3 +131,41 @@ function create_subsites($domains = ['alpha.example.com', 'beta.example.com']) {
 
 	return $results;
 }
+
+if ( is_multisite() ) :
+	require_once dirname( __FILE__ ) . '/wp-multi-network-functions.php';
+
+	function add_network() {
+		$sub_domain = dechex( wp_rand( -2147483648, 2147483647 ) );
+		$domain     = "$sub_domain.example.com";
+		$path       = '/';
+
+		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
+		$result     = \add_network(
+			array(
+				'domain'           => $domain,
+				'path'             => '/',
+				'site_name'        => $domain,
+				'network_name'     => $domain,
+				'user_id'          => $admin_user->ID,
+				'network_admin_id' => $admin_user->ID,
+			)
+		);
+
+		if ( is_wp_error( $result ) ) {
+			throw new \Exception( 'failed creating network' );
+		}
+
+		return $result;
+	}
+
+	function curry_add_network_handler( &$network_ids ) {
+		return function ( $network_id, $params ) use ( &$network_ids ) {
+			if ( ! is_array( $network_ids ) ) {
+				return null;
+			}
+
+			array_push( $network_ids, $network_id );
+		};
+	}
+endif;

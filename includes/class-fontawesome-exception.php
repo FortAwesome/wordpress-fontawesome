@@ -591,4 +591,19 @@ class UpgradeException extends FontAwesome_ServerException {
 			)
 		);
 	}
+
+	/**
+	 * Internal use only.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function multisite_network_option_update() {
+		return new static(
+			esc_html__(
+				'Failed updating release metadata on a main network option when trying to upgrade the Font Awesome plugin in multisite mode.',
+				'font-awesome'
+			)
+		);
+	}
 }

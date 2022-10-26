@@ -46,11 +46,13 @@ class FontAwesome_Deactivator {
 		} else {
 			self::delete_options();
 		}
+
+		// This one handles its own multisite considerations.
+		FontAwesome_Release_Provider::delete_option();
 	}
 
 	private static function delete_options() {
 		delete_option( FontAwesome::OPTIONS_KEY );
-		FontAwesome_Release_Provider::delete_option();
 		delete_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY );
 		delete_option( FontAwesome_API_Settings::OPTIONS_KEY );
 	}
