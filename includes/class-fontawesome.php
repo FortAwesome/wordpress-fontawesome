@@ -597,6 +597,7 @@ class FontAwesome {
 	 * Internal use only.
 	 *
 	 * @throws ReleaseMetadataMissingException
+	 * @throws UpgradeException
 	 * @ignore
 	 * @internal
 	 */
