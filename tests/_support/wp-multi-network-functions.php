@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 /**
  * Multi-network functions.
  *
