@@ -136,7 +136,7 @@ if ( is_multisite() ) :
 	require_once dirname( __FILE__ ) . '/wp-multi-network-functions.php';
 
 	function add_network() {
-		$sub_domain = dechex( wp_rand( PHP_INT_MIN, PHP_INT_MAX ) );
+		$sub_domain = dechex( wp_rand( -2147483648, 2147483647 ) );
 		$domain     = "$sub_domain.example.com";
 		$path       = '/';
 
