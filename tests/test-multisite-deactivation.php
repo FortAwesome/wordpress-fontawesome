@@ -98,10 +98,7 @@ class MultisiteDeactivationTest extends TestCase {
 			\switch_to_network( $new_network_id );
 		}
 
-		//FontAwesome_Deactivator::deactivate();
 		FontAwesome_Deactivator::uninstall();
-		//delete_network_option( $new_network_id, FontAwesome_Release_Provider::OPTIONS_KEY );
-		//delete_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY );
 
 		$this->assertFalse( get_network_option( $new_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
 		$this->assertFalse( get_network_option( $main_network_id, FontAwesome_Release_Provider::OPTIONS_KEY ) );
