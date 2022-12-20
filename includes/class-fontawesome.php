@@ -2906,23 +2906,23 @@ EOT;
 	 */
 	public function process_shortcode( $params ) {
 		$defaults = array(
-				'name'            => '',
-				'prefix'          => self::DEFAULT_PREFIX,
-				'class'           => '',
-				'style'           => null,
-				'aria-hidden'     => null,
-				'aria-label'      => null,
-				'aria-labelledby' => null,
-				'title'           => null,
-				'role'            => null,
-			);
+			'name'            => '',
+			'prefix'          => self::DEFAULT_PREFIX,
+			'class'           => '',
+			'style'           => null,
+			'aria-hidden'     => null,
+			'aria-label'      => null,
+			'aria-labelledby' => null,
+			'title'           => null,
+			'role'            => null,
+		);
 
 		$escaped_params = array();
 
 		foreach ( $defaults as $key => $value ) {
-			if ( array_key_exists($key, $params) ) {
-				$escaped = esc_js( $params[$key] );
-				$escaped_params[$key] = $escaped;
+			if ( array_key_exists( $key, $params ) ) {
+				$escaped                = esc_js( $params[ $key ] );
+				$escaped_params[ $key ] = $escaped;
 			}
 		}
 

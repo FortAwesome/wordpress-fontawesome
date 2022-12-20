@@ -7,36 +7,34 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 /**
  * Class ShortcodeTest
  */
-class ShortcodeTest extends TestCase
-{
-	public static function set_up_before_class()
-	{
+class ShortcodeTest extends TestCase {
+
+	public static function set_up_before_class() {
 		add_shortcode(
 			FontAwesome::SHORTCODE_TAG,
-			array(fa(), 'process_shortcode')
+			array( fa(), 'process_shortcode' )
 		);
 	}
 
-	public function test_shortcode()
-	{
-		$this->assertMatchesRegularExpression('/<i class="fas fa-coffee">.*?<\/i>/', do_shortcode('[icon name="coffee"/]'));
+	public function test_shortcode() {
+		$this->assertMatchesRegularExpression( '/<i class="fas fa-coffee">.*?<\/i>/', do_shortcode( '[icon name="coffee"/]' ) );
 
 		$this->assertMatchesRegularExpression(
 			'/<i class="far fa-bell">.*?<\/i>/',
-			do_shortcode('[icon prefix="far" name="bell" /]')
+			do_shortcode( '[icon prefix="far" name="bell" /]' )
 		);
 
 		$this->assertMatchesRegularExpression(
 			'/<i class="fas fa-coffee fa-2x foo">.*?<\/i>/',
-			do_shortcode('[icon class="fa-2x foo" name="coffee" /]')
+			do_shortcode( '[icon class="fa-2x foo" name="coffee" /]' )
 		);
 
 		$this->assertMatchesRegularExpression(
 			'/<i class="fas fa-coffee" style="color: red;">.*?<\/i>/',
-			do_shortcode('[icon style="color: red;" name="coffee" /]')
+			do_shortcode( '[icon style="color: red;" name="coffee" /]' )
 		);
 
-		$content = do_shortcode('[icon role="img" aria-label="blah" aria-labelledby="foo" aria-hidden="true" title="coffee" name="coffee" /]');
+		$content = do_shortcode( '[icon role="img" aria-label="blah" aria-labelledby="foo" aria-hidden="true" title="coffee" name="coffee" /]' );
 
 		$this->assertMatchesRegularExpression(
 			'/<i.*?\sclass="fas fa-coffee".*?>.*?<\/i>/',
@@ -63,15 +61,14 @@ class ShortcodeTest extends TestCase
 			$content
 		);
 
-		$this->assertMatchesRegularExpression('/<i class="fass fa-coffee">.*?<\/i>/', do_shortcode('[icon prefix="fass" name="coffee"/]'));
+		$this->assertMatchesRegularExpression( '/<i class="fass fa-coffee">.*?<\/i>/', do_shortcode( '[icon prefix="fass" name="coffee"/]' ) );
 	}
 
-	public function test_shortcode_sanitization()
-	{
-		$short_code = <<<'EOD'
+	public function test_shortcode_sanitization() {
+		 $short_code = <<<'EOD'
 [icon name='coffee' alpha='bar' title=' "onmouseover="alert(1)']
 EOD;
-		//$this->assertMatchesRegularExpression('/<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)">.*?<\/i>/', do_shortcode($short_code));
-		$this->assertEquals('<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)"></i>', do_shortcode($short_code));
+		// $this->assertMatchesRegularExpression('/<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)">.*?<\/i>/', do_shortcode($short_code));
+		$this->assertEquals( '<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)"></i>', do_shortcode( $short_code ) );
 	}
 }
