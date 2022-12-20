@@ -65,10 +65,10 @@ class ShortcodeTest extends TestCase {
 	}
 
 	public function test_shortcode_sanitization() {
-		 $short_code = <<<'EOD'
+		// phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found
+		$short_code = <<<'EOD'
 [icon name='coffee' alpha='bar' title=' "onmouseover="alert(1)']
 EOD;
-		// $this->assertMatchesRegularExpression('/<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)">.*?<\/i>/', do_shortcode($short_code));
 		$this->assertEquals( '<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)"></i>', do_shortcode( $short_code ) );
 	}
 }
