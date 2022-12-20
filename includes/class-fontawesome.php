@@ -2905,12 +2905,7 @@ EOT;
 	 * @ignore
 	 */
 	public function process_shortcode( $params ) {
-		/**
-		 * TODO: add extras to shortcode
-		 * class: just add extra classes
-		 */
-		$atts = shortcode_atts(
-			array(
+		$defaults = array(
 				'name'            => '',
 				'prefix'          => self::DEFAULT_PREFIX,
 				'class'           => '',
@@ -2920,8 +2915,24 @@ EOT;
 				'aria-labelledby' => null,
 				'title'           => null,
 				'role'            => null,
-			),
-			$params,
+			);
+
+		$escaped_params = array();
+
+		foreach ( $defaults as $key => $value ) {
+			if ( array_key_exists($key, $params) ) {
+				$escaped = esc_js( $params[$key] );
+				$escaped_params[$key] = $escaped;
+			}
+		}
+
+		/**
+		 * TODO: add extras to shortcode
+		 * class: just add extra classes
+		 */
+		$atts = shortcode_atts(
+			$defaults,
+			$escaped_params,
 			self::SHORTCODE_TAG
 		);
 
