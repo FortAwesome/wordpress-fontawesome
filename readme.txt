@@ -162,6 +162,9 @@ You can get more information about all the available settings and troubleshootin
 
 == Changelog ==
 
+= 4.3.2 =
+* Security Fix: escape shortcode attribute values.
+
 = 4.3.1 =
 * Increase network request timeout to accommodate some slow-running Icon Chooser searches.
   We've recently added some new functionality to the Font Awesome API server. We're in
