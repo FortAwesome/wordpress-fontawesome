@@ -21,7 +21,9 @@
     "@wordpress/babel-preset-default": "6.2.0",
     "@wordpress/scripts": "16.1.4",
     "terser": "4.8.1",
-    "babel-plugin-lodash": "^3.3.4"
+    "babel-plugin-lodash": "^3.3.4",
+    "loader-utils": "^1.4.2",
+    "decode-uri-component": "^0.2.1"
   },
   "scripts": {
     "build": "wp-scripts build --webpack-no-externals"

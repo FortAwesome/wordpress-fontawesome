@@ -1,4 +1,5 @@
 <?php
+
 namespace FortAwesome;
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
@@ -7,6 +8,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class ShortcodeTest
  */
 class ShortcodeTest extends TestCase {
+
 	public static function set_up_before_class() {
 		add_shortcode(
 			FontAwesome::SHORTCODE_TAG,
@@ -60,5 +62,13 @@ class ShortcodeTest extends TestCase {
 		);
 
 		$this->assertMatchesRegularExpression( '/<i class="fass fa-coffee">.*?<\/i>/', do_shortcode( '[icon prefix="fass" name="coffee"/]' ) );
+	}
+
+	public function test_shortcode_sanitization() {
+		// phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found
+		$short_code = <<<'EOD'
+[icon name='coffee' alpha='bar' title=' "onmouseover="alert(1)']
+EOD;
+		$this->assertEquals( '<i class="fas fa-coffee" title=" &quot;onmouseover=&quot;alert(1)"></i>', do_shortcode( $short_code ) );
 	}
 }
