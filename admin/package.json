@@ -78,6 +78,7 @@
     "rewire": "^5.0.0",
     "terser": "4.8.1",
     "webpack-bundle-analyzer": "^4.4.2",
-    "loader-utils": "^1.4.2"
+    "loader-utils": "^1.4.2",
+    "decode-uri-component": "^0.2.1"
   }
 }
