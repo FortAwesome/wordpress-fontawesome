@@ -66,7 +66,7 @@
     "@wordpress/jest-preset-default": "7.0.5",
     "@wordpress/primitives": "2.1.1",
     "@wordpress/rich-text": "4.1.5",
-    "@wordpress/scripts": "16.1.4",
+    "@wordpress/scripts": "25.1.0",
     "babel-plugin-lodash": "^3.3.4",
     "dotenv": "^14.2.0",
     "enzyme": "^3.11.0",
@@ -78,7 +78,7 @@
     "rewire": "^5.0.0",
     "terser": "4.8.1",
     "webpack-bundle-analyzer": "^4.4.2",
-    "loader-utils": "^1.4.2",
+    "loader-utils": "^3.2.1",
     "decode-uri-component": "^0.2.1"
   }
 }
