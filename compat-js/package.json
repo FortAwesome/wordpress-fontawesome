@@ -19,10 +19,10 @@
   },
   "devDependencies": {
     "@wordpress/babel-preset-default": "6.2.0",
-    "@wordpress/scripts": "16.1.4",
+    "@wordpress/scripts": "25.1.0",
     "terser": "4.8.1",
     "babel-plugin-lodash": "^3.3.4",
-    "loader-utils": "^1.4.2",
+    "loader-utils": "^3.2.1",
     "decode-uri-component": "^0.2.1"
   },
   "scripts": {
