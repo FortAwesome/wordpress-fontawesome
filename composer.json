@@ -54,7 +54,7 @@
         "squizlabs/php_codesniffer": "^3.5.8",
         "wp-coding-standards/wpcs": "^2.3.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-        "phpunit/phpunit": "^7.4.5",
+        "phpunit/phpunit": "^8",
         "yoast/phpunit-polyfills": "^1.0",
         "yoast/wp-test-utils": "^1.0"
     },
