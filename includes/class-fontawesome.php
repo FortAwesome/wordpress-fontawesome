@@ -1943,7 +1943,7 @@ class FontAwesome {
 
 							$script_content = <<< EOT
 window.__FontAwesome__WP__KitConfig__ = {
-	detectConflictsUntil: ${detect_conflicts_until}
+	detectConflictsUntil: {$detect_conflicts_until}
 }
 
 Object.defineProperty(window, 'FontAwesomeKitConfig', {
