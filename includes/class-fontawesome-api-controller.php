@@ -92,18 +92,35 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'query' ),
-					'permission_callback' => function() {
+					'permission_callback' => function( $request ) {
 						/**
 						 * It's possible that a non-admin user may need to be able
 						 * to issue requests through this API Controller, such as
 						 * when searching through the Font Awesome API search via
-						 * an icon chooser. That's why 'edit_posts' is allowed here.
+						 * an icon chooser. That's why 'edit_posts' is allowed here,
+						 * by default.
 						 *
 						 * However, it seems there are cases where a user may be
 						 * able to manage_options but not edit_posts, so we'll include
-						 * that permission separately.
+						 * that permission separately, by default.
+						 *
+						 * Finally, we'll filter it so developers can further customize.
 						 */
-						return current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' ); },
+
+						/**
+						 * Filters the `permission_callback` for the plugin's
+						 * REST endpoint that queries the Font Awesome search API.
+						 *
+						 * See also: WordPress REST API [`permission_callback`](https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/#permissions-callback) documentation.
+						 *
+						 * @param WP_REST_Request
+						 */
+						return apply_filters(
+							'font_awesome_query_api_permission_callback',
+							current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' ),
+							$request,
+						);
+					},
 					'args'                => array(),
 				),
 			)
