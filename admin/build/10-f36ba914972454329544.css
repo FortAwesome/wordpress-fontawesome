@@ -186,8 +186,7 @@ button .jRDHFr0fk9vh0tmPg3yyNA\=\= {
 .YGOg\+3jg-Q6uUjZrsKJJBw\=\=:checked ~ label .AX07i\+p1n9K\+g4HYk3mvOg\=\= a:hover,
 .YGOg\+3jg-Q6uUjZrsKJJBw\=\= ~ label .AX07i\+p1n9K\+g4HYk3mvOg\=\= a:hover {
     color: #228be6;
-    -webkit-text-decoration-color: initial;
-            text-decoration-color: initial;
+    text-decoration-color: initial;
 }
 
 
