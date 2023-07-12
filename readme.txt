@@ -162,6 +162,13 @@ You can get more information about all the available settings and troubleshootin
 
 == Changelog ==
 
+= 4.4.0 =
+* Update the Icon Chooser to fix the use of Sharp Solid in more recent versions of Font Awesome,
+  and include Sharp Regular and Sharp Light.
+* Add the "defer" attribute to script tags when in "Use a Kit" mode. This was already the behavior
+  under "Use CDN" mode.
+* Fix some deprecation notices for php 8.2.
+
 = 4.3.2 =
 * Security Fix: escape shortcode attribute values.
 
