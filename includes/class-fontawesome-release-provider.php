@@ -80,6 +80,18 @@ class FontAwesome_Release_Provider {
 	/**
 	 * @ignore
 	 */
+	protected $latest_version_5 = null;
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
+	protected $latest_version_6 = null;
+
+	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+	/**
+	 * @ignore
+	 */
 	protected $api_client = null;
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort

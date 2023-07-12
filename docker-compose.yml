@@ -240,15 +240,45 @@ services:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-5.9
+       - db-latest
      image: wordpress-fontawesome-dev-php8.0
      env_file:
        - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.9:3312
-       COMPOSER: ${WP_FA_DIR}/composer-php8.0.14.json
+       WORDPRESS_DB_HOST: db-latest:3306
+       COMPOSER: ${WP_FA_DIR}/composer-php8.0.json
      container_name: "com.fontawesome.wordpress-php8.0-dev"
+
+   wordpress-php8.1-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-php8.1
+     env_file:
+       - ".env"
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       COMPOSER: ${WP_FA_DIR}/composer-php8.1.json
+     container_name: "com.fontawesome.wordpress-php8.1-dev"
+
+   wordpress-php8.2-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - db-latest
+     image: wordpress-fontawesome-dev-php8.2
+     env_file:
+       - ".env"
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: db-latest:3306
+       COMPOSER: ${WP_FA_DIR}/composer-php8.2.json
+     container_name: "com.fontawesome.wordpress-php8.2-dev"
 
    wordpress-php7.3-dev:
      <<:
