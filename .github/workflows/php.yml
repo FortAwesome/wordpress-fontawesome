@@ -43,7 +43,7 @@ jobs:
               wordpress: trunk
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: shivammathur/setup-php@v2
       with:
@@ -70,7 +70,7 @@ jobs:
 
     - name: Cache Composer packages
       id: composer-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: vendor
         key: ${{ runner.os }}-php-b-${{ steps.composer-lock.outputs.COMPOSER_LOCK_HASH }}
@@ -81,14 +81,14 @@ jobs:
 
     - name: Cache APT Sources Daily
       id: apt-sources-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
         key: ${{ runner.os }}-apt-sources-${{ steps.cache-date.outputs.DATE }}
 
     - name: Cache APT Packages Daily
       id: apt-packages-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
         key: ${{ runner.os }}-apt-packages-${{ steps.cache-date.outputs.DATE }}
@@ -162,7 +162,7 @@ jobs:
 
     - name: Cache WordPress Core Installation
       id: wordpress-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
         key: ${{ runner.os }}-wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
@@ -184,7 +184,7 @@ jobs:
 
     - name: Cache WordPress Test Installation
       id: wordpress-test-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
         key: ${{ runner.os }}-wordpress-test-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
