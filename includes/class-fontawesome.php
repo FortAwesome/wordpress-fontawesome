@@ -1988,7 +1988,7 @@ EOT;
 				if ( self::RESOURCE_HANDLE === $handle ) {
 					$revised_html = preg_replace(
 						'/<script[\s]+(.*?)>/',
-						'<script crossorigin="anonymous" \1>',
+						'<script defer crossorigin="anonymous" \1>',
 						$revised_html
 					);
 				}
