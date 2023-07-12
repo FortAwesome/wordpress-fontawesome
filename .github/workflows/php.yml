@@ -117,7 +117,7 @@ jobs:
     - name: Resolve WordPress Version
       run: |
         curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
-        LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+        LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//' | head -1)
         if [ "${{ matrix.wordpress }}" == 'latest' ]; then
           VERSION=$LATEST_VERSION
           echo "WORDPRESS_VERSION=$VERSION" >> $GITHUB_OUTPUT
