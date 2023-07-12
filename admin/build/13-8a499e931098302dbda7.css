@@ -657,8 +657,7 @@ svg.components-checkbox-control__checked {
   width: 24px;
   height: 24px;
   -webkit-user-select: none;
-          -ms-user-select: none;
-      user-select: none;
+          user-select: none;
   pointer-events: none;
 }
 @media (min-width: 600px) {
@@ -1807,8 +1806,7 @@ input.components-combobox-control__input[type=text]:focus {
   text-align: center;
   vertical-align: top;
   -webkit-user-select: none;
-  -ms-user-select: none;
-      user-select: none;
+  user-select: none;
 }
 
 .CalendarMonth_table {
@@ -1899,8 +1897,7 @@ input.components-combobox-control__input[type=text]:focus {
 .DayPickerNavigation_button {
   cursor: pointer;
   -webkit-user-select: none;
-  -ms-user-select: none;
-      user-select: none;
+  user-select: none;
   border: 0;
   padding: 0;
   margin: 0;
@@ -2136,8 +2133,7 @@ input.components-combobox-control__input[type=text]:focus {
 
 .DateInput_input__readOnly {
   -webkit-user-select: none;
-  -ms-user-select: none;
-      user-select: none;
+  user-select: none;
 }
 
 .DateInput_input__focused {
@@ -3380,8 +3376,7 @@ body.is-dragging-components-draggable {
 }
 
 .components-menu-item__shortcut {
-  -ms-grid-row-align: center;
-      align-self: center;
+  align-self: center;
   margin-right: 0;
   margin-left: auto;
   padding-left: 24px;
@@ -4778,8 +4773,7 @@ body.lockscroll {
   color: #757575;
 }
 .components-tip svg {
-  -ms-grid-row-align: center;
-      align-self: center;
+  align-self: center;
   fill: #f0b849;
   flex-shrink: 0;
   margin-right: 16px;

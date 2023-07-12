@@ -19,7 +19,7 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     services:
       mysql:
@@ -34,21 +34,16 @@ jobs:
 
     strategy:
         matrix:
-          php: [7.1, 7.2, 7.3, 7.4]
+          php: ['7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
           wordpress: [latest]
           include:
-            - php: 5.6
+            - php: '5.6'
               wordpress: 5.2.5
-            - php: 7.4
+            - php: '7.4'
               wordpress: trunk
-            - php: 8.0.14
-              wordpress: 5.9-RC2
-            # There are test errors in CI that aren't happening locally. What's different?
-            # - php: 8.1
-            #   wordpress: 5.9-RC2
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: shivammathur/setup-php@v2
       with:
@@ -57,7 +52,7 @@ jobs:
     - name: Validate composer.json and composer.lock
       id: composer-lock
       run: |
-        if [ ${{ matrix.php }} == 7.4 ]; then
+        if [ ${{ matrix.php }} == '7.4' ]; then
           composer validate
           LOCK_FILE=composer.lock
           COMPOSER_FILE=composer.json
@@ -66,16 +61,16 @@ jobs:
           LOCK_FILE=composer-php${{ matrix.php }}.lock
           COMPOSER_FILE=composer-php${{ matrix.php }}.json
         fi
-        echo "::set-output name=COMPOSER_LOCK_HASH::$(md5sum $LOCK_FILE | cut -d' ' -f1)"
-        echo "::set-output name=COMPOSER_FILE::${COMPOSER_FILE}"
+        echo "COMPOSER_LOCK_HASH=$(md5sum $LOCK_FILE | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+        echo "COMPOSER_FILE=${COMPOSER_FILE}" >> $GITHUB_OUTPUT
 
     - name: Resolve Cache Date
       id: cache-date
-      run: echo "::set-output name=DATE::$(date +'%Y-%m-%d')"
+      run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - name: Cache Composer packages
       id: composer-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: vendor
         key: ${{ runner.os }}-php-b-${{ steps.composer-lock.outputs.COMPOSER_LOCK_HASH }}
@@ -86,14 +81,14 @@ jobs:
 
     - name: Cache APT Sources Daily
       id: apt-sources-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/apt-sources-${{ steps.cache-date.outputs.DATE }}
         key: ${{ runner.os }}-apt-sources-${{ steps.cache-date.outputs.DATE }}
 
     - name: Cache APT Packages Daily
       id: apt-packages-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/apt-packages-${{ steps.cache-date.outputs.DATE }}
         key: ${{ runner.os }}-apt-packages-${{ steps.cache-date.outputs.DATE }}
@@ -122,44 +117,44 @@ jobs:
     - name: Resolve WordPress Version
       run: |
         curl -s https://api.wordpress.org/core/version-check/1.7/ > /tmp/wp-latest.json
-        LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+        LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//' | head -1)
         if [ "${{ matrix.wordpress }}" == 'latest' ]; then
           VERSION=$LATEST_VERSION
-          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
-          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
-          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
-          echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
+          echo "WORDPRESS_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "WORDPRESS_VERSION_IS_TRUNK=0" >> $GITHUB_OUTPUT
+          echo "WORDPRESS_CORE_DIR=/tmp/$VERSION" >> $GITHUB_OUTPUT
+          echo "WP_TESTS_TAG=branches/$VERSION" >> $GITHUB_OUTPUT
         elif [ "${{ matrix.wordpress }}" == 'trunk' ]; then
           VERSION=trunk-$(date +'%Y-%m-%d')
-          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
-          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::1"
-          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
-          echo "::set-output name=WP_TESTS_TAG::trunk"
+          echo "WORDPRESS_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "WORDPRESS_VERSION_IS_TRUNK=1" >> $GITHUB_OUTPUT
+          echo "WORDPRESS_CORE_DIR=/tmp/$VERSION" >> $GITHUB_OUTPUT
+          echo "WP_TESTS_TAG=trunk" >> $GITHUB_OUTPUT
         else 
           VERSION=${{ matrix.wordpress }}
-          echo "::set-output name=WORDPRESS_VERSION::$VERSION"
-          echo "::set-output name=WORDPRESS_VERSION_IS_TRUNK::0"
-          echo "::set-output name=WORDPRESS_CORE_DIR::/tmp/$VERSION"
+          echo "WORDPRESS_VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "WORDPRESS_VERSION_IS_TRUNK=0" >> $GITHUB_OUTPUT
+          echo "WORDPRESS_CORE_DIR=/tmp/$VERSION" >> $GITHUB_OUTPUT
         fi
 
         if [[ $VERSION =~ ^[0-9]+\.[0-9]+\-(beta|RC)[0-9]+$ ]]; then
           WP_BRANCH=${VERSION%\-*}
-          echo "::set-output name=WP_TESTS_TAG::branches/$WP_BRANCH"
+          echo "WP_TESTS_TAG=branches/$WP_BRANCH" >> $GITHUB_OUTPUT
         elif [[ $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
-          echo "::set-output name=WP_TESTS_TAG::branches/$VERSION"
+          echo "WP_TESTS_TAG=branches/$VERSION" >> $GITHUB_OUTPUT
         elif [[ $VERSION =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
           if [[ $VERSION =~ [0-9]+\.[0-9]+\.[0] ]]; then
             # version x.x.0 means the first release of the major version, so strip off the .0 and download version x.x
-            echo "::set-output name=WP_TESTS_TAG::tags/${VERSION%??}"
+            echo "WP_TESTS_TAG=tags/${VERSION%??}" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=WP_TESTS_TAG::tags/$VERSION"
+            echo "WP_TESTS_TAG=tags/$VERSION" >> $GITHUB_OUTPUT
           fi
         elif [[ $VERSION == 'nightly' || $VERSION == 'trunk' ]]; then
-          echo "::set-output name=WP_TESTS_TAG::trunk"
+          echo "WP_TESTS_TAG=trunk" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=WP_TESTS_TAG::tags/$LATEST_VERSION"
+          echo "WP_TESTS_TAG=tags/$LATEST_VERSION" >> $GITHUB_OUTPUT
         fi
-        echo "::set-output name=WP_TESTS_DIR::/tmp/test/$VERSION"
+        echo "WP_TESTS_DIR=/tmp/test/$VERSION" >> $GITHUB_OUTPUT
       id: wordpress-version
 
     - name: Show WordPress Version
@@ -167,7 +162,7 @@ jobs:
 
     - name: Cache WordPress Core Installation
       id: wordpress-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.wordpress-version.outputs.WORDPRESS_CORE_DIR }}
         key: ${{ runner.os }}-wordpress-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
@@ -189,7 +184,7 @@ jobs:
 
     - name: Cache WordPress Test Installation
       id: wordpress-test-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.wordpress-version.outputs.WP_TESTS_DIR }}
         key: ${{ runner.os }}-wordpress-test-${{ steps.wordpress-version.outputs.WORDPRESS_VERSION }}') }}
@@ -272,7 +267,7 @@ jobs:
 
     - name: Maybe run phpcs
       run: |
-        if [ ${{ matrix.php }} == 7.4 ] && [ ${{ matrix.wordpress }} == latest ]; then
+        if [ ${{ matrix.php }} == '7.4' ] && [ ${{ matrix.wordpress }} == latest ]; then
           composer phpcs
         echo
           echo "Skipping phpcs"
