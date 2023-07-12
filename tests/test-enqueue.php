@@ -65,13 +65,13 @@ class EnqueueTest extends TestCase {
 		$resources = array();
 
 		$resources['all'] = new FontAwesome_Resource(
-			"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/all.${technology_path_part}",
+			"https://{$license_subdomain}.fontawesome.com/releases/v{$version}/{$technology_path_part}/all.{$technology_path_part}",
 			'sha384-fake123'
 		);
 
 		if( boolval( $options['compat'] ) ) {
 			$resources['v4-shims'] = new FontAwesome_Resource(
-				"https://${license_subdomain}.fontawesome.com/releases/v${version}/${technology_path_part}/v4-shims.${technology_path_part}",
+				"https://{$license_subdomain}.fontawesome.com/releases/v{$version}/{$technology_path_part}/v4-shims.{$technology_path_part}",
 				'sha384-fake246'
 			);
 		}
@@ -84,7 +84,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<link[\s]+${ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake123\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
+				"/<link[\s]+{$ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake123\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -100,7 +100,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<script[\s]+${ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/all\.js\'.*?><\/script>/",
+				"/<script[\s]+{$ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/js\/all\.js\'.*?><\/script>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -116,7 +116,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<link[\s]+${ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake246\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
+				"/<link[\s]+{$ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake246\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -132,7 +132,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<script[\s]+${ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake246\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/${license_subdomain}\.fontawesome\.com\/releases\/v${version}\/js\/v4-shims\.js\'.*?><\/script>/",
+				"/<script[\s]+{$ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake246\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/js\/v4-shims\.js\'.*?><\/script>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE . "\n\n$output\n\n"
@@ -156,7 +156,7 @@ class EnqueueTest extends TestCase {
 
 	public function assert_font_face_overrides($output, $license_subdomain, $version, $refute = false){
 		$font_face_match_count = preg_match_all(
-			"/@font-face {\n.*?font-family: \"FontAwesome\";\n.*?font-display: block;\n[\s]*src: url\(\"https:\/\/${license_subdomain}\.fontawesome\.com.*?${version}\/webfonts\/fa-brands-400\.eot\"/",
+			"/@font-face {\n.*?font-family: \"FontAwesome\";\n.*?font-display: block;\n[\s]*src: url\(\"https:\/\/{$license_subdomain}\.fontawesome\.com.*?{$version}\/webfonts\/fa-brands-400\.eot\"/",
 			$output,
 			$font_face_matches
 		);
@@ -200,7 +200,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<script\s*${ignore_detection}.*?>\s*.*?searchPseudoElements:\s*true/",
+				"/<script\s*{$ignore_detection}.*?>\s*.*?searchPseudoElements:\s*true/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
