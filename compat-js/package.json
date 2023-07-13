@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@wordpress/babel-preset-default": "^7",
-    "@wordpress/scripts": "^18",
+    "@wordpress/scripts": "^26",
     "babel-plugin-lodash": "^3.3.4",
     "decode-uri-component": "^0.2.1",
     "loader-utils": "^1.4.2",
