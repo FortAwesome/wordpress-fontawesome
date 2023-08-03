@@ -24,6 +24,7 @@
 - [Remote Debugging with VSCode](#remote-debugging-with-vscode)
 - [Redis Cache Setup](#redis-cache-setup)
 - [Analyze Webpack Bundle](#analyze-webpack-bundle)
+- [Test Against a WordPress Release Candidate](#test-against-a-wordpress-release-candidate)
 
 <!-- tocstop -->
 
@@ -1289,3 +1290,13 @@ See [guide here](https://wordpress.org/support/article/create-a-network/)
 ```
 wp --allow-root eval 'require_once "wp-content/plugins/font-awesome/includes/class-fontawesome-deactivator.php"; use FortAwesome\FontAwesome_Deactivator; define("WP_NETWORK_ADMIN", true); FontAwesome_Deactivator::uninstall();'
 ```
+
+# Test Against a WordPress Release Candidate
+
+Probably the easiest is to just use `bin/dev` to run the currently-latest release,
+and then use `bin/env /bin/bash` to shell into that container and use the WP CLI
+to update the release.
+
+For example, when WordPress was at `RC3` for version 6.3, this installed as expected:
+
+`wp --allow-root core update --version=6.3-RC3`
