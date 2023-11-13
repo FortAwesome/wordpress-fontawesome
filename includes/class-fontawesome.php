@@ -277,7 +277,7 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	protected $icon_chooser_screens = array( 'post.php', 'post-new.php' );
+	protected $icon_chooser_screens = array( 'post.php', 'post-new.php', 'site-editor.php' );
 
 	/**
 	 * @internal
