@@ -1,7 +1,7 @@
 import size from 'lodash/size'
 import omit from 'lodash/omit'
 import get from 'lodash/get'
-import { combineReducers } from 'redux'
+import { combineReducers } from '@wordpress/data'
 
 export const ADMIN_TAB_SETTINGS = 'ADMIN_TAB_SETTINGS'
 export const ADMIN_TAB_TROUBLESHOOT = 'ADMIN_TAB_TROUBLESHOOT'
