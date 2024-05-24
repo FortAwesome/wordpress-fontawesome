@@ -1,5 +1,3 @@
-import { __experimentalCreateInterpolateElement, createInterpolateElement as stableCreateInterpolateElement } from '@wordpress/element'
-
-const createInterpolateElement = stableCreateInterpolateElement || __experimentalCreateInterpolateElement
+import { createInterpolateElement } from '@wordpress/element'
 
 export default createInterpolateElement
