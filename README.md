@@ -740,7 +740,7 @@ then rely on the presence of Font Awesome Pro for the version indicated by
 
 The Font Awesome [GraphQL API](https://fontawesome.com/docs/apis/graphql/get-started) allows you to query and search icon metadata.
 
-See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/classes/FortAwesome.FontAwesome.html#method_query) method.
+See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/classes/FortAwesome-FontAwesome.html#method_query) method.
 
 ## public scope queries on api.fontawesome.com
 
