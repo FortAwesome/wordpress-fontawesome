@@ -1,12 +1,22 @@
-import { createReduxStore, register } from '@wordpress/data'
+import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
+import thunkMiddleware from 'redux-thunk'
 import rootReducer from './reducers'
 
-export function createStoreDescriptor(initialData = {}) {
-  const storeDescriptor = createReduxStore('font-awesome-official', {
-    reducer: rootReducer,
-    initialState: initialData
-  })
+const middleware = [ thunkMiddleware ]
 
-  register(storeDescriptor)
-  return storeDescriptor
+const composeEnhancers = (
+  process.env.NODE_ENV === 'development'
+  && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  ) || compose
+
+const enhancer = composeEnhancers(
+  applyMiddleware(...middleware)
+)
+
+export function createStore(initialData = {}) {
+  return reduxCreateStore(
+    rootReducer,
+    initialData,
+    enhancer
+  )
 }

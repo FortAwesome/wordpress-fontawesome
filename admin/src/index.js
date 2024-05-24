@@ -1,4 +1,4 @@
-import { createStoreDescriptor } from './store'
+import { createStore } from './store'
 import get from 'lodash/get'
 
 const initialData = window['__FontAwesomeOfficialPlugin__']
@@ -56,8 +56,7 @@ if(! initialData){
   console.error( __( 'Font Awesome plugin is broken: initial state data missing.', 'font-awesome' ) )
 }
 
-const storeDescriptor = createStoreDescriptor(initialData)
-const store = storeDescriptor.instantiate().store
+const store = createStore(initialData)
 
 const {
   showAdmin,
