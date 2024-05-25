@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkfont_awesome_admin=self.webpackChunkfont_awesome_admin||[]).push([[250],{1250:(e,o,s)=>{s.r(o),s.d(o,{default:()=>r});var t=s(1083);const r=e=>t.A.get(e).then((e=>e.status>=200||e.satus<=299?e.data:(console.error(e),Promise.reject("Font Awesome plugin unexpected response for Icon Chooser")))).catch((e=>(console.error(e),Promise.reject(e))))}}]);

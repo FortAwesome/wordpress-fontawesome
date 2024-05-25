@@ -65,13 +65,11 @@
     "@wordpress/block-editor": "wp-6.5",
     "@wordpress/blocks": "wp-6.5",
     "@wordpress/e2e-test-utils": "wp-6.5",
-    "babel-plugin-lodash": "^3.3.4",
     "rewire": "^7.0.0",
     "decode-uri-component": "^0.4.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "dotenv": "^14.2.0",
-    "redux-mock-store": "^1.5.4",
-    "webpack-bundle-analyzer": "^4.10.2"
+    "redux-mock-store": "^1.5.4"
   }
 }
