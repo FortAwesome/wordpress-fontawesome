@@ -2,7 +2,7 @@ import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
 import * as actions from './actions'
 import { submitPendingOptions, addPendingOption } from './actions'
 import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
+import { thunk } from 'redux-thunk'
 import reportRequestError, { MOCK_UI_MESSAGE, redactHeaders, redactRequestData } from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
@@ -86,7 +86,7 @@ describe('submitPendingOptions and interceptors', () => {
 
           respondWith({
             url: `${apiUrl}/config`,
-            method: 'PUT',
+            method: 'POST',
             response: {
               status: 200,
               statusText: 'OK',
@@ -143,7 +143,7 @@ describe('submitPendingOptions and interceptors', () => {
 
           respondWith({
             url: `${apiUrl}/config`,
-            method: 'PUT',
+            method: 'POST',
             response: {
               status: 200,
               statusText: 'OK',
@@ -179,16 +179,16 @@ describe('submitPendingOptions and interceptors', () => {
         })
 
         describe('axios request', () => {
-          let mockPut = null
+          let mockPost = null
           beforeEach(() => {
-            mockPut = jest.fn(() => Promise.resolve({ data }))
-            changeImpl({ name: 'put', fn: mockPut })
+            mockPost = jest.fn(() => Promise.resolve({ data }))
+            changeImpl({ name: 'post', fn: mockPost })
           })
 
           test('submits pendingOptions', done => {
             store.dispatch(submitPendingOptions()).then(() => {
-              expect(mockPut).toHaveBeenCalledTimes(1)
-              expect(mockPut).toHaveBeenCalledWith(
+              expect(mockPost).toHaveBeenCalledTimes(1)
+              expect(mockPost).toHaveBeenCalledWith(
                 `${apiUrl}/config`,
                 expect.objectContaining({
                   options: pendingOptions
@@ -212,7 +212,7 @@ describe('submitPendingOptions and interceptors', () => {
     describe('when errors payload is absent', () => {
         const responseData = {foo: 42}
         const url = `${apiUrl}/config`
-        const method = 'PUT'
+        const method = 'POST'
         const status = 400
         const statusText = 'Bad Request'
         const requestData = JSON.stringify({bar: 43})
@@ -279,7 +279,7 @@ describe('submitPendingOptions and interceptors', () => {
     beforeEach(() => {
       respondWith({
         url: `${apiUrl}/config`,
-        method: 'PUT',
+        method: 'POST',
         response: new XMLHttpRequest()
       })
 
@@ -321,7 +321,7 @@ describe('submitPendingOptions and interceptors', () => {
     beforeEach(() => {
       respondWith({
         url: `${apiUrl}/config`,
-        method: 'PUT',
+        method: 'POST',
         response: new Error('some axios error')
       })
 
@@ -389,7 +389,7 @@ describe('some action failure cases', () => {
       action: 'updateApiToken',
       state: {},
       route: 'config',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'OPTIONS_FORM_SUBMIT_START',
       endAction: 'OPTIONS_FORM_SUBMIT_END',
       params: {
@@ -482,7 +482,7 @@ describe('some action failure cases', () => {
       action: 'submitPendingOptions',
       state: STATE_TECH_CHANGE,
       route: 'config',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'OPTIONS_FORM_SUBMIT_START',
       endAction: 'OPTIONS_FORM_SUBMIT_END',
       params: undefined
