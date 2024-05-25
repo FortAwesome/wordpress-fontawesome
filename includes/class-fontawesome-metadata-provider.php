@@ -102,13 +102,21 @@ class FontAwesome_Metadata_Provider {
 	 * @return string json encoded response body when the API server response
 	 *     has a HTTP 200 status.
 	 */
-	public function metadata_query( $query_string, $ignore_auth = false ) {
+	public function metadata_query( $query, $ignore_auth = false ) {
+		$body = "";
+
+		if ( is_string( $query ) ) {
+			$body = '{"query": ' . wp_json_encode( $query ) . '}';
+		} else if ( is_array( $query ) ) {
+			$body = wp_json_encode( $query );
+		}
+
 		$args = array(
 			'method'  => 'POST',
 			'headers' => array(
 				'Content-Type' => 'application/json',
 			),
-			'body'    => '{"query": ' . wp_json_encode( $query_string ) . '}',
+			'body'    => $body,
 			'timeout' => 10, // seconds.
 		);
 

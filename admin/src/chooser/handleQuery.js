@@ -1,6 +1,6 @@
 import apiFetch from '@wordpress/api-fetch'
 
-const configureQueryHandler = params => async (query) => {
+const configureQueryHandler = params => async (query, variables) => {
   try {
     const { apiNonce, rootUrl, restApiNamespace } = params
 
@@ -22,7 +22,7 @@ const configureQueryHandler = params => async (query) => {
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify({ query: query.replace(/\s+/g, " ") })
+      body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables })
     } )
   } catch( error ) {
     console.error('CAUGHT:', error)

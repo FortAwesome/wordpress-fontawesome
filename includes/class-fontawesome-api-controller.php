@@ -157,8 +157,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 
 	private function get_query_body($request) {
 		if( $request->get_header('Content-Type') == 'application/json' ) {
-		  $params = $request->get_json_params();
-		  return $params['query'];
+		  return $request->get_json_params();
 		} else {
 			return $request->get_body();
 		}
