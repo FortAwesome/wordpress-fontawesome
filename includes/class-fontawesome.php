@@ -2763,6 +2763,8 @@ EOT;
 	 * message, if non-null, is appropriate for displaying in the WordPress admin ui
 	 * to an admin user.
 	 *
+	 * It also accepts an associative array with keys "query" and "variables".
+	 *
 	 * Requests to the Font Awesome API server will automatically be authorized
 	 * by the WordPress site owner's API Token if they have added one through the
 	 * plugin's settings page. The API Token is used to retrieve a short-lived
@@ -2882,7 +2884,21 @@ EOT;
 	 * Point it at `https://api.fontawesome.com`.
 	 *
 	 * @since 4.0.0
-	 * @param string $query_string a GraphQL query document
+	 * @param string | array $query If given a string, it'll be used as the query document.
+	 *   If given an associative array, it must be JSON-encodable, and must have a "query"
+	 *   key whose value is the GraphQL query document. It may also have a "variables" key whose
+	 *   value is another associative array containing values for the variables in the query.
+	 *
+	 *   For example:
+	 *
+	 *   ```php
+	 *   [
+	 *     "query" => "query KitMetadata($token: String!){ me { kit(token: $token){ version name } } }",
+	 *     "variables" => [
+	 *       "token" => "abc123"
+	 *     ]
+	 *   ]
+	 *   ```
 	 * @throws ApiTokenMissingException
 	 * @throws ApiTokenEndpointRequestException
 	 * @throws ApiTokenEndpointResponseException
@@ -2892,8 +2908,8 @@ EOT;
 	 * @return string json encoded response body when the API server response
 	 *     has a HTTP 200 status.
 	 */
-	public function query( $query_string ) {
-		return $this->metadata_provider()->metadata_query( $query_string );
+	public function query( $query ) {
+		return $this->metadata_provider()->metadata_query( $query );
 	}
 
 	/**
