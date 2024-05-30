@@ -17,3 +17,6 @@ tmp/
 webpack-stats.html
 webpack-stats.json
 .phpunit.result.cache
+admin/src/playwright/.auth/
+admin/artifacts/
+admin/test-results/
