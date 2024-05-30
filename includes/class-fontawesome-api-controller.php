@@ -127,7 +127,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 */
 	public function query( $request ) {
 		try {
-			$query_body = $this->get_query_body($request);
+			$query_body = $this->get_query_body( $request );
 
 			$result = $this->metadata_provider()->metadata_query( $query_body );
 
@@ -155,9 +155,9 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 		return $this->metadata_provider;
 	}
 
-	private function get_query_body($request) {
-		if( $request->get_header('Content-Type') == 'application/json' ) {
-		  return $request->get_json_params();
+	private function get_query_body( $request ) {
+		if ( $request->get_header( 'Content-Type' ) == 'application/json' ) {
+			return $request->get_json_params();
 		} else {
 			return $request->get_body();
 		}
