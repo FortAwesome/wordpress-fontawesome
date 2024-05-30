@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkfont_awesome_admin=self.webpackChunkfont_awesome_admin||[]).push([[56],{6056:(e,s,a)=>{a.r(s)}}]);
