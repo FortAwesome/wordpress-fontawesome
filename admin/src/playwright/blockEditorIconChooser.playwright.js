@@ -11,7 +11,7 @@ test.describe( 'blockEditorIconChooser', async () => {
 	  },
   } )
 
-  test('works', async ({ editor, page, pageUtils }) => {
+  test('search and select from icon chooser', async ({ editor, page, pageUtils }) => {
 		await editor.insertBlock( {
 			name: 'core/paragraph',
 		} );
