@@ -31,6 +31,8 @@ COPY ./add-hosts.sh /tmp
 
 COPY ./modsecurity.conf /etc/modsecurity
 
+COPY ./allowlist.conf /etc/modsecurity
+
 COPY ./security2.conf /etc/apache2/mods-enabled/security2.conf
 
 COPY ./setup-owasp.sh /tmp

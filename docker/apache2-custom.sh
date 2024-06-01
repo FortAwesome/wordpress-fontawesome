@@ -4,8 +4,14 @@
 
 chown -Rf www-data:www-data /var/www/html/
 
+DEFINES=""
+
 if [ "$FONTAWESOME_ENV" = "development" ]; then
-	exec apache2-foreground -DDEVELOPMENT
-else
-	exec apache2-foreground
+	DEFINES="${DEFINES} -DDEVELOPMENT"
 fi
+
+if [ "$ALLOW_PUT_REQUESTS" = "true" ]; then
+	DEFINES="${DEFINES} -DAllowPutRequests"
+fi
+
+exec apache2-foreground ${DEFINES}
