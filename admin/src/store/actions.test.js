@@ -444,7 +444,7 @@ describe('some action failure cases', () => {
       action: 'snoozeV3DeprecationWarning',
       state: {},
       route: 'v3deprecation',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'SNOOZE_V3DEPRECATION_WARNING_START',
       endAction: 'SNOOZE_V3DEPRECATION_WARNING_END',
       params: {}

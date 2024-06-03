@@ -675,7 +675,7 @@ export function snoozeV3DeprecationWarning() {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/v3deprecation`,
       { snooze: true },
       {
