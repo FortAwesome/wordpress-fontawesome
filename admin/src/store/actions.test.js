@@ -405,7 +405,7 @@ describe('some action failure cases', () => {
         }
       },
       route: 'conflict-detection/conflicts/blocklist',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'BLOCKLIST_UPDATE_START',
       endAction: 'BLOCKLIST_UPDATE_END',
       params: {}
@@ -454,7 +454,7 @@ describe('some action failure cases', () => {
       desc: 'when enabling',
       state: {},
       route: 'conflict-detection/until',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'ENABLE_CONFLICT_DETECTION_SCANNER_START',
       endAction: 'ENABLE_CONFLICT_DETECTION_SCANNER_END',
       params: { enable: true }
@@ -464,7 +464,7 @@ describe('some action failure cases', () => {
       desc: 'when disabling',
       state: {},
       route: 'conflict-detection/until',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'DISABLE_CONFLICT_DETECTION_SCANNER_START',
       endAction: 'DISABLE_CONFLICT_DETECTION_SCANNER_END',
       params: { enable: false }

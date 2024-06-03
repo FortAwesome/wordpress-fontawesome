@@ -345,7 +345,7 @@ class ConflictDetectionControllerTest extends TestCase {
 		$this->assertFalse( fa()->detecting_conflicts() );
 
 		$request = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_detect_until_route
 		);
 
@@ -391,7 +391,7 @@ class ConflictDetectionControllerTest extends TestCase {
 		$this->assertFalse( fa()->detecting_conflicts() );
 
 		$request = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_detect_until_route
 		);
 
@@ -440,7 +440,7 @@ class ConflictDetectionControllerTest extends TestCase {
 		);
 
 		$request = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_detect_until_route
 		);
 
@@ -684,7 +684,7 @@ class ConflictDetectionControllerTest extends TestCase {
 		$ids = [ 'a9a9aa2d454f77cd623d6755c902c408', '83c869f6fa4c3138019f564a3358e877' ];
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_blocklist_route
 		);
 
@@ -747,7 +747,7 @@ class ConflictDetectionControllerTest extends TestCase {
 		$ids = [];
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_blocklist_route
 		);
 
@@ -810,7 +810,7 @@ class ConflictDetectionControllerTest extends TestCase {
 		$ids = [ 'a9a9aa2d454f77cd623d6755c902c408', '83c869f6fa4c3138019f564a3358e877' ];
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_blocklist_route
 		);
 

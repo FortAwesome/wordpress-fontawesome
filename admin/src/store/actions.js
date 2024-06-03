@@ -304,7 +304,7 @@ export function submitPendingBlocklist() {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/conflict-detection/conflicts/blocklist`,
       blocklist,
       {
@@ -731,7 +731,7 @@ export function setConflictDetectionScanner({ enable = true }) {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/conflict-detection/until`,
       enable
         ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)
