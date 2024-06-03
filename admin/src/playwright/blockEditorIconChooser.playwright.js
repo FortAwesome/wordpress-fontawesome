@@ -36,5 +36,12 @@ test.describe( 'blockEditorIconChooser', async () => {
     const blocks = await editor.getBlocks()
     expect(blocks).toHaveLength(1)
     expect(blocks[0].attributes.content).toMatch(/\[icon.*?\]$/)
+
+    // The loading of the icon chooser should not have messed up globals.
+    // It could create problems for other plugins that depend on them.
+    await expect(page.evaluate(() => _.version == __originalsBeforeFontAwesome._.version)).toBeTruthy();
+    await expect(page.evaluate(() => React.version == __originalsBeforeFontAwesome.React.version)).toBeTruthy();
+    await expect(page.evaluate(() => ReactDOM.version == __originalsBeforeFontAwesome.ReactDOM.version)).toBeTruthy();
+    await expect(page.evaluate(() => moment.version == __originalsBeforeFontAwesome.moment.version)).toBeTruthy();
   })
 } )
