@@ -3,18 +3,7 @@ import { request } from '@playwright/test'
 import mysql from 'mysql2/promise'
 
 setup('reset', async ({ storageState, baseURL }) => {
-	const requestContext = await request.newContext( {
-		baseURL,
-	} );
-
-	const storageStatePath =
-		typeof storageState === 'string' ? storageState : undefined;
-
-	const requestUtils = new RequestUtils( requestContext, {
-		storageStatePath,
-	} );
-
-	await requestUtils.setupRest()
+  const {requestUtils, requestContext} = await prepareRequestUtilsAndContext({ storageState, baseURL })
 	await requestUtils.deactivatePlugin('font-awesome')
 
   const connection = await mysql.createConnection({
@@ -31,3 +20,20 @@ setup('reset', async ({ storageState, baseURL }) => {
 	await requestUtils.activatePlugin('font-awesome')
 	await requestContext.dispose();
 })
+
+async function prepareRequestUtilsAndContext({baseURL, storageState}) {
+	const requestContext = await request.newContext( {
+		baseURL,
+	} );
+
+	const storageStatePath =
+		typeof storageState === 'string' ? storageState : undefined;
+
+	const requestUtils = new RequestUtils( requestContext, {
+		storageStatePath,
+	} );
+
+	await requestUtils.setupRest()
+
+	return {requestUtils, requestContext}
+}
