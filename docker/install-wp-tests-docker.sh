@@ -2,7 +2,7 @@
 
 WP_VERSION=${1-latest}
 
-DB_HOST=${2-db-latest:3306}
+DB_HOST=${2-wpdb:3306}
 
 # These are hardcoded to be the same as those defined for the db container in docker-compose.yml
 # We'll use the same wordpress database for the test environment. Since the wp-tests-config.php
