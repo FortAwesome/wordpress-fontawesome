@@ -116,7 +116,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -154,7 +154,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -184,7 +184,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -217,7 +217,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -252,7 +252,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -286,7 +286,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -321,7 +321,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -354,7 +354,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -387,7 +387,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -422,7 +422,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -446,7 +446,7 @@ class ConfigControllerTest extends TestCase {
 		$request_body = array();
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -481,7 +481,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -534,7 +534,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -591,7 +591,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -627,7 +627,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -664,7 +664,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -703,7 +703,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
@@ -738,7 +738,7 @@ class ConfigControllerTest extends TestCase {
 			);
 
 		$request  = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 
