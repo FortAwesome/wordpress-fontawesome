@@ -24,6 +24,12 @@ ENV XDEBUG_PORT 9000
 # See: https://github.com/docker-library/wordpress/issues/205
 COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
 
+COPY ./disable_auto_update.sh /tmp
+
+RUN /tmp/disable_auto_update.sh
+
+RUN cp -R /usr/src/wordpress/* /var/www/html/
+
 COPY ./add-hosts.sh /tmp
 
 CMD ["apache2-foreground"]

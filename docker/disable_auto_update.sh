@@ -10,6 +10,10 @@ set -eux
 
 cd /usr/src/wordpress
 
-cp -s wp-config-docker.php wp-config.php
+if [ -f wp-config-docker.php ]; then
+  cp -s wp-config-docker.php wp-config.php
+else
+  cp -s wp-config-sample.php wp-config.php
+fi
 
-sed -i "/Add any custom values/a define\( \'WP_AUTO_UPDATE_CORE\', false\);" wp-config.php
+sed -i "/Happy publishing/i define\( \'WP_AUTO_UPDATE_CORE\', false\);" wp-config.php
