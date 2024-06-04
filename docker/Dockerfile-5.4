@@ -16,7 +16,7 @@ RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93
 
 COPY ./install-wp-tests-docker.sh /tmp
 
-RUN /tmp/install-wp-tests-docker.sh 5.4 db-5.4:3308
+RUN /tmp/install-wp-tests-docker.sh 5.4
 
 # Xdebug environment variables
 ENV XDEBUG_PORT 9000
