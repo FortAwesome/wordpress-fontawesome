@@ -2,8 +2,20 @@ import { test as setup, expect, RequestUtils } from '@wordpress/e2e-test-utils-p
 import { request } from '@playwright/test'
 import mysql from 'mysql2/promise'
 
-setup('reset', async ({ page, storageState, baseURL }) => {
-	await deactivate(page);
+setup('reset', async ({ storageState, baseURL }) => {
+	const requestContext = await request.newContext( {
+		baseURL,
+	} );
+
+	const storageStatePath =
+		typeof storageState === 'string' ? storageState : undefined;
+
+	const requestUtils = new RequestUtils( requestContext, {
+		storageStatePath,
+	} );
+
+	await requestUtils.setupRest()
+	await requestUtils.deactivatePlugin('font-awesome')
 
   const connection = await mysql.createConnection({
     host: 'localhost',
@@ -16,26 +28,6 @@ setup('reset', async ({ page, storageState, baseURL }) => {
   await connection.execute(sql, ['font-awesome']);
   await connection.execute(sql, ['font-awesome-conflict-detection']);
   await connection.execute(sql, ['font-awesome-releases']);
-
-	await activate(page);
+	await requestUtils.activatePlugin('font-awesome')
+	await requestContext.dispose();
 })
-
-async function deactivate(page) {
-	await page.goto('/wp-admin/plugins.php');
-  const linkLocator = page.getByRole('row', { name: 'Select Font Awesome Font' }).getByRole('link').nth(1);
-
-	if ( (await linkLocator.innerText()).match(/Deactivate/) ) {
-	  await linkLocator.click();
-    await page.waitForURL('/wp-admin/plugins.php');
-	}
-}
-
-async function activate(page) {
-	await page.goto('/wp-admin/plugins.php');
-  const linkLocator = page.getByRole('row', { name: 'Select Font Awesome Font' }).getByRole('link').nth(1);
-
-	if ((await linkLocator.innerText()).match(/Activate/) ) {
-	  await linkLocator.click();
-    await page.waitForURL('/wp-admin/plugins.php');
-	}
-}
