@@ -1,6 +1,9 @@
 <?php
 namespace FortAwesome;
 
+/**
+ * Convenience class for encapsulating the results of `preg_match()` or `preg_match_all()`.
+ */
 class MatchResult {
 	protected $match_count = 0;
 	protected $matches     = array();
