@@ -13,6 +13,7 @@ namespace FortAwesome;
 use \ReflectionException, \ReflectionProperty, \Exception;
 
 require_once FONTAWESOME_DIR_PATH . 'tests/_support/class-mock-fontawesome-metadata-provider.php';
+require_once FONTAWESOME_DIR_PATH . 'tests/_support/match_result.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
 
@@ -130,4 +131,35 @@ function create_subsites($domains = ['alpha.example.com', 'beta.example.com']) {
 	}
 
 	return $results;
+}
+
+function parse_attrs($attrs_string) {
+	$attrs = array();
+
+	foreach ( preg_split( "/\s+/", $attrs_string, 0, PREG_SPLIT_NO_EMPTY ) as $attr ) {
+		if ( strpos( $attr, '=' ) !== false ) {
+			$kv = explode( '=', $attr );
+			$attrs[$kv[0]] = $kv[1];
+		} else {
+			$attrs[$attr] = true;
+		}
+	}
+
+	return $attrs;
+}
+
+function match_all( $pattern, $content ) {
+	$matches = [];
+
+	$match_result = preg_match_all(
+		$pattern,
+		$content,
+		$matches
+	);
+
+	if ( $match_result === false ) {
+		throw new Exception( 'failed preg_match_all' );
+	}
+
+	return new MatchResult( $match_result, $matches );
 }
