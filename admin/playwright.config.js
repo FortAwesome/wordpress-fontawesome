@@ -1,4 +1,4 @@
-import './src/playwright/env.js'
+import './src/playwright/support/env.js'
 import { defineConfig, devices } from '@playwright/test';
 
 const testDir = 'src/playwright'
@@ -11,11 +11,11 @@ export default defineConfig({
     baseURL,
   },
   projects: [
-    { name: 'auth', testDir, testMatch: 'auth.setup.js' },
+    { name: 'auth', testDir, testMatch: 'setup/auth.js' },
     {
       name: 'reset',
       testDir,
-      testMatch: 'reset.setup.js',
+      testMatch: 'setup/reset.js',
       use: {
         storageState: adminStorageStatePath
       },
@@ -23,7 +23,7 @@ export default defineConfig({
     {
       name: 'setupProKit',
       testDir,
-      testMatch: 'proKit.setup.js',
+      testMatch: 'setup/proKit.js',
       use: {
         storageState: adminStorageStatePath
       },
@@ -33,13 +33,22 @@ export default defineConfig({
       ]
     },
     {
-      name: 'chromium',
-      testMatch: '*.playwright.js',
+      name: 'with-proKit-chromium',
+      testMatch: 'withProKit/*.spec.js',
       use: {
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
       dependencies: ['setupProKit'],
+    },
+    {
+      name: 'withAuth-chromium',
+      testMatch: 'withAuth/*.spec.js',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: adminStorageStatePath
+      },
+      dependencies: ['auth'],
     }
   ]
 })

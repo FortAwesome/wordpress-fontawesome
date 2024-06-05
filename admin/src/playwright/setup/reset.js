@@ -1,9 +1,9 @@
 import { test as setup, expect, RequestUtils } from '@wordpress/e2e-test-utils-playwright'
-import { request } from '@playwright/test'
 import mysql from 'mysql2/promise'
+import { prepareRestApi } from '../support/testHelpers'
 
 setup('reset', async ({ storageState, baseURL }) => {
-  const {requestUtils, requestContext} = await prepareRequestUtilsAndContext({ storageState, baseURL })
+  const {requestUtils, requestContext} = await prepareRestApi({ storageState, baseURL })
 	await requestUtils.deactivatePlugin('font-awesome')
 
   const connection = await mysql.createConnection({
@@ -20,20 +20,3 @@ setup('reset', async ({ storageState, baseURL }) => {
 	await requestUtils.activatePlugin('font-awesome')
 	await requestContext.dispose();
 })
-
-async function prepareRequestUtilsAndContext({baseURL, storageState}) {
-	const requestContext = await request.newContext( {
-		baseURL,
-	} );
-
-	const storageStatePath =
-		typeof storageState === 'string' ? storageState : undefined;
-
-	const requestUtils = new RequestUtils( requestContext, {
-		storageStatePath,
-	} );
-
-	await requestUtils.setupRest()
-
-	return {requestUtils, requestContext}
-}

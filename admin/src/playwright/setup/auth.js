@@ -1,5 +1,5 @@
 import { test as setup, expect } from '@wordpress/e2e-test-utils-playwright'
-import './env.js'
+import '../support/env.js'
 
 const authFile = 'src/playwright/.auth/state.json';
 

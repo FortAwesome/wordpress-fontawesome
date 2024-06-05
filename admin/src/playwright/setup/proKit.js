@@ -1,5 +1,5 @@
 import { test as setup, expect } from '@wordpress/e2e-test-utils-playwright'
-import './env.js'
+import '../support/env.js'
 
 const CONFIG_ROUTE_PATTERN = '**/font-awesome/v1/config'
 const API_ROUTE_PATTERN = '**/font-awesome/v1/api*'
