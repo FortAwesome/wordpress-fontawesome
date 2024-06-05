@@ -3,11 +3,11 @@ namespace FortAwesome;
 
 class MatchResult {
 	protected $match_count = 0;
-	protected $matches = [];
+	protected $matches     = array();
 
-	public function __construct($match_count, $matches) {
+	public function __construct( $match_count, $matches ) {
 		$this->match_count = $match_count;
-		$this->matches = $matches;
+		$this->matches     = $matches;
 	}
 
 	public function match_count() {
