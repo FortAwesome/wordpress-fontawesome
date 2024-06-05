@@ -238,15 +238,24 @@ class EnqueueTest extends TestCase {
 	}
 
 	public function assert_pseudo_elements($output, $refute = false){
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
-		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<script\s*{$ignore_detection}.*?>\s*.*?searchPseudoElements:\s*true/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		$match_result = match_all(
+			"/<script.*?>.*?searchPseudoElements:\s*true.*?<\/script>/s",
+			$output
 		);
+
+		if ( $refute ) {
+			$this->assertEquals(
+				0,
+				$match_result->match_count(),
+				"expected no matches of script tags setting searchPseudoElements to true, but found at least one"
+			);
+		} else {
+			$this->assertEquals(
+				1,
+				$match_result->match_count(),
+				"expected exactly one match of script tags setting searchPseudoElements to true, but found none."
+			);
+		}
 	}
 
 	public function refute_pseudo_elements($output) {
