@@ -96,14 +96,38 @@ class EnqueueTest extends TestCase {
 	}
 
 	public function assert_svg($output, $license_subdomain, $version, $refute = false) {
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
+		$matches = [];
+		preg_match_all(
+			"/<script(?P<attrs>.*?all\.js.*?)><\/script>/",
+			$output,
+			$matches
+		);
+
+		if ( $refute ) {
+		  $this->assertEquals( count($matches[0]), 0, 'expected zero matching script tags');
+		  return;
+		}
+
+		$this->assertEquals( count($matches[0]), 1, 'expected exactly one matching script tag' . print_r($matches, true));
+
+		$attrs = $this->parse_attrs($matches['attrs'][0]);
+
+
+		if ( fa()->detecting_conflicts() ) {
+			$this->assertEquals( 1, $attrs['data-fa-detection-ignore'] );
+		} else {
+			$this->assertFalse( array_key_exists( 'data-fa-detection-ignore', $attrs ) );
+		}
+
+		$this->assertEquals('"anonymous"', $attrs['crossorigin']);
+		$this->assertEquals('"sha384-fake123"', $attrs['integrity']);
+		$this->assertTrue( array_key_exists( 'defer', $attrs ) );
+		$this->assertEquals('"text/javascript"', $attrs['type']);
+		$expected_src = "\"https://$license_subdomain.fontawesome.com/releases/v$version/js/all.js\"";
+		$actual_src = $attrs['src'];
 		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<script[\s]+{$ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/js\/all\.js\'.*?><\/script>/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
+			$expected_src,
+			$actual_src
 		);
 	}
 
@@ -377,6 +401,7 @@ class EnqueueTest extends TestCase {
 		$this->assertTrue( wp_script_is( FontAwesome::RESOURCE_HANDLE_V4SHIM, 'enqueued' ) );
 
 		$this->refute_webfont( $output, 'use', $version );
+		//error_log("OUTPUT\n" . print_r($output, true));
 		$this->assert_svg( $output, 'use', $version );
 		$this->assert_svg_v4shim( $output, 'use', $version );
 		$this->refute_pseudo_elements( $output );
@@ -518,4 +543,20 @@ class EnqueueTest extends TestCase {
 		 * conflict detector reports it.)
 		 */
 	}
+
+    private function parse_attrs($attrs_string) {
+		$attrs = array();
+
+		foreach ( preg_split( "/\s+/", $attrs_string, 0, PREG_SPLIT_NO_EMPTY ) as $attr ) {
+			if ( strpos( $attr, '=' ) !== false ) {
+				$kv = explode( '=', $attr );
+				$attrs[$kv[0]] = $kv[1];
+			} else {
+				$attrs[$attr] = true;
+			}
+		}
+
+		return $attrs;
+	}
 }
+
