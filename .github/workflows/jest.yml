@@ -32,3 +32,6 @@ jobs:
 
     - name: Run Jest
       run: cd admin && npm run test
+
+    - name: Run Playwright
+      run: cd admin && npx playwright test
