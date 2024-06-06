@@ -271,6 +271,21 @@ services:
        COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
      container_name: "com.fontawesome.wordpress-php7.4-dev"
 
+   wordpress-php8.3-dev:
+     <<:
+       - *wordpress_defaults
+       - *dev_env_volumes
+     depends_on:
+       - wpdb
+     image: wordpress-fontawesome-dev-php8.3
+     env_file:
+       - ".env"
+       - ".env.local"
+     environment:
+       WORDPRESS_DB_HOST: wpdb:3306
+       COMPOSER: ${WP_FA_DIR}/composer-php8.3.json
+     container_name: "com.fontawesome.wordpress-php8.3-dev"
+
    wordpress-php7.2-dev:
      <<:
        - *wordpress_defaults
