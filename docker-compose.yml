@@ -131,18 +131,6 @@ services:
        - ".env"
      container_name: "com.fontawesome.wpdb"
 
-   db-5.0:
-     image: mariadb:10.5.8
-     ports:
-       - "3307:3307"
-     env_file:
-       - ".env"
-     environment:
-       MYSQL_TCP_PORT: 3307
-     volumes:
-       - db_data-5.0:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-5.0"
-
    db-5.9:
      image: mariadb:10.5.8
      ports:
@@ -306,13 +294,13 @@ services:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-5.0
+       - wpdb
      image: wordpress-fontawesome-dev-php5.6
      env_file:
        - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.0:3307
+       WORDPRESS_DB_HOST: wpdb:3306
        COMPOSER: ${WP_FA_DIR}/composer-php5.6.json
      container_name: "com.fontawesome.wordpress-php5.6-dev"
 
@@ -336,13 +324,13 @@ services:
        - *wordpress_defaults
        - *dev_env_volumes
      depends_on:
-       - db-5.0
+       - wpdb
      image: wordpress-fontawesome-dev-5.0
      env_file:
        - ".env"
        - ".env.local"
      environment:
-       WORDPRESS_DB_HOST: db-5.0:3307
+       WORDPRESS_DB_HOST: wpdb:3306
        COMPOSER: ${WP_FA_DIR}/composer-wp5.0.json
      container_name: "com.fontawesome.wordpress-5.0-dev"
 
@@ -382,13 +370,13 @@ services:
        - *integration_env_volumes
      image: wordpress-fontawesome-dev-5.0
      depends_on:
-       - db-5.0
+       - wpdb
      env_file:
        - ".env"
        - ".env.local"
      environment:
        FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: db-5.0:3307
+       WORDPRESS_DB_HOST: wpdb:3306
      container_name: "com.fontawesome.wordpress-5.0-integration"
 
    wordpress-5.4-integration:
@@ -498,6 +486,5 @@ volumes:
     wpdb_data:
     db_data-4.8:
     db_data-4.9:
-    db_data-5.0:
     db_data-5.9:
     db_data-6.0:
