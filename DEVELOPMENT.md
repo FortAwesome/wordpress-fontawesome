@@ -1181,14 +1181,10 @@ If you want to preview the built docs with a web server, first build the docs:
 bin/phpdoc
 ```
 
-Then go into the `docsrv` directory and run the doc server:
+Then go into the `docs` directory and run:
 ```
-cd docsrv
-npm install
-node index.js
+npx serve
 ```
-
-Point a web browser at `http://localhost:3000`.
 
 # Special Notes on plugin-sigma
 
