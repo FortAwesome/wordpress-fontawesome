@@ -48,7 +48,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['auth'],
+      dependencies: ['auth', 'reset'],
     }
   ]
 })
