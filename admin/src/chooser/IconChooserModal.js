@@ -72,18 +72,6 @@ const IconChooserModal = (props) => {
                   <span slot='searching-pro'>
                     {__("You're searching Font Awesome Pro icons in version", 'font-awesome')}
                   </span>
-                  <span slot='light-requires-pro'>
-                    {__('You need to use a Pro kit to get Light icons.', 'font-awesome')}
-                  </span>
-                  <span slot='thin-requires-pro'>
-                    {__('You need to use a Pro kit with Version 6 to get Thin icons.', 'font-awesome')}
-                  </span>
-                  <span slot='duotone-requires-pro'>
-                    {__('You need to use a Pro kit with Version 5.10 or later to get Duotone icons.', 'font-awesome')}
-                  </span>
-                  <span slot='uploaded-requires-pro'>
-                    {__('You need to use a Pro kit to get Uploaded icons.', 'font-awesome')}
-                  </span>
                   <span slot='kit-has-no-uploaded-icons'>
                     {__('This kit contains no uploaded icons.', 'font-awesome')}
                   </span>
