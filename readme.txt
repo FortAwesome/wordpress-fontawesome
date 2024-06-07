@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.4.0
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 6.3
+Tested up to: 6.5
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -161,6 +161,17 @@ You can get more information about all the available settings and troubleshootin
 
 
 == Changelog ==
+
+= 4.5.0 =
+* Update the Icon Chooser to support all available family styles for the active version of
+  Font Awesome. The available family styles are dynamically loaded so that when new
+  family styles are introduced in new versions of Font Awesome, they will be immediately
+  available in the Icon Chooser.
+* Make the Icon Chooser available in the Full Site Editor.
+* Change the format of some network requests in order to accommodate common Web Application
+  Firewall settings. This resolves a common cause of error messages, such as:
+  "Something has gone horribly wrong" in the Icon Chooser, or "Couldn't save those changes" on
+  the plugin's settings page.
 
 = 4.4.0 =
 * Update the Icon Chooser to fix the use of Sharp Solid in more recent versions of Font Awesome,
