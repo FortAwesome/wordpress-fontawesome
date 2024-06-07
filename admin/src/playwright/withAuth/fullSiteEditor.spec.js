@@ -12,9 +12,19 @@ test.describe('full site editor', async () => {
   } )
 
   test("insert with icon chooser", async ({ page, editor,pageUtils }) => {
+    const pageLoadPromise = page.waitForResponse(
+      '**/wp/v2/pages*'
+    );
+
     await page.goto("/wp-admin/site-editor.php?canvas=edit");
 
-    await page.getByRole('button', { name: 'Get started' }).click();
+    await pageLoadPromise;
+
+    const getStartedCount = await page.getByRole('button', { name: 'Get started' }).count();
+
+    if (getStartedCount > 0) {
+      await page.getByRole('button', { name: 'Get started' }).click();
+    }
 
 		await editor.insertBlock( {
 			name: 'core/paragraph',
