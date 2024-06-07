@@ -96,14 +96,35 @@ class EnqueueTest extends TestCase {
 	}
 
 	public function assert_svg($output, $license_subdomain, $version, $refute = false) {
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
+		$match_result = match_all(
+			"/<script(?P<attrs>.*?all\.js.*?)><\/script>/",
+			$output
+		);
+
+		if ( $refute ) {
+		  $this->assertEquals( $match_result->match_count(), 0, 'expected zero matching script tags');
+		  return;
+		}
+
+		$this->assertEquals( $match_result->match_count(), 1, 'expected exactly one matching script tag');
+
+		$attrs = parse_attrs($match_result->matches()['attrs'][0]);
+
+		if ( fa()->detecting_conflicts() ) {
+			$this->assertEquals( 1, $attrs['data-fa-detection-ignore'] );
+		} else {
+			$this->assertFalse( array_key_exists( 'data-fa-detection-ignore', $attrs ) );
+		}
+
+		$this->assertEquals('"anonymous"', $attrs['crossorigin']);
+		$this->assertEquals('"sha384-fake123"', $attrs['integrity']);
+		$this->assertTrue( array_key_exists( 'defer', $attrs ) );
+		$this->assertEquals('"text/javascript"', $attrs['type']);
+		$expected_src = "\"https://$license_subdomain.fontawesome.com/releases/v$version/js/all.js\"";
+		$actual_src = $attrs['src'];
 		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<script[\s]+{$ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake123\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/js\/all\.js\'.*?><\/script>/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
+			$expected_src,
+			$actual_src
 		);
 	}
 
@@ -128,14 +149,35 @@ class EnqueueTest extends TestCase {
 	}
 
 	public function assert_svg_v4shim($output, $license_subdomain, $version, $refute = false){
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
+		$match_result = match_all(
+			"/<script(?P<attrs>.*?v4-shims\.js.*?)><\/script>/",
+			$output
+		);
+
+		if ( $refute ) {
+		  $this->assertEquals( $match_result->match_count(), 0, 'expected zero matching script tags');
+		  return;
+		}
+
+		$this->assertEquals( $match_result->match_count(), 1, 'expected exactly one matching script tag');
+
+		$attrs = parse_attrs($match_result->matches()['attrs'][0]);
+
+		if ( fa()->detecting_conflicts() ) {
+			$this->assertEquals( 1, $attrs['data-fa-detection-ignore'] );
+		} else {
+			$this->assertFalse( array_key_exists( 'data-fa-detection-ignore', $attrs ) );
+		}
+
+		$this->assertEquals('"anonymous"', $attrs['crossorigin']);
+		$this->assertEquals('"sha384-fake246"', $attrs['integrity']);
+		$this->assertTrue( array_key_exists( 'defer', $attrs ) );
+		$this->assertEquals('"text/javascript"', $attrs['type']);
+		$expected_src = "\"https://$license_subdomain.fontawesome.com/releases/v$version/js/v4-shims.js\"";
+		$actual_src = $attrs['src'];
 		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<script[\s]+{$ignore_detection}[\s]*defer[\s]+crossorigin=\"anonymous\"[\s]+integrity=\"sha384-fake246\"[\s]+type=\'text\/javascript\'[\s]+src=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/js\/v4-shims\.js\'.*?><\/script>/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE . "\n\n$output\n\n"
+			$expected_src,
+			$actual_src
 		);
 	}
 
@@ -196,15 +238,24 @@ class EnqueueTest extends TestCase {
 	}
 
 	public function assert_pseudo_elements($output, $refute = false){
-		$ignore_detection = fa()->detecting_conflicts() ? "data-fa-detection-ignore " : "";
-		$this->assertEquals(
-			$refute ? 0 : 1,
-			preg_match(
-				"/<script\s*{$ignore_detection}.*?>\s*.*?searchPseudoElements:\s*true/",
-				$output
-			),
-			self::OUTPUT_MATCH_FAILURE_MESSAGE
+		$match_result = match_all(
+			"/<script.*?>.*?searchPseudoElements:\s*true.*?<\/script>/s",
+			$output
 		);
+
+		if ( $refute ) {
+			$this->assertEquals(
+				0,
+				$match_result->match_count(),
+				"expected no matches of script tags setting searchPseudoElements to true, but found at least one"
+			);
+		} else {
+			$this->assertEquals(
+				1,
+				$match_result->match_count(),
+				"expected exactly one match of script tags setting searchPseudoElements to true, but found none."
+			);
+		}
 	}
 
 	public function refute_pseudo_elements($output) {
@@ -519,3 +570,4 @@ class EnqueueTest extends TestCase {
 		 */
 	}
 }
+

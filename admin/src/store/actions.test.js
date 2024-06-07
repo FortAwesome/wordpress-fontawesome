@@ -2,7 +2,7 @@ import { respondWith, resetAxiosMocks, changeImpl } from 'axios'
 import * as actions from './actions'
 import { submitPendingOptions, addPendingOption } from './actions'
 import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
+import { thunk } from 'redux-thunk'
 import reportRequestError, { MOCK_UI_MESSAGE, redactHeaders, redactRequestData } from '../util/reportRequestError'
 jest.mock('../util/reportRequestError')
 const apiUrl = '/font-awesome/v1'
@@ -86,7 +86,7 @@ describe('submitPendingOptions and interceptors', () => {
 
           respondWith({
             url: `${apiUrl}/config`,
-            method: 'PUT',
+            method: 'POST',
             response: {
               status: 200,
               statusText: 'OK',
@@ -143,7 +143,7 @@ describe('submitPendingOptions and interceptors', () => {
 
           respondWith({
             url: `${apiUrl}/config`,
-            method: 'PUT',
+            method: 'POST',
             response: {
               status: 200,
               statusText: 'OK',
@@ -179,16 +179,16 @@ describe('submitPendingOptions and interceptors', () => {
         })
 
         describe('axios request', () => {
-          let mockPut = null
+          let mockPost = null
           beforeEach(() => {
-            mockPut = jest.fn(() => Promise.resolve({ data }))
-            changeImpl({ name: 'put', fn: mockPut })
+            mockPost = jest.fn(() => Promise.resolve({ data }))
+            changeImpl({ name: 'post', fn: mockPost })
           })
 
           test('submits pendingOptions', done => {
             store.dispatch(submitPendingOptions()).then(() => {
-              expect(mockPut).toHaveBeenCalledTimes(1)
-              expect(mockPut).toHaveBeenCalledWith(
+              expect(mockPost).toHaveBeenCalledTimes(1)
+              expect(mockPost).toHaveBeenCalledWith(
                 `${apiUrl}/config`,
                 expect.objectContaining({
                   options: pendingOptions
@@ -212,7 +212,7 @@ describe('submitPendingOptions and interceptors', () => {
     describe('when errors payload is absent', () => {
         const responseData = {foo: 42}
         const url = `${apiUrl}/config`
-        const method = 'PUT'
+        const method = 'POST'
         const status = 400
         const statusText = 'Bad Request'
         const requestData = JSON.stringify({bar: 43})
@@ -279,7 +279,7 @@ describe('submitPendingOptions and interceptors', () => {
     beforeEach(() => {
       respondWith({
         url: `${apiUrl}/config`,
-        method: 'PUT',
+        method: 'POST',
         response: new XMLHttpRequest()
       })
 
@@ -321,7 +321,7 @@ describe('submitPendingOptions and interceptors', () => {
     beforeEach(() => {
       respondWith({
         url: `${apiUrl}/config`,
-        method: 'PUT',
+        method: 'POST',
         response: new Error('some axios error')
       })
 
@@ -389,7 +389,7 @@ describe('some action failure cases', () => {
       action: 'updateApiToken',
       state: {},
       route: 'config',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'OPTIONS_FORM_SUBMIT_START',
       endAction: 'OPTIONS_FORM_SUBMIT_END',
       params: {
@@ -405,7 +405,7 @@ describe('some action failure cases', () => {
         }
       },
       route: 'conflict-detection/conflicts/blocklist',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'BLOCKLIST_UPDATE_START',
       endAction: 'BLOCKLIST_UPDATE_END',
       params: {}
@@ -444,7 +444,7 @@ describe('some action failure cases', () => {
       action: 'snoozeV3DeprecationWarning',
       state: {},
       route: 'v3deprecation',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'SNOOZE_V3DEPRECATION_WARNING_START',
       endAction: 'SNOOZE_V3DEPRECATION_WARNING_END',
       params: {}
@@ -454,7 +454,7 @@ describe('some action failure cases', () => {
       desc: 'when enabling',
       state: {},
       route: 'conflict-detection/until',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'ENABLE_CONFLICT_DETECTION_SCANNER_START',
       endAction: 'ENABLE_CONFLICT_DETECTION_SCANNER_END',
       params: { enable: true }
@@ -464,7 +464,7 @@ describe('some action failure cases', () => {
       desc: 'when disabling',
       state: {},
       route: 'conflict-detection/until',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'DISABLE_CONFLICT_DETECTION_SCANNER_START',
       endAction: 'DISABLE_CONFLICT_DETECTION_SCANNER_END',
       params: { enable: false }
@@ -482,7 +482,7 @@ describe('some action failure cases', () => {
       action: 'submitPendingOptions',
       state: STATE_TECH_CHANGE,
       route: 'config',
-      method: 'PUT',
+      method: 'POST',
       startAction: 'OPTIONS_FORM_SUBMIT_START',
       endAction: 'OPTIONS_FORM_SUBMIT_END',
       params: undefined

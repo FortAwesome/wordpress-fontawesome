@@ -54,7 +54,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			'/' . $route_base,
 			array(
 				array(
-					'methods'             => 'PUT',
+					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_item' ),
 					'permission_callback' => function() {
 						return current_user_can( 'manage_options' ); },

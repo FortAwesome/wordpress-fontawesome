@@ -54,7 +54,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 			'/' . $route_base . '/until',
 			array(
 				array(
-					'methods'             => 'PUT',
+					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_detect_conflicts_until' ),
 					'permission_callback' => function() {
 						return current_user_can( 'manage_options' ); },
@@ -101,7 +101,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 			'/' . $route_base . '/conflicts/blocklist',
 			array(
 				array(
-					'methods'             => 'PUT',
+					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_blocklist' ),
 					'permission_callback' => function() {
 						return current_user_can( 'manage_options' ); },

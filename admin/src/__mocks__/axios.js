@@ -40,6 +40,8 @@ export function respondWith ({ url, method = "GET", response }) {
 export function resetAxiosMocks () {
   responses = {}
   axios.put = DEFAULT_PUT
+  axios.post = DEFAULT_POST
+  axios.delete = DEFAULT_DELETE
 }
 
 export function changeImpl({ name, fn }) {

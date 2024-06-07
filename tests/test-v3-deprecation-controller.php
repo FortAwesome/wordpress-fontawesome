@@ -61,7 +61,7 @@ class V3DeprecationControllerTest extends TestCase {
 	public function test_update_item() {
 		$this->assertFalse( boolval( fa()->get_v3deprecation_warning_data() ) );
 		$request = new \WP_REST_Request(
-			'PUT',
+			'POST',
 			$this->namespaced_route
 		);
 

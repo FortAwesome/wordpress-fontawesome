@@ -8,4 +8,10 @@ COPY ./apache2-custom.sh /usr/local/bin/apache2-custom.sh
 
 COPY ./add-hosts.sh /tmp
 
+COPY ./disable_auto_update.sh /tmp
+
+RUN /tmp/disable_auto_update.sh
+
+RUN cp -R /usr/src/wordpress/* /var/www/html/
+
 CMD ["apache2-foreground"]

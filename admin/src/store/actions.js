@@ -304,7 +304,7 @@ export function submitPendingBlocklist() {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/conflict-detection/conflicts/blocklist`,
       blocklist,
       {
@@ -409,21 +409,7 @@ export function queryKits() {
 
     return restApiAxios.post(
       `${apiUrl}/api`,
-      `query {
-        me {
-          kits {
-            name
-            version
-            technologySelected
-            licenseSelected
-            minified
-            token
-            shimEnabled
-            autoAccessibilityEnabled
-            status
-          }
-        }
-      }`,
+      'query { me { kits { name version technologySelected licenseSelected minified token shimEnabled autoAccessibilityEnabled status }}}',
       {
         headers: {
           'X-WP-Nonce': apiNonce
@@ -492,7 +478,7 @@ export function queryKits() {
 
       dispatch({type: 'OPTIONS_FORM_SUBMIT_START'})
 
-      return restApiAxios.put(
+      return restApiAxios.post(
         `${apiUrl}/config`,
         { 
           options: {
@@ -534,7 +520,7 @@ export function submitPendingOptions() {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/config`,
       { options: { ...options, ...pendingOptions }},
       {
@@ -573,7 +559,7 @@ export function updateApiToken({ apiToken = false, runQueryKits = false }) {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/config`,
       { options: { ...options, apiToken }},
       {
@@ -689,7 +675,7 @@ export function snoozeV3DeprecationWarning() {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/v3deprecation`,
       { snooze: true },
       {
@@ -745,7 +731,7 @@ export function setConflictDetectionScanner({ enable = true }) {
       })
     }
 
-    return restApiAxios.put(
+    return restApiAxios.post(
       `${apiUrl}/conflict-detection/until`,
       enable
         ? Math.floor((new Date((new Date()).valueOf() + (CONFLICT_DETECTION_SCANNER_DURATION_MIN * 1000 * 60))) / 1000)

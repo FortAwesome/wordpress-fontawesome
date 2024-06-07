@@ -88,6 +88,7 @@ class FontAwesome_Metadata_Provider {
 	 *
 	 * External code should use {@see FontAwesome::query()} instead.
 	 *
+	 * @param string | array $query {@see FontAwesome::query()}.
 	 * @param $ignore_auth when TRUE this will omit an authorization header on
 	 *     the network request, even if an apiToken is present.
 	 * @ignore
@@ -102,13 +103,27 @@ class FontAwesome_Metadata_Provider {
 	 * @return string json encoded response body when the API server response
 	 *     has a HTTP 200 status.
 	 */
-	public function metadata_query( $query_string, $ignore_auth = false ) {
+	public function metadata_query( $query, $ignore_auth = false ) {
+		$body = '';
+
+		if ( is_string( $query ) ) {
+			$body = '{"query": ' . wp_json_encode( $query ) . '}';
+		} elseif ( is_array( $query ) ) {
+			$filtered_query_array          = array();
+			$filtered_query_array['query'] = $query['query'];
+			if ( array_key_exists( 'variables', $query ) ) {
+				$filtered_query_array['variables'] = $query['variables'];
+			}
+
+			$body = wp_json_encode( $filtered_query_array );
+		}
+
 		$args = array(
 			'method'  => 'POST',
 			'headers' => array(
 				'Content-Type' => 'application/json',
 			),
-			'body'    => '{"query": ' . wp_json_encode( $query_string ) . '}',
+			'body'    => $body,
 			'timeout' => 10, // seconds.
 		);
 

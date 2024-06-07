@@ -1,8 +1,8 @@
 import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
-import thunkMiddleware from 'redux-thunk'
+import { thunk } from 'redux-thunk'
 import rootReducer from './reducers'
 
-const middleware = [ thunkMiddleware ]
+const middleware = [ thunk ]
 
 const composeEnhancers = (
   process.env.NODE_ENV === 'development'

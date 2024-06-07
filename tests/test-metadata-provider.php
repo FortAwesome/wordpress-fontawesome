@@ -325,4 +325,36 @@ class MetadataProviderTest extends TestCase {
 
 		$this->assertTrue( boolval( $result ) );
 	}
+
+	public function test_query_with_variables() {
+		add_filter(
+			'pre_http_request',
+			function( $_prempt, $parsed_args ) {
+				$query = json_decode( $parsed_args['body'] );
+				$this->assertMatchesRegularExpression( '/Search/', $query->query );
+				$this->assertEquals( '6.x', $query->variables->version );
+				$this->assertEquals( 'coffee', $query->variables->query );
+				// A property other than 'query' or 'variables' is filtered out.
+				$obj = new \ReflectionObject( $query );
+				$this->assertFalse( $obj->hasProperty( 'foo' ) );
+
+				return self::build_success_response();
+			},
+			1, // filter priority.
+			2  // num args accepted.
+		);
+
+		$query = array(
+			'query'     => 'query { Search($query: String!, $version: String!) search(version: $version, query: $query) { id } }',
+			'variables' => array(
+				'version' => '6.x',
+				'query'   => 'coffee',
+				'foo'     => 'bar',
+			),
+		);
+
+		$result = fa_metadata_provider()->metadata_query( $query, true );
+
+		$this->assertTrue( is_string( $result ) );
+	}
 }

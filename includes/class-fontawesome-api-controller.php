@@ -23,17 +23,22 @@ use \WP_REST_Controller, \WP_Error, \Error, \Exception;
  * <h3>Headers</h3>
  *
  * `X-WP-Nonce`: include an appropriate nonce from WordPress.
+ * `content-type: application/json`
  *
  * <h3>Body</h3>
  *
- * The request body should contain a GraphQL query document as a string.
- *
- * For example, the following query would return all available Font Awesome
+ * The request body should contain JSON with a GraphQL query document on the `"query"`
+ * property. For example, the following query would return all available Font Awesome
  * version numbers:
  *
  * ```
- * query { releases { version } }
+ * { "query": "query { releases { version } }" }
  * ```
+ *
+ * (For compatibility with prior versions, it still also allows for sending the
+ * request with a plain text body of the query document only, with a
+ * `content-type: text/plain` header. However, this pattern seems to be penalized
+ * by the OWASP ruleset used by `mod_security`.)
  *
  * <h3>Internal Use vs. Public API</h3>
  *
@@ -122,7 +127,9 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 */
 	public function query( $request ) {
 		try {
-			$result = $this->metadata_provider()->metadata_query( $request->get_body() );
+			$query_body = $this->get_query_body( $request );
+
+			$result = $this->metadata_provider()->metadata_query( $query_body );
 
 			return new FontAwesome_REST_Response( json_decode( $result, true ), 200 );
 		} catch ( FontAwesome_ServerException $e ) {
@@ -146,5 +153,13 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 */
 	protected function metadata_provider() {
 		return $this->metadata_provider;
+	}
+
+	private function get_query_body( $request ) {
+		if ( $request->get_header( 'Content-Type' ) === 'application/json' ) {
+			return $request->get_json_params();
+		} else {
+			return $request->get_body();
+		}
 	}
 }

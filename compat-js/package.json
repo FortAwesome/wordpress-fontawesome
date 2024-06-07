@@ -3,29 +3,22 @@
   "version": "4.4.0",
   "private": true,
   "dependencies": {
-    "@wordpress/api-fetch": "^5.1.1",
-    "@wordpress/components": "14.1.10",
-    "@wordpress/compose": "4.1.5",
-    "@wordpress/data": "5.1.5",
-    "@wordpress/element": "3.1.1",
-    "@wordpress/i18n": "^3.16.0",
-    "@wordpress/icons": "4.0.2",
-    "@wordpress/primitives": "2.1.1",
-    "@wordpress/rich-text": "4.1.5",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5.35",
-    "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "@wordpress/components": "wp-6.5",
+    "@wordpress/compose": "wp-6.5",
+    "@wordpress/data": "wp-6.5",
+    "@wordpress/i18n": "wp-6.5",
+    "@wordpress/icons": "wp-6.5",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@wordpress/babel-preset-default": "^7",
-    "@wordpress/scripts": "^18",
-    "babel-plugin-lodash": "^3.3.4",
-    "decode-uri-component": "^0.2.1",
-    "loader-utils": "^1.4.2",
-    "process": "0.11.10",
-    "rimraf": "^5.0.1",
-    "terser": "4.8.1"
+    "@wordpress/babel-preset-default": "wp-6.5",
+    "@wordpress/scripts": "wp-6.5",
+    "decode-uri-component": "^0.4.1",
+    "rimraf": "^5.0.7",
+    "process": "0.11.10"
   },
   "scripts": {
     "build": "wp-scripts build --webpack-no-externals"

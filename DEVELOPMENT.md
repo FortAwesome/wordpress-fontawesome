@@ -9,6 +9,7 @@
 - [Optional Development Setup Steps](#optional-development-setup-steps)
 - [Run tests with phpunit](#run-tests-with-phpunit)
   * [Pass arguments to phpunit](#pass-arguments-to-phpunit)
+- [Run end-to-end tests with playwright](#run-end-to-end-tests-with-playwright)
 - [Use wp-cli within your Docker environment](#use-wp-cli-within-your-docker-environment)
 - [Run anything else within your Docker environment](#run-anything-else-within-your-docker-environment)
   * [Run a shell insider your Docker environment](#run-a-shell-inside-your-docker-environment)
@@ -18,6 +19,7 @@
   * [Main Options](#main-options)
   * [Releases Metadata Transient](#releases-metadata-transient)
   * [V3 Deprecation Warning](#v3-deprecation-warning)
+- [Managing web security rules](#managing-web-security-rules)
 - [Cut a Release](#cut-a-release)
 - [Run a Local Docs Server](#run-a-local-docs-server)
 - [Special Notes on plugin-sigma](#special-notes-on-plugin-sigma)
@@ -609,6 +611,53 @@ Everything before the `--` are the options do the `bin/phpunit` script, and ever
 to the `phpunit` command inside the container.
 </details>
 
+# Run end-to-end tests with playwright
+
+## Add tokens to `.env.local`
+
+```
+API_TOKEN=YOUR_FA_API_TOKEN
+KIT_TOKEN=YOUR_KIT_TOKEN
+```
+
+To run the end-to-end tests, you must have the WordPress environment running.
+For example, from the top-level directory, run this:
+
+```bash
+bin/dev
+```
+
+Leave that running in one terminal and do the following in a separate terminal.
+
+Playwright must be also installed when initializing a local dev environment:
+```bash
+cd admin
+npx playwright install --with-deps
+```
+
+Then, still in the `admin` directory, run tests on the terminal:
+```bash
+npx playwright test
+```
+
+Or run the tests in the Playwright UI:
+```bash
+npx playwright test --ui
+```
+
+Or in debug mode:
+```bash
+npx playwright test --debug
+```
+
+See also [Playwright docs](https://playwright.dev/docs/intro).
+
+## WordPress Version Caveat
+
+The end-to-end tests may use features of WordPress that are not present in older versions, so their
+use on older versions may be limited. But within those limits, at least some of them are useful for
+running against older versions of WordPress to ensure compatibility.
+
 # Use WP-CLI within your Docker environment
 
 For example,
@@ -729,6 +778,36 @@ Remove it:
 
 ```bash
 $ bin/wp transient delete font-awesome-v3-deprecation-data
+```
+
+# Managing web security rules
+
+For the `latest` docker image, the latest release of the [OWASP core ruleset](https://coreruleset.org/) is installed by default,
+but _not_ enabled by default. This simulates what are probably common Web Application Firewall configurations for WordPress hosting providers.
+
+By default, it merely audits. See the log in `/var/log/apache2/modsec_audit.log`.
+
+To enable filtering--actually rejecting requests that exceed the rules' tolerances--edit your `.env.local`:
+
+```
+ENABLE_MOD_SECURITY=true
+```
+
+Note that this env var setting must be present in the environment when the docker container is created.
+So if you've already started a container, you'll need to stop and remove it, then change this env var,
+then start it back up.
+
+You can watch the terminal where `apache2` is launched in the container. When `mod_security` is not enabled,
+it'll look like this:
+
+```
+'apache2 -D FOREGROUND -D DEVELOPMENT'
+```
+
+When `mod_security` is enabled, it'll look like this:
+
+```
+'apache2 -D FOREGROUND -D DEVELOPMENT -D EnableModSecurity'
 ```
 
 # Cut a Release
@@ -1181,14 +1260,10 @@ If you want to preview the built docs with a web server, first build the docs:
 bin/phpdoc
 ```
 
-Then go into the `docsrv` directory and run the doc server:
+Then go into the `docs` directory and run:
 ```
-cd docsrv
-npm install
-node index.js
+npx serve
 ```
-
-Point a web browser at `http://localhost:3000`.
 
 # Special Notes on plugin-sigma
 
