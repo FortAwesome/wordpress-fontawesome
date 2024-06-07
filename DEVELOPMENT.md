@@ -613,6 +613,13 @@ to the `phpunit` command inside the container.
 
 # Run end-to-end tests with playwright
 
+## Add tokens to `.env.local`
+
+```
+API_TOKEN=YOUR_FA_API_TOKEN
+KIT_TOKEN=YOUR_KIT_TOKEN
+```
+
 To run the end-to-end tests, you must have the WordPress environment running.
 For example, from the top-level directory, run this:
 
