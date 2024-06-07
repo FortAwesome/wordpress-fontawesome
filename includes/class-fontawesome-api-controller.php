@@ -22,12 +22,12 @@ use \WP_REST_Controller, \WP_Error, \Error, \Exception;
  *
  * <h3>Headers</h3>
  *
- * `X-WP-Nonce`: include an appropriate nonce from WordPress.
- * `content-type: application/json`
+ * - `X-WP-Nonce`: include an appropriate nonce from WordPress.
+ * - `Content-Type: application/json`
  *
  * <h3>Body</h3>
  *
- * The request body should contain JSON with a GraphQL query document on the `"query"`
+ * The request body must contain JSON with a GraphQL query document on the `"query"`
  * property. For example, the following query would return all available Font Awesome
  * version numbers:
  *
@@ -35,10 +35,21 @@ use \WP_REST_Controller, \WP_Error, \Error, \Exception;
  * { "query": "query { releases { version } }" }
  * ```
  *
- * (For compatibility with prior versions, it still also allows for sending the
- * request with a plain text body of the query document only, with a
- * `content-type: text/plain` header. However, this pattern seems to be penalized
- * by the OWASP ruleset used by `mod_security`.)
+ * It may also contain a "variables" property whose value is an object with variable
+ * assignments. For example, the following returns all icon identifiers for the
+ * latest version of Font Awesome 6.
+ *
+ * ```
+ * {
+ *   "query": "query Icons($ver: String!) { release(version:$ver) { icons { id } } }",
+ *   "variables": { "ver": "6.x" }
+ * }
+ * ```
+ *
+ * For compatibility with prior versions, this API end point still also allows for
+ * sending the request with a plain text body of the query document only, with an
+ * implied `content-type: text/plain` header (the default). However, this format is
+ * penalized by the OWASP core ruleset used by `mod_security`, so it should not be used.
  *
  * <h3>Internal Use vs. Public API</h3>
  *

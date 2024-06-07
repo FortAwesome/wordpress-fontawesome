@@ -114,7 +114,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-api-controller.php"><a href="files/includes-class-fontawesome-api-controller.html"><abbr title="includes/class-fontawesome-api-controller.php">class-fontawesome-api-controller.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">49</span>
+    <span class="phpdocumentor-element-found-in__line">65</span>
 
     </aside>
 
@@ -126,13 +126,31 @@ The plugin's setting page is a React app that acts as such a client,
 querying kits.</p>
 <p>Requests to this REST route should have the following headers and body:</p>
 <h3>Headers</h3>
-<p><code class="prettyprint">X-WP-Nonce</code>: include an appropriate nonce from WordPress.</p>
+<ul>
+<li>
+<code class="prettyprint">X-WP-Nonce</code>: include an appropriate nonce from WordPress.</li>
+<li>
+<code class="prettyprint">Content-Type: application/json</code>
+</li>
+</ul>
 <h3>Body</h3>
-<p>The request body should contain a GraphQL query document as a string.</p>
-<p>For example, the following query would return all available Font Awesome
+<p>The request body must contain JSON with a GraphQL query document on the <code class="prettyprint">&quot;query&quot;</code>
+property. For example, the following query would return all available Font Awesome
 version numbers:</p>
-<pre class="prettyprint"><code class="prettyprint">query { releases { version } }
+<pre class="prettyprint"><code class="prettyprint">{ &quot;query&quot;: &quot;query { releases { version } }&quot; }
 </code></pre>
+<p>It may also contain a &quot;variables&quot; property whose value is an object with variable
+assignments. For example, the following returns all icon identifiers for the
+latest version of Font Awesome 6.</p>
+<pre class="prettyprint"><code class="prettyprint">{
+  &quot;query&quot;: &quot;query Icons($ver: String!) { release(version:$ver) { icons { id } } }&quot;,
+  &quot;variables&quot;: { &quot;ver&quot;: &quot;6.x&quot; }
+}
+</code></pre>
+<p>For compatibility with prior versions, this API end point still also allows for
+sending the request with a plain text body of the query document only, with an
+implied <code class="prettyprint">content-type: text/plain</code> header (the default). However, this format is
+penalized by the OWASP core ruleset used by <code class="prettyprint">mod_security</code>, so it should not be used.</p>
 <h3>Internal Use vs. Public API</h3>
 <p>The PHP methods in this controller class are not part of this plugin's
 public API, but the REST route it exposes is.</p>
@@ -161,6 +179,19 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
 
 
 
+<h4 id="toc-methods">
+    Methods
+    <a href="classes/FortAwesome-FontAwesome-API-Controller.html#toc-methods" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a href="classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body">get_query_body()</a>
+    <span>
+                                &nbsp;: mixed    </span>
+</dt>
+
+    </dl>
 
 
 
@@ -169,7 +200,55 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
 
         
 
-        
+            <section class="phpdocumentor-methods">
+        <h3 class="phpdocumentor-elements__header" id="methods">
+            Methods
+            <a href="classes/FortAwesome-FontAwesome-API-Controller.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_get_query_body">
+        get_query_body()
+        <a href="classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-api-controller.php"><a href="files/includes-class-fontawesome-api-controller.html"><abbr title="includes/class-fontawesome-api-controller.php">class-fontawesome-api-controller.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">169</span>
+
+    </aside>
+
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">get_query_body</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$request</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$request</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+            </dl>
+
+    
+
+    
+</article>
+            </section>
+
         <div class="phpdocumentor-modal" id="source-view">
     <div class="phpdocumentor-modal-bg" data-exit-button></div>
     <div class="phpdocumentor-modal-container">
@@ -273,10 +352,17 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                                                            </ul>
+                                                                                <li><a href="classes/FortAwesome-FontAwesome-API-Controller.html#toc-methods">Methods</a></li>
+                                    </ul>
             </li>
             
             
+                        <li class="phpdocumentor-on-this-page-section__title">Methods</li>
+            <li>
+                <ul class="phpdocumentor-list -clean">
+                                            <li><a href="classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body">get_query_body()</a></li>
+                                    </ul>
+            </li>
                     </ul>
     </section>
 

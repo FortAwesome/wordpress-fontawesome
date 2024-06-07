@@ -56,6 +56,11 @@ Search.appendIndex(
             "summary": "Controller\u0020class\u0020for\u0020the\u0020plugin\u0027s\u0020GraphQL\u0020API\u0020REST\u0020endpoint.",
             "url": "classes/FortAwesome-FontAwesome-API-Controller.html"
         },                {
+            "fqsen": "\\FortAwesome\\FontAwesome_API_Controller\u003A\u003Aget_query_body\u0028\u0029",
+            "name": "get_query_body",
+            "summary": "",
+            "url": "classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body"
+        },                {
             "fqsen": "\\FortAwesome\\FontAwesome_Exception",
             "name": "FontAwesome_Exception",
             "summary": "An\u0020abstract\u0020class\u0020defining\u0020behavior\u0020for\u0020most\u0020exceptions\u0020thrown\u0020by\u0020this\u0020plugin.",

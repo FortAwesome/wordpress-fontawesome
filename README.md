@@ -733,14 +733,14 @@ Once the site owner enables Pro, `fa()->pro()` will be `true` and your code can
 then rely on the presence of Font Awesome Pro for the version indicated by
 `fa()->version()`.
 
-(See the [PHP API docs](https://fortawesome.github.io/wordpress-fontawesome/index.html) for how to resolve the symbolic
+(See the [PHP API docs](https://fortawesome.github.io/wordpress-fontawesome/) for how to resolve the symbolic
 `"latest"` version as a concrete version like `"5.12.0"`.)
 
 # Query the Font Awesome GraphQL API
 
 The Font Awesome [GraphQL API](https://fontawesome.com/docs/apis/graphql/get-started) allows you to query and search icon metadata.
 
-See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/classes/FortAwesome-FontAwesome.html#method_query) method.
+See also documentation in PHP API on the [`FontAwesome::query()`](https://fortawesome.github.io/wordpress-fontawesome/) method.
 
 ## public scope queries on api.fontawesome.com
 
@@ -755,7 +755,8 @@ fetch(
   'https://api.fontawesome.com',
   {
     method: 'POST',
-    body: 'query { release(version:"5.12.0") { icons { id } } }'
+    headers: {'Content-Type': 'application/json'},
+    body: '{"query": "query Icons($ver: String!) { release(version:$ver) { icons { id } } }", "variables": { "ver": "6.x" } }'
   }
 )
 .then(response => response.ok ? response.json() : null)
