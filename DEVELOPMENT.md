@@ -613,7 +613,7 @@ to the `phpunit` command inside the container.
 
 # Run end-to-end tests with playwright
 
-You must have the WordPress environment running.
+To run the end-to-end tests, you must have the WordPress environment running.
 For example, from the top-level directory, run this:
 
 ```bash
@@ -622,7 +622,7 @@ bin/dev
 
 Leave that running in one terminal and do the following in a separate terminal.
 
-Playwright must be installed when initializing a local dev environment:
+Playwright must be also installed when initializing a local dev environment:
 ```bash
 cd admin
 npx playwright install --with-deps
@@ -638,7 +638,12 @@ Or run the tests in the Playwright UI:
 npx playwright test --ui
 ```
 
-See also [Playwright docs](https://playwright.dev/).
+Or in debug mode:
+```bash
+npx playwright test --debug
+```
+
+See also [Playwright docs](https://playwright.dev/docs/intro).
 
 ## WordPress Version Caveat
 
@@ -770,12 +775,12 @@ $ bin/wp transient delete font-awesome-v3-deprecation-data
 
 # Managing web security rules
 
-For the `latest` development environment, the latest [OWASP core ruleset](https://coreruleset.org/) is installed by default,
+For the `latest` docker image, the latest release of the [OWASP core ruleset](https://coreruleset.org/) is installed by default,
 but _not_ enabled by default. This simulates what are probably common Web Application Firewall configurations for WordPress hosting providers.
 
 By default, it merely audits. See the log in `/var/log/apache2/modsec_audit.log`.
 
-To enable filtering--rejecting requests that exceed the rules' tolerances--editor your `.env.local`:
+To enable filtering--actually rejecting requests that exceed the rules' tolerances--edit your `.env.local`:
 
 ```
 ENABLE_MOD_SECURITY=true
