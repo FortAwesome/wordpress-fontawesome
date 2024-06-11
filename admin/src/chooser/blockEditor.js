@@ -9,7 +9,6 @@ import {
   insertObject,
   registerFormatType,
 } from "@wordpress/rich-text";
-import { registerBlockType } from "@wordpress/blocks";
 import {
   BlockControls,
   RichTextToolbarButton,
