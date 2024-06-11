@@ -1,6 +1,6 @@
 const REBUILD_SVG_VISITED_ATTR = "data-repaint-visited";
 
-function maybeUpdateSvg(el) {
+function maybeRebuildElement(el) {
   if (!el.getAttribute(REBUILD_SVG_VISITED_ATTR)) {
     el.setAttribute(REBUILD_SVG_VISITED_ATTR, true);
     el.outerHTML = el.outerHTML;
@@ -21,7 +21,7 @@ function setupObserver() {
         if (
           child.tagName && "SVG" === child.tagName.toUpperCase()
         ) {
-          maybeUpdateSvg(child);
+          maybeRebuildElement(child);
         }
       }
     }
@@ -32,9 +32,6 @@ function setupObserver() {
 
   // Start observing the target node for configured mutations
   observer.observe(targetNode, config);
-
-  // Later, you can stop observing
-  //observer.disconnect();
 }
 
 const editorContentFrame = document.querySelector(".block-editor-iframe__body");
@@ -42,7 +39,7 @@ const editorContentFrame = document.querySelector(".block-editor-iframe__body");
 if (editorContentFrame) {
   document.addEventListener("DOMContentLoaded", () => {
     for (const faSvg of document.querySelectorAll("svg.svg-inline--fa")) {
-      maybeUpdateSvg(faSvg);
+      maybeRebuildElement(faSvg);
     }
     setupObserver();
   });

@@ -13,8 +13,10 @@ import { registerBlockType } from "@wordpress/blocks";
 import { RichTextToolbarButton, useBlockProps } from "@wordpress/block-editor";
 import { dom } from "@fortawesome/fontawesome-svg-core";
 
+const name = "font-awesome/icon";
+const title = __("Font Awesome Icon");
 const inlineSvgName = "font-awesome/fa-inline-svg";
-const inlineSvgTitle = __("Font Awesome Icon");
+const inlineSvgTitle = __("Font Awesome Inline SVG");
 const inlineSvgPathName = "font-awesome/fa-inline-svg-path";
 const inlineSvgPathTitle = __("Font Awesome Inline SVG Path");
 
@@ -108,9 +110,15 @@ export function setupBlockEditor(params) {
 
       for (let i = wrapperIndex; i < newStart + objectCount; i++) {
         if (Array.isArray(newValue.formats[i])) {
+          // then wrap the outer <span> around the <svg>
+          newValue.formats[i].push({ type: name });
+          // wrap the <svg> around any <path> elements.
           newValue.formats[i].push(svgElementWrapper);
         } else {
-          newValue.formats[i] = [svgElementWrapper];
+          newValue.formats[i] = [
+            { type: name },
+            svgElementWrapper,
+          ];
         }
       }
 
@@ -133,7 +141,7 @@ export function setupBlockEditor(params) {
                 />
               </SVG>
             }
-            title={inlineSvgTitle}
+            title={title}
             onClick={this.handleFormatButtonClick}
           />
           <IconChooserModal
@@ -151,23 +159,29 @@ export function setupBlockEditor(params) {
     }
   }
 
+  const mainSettings = {
+    name,
+    title,
+    keywords: [__("icon"), __("awesome")],
+    tagName: "span",
+    className: "fa-icon",
+    edit: FontAwesomeIconEdit,
+  };
+
   const inlineSvgSettings = {
     name: inlineSvgName,
     title: inlineSvgTitle,
-    keywords: [__("icon"), __("awesome")],
     tagName: "svg",
     className: "svg-inline--fa",
     attributes: {
       xmlns: "xmlns",
       viewBox: "viewBox",
     },
-    edit: FontAwesomeIconEdit,
   };
 
   const inlineSvgPathSettings = {
     name: inlineSvgPathName,
     title: inlineSvgPathTitle,
-    keywords: [__("icon"), __("awesome")],
     tagName: "path",
     className: null,
     attributes: {
@@ -179,4 +193,5 @@ export function setupBlockEditor(params) {
 
   registerFormatType(inlineSvgName, inlineSvgSettings);
   registerFormatType(inlineSvgPathName, inlineSvgPathSettings);
+  registerFormatType(name, mainSettings);
 }
