@@ -14,6 +14,8 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'fa-icon-block/fa-icon-bl
 
 if ( ! function_exists( 'FortAwesome\fa_handle_init' ) ) {
 	function fa_handle_init() {
+		// TODO: maybe rewire so that FontAwesome::init() always runs on init,
+		// which is what it claims to do.
 		fa_icon_block_init();
 	}
 }
