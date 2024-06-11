@@ -10,6 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once trailingslashit( __DIR__ ) . 'defines.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'fa-icon-block/fa-icon-block.php';
+
+if ( ! function_exists( 'FortAwesome\fa_handle_init' ) ) {
+	function fa_handle_init() {
+		fa_icon_block_init();
+	}
+}
 
 if ( ! defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
 	register_deactivation_hook(
