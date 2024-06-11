@@ -81,8 +81,6 @@ export function setupBlockEditor(params) {
         },
       });
 
-      const i = insertObject;
-
       if (isDuotone && secondaryPath) {
         newStart = value.start - 1;
         newValue = insertObject(
