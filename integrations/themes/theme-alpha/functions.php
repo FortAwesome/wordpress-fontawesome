@@ -72,3 +72,11 @@ function theme_alpha_fa_classes(){
 
   return implode(' ', $class_list);
 }
+
+add_filter('font_awesome_query_api_permission_callback', function($val, $request) {
+	// This is how we might filter the permisssions for the plugin's WP REST API 
+	// endpoint, to determine whether we'll issue a search request on behalf
+	// of a user.
+	error_log('DEBUG: filtering font_awesome_query_api_permission_callback');
+	return $val;
+}, 10, 2);
