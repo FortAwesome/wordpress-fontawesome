@@ -29,7 +29,7 @@
     }
   },
   "textdomain": "fa-icon-block",
-  "editorScript": "file:./index.js",
+  "editorScript": "font-awesome-icon-block",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
   "render": "file:./render.php"

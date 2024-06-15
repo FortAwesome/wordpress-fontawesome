@@ -1,7 +1,8 @@
 import { createStore } from './store'
 import get from 'lodash/get'
 
-const initialData = window['__FontAwesomeOfficialPlugin__']
+const GLOBAL_KEY = '__FontAwesomeOfficialPlugin__'
+const initialData = window[GLOBAL_KEY]
 // See: https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = get(initialData, 'webpackPublicPath')
 const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport'
