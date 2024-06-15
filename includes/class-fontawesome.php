@@ -176,6 +176,14 @@ class FontAwesome {
 	const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
 
 	/**
+	 * The handle used when enqueuing the icon chooser.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	const RESOURCE_HANDLE_ICON_CHOOSER = 'font-awesome-official-icon-chooser';
+
+	/**
 	 * The handle used when enqueuing block editor assets.
 	 *
 	 * @ignore
@@ -1647,12 +1655,15 @@ class FontAwesome {
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
-							array_merge(
-								$this->common_data_for_js_bundle(),
-								array(
-									'enableIconChooser' => true,
-								)
-							)
+							$this->common_data_for_js_bundle()
+						);
+
+						wp_enqueue_script(
+							self::RESOURCE_HANDLE_ICON_CHOOSER,
+							trailingslashit( FONTAWESOME_DIR_URL ) . 'icon-chooser/build/index.js',
+							array( self::ADMIN_RESOURCE_HANDLE ),
+							self::PLUGIN_VERSION,
+							true
 						);
 
 						/**

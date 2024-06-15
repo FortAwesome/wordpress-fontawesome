@@ -1,0 +1,24 @@
+{
+  "name": "icon-chooser",
+  "version": "0.1.0",
+  "description": "Choose a Font Awesome icon",
+  "author": "Font Awesome",
+  "license": "GPL-2.0-or-later",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start",
+    "env": "wp-env"
+  },
+  "dependencies": {
+    "@fortawesome/fa-icon-chooser-react": "^0.7.0"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "wp-6.5"
+  }
+}
