@@ -378,7 +378,7 @@ class FontAwesome {
 	 * @ignore
 	 */
 	public function run() {
-		 $this->init();
+		$this->init();
 
 		$this->initialize_rest_api();
 
@@ -1851,6 +1851,27 @@ class FontAwesome {
 				);
 			}
 		}
+
+		/*
+		add_filter(
+			'mce_css',
+			function($mce_css) {
+				$custom_style_url = trailingslashit( FONTAWESOME_DIR_URL ) . 'static/svg-with-js.css';
+
+    			if (!empty($mce_css)) {
+        			$mce_css .= ',';
+    			}
+
+    			$mce_css .= $custom_style_url;
+
+
+				return $mce_css;
+
+			},
+			10,
+			1
+		);
+*/
 
 		$this->enqueue_fa_block_assets();
 	}
