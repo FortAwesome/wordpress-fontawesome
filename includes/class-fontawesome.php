@@ -184,6 +184,14 @@ class FontAwesome {
 	const RESOURCE_HANDLE_ICON_CHOOSER = 'font-awesome-official-icon-chooser';
 
 	/**
+	 * The handle used when enqueuing the bundle for supporting the Classic Editor.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	const RESOURCE_HANDLE_CLASSIC_EDITOR = 'font-awesome-official-classic-editor';
+
+	/**
 	 * The handle used when enqueuing block editor assets.
 	 *
 	 * @ignore
@@ -1666,6 +1674,22 @@ class FontAwesome {
 							true
 						);
 
+						// TODO: only enqueue this when the classic editor will be loaded.
+						wp_enqueue_script(
+							self::RESOURCE_HANDLE_CLASSIC_EDITOR,
+							trailingslashit( FONTAWESOME_DIR_URL ) . 'classic-editor/build/index.js',
+							array(
+								self::ADMIN_RESOURCE_HANDLE,
+								self::RESOURCE_HANDLE_ICON_CHOOSER,
+								'wp-tinymce'
+							),
+							self::PLUGIN_VERSION,
+							true
+						);
+
+						// Required for styling the icon chooser in the Classic Editor.
+                        wp_enqueue_style('wp-components');
+
 						/**
 						 * TODO: re-enable the possibility of integrating with TinyMCE
 						 * even on pages where Gutenberg is also present.
@@ -1699,7 +1723,7 @@ class FontAwesome {
 											'%1$sAdd Font Awesome%2$s',
 											'font-awesome'
 										),
-										'<button type="button" onclick="__FontAwesomeOfficialPlugin__openIconChooserModal()" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+										'<button type="button" onclick="document.dispatchEvent(__FontAwesomeOfficialPlugin__.iconChooser.modalOpenEvent)" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
 										'</button>'
 									);
 								},
