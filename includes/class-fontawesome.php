@@ -1730,12 +1730,33 @@ class FontAwesome {
 								99
 							);
 
+							/**
+ 	 	 	 	 	 	 	 * "Fires immediately before the TinyMCE settings are printed."
+ 	 	 	 	 	 	 	 * See: https://developer.wordpress.org/reference/hooks/before_wp_tiny_mce/
+ 	 	 	 	 	 	 	 *
+ 	 	 	 	 	 	 	 * This container div must already be available to our setup script.
+ 	 	 	 	 	 	 	 * It will be if it's already there prior to the editor's initialization.
+ 	 	 	 	 	 	 	 * And if it's printed before the editor's settings are printed, then
+ 	 	 	 	 	 	 	 * it's guaranteed to be present before the editor's initialization.
+ 	 	 	 	 	 	 	 */
 							add_action(
 								'before_wp_tiny_mce',
 								function () {
 									printf( '<div id="font-awesome-icon-chooser-container"></div>' );
 								},
 								99
+							);
+
+							add_filter(
+								'tiny_mce_before_init',
+								function($mce_init) {
+									$plugins = is_string( $mce_init['plugins'] ) ? explode( ',', $mce_init['plugins'] ) : [];
+									array_push( $plugins, 'font-awesome-official' );
+									$mce_init['plugins'] = implode( ',', $plugins );
+									return $mce_init;
+								},
+								10,
+								1
 							);
 						}
 					} else {
@@ -1885,30 +1906,6 @@ class FontAwesome {
 			if ( $enable_icon_chooser && $this->is_gutenberg_page() ) {
 				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
 			}
-		}
-
-		if ( $enable_icon_chooser ) {
-			/**
-			 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
-			 * page load. For now, we're eliminating that case because
-			 * some customers experienced Gutenberg failures on pages where both
-			 * editors were active.
-			 *
-			 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
-			 * then we want to enable our TinyMCE integration. We'll initialize it
-			 * on the wp_tiny_mce_init action hook.
-			 *
-			 * According to the docs:
-			 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
-			 *
-			 * So we expect this to only fire once, even if multiple instances of the editor
-			 * are added to a single page.
-			 *
-			 * If TinyMCE is not present or not active, then this action hook will
-			 * never be fired and thus our TinyMCE integration will never be setup,
-			 * which is what we want.
-			 */
-			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 		}
 
 		wp_enqueue_script(
@@ -3167,31 +3164,6 @@ EOT;
 		}
 
 		return false;
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * We can't guarantee the timing of when this global hook will be set.
-	 * So if we find that it's already set, we'll invoke it. Otherwise, we'll
-	 * assign a truthy value to it to indicate that it should be invoked as
-	 * soon as the hook is ready.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public function print_classic_editor_icon_chooser_setup_script() {
-		?>
-		<script type="text/javascript">
-			if (window.tinymce) {
-				if (typeof window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser === 'function') {
-					window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
-				} else {
-					window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser = true
-				}
-			}
-		</script>
-		<?php
 	}
 
 	/**
