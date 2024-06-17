@@ -19,23 +19,22 @@ import { useBlockProps } from '@wordpress/block-editor';
  * @return {Element} Element to render.
  */
 export default function save( { attributes } ) {
-	const { fallbackCurrentYear, showStartingYear, startingYear } = attributes;
+	const { width, height, primaryPath, secondaryPath, spin } = attributes;
+  const isReady = width && height && (primaryPath || secondaryPath)
 
-	// If there is no fallbackCurrentYear, which could happen if the block
-	// is loaded from a template/pattern, return null. In this case, block
-	// rendering will be handled by the render.php file.
-	if ( ! fallbackCurrentYear ) {
-		return null;
-	}
+  if (!isReady) {
+    return null
+  }
 
-	let displayDate;
+  const classes = ['svg-inline--fa']
 
-	// Display the starting year as well if supplied by the user.
-	if ( showStartingYear && startingYear ) {
-		displayDate = startingYear + '–' + fallbackCurrentYear;
-	} else {
-		displayDate = fallbackCurrentYear;
-	}
+  if(spin) {
+    classes.push('fa-spin')
+  }
 
-	return <p { ...useBlockProps.save() }>© { displayDate }</p>;
+  return <span {...useBlockProps.save()}>
+    <svg class={classes.join(' ')} viewBox={`0 0 ${width} ${height}`}>
+      <path fill="currentColor" d={primaryPath}/>
+    </svg>
+  </span>
 }

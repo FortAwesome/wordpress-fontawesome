@@ -5,27 +5,57 @@
   "version": "0.1.0",
   "title": "Font Awesome Icon",
   "category": "widgets",
-  "description": "Display your site's copyright date.",
+  "description": "Add a Font Awesome icon.",
   "example": {},
   "attributes": {
-    "fallbackCurrentYear": {
+    "prefix": {
       "type": "string"
     },
-    "showStartingYear": {
+    "iconName": {
+      "type": "string"
+    },
+    "width": {
+      "type": "integer"
+    },
+    "height": {
+      "type": "integer"
+    },
+    "transform": {
+      "type": "string"
+    },
+    "primaryPath": {
+      "type": "string"
+    },
+    "secondaryPath": {
+      "type": "string"
+    },
+    "spin": {
       "type": "boolean"
-    },
-    "startingYear": {
-      "type": "string"
     }
   },
   "supports": {
+    "anchor": true,
+    "align": ["left", "center", "right" ],
+    "ariaLabel": true,
     "color": {
-      "background": false,
-      "text": true
+      "background": true,
+      "text": true,
+      "enableConstrastChecker": true,
+      "gradients": true
+    },
+    "dimensions": {
+      "aspectRatio": true,
+      "minHeight": true
     },
     "html": false,
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "blockGap": true
+    },
     "typography": {
-      "fontSize": true
+      "fontSize": true,
+      "lineHeight": true
     }
   },
   "textdomain": "fa-icon-block",

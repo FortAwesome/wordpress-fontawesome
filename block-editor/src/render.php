@@ -10,9 +10,8 @@
  * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
  */
 
-// Get the current year.
-$current_year = date( "Y" );
 
+/*
 // Determine which content to display.
 if ( isset( $attributes['fallbackCurrentYear'] ) && $attributes['fallbackCurrentYear'] === $current_year ) {
 
@@ -29,5 +28,6 @@ if ( isset( $attributes['fallbackCurrentYear'] ) && $attributes['fallbackCurrent
 
 	$block_content = '<p ' . get_block_wrapper_attributes() . '>© ' . esc_html( $display_date ) . '</p>';
 }
+*/
 
-echo wp_kses_post( $block_content );
+echo wp_kses_post( $content );
