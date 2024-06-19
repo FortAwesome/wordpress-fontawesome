@@ -16,14 +16,17 @@
 		"env": "wp-env"
 	},
 	"devDependencies": {
+		"@wordpress/block-editor": "wp-6.5",
+		"@wordpress/blocks": "wp-6.5",
+		"@wordpress/components": "wp-6.5",
+		"@wordpress/element": "wp-6.5",
 		"@wordpress/env": "^10.0.0",
+		"@wordpress/i18n": "wp-6.5",
+		"@wordpress/rich-text": "wp-6.5",
 		"@wordpress/scripts": "wp-6.5",
-    "@wordpress/components": "wp-6.5",
-    "@wordpress/element": "wp-6.5",
-    "@wordpress/i18n": "wp-6.5",
-    "@wordpress/rich-text": "wp-6.5",
-    "@wordpress/block-editor": "wp-6.5",
-    "@wordpress/blocks": "wp-6.5",
 		"classnames": "^2.3.1"
+	},
+	"dependencies": {
+		"@fortawesome/react-fontawesome": "^0.2.2"
 	}
 }

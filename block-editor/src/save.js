@@ -6,7 +6,9 @@
  */
 import { useBlockProps } from "@wordpress/block-editor";
 import classnames from "classnames";
-import SvgIcon from "./svgIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { isValid } from "./attributeValidation";
+import buildIconDefinition from "./buildIconDefinition";
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -20,26 +22,19 @@ import SvgIcon from "./svgIcon";
  * @return {Element} Element to render.
  */
 export default function save({ attributes }) {
-  const { width, height, primaryPath, secondaryPath, spin } = attributes;
-  const isReady = width && height && (primaryPath || secondaryPath);
-
-  if (!isReady) {
+  if (!isValid(attributes)) {
     return null;
   }
 
+  const iconDefinition = buildIconDefinition(attributes);
+
   const svgElementClasses = classnames({
-    "fa-spin": spin,
+    "fa-spin": !!attributes.spin,
   });
 
   return (
     <span {...useBlockProps.save()}>
-      <SvgIcon
-        extraClasses={svgElementClasses}
-        width={width}
-        height={height}
-        primaryPath={primaryPath}
-        secondaryPath={secondaryPath}
-      />
+      <FontAwesomeIcon icon={iconDefinition} />
     </span>
   );
 }

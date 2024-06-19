@@ -47,7 +47,11 @@ import get from "lodash/get";
 
 import { GLOBAL_KEY } from "../../admin/src/constants";
 
-import SvgIcon from "./svgIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import buildIconDefinition from "./buildIconDefinition";
+
+import { filterSelectionEvent, isValid } from "./attributeValidation";
 
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
@@ -55,73 +59,42 @@ const { IconChooserModal, modalOpenEvent } = get(window, [
 ], {});
 
 export function Edit({ attributes, setAttributes, isSelected }) {
-  const { iconName, prefix, primaryPath, secondaryPath, width, height, spin } =
-    attributes;
-  //console.log(`IS_SELECTED: ${isSelected}, className: ${className}, iconName: ${iconName}`)
-
   const handleSelect = (event) => {
-    if (!event.detail) {
+    const filteredSelectionAttributes = filterSelectionEvent(event);
+
+    if ("object" !== typeof filteredSelectionAttributes) {
       return;
     }
 
-    const { iconName, prefix } = event.detail;
-    const icon = event.detail.icon || [];
-    const width = icon[0];
-    const height = icon[1];
-    const pathData = icon[4];
-
-    const isDuotone = Array.isArray(pathData);
-
-    const primaryPath = isDuotone
-      ? (Array.isArray(pathData) ? pathData[1] : "")
-      : pathData;
-
-    const secondaryPath = Array.isArray(pathData) ? pathData[0] : null;
-
     setAttributes({
-      iconName,
-      prefix,
-      width,
-      height,
-      primaryPath,
-      secondaryPath,
+      ...filteredSelectionAttributes,
       spin: false,
+      transform: null,
     });
   };
 
-  const isReady = width && height && (primaryPath || secondaryPath);
-
   const svgElementClasses = classnames({
-    "fa-spin": spin,
+    "fa-spin": !!attributes.spin,
   });
 
   const blockProps = useBlockProps();
 
-  return iconName
+  const iconDefinition = buildIconDefinition(attributes);
+
+  return iconDefinition
     ? (
       <Fragment>
         <InspectorControls>
           <PanelBody title={__("Settings", "fa-icon-block")}>
             <p>
-              <SvgIcon
-                extraClasses={svgElementClasses}
-                width={width}
-                height={height}
-                primaryPath={primaryPath}
-                secondaryPath={secondaryPath}
-              />{" "}
-              {prefix} {iconName}
+              <FontAwesomeIcon icon={iconDefinition} /> {iconDefinition.prefix}
+              {" "}
+              {iconDefinition.iconName}
             </p>
           </PanelBody>
         </InspectorControls>
         <span {...blockProps}>
-          <SvgIcon
-            extraClasses={svgElementClasses}
-            width={width}
-            height={height}
-            primaryPath={primaryPath}
-            secondaryPath={secondaryPath}
-          />
+          <FontAwesomeIcon icon={iconDefinition} />
         </span>
       </Fragment>
     )

@@ -20,13 +20,10 @@
     "height": {
       "type": "integer"
     },
+    "pathData": {
+      "type": "array"
+    },
     "transform": {
-      "type": "string"
-    },
-    "primaryPath": {
-      "type": "string"
-    },
-    "secondaryPath": {
       "type": "string"
     },
     "spin": {
