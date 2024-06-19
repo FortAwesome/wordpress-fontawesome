@@ -6,7 +6,7 @@
  */
 import { useBlockProps } from "@wordpress/block-editor";
 import classnames from "classnames";
-
+import SvgIcon from "./svgIcon";
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -27,15 +27,19 @@ export default function save({ attributes }) {
     return null;
   }
 
-  const svgElementClasses = classnames("svg-inline--fa", {
+  const svgElementClasses = classnames({
     "fa-spin": spin,
   });
 
   return (
     <span {...useBlockProps.save()}>
-      <svg class={svgElementClasses} viewBox={`0 0 ${width} ${height}`}>
-        <path fill="currentColor" d={primaryPath} />
-      </svg>
+      <SvgIcon
+        extraClasses={svgElementClasses}
+        width={width}
+        height={height}
+        primaryPath={primaryPath}
+        secondaryPath={secondaryPath}
+      />
     </span>
   );
 }

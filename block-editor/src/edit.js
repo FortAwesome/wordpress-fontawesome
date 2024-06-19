@@ -47,6 +47,8 @@ import get from "lodash/get";
 
 import { GLOBAL_KEY } from "../../admin/src/constants";
 
+import SvgIcon from "./svgIcon";
+
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
@@ -89,7 +91,7 @@ export function Edit({ attributes, setAttributes, isSelected }) {
 
   const isReady = width && height && (primaryPath || secondaryPath);
 
-  const svgElementClasses = classnames("svg-inline--fa", {
+  const svgElementClasses = classnames({
     "fa-spin": spin,
   });
 
@@ -101,20 +103,25 @@ export function Edit({ attributes, setAttributes, isSelected }) {
         <InspectorControls>
           <PanelBody title={__("Settings", "fa-icon-block")}>
             <p>
-              <svg
-                className={svgElementClasses}
-                viewBox={`0 0 ${width} ${height}`}
-              >
-                <path fill="currentColor" d={primaryPath}>&nbsp;</path>
-              </svg>{" "}
+              <SvgIcon
+                extraClasses={svgElementClasses}
+                width={width}
+                height={height}
+                primaryPath={primaryPath}
+                secondaryPath={secondaryPath}
+              />{" "}
               {prefix} {iconName}
             </p>
           </PanelBody>
         </InspectorControls>
         <span {...blockProps}>
-          <svg className={svgElementClasses} viewBox={`0 0 ${width} ${height}`}>
-            <path fill="currentColor" d={primaryPath} />
-          </svg>
+          <SvgIcon
+            extraClasses={svgElementClasses}
+            width={width}
+            height={height}
+            primaryPath={primaryPath}
+            secondaryPath={secondaryPath}
+          />
         </span>
       </Fragment>
     )
