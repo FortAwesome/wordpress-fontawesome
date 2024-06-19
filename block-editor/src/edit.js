@@ -27,7 +27,12 @@ import { Fragment, useState } from "@wordpress/element";
  * @see https://developer.wordpress.org/block-editor/reference-guides/components/text-control/
  * @see https://developer.wordpress.org/block-editor/reference-guides/components/toggle-control/
  */
-import { Button, PanelBody, TextControl, ToggleControl } from "@wordpress/components";
+import {
+  Button,
+  PanelBody,
+  TextControl,
+  ToggleControl,
+} from "@wordpress/components";
 
 /**
  * Imports the useEffect React Hook. This is used to set an attribute when the
@@ -37,25 +42,24 @@ import { Button, PanelBody, TextControl, ToggleControl } from "@wordpress/compon
  */
 import { useEffect } from "react";
 
-import get from 'lodash/get';
+import classnames from "classnames";
+import get from "lodash/get";
 
-import { GLOBAL_KEY } from '../../admin/src/constants'
+import { GLOBAL_KEY } from "../../admin/src/constants";
 
-const { IconChooserModal, modalOpenEvent } = get(window, [GLOBAL_KEY, 'iconChooser'], {});
+const { IconChooserModal, modalOpenEvent } = get(window, [
+  GLOBAL_KEY,
+  "iconChooser",
+], {});
 
-export function Edit({ attributes, setAttributes }) {
-  const { iconName, prefix, primaryPath, secondaryPath, width, height, spin } = attributes;
-
-  useEffect(() => {
-    // Load the icon chooser if the icon has not yet been picked.
-    if(!iconName || !prefix) {
-      document.dispatchEvent(modalOpenEvent)
-    }
-  }, [iconName, prefix]);
+export function Edit({ attributes, setAttributes, isSelected }) {
+  const { iconName, prefix, primaryPath, secondaryPath, width, height, spin } =
+    attributes;
+  //console.log(`IS_SELECTED: ${isSelected}, className: ${className}, iconName: ${iconName}`)
 
   const handleSelect = (event) => {
-    if(!event.detail) {
-      return
+    if (!event.detail) {
+      return;
     }
 
     const { iconName, prefix } = event.detail;
@@ -79,38 +83,51 @@ export function Edit({ attributes, setAttributes }) {
       height,
       primaryPath,
       secondaryPath,
-      spin: false
-    })
-  }
+      spin: false,
+    });
+  };
 
-  const isReady = width && height && (primaryPath || secondaryPath)
+  const isReady = width && height && (primaryPath || secondaryPath);
 
-  const classes = ['svg-inline--fa']
+  const svgElementClasses = classnames("svg-inline--fa", {
+    "fa-spin": spin,
+  });
 
-  if(spin) {
-    classes.push('fa-spin')
-  }
-        const blockProps = useBlockProps( {
-            className: 'fa-icon',
-        } );
-  return (
-    <Fragment>
-      <IconChooserModal
-        onSubmit={handleSelect}
-      />
-      <InspectorControls>
-        <PanelBody title={__("Settings", "fa-icon-block")}>
-          <p>Prefix: {prefix}</p>
-          <p>Icon: {iconName}</p>
-        </PanelBody>
-      </InspectorControls>
-      {isReady && <span {...blockProps}>
-        <svg class={classes.join(' ')} viewBox={`0 0 ${width} ${height}`}>
-          <path fill="currentColor" d={primaryPath}>&nbsp;</path>
-        </svg>
-      </span>}
-    </Fragment>
-  );
+  const blockProps = useBlockProps();
+
+  return iconName
+    ? (
+      <Fragment>
+        <InspectorControls>
+          <PanelBody title={__("Settings", "fa-icon-block")}>
+            <p>
+              <svg
+                className={svgElementClasses}
+                viewBox={`0 0 ${width} ${height}`}
+              >
+                <path fill="currentColor" d={primaryPath}>&nbsp;</path>
+              </svg>{" "}
+              {prefix} {iconName}
+            </p>
+          </PanelBody>
+        </InspectorControls>
+        <span {...blockProps}>
+          <svg className={svgElementClasses} viewBox={`0 0 ${width} ${height}`}>
+            <path fill="currentColor" d={primaryPath} />
+          </svg>
+        </span>
+      </Fragment>
+    )
+    : (
+      <Fragment>
+        <IconChooserModal
+          onSubmit={handleSelect}
+        />
+        <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
+          choose icon
+        </button>
+      </Fragment>
+    );
 }
 /*
           <ToggleControl

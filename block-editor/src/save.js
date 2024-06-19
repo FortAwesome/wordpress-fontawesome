@@ -4,7 +4,8 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps } from "@wordpress/block-editor";
+import classnames from "classnames";
 
 /**
  * The save function defines the way in which the different attributes should
@@ -18,23 +19,23 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {Element} Element to render.
  */
-export default function save( { attributes } ) {
-	const { width, height, primaryPath, secondaryPath, spin } = attributes;
-  const isReady = width && height && (primaryPath || secondaryPath)
+export default function save({ attributes }) {
+  const { width, height, primaryPath, secondaryPath, spin } = attributes;
+  const isReady = width && height && (primaryPath || secondaryPath);
 
   if (!isReady) {
-    return null
+    return null;
   }
 
-  const classes = ['svg-inline--fa']
+  const svgElementClasses = classnames("svg-inline--fa", {
+    "fa-spin": spin,
+  });
 
-  if(spin) {
-    classes.push('fa-spin')
-  }
-
-  return <span {...useBlockProps.save()}>
-    <svg class={classes.join(' ')} viewBox={`0 0 ${width} ${height}`}>
-      <path fill="currentColor" d={primaryPath}/>
-    </svg>
-  </span>
+  return (
+    <span {...useBlockProps.save()}>
+      <svg class={svgElementClasses} viewBox={`0 0 ${width} ${height}`}>
+        <path fill="currentColor" d={primaryPath} />
+      </svg>
+    </span>
+  );
 }

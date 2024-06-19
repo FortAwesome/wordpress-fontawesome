@@ -12,12 +12,15 @@ import {
   RichTextToolbarButton,
   useBlockProps,
 } from "@wordpress/block-editor";
-import get from 'lodash/get';
-import blockIcon from './blockIcon' ;
-import { GLOBAL_KEY } from '../../admin/src/constants'
-const { IconChooserModal, modalOpenEvent } = get(window, [GLOBAL_KEY, 'iconChooser'], {});
+import get from "lodash/get";
+import blockIcon from "./blockIcon";
+import { GLOBAL_KEY } from "../../admin/src/constants";
+const { IconChooserModal, modalOpenEvent } = get(window, [
+  GLOBAL_KEY,
+  "iconChooser",
+], {});
 
-const name = "font-awesome/icon";
+const name = "font-awesome/inline-icon";
 const title = __("Font Awesome Icon");
 const inlineSvgName = "font-awesome/fa-inline-svg";
 const inlineSvgTitle = __("Font Awesome Inline SVG");
