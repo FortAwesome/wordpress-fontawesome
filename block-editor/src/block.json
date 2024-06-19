@@ -35,7 +35,7 @@
   },
   "supports": {
     "anchor": true,
-    "align": ["left", "center", "right" ],
+    "align": ["left", "center", "right"],
     "ariaLabel": true,
     "color": {
       "background": true,
@@ -43,16 +43,11 @@
       "enableConstrastChecker": true,
       "gradients": true
     },
-    "dimensions": {
-      "aspectRatio": true,
-      "minHeight": true
-    },
-    "html": false,
     "spacing": {
       "margin": true,
-      "padding": true,
-      "blockGap": true
+      "padding": true
     },
+    "html": false,
     "typography": {
       "fontSize": true,
       "lineHeight": true
