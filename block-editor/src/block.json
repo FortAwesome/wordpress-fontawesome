@@ -26,7 +26,43 @@
     "transform": {
       "type": "string"
     },
+    "fixedWidth": {
+      "type": "boolean"
+    },
+    "rotate": {
+      "type": "integer"
+    },
+    "flip": {
+      "enum": ["horizontal", "vertical", "both"]
+    },
+    "bounce": {
+      "type": "boolean"
+    },
+    "beat": {
+      "type": "boolean"
+    },
+    "fade": {
+      "type": "boolean"
+    },
+    "beatFade": {
+      "type": "boolean"
+    },
     "spin": {
+      "type": "boolean"
+    },
+    "spinReverse": {
+      "type": "boolean"
+    },
+    "spinPulse": {
+      "type": "boolean"
+    },
+    "shake": {
+      "type": "boolean"
+    },
+    "border": {
+      "type": "boolean"
+    },
+    "inverse": {
       "type": "boolean"
     }
   },
@@ -53,6 +89,5 @@
   "textdomain": "fa-icon-block",
   "editorScript": "font-awesome-block-editor-support",
   "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "render": "file:./render.php"
+  "style": "file:./style-index.css"
 }
