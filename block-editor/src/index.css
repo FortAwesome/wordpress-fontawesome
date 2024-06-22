@@ -1,0 +1,9 @@
+.fa-icon-format:hover {
+  cursor: pointer;
+  border:  1px dotted grey;
+}
+
+.block-editor-format-toolbar__fa-icon-format-popover .components-popover__content {
+  width: auto;
+  max-width: 300px;
+}

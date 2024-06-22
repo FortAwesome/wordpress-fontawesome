@@ -3268,6 +3268,17 @@ EOT;
 						self::PLUGIN_VERSION,
 						true
 					);
+
+					// TODO: remove this hack. The block editor support CSS should be
+					// being built into the build directory of the block, and loaded
+					// automatically at the appropriate times due to being declared
+					// in block.json, but it's not. This is a temporary hack to force it.
+					wp_enqueue_style(
+						"font-awesome-block-editor-support",
+						trailingslashit(FONTAWESOME_DIR_URL) . "block-editor/src/index.css",
+						array(),
+						FontAwesome::PLUGIN_VERSION
+					);
 				}
 			}
 		);
