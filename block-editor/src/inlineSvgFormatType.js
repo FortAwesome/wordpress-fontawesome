@@ -139,7 +139,7 @@ const mainSettings = {
   title,
   keywords: [__("icon"), __("awesome")],
   tagName: "span",
-  className: "fa-icon",
+  className: "fa-icon-format",
   edit: Edit,
 };
 

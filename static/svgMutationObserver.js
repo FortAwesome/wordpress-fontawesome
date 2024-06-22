@@ -22,7 +22,7 @@ function setupObserver() {
           child.tagName &&
           ("SVG" === child.tagName.toUpperCase() ||
             ("SPAN" == child.tagName.toUpperCase() &&
-              child.classList.contains("fa-icon")))
+              child.classList.contains("fa-icon-format")))
         ) {
           maybeRebuildElement(child);
         }
@@ -40,8 +40,17 @@ function setupObserver() {
 const editorContentFrame = document.querySelector(".block-editor-iframe__body");
 
 if (editorContentFrame) {
+  // This fixes the inline SVGs produced by the Format API, but it breaks
+  // those produced by the fa-icon block. This seems to have to do with
+  // differences between these two Gutenberg APIs and their rendering implementations.
+  // So we need to distinguish between these two different kinds of icon svg elements,
+  // such as with different class name, in order to apply these changes differently.
   document.addEventListener("DOMContentLoaded", () => {
-    for (const faSvg of document.querySelectorAll("svg.svg-inline--fa")) {
+    for (
+      const faSvg of document.querySelectorAll(
+        ".fa-icon-format svg.svg-inline--fa",
+      )
+    ) {
       maybeRebuildElement(faSvg);
     }
     setupObserver();
