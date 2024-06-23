@@ -302,6 +302,39 @@ class FontAwesome_API_Settings {
 	}
 
 	/**
+	 * Returns a current access_token, if available. Attempts to refresh an
+	 * access_token if the one we have is near or past expiration and an api_token
+	 * is present.
+	 *
+	 * Returns WP_Error indicating any error when trying to refresh an access_token.
+	 * Returns null when there is no api_token.
+	 * Otherwise, returns the current access_token as a string.
+	 *
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @return string|null access_token if available; null if unavailable
+	 */
+	public function current_access_token() {
+		if ( ! boolval( $this->api_token() ) ) {
+			return null;
+		}
+
+		$exp          = $this->access_token_expiration_time();
+		$access_token = $this->access_token();
+
+		if ( is_string( $access_token ) && $exp > ( time() - 5 ) ) {
+			return $access_token;
+		} else {
+			// refresh the access token.
+			$this->request_access_token();
+			return $this->access_token();
+		}
+	}
+
+	/**
 	 * Requests an access_token with the current api_token. Stores the result
 	 * upon successfully retrieving an access token.
 	 *

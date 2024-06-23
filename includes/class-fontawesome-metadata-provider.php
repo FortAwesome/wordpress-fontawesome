@@ -128,7 +128,7 @@ class FontAwesome_Metadata_Provider {
 		);
 
 		if ( ! $ignore_auth ) {
-			$access_token                     = $this->current_access_token();
+			$access_token                     = fa_api_settings()->current_access_token();
 			$args['headers']['authorization'] = "Bearer $access_token";
 		}
 
@@ -142,39 +142,6 @@ class FontAwesome_Metadata_Provider {
 			return $response['body'];
 		} else {
 			throw ApiResponseException::with_wp_response( $response );
-		}
-	}
-
-	/**
-	 * Returns a current access_token, if available. Attempts to refresh an
-	 * access_token if the one we have is near or past expiration and an api_token
-	 * is present.
-	 *
-	 * Returns WP_Error indicating any error when trying to refresh an access_token.
-	 * Returns null when there is no api_token.
-	 * Otherwise, returns the current access_token as a string.
-	 *
-	 * @throws ApiTokenMissingException
-	 * @throws ApiTokenEndpointRequestException
-	 * @throws ApiTokenEndpointResponseException
-	 * @throws ApiTokenInvalidException
-	 * @throws AccessTokenStorageException
-	 * @return string|null access_token if available; null if unavailable
-	 */
-	protected function current_access_token() {
-		if ( ! boolval( fa_api_settings()->api_token() ) ) {
-			return null;
-		}
-
-		$exp          = fa_api_settings()->access_token_expiration_time();
-		$access_token = fa_api_settings()->access_token();
-
-		if ( is_string( $access_token ) && $exp > ( time() - 5 ) ) {
-			return $access_token;
-		} else {
-			// refresh the access token.
-			fa_api_settings()->request_access_token();
-			return fa_api_settings()->access_token();
 		}
 	}
 }

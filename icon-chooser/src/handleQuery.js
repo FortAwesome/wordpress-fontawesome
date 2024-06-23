@@ -1,9 +1,23 @@
 import apiFetch from '@wordpress/api-fetch'
 import md5 from 'blueimp-md5'
+import { __ } from '@wordpress/i18n'
+
+// TODO: GET this from server config data.
+const FA_API_URL = 'https:/api.fontawesome.com/'
+
+let accessToken;
 
 const configureQueryHandler = params => async (query, variables, options) => {
   try {
     const { apiNonce, rootUrl, restApiNamespace } = params
+
+    const cacheKey = md5(`${query}${JSON.stringify(variables)}`)
+
+    const data = localStorage.getItem(cacheKey)
+
+    if(data) {
+      return JSON.parse(data)
+    }
 
     // If apiFetch is from wp.apiFetch, it may already have RootURLMiddleware set up.
     // If we're using the fallback (i.e. when running in the Classic Editor), then
@@ -17,28 +31,43 @@ const configureQueryHandler = params => async (query, variables, options) => {
     // the API controller end point, which requires non-public authorization.
     apiFetch.use( apiFetch.createNonceMiddleware( apiNonce ) )
 
-    const cacheKey = md5(`${query}${JSON.stringify(variables)}`)
-
-    const data = sessionStorage.getItem(cacheKey)
-
-    if(data) {
-      return JSON.parse(data)
-    }
-
-    const response = await apiFetch( {
-      path: `${restApiNamespace}/api`,
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables })
+    const accessTokenResponse = await apiFetch( {
+      path: `${restApiNamespace}/api/token`,
+      method: 'GET'
     } )
 
-    if(options?.cache) {
-      sessionStorage.setItem(cacheKey, JSON.stringify(response))
+    accessToken = accessTokenResponse?.access_token
+
+    if ( ! accessToken ) {
+      const error = __( 'Font Awesome Icon Chooser could not get an access token from the WordPress server.', 'font-awesome' )
+      console.error(error)
+      throw new Error(error)
     }
 
-    return response
+    const response = await fetch(
+      FA_API_URL,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables })
+      }
+    )
+
+    if (!response.ok) {
+      const error = __( 'Font Awesome Icon Chooser received an error response from the Font Awesome API server. See developer console.', 'font-awesome' )
+      console.error(error)
+      throw new Error(error)
+    }
+
+    const responseBody = await response.json()
+
+    if(options?.cache) {
+      localStorage.setItem(cacheKey, JSON.stringify(responseBody))
+    }
+
+    return responseBody
   } catch( error ) {
     console.error('CAUGHT:', error)
     throw new Error(error)
