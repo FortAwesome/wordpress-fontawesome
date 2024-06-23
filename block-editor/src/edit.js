@@ -1,3 +1,4 @@
+import { crop } from "@wordpress/icons";
 /**
  * Retrieves the translation of text.
  *
@@ -16,9 +17,13 @@ import { __ } from "@wordpress/i18n";
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#inspectorcontrols
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
+import {
+  BlockControls,
+  InspectorControls,
+  useBlockProps,
+} from "@wordpress/block-editor";
 
-import { Fragment, useState } from "@wordpress/element";
+import { Fragment, useRef, useState } from "@wordpress/element";
 /**
  * Imports the necessary components that will be used to create
  * the user interface for the block's settings.
@@ -30,8 +35,12 @@ import { Fragment, useState } from "@wordpress/element";
 import {
   Button,
   PanelBody,
+  Placeholder,
   TextControl,
   ToggleControl,
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
 } from "@wordpress/components";
 
 /**
@@ -49,7 +58,7 @@ import { GLOBAL_KEY } from "../../admin/src/constants";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import buildIconDefinition from "./buildIconDefinition";
+import { toIconDefinition } from "./iconDefinitions";
 
 import { filterSelectionEvent, isValid } from "./attributeValidation";
 
@@ -73,14 +82,19 @@ export function Edit({ attributes, setAttributes, isSelected }) {
     });
   };
 
+  const openIconChooser = () => {
+    document.dispatchEvent(modalOpenEvent);
+  };
+
   const svgElementClasses = classnames({
     "fa-spin": !!attributes.spin,
   });
 
   const blockProps = useBlockProps();
 
-  const iconDefinition = buildIconDefinition(attributes);
+  const iconDefinition = toIconDefinition(attributes);
 
+  // Please use ToolbarItem, ToolbarButton or ToolbarDropdownMenu
   return iconDefinition
     ? (
       <Fragment>
@@ -91,38 +105,45 @@ export function Edit({ attributes, setAttributes, isSelected }) {
               {" "}
               {iconDefinition.iconName}
             </p>
+            <ToggleControl
+              label={__("spin", "fa-icon-block")}
+              checked={!!attributes.spin}
+              onChange={() => setAttributes({ spin: !attributes.spin })}
+            />
           </PanelBody>
         </InspectorControls>
+
+        <BlockControls>
+          <ToolbarGroup>
+            <IconChooserModal
+              onSubmit={handleSelect}
+            />
+            <ToolbarButton
+              icon={crop}
+              onClick={openIconChooser}
+              label={__("Change Icon")}
+            />
+          </ToolbarGroup>
+        </BlockControls>
+
         <span {...blockProps}>
-          <FontAwesomeIcon icon={iconDefinition} />
+          <FontAwesomeIcon
+            icon={iconDefinition}
+            spin={!!attributes.spin}
+          />
         </span>
       </Fragment>
     )
     : (
       <Fragment>
-        <IconChooserModal
-          onSubmit={handleSelect}
-        />
-        <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
-          choose icon
-        </button>
+        <Placeholder>
+          <IconChooserModal
+            onSubmit={handleSelect}
+          />
+          <button onClick={openIconChooser}>
+            Choose Icon
+          </button>
+        </Placeholder>
       </Fragment>
     );
 }
-/*
-          <ToggleControl
-            label={__("spin", "fa-icon-block")}
-            checked={spin}
-            onChange={ () => setAttributes({spin: !spin}) }
-          />
-          <TextControl
-            label={__("prefix", "fa-icon-block")}
-            value={prefix}
-            onChange={(value) => setAttributes({ prefix: value })}
-          />
-          <TextControl
-            label={__("Icon Name", "fa-icon-block")}
-            value={iconName}
-            onChange={(value) => setAttributes({ iconName: value })}
-          />
- * */

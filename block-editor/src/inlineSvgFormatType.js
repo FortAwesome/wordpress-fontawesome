@@ -14,8 +14,9 @@ import {
   useBlockProps,
 } from "@wordpress/block-editor";
 import get from "lodash/get";
-import blockIcon from "./blockIcon";
+import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
+import { normalizeIconDefinition } from './iconDefinitions'
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
@@ -82,19 +83,17 @@ class Edit extends Component {
     // TODO: this would indicate an invalid event. Do we want some error handling here?
     if (!event.detail) return;
 
-    const { iconName, prefix } = event.detail;
-    const icon = event.detail.icon || [];
-    const width = icon[0];
-    const height = icon[1];
-    const pathData = icon[4];
+    const iconNormalized = normalizeIconDefinition(event.detail)
 
-    const isDuotone = Array.isArray(pathData);
+    if (!iconNormalized) return;
 
-    const primaryPath = isDuotone
-      ? (Array.isArray(pathData) ? pathData[1] : "")
-      : pathData;
-
-    const secondaryPath = Array.isArray(pathData) ? pathData[0] : null;
+    const {
+      iconName,
+      width,
+      height,
+      primaryPath,
+      secondaryPath
+    } = iconNormalized
 
     const svgElementWrapper = {
       type: inlineSvgName,
@@ -114,7 +113,7 @@ class Edit extends Component {
       },
     });
 
-    if (isDuotone && secondaryPath) {
+    if (secondaryPath) {
       newStart = value.start - 1;
       newValue = insertObject(
         newValue,
@@ -158,8 +157,6 @@ class Edit extends Component {
 
   render() {
     const {
-      isObjectActive,
-      activeObjectAttributes,
       contentRef,
       value,
       onChange
@@ -170,7 +167,7 @@ class Edit extends Component {
     return (
       <Fragment>
         <RichTextToolbarButton
-          icon={blockIcon}
+          icon={faBrandIcon}
           title={title}
           onClick={this.handleFormatButtonClick}
         />

@@ -8,7 +8,7 @@ import { useBlockProps } from "@wordpress/block-editor";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isValid } from "./attributeValidation";
-import buildIconDefinition from "./buildIconDefinition";
+import { toIconDefinition } from "./iconDefinitions";
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -26,7 +26,7 @@ export default function save({ attributes }) {
     return null;
   }
 
-  const iconDefinition = buildIconDefinition(attributes);
+  const iconDefinition = toIconDefinition(attributes);
 
   const svgElementClasses = classnames({
     "fa-spin": !!attributes.spin,
