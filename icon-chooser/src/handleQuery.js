@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch'
+import md5 from 'blueimp-md5'
 
-const configureQueryHandler = params => async (query, variables) => {
+const configureQueryHandler = params => async (query, variables, options) => {
   try {
     const { apiNonce, rootUrl, restApiNamespace } = params
 
@@ -16,7 +17,15 @@ const configureQueryHandler = params => async (query, variables) => {
     // the API controller end point, which requires non-public authorization.
     apiFetch.use( apiFetch.createNonceMiddleware( apiNonce ) )
 
-    return await apiFetch( {
+    const cacheKey = md5(`${query}${JSON.stringify(variables)}`)
+
+    const data = sessionStorage.getItem(cacheKey)
+
+    if(data) {
+      return JSON.parse(data)
+    }
+
+    const response = await apiFetch( {
       path: `${restApiNamespace}/api`,
       method: 'POST',
       headers: {
@@ -24,6 +33,12 @@ const configureQueryHandler = params => async (query, variables) => {
       },
       body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables })
     } )
+
+    if(options?.cache) {
+      sessionStorage.setItem(cacheKey, JSON.stringify(response))
+    }
+
+    return response
   } catch( error ) {
     console.error('CAUGHT:', error)
     throw new Error(error)
