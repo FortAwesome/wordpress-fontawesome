@@ -9,6 +9,7 @@ import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isValid } from "./attributeValidation";
 import { toIconDefinition } from "./iconDefinitions";
+import { prepareParamsForUseBlock } from "./rendering";
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -26,29 +27,7 @@ export default function save({ attributes }) {
     return null;
   }
 
-  const iconLayerCount = Array.isArray(attributes.iconLayers)
-    ? attributes.iconLayers.length
-    : 0;
+  const blockProps = useBlockProps(prepareParamsForUseBlock(attributes)).save();
 
-  const blockProps = useBlockProps({
-    className: classnames({
-      "fa-layers": iconLayerCount > 1,
-    }),
-  }).save();
-
-  return (
-    <span {...blockProps}>
-      {attributes.iconLayers.map((layer, index) => {
-        const { iconDefinition, ...rest } = layer;
-
-        return (
-          <FontAwesomeIcon
-            key={index}
-            icon={iconDefinition}
-            {...rest}
-          />
-        );
-      })}
-    </span>
-  );
+  return renderBlock(blockProps, attributes);
 }

@@ -68,7 +68,11 @@ import { useAnchor } from "@wordpress/rich-text";
 
 import { wpIconFromFaIconDefinition } from "./icons";
 
-import renderBlock from "./renderBlock";
+import {
+  computeIconLayerCount,
+  prepareParamsForUseBlock,
+  renderBlock,
+} from "./rendering";
 
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
@@ -125,15 +129,9 @@ export function Edit(props) {
     document.dispatchEvent(modalOpenEvent);
   };
 
-  const iconLayerCount = Array.isArray(attributes.iconLayers)
-    ? attributes.iconLayers.length
-    : 0;
+  const iconLayerCount = computeIconLayerCount(attributes);
 
-  const blockProps = useBlockProps({
-    className: classnames({
-      "fa-layers": iconLayerCount > 1,
-    }),
-  });
+  const blockProps = useBlockProps(prepareParamsForUseBlock(attributes));
 
   return iconLayerCount > 0
     ? (
