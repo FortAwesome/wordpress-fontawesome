@@ -1,4 +1,4 @@
-import { crop } from "@wordpress/icons";
+import { faIcons, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 /**
  * Retrieves the translation of text.
  *
@@ -6,6 +6,7 @@ import { crop } from "@wordpress/icons";
  */
 import { __ } from "@wordpress/i18n";
 
+import { DOWN } from '@wordpress/keycodes';
 /**
  * Imports the InspectorControls component, which is used to wrap
  * the block's custom controls that will appear in in the Settings
@@ -34,8 +35,11 @@ import { Fragment, useRef, useState } from "@wordpress/element";
  */
 import {
   Button,
+  Dropdown,
+	MenuGroup,
   PanelBody,
   Placeholder,
+  Popover,
   TextControl,
   ToggleControl,
   Toolbar,
@@ -62,12 +66,28 @@ import { toIconDefinition } from "./iconDefinitions";
 
 import { filterSelectionEvent, isValid } from "./attributeValidation";
 
+import {
+  useAnchor
+} from "@wordpress/rich-text";
+
+import { wpIconFromFaIconDefinition } from './icons'
+
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
 ], {});
 
-export function Edit({ attributes, setAttributes, isSelected }) {
+const changeIconToolbarIcon = wpIconFromFaIconDefinition(faIcons)
+
+const manageIconLayersToolbarIcon = wpIconFromFaIconDefinition(faLayerGroup)
+
+export function Edit(props) {
+  const {
+    attributes,
+    setAttributes,
+    isSelected 
+  } = props
+
   const handleSelect = (event) => {
     const filteredSelectionAttributes = filterSelectionEvent(event);
 
@@ -114,16 +134,49 @@ export function Edit({ attributes, setAttributes, isSelected }) {
         </InspectorControls>
 
         <BlockControls>
-          <ToolbarGroup>
             <IconChooserModal
               onSubmit={handleSelect}
             />
             <ToolbarButton
-              icon={crop}
+              icon={changeIconToolbarIcon}
               onClick={openIconChooser}
               label={__("Change Icon")}
             />
-          </ToolbarGroup>
+
+          <Dropdown
+			      popoverProps={ {
+				      className: 'block-editor-fa-icon-layers__popover',
+				      headerTitle: __( 'Add Icon Layer' ),
+			      } }
+			      renderToggle={ ( { isOpen, onToggle } ) => {
+				      const openOnArrowDown = ( event ) => {
+					      if ( ! isOpen && event.keyCode === DOWN ) {
+						      event.preventDefault();
+						      onToggle();
+					      }
+				      };
+				      return (
+					      <ToolbarButton
+						      showTooltip
+						      onClick={ onToggle }
+						      aria-haspopup="true"
+						      aria-expanded={ isOpen }
+						      onKeyDown={ openOnArrowDown }
+						      label={ __('Add Icon Layer') }
+						      icon={ manageIconLayersToolbarIcon }
+					      />
+				      );
+			      } }
+			      renderContent={ () => (
+				      <MenuGroup label={ __( 'Icon Layers' ) }>
+					      <p>
+						      { __(
+							      'Add icon layers.'
+						      ) }
+					      </p>
+				      </MenuGroup>
+			      ) }
+          />
         </BlockControls>
 
         <span {...blockProps}>
