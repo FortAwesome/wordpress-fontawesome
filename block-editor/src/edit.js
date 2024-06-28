@@ -60,8 +60,6 @@ import get from "lodash/get";
 
 import { GLOBAL_KEY } from "../../admin/src/constants";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import { toIconDefinition } from "./iconDefinitions";
 
 import { filterSelectionEvent, isValid } from "./attributeValidation";
@@ -69,6 +67,8 @@ import { filterSelectionEvent, isValid } from "./attributeValidation";
 import { useAnchor } from "@wordpress/rich-text";
 
 import { wpIconFromFaIconDefinition } from "./icons";
+
+import renderBlock from "./renderBlock";
 
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
@@ -186,20 +186,7 @@ export function Edit(props) {
             )}
           />
         </BlockControls>
-
-        <span {...blockProps}>
-          {attributes.iconLayers.map((layer, index) => {
-            const { iconDefinition, ...rest } = layer;
-
-            return (
-              <FontAwesomeIcon
-                key={index}
-                icon={iconDefinition}
-                {...rest}
-              />
-            );
-          })}
-        </span>
+        {renderBlock(blockProps, attributes)}
       </Fragment>
     )
     : (
