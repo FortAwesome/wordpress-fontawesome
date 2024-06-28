@@ -1,5 +1,11 @@
 import { isValid } from "./attributeValidation.js";
 
+export function iconLayerAttributesToIconDefinitionsAndParams(attributes) {
+  return (attributes?.iconLayers || []).reduce((acc, layer) => {
+    //const { iconName, prefix, width, height, pathData } = attributes;
+  }, {});
+}
+
 // Given block attributes, produce an IconDefinition.
 export function toIconDefinition(attributes) {
   if (!isValid(attributes)) {
@@ -26,16 +32,16 @@ export function toIconDefinition(attributes) {
 // Given an IconDefinition, produce a structure that is ready for use in
 // constructing an SVG.
 export function normalizeIconDefinition({ iconName, prefix, icon }) {
-  if('string' !== typeof iconName) {
-    return
+  if ("string" !== typeof iconName) {
+    return;
   }
 
-  if('string' !== typeof prefix) {
-    return
+  if ("string" !== typeof prefix) {
+    return;
   }
 
-  if(!Array.isArray(icon) || icon.length < 5) {
-    return
+  if (!Array.isArray(icon) || icon.length < 5) {
+    return;
   }
 
   const [
@@ -43,8 +49,8 @@ export function normalizeIconDefinition({ iconName, prefix, icon }) {
     height,
     , // ligatures
     , // unicode
-    pathData
-  ] = icon
+    pathData,
+  ] = icon;
 
   const isDuotone = Array.isArray(pathData);
 
@@ -61,6 +67,6 @@ export function normalizeIconDefinition({ iconName, prefix, icon }) {
     height,
     isDuotone,
     primaryPath,
-    secondaryPath
-  }
+    secondaryPath,
+  };
 }

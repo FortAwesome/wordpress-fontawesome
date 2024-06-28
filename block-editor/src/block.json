@@ -8,62 +8,8 @@
   "description": "Add a Font Awesome icon.",
   "example": {},
   "attributes": {
-    "prefix": {
-      "type": "string"
-    },
-    "iconName": {
-      "type": "string"
-    },
-    "width": {
-      "type": "integer"
-    },
-    "height": {
-      "type": "integer"
-    },
-    "pathData": {
+    "iconLayers": {
       "type": "array"
-    },
-    "transform": {
-      "type": "string"
-    },
-    "fixedWidth": {
-      "type": "boolean"
-    },
-    "rotate": {
-      "type": "integer"
-    },
-    "flip": {
-      "enum": ["horizontal", "vertical", "both"]
-    },
-    "bounce": {
-      "type": "boolean"
-    },
-    "beat": {
-      "type": "boolean"
-    },
-    "fade": {
-      "type": "boolean"
-    },
-    "beatFade": {
-      "type": "boolean"
-    },
-    "spin": {
-      "type": "boolean"
-    },
-    "spinReverse": {
-      "type": "boolean"
-    },
-    "spinPulse": {
-      "type": "boolean"
-    },
-    "shake": {
-      "type": "boolean"
-    },
-    "border": {
-      "type": "boolean"
-    },
-    "inverse": {
-      "type": "boolean"
     }
   },
   "supports": {

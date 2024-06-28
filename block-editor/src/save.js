@@ -26,15 +26,29 @@ export default function save({ attributes }) {
     return null;
   }
 
-  const iconDefinition = toIconDefinition(attributes);
+  const iconLayerCount = Array.isArray(attributes.iconLayers)
+    ? attributes.iconLayers.length
+    : 0;
 
-  const svgElementClasses = classnames({
-    "fa-spin": !!attributes.spin,
-  });
+  const blockProps = useBlockProps({
+    className: classnames({
+      "fa-layers": iconLayerCount > 1,
+    }),
+  }).save();
 
   return (
-    <span {...useBlockProps.save()}>
-      <FontAwesomeIcon icon={iconDefinition} />
+    <span {...blockProps}>
+      {attributes.iconLayers.map((layer, index) => {
+        const { iconDefinition, ...rest } = layer;
+
+        return (
+          <FontAwesomeIcon
+            key={index}
+            icon={iconDefinition}
+            {...rest}
+          />
+        );
+      })}
     </span>
   );
 }

@@ -6,7 +6,7 @@ import { faIcons, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
  */
 import { __ } from "@wordpress/i18n";
 
-import { DOWN } from '@wordpress/keycodes';
+import { DOWN } from "@wordpress/keycodes";
 /**
  * Imports the InspectorControls component, which is used to wrap
  * the block's custom controls that will appear in in the Settings
@@ -36,7 +36,7 @@ import { Fragment, useRef, useState } from "@wordpress/element";
 import {
   Button,
   Dropdown,
-	MenuGroup,
+  MenuGroup,
   PanelBody,
   Placeholder,
   Popover,
@@ -66,124 +66,139 @@ import { toIconDefinition } from "./iconDefinitions";
 
 import { filterSelectionEvent, isValid } from "./attributeValidation";
 
-import {
-  useAnchor
-} from "@wordpress/rich-text";
+import { useAnchor } from "@wordpress/rich-text";
 
-import { wpIconFromFaIconDefinition } from './icons'
+import { wpIconFromFaIconDefinition } from "./icons";
 
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
 ], {});
 
-const changeIconToolbarIcon = wpIconFromFaIconDefinition(faIcons)
+const changeIconToolbarIcon = wpIconFromFaIconDefinition(faIcons);
 
-const manageIconLayersToolbarIcon = wpIconFromFaIconDefinition(faLayerGroup)
+const manageIconLayersToolbarIcon = wpIconFromFaIconDefinition(faLayerGroup);
+
+const defaultStylingParams = {
+  spin: false,
+  transform: null,
+};
 
 export function Edit(props) {
   const {
     attributes,
     setAttributes,
-    isSelected 
-  } = props
+    isSelected,
+  } = props;
 
-  const handleSelect = (event) => {
+  const handleSelect = (layerReplacementIndex) => (event) => {
     const filteredSelectionAttributes = filterSelectionEvent(event);
 
     if ("object" !== typeof filteredSelectionAttributes) {
       return;
     }
 
-    setAttributes({
-      ...filteredSelectionAttributes,
-      spin: false,
-      transform: null,
-    });
+    const iconLayers = attributes?.iconLayers || [];
+
+    const iconDefinition = toIconDefinition(filteredSelectionAttributes);
+
+    const layer = {
+      iconDefinition,
+      ...defaultStylingParams,
+    };
+
+    const newIconLayers = [...iconLayers];
+
+    if (
+      Number.isInteger(layerReplacementIndex) &&
+      layerReplacementIndex < iconLayers.length
+    ) {
+      newIconLayers[layerReplacementIndex] = layer;
+    } else {
+      newIconLayers.push(layer);
+    }
+
+    setAttributes({ iconLayers: newIconLayers });
   };
 
   const openIconChooser = () => {
     document.dispatchEvent(modalOpenEvent);
   };
 
-  const svgElementClasses = classnames({
-    "fa-spin": !!attributes.spin,
+  const iconLayerCount = Array.isArray(attributes.iconLayers)
+    ? attributes.iconLayers.length
+    : 0;
+
+  const blockProps = useBlockProps({
+    className: classnames({
+      "fa-layers": iconLayerCount > 1,
+    }),
   });
 
-  const blockProps = useBlockProps();
-
-  const iconDefinition = toIconDefinition(attributes);
-
-  // Please use ToolbarItem, ToolbarButton or ToolbarDropdownMenu
-  return iconDefinition
+  return iconLayerCount > 0
     ? (
       <Fragment>
-        <InspectorControls>
-          <PanelBody title={__("Settings", "fa-icon-block")}>
-            <p>
-              <FontAwesomeIcon icon={iconDefinition} /> {iconDefinition.prefix}
-              {" "}
-              {iconDefinition.iconName}
-            </p>
-            <ToggleControl
-              label={__("spin", "fa-icon-block")}
-              checked={!!attributes.spin}
-              onChange={() => setAttributes({ spin: !attributes.spin })}
-            />
-          </PanelBody>
-        </InspectorControls>
-
         <BlockControls>
-            <IconChooserModal
-              onSubmit={handleSelect}
-            />
-            <ToolbarButton
-              icon={changeIconToolbarIcon}
-              onClick={openIconChooser}
-              label={__("Change Icon")}
-            />
-
+          {iconLayerCount == 1 && (
+            <>
+              <IconChooserModal
+                onSubmit={handleSelect(0)}
+              />
+              <ToolbarButton
+                icon={changeIconToolbarIcon}
+                onClick={openIconChooser}
+                label={__("Change Icon")}
+              />
+            </>
+          )}
           <Dropdown
-			      popoverProps={ {
-				      className: 'block-editor-fa-icon-layers__popover',
-				      headerTitle: __( 'Add Icon Layer' ),
-			      } }
-			      renderToggle={ ( { isOpen, onToggle } ) => {
-				      const openOnArrowDown = ( event ) => {
-					      if ( ! isOpen && event.keyCode === DOWN ) {
-						      event.preventDefault();
-						      onToggle();
-					      }
-				      };
-				      return (
-					      <ToolbarButton
-						      showTooltip
-						      onClick={ onToggle }
-						      aria-haspopup="true"
-						      aria-expanded={ isOpen }
-						      onKeyDown={ openOnArrowDown }
-						      label={ __('Add Icon Layer') }
-						      icon={ manageIconLayersToolbarIcon }
-					      />
-				      );
-			      } }
-			      renderContent={ () => (
-				      <MenuGroup label={ __( 'Icon Layers' ) }>
-					      <p>
-						      { __(
-							      'Add icon layers.'
-						      ) }
-					      </p>
-				      </MenuGroup>
-			      ) }
+            popoverProps={{
+              className: "block-editor-fa-icon-layers__popover",
+              headerTitle: __("Add Icon Layer"),
+            }}
+            renderToggle={({ isOpen, onToggle }) => {
+              const openOnArrowDown = (event) => {
+                if (!isOpen && event.keyCode === DOWN) {
+                  event.preventDefault();
+                  onToggle();
+                }
+              };
+              return (
+                <ToolbarButton
+                  showTooltip
+                  onClick={onToggle}
+                  aria-haspopup="true"
+                  aria-expanded={isOpen}
+                  onKeyDown={openOnArrowDown}
+                  label={__("Add Icon Layer")}
+                  icon={manageIconLayersToolbarIcon}
+                />
+              );
+            }}
+            renderContent={() => (
+              <MenuGroup label={__("Icon Layers")}>
+                <p>
+                  {__(
+                    "Add icon layers.",
+                  )}
+                </p>
+              </MenuGroup>
+            )}
           />
         </BlockControls>
 
         <span {...blockProps}>
-          <FontAwesomeIcon
-            icon={iconDefinition}
-            spin={!!attributes.spin}
-          />
+          {attributes.iconLayers.map((layer, index) => {
+            const { iconDefinition, ...rest } = layer;
+
+            return (
+              <FontAwesomeIcon
+                key={index}
+                icon={iconDefinition}
+                {...rest}
+              />
+            );
+          })}
         </span>
       </Fragment>
     )
@@ -191,7 +206,7 @@ export function Edit(props) {
       <Fragment>
         <Placeholder>
           <IconChooserModal
-            onSubmit={handleSelect}
+            onSubmit={handleSelect(0)}
           />
           <button onClick={openIconChooser}>
             Choose Icon
