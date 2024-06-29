@@ -74,14 +74,14 @@ import {
   renderBlock,
 } from "./rendering";
 
+import IconModifier from "./iconModifier";
+
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
 ], {});
 
-const changeIconToolbarIcon = wpIconFromFaIconDefinition(faIcons);
-
-const manageIconLayersToolbarIcon = wpIconFromFaIconDefinition(faLayerGroup);
+const modifyToolbarIcon = wpIconFromFaIconDefinition(faIcons);
 
 const defaultStylingParams = {
   spin: false,
@@ -95,7 +95,7 @@ export function Edit(props) {
     isSelected,
   } = props;
 
-  const handleSelect = (layerReplacementIndex) => (event) => {
+  const prepareHandleSelect = (layerParams) => (event) => {
     const filteredSelectionAttributes = filterSelectionEvent(event);
 
     if ("object" !== typeof filteredSelectionAttributes) {
@@ -112,14 +112,15 @@ export function Edit(props) {
     };
 
     const newIconLayers = [...iconLayers];
+    const { replace, append } = layerParams;
 
-    if (
-      Number.isInteger(layerReplacementIndex) &&
-      layerReplacementIndex < iconLayers.length
+    if (append) {
+      newIconLayers.push(layer);
+    } else if (
+      Number.isInteger(replace) &&
+      replace < iconLayers.length
     ) {
       newIconLayers[layerReplacementIndex] = layer;
-    } else {
-      newIconLayers.push(layer);
     }
 
     setAttributes({ iconLayers: newIconLayers });
@@ -137,22 +138,10 @@ export function Edit(props) {
     ? (
       <Fragment>
         <BlockControls>
-          {iconLayerCount == 1 && (
-            <>
-              <IconChooserModal
-                onSubmit={handleSelect(0)}
-              />
-              <ToolbarButton
-                icon={changeIconToolbarIcon}
-                onClick={openIconChooser}
-                label={__("Change Icon")}
-              />
-            </>
-          )}
           <Dropdown
             popoverProps={{
-              className: "block-editor-fa-icon-layers__popover",
-              headerTitle: __("Add Icon Layer"),
+              className: "block-editor-fa-icon-edit__popover",
+              headerTitle: __("Edit Icon"),
             }}
             renderToggle={({ isOpen, onToggle }) => {
               const openOnArrowDown = (event) => {
@@ -168,18 +157,19 @@ export function Edit(props) {
                   aria-haspopup="true"
                   aria-expanded={isOpen}
                   onKeyDown={openOnArrowDown}
-                  label={__("Add Icon Layer")}
-                  icon={manageIconLayersToolbarIcon}
+                  label={__("Edit Icon")}
+                  icon={modifyToolbarIcon}
                 />
               );
             }}
             renderContent={() => (
-              <MenuGroup label={__("Icon Layers")}>
-                <p>
-                  {__(
-                    "Add icon layers.",
-                  )}
-                </p>
+              <MenuGroup label={__("Edit Icon")}>
+                <IconModifier
+                  attributes={attributes}
+                  IconChooserModal={IconChooserModal}
+                  prepareHandleSelect={prepareHandleSelect}
+                  openIconChooser={openIconChooser}
+                />
               </MenuGroup>
             )}
           />
@@ -191,7 +181,7 @@ export function Edit(props) {
       <Fragment>
         <Placeholder>
           <IconChooserModal
-            onSubmit={handleSelect(0)}
+            onSubmit={prepareHandleSelect({ append: true })}
           />
           <button onClick={openIconChooser}>
             Choose Icon

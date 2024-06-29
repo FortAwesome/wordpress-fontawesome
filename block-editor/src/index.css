@@ -3,6 +3,20 @@
   border:  1px dotted grey;
 }
 
+.block-editor-fa-icon-edit__popover {
+  width: 80%;
+  max-width: 300px;
+}
+
+.block-editor-fa-icon-edit__popover .components-popover__content {
+  width: auto:
+}
+
+.block-editor-fa-icon-edit__popover .components-popover__content {
+  width: auto;
+  max-width: 300px;
+}
+
 .block-editor-format-toolbar__fa-icon-format-popover .components-popover__content {
   width: auto;
   max-width: 300px;
