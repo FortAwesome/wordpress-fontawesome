@@ -19,6 +19,7 @@ function IconLayer(
     canMoveDown,
     moveUp,
     moveDown,
+    remove,
   },
 ) {
   const { iconDefinition, ...rest } = layer;
@@ -49,6 +50,9 @@ function IconLayer(
               down
             </button>
           )}
+        <button style={buttonStyle} onClick={() => remove(layerIndex)}>
+          remove
+        </button>
       </div>
     </>
   );
@@ -87,6 +91,12 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   };
 
+  const removeLayer = (curIndex) => {
+    const newIconLayers = [...iconLayers];
+    newIconLayers.splice(curIndex, 1);
+    setAttributes({ iconLayers: newIconLayers });
+  };
+
   const isMultiLayer = iconLayers.length > 1;
 
   return (
@@ -104,6 +114,7 @@ export default function (
             canMoveDown={isMultiLayer && index <= (iconLayers.length - 2)}
             moveUp={moveUp}
             moveDown={moveDown}
+            remove={removeLayer}
           />
         ))}
         <div>
