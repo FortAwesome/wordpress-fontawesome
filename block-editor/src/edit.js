@@ -166,6 +166,7 @@ export function Edit(props) {
               <MenuGroup label={__("Edit Icon")}>
                 <IconModifier
                   attributes={attributes}
+                  setAttributes={setAttributes}
                   IconChooserModal={IconChooserModal}
                   prepareHandleSelect={prepareHandleSelect}
                   openIconChooser={openIconChooser}
