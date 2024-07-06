@@ -74,7 +74,7 @@ import {
   renderBlock,
 } from "./rendering";
 
-import IconModifier from "./iconModifier";
+import IconLayersModifier from "./iconLayersModifier";
 
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
@@ -164,7 +164,7 @@ export function Edit(props) {
             }}
             renderContent={() => (
               <MenuGroup label={__("Edit Icon")}>
-                <IconModifier
+                <IconLayersModifier
                   attributes={attributes}
                   setAttributes={setAttributes}
                   IconChooserModal={IconChooserModal}
