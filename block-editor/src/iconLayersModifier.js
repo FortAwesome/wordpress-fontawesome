@@ -1,12 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-
-const buttonStyle = {
-  border: "none",
-  background: "unset",
-  cursor: "pointer",
-  textDecoration: "underline",
-};
+import buttonStyle from "./buttonStyle";
 
 function IconLayer(
   {

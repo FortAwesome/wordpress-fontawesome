@@ -75,6 +75,7 @@ import {
 } from "./rendering";
 
 import IconLayersModifier from "./iconLayersModifier";
+import IconModifier from "./iconModifier";
 
 const { IconChooserModal, modalOpenEvent } = get(window, [
   GLOBAL_KEY,
@@ -164,13 +165,25 @@ export function Edit(props) {
             }}
             renderContent={() => (
               <MenuGroup label={__("Edit Icon")}>
-                <IconLayersModifier
-                  attributes={attributes}
-                  setAttributes={setAttributes}
-                  IconChooserModal={IconChooserModal}
-                  prepareHandleSelect={prepareHandleSelect}
-                  openIconChooser={openIconChooser}
-                />
+                {iconLayerCount > 1
+                  ? (
+                    <IconLayersModifier
+                      attributes={attributes}
+                      setAttributes={setAttributes}
+                      IconChooserModal={IconChooserModal}
+                      prepareHandleSelect={prepareHandleSelect}
+                      openIconChooser={openIconChooser}
+                    />
+                  )
+                  : (
+                    <IconModifier
+                      attributes={attributes}
+                      setAttributes={setAttributes}
+                      IconChooserModal={IconChooserModal}
+                      prepareHandleSelect={prepareHandleSelect}
+                      openIconChooser={openIconChooser}
+                    />
+                  )}
               </MenuGroup>
             )}
           />
