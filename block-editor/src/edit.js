@@ -76,6 +76,11 @@ import {
 
 import IconLayersModifier from "./iconLayersModifier";
 import IconModifier from "./iconModifier";
+import createCustomEvent from './createCustomEvent';
+
+const openEventAddLayer = createCustomEvent('fontAwesomeIconChooserOpen-addLayer', {
+  append: true
+})
 
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
@@ -121,7 +126,7 @@ export function Edit(props) {
       Number.isInteger(replace) &&
       replace < iconLayers.length
     ) {
-      newIconLayers[layerReplacementIndex] = layer;
+      newIconLayers[replace] = layer;
     }
 
     setAttributes({ iconLayers: newIconLayers });
@@ -168,7 +173,6 @@ export function Edit(props) {
                       setAttributes={setAttributes}
                       IconChooserModal={IconChooserModal}
                       prepareHandleSelect={prepareHandleSelect}
-                      openIconChooser={openIconChooser}
                     />
                   )
                   : (
@@ -178,7 +182,6 @@ export function Edit(props) {
                       setAttributes={setAttributes}
                       IconChooserModal={IconChooserModal}
                       prepareHandleSelect={prepareHandleSelect}
-                      openIconChooser={openIconChooser}
                     />
                   )}
               </MenuGroup>
@@ -193,8 +196,9 @@ export function Edit(props) {
         <Placeholder>
           <IconChooserModal
             onSubmit={prepareHandleSelect({ append: true })}
+            openEvent={openEventAddLayer}
           />
-          <button onClick={openIconChooser}>
+          <button onClick={() => document.dispatchEvent(openEventAddLayer)}>
             Choose Icon
           </button>
         </Placeholder>

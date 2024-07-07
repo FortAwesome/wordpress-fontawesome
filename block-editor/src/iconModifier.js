@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import buttonStyle from "./buttonStyle";
+import createCustomEvent from './createCustomEvent'
 
 export default function (
   {
@@ -8,8 +9,7 @@ export default function (
     layerIndex,
     setAttributes,
     IconChooserModal,
-    prepareHandleSelect,
-    openIconChooser,
+    prepareHandleSelect
   },
 ) {
   const iconLayers = attributes.iconLayers || [];
@@ -17,12 +17,19 @@ export default function (
   const { iconDefinition, ...rest } = layer;
 
   const handleSelectChange = prepareHandleSelect({ replace: layerIndex });
+  const openEventChangeLayer = createCustomEvent(`fontAwesomeIconChooserOpen-changeLayer-${layerIndex}`, {
+    replace: layerIndex
+  })
+  const openEventAddLayer = createCustomEvent('fontAwesomeIconChooserOpen-addLayer', {
+    append: true
+  })
 
   return (
     <div>
       <div>
         <IconChooserModal
           onSubmit={handleSelectChange}
+          openEvent={openEventChangeLayer}
         />
         <div>
           <FontAwesomeIcon
@@ -30,7 +37,7 @@ export default function (
             icon={iconDefinition}
             {...rest}
           />
-          <button style={buttonStyle} onClick={openIconChooser}>
+          <button style={buttonStyle} onClick={() => document.dispatchEvent(openEventChangeLayer)}>
             change
           </button>
         </div>
@@ -38,8 +45,9 @@ export default function (
       <div>
         <IconChooserModal
           onSubmit={prepareHandleSelect({ append: true })}
+          openEvent={openEventAddLayer}
         />
-        <button style={buttonStyle} onClick={openIconChooser}>
+        <button style={buttonStyle} onClick={() => document.dispatchEvent(openEventAddLayer)}>
           <FontAwesomeIcon icon={faPlus} />
         </button>
         Add Layer
