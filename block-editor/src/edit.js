@@ -78,12 +78,7 @@ import IconLayersModifier from "./iconLayersModifier";
 import IconModifier from "./iconModifier";
 import createCustomEvent from "./createCustomEvent";
 
-const openEventAddLayer = createCustomEvent(
-  "fontAwesomeIconChooserOpen-addLayer",
-  {
-    append: true,
-  },
-);
+const openIconChooserForAddLayerEvent = createCustomEvent();
 
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
@@ -199,9 +194,9 @@ export function Edit(props) {
         <Placeholder>
           <IconChooserModal
             onSubmit={prepareHandleSelect({ append: true })}
-            openEvent={openEventAddLayer}
+            openEvent={openIconChooserForAddLayerEvent}
           />
-          <button onClick={() => document.dispatchEvent(openEventAddLayer)}>
+          <button onClick={() => document.dispatchEvent(openIconChooserForAddLayerEvent)}>
             Choose Icon
           </button>
         </Placeholder>

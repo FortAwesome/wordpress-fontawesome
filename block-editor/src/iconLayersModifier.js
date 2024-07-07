@@ -3,9 +3,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import buttonStyle from "./buttonStyle";
 import createCustomEvent from './createCustomEvent';
 
-const openEventAddLayer = createCustomEvent('fontAwesomeIconChooserOpen-addLayer', {
-  append: true
-})
+const openIconChooserForAddLayerEvent = createCustomEvent()
 
 function IconLayer(
   {
@@ -13,7 +11,6 @@ function IconLayer(
     layer,
     layerIndex,
     IconChooserModal,
-    openEvent,
     canMoveUp,
     canMoveDown,
     moveUp,
@@ -22,6 +19,7 @@ function IconLayer(
   },
 ) {
   const { iconDefinition, ...rest } = layer;
+  const openEvent = createCustomEvent()
 
   return (
     <>
@@ -63,8 +61,7 @@ export default function (
     attributes,
     setAttributes,
     IconChooserModal,
-    prepareHandleSelect,
-    openIconChooser,
+    prepareHandleSelect
   },
 ) {
   const iconLayers = attributes.iconLayers || [];
@@ -102,31 +99,26 @@ export default function (
   return (
     <div>
       <>
-        {iconLayers.map((layer, index) => {
-          const openEventChangeLayer = createCustomEvent(`fontAwesomeIconChooserOpen-changeLayer-${index}`, {
-            replace: index
-          })
-
-          return <IconLayer
+        {iconLayers.map((layer, index) => (
+          <IconLayer
             key={index}
             layerIndex={index}
             layer={layer}
             handleSelect={prepareHandleSelect({ replace: index })}
             IconChooserModal={IconChooserModal}
-            openEvent={openEventChangeLayer}
             canMoveUp={isMultiLayer && index > 0}
             canMoveDown={isMultiLayer && index <= (iconLayers.length - 2)}
             moveUp={moveUp}
             moveDown={moveDown}
             remove={removeLayer}
           />
-        })}
+        ))}
         <div>
           <IconChooserModal
             onSubmit={prepareHandleSelect({ append: true })}
-            openEvent={openEventAddLayer}
+            openEvent={openIconChooserForAddLayerEvent}
           />
-          <button style={buttonStyle} onClick={() => document.dispatchEvent(openEventAddLayer)}>
+          <button style={buttonStyle} onClick={() => document.dispatchEvent(openIconChooserForAddLayerEvent)}>
             <FontAwesomeIcon icon={faPlus} />
           </button>
           Add Layer

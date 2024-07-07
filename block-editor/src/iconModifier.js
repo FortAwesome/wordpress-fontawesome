@@ -17,19 +17,15 @@ export default function (
   const { iconDefinition, ...rest } = layer;
 
   const handleSelectChange = prepareHandleSelect({ replace: layerIndex });
-  const openEventChangeLayer = createCustomEvent(`fontAwesomeIconChooserOpen-changeLayer-${layerIndex}`, {
-    replace: layerIndex
-  })
-  const openEventAddLayer = createCustomEvent('fontAwesomeIconChooserOpen-addLayer', {
-    append: true
-  })
+  const openIconChooserForChangeEvent = createCustomEvent()
+  const openIconChooserForAddLayerEvent = createCustomEvent()
 
   return (
     <div>
       <div>
         <IconChooserModal
           onSubmit={handleSelectChange}
-          openEvent={openEventChangeLayer}
+          openEvent={openIconChooserForChangeEvent}
         />
         <div>
           <FontAwesomeIcon
@@ -37,7 +33,7 @@ export default function (
             icon={iconDefinition}
             {...rest}
           />
-          <button style={buttonStyle} onClick={() => document.dispatchEvent(openEventChangeLayer)}>
+          <button style={buttonStyle} onClick={() => document.dispatchEvent(openIconChooserForChangeEvent)}>
             change
           </button>
         </div>
@@ -45,9 +41,9 @@ export default function (
       <div>
         <IconChooserModal
           onSubmit={prepareHandleSelect({ append: true })}
-          openEvent={openEventAddLayer}
+          openEvent={openIconChooserForAddLayerEvent}
         />
-        <button style={buttonStyle} onClick={() => document.dispatchEvent(openEventAddLayer)}>
+        <button style={buttonStyle} onClick={() => document.dispatchEvent(openIconChooserForAddLayerEvent)}>
           <FontAwesomeIcon icon={faPlus} />
         </button>
         Add Layer
