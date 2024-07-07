@@ -76,11 +76,14 @@ import {
 
 import IconLayersModifier from "./iconLayersModifier";
 import IconModifier from "./iconModifier";
-import createCustomEvent from './createCustomEvent';
+import createCustomEvent from "./createCustomEvent";
 
-const openEventAddLayer = createCustomEvent('fontAwesomeIconChooserOpen-addLayer', {
-  append: true
-})
+const openEventAddLayer = createCustomEvent(
+  "fontAwesomeIconChooserOpen-addLayer",
+  {
+    append: true,
+  },
+);
 
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
