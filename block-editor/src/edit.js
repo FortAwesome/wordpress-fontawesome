@@ -178,6 +178,7 @@ export function Edit(props) {
                   : (
                     <IconModifier
                       attributes={attributes}
+                      layerIndex={0}
                       setAttributes={setAttributes}
                       IconChooserModal={IconChooserModal}
                       prepareHandleSelect={prepareHandleSelect}
