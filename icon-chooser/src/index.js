@@ -5,15 +5,6 @@ import configureQueryHandler from "./handleQuery.js"
 import getUrlText from "./getUrlText.js"
 import configureIconChooserModal from "./IconChooserModal.js"
 
-const modalOpenEvent = new Event("fontAwesomeIconChooserOpen", {
-  "bubbles": true,
-  "cancelable": false,
-});
-
-window["__FontAwesomeOfficialPlugin__openIconChooserModal"] = () => {
-  document.dispatchEvent(params.modalOpenEvent);
-};
-
 const initialData = window[GLOBAL_KEY]
 const kitToken = get(initialData, 'options.kitToken')
 const version = get(initialData, 'options.version')
@@ -24,8 +15,7 @@ const params = {
   kitToken,
   version,
   getUrlText,
-  pro,
-  modalOpenEvent,
+  pro
 }
 
 params.handleQuery = configureQueryHandler(params) 
@@ -33,6 +23,5 @@ params.handleQuery = configureQueryHandler(params)
 const IconChooserModal = configureIconChooserModal(params)
 
 set(window, [GLOBAL_KEY, 'iconChooser'], {
-  modalOpenEvent,
   IconChooserModal
 });

@@ -7,13 +7,13 @@ import get from 'lodash/get'
 const createInterpolateElement = get(window, [GLOBAL_KEY, 'createInterpolateElement'])
 
 export default function (params) {
-  const { kitToken, version, pro, handleQuery, modalOpenEvent, getUrlText, settingsPageUrl } = params
+  const { kitToken, version, pro, handleQuery, getUrlText, settingsPageUrl } = params
 
   return (props) => {
-    const { onSubmit } = props
+    const { onSubmit, openEvent } = props
     const [ isOpen, setOpen ] = useState( false )
 
-    document.addEventListener(modalOpenEvent.type, () => setOpen(true))
+    document.addEventListener(openEvent.type, () => setOpen(true))
 
     const closeModal = () => setOpen( false )
 
