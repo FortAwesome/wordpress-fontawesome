@@ -29,6 +29,11 @@ const inlineSvgTitle = __("Font Awesome Inline SVG");
 const inlineSvgPathName = "font-awesome/fa-inline-svg-path";
 const inlineSvgPathTitle = __("Font Awesome Inline SVG Path");
 
+const modalOpenEvent = new Event("inlineSvgFontAwesomeIconChooserOpen", {
+  "bubbles": true,
+  "cancelable": false,
+});
+
 function isFocused(value) {
   if(!Array.isArray(value.formats) || !Number.isInteger(value.start)) {
     return false
@@ -173,6 +178,7 @@ class Edit extends Component {
         />
         <IconChooserModal
           onSubmit={this.handleSelect}
+          openEvent={modalOpenEvent}
         />
         {isFormatIconFocused &&
         <InlineUI
