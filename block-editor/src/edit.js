@@ -77,7 +77,7 @@ import {
 import IconLayersModifier from "./iconLayersModifier";
 import IconModifier from "./iconModifier";
 
-const { IconChooserModal, modalOpenEvent } = get(window, [
+const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
 ], {});
@@ -125,10 +125,6 @@ export function Edit(props) {
     }
 
     setAttributes({ iconLayers: newIconLayers });
-  };
-
-  const openIconChooser = () => {
-    document.dispatchEvent(modalOpenEvent);
   };
 
   const iconLayerCount = computeIconLayerCount(attributes);

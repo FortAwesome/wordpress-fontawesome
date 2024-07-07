@@ -17,7 +17,7 @@ import get from "lodash/get";
 import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { normalizeIconDefinition } from './iconDefinitions'
-const { IconChooserModal, modalOpenEvent } = get(window, [
+const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
 ], {});
