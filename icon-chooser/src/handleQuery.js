@@ -49,7 +49,8 @@ const configureQueryHandler = params => async (query, variables, options) => {
       {
         method: 'POST',
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          'authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables })
       }
@@ -62,8 +63,9 @@ const configureQueryHandler = params => async (query, variables, options) => {
     }
 
     const responseBody = await response.json()
+    const hasErrors = Array.isArray(responseBody?.errors) && responseBody.errors.length > 0
 
-    if(options?.cache) {
+    if(options?.cache && !hasErrors) {
       localStorage.setItem(cacheKey, JSON.stringify(responseBody))
     }
 
