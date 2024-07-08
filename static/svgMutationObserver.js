@@ -1,4 +1,5 @@
 const REBUILD_SVG_VISITED_ATTR = "data-repaint-visited";
+const ICON_FORMAT_CLASS = 'fa-icon-format';
 
 function maybeRebuildElement(el) {
   if (!el.getAttribute(REBUILD_SVG_VISITED_ATTR)) {
@@ -20,9 +21,8 @@ function setupObserver() {
       for (const child of mutation.addedNodes) {
         if (
           child.tagName &&
-          ("SVG" === child.tagName.toUpperCase() ||
-            ("SPAN" == child.tagName.toUpperCase() &&
-              child.classList.contains("fa-icon-format")))
+          ("SPAN" == child.tagName.toUpperCase() &&
+            child.classList.contains(ICON_FORMAT_CLASS))
         ) {
           maybeRebuildElement(child);
         }
@@ -48,7 +48,7 @@ if (editorContentFrame) {
   document.addEventListener("DOMContentLoaded", () => {
     for (
       const faSvg of document.querySelectorAll(
-        ".fa-icon-format svg.svg-inline--fa",
+        `.${ICON_FORMAT_CLASS} svg.svg-inline--fa`,
       )
     ) {
       maybeRebuildElement(faSvg);
