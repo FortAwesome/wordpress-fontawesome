@@ -75,7 +75,7 @@ import {
   renderBlock,
 } from "./rendering";
 
-import IconLayersModifier from "./iconLayersModifier";
+import IconModifier from "./iconModifier";
 import createCustomEvent from "./createCustomEvent";
 
 const openIconChooserForAddLayerEvent = createCustomEvent();
@@ -155,7 +155,7 @@ export function Edit(props) {
 
           {isEditModalOpen &&
             <Modal title="Edit Font Awesome Icon" onRequestClose={ () => setIsEditModalOpen(false) }>
-              <IconLayersModifier
+              <IconModifier
                 attributes={attributes}
                 setAttributes={setAttributes}
                 IconChooserModal={IconChooserModal}
