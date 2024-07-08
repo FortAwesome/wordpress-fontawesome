@@ -37,6 +37,7 @@ import {
   Button,
   Dropdown,
   MenuGroup,
+  Modal,
   PanelBody,
   Placeholder,
   Popover,
@@ -75,7 +76,6 @@ import {
 } from "./rendering";
 
 import IconLayersModifier from "./iconLayersModifier";
-import IconModifier from "./iconModifier";
 import createCustomEvent from "./createCustomEvent";
 
 const openIconChooserForAddLayerEvent = createCustomEvent();
@@ -134,57 +134,35 @@ export function Edit(props) {
 
   const blockProps = useBlockProps(prepareParamsForUseBlock(attributes));
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
   return iconLayerCount > 0
     ? (
       <Fragment>
         <BlockControls>
-          <Dropdown
-            popoverProps={{
-              className: "block-editor-fa-icon-edit__popover",
-              headerTitle: __("Edit Icon"),
+          <ToolbarButton
+            showTooltip
+            onClick={() => {
+              console.log('CLICKED!')
+              setIsEditModalOpen(!isEditModalOpen)
             }}
-            renderToggle={({ isOpen, onToggle }) => {
-              const openOnArrowDown = (event) => {
-                if (!isOpen && event.keyCode === DOWN) {
-                  event.preventDefault();
-                  onToggle();
-                }
-              };
-              return (
-                <ToolbarButton
-                  showTooltip
-                  onClick={onToggle}
-                  aria-haspopup="true"
-                  aria-expanded={isOpen}
-                  onKeyDown={openOnArrowDown}
-                  label={__("Edit Icon")}
-                  icon={modifyToolbarIcon}
-                />
-              );
-            }}
-            renderContent={() => (
-              <MenuGroup label={__("Edit Icon")}>
-                {iconLayerCount > 1
-                  ? (
-                    <IconLayersModifier
-                      attributes={attributes}
-                      setAttributes={setAttributes}
-                      IconChooserModal={IconChooserModal}
-                      prepareHandleSelect={prepareHandleSelect}
-                    />
-                  )
-                  : (
-                    <IconModifier
-                      attributes={attributes}
-                      layerIndex={0}
-                      setAttributes={setAttributes}
-                      IconChooserModal={IconChooserModal}
-                      prepareHandleSelect={prepareHandleSelect}
-                    />
-                  )}
-              </MenuGroup>
-            )}
+            aria-haspopup="true"
+            aria-expanded={isEditModalOpen}
+            onKeyDown={() => console.log('KEY_DOWN')}
+            label={__("Edit Icon")}
+            icon={modifyToolbarIcon}
           />
+
+          {isEditModalOpen &&
+            <Modal title="Edit Font Awesome Icon" onRequestClose={ () => setIsEditModalOpen(false) }>
+              <IconLayersModifier
+                attributes={attributes}
+                setAttributes={setAttributes}
+                IconChooserModal={IconChooserModal}
+                prepareHandleSelect={prepareHandleSelect}
+              />
+            </Modal>
+          }
         </BlockControls>
         {renderBlock(blockProps, attributes)}
       </Fragment>
