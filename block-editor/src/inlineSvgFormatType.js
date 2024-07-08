@@ -17,6 +17,7 @@ import get from "lodash/get";
 import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { normalizeIconDefinition } from './iconDefinitions'
+import createCustomEvent from './createCustomEvent'
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
@@ -29,10 +30,7 @@ const inlineSvgTitle = __("Font Awesome Inline SVG");
 const inlineSvgPathName = "font-awesome/fa-inline-svg-path";
 const inlineSvgPathTitle = __("Font Awesome Inline SVG Path");
 
-const modalOpenEvent = new Event("inlineSvgFontAwesomeIconChooserOpen", {
-  "bubbles": true,
-  "cancelable": false,
-});
+const modalOpenEvent = createCustomEvent()
 
 function isFocused(value) {
   if(!Array.isArray(value.formats) || !Number.isInteger(value.start)) {
