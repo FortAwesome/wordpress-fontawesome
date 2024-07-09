@@ -5,7 +5,7 @@ import { renderIcon, computeIconLayerCount } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
-import { Tooltip } from '@wordpress/components';
+import { ColorPalette, Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n'
 
 const NO_TAB = 0;
@@ -143,15 +143,11 @@ export default function (
     setSelectedLayerIndex(null)
   }
 
-  /*
-  const subpanelTooltipText = (messageWhenActive) => {
-    if(Number.isInteger(selectedLayerIndex) || iconLayerCount === 1) {
-      return messageWhenActive
-    } else {
-      return __("Select a layer to set these options", "font-awesome")
-    }
+  const setColor = (color) => {
+    const newIconLayers = [...iconLayers];
+    newIconLayers[selectedLayerIndex].color = color
+    setAttributes({ iconLayers: newIconLayers });
   }
-  */
 
   const isMultiLayer = iconLayers.length > 1;
 
@@ -213,22 +209,25 @@ export default function (
       </div>
       {
         (STYLES_TAB == selectedTab) && <div className="fa-icon-modifier-styles">
-          styles
+          <div className="options-section-heading">{__("Styles", "font-awesome")}</div>
+          <div>
+            <ColorPalette colors={settings.colors} onChange={setColor}></ColorPalette>
+          </div>
         </div>
       }
       {
         ANIMATIONS_TAB == selectedTab && <div className="fa-icon-modifier-animation">
-          animation
+          <div className="options-section-heading">{__("Animation", "font-awesome")}</div>
         </div>
       }
       {
         POWER_TRANSFORMS_TAB == selectedTab && <div className="fa-icon-modifier-power-transforms">
-          power transforms
+          <div className="options-section-heading">{__("Power Transforms", "font-awesome")}</div>
         </div>
       }
       {
         iconLayerCount > 1 && <div className="fa-icon-modifier-layers">
-        <div className="layers-section-heading">Layers</div>
+        <div className="options-section-heading">{__("Layers", "font-awesome")}</div>
         {iconLayers.map((layer, index) => (
           <IconLayer
             key={index}
