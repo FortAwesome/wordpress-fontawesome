@@ -74,7 +74,7 @@ button:disabled .fa-icon-modifier-control {
   cursor: unset;
 }
 
-.fa-icon-modifier svg.selected-layer path {
+.fa-icon-modifier .fa-layers svg.selected-layer path {
   stroke: magenta;
   stroke-width: 5px;
   stroke-dasharray: 5, 5;

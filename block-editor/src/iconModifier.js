@@ -100,7 +100,8 @@ export default function (
 ) {
   const iconLayers = attributes.iconLayers || [];
   const iconLayerCount = computeIconLayerCount(attributes)
-  const [ selectedLayerIndex, setSelectedLayerIndex ] = useState(iconLayerCount > 1 ? 0 : null)
+  const isMultiLayer = iconLayerCount > 1;
+  const [ selectedLayerIndex, setSelectedLayerIndex ] = useState(isMultiLayer ? null : 0)
   const [ selectedTab, setSelectedTab ] = useState(NO_TAB)
 
   const moveUp = (curIndex) => {
@@ -182,22 +183,15 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
-  const isMultiLayer = iconLayers.length > 1;
-
   const { getSettings } = select('core/block-editor');
 
-  // Get the editor settings
   const settings = getSettings();
 
-  // Access the color palette
-  const colorPalette = settings.colors;
+  const optionsControlsDisabled = !Number.isInteger(selectedLayerIndex)
 
-  const optionsControlsDisabled = !(Number.isInteger(selectedLayerIndex) || iconLayerCount === 1)
-
-  //console.log('Theme Color Palette:', colorPalette);
   const extraProps = {}
 
-  if(iconLayerCount > 1) {
+  if(isMultiLayer) {
     extraProps.wrapperProps = {className: 'fa-layers'}
   }
 
@@ -215,17 +209,17 @@ export default function (
         <OptionalTooltip enabled={optionsControlsDisabled} text={__("Select a layer to set these options", "font-awesome")}>
           <div className={classnames('fa-icon-modifier-preview-controls', {'options-controls-disabled': optionsControlsDisabled})}>
             <Tooltip text={__("Set style options", "font-awesome")}>
-              <button disabled={!Number.isInteger(selectedLayerIndex)} onClick={() => setSelectedTab(STYLES_TAB)}>
+              <button disabled={optionsControlsDisabled} onClick={() => setSelectedTab(STYLES_TAB)}>
                 <FontAwesomeIcon className="fa-icon-modifier-control" icon={faPalette}/>
               </button>
             </Tooltip>
             <Tooltip text={__("Set animation options", "font-awesome")}>
-              <button disabled={!Number.isInteger(selectedLayerIndex)} onClick={() => setSelectedTab(ANIMATIONS_TAB)}>
+              <button disabled={optionsControlsDisabled} onClick={() => setSelectedTab(ANIMATIONS_TAB)}>
                 <FontAwesomeIcon className="fa-icon-modifier-control" icon={faFilm} />
               </button>
             </Tooltip>
             <Tooltip text={__("Set power transform options", "font-awesome")}>
-              <button disabled={!Number.isInteger(selectedLayerIndex)} onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}>
+              <button disabled={optionsControlsDisabled} onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}>
                 <FontAwesomeIcon className="fa-icon-modifier-control" icon={faBolt} />
               </button>
             </Tooltip>
@@ -351,7 +345,7 @@ export default function (
         </div>
       }
       {
-        iconLayerCount > 1 && <div className="fa-icon-modifier-layers">
+        isMultiLayer && <div className="fa-icon-modifier-layers">
         <div className="options-section-heading">{__("Layers", "font-awesome")}</div>
         {iconLayers.map((layer, index) => (
           <IconLayer
