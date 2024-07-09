@@ -239,7 +239,7 @@ export interface Transform {
 }
   */
 
-    const {grow, shrink, right, left, up, down, toggleFlipX, toggleFlipY, reset} = transformParams
+    const {grow, shrink, right, left, up, down, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
 
     if(Number.isFinite(grow) && grow > 0) {
       updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
@@ -267,9 +267,19 @@ export interface Transform {
       updates.flipY = !prevTransform?.flipY
     }
 
+    const rotate = parseInt(rotateRaw)
+
+    if(Number.isFinite(rotate)) {
+      updates.rotate = rotate
+    }
+
     const updatedTransform = {
       ...prevTransform,
       ...updates
+    }
+
+    if(resetRotate && updatedTransform.hasOwnProperty('rotate')) {
+      delete updatedTransform.rotate
     }
 
     newIconLayers[selectedLayerIndex].transform = reset ? null : updatedTransform
@@ -486,6 +496,23 @@ export interface Transform {
               <FontAwesomeIcon icon={faReflectVertical}/>
             </button>
           </Tooltip>
+          <div>
+            <Tooltip text={__("Remove Rotation", "font-awesome")}>
+              <button onClick={() => updateTransform({resetRotate: true})}>
+                <FontAwesomeIcon icon={faBan}/>
+              </button>
+            </Tooltip>
+            <Tooltip text={__("Rotate 90deg to the right", "font-awesome")}>
+              <button onClick={() => updateTransform({rotate: 90})}>90°</button>
+            </Tooltip>
+            <Tooltip text={__("Rotate 180deg to the right", "font-awesome")}>
+              <button onClick={() => updateTransform({rotate: 180})}>180°</button>
+            </Tooltip>
+            <Tooltip text={__("Rotate 270deg to the right", "font-awesome")}>
+              <button onClick={() => updateTransform({rotate: 270})}>270°</button>
+            </Tooltip>
+            <input type="number" placeholder={__("Custom...", "font-awesome")} onChange={(e) => updateTransform({rotate: e.target.value})}/>
+          </div>
         </div>
       }
       {
