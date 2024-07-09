@@ -9,7 +9,7 @@ import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isValid } from "./attributeValidation";
 import { toIconDefinition } from "./iconDefinitions";
-import { prepareParamsForUseBlock } from "./rendering";
+import { prepareParamsForUseBlock, renderIcon } from "./rendering";
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -27,7 +27,9 @@ export default function save({ attributes }) {
     return null;
   }
 
-  const blockProps = useBlockProps(prepareParamsForUseBlock(attributes)).save();
+  const extraProps = {
+    wrapperProps: useBlockProps(prepareParamsForUseBlock(attributes)).save()
+  };
 
-  return renderBlock(blockProps, attributes);
+  return renderIcon(attributes, extraProps);
 }

@@ -72,7 +72,7 @@ import { wpIconFromFaIconDefinition } from "./icons";
 import {
   computeIconLayerCount,
   prepareParamsForUseBlock,
-  renderBlock,
+  renderIcon,
 } from "./rendering";
 
 import IconModifier from "./iconModifier";
@@ -132,7 +132,9 @@ export function Edit(props) {
 
   const iconLayerCount = computeIconLayerCount(attributes);
 
-  const blockProps = useBlockProps(prepareParamsForUseBlock(attributes));
+  const extraProps = {
+    wrapperProps: useBlockProps(prepareParamsForUseBlock(attributes))
+  }
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
@@ -164,7 +166,7 @@ export function Edit(props) {
             </Modal>
           }
         </BlockControls>
-        {renderBlock(blockProps, attributes)}
+        {renderIcon(attributes, extraProps)}
       </Fragment>
     )
     : (

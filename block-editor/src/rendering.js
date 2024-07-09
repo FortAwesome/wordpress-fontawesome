@@ -38,12 +38,3 @@ export function renderIcon(attributes, extraProps = {}) {
     </span>
   );
 }
-
-export function renderBlock(blockProps, attributes) {
-  const extraProps = {
-    wrapperProps: blockProps,
-    classNamesByLayer: []
-  }
-
-  return renderIcon(attributes, extraProps)
-}
