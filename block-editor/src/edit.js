@@ -144,10 +144,7 @@ export function Edit(props) {
         <BlockControls>
           <ToolbarButton
             showTooltip
-            onClick={() => {
-              console.log('CLICKED!')
-              setIsEditModalOpen(!isEditModalOpen)
-            }}
+            onClick={() => setIsEditModalOpen(!isEditModalOpen)}
             aria-haspopup="true"
             aria-expanded={isEditModalOpen}
             onKeyDown={() => console.log('KEY_DOWN')}
