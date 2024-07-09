@@ -100,13 +100,13 @@ function IconLayer(
         {canMoveUp &&
           (
             <button onClick={() => moveUp(layerIndex)}>
-              up
+              backward
             </button>
           )}
         {canMoveDown &&
           (
             <button onClick={() => moveDown(layerIndex)}>
-              down
+              forward
             </button>
           )}
         <button onClick={() => remove(layerIndex)}>
