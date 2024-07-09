@@ -1,5 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faReflectHorizontal, faReflectVertical, faReflectBoth, faHeartHalfStroke, faBellRing, faSlidersSimple } from "@fortawesome/pro-solid-svg-icons";
+import {
+  faReflectHorizontal,
+  faReflectVertical,
+  faReflectBoth,
+  faHeartHalfStroke,
+  faBellRing,
+  faSlidersSimple,
+  faExpand,
+  faCompress,
+  faRight,
+  faLeft,
+  faUp,
+  faDown
+} from "@fortawesome/pro-solid-svg-icons";
 import { faBan, faBolt, faLayerGroup, faPlus, faPalette, faFilm, faHeart, faCircle, faRotateRight, faRotateLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import createCustomEvent from './createCustomEvent';
 import { renderIcon, computeIconLayerCount } from './rendering';
@@ -9,6 +22,7 @@ import classnames from 'classnames';
 import { ColorPalette, Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n'
 
+const ORIGINAL_SIZE = 16
 const NO_TAB = 0;
 const STYLES_TAB = 1;
 const ANIMATIONS_TAB = 2;
@@ -186,6 +200,54 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
+  const updateTransform = (transformParams) => {
+    const newIconLayers = [...iconLayers];
+    const prevTransform =  (newIconLayers[selectedLayerIndex].transform || {})
+
+    const updates = {}
+
+
+    
+    /*
+export interface Transform {
+  size?: number;
+  x?: number;
+  y?: number;
+  rotate?: number;
+  flipX?: boolean;
+  flipY?: boolean;
+}
+  */
+
+    const {grow, shrink, right, left, up, down, reset} = transformParams
+
+    if(Number.isFinite(grow) && grow > 0) {
+      updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
+    } else if(Number.isFinite(shrink) && shrink > 0) {
+      updates.size = (prevTransform.size || ORIGINAL_SIZE) - shrink
+    }
+
+    if(Number.isFinite(right) && right > 0) {
+      updates.x = (prevTransform.x || 0) + right
+    } else if(Number.isFinite(left) && left > 0) {
+      updates.x = (prevTransform.x || 0) - left
+    }
+
+    if(Number.isFinite(up) && up > 0) {
+      updates.y = (prevTransform.y || 0) - up
+    } else if(Number.isFinite(down) && down > 0) {
+      updates.y = (prevTransform.y || 0) + down
+    }
+
+    const updatedTransform = {
+      ...prevTransform,
+      ...updates
+    }
+
+    newIconLayers[selectedLayerIndex].transform = updatedTransform
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
   const { getSettings } = select('core/block-editor');
 
   const settings = getSettings();
@@ -345,6 +407,37 @@ export default function (
       {
         POWER_TRANSFORMS_TAB == selectedTab && <div className="fa-icon-modifier-power-transforms">
           <div className="options-section-heading">{__("Power Transforms", "font-awesome")}</div>
+
+          <Tooltip text={__("Grow", "font-awesome")}>
+            <button onClick={() => updateTransform({grow: 1})}>
+              <FontAwesomeIcon icon={faExpand}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Shrink", "font-awesome")}>
+            <button onClick={() => updateTransform({shrink: 1})}>
+              <FontAwesomeIcon icon={faCompress}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Move Right", "font-awesome")}>
+            <button onClick={() => updateTransform({right: 1})}>
+              <FontAwesomeIcon icon={faRight}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Move Left", "font-awesome")}>
+            <button onClick={() => updateTransform({left: 1})}>
+              <FontAwesomeIcon icon={faLeft}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Move Up", "font-awesome")}>
+            <button onClick={() => updateTransform({up: 1})}>
+              <FontAwesomeIcon icon={faUp}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Move Down", "font-awesome")}>
+            <button onClick={() => updateTransform({down: 1})}>
+              <FontAwesomeIcon icon={faDown}/>
+            </button>
+          </Tooltip>
         </div>
       }
       {
