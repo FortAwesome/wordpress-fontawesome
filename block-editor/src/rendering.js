@@ -17,15 +17,19 @@ export function prepareParamsForUseBlock(attributes) {
   };
 }
 
-export function renderBlock(blockProps, attributes) {
+export function renderIcon(attributes, extraProps = {}) {
+  const {wrapperProps, classNamesByLayer} = extraProps
+
   return (
-    <span {...blockProps}>
+    <span {...(wrapperProps || {})}>
       {attributes.iconLayers.map((layer, index) => {
         const { iconDefinition, ...rest } = layer;
+        const classNamesForLayer = (classNamesByLayer || [])[index]
 
         return (
           <FontAwesomeIcon
             key={index}
+            className={classNamesForLayer}
             icon={iconDefinition}
             {...rest}
           />
@@ -33,4 +37,13 @@ export function renderBlock(blockProps, attributes) {
       })}
     </span>
   );
+}
+
+export function renderBlock(blockProps, attributes) {
+  const extraProps = {
+    wrapperProps: blockProps,
+    classNamesByLayer: []
+  }
+
+  return renderIcon(attributes, extraProps)
 }
