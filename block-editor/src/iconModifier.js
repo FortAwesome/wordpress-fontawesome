@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faReflectHorizontal, faReflectVertical, faReflectBoth } from "@fortawesome/pro-solid-svg-icons";
 import { faBan, faBolt, faLayerGroup, faPlus, faPalette, faFilm } from "@fortawesome/free-solid-svg-icons";
 import createCustomEvent from './createCustomEvent';
 import { renderIcon, computeIconLayerCount } from './rendering';
@@ -159,6 +160,12 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
+  const setFlip = (flip) => {
+    const newIconLayers = [...iconLayers];
+    newIconLayers[selectedLayerIndex].flip = flip
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
   const isMultiLayer = iconLayers.length > 1;
 
   const { getSettings } = select('core/block-editor');
@@ -258,6 +265,31 @@ export default function (
               <button onClick={() => setSize('lg')}>2xs</button>
               <button onClick={() => setSize('xl')}>2xs</button>
               <button onClick={() => setSize('2xl')}>2xs</button>
+            </div>
+          </div>
+          <div>
+            <div className="options-section-heading">{__("Flip", "font-awesome")}</div>
+            <div>
+              <Tooltip text={__("Remove Flipping", "font-awesome")}>
+                <button onClick={() => setFlip(null)}>
+                  <FontAwesomeIcon icon={faBan}/>
+                </button>
+              </Tooltip>
+              <Tooltip text={__("Flip Horizontal", "font-awesome")}>
+                <button onClick={() => setFlip('horizontal')}>
+                  <FontAwesomeIcon icon={faReflectHorizontal}/>
+                </button>
+              </Tooltip>
+              <Tooltip text={__("Flip Vertical", "font-awesome")}>
+                <button onClick={() => setFlip('vertical')}>
+                  <FontAwesomeIcon icon={faReflectVertical}/>
+                </button>
+              </Tooltip>
+              <Tooltip text={__("Flip Both", "font-awesome")}>
+                <button onClick={() => setFlip('both')}>
+                  <FontAwesomeIcon icon={faReflectBoth}/>
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
