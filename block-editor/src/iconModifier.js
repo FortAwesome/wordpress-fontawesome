@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBolt, faLayerGroup, faPlus, faPalette, faFilm } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faBolt, faLayerGroup, faPlus, faPalette, faFilm } from "@fortawesome/free-solid-svg-icons";
 import createCustomEvent from './createCustomEvent';
 import { renderIcon, computeIconLayerCount } from './rendering';
 import { select } from '@wordpress/data';
@@ -61,11 +61,9 @@ function IconLayer(
       />
       <div>
         <button className={classnames({'selected-layer': layerIndex === selectedLayerIndex})} onClick={handleLayerSelection}>
-          <FontAwesomeIcon
-            fixedWidth
-            icon={iconDefinition}
-            {...rest}
-          />
+          {
+            renderIcon({iconLayers: [{iconDefinition, fixedWidth: true, ...rest}]})
+          }
         </button>
         <button onClick={() => document.dispatchEvent(openEvent)}>
           change
@@ -149,6 +147,12 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
+  const setRotation = (rotation) => {
+    const newIconLayers = [...iconLayers];
+    newIconLayers[selectedLayerIndex].rotation = rotation
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
   const isMultiLayer = iconLayers.length > 1;
 
   const { getSettings } = select('core/block-editor');
@@ -209,9 +213,31 @@ export default function (
       </div>
       {
         (STYLES_TAB == selectedTab) && <div className="fa-icon-modifier-styles">
-          <div className="options-section-heading">{__("Styles", "font-awesome")}</div>
           <div>
-            <ColorPalette colors={settings.colors} onChange={setColor}></ColorPalette>
+            <div className="options-section-heading">{__("Color", "font-awesome")}</div>
+            <div>
+              <ColorPalette colors={settings.colors} onChange={setColor}></ColorPalette>
+            </div>
+          </div>
+          <div>
+            <div className="options-section-heading">{__("Rotation", "font-awesome")}</div>
+            <div>
+              <Tooltip text={__("Remove Rotation", "font-awesome")}>
+                <button onClick={() => setRotation(null)}>
+                  <FontAwesomeIcon icon={faBan}/>
+                </button>
+              </Tooltip>
+              <Tooltip text={__("Rotate 90deg to the right", "font-awesome")}>
+                <button onClick={() => setRotation(90)}>90°</button>
+              </Tooltip>
+              <Tooltip text={__("Rotate 180deg to the right", "font-awesome")}>
+                <button onClick={() => setRotation(180)}>180°</button>
+              </Tooltip>
+              <Tooltip text={__("Rotate 270deg to the right", "font-awesome")}>
+                <button onClick={() => setRotation(270)}>270°</button>
+              </Tooltip>
+              <input type="number" placeholder={__("Custom...", "font-awesome")} onChange={(e) => setRotation(e.target.value)}/>
+            </div>
           </div>
         </div>
       }

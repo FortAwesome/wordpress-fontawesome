@@ -23,14 +23,25 @@ export function renderIcon(attributes, extraProps = {}) {
   return (
     <span {...(wrapperProps || {})}>
       {attributes.iconLayers.map((layer, index) => {
-        const { iconDefinition, ...rest } = layer;
-        const classNamesForLayer = (classNamesByLayer || [])[index]
+        const { iconDefinition, rotation: initialRotation, ...rest } = layer;
+        let className = (classNamesByLayer || [])[index]
+        let rotation
+        const style = {}
+
+        if([0,90,180,270].includes(initialRotation)) {
+          rotation = initialRotation
+        } else if (!Number.isNaN(parseInt(initialRotation))) {
+          className = classnames(className ? className.toString() : '', 'fa-rotate-by')
+          style['--fa-rotate-angle'] = `${initialRotation}deg`
+        }
 
         return (
           <FontAwesomeIcon
             key={index}
-            className={classNamesForLayer}
+            className={className}
+            style={style}
             icon={iconDefinition}
+            rotation={rotation}
             {...rest}
           />
         );
