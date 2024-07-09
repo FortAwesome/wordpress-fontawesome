@@ -219,7 +219,7 @@ export interface Transform {
 }
   */
 
-    const {grow, shrink, right, left, up, down, reset} = transformParams
+    const {grow, shrink, right, left, up, down, toggleFlipX, toggleFlipY, reset} = transformParams
 
     if(Number.isFinite(grow) && grow > 0) {
       updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
@@ -239,12 +239,20 @@ export interface Transform {
       updates.y = (prevTransform.y || 0) + down
     }
 
+    if(toggleFlipX) {
+      updates.flipX = !prevTransform?.flipX
+    }
+
+    if(toggleFlipY) {
+      updates.flipY = !prevTransform?.flipY
+    }
+
     const updatedTransform = {
       ...prevTransform,
       ...updates
     }
 
-    newIconLayers[selectedLayerIndex].transform = updatedTransform
+    newIconLayers[selectedLayerIndex].transform = reset ? null : updatedTransform
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -408,6 +416,11 @@ export interface Transform {
         POWER_TRANSFORMS_TAB == selectedTab && <div className="fa-icon-modifier-power-transforms">
           <div className="options-section-heading">{__("Power Transforms", "font-awesome")}</div>
 
+          <Tooltip text={__("Reset Transform", "font-awesome")}>
+            <button onClick={() => updateTransform({reset: true})}>
+              <FontAwesomeIcon icon={faBan}/>
+            </button>
+          </Tooltip>
           <Tooltip text={__("Grow", "font-awesome")}>
             <button onClick={() => updateTransform({grow: 1})}>
               <FontAwesomeIcon icon={faExpand}/>
@@ -436,6 +449,16 @@ export interface Transform {
           <Tooltip text={__("Move Down", "font-awesome")}>
             <button onClick={() => updateTransform({down: 1})}>
               <FontAwesomeIcon icon={faDown}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Toggle Flip Horizontal", "font-awesome")}>
+            <button onClick={() => updateTransform({toggleFlipX: true})}>
+              <FontAwesomeIcon icon={faReflectHorizontal}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Toggle Flip Vertical", "font-awesome")}>
+            <button onClick={() => updateTransform({toggleFlipY: true})}>
+              <FontAwesomeIcon icon={faReflectVertical}/>
             </button>
           </Tooltip>
         </div>
