@@ -202,9 +202,11 @@ export default function (
             </Tooltip>
             {
               iconLayerCount === 1 &&
-              <button onClick={openIconChooserToAddLayer}>
-                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faLayerGroup} />
-              </button>
+              <Tooltip text={__("Add a layer", "font-awesome")}>
+                <button onClick={openIconChooserToAddLayer}>
+                  <FontAwesomeIcon className="fa-icon-modifier-control" icon={faLayerGroup} />
+                </button>
+              </Tooltip>
             }
           </div>
         </OptionalTooltip>
