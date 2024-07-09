@@ -147,6 +147,12 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
+  const setSize = (size) => {
+    const newIconLayers = [...iconLayers];
+    newIconLayers[selectedLayerIndex].size = size
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
   const setRotation = (rotation) => {
     const newIconLayers = [...iconLayers];
     newIconLayers[selectedLayerIndex].rotation = rotation
@@ -237,6 +243,21 @@ export default function (
                 <button onClick={() => setRotation(270)}>270°</button>
               </Tooltip>
               <input type="number" placeholder={__("Custom...", "font-awesome")} onChange={(e) => setRotation(e.target.value)}/>
+            </div>
+          </div>
+          <div>
+            <div className="options-section-heading">{__("Size", "font-awesome")}</div>
+            <div>
+              <button onClick={() => setSize('2xs')}>2xs</button>
+              <button onClick={() => setSize('xs')}>2xs</button>
+              <Tooltip text={__("Remove Sizing", "font-awesome")}>
+                <button onClick={() => setSize(null)}>
+                  <FontAwesomeIcon icon={faBan}/>
+                </button>
+              </Tooltip>
+              <button onClick={() => setSize('lg')}>2xs</button>
+              <button onClick={() => setSize('xl')}>2xs</button>
+              <button onClick={() => setSize('2xl')}>2xs</button>
             </div>
           </div>
         </div>
