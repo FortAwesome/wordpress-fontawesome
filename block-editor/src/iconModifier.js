@@ -129,6 +129,9 @@ export default function (
   const removeLayer = (curIndex) => {
     const newIconLayers = [...iconLayers];
     newIconLayers.splice(curIndex, 1);
+    if(newIconLayers.length === 1) {
+      setSelectedLayerIndex(0)
+    }
     setAttributes({ iconLayers: newIconLayers });
   };
 
