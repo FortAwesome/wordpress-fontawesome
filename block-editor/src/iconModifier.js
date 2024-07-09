@@ -13,7 +13,20 @@ import {
   faUp,
   faDown
 } from "@fortawesome/pro-solid-svg-icons";
-import { faBan, faBolt, faLayerGroup, faPlus, faPalette, faFilm, faHeart, faCircle, faRotateRight, faRotateLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBan,
+  faBolt,
+  faLayerGroup,
+  faPlus,
+  faPalette,
+  faFilm,
+  faHeart,
+  faCircle,
+  faRotateRight,
+  faRotateLeft,
+  faSpinner,
+  faCircleHalfStroke
+} from "@fortawesome/free-solid-svg-icons";
 import createCustomEvent from './createCustomEvent';
 import { renderIcon, computeIconLayerCount } from './rendering';
 import { select } from '@wordpress/data';
@@ -58,7 +71,7 @@ function IconLayer(
     clearLayerSelection
   },
 ) {
-  const { iconDefinition, ...rest } = layer;
+  const { iconDefinition, inverse: _ignore_inverse, transform: _ignore_transform, ...rest } = layer;
   const openEvent = createCustomEvent()
 
   const handleLayerSelection = () => {
@@ -197,6 +210,13 @@ export default function (
       newIconLayers[selectedLayerIndex].spin = true
     }
 
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
+  const toggleInverse = () => {
+    const newIconLayers = [...iconLayers];
+    const prev = newIconLayers[selectedLayerIndex]?.inverse
+    newIconLayers[selectedLayerIndex].inverse = !prev
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -419,6 +439,11 @@ export interface Transform {
           <Tooltip text={__("Reset Transform", "font-awesome")}>
             <button onClick={() => updateTransform({reset: true})}>
               <FontAwesomeIcon icon={faBan}/>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Invert", "font-awesome")}>
+            <button onClick={() => toggleInverse()}>
+              <FontAwesomeIcon icon={faCircleHalfStroke}/>
             </button>
           </Tooltip>
           <Tooltip text={__("Grow", "font-awesome")}>
