@@ -20,3 +20,4 @@ webpack-stats.json
 admin/src/playwright/.auth/
 admin/artifacts/
 admin/test-results/
+.npmrc
