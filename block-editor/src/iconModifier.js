@@ -5,6 +5,8 @@ import { renderIcon, computeIconLayerCount } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
+import { Tooltip } from '@wordpress/components';
+import { __ } from '@wordpress/i18n'
 
 const NO_TAB = 0;
 const STYLES_TAB = 1;
@@ -13,6 +15,16 @@ const LAYERS_TAB = 3;
 const POWER_TRANSFORMS_TAB = 4;
 
 const openIconChooserForAddLayerEvent = createCustomEvent()
+
+function OptionalTooltip({ enabled, text, children }) {
+  return enabled
+  ? <Tooltip text={text}>
+  {children}
+  </Tooltip>
+  : <>
+      {children}
+  </>
+}
 
 function IconLayer(
   {
@@ -131,6 +143,16 @@ export default function (
     setSelectedLayerIndex(null)
   }
 
+  /*
+  const subpanelTooltipText = (messageWhenActive) => {
+    if(Number.isInteger(selectedLayerIndex) || iconLayerCount === 1) {
+      return messageWhenActive
+    } else {
+      return __("Select a layer to set these options", "font-awesome")
+    }
+  }
+  */
+
   const isMultiLayer = iconLayers.length > 1;
 
   const { getSettings } = select('core/block-editor');
@@ -140,6 +162,8 @@ export default function (
 
   // Access the color palette
   const colorPalette = settings.colors;
+
+  const optionsControlsDisabled = !(Number.isInteger(selectedLayerIndex) || iconLayerCount === 1)
 
   //console.log('Theme Color Palette:', colorPalette);
   const extraProps = {}
@@ -159,23 +183,31 @@ export default function (
         <div className="fa-icon-modifier-preview">
           {renderIcon(attributes, extraProps)}
         </div>
-        <div className="fa-icon-modifier-preview-controls">
-          <button onClick={() => setSelectedTab(STYLES_TAB)}>
-            <FontAwesomeIcon className="fa-icon-modifier-control" icon={faPalette}/>
-          </button>
-          <button onClick={() => setSelectedTab(ANIMATIONS_TAB)}>
-            <FontAwesomeIcon className="fa-icon-modifier-control" icon={faFilm} />
-          </button>
-          <button onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}>
-            <FontAwesomeIcon className="fa-icon-modifier-control" icon={faBolt} />
-          </button>
-          {
-            iconLayerCount === 1 &&
-            <button onClick={openIconChooserToAddLayer}>
-              <FontAwesomeIcon className="fa-icon-modifier-control" icon={faLayerGroup} />
-            </button>
-          }
-        </div>
+        <OptionalTooltip enabled={optionsControlsDisabled} text={__("Select a layer to set these options", "font-awesome")}>
+          <div className={classnames('fa-icon-modifier-preview-controls', {'options-controls-disabled': optionsControlsDisabled})}>
+            <Tooltip text={__("Set style options", "font-awesome")}>
+              <button disabled={!Number.isInteger(selectedLayerIndex)} onClick={() => setSelectedTab(STYLES_TAB)}>
+                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faPalette}/>
+              </button>
+            </Tooltip>
+            <Tooltip text={__("Set animation options", "font-awesome")}>
+              <button disabled={!Number.isInteger(selectedLayerIndex)} onClick={() => setSelectedTab(ANIMATIONS_TAB)}>
+                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faFilm} />
+              </button>
+            </Tooltip>
+            <Tooltip text={__("Set power transform options", "font-awesome")}>
+              <button disabled={!Number.isInteger(selectedLayerIndex)} onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}>
+                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faBolt} />
+              </button>
+            </Tooltip>
+            {
+              iconLayerCount === 1 &&
+              <button onClick={openIconChooserToAddLayer}>
+                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faLayerGroup} />
+              </button>
+            }
+          </div>
+        </OptionalTooltip>
       </div>
       {
         (STYLES_TAB == selectedTab) && <div className="fa-icon-modifier-styles">
@@ -194,7 +226,7 @@ export default function (
       }
       {
         iconLayerCount > 1 && <div className="fa-icon-modifier-layers">
-        layers
+        <div className="layers-section-heading">Layers</div>
         {iconLayers.map((layer, index) => (
           <IconLayer
             key={index}

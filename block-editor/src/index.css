@@ -27,6 +27,15 @@
   color: var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
 }
 
+button:disabled .fa-icon-modifier-control {
+  color: grey;
+  cursor: unset;
+}
+
+.fa-icon-modifier-preview-controls.options-controls-disabled {
+  cursor: pointer;
+}
+
 .fa-icon-modifier-preview-container {
   padding: 2em;
   border: 2px solid lightgrey;
@@ -60,7 +69,7 @@
   text-decoration: unset;
 }
 
-.fa-icon-modifier button.selected-layer:disabled {
+.fa-icon-modifier button:disabled {
   color: unset;
   cursor: unset;
 }
