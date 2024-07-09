@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faReflectHorizontal, faReflectVertical, faReflectBoth } from "@fortawesome/pro-solid-svg-icons";
-import { faBan, faBolt, faLayerGroup, faPlus, faPalette, faFilm } from "@fortawesome/free-solid-svg-icons";
+import { faReflectHorizontal, faReflectVertical, faReflectBoth, faHeartHalfStroke, faBellRing, faSlidersSimple } from "@fortawesome/pro-solid-svg-icons";
+import { faBan, faBolt, faLayerGroup, faPlus, faPalette, faFilm, faHeart, faCircle, faRotateRight, faRotateLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import createCustomEvent from './createCustomEvent';
 import { renderIcon, computeIconLayerCount } from './rendering';
 import { select } from '@wordpress/data';
@@ -14,6 +14,7 @@ const STYLES_TAB = 1;
 const ANIMATIONS_TAB = 2;
 const LAYERS_TAB = 3;
 const POWER_TRANSFORMS_TAB = 4;
+const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 
 const openIconChooserForAddLayerEvent = createCustomEvent()
 
@@ -166,6 +167,21 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
+  const setAnimation = (animation) => {
+    const newIconLayers = [...iconLayers];
+    for(const currentAnimation of ANIMATIONS) {
+      // Turn off every animation, except the one being currently set.
+      newIconLayers[selectedLayerIndex][currentAnimation] = animation === currentAnimation
+    }
+
+    // Special case: when setting spinReverse, spin must also be set.
+    if('spinReverse' === animation) {
+      newIconLayers[selectedLayerIndex].spin = true
+    }
+
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
   const isMultiLayer = iconLayers.length > 1;
 
   const { getSettings } = select('core/block-editor');
@@ -296,7 +312,37 @@ export default function (
       }
       {
         ANIMATIONS_TAB == selectedTab && <div className="fa-icon-modifier-animation">
-          <div className="options-section-heading">{__("Animation", "font-awesome")}</div>
+          <div className="options-section-heading">{__("Animate", "font-awesome")}</div>
+          <button onClick={() => setAnimation(null)}>
+            <FontAwesomeIcon icon={faBan}/> {__("No Animation", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('beat')}>
+            <FontAwesomeIcon icon={faHeart}/> {__("Beat", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('beatFade')}>
+            <FontAwesomeIcon icon={faHeartHalfStroke}/> {__("Beat Fade", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('bounce')}>
+            <FontAwesomeIcon icon={faCircle}/> {__("Bounce", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('fade')}>
+            <FontAwesomeIcon icon={faSlidersSimple}/> {__("Fade", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('flip')}>
+            <FontAwesomeIcon icon={faReflectHorizontal}/> {__("Flip", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('shake')}>
+            <FontAwesomeIcon icon={faBellRing}/> {__("Shake", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('spin')}>
+            <FontAwesomeIcon icon={faRotateRight}/> {__("Spin", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('spinReverse')}>
+            <FontAwesomeIcon icon={faRotateLeft}/> {__("Spin Reverse", "font-awesome")}
+          </button>
+          <button onClick={() => setAnimation('spinPulse')}>
+            <FontAwesomeIcon icon={faRotateLeft}/> {__("Spin Pulse", "font-awesome")}
+          </button>
         </div>
       }
       {
