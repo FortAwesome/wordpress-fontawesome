@@ -1,18 +1,13 @@
-import { isValid } from "./attributeValidation.js";
-
 export function iconLayerAttributesToIconDefinitionsAndParams(attributes) {
   return (attributes?.iconLayers || []).reduce((acc, layer) => {
     //const { iconName, prefix, width, height, pathData } = attributes;
   }, {});
 }
 
-// Given block attributes, produce an IconDefinition.
-export function toIconDefinition(attributes) {
-  if (!isValid(attributes)) {
-    return;
+export function toIconDefinition({ iconName, prefix, width, height, pathData }) {
+  if (!iconName || !prefix || !Number.isInteger(width) || !Number.isInteger(height) || !Array.isArray(pathData)) {
+    return
   }
-
-  const { iconName, prefix, width, height, pathData } = attributes;
 
   const convertedPathData = pathData.length > 1 ? pathData : pathData[0];
 

@@ -63,7 +63,7 @@ import { GLOBAL_KEY } from "../../admin/src/constants";
 
 import { toIconDefinition } from "./iconDefinitions";
 
-import { filterSelectionEvent, isValid } from "./attributeValidation";
+import { filterSelectionEvent } from "./attributeValidation";
 
 import { useAnchor } from "@wordpress/rich-text";
 

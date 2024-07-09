@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classnames from "classnames";
 
 export function computeIconLayerCount(attributes) {
-  return Array.isArray(attributes.iconLayers)
+  return Array.isArray(attributes?.iconLayers)
     ? attributes.iconLayers.length
     : 0;
 }

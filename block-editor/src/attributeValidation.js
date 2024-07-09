@@ -1,3 +1,6 @@
+import { computeIconLayerCount } from './rendering'
+import { toIconDefinition, normalizeIconDefinition } from './iconDefinitions'
+
 export function filterSelectionEvent(selectionEvent) {
   if (!selectionEvent.detail) {
     console.error(
@@ -92,11 +95,42 @@ export function filterSelectionEvent(selectionEvent) {
   };
 }
 
-export function isValid({ iconName, prefix, width, height, pathData }) {
-  return !!iconName &&
-    !!prefix &&
-    Number.isInteger(width) &&
-    Number.isInteger(height) &&
-    Array.isArray(pathData) &&
-    pathData.length > 0;
+export function isBlockValid(attributes) {
+  const iconLayerCount = computeIconLayerCount(attributes)
+
+  if(iconLayerCount < 1) {
+    return false
+  }
+
+  return attributes.iconLayers.reduce((acc, cur) => {
+    if(!acc) {
+      return false
+    }
+
+    if(!cur?.iconDefinition) {
+      return false
+    }
+
+    const normalizedIconDefinition = normalizeIconDefinition(cur?.iconDefinition)
+
+    if(!normalizedIconDefinition) {
+      return false
+    }
+
+    const {iconName, prefix, width, height, isDuotone, primaryPath, secondaryPath} = normalizedIconDefinition
+
+    if(!iconName || !prefix || !Number.isInteger(width) || !Number.isInteger(height)) {
+      return false
+    }
+
+    if(!isDuotone && !primaryPath) {
+      return false
+    }
+
+    if(isDuotone && (!primaryPath && !secondaryPath)) {
+      return false
+    }
+
+    return true
+  }, true)
 }

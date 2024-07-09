@@ -7,7 +7,7 @@
 import { useBlockProps } from "@wordpress/block-editor";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isValid } from "./attributeValidation";
+import { isBlockValid } from "./attributeValidation";
 import { toIconDefinition } from "./iconDefinitions";
 import { prepareParamsForUseBlock, renderIcon } from "./rendering";
 /**
@@ -23,12 +23,12 @@ import { prepareParamsForUseBlock, renderIcon } from "./rendering";
  * @return {Element} Element to render.
  */
 export default function save({ attributes }) {
-  if (!isValid(attributes)) {
+  if (!isBlockValid(attributes)) {
     return null;
   }
 
   const extraProps = {
-    wrapperProps: useBlockProps(prepareParamsForUseBlock(attributes)).save()
+    wrapperProps: useBlockProps.save(prepareParamsForUseBlock(attributes))
   };
 
   return renderIcon(attributes, extraProps);
