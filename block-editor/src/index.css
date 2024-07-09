@@ -21,3 +21,52 @@
   width: auto;
   max-width: 300px;
 }
+
+.fa-icon-modifier-control {
+  cursor: pointer;
+  color: var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
+}
+
+.fa-icon-modifier-preview-container {
+  padding: 2em;
+  border: 2px solid lightgrey;
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+}
+.fa-icon-modifier-preview {
+  text-align: center;
+  display: flex;
+  margin: auto;
+  height: 200px;
+}
+
+.fa-icon-modifier-preview span {
+  display: flex;
+  margin: auto;
+  transform: scale(10);
+}
+
+.fa-icon-modifier button {
+  border: none;
+  background: unset;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.fa-icon-modifier button.selected-layer {
+  border: 1px dashed magenta;
+  border-radius: 2px;
+  text-decoration: unset;
+}
+
+.fa-icon-modifier button.selected-layer:disabled {
+  color: unset;
+  cursor: unset;
+}
+
+.fa-icon-modifier svg.selected-layer path {
+  stroke: magenta;
+  stroke-width: 5px;
+  stroke-dasharray: 5, 5;
+}
