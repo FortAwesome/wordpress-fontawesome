@@ -1,6 +1,8 @@
 .fa-icon-format:hover {
   cursor: pointer;
-  border:  1px dotted grey;
+  border:  1px solid var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
+  margin-left: -1px;
+  border-radius: 2px;
 }
 
 .block-editor-fa-icon-edit__popover {
