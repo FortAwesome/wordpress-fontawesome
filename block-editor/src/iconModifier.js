@@ -374,15 +374,15 @@ export default function (
             <div className="options-section-heading">{__("Size", "font-awesome")}</div>
             <div>
               <button onClick={() => setSize('2xs')}>2xs</button>
-              <button onClick={() => setSize('xs')}>2xs</button>
+              <button onClick={() => setSize('xs')}>xs</button>
               <Tooltip text={__("Remove Sizing", "font-awesome")}>
                 <button onClick={() => setSize(null)}>
                   <FontAwesomeIcon icon={faBan}/>
                 </button>
               </Tooltip>
-              <button onClick={() => setSize('lg')}>2xs</button>
-              <button onClick={() => setSize('xl')}>2xs</button>
-              <button onClick={() => setSize('2xl')}>2xs</button>
+              <button onClick={() => setSize('lg')}>lg</button>
+              <button onClick={() => setSize('xl')}>xl</button>
+              <button onClick={() => setSize('2xl')}>2xl</button>
             </div>
           </div>
           <div>
