@@ -21,8 +21,8 @@ function setupObserver() {
       for (const child of mutation.addedNodes) {
         if (
           child.tagName &&
-          ("SPAN" == child.tagName.toUpperCase() &&
-            child.classList.contains(ICON_FORMAT_CLASS))
+          ("SVG" == child.tagName.toUpperCase() &&
+            child.parentElement.classList.contains(ICON_FORMAT_CLASS))
         ) {
           maybeRebuildElement(child);
         }
