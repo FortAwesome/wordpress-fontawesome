@@ -69,21 +69,16 @@ function InlineUI( { value, onChange, contentRef } ) {
 	);
 }
 
-class Edit extends Component {
-  constructor(props) {
-    super(...arguments);
+function Edit(props) {
+  const { value, onChange, contentRef } = props;
 
-    this.handleFormatButtonClick = this.handleFormatButtonClick.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
-  }
+  const isFormatIconFocused = isFocused(value)
 
-  handleFormatButtonClick() {
+  const handleFormatButtonClick = () => {
     document.dispatchEvent(modalOpenEvent);
   }
 
-  handleSelect(event) {
-    const { value, onChange } = this.props;
-    // TODO: this would indicate an invalid event. Do we want some error handling here?
+  const handleSelect = (event) => {
     if (!event.detail) return;
 
     const iconNormalized = normalizeIconDefinition(event.detail)
@@ -158,35 +153,25 @@ class Edit extends Component {
     onChange(newValue);
   }
 
-  render() {
-    const {
-      contentRef,
-      value,
-      onChange
-    } = this.props;
-
-    const isFormatIconFocused = isFocused(value)
-
-    return (
-      <Fragment>
-        <RichTextToolbarButton
-          icon={faBrandIcon}
-          title={title}
-          onClick={this.handleFormatButtonClick}
-        />
-        <IconChooserModal
-          onSubmit={this.handleSelect}
-          openEvent={modalOpenEvent}
-        />
-        {isFormatIconFocused &&
-        <InlineUI
-            value={ value }
-            onChange={ onChange }
-            contentRef={ contentRef }
-          />}
-      </Fragment>
-    );
-  }
+  return (
+    <Fragment>
+      <RichTextToolbarButton
+        icon={faBrandIcon}
+        title={title}
+        onClick={handleFormatButtonClick}
+      />
+      <IconChooserModal
+        onSubmit={handleSelect}
+        openEvent={modalOpenEvent}
+      />
+      {isFormatIconFocused &&
+      <InlineUI
+          value={ value }
+          onChange={ onChange }
+          contentRef={ contentRef }
+        />}
+    </Fragment>
+  )
 }
 
 const mainSettings = {
