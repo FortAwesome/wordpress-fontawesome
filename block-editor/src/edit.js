@@ -116,7 +116,7 @@ export function Edit(props) {
     };
 
     const newIconLayers = [...iconLayers];
-    const { replace, append } = layerParams;
+    const { replace, append, mask } = layerParams;
 
     if (append) {
       newIconLayers.push(layer);
@@ -125,6 +125,8 @@ export function Edit(props) {
       replace < iconLayers.length
     ) {
       newIconLayers[replace] = layer;
+    } else if (Number.isInteger(mask) && mask < iconLayers.length) {
+      newIconLayers[mask].mask = iconDefinition;
     }
 
     setAttributes({ iconLayers: newIconLayers });

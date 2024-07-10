@@ -11,7 +11,8 @@ import {
   faRight,
   faLeft,
   faUp,
-  faDown
+  faDown,
+  faMask
 } from "@fortawesome/pro-solid-svg-icons";
 import {
   faBan,
@@ -44,6 +45,7 @@ const POWER_TRANSFORMS_TAB = 4;
 const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 
 const openIconChooserForAddLayerEvent = createCustomEvent()
+const openIconChooserForAddMaskEvent = createCustomEvent()
 
 function OptionalTooltip({ enabled, text, children }) {
   return enabled
@@ -57,7 +59,7 @@ function OptionalTooltip({ enabled, text, children }) {
 
 function IconLayer(
   {
-    handleSelect,
+    handleSelectForReplace,
     layer,
     layerIndex,
     IconChooserModal,
@@ -85,7 +87,7 @@ function IconLayer(
   return (
     <>
       <IconChooserModal
-        onSubmit={handleSelect}
+        onSubmit={handleSelectForReplace}
         openEvent={openEvent}
       />
       <div>
@@ -166,6 +168,10 @@ export default function (
     document.dispatchEvent(openIconChooserForAddLayerEvent)
   }
 
+  const openIconChooserToAddMask = () => {
+    document.dispatchEvent(openIconChooserForAddMaskEvent)
+  }
+
   const selectLayer = (layerIndex) => {
     setSelectedLayerIndex(layerIndex)
   }
@@ -225,19 +231,6 @@ export default function (
     const prevTransform =  (newIconLayers[selectedLayerIndex].transform || {})
 
     const updates = {}
-
-
-    
-    /*
-export interface Transform {
-  size?: number;
-  x?: number;
-  y?: number;
-  rotate?: number;
-  flipX?: boolean;
-  flipY?: boolean;
-}
-  */
 
     const {grow, shrink, right, left, up, down, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
 
@@ -324,6 +317,18 @@ export interface Transform {
             <Tooltip text={__("Set power transform options", "font-awesome")}>
               <button disabled={optionsControlsDisabled} onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}>
                 <FontAwesomeIcon className="fa-icon-modifier-control" icon={faBolt} />
+              </button>
+            </Tooltip>
+            {
+              Number.isInteger(selectedLayerIndex) && 
+              <IconChooserModal
+                onSubmit={prepareHandleSelect({ mask: selectedLayerIndex })}
+                openEvent={openIconChooserForAddMaskEvent}
+              />
+            }
+            <Tooltip text={__("Add a mask", "font-awesome")}>
+              <button disabled={optionsControlsDisabled} onClick={openIconChooserToAddMask}>
+                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faMask} />
               </button>
             </Tooltip>
             {
@@ -526,7 +531,7 @@ export interface Transform {
             selectLayer={selectLayer}
             clearLayerSelection={clearLayerSelection}
             selectedLayerIndex={selectedLayerIndex}
-            handleSelect={prepareHandleSelect({ replace: index })}
+            handleSelectForReplace={prepareHandleSelect({ replace: index })}
             IconChooserModal={IconChooserModal}
             canMoveUp={isMultiLayer && index > 0}
             canMoveDown={isMultiLayer && index <= (iconLayers.length - 2)}
