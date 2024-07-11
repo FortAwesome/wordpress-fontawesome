@@ -21,7 +21,7 @@ export function renderIcon(attributes, extraProps = {}) {
   const {wrapperProps, classNamesByLayer} = extraProps
 
   return (
-    <span {...(wrapperProps || {})}>
+    <div {...(wrapperProps || {})}>
       {attributes.iconLayers.map((layer, index) => {
         const { iconDefinition, rotation: initialRotation, ...rest } = layer;
         let className = (classNamesByLayer || [])[index]
@@ -46,6 +46,6 @@ export function renderIcon(attributes, extraProps = {}) {
           />
         );
       })}
-    </span>
+    </div>
   );
 }

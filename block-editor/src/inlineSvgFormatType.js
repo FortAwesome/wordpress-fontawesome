@@ -18,6 +18,9 @@ import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
+
+export const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'span'
+
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
   "iconChooser",
@@ -178,7 +181,7 @@ const mainSettings = {
   name,
   title,
   keywords: [__("icon"), __("awesome")],
-  tagName: "span",
+  tagName: INLINE_SVG_FORMAT_WRAPPER_TAG_NAME,
   className: "fa-icon-format",
   edit: Edit,
 };

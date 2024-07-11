@@ -52,7 +52,7 @@ button:disabled .fa-icon-modifier-control {
   height: 200px;
 }
 
-.fa-icon-modifier-preview span {
+.fa-icon-modifier-preview div {
   display: flex;
   margin: auto;
   transform: scale(10);
@@ -80,4 +80,8 @@ button:disabled .fa-icon-modifier-control {
   stroke: magenta;
   stroke-width: 5px;
   stroke-dasharray: 5, 5;
+}
+
+.wp-block-font-awesome-icon {
+  display: inline-block;
 }

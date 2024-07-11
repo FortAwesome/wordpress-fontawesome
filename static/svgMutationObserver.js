@@ -1,5 +1,6 @@
 const REBUILD_SVG_VISITED_ATTR = "data-repaint-visited";
 const ICON_FORMAT_CLASS = 'fa-icon-format';
+const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'SPAN'
 
 function maybeRebuildElement(el) {
   if (!el.getAttribute(REBUILD_SVG_VISITED_ATTR)) {
@@ -21,8 +22,11 @@ function setupObserver() {
       for (const child of mutation.addedNodes) {
         if (
           child.tagName &&
-          ("SVG" == child.tagName.toUpperCase() &&
-            child.parentElement.classList.contains(ICON_FORMAT_CLASS))
+          (
+            (INLINE_SVG_FORMAT_WRAPPER_TAG_NAME.toUpperCase() === child.tagName.toUpperCase() && child.classList.contains(ICON_FORMAT_CLASS))
+            ||
+            ("SVG" == child.tagName.toUpperCase() && child.parentElement.classList.contains(ICON_FORMAT_CLASS))
+          )
         ) {
           maybeRebuildElement(child);
         }
