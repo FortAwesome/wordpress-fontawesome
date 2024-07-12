@@ -11,7 +11,7 @@
 }
 
 .block-editor-fa-icon-edit__popover .components-popover__content {
-  width: auto:
+  width: auto;
 }
 
 .block-editor-fa-icon-edit__popover .components-popover__content {
@@ -82,6 +82,3 @@ button:disabled .fa-icon-modifier-control {
   stroke-dasharray: 5, 5;
 }
 
-.wp-block-font-awesome-icon {
-  display: inline-block;
-}
