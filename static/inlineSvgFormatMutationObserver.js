@@ -34,6 +34,8 @@ function setupObserver() {
             (INLINE_SVG_FORMAT_WRAPPER_TAG_NAME.toUpperCase() === child.tagName.toUpperCase() && child.classList.contains(ICON_FORMAT_CLASS))
             ||
             ("SVG" == child.tagName.toUpperCase() && child?.parentElement?.classList?.contains(ICON_FORMAT_CLASS))
+            ||
+            ("SVG" == child.tagName.toUpperCase() && child?.classList?.contains('svg-inline--fa'))
           )
         ) {
           maybeRebuildElement(child);
@@ -52,7 +54,7 @@ function setupObserver() {
 function initialize() {
   for (
     const faSvg of document.querySelectorAll(
-      `.${ICON_FORMAT_CLASS} svg.svg-inline--fa`,
+      'svg.svg-inline--fa',
     )
   ) {
     maybeRebuildElement(faSvg);

@@ -2,6 +2,7 @@ import { Component, Fragment } from "@wordpress/element";
 import { Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
+  applyFormat,
   create,
   insert,
   insertObject,
@@ -75,10 +76,35 @@ function InlineUI( { value, onChange, contentRef } ) {
 function Edit(props) {
   const { value, onChange, contentRef } = props;
 
+  console.log('VALUE', value)
   const isFormatIconFocused = isFocused(value)
 
   const handleFormatButtonClick = () => {
     document.dispatchEvent(modalOpenEvent);
+  }
+
+  const createSvgDomElement = ({width, height, primaryPath, secondaryPath}) => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", 'SVG')
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
+    if(secondaryPath) {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", 'PATH')
+      path.setAttribute('d', secondaryPath)
+      path.setAttribute('class', 'fa-secondary')
+      path.appendChild(document.createTextNode('x'))
+      svg.appendChild(path)
+    }
+
+    if(primaryPath) {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", 'PATH')
+      path.setAttribute('d', primaryPath)
+      if(secondaryPath) {
+        path.setAttribute('class', 'fa-primary')
+      }
+      path.appendChild(document.createTextNode('y'))
+      svg.appendChild(path)
+    }
+    console.log('DOM_ELEMENT', svg)
+    return svg
   }
 
   const handleSelect = (event) => {
@@ -104,8 +130,71 @@ function Edit(props) {
       },
     };
 
-    let newStart = value.start;
+    const originalStart = value.start;
+    //console.log("ORIG_VALUE", value)
 
+    // const svgValue = create({element: createSvgDomElement(iconNormalized)})
+    // console.log("SVG_VALUE", svgValue)
+    // const newValue = insert(value, svgValue)
+    //const newReplacements = value.replacements.slice()
+
+    let newValue = {...value}
+
+    if(primaryPath) {
+      newValue = insertObject(newValue, {
+        type: inlineSvgPathName,
+        attributes: {
+          d: primaryPath,
+          fill: "currentColor",
+        }
+      })
+      /*
+      newReplacements[ value.start ] = {
+        type: inlineSvgPathName,
+        attributes: {
+          d: primaryPath,
+          fill: "currentColor",
+        }
+      }
+      */
+    }
+
+    if(secondaryPath) {
+      newValue = insertObject(newValue, {
+        type: inlineSvgPathName,
+        attributes: {
+          d: secondaryPath,
+          fill: "currentColor",
+          className: "fa-secondary"
+        }
+      })
+      /*
+      newReplacements[ value.start ] = {
+        type: inlineSvgPathName,
+        attributes: {
+          d: secondaryPath,
+          fill: "currentColor",
+        }
+      }
+      */
+    }
+
+    let objectCount = 0;
+    primaryPath && objectCount++;
+    secondaryPath && objectCount++;
+
+    const formatStartIndex = objectCount > 1 ? value.start - 1 : value.start
+    console.log("ORIG_VALUE", value)
+    console.log("NEW_VALUE_CANDATE", newValue)
+
+    //newValue = applyFormat(newValue, svgElementWrapper, formatStartIndex, value.start)
+    newValue.formats[value.start] = [svgElementWrapper]
+
+    if(secondaryPath) {
+      newValue.formats[value.start + 1] = [svgElementWrapper]
+    }
+
+    /*
     let newValue = insertObject(value, {
       type: inlineSvgPathName,
       attributes: {
@@ -113,9 +202,12 @@ function Edit(props) {
         fill: "currentColor",
       },
     });
+    */
+    //console.log("NEW_VALUE_PRIMARY", newValue)
 
+    /*
     if (secondaryPath) {
-      newStart = value.start - 1;
+      //newStart = value.start - 1;
       newValue = insertObject(
         newValue,
         {
@@ -126,20 +218,26 @@ function Edit(props) {
             className: "fa-secondary",
           },
         },
-        newStart,
-        value.start,
+        originalStart,
+        originalStart
+        //newStart,
+        //value.start,
       );
-    }
 
-    let objectCount = 0;
-    primaryPath && objectCount++;
-    secondaryPath && objectCount++;
+      //console.log("NEW_VALUE_SECONDARY", newValue)
+    }
+    */
+
+    // let objectCount = 0;
+    // primaryPath && objectCount++;
+    // secondaryPath && objectCount++;
 
     event.preventDefault();
 
-    const wrapperIndex = newStart;
+    /*
+    const wrapperIndex = originalStart;
 
-    for (let i = wrapperIndex; i < newStart + objectCount; i++) {
+    for (let i = wrapperIndex; i < originalStart + objectCount; i++) {
       if (Array.isArray(newValue.formats[i])) {
         // then wrap the outer <span> around the <svg>
         newValue.formats[i].push({ type: name });
@@ -152,6 +250,9 @@ function Edit(props) {
         ];
       }
     }
+    */
+
+    console.log('NEW_VALUE', newValue)
 
     onChange(newValue);
   }
