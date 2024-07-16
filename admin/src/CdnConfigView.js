@@ -34,7 +34,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const pendingOptionConflicts = useSelector(state => state.pendingOptionConflicts)
   const hasChecked = useSelector(state => state.preferenceConflictDetection.hasChecked)
   const preferenceCheckSuccess = useSelector(state => state.preferenceConflictDetection.success)
-  const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)  
+  const preferenceCheckMessage = useSelector(state => state.preferenceConflictDetection.message)
 
   const versionOptions = useSelector(state => {
     const { releases: { available, latest_version_5, latest_version_6 } } = state
@@ -160,7 +160,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
             { usePro &&
               isVersion6 &&
               <Alert title={ __( 'Heads up! Pro Version 6 is not available from CDN', 'font-awesome' ) } type='warning'>
-                <p>You can, however, use a Kit. Make sure you have a paid subscription and select "Use a Kit" above. We'll walk you through the other details from there.</p>
+                <p>You can, however, use a Kit. Make sure you have an active Font Awesome subscription and select "Use a Kit" above. We'll walk you through the other details from there.</p>
               </Alert>
             }
             { usePro &&
