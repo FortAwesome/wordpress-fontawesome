@@ -1,3 +1,11 @@
+// This fixes the inline SVGs produced by the Format API, but it breaks
+// those produced by the fa-icon block. This seems to have to do with
+// differences between these two Gutenberg APIs and their rendering implementations.
+// So we need to distinguish between these two different kinds of icon svg elements,
+// such as with different class name, in order to apply these changes differently.
+//
+// It can't be loaded in Edit component of the block editor, because it must
+// be loaded _inside_ the content iframe.
 const REBUILD_SVG_VISITED_ATTR = "data-repaint-visited";
 const ICON_FORMAT_CLASS = 'fa-icon-format';
 const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'SPAN'
@@ -25,7 +33,7 @@ function setupObserver() {
           (
             (INLINE_SVG_FORMAT_WRAPPER_TAG_NAME.toUpperCase() === child.tagName.toUpperCase() && child.classList.contains(ICON_FORMAT_CLASS))
             ||
-            ("SVG" == child.tagName.toUpperCase() && child.parentElement.classList.contains(ICON_FORMAT_CLASS))
+            ("SVG" == child.tagName.toUpperCase() && child?.parentElement?.classList?.contains(ICON_FORMAT_CLASS))
           )
         ) {
           maybeRebuildElement(child);
@@ -41,22 +49,23 @@ function setupObserver() {
   observer.observe(targetNode, config);
 }
 
+function initialize() {
+  for (
+    const faSvg of document.querySelectorAll(
+      `.${ICON_FORMAT_CLASS} svg.svg-inline--fa`,
+    )
+  ) {
+    maybeRebuildElement(faSvg);
+  }
+  setupObserver();
+}
+
 const editorContentFrame = document.querySelector(".block-editor-iframe__body");
 
 if (editorContentFrame) {
-  // This fixes the inline SVGs produced by the Format API, but it breaks
-  // those produced by the fa-icon block. This seems to have to do with
-  // differences between these two Gutenberg APIs and their rendering implementations.
-  // So we need to distinguish between these two different kinds of icon svg elements,
-  // such as with different class name, in order to apply these changes differently.
-  document.addEventListener("DOMContentLoaded", () => {
-    for (
-      const faSvg of document.querySelectorAll(
-        `.${ICON_FORMAT_CLASS} svg.svg-inline--fa`,
-      )
-    ) {
-      maybeRebuildElement(faSvg);
-    }
-    setupObserver();
-  });
+  if ('complete' === document.readyState) {
+    initialize()
+  } else {
+    document.addEventListener("DOMContentLoaded", initialize);
+  }
 }
