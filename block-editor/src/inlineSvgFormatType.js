@@ -19,6 +19,7 @@ import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
+//import { addFilter } from '@wordpress/hooks'
 
 export const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'span'
 
@@ -35,6 +36,39 @@ const inlineSvgPathName = "font-awesome/fa-inline-svg-path";
 const inlineSvgPathTitle = __("Font Awesome Inline SVG Path");
 
 const modalOpenEvent = createCustomEvent()
+
+export const ZWNBSP = '\ufeff';
+
+function insertObjectAlt( value, formatToInsert, startIndex, endIndex ) {
+	const valueToInsert = {
+		formats: [ , ],
+		replacements: [ formatToInsert ],
+		text: ZWNBSP,
+	};
+
+	return insert( value, valueToInsert, startIndex, endIndex );
+}
+
+function filterGetSaveElement(element, blockType, attributes) {
+  //console.log('SAVE type', blockType)
+  if('core/paragraph' === blockType.name) {
+    console.log('FILTER_ELEMENT', element)
+    //console.log('FILTER_ATTRS', attributes)
+  }
+  return element
+}
+
+function filterGetBlockAttributes(element, blockType, attributes) {
+  console.log('ATTR type', blockType.name)
+  if('core/paragraph' === blockType.name) {
+    console.log('GET_BLOCK_ATTRS_ELEMENT', element)
+    console.log('GET_BLOCK_ATTRS_ATTRS', attributes)
+  }
+  return element
+}
+
+//addFilter('blocks.getSaveElement', 'font-awesome/icon', filterGetSaveElement, 10)
+//addFilter('blocks.getBlockAttributes', 'font-awesome/icon', filterGetBlockAttributes, 10)
 
 function isFocused(value) {
   if(!Array.isArray(value.formats) || !Number.isInteger(value.start)) {
@@ -71,6 +105,16 @@ function InlineUI( { value, onChange, contentRef } ) {
 		  </div>
 		</Popover>
 	);
+}
+
+function pathsAsHTML(primaryPath, secondaryPath) {
+  const secondary = secondaryPath ? `<path class="fa-secondary" d="${secondaryPath}"/>` : ''
+  const primary = primaryPath ? `<path ${secondaryPath ? 'class="fa-primary"' : ''} d="${primaryPath}"/>` : ''
+  return `${secondary}${primary}`
+}
+
+function asHTML({width, height, primaryPath, secondaryPath}) {
+  return `<svg class="svg-inline--fa fawp-fmt" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${pathsAsHTML(primaryPath, secondaryPath)}</svg>`
 }
 
 function Edit(props) {
@@ -121,6 +165,7 @@ function Edit(props) {
       primaryPath,
       secondaryPath
     } = iconNormalized
+
 
     const svgElementWrapper = {
       type: inlineSvgName,
@@ -252,6 +297,8 @@ function Edit(props) {
     }
     */
 
+    newValue = insert(value, create({html: asHTML(iconNormalized)}))
+
     console.log('NEW_VALUE', newValue)
 
     onChange(newValue);
@@ -283,6 +330,7 @@ const mainSettings = {
   title,
   keywords: [__("icon"), __("awesome")],
   tagName: INLINE_SVG_FORMAT_WRAPPER_TAG_NAME,
+  //contentEditable: false,
   className: "fa-icon-format",
   edit: Edit,
 };
@@ -292,6 +340,7 @@ const inlineSvgSettings = {
   title: inlineSvgTitle,
   tagName: "svg",
   className: "svg-inline--fa",
+//  contentEditable: false,
   attributes: {
     xmlns: "xmlns",
     viewBox: "viewBox",
@@ -303,6 +352,7 @@ const inlineSvgPathSettings = {
   title: inlineSvgPathTitle,
   tagName: "path",
   className: null,
+//  contentEditable: false,
   attributes: {
     className: "class",
     d: "d",
