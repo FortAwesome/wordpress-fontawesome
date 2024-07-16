@@ -11,7 +11,7 @@ const ICON_FORMAT_CLASS = 'fa-icon-format';
 const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'SPAN'
 
 function maybeRebuildElement(el) {
-  if (!el.getAttribute(REBUILD_SVG_VISITED_ATTR)) {
+  if (!el.getAttribute(REBUILD_SVG_VISITED_ATTR) || el.getAttribute('viewbox')) {
     el.setAttribute(REBUILD_SVG_VISITED_ATTR, true);
     el.outerHTML = el.outerHTML;
   }
@@ -22,7 +22,7 @@ function setupObserver() {
   const targetNode = document.body;
 
   // Options for the observer (which mutations to observe)
-  const config = { attributes: true, childList: true, subtree: true };
+  const config = { attributes: false, childList: true, subtree: true };
 
   // Callback function to execute when mutations are observed
   const callback = (mutationList, observer) => {
