@@ -6,13 +6,9 @@
 //
 // It can't be loaded in Edit component of the block editor, because it must
 // be loaded _inside_ the content iframe.
-const REBUILD_SVG_VISITED_ATTR = "data-repaint-visited";
-const ICON_FORMAT_CLASS = 'fa-icon-format';
-const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'SPAN'
-
 function maybeRebuildElement(el) {
-  if (!el.getAttribute(REBUILD_SVG_VISITED_ATTR) || el.getAttribute('viewbox')) {
-    el.setAttribute(REBUILD_SVG_VISITED_ATTR, true);
+  // If the SVG has 'viewbox' instead of 'viewBox', repaint it.
+  if([...el.attributes].find((attr) => 'viewbox' === attr.name)) {
     el.outerHTML = el.outerHTML;
   }
 }
@@ -31,10 +27,6 @@ function setupObserver() {
         if (
           child.tagName &&
           (
-            (INLINE_SVG_FORMAT_WRAPPER_TAG_NAME.toUpperCase() === child.tagName.toUpperCase() && child.classList.contains(ICON_FORMAT_CLASS))
-            ||
-            ("SVG" == child.tagName.toUpperCase() && child?.parentElement?.classList?.contains(ICON_FORMAT_CLASS))
-            ||
             ("SVG" == child.tagName.toUpperCase() && child?.classList?.contains('svg-inline--fa'))
           )
         ) {
