@@ -28,47 +28,10 @@ const { IconChooserModal } = get(window, [
   "iconChooser",
 ], {});
 
-const name = "font-awesome/inline-icon";
+const name = "font-awesome/rich-text-icon";
 const title = __("Font Awesome Icon");
-const inlineSvgName = "font-awesome/fa-inline-svg";
-const inlineSvgTitle = __("Font Awesome Inline SVG");
-const inlineSvgPathName = "font-awesome/fa-inline-svg-path";
-const inlineSvgPathTitle = __("Font Awesome Inline SVG Path");
 
 const modalOpenEvent = createCustomEvent()
-
-export const ZWNBSP = '\ufeff';
-
-function insertObjectAlt( value, formatToInsert, startIndex, endIndex ) {
-	const valueToInsert = {
-		formats: [ , ],
-		replacements: [ formatToInsert ],
-		text: ZWNBSP,
-	};
-
-	return insert( value, valueToInsert, startIndex, endIndex );
-}
-
-function filterGetSaveElement(element, blockType, attributes) {
-  //console.log('SAVE type', blockType)
-  if('core/paragraph' === blockType.name) {
-    console.log('FILTER_ELEMENT', element)
-    //console.log('FILTER_ATTRS', attributes)
-  }
-  return element
-}
-
-function filterGetBlockAttributes(element, blockType, attributes) {
-  console.log('ATTR type', blockType.name)
-  if('core/paragraph' === blockType.name) {
-    console.log('GET_BLOCK_ATTRS_ELEMENT', element)
-    console.log('GET_BLOCK_ATTRS_ATTRS', attributes)
-  }
-  return element
-}
-
-//addFilter('blocks.getSaveElement', 'font-awesome/icon', filterGetSaveElement, 10)
-//addFilter('blocks.getBlockAttributes', 'font-awesome/icon', filterGetBlockAttributes, 10)
 
 function isFocused(value) {
   if(!Array.isArray(value.formats) || !Number.isInteger(value.start)) {
@@ -127,30 +90,6 @@ function Edit(props) {
     document.dispatchEvent(modalOpenEvent);
   }
 
-  const createSvgDomElement = ({width, height, primaryPath, secondaryPath}) => {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", 'SVG')
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
-    if(secondaryPath) {
-      const path = document.createElementNS("http://www.w3.org/2000/svg", 'PATH')
-      path.setAttribute('d', secondaryPath)
-      path.setAttribute('class', 'fa-secondary')
-      path.appendChild(document.createTextNode('x'))
-      svg.appendChild(path)
-    }
-
-    if(primaryPath) {
-      const path = document.createElementNS("http://www.w3.org/2000/svg", 'PATH')
-      path.setAttribute('d', primaryPath)
-      if(secondaryPath) {
-        path.setAttribute('class', 'fa-primary')
-      }
-      path.appendChild(document.createTextNode('y'))
-      svg.appendChild(path)
-    }
-    console.log('DOM_ELEMENT', svg)
-    return svg
-  }
-
   const handleSelect = (event) => {
     if (!event.detail) return;
 
@@ -158,147 +97,12 @@ function Edit(props) {
 
     if (!iconNormalized) return;
 
-    const {
-      iconName,
-      width,
-      height,
-      primaryPath,
-      secondaryPath
-    } = iconNormalized
-
-
-    const svgElementWrapper = {
-      type: inlineSvgName,
-      attributes: {
-        xmlns: "http://www.w3.org/2000/svg",
-        viewBox: `0 0 ${width} ${height}`,
-      },
-    };
-
-    const originalStart = value.start;
-    //console.log("ORIG_VALUE", value)
-
-    // const svgValue = create({element: createSvgDomElement(iconNormalized)})
-    // console.log("SVG_VALUE", svgValue)
-    // const newValue = insert(value, svgValue)
-    //const newReplacements = value.replacements.slice()
-
-    let newValue = {...value}
-
-    if(primaryPath) {
-      newValue = insertObject(newValue, {
-        type: inlineSvgPathName,
-        attributes: {
-          d: primaryPath,
-          fill: "currentColor",
-        }
-      })
-      /*
-      newReplacements[ value.start ] = {
-        type: inlineSvgPathName,
-        attributes: {
-          d: primaryPath,
-          fill: "currentColor",
-        }
-      }
-      */
-    }
-
-    if(secondaryPath) {
-      newValue = insertObject(newValue, {
-        type: inlineSvgPathName,
-        attributes: {
-          d: secondaryPath,
-          fill: "currentColor",
-          className: "fa-secondary"
-        }
-      })
-      /*
-      newReplacements[ value.start ] = {
-        type: inlineSvgPathName,
-        attributes: {
-          d: secondaryPath,
-          fill: "currentColor",
-        }
-      }
-      */
-    }
-
-    let objectCount = 0;
-    primaryPath && objectCount++;
-    secondaryPath && objectCount++;
-
-    const formatStartIndex = objectCount > 1 ? value.start - 1 : value.start
-    console.log("ORIG_VALUE", value)
-    console.log("NEW_VALUE_CANDATE", newValue)
-
-    //newValue = applyFormat(newValue, svgElementWrapper, formatStartIndex, value.start)
-    newValue.formats[value.start] = [svgElementWrapper]
-
-    if(secondaryPath) {
-      newValue.formats[value.start + 1] = [svgElementWrapper]
-    }
-
-    /*
-    let newValue = insertObject(value, {
-      type: inlineSvgPathName,
-      attributes: {
-        d: primaryPath,
-        fill: "currentColor",
-      },
-    });
-    */
-    //console.log("NEW_VALUE_PRIMARY", newValue)
-
-    /*
-    if (secondaryPath) {
-      //newStart = value.start - 1;
-      newValue = insertObject(
-        newValue,
-        {
-          type: inlineSvgPathName,
-          attributes: {
-            d: secondaryPath,
-            fill: "currentColor",
-            className: "fa-secondary",
-          },
-        },
-        originalStart,
-        originalStart
-        //newStart,
-        //value.start,
-      );
-
-      //console.log("NEW_VALUE_SECONDARY", newValue)
-    }
-    */
-
-    // let objectCount = 0;
-    // primaryPath && objectCount++;
-    // secondaryPath && objectCount++;
-
     event.preventDefault();
 
-    /*
-    const wrapperIndex = originalStart;
+    const iconValue = create({html: asHTML(iconNormalized)})
 
-    for (let i = wrapperIndex; i < originalStart + objectCount; i++) {
-      if (Array.isArray(newValue.formats[i])) {
-        // then wrap the outer <span> around the <svg>
-        newValue.formats[i].push({ type: name });
-        // wrap the <svg> around any <path> elements.
-        newValue.formats[i].push(svgElementWrapper);
-      } else {
-        newValue.formats[i] = [
-          { type: name },
-          svgElementWrapper,
-        ];
-      }
-    }
-    */
-
-    newValue = insert(value, create({html: asHTML(iconNormalized)}))
-
+    console.log('ICON_VALUE', iconValue)
+    const newValue = insert(value, iconValue)
     console.log('NEW_VALUE', newValue)
 
     onChange(newValue);
@@ -325,41 +129,14 @@ function Edit(props) {
   )
 }
 
-const mainSettings = {
+const settings = {
   name,
   title,
   keywords: [__("icon"), __("awesome")],
-  tagName: INLINE_SVG_FORMAT_WRAPPER_TAG_NAME,
-  //contentEditable: false,
-  className: "fa-icon-format",
+  tagName: 'svg',
+  className: 'svg-inline--fa',
+  contentEditable: false,
   edit: Edit,
 };
 
-const inlineSvgSettings = {
-  name: inlineSvgName,
-  title: inlineSvgTitle,
-  tagName: "svg",
-  className: "svg-inline--fa",
-//  contentEditable: false,
-  attributes: {
-    xmlns: "xmlns",
-    viewBox: "viewBox",
-  },
-};
-
-const inlineSvgPathSettings = {
-  name: inlineSvgPathName,
-  title: inlineSvgPathTitle,
-  tagName: "path",
-  className: null,
-//  contentEditable: false,
-  attributes: {
-    className: "class",
-    d: "d",
-    fill: "fill",
-  },
-};
-
-registerFormatType(inlineSvgName, inlineSvgSettings);
-registerFormatType(inlineSvgPathName, inlineSvgPathSettings);
-registerFormatType(name, mainSettings);
+registerFormatType(name, settings);
