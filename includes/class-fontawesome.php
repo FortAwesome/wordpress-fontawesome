@@ -3262,8 +3262,8 @@ EOT;
 				);
 				if ( $this->is_gutenberg_page() ) {
 					wp_enqueue_script(
-						self::RESOURCE_HANDLE_FA_BLOCKS . '-inline-svg-mutation-observer',
-						trailingslashit( FONTAWESOME_DIR_URL ) . 'static/inlineSvgFormatMutationObserver.js',
+						self::RESOURCE_HANDLE_FA_BLOCKS . '-rich-text-icon-mutation-observer',
+						trailingslashit( FONTAWESOME_DIR_URL ) . 'static/richTextIconMutationObserver.js',
 						array(),
 						self::PLUGIN_VERSION,
 						true
