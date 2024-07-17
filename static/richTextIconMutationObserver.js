@@ -6,6 +6,9 @@
 //
 // It can't be loaded in Edit component of the block editor, because it must
 // be loaded _inside_ the content iframe.
+
+const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
+
 function maybeRebuildElement(el) {
   // If the SVG has 'viewbox' instead of 'viewBox', repaint it.
   if([...el.attributes].find((attr) => 'viewbox' === attr.name)) {
@@ -18,16 +21,18 @@ function setupObserver() {
   const targetNode = document.body;
 
   // Options for the observer (which mutations to observe)
-  const config = { attributes: false, childList: true, subtree: true };
+  const config = { attributes: true, childList: true, subtree: true };
 
   // Callback function to execute when mutations are observed
   const callback = (mutationList, observer) => {
     for (const mutation of mutationList) {
       for (const child of mutation.addedNodes) {
         if (
-          child.tagName &&
+          child?.tagName &&
           (
             ("SVG" == child.tagName.toUpperCase() && child?.classList?.contains('svg-inline--fa'))
+            &&
+            child?.parentElement?.classList?.contains(FONT_AWESOME_RICH_TEXT_ICON_CLASS)
           )
         ) {
           maybeRebuildElement(child);
