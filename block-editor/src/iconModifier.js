@@ -133,53 +133,6 @@ export default function (
   const [ selectedLayerIndex, setSelectedLayerIndex ] = useState(isMultiLayer ? null : 0)
   const [ selectedTab, setSelectedTab ] = useState(NO_TAB)
 
-  const moveUp = (curIndex) => {
-    const newIconLayers = [...iconLayers];
-
-    const prevIndex = curIndex - 1;
-    const tmp = newIconLayers[prevIndex];
-    newIconLayers[prevIndex] = newIconLayers[curIndex];
-    newIconLayers[curIndex] = tmp;
-
-    setAttributes({ iconLayers: newIconLayers });
-  };
-
-  const moveDown = (curIndex) => {
-    const newIconLayers = [...iconLayers];
-
-    const nextIndex = curIndex + 1;
-    const tmp = newIconLayers[nextIndex];
-    newIconLayers[nextIndex] = newIconLayers[curIndex];
-    newIconLayers[curIndex] = tmp;
-
-    setAttributes({ iconLayers: newIconLayers });
-  };
-
-  const removeLayer = (curIndex) => {
-    const newIconLayers = [...iconLayers];
-    newIconLayers.splice(curIndex, 1);
-    if(newIconLayers.length === 1) {
-      setSelectedLayerIndex(0)
-    }
-    setAttributes({ iconLayers: newIconLayers });
-  };
-
-  const openIconChooserToAddLayer = () => {
-    document.dispatchEvent(openIconChooserForAddLayerEvent)
-  }
-
-  const openIconChooserToAddMask = () => {
-    document.dispatchEvent(openIconChooserForAddMaskEvent)
-  }
-
-  const selectLayer = (layerIndex) => {
-    setSelectedLayerIndex(layerIndex)
-  }
-
-  const clearLayerSelection = () => {
-    setSelectedLayerIndex(null)
-  }
-
   const setColor = (color) => {
     const newIconLayers = [...iconLayers];
     newIconLayers[selectedLayerIndex].color = color
@@ -325,19 +278,6 @@ export default function (
                 onSubmit={prepareHandleSelect({ mask: selectedLayerIndex })}
                 openEvent={openIconChooserForAddMaskEvent}
               />
-            }
-            <Tooltip text={__("Add a mask", "font-awesome")}>
-              <button disabled={optionsControlsDisabled} onClick={openIconChooserToAddMask}>
-                <FontAwesomeIcon className="fa-icon-modifier-control" icon={faMask} />
-              </button>
-            </Tooltip>
-            {
-              iconLayerCount === 1 &&
-              <Tooltip text={__("Add a layer", "font-awesome")}>
-                <button onClick={openIconChooserToAddLayer}>
-                  <FontAwesomeIcon className="fa-icon-modifier-control" icon={faLayerGroup} />
-                </button>
-              </Tooltip>
             }
           </div>
         </OptionalTooltip>
