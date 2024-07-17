@@ -1,8 +1,9 @@
-export function iconLayerAttributesToIconDefinitionsAndParams(attributes) {
-  return (attributes?.iconLayers || []).reduce((acc, layer) => {
-    //const { iconName, prefix, width, height, pathData } = attributes;
-  }, {});
-}
+// export function iconLayerAttributesToIconDefinitionsAndParams(attributes) {
+//   return (attributes?.iconLayers || []).reduce((acc, layer) => {
+//     //const { iconName, prefix, width, height, pathData } = attributes;
+//   }, {});
+// }
+import { filterSelectionEvent } from "./attributeValidation";
 
 export function toIconDefinition({ iconName, prefix, width, height, pathData }) {
   if (!iconName || !prefix || !Number.isInteger(width) || !Number.isInteger(height) || !Array.isArray(pathData)) {
@@ -64,4 +65,14 @@ export function normalizeIconDefinition({ iconName, prefix, icon }) {
     primaryPath,
     secondaryPath,
   };
+}
+
+export function iconDefinitionFromIconChooserSelectionEvent(event) {
+  const filteredSelectionAttributes = filterSelectionEvent(event);
+
+  if ("object" !== typeof filteredSelectionAttributes) {
+    return;
+  }
+
+  return toIconDefinition(filteredSelectionAttributes)
 }

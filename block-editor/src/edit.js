@@ -60,9 +60,7 @@ import get from "lodash/get";
 
 import { GLOBAL_KEY } from "../../admin/src/constants";
 
-import { toIconDefinition } from "./iconDefinitions";
-
-import { filterSelectionEvent } from "./attributeValidation";
+import { iconDefinitionFromIconChooserSelectionEvent } from "./iconDefinitions";
 
 import { useAnchor } from "@wordpress/rich-text";
 
@@ -99,15 +97,11 @@ export function Edit(props) {
   } = props;
 
   const prepareHandleSelect = (layerParams) => (event) => {
-    const filteredSelectionAttributes = filterSelectionEvent(event);
-
-    if ("object" !== typeof filteredSelectionAttributes) {
-      return;
-    }
-
     const iconLayers = attributes?.iconLayers || [];
 
-    const iconDefinition = toIconDefinition(filteredSelectionAttributes);
+    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event)
+
+    if(!iconDefinition) return
 
     const layer = {
       iconDefinition,
