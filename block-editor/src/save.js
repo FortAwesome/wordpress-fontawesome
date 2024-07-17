@@ -31,5 +31,5 @@ export default function save({ attributes }) {
     wrapperProps: useBlockProps.save(prepareParamsForUseBlock(attributes))
   };
 
-  return renderIcon(attributes, extraProps);
+  return renderIcon(attributes, {extraProps});
 }

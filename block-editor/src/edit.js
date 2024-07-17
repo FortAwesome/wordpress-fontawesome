@@ -161,7 +161,7 @@ export function Edit(props) {
             </Modal>
           }
         </BlockControls>
-        {renderIcon(attributes, extraProps)}
+        {renderIcon(attributes, {extraProps})}
       </Fragment>
     )
     : (

@@ -253,7 +253,7 @@ export default function (
     <div className="fa-icon-modifier">
       <div className="fa-icon-modifier-preview-container">
         <div className="fa-icon-modifier-preview">
-          {renderIcon(attributes, extraProps)}
+          {renderIcon(attributes, {extraProps})}
         </div>
         <OptionalTooltip enabled={optionsControlsDisabled} text={__("Select a layer to set these options", "font-awesome")}>
           <div className={classnames('fa-icon-modifier-preview-controls', {'options-controls-disabled': optionsControlsDisabled})}>
