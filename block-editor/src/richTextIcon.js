@@ -14,6 +14,9 @@ import {
   RichTextToolbarButton,
   useBlockProps,
 } from "@wordpress/block-editor";
+import {
+  Button
+} from "@wordpress/components";
 import get from "lodash/get";
 import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
@@ -61,21 +64,24 @@ function InlineUI( { value, onChange, contentRef } ) {
 	} );
 
 	return (
-		<Popover
-			placement="bottom"
-			focusOnMount={ false }
-			anchor={ popoverAnchor }
-			className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
-		>
-		  <div>
-		    <p>
-		    TODO: Add some inline UI capabilities here. Note that "Change Icon" currently
-		    inserts an additional one. That should be fixed.
-		    </p>
-		    <button onClick={() => document.dispatchEvent(modalOpenEvent)}>Change Icon</button>
-		  </div>
-		</Popover>
-	);
+    <Popover
+      placement="bottom"
+      focusOnMount={false}
+      anchor={popoverAnchor}
+      className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
+    >
+      <div>
+        <p>
+          <Button
+            variant="link"
+            onClick={() => document.dispatchEvent(modalOpenEvent)}
+          >
+            Switch Icon
+          </Button>
+        </p>
+      </div>
+    </Popover>
+  );
 }
 
 function Edit(props) {
