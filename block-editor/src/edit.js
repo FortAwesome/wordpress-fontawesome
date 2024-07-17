@@ -149,7 +149,6 @@ export function Edit(props) {
             onClick={() => setIsEditModalOpen(!isEditModalOpen)}
             aria-haspopup="true"
             aria-expanded={isEditModalOpen}
-            onKeyDown={() => console.log('TODO: KEY_DOWN')}
             label={__("Edit Icon")}
             icon={modifyToolbarIcon}
           />
