@@ -19,9 +19,7 @@ import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
-//import { addFilter } from '@wordpress/hooks'
-
-export const INLINE_SVG_FORMAT_WRAPPER_TAG_NAME = 'span'
+export const ZERO_WIDTH_SPACE = '\u200b';
 
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
@@ -99,13 +97,34 @@ function Edit(props) {
 
     event.preventDefault();
 
+    // Use `insertObject()` on an empty value merely for the side effect of
+    // producing the text value corresponding to an object.
+    //
+    // This is sort of bending over backwards. Here's why:
+    //
+    // We can see in the Gutenberg source code that it's currently just a single
+    // character: U+FFFC, the object replacement character. So why not use it
+    // directly here?
+    //
+    // Because it's not documented as part of the public API. So it's an implementation
+    // detail that might change. (In fact, it seems to have changed in the past,
+    // if memory serves.)
+    //
+    // This is a way to produce whatever text is used for object replacement,
+    // using `insertObject()`, which *is* part of the RichText API.
+    const emptyValue = create({text: ''})
+    const objectValue = insertObject(emptyValue, {})
+
     const iconValue = create({html: asHTML(iconNormalized)})
+    // The object replacement text indicates where the svg should be rendered.
+    // Without it, no SVG would be rendered.
+    // The zero-width space allows the insert caret to move around the icon
+    // in a normal intuitive way, such as when moving across it with arrow keys.
+    // It also allows for placing the caret at the end of the rich text value
+    // when an icon SVG is at the end, and then backspacing to delete the icon.
+    iconValue.text = `${objectValue.text}${ZERO_WIDTH_SPACE}`;
 
-    console.log('ICON_VALUE', iconValue)
-    const newValue = insert(value, iconValue)
-    console.log('NEW_VALUE', newValue)
-
-    onChange(newValue);
+    onChange(insert(value, iconValue));
   }
 
   return (
