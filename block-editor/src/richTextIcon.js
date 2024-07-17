@@ -64,16 +64,6 @@ function InlineUI( { value, onChange, contentRef } ) {
 	);
 }
 
-function pathsAsHTML(primaryPath, secondaryPath) {
-  const secondary = secondaryPath ? `<path class="fa-secondary" d="${secondaryPath}"/>` : ''
-  const primary = primaryPath ? `<path ${secondaryPath ? 'class="fa-primary"' : ''} d="${primaryPath}"/>` : ''
-  return `${secondary}${primary}`
-}
-
-function asHTML({width, height, primaryPath, secondaryPath}) {
-  return `<span class="${FONT_AWESOME_RICH_TEXT_ICON_CLASS}"><svg class="svg-inline--fa" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${pathsAsHTML(primaryPath, secondaryPath)}</svg></span>`
-}
-
 function Edit(props) {
   const { value, onChange, contentRef } = props;
 
