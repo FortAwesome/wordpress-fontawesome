@@ -1,4 +1,4 @@
-import { faIcons, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import { faBrush, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 /**
  * Retrieves the translation of text.
  *
@@ -85,7 +85,7 @@ const { IconChooserModal } = get(window, [
   "iconChooser",
 ], {});
 
-const modifyToolbarIcon = wpIconFromFaIconDefinition(faIcons);
+const modifyToolbarIcon = wpIconFromFaIconDefinition(faBrush);
 
 const defaultStylingParams = {
   spin: false,
@@ -149,7 +149,7 @@ export function Edit(props) {
             onClick={() => setIsEditModalOpen(!isEditModalOpen)}
             aria-haspopup="true"
             aria-expanded={isEditModalOpen}
-            onKeyDown={() => console.log('KEY_DOWN')}
+            onKeyDown={() => console.log('TODO: KEY_DOWN')}
             label={__("Edit Icon")}
             icon={modifyToolbarIcon}
           />
