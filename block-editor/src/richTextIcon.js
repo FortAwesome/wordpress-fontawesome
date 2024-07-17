@@ -32,17 +32,11 @@ const title = __("Font Awesome Icon");
 const modalOpenEvent = createCustomEvent()
 
 function isFocused(value) {
-  if(!Array.isArray(value.formats) || !Number.isInteger(value.start)) {
+  if(!Array.isArray(value.replacements) || !Number.isInteger(value.start)) {
     return false
   }
-
-  const formats = value.formats[value.start]
-
-  if(!Array.isArray(formats)) {
-    return false
-  }
-
-  return !!formats.find(({type: type}) => type === name)
+  const replacement = value.replacements[value.start]
+  return replacement?.type === name
 }
 
 function InlineUI( { value, onChange, contentRef } ) {
@@ -81,7 +75,6 @@ function asHTML({width, height, primaryPath, secondaryPath}) {
 function Edit(props) {
   const { value, onChange, contentRef } = props;
 
-  console.log('VALUE', value)
   const isFormatIconFocused = isFocused(value)
 
   const handleFormatButtonClick = () => {
@@ -124,7 +117,8 @@ function Edit(props) {
     // when an icon SVG is at the end, and then backspacing to delete the icon.
     iconValue.text = `${objectValue.text}${ZERO_WIDTH_SPACE}`;
 
-    onChange(insert(value, iconValue));
+    const newValue = insert(value, iconValue)
+    onChange(newValue);
   }
 
   return (
@@ -155,6 +149,11 @@ const settings = {
   tagName: 'svg',
   className: 'svg-inline--fa',
   contentEditable: false,
+  attributes: {
+    xmlns: 'xmlns',
+    viewBox: 'viewBox',
+    class: 'class'
+  },
   edit: Edit,
 };
 
