@@ -1,4 +1,4 @@
-import { Component, Fragment } from "@wordpress/element";
+import { Component, Fragment, renderToString } from "@wordpress/element";
 import { Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
@@ -17,8 +17,9 @@ import {
 import get from "lodash/get";
 import { faBrandIcon } from './icons';
 import { GLOBAL_KEY } from "../../admin/src/constants";
-import { normalizeIconDefinition } from './iconDefinitions'
+import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
+import { renderIcon } from './rendering'
 export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
 
@@ -83,13 +84,12 @@ function Edit(props) {
   }
 
   const handleSelect = (event) => {
-    if (!event.detail) return;
-
-    const iconNormalized = normalizeIconDefinition(event.detail)
-
-    if (!iconNormalized) return;
-
+    if (!event?.detail) return;
     event.preventDefault();
+
+    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event)
+
+    if (!iconDefinition) return;
 
     // Use `insertObject()` on an empty value merely for the side effect of
     // producing the text value corresponding to an object.
@@ -112,7 +112,16 @@ function Edit(props) {
     const emptyValue = create({text: ''})
     const objectValue = insertObject(emptyValue, {})
 
-    let iconValue = create({html: asHTML(iconNormalized)})
+    const attributes = {
+      iconLayers: [
+        {iconDefinition}
+      ]
+    }
+
+    const element = renderIcon(attributes, {wrapperElement: 'span', extraProps: {wrapperProps: {className: FONT_AWESOME_RICH_TEXT_ICON_CLASS}}})
+    const html = renderToString(element)
+
+    let iconValue = create({html})
 
     // The object replacement text indicates where the icon should be rendered,
     // replacing that object replacement text. Without it, no SVG would be rendered.
