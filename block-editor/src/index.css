@@ -1,7 +1,8 @@
-.fawp-fmt:hover {
+.wp-font-awesome-rich-text-icon:hover {
   cursor: pointer;
   border:  1px solid var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
   margin-left: -1px;
+  margin-right: -1px;
   border-radius: 2px;
 }
 

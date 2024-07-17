@@ -20,6 +20,7 @@ import { GLOBAL_KEY } from "../../admin/src/constants";
 import { normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
 export const ZERO_WIDTH_SPACE = '\u200b';
+const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
 
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
@@ -69,7 +70,7 @@ function pathsAsHTML(primaryPath, secondaryPath) {
 }
 
 function asHTML({width, height, primaryPath, secondaryPath}) {
-  return `<svg class="svg-inline--fa fawp-fmt" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${pathsAsHTML(primaryPath, secondaryPath)}</svg>`
+  return `<span class="${FONT_AWESOME_RICH_TEXT_ICON_CLASS}"><svg class="svg-inline--fa" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${pathsAsHTML(primaryPath, secondaryPath)}</svg></span>`
 }
 
 function Edit(props) {
@@ -146,14 +147,9 @@ const settings = {
   name,
   title,
   keywords: [__("icon"), __("awesome")],
-  tagName: 'svg',
-  className: 'svg-inline--fa',
+  tagName: 'span',
+  className: FONT_AWESOME_RICH_TEXT_ICON_CLASS,
   contentEditable: false,
-  attributes: {
-    xmlns: 'xmlns',
-    viewBox: 'viewBox',
-    class: 'class'
-  },
   edit: Edit,
 };
 
