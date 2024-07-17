@@ -94,29 +94,65 @@ function Edit(props) {
     // Use `insertObject()` on an empty value merely for the side effect of
     // producing the text value corresponding to an object.
     //
-    // This is sort of bending over backwards. Here's why:
+    // This is sort of bending over backwards to avoid hardcoding an implementation
+    // detail of the block editor.
     //
-    // We can see in the Gutenberg source code that it's currently just a single
-    // character: U+FFFC, the object replacement character. So why not use it
-    // directly here?
+    // We can see in the Gutenberg source code (as of WordPress 6.5) that the text
+    // inserted by `insertObject()` is just a single character: U+FFFC, the object
+    // replacement character.
     //
-    // Because it's not documented as part of the public API. So it's an implementation
-    // detail that might change. (In fact, it seems to have changed in the past,
-    // if memory serves.)
+    // However, that implementation is not documented as part of the public API.
+    // So it might change at any time. So let's not hardcode it here.
+    // (In fact, if memory serves, it used to be a different special character.)
     //
-    // This is a way to produce whatever text is used for object replacement,
-    // using `insertObject()`, which *is* part of the RichText API.
+    // This technique produces whatever text is used for object replacement,
+    // which might be more than one character, using `insertObject()`.
+    // Since `insertObject()` *is* part of the RichText API, this ought to continue
+    // working even if the implementation details change underneath.
     const emptyValue = create({text: ''})
     const objectValue = insertObject(emptyValue, {})
 
-    const iconValue = create({html: asHTML(iconNormalized)})
-    // The object replacement text indicates where the svg should be rendered.
-    // Without it, no SVG would be rendered.
+    let iconValue = create({html: asHTML(iconNormalized)})
+
+    // The object replacement text indicates where the icon should be rendered,
+    // replacing that object replacement text. Without it, no SVG would be rendered.
+    //
     // The zero-width space allows the insert caret to move around the icon
     // in a normal intuitive way, such as when moving across it with arrow keys.
     // It also allows for placing the caret at the end of the rich text value
     // when an icon SVG is at the end, and then backspacing to delete the icon.
-    iconValue.text = `${objectValue.text}${ZERO_WIDTH_SPACE}`;
+    const zeroWidthSpaceIndex = iconValue.text.length
+    iconValue = insert(iconValue, ZERO_WIDTH_SPACE, zeroWidthSpaceIndex, zeroWidthSpaceIndex)
+
+    // Now that we've extended the value's text by a single character, we need to
+    // fix up the replacements so that our object replacement format
+    // is present at every index in the value that corresponds to the text that should
+    // be replaced by our icon object.
+    //
+    // If we don't do this fixup, then we end up with misalignment of the object
+    // replacement text and its corresponding replacement format in the resulting value.
+    // This works fine when there's only one rich text icon in the value. But once
+    // you add a second, or more, you get off-by-one errors, or worse.
+    //
+    // For example, suppose the `iconValue.text` ends up being two characters long, total,
+    // with the first character being the object replacement character, and the second
+    // being the zero width space. That works fine for the first icon insertion.
+    // Suppose that first icon is inserted so that the replacement format and
+    // the object replacement character are both at index 2. Then the zero width space
+    // we add will be at index 3. No problem.
+    //
+    // Now suppose you add a second icon value later in the value, at index 7.
+    // The object replacement character will end up at index 8, but the replacement
+    // format object would be placed at index 7--off by one.
+    //
+    // The result is that the second icon will not render, because the block editor doesn't
+    // find that the object replacement character's index corresponds to the index of
+    // our replacmeent format.
+    //
+    // The solution is to make sure that our replacement format covers exactly the same
+    // indices of content that correspond to the text being inserted.
+    const replacement = iconValue.replacements[0]
+    iconValue.replacements[iconValue.replacements.length - 1] = replacement
 
     const newValue = insert(value, iconValue)
     onChange(newValue);
