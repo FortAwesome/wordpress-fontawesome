@@ -49,7 +49,7 @@ function InlineUI( { value, onChange, contentRef } ) {
 			placement="bottom"
 			focusOnMount={ false }
 			anchor={ popoverAnchor }
-			className="block-editor-format-toolbar__fa-icon-format-popover"
+			className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
 		>
 		  <div>
 		    <p>

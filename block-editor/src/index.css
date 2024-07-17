@@ -1,4 +1,4 @@
-.fa-icon-format:hover {
+.fawp-fmt:hover {
   cursor: pointer;
   border:  1px solid var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
   margin-left: -1px;
@@ -19,7 +19,7 @@
   max-width: 300px;
 }
 
-.block-editor-format-toolbar__fa-icon-format-popover .components-popover__content {
+.block-editor-format-toolbar__font-awesome-rich-text-icon-popover .components-popover__content {
   width: auto;
   max-width: 300px;
 }
