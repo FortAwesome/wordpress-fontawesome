@@ -6,7 +6,6 @@ import { faBrush, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
  */
 import { __ } from "@wordpress/i18n";
 
-import { DOWN } from "@wordpress/keycodes";
 /**
  * Imports the InspectorControls component, which is used to wrap
  * the block's custom controls that will appear in in the Settings
@@ -116,7 +115,7 @@ export function Edit(props) {
     };
 
     const newIconLayers = [...iconLayers];
-    const { replace, append, mask } = layerParams;
+    const { replace, append } = layerParams;
 
     if (append) {
       newIconLayers.push(layer);
@@ -125,8 +124,6 @@ export function Edit(props) {
       replace < iconLayers.length
     ) {
       newIconLayers[replace] = layer;
-    } else if (Number.isInteger(mask) && mask < iconLayers.length) {
-      newIconLayers[mask].mask = iconDefinition;
     }
 
     setAttributes({ iconLayers: newIconLayers });
