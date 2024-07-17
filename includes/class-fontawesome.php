@@ -3261,14 +3261,6 @@ EOT;
 					'all'
 				);
 				if ( $this->is_gutenberg_page() ) {
-					wp_enqueue_script(
-						self::RESOURCE_HANDLE_FA_BLOCKS . '-rich-text-icon-mutation-observer',
-						trailingslashit( FONTAWESOME_DIR_URL ) . 'static/richTextIconMutationObserver.js',
-						array(),
-						self::PLUGIN_VERSION,
-						true
-					);
-
 					// TODO: remove this hack. The block editor support CSS should be
 					// being built into the build directory of the block, and loaded
 					// automatically at the appropriate times due to being declared
