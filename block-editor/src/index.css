@@ -34,8 +34,8 @@
 
   --spacing-sm-fa: 0.5rem;
   --spacing-md-fa: 1rem;
-  --spacing-lg-fa: 1.5rem;
-  --spacing-xl-fa: 2.5rem;
+  --spacing-lg-fa: 1.3rem;
+  --spacing-xl-fa: 2rem;
 
   --black-fa: hsl(213, 100%, 13%); /* fa-dk-navy */
   --gray1-fa: hsl(215, 55%, 21%); /* fa-navy */
@@ -96,12 +96,12 @@ button:disabled .fa-icon-modifier-control {
   display: flex;
   margin: auto;
   height: 200px;
+  font-size: var(--wp--preset--font-size--medium);
 }
 
 .fa-icon-modifier-preview div {
   display: flex;
   margin: auto;
-  transform: scale(10);
 }
 
 /* styling tabs */
@@ -122,25 +122,42 @@ button:disabled .fa-icon-modifier-control {
   margin-block: var(--spacing-sm-fa);
 }
 
-.styling-controls {
+.styling-controls,
+.animation-controls {
   display: flex;
   align-items: stretch;
   gap: var(--spacing-sm-fa);
 }
 
-.styling-controls .reset {
+.animation-controls {
+  flex-wrap: wrap;
+}
+
+.styling-controls .reset,
+.animation-controls .reset {
   flex-grow: 0;
   background-color: var(--gray7-fa);
 }
 
 .icon-styling-rotate button,
 .icon-styling-size button,
-.icon-styling-flip button {
+.icon-styling-flip button,
+.icon-animations button {
   background-color: var(--white-fa);
   border-radius: var(--border-radius-fa);
   border: var(--border-width-fa) solid var(--gray7-fa);
-  padding: var(--spacing-sm-fa)  var(--spacing-md-fa);
+  padding: var(--spacing-md-fa)  var(--spacing-lg-fa);
   flex: auto;
+}
+
+.icon-animations .animation-controls button {
+  flex: 1 0 18%;
+}
+
+.icon-styling-rotate button.is-selected,
+.icon-styling-size button.is-selected,
+.icon-styling-flip button.is-selected {
+  border-color: var(--black-fa);
 }
 
 .icon-styling-rotate input {

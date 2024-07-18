@@ -351,16 +351,16 @@ export default function (
               {__("Size", "font-awesome")}
             </div>
             <div className="styling-controls">
-              <button onClick={() => setSize("2xs")}>2xs</button>
-              <button onClick={() => setSize("xs")}>xs</button>
               <Tooltip text={__("Remove Sizing", "font-awesome")}>
                 <button className="reset" onClick={() => setSize(null)}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
-              <button onClick={() => setSize("lg")}>lg</button>
-              <button onClick={() => setSize("xl")}>xl</button>
-              <button onClick={() => setSize("2xl")}>2xl</button>
+              <button onClick={() => setSize("2x")}>2x</button>
+              <button onClick={() => setSize("4x")}>4x</button>
+              <button onClick={() => setSize("6x")}>6x</button>
+              <button onClick={() => setSize("8x")}>8x</button>
+              <button onClick={() => setSize("10x")}>10x</button>
             </div>
           </div>
           <div className="fa-icon-styling-tab-content icon-styling-flip">
@@ -393,47 +393,53 @@ export default function (
         </div>
       )}
       {ANIMATIONS_TAB == selectedTab && (
-        <div className="fa-icon-modifier-animation">
-          <div className="options-section-heading">
-            {__("Animate", "font-awesome")}
+        <div className="fa-icon-animations-tab-content-wrapper">
+          <div className="fa-icon-animations-tab-content icon-animations">
+            <div className="options-section-heading">
+              {__("Animate", "font-awesome")}
+            </div>
+            <div className="animation-controls">
+              <button className="reset" onClick={() => setAnimation(null)}>
+                <FontAwesomeIcon icon={faBan} />{" "}
+                {__("No Animation", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("beat")}>
+                <FontAwesomeIcon icon={faHeart} /> {__("Beat", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("beatFade")}>
+                <FontAwesomeIcon icon={faHeartHalfStroke} />{" "}
+                {__("Beat Fade", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("bounce")}>
+                <FontAwesomeIcon icon={faCircle} />{" "}
+                {__("Bounce", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("fade")}>
+                <FontAwesomeIcon icon={faSlidersSimple} />{" "}
+                {__("Fade", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("flip")}>
+                <FontAwesomeIcon icon={faReflectHorizontal} />{" "}
+                {__("Flip", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("shake")}>
+                <FontAwesomeIcon icon={faBellRing} />{" "}
+                {__("Shake", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("spin")}>
+                <FontAwesomeIcon icon={faRotateRight} />{" "}
+                {__("Spin", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("spinReverse")}>
+                <FontAwesomeIcon icon={faRotateLeft} />{" "}
+                {__("Spin Reverse", "font-awesome")}
+              </button>
+              <button onClick={() => setAnimation("spinPulse")}>
+                <FontAwesomeIcon icon={faRotateLeft} />{" "}
+                {__("Spin Pulse", "font-awesome")}
+              </button>
+            </div>
           </div>
-          <button onClick={() => setAnimation(null)}>
-            <FontAwesomeIcon icon={faBan} />{" "}
-            {__("No Animation", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("beat")}>
-            <FontAwesomeIcon icon={faHeart} /> {__("Beat", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("beatFade")}>
-            <FontAwesomeIcon icon={faHeartHalfStroke} />{" "}
-            {__("Beat Fade", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("bounce")}>
-            <FontAwesomeIcon icon={faCircle} /> {__("Bounce", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("fade")}>
-            <FontAwesomeIcon icon={faSlidersSimple} />{" "}
-            {__("Fade", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("flip")}>
-            <FontAwesomeIcon icon={faReflectHorizontal} />{" "}
-            {__("Flip", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("shake")}>
-            <FontAwesomeIcon icon={faBellRing} /> {__("Shake", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("spin")}>
-            <FontAwesomeIcon icon={faRotateRight} />{" "}
-            {__("Spin", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("spinReverse")}>
-            <FontAwesomeIcon icon={faRotateLeft} />{" "}
-            {__("Spin Reverse", "font-awesome")}
-          </button>
-          <button onClick={() => setAnimation("spinPulse")}>
-            <FontAwesomeIcon icon={faRotateLeft} />{" "}
-            {__("Spin Pulse", "font-awesome")}
-          </button>
         </div>
       )}
       {POWER_TRANSFORMS_TAB == selectedTab && (
