@@ -43,7 +43,7 @@ const settings = {
   className: FONT_AWESOME_RICH_TEXT_ICON_CLASS,
   contentEditable: false,
   attributes: {
-    transformJSON: FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR 
+    transformJSON: FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR
   },
   edit: Edit
 };
@@ -87,9 +87,9 @@ function isFocused(value) {
 function deriveAttributes(value) {
   if(!Number.isFinite(value?.start)) return
   const replacement = value?.replacements[value.start]
-  const el = document.createElement('span')
-  el.innerHTML = replacement.innerHTML
-  const svg = el.querySelector('svg')
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(replacement.innerHTML, 'text/html');
+  const svg = doc.querySelector('svg')
   if(!svg) return
 
   const viewBox = svg.getAttribute('viewBox')
