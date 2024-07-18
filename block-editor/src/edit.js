@@ -140,14 +140,15 @@ export function Edit(props) {
             onClick={() => setIsEditModalOpen(!isEditModalOpen)}
             aria-haspopup="true"
             aria-expanded={isEditModalOpen}
-            label={__("Edit Icon")}
+          label={__("Add Icon Styling")}
             icon={modifyToolbarIcon}
           />
 
         {isEditModalOpen && (
           <Modal
-            title="Edit Font Awesome Icon"
+            title="Add Icon Styling"
             onRequestClose={() => setIsEditModalOpen(false)}
+            className={`fawp-icon-styling-modal`}
           >
             <IconModifier
               attributes={attributes}
