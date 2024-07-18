@@ -46,6 +46,27 @@ registerFormatType(name, settings);
 
 const modalOpenEvent = createCustomEvent()
 
+// Use `insertObject()` on an empty value merely for the side effect of
+// producing the text value corresponding to an object.
+//
+// This is sort of bending over backwards to avoid hardcoding an implementation
+// detail of the block editor.
+//
+// We can see in the Gutenberg source code (as of WordPress 6.5) that the text
+// inserted by `insertObject()` is just a single character: U+FFFC, the object
+// replacement character.
+//
+// However, that implementation is not documented as part of the public API.
+// So it might change at any time. So let's not hardcode it here.
+// (In fact, if memory serves, it used to be a different special character.)
+//
+// This technique produces whatever text is used for object replacement,
+// which might be more than one character, using `insertObject()`.
+// Since `insertObject()` *is* part of the RichText API, this ought to continue
+// working even if the implementation details change underneath.
+const EMPTY_VALUE = create({ text: "" });
+const EMPTY_OBJECT_VALUE = insertObject(EMPTY_VALUE, {});
+
 function isFocused(value) {
   if (!Array.isArray(value.replacements) || !Number.isInteger(value.start)) {
     return false;
@@ -208,27 +229,6 @@ function Edit(props) {
     const html = renderToString(element)
 
     let iconValue = create({ html });
-
-    // Use `insertObject()` on an empty value merely for the side effect of
-    // producing the text value corresponding to an object.
-    //
-    // This is sort of bending over backwards to avoid hardcoding an implementation
-    // detail of the block editor.
-    //
-    // We can see in the Gutenberg source code (as of WordPress 6.5) that the text
-    // inserted by `insertObject()` is just a single character: U+FFFC, the object
-    // replacement character.
-    //
-    // However, that implementation is not documented as part of the public API.
-    // So it might change at any time. So let's not hardcode it here.
-    // (In fact, if memory serves, it used to be a different special character.)
-    //
-    // This technique produces whatever text is used for object replacement,
-    // which might be more than one character, using `insertObject()`.
-    // Since `insertObject()` *is* part of the RichText API, this ought to continue
-    // working even if the implementation details change underneath.
-    const emptyValue = create({ text: "" });
-    const objectValue = insertObject(emptyValue, {});
 
     // The object replacement text indicates where the icon should be rendered,
     // replacing that object replacement text. Without it, no SVG would be rendered.
