@@ -299,11 +299,18 @@ function Edit(props) {
 
     if (!iconDefinition) return;
 
-    const attributes = {
-      iconLayers: [{ iconDefinition }],
+    const existingIconLayer = (attributes?.iconLayers || [])[0] || {}
+
+    const iconLayer = {
+      ...existingIconLayer,
+      iconDefinition
+    }
+
+    const newAttributes = {
+      iconLayers: [iconLayer],
     };
 
-    setAttributesAndChangeValue(attributes)
+    setAttributesAndChangeValue(newAttributes)
   };
 
   return (
