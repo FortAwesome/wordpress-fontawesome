@@ -238,12 +238,19 @@ function Edit(props) {
     // It also allows for placing the caret at the end of the rich text value
     // when an icon SVG is at the end, and then backspacing to delete the icon.
     const zeroWidthSpaceIndex = iconValue.text.length;
-    iconValue = insert(
-      iconValue,
-      ZERO_WIDTH_SPACE,
-      zeroWidthSpaceIndex,
-      zeroWidthSpaceIndex,
-    );
+
+    if(!attributes?.iconLayers) {
+      // If don't yet have any icon layers, then this is the first, so this
+      // extra character should be inserted.
+      // If we're *changing* the icon, then we'll be only changing the replacement
+      // formats below--but don't add additional zero-width space.
+      iconValue = insert(
+        iconValue,
+        ZERO_WIDTH_SPACE,
+        zeroWidthSpaceIndex,
+        zeroWidthSpaceIndex,
+      );
+    }
 
     // Now that we've extended the value's text by a single character, we need to
     // fix up the replacements so that our object replacement format
@@ -275,7 +282,12 @@ function Edit(props) {
     const replacement = iconValue.replacements[0];
     iconValue.replacements[iconValue.replacements.length - 1] = replacement;
 
-    const newValue = insert(value, iconValue);
+    const insertStartIndex = value.start
+    // If we already have an icon at this location, then we should replace it.
+    // Otherwise, we're inserting a new one.
+    const insertEndIndex = attributes?.iconLayers ? insertStartIndex + 1 : insertStartIndex
+
+    const newValue = insert(value, iconValue, insertStartIndex, insertEndIndex);
     onChange(newValue);
   }
 
