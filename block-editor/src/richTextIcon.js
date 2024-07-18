@@ -16,6 +16,7 @@ import {
 } from "@wordpress/block-editor";
 import get from "lodash/get";
 import kebabCase from "lodash/kebabCase";
+import pick from "lodash/pick";
 import { faBrandIcon } from "./icons";
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
@@ -27,6 +28,7 @@ export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
 const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform';
 export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
+const TRANSFORM_PROPS = ['size', 'x', 'y', 'rotate', 'flipX', 'flipY']
 
 const { IconChooserModal } = get(window, [GLOBAL_KEY, "iconChooser"], {});
 
@@ -152,7 +154,7 @@ function deriveAttributes(value) {
   if(transformJSON) {
     const transform = transformJSON ? JSON.parse(transformJSON) : undefined
     if(transform) {
-      iconLayer.transform = transform
+      iconLayer.transform = pick(transform, TRANSFORM_PROPS)
     }
   }
 
