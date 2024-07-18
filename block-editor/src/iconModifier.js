@@ -42,7 +42,7 @@ const STYLES_TAB = 1;
 const ANIMATIONS_TAB = 2;
 const LAYERS_TAB = 3;
 const POWER_TRANSFORMS_TAB = 4;
-const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
+export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 
 const openIconChooserForAddLayerEvent = createCustomEvent()
 const openIconChooserForAddMaskEvent = createCustomEvent()

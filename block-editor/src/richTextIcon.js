@@ -1,5 +1,5 @@
-import { Component, Fragment, renderToString } from "@wordpress/element";
-import { Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
+import { Component, Fragment, renderToString, useState } from "@wordpress/element";
+import { Modal, Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
   applyFormat,
@@ -15,11 +15,14 @@ import {
   useBlockProps,
 } from "@wordpress/block-editor";
 import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
 import { faBrandIcon } from "./icons";
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
 import { renderIcon } from './rendering'
+import { default as IconModifier, ANIMATIONS } from './iconModifier'
+import { toIconDefinition } from './iconDefinitions'
 export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
 export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
@@ -51,11 +54,91 @@ function isFocused(value) {
   return replacement?.type === name;
 }
 
-function InlineUI( { value, onChange, contentRef } ) {
+// This does not quite yet handle layers. It returns attributes with
+// an `iconLayers` property, but it doesn't yet read icon layers out of the HTML,
+// so that iconLayers array will always have a length of 1.
+function deriveAttributes(value) {
+  if(!Number.isFinite(value?.start)) return
+  const replacement = value?.replacements[value.start]
+  const el = document.createElement('span')
+  el.innerHTML = replacement.innerHTML
+  const svg = el.querySelector('svg')
+  if(!svg) return
+
+  const viewBox = svg.getAttribute('viewBox')
+  const prefix = svg.getAttribute('data-prefix')
+  const iconName = svg.getAttribute('data-icon')
+  const paths = svg.querySelectorAll('path')
+
+  let primaryPath, secondaryPath
+
+  if(paths.length < 1) return
+
+  if (paths[0].classList.contains('fa-secondary')) {
+    secondaryPath = paths[0].getAttribute('d')
+  } else {
+    primaryPath = paths[0].getAttribute('d')
+  }
+
+  if(paths.length > 1) {
+    if (paths[1].classList.contains('fa-secondary')) {
+      secondaryPath = paths[1].getAttribute('d')
+    } else {
+      primaryPath = paths[1].getAttribute('d')
+    }
+  }
+
+  let width, height;
+
+  if('string' === typeof viewBox) {
+    const viewBoxProps = viewBox.split(/\W/)
+    width = Number.parseFloat(viewBoxProps[2])
+    height = Number.parseFloat(viewBoxProps[3])
+  }
+
+  if(!Number.isFinite(width) || !Number.isFinite(height)) {
+    return
+  }
+
+  const pathData = []
+
+  if(secondaryPath) {
+    pathData.push(secondaryPath)
+  }
+
+  if(primaryPath) {
+    pathData.push(primaryPath)
+  }
+
+  const iconDefinition = toIconDefinition({iconName, prefix, width, height, pathData})
+
+  if(!iconDefinition) return
+
+  const iconLayer = {iconDefinition}
+
+  const color = svg.getAttribute('color')
+
+  if(color) {
+    iconLayer.color = color
+  }
+
+  for(const animation of ANIMATIONS) {
+    const animationClass = `fa-${kebabCase(animation)}`
+    if(svg.classList.contains(animationClass)){
+      iconLayer[animation] = true
+    }
+  }
+
+  return {iconLayers: [iconLayer]}
+}
+
+function InlineUI( { value, onChange, contentRef, handleSelect, attributes, setAttributesAndChangeValue } ) {
 	const popoverAnchor = useAnchor( {
 		editableContentElement: contentRef.current,
 		settings
 	} );
+
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   return (
     <Popover
@@ -65,13 +148,27 @@ function InlineUI( { value, onChange, contentRef } ) {
       className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
     >
       <div>
-        <p>
-          TODO: Add some inline UI capabilities here. Note that "Change Icon"
-          currently inserts an additional one. That should be fixed.
-        </p>
         <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
           Change Icon
         </button>
+        <button onClick={() => setIsEditModalOpen(true)}>
+          Add Styling
+        </button>
+
+        {attributes && isEditModalOpen && (
+          <Modal
+            title="Add Icon Styling"
+            onRequestClose={() => setIsEditModalOpen(false)}
+            className={`fawp-icon-styling-modal`}
+          >
+            <IconModifier
+              attributes={attributes}
+              setAttributes={setAttributesAndChangeValue}
+              IconChooserModal={IconChooserModal}
+              prepareHandleSelect={() => handleSelect}
+            />
+          </Modal>
+        )}
       </div>
     </Popover>
   );
@@ -81,18 +178,36 @@ function Edit(props) {
   const { value, onChange, contentRef } = props;
 
   const isFormatIconFocused = isFocused(value);
+  const [attributes, setAttributes] = useState(isFormatIconFocused ? deriveAttributes(value) : {})
+
+  /*
+   * Deriving attributes:
+   *
+   * - color: color attr on svg
+   * - size: will it be fa-4x? or the power transforms? probably power transforms.
+   * - rotation: will it be fa-rotate? or power transforms?
+   * - flip: will it be fa-flip-vertical or power transforms?
+   * - animations: each class corresonds to a boolean.
+   */
 
   const handleFormatButtonClick = () => {
     document.dispatchEvent(modalOpenEvent);
   };
 
-  const handleSelect = (event) => {
-    if (!event?.detail) return;
-    event.preventDefault();
+  const setAttributesAndChangeValue = (attributes) => {
+    setAttributes(attributes)
 
-    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event);
+    const element = renderIcon(attributes, {
+      wrapperElement: 'span',
+      extraProps: {
+        wrapperProps: {
+          className: FONT_AWESOME_RICH_TEXT_ICON_CLASS
+        }
+      }
+    })
+    const html = renderToString(element)
 
-    if (!iconDefinition) return;
+    let iconValue = create({ html });
 
     // Use `insertObject()` on an empty value merely for the side effect of
     // producing the text value corresponding to an object.
@@ -114,22 +229,6 @@ function Edit(props) {
     // working even if the implementation details change underneath.
     const emptyValue = create({ text: "" });
     const objectValue = insertObject(emptyValue, {});
-
-    const attributes = {
-      iconLayers: [{ iconDefinition }],
-    };
-
-    const element = renderIcon(attributes, {
-      wrapperElement: 'span',
-      extraProps: {
-        wrapperProps: {
-          className: FONT_AWESOME_RICH_TEXT_ICON_CLASS
-        }
-      }
-    })
-    const html = renderToString(element)
-
-    let iconValue = create({ html });
 
     // The object replacement text indicates where the icon should be rendered,
     // replacing that object replacement text. Without it, no SVG would be rendered.
@@ -178,6 +277,21 @@ function Edit(props) {
 
     const newValue = insert(value, iconValue);
     onChange(newValue);
+  }
+
+  const handleSelect = (event) => {
+    if (!event?.detail) return;
+    event.preventDefault();
+
+    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event);
+
+    if (!iconDefinition) return;
+
+    const attributes = {
+      iconLayers: [{ iconDefinition }],
+    };
+
+    setAttributesAndChangeValue(attributes)
   };
 
   return (
@@ -189,7 +303,14 @@ function Edit(props) {
       />
       <IconChooserModal onSubmit={handleSelect} openEvent={modalOpenEvent} />
       {isFormatIconFocused && (
-        <InlineUI value={value} onChange={onChange} contentRef={contentRef} />
+        <InlineUI
+          value={value}
+          onChange={onChange}
+          contentRef={contentRef}
+          handleSelect={handleSelect}
+          attributes={attributes}
+          setAttributesAndChangeValue={setAttributesAndChangeValue}
+        />
       )}
     </Fragment>
   );
