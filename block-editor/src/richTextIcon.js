@@ -22,6 +22,7 @@ import createCustomEvent from './createCustomEvent'
 import { renderIcon } from './rendering'
 export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
+export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
 
 const { IconChooserModal } = get(window, [
   GLOBAL_KEY,
@@ -30,6 +31,18 @@ const { IconChooserModal } = get(window, [
 
 const name = "font-awesome/rich-text-icon";
 const title = __("Font Awesome Icon");
+
+const settings = {
+  name,
+  title,
+  keywords: [__("icon"), __("awesome")],
+  tagName: FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME,
+  className: FONT_AWESOME_RICH_TEXT_ICON_CLASS,
+  contentEditable: false,
+  edit: Edit
+};
+
+registerFormatType(name, settings);
 
 const modalOpenEvent = createCustomEvent()
 
@@ -44,6 +57,7 @@ function isFocused(value) {
 function InlineUI( { value, onChange, contentRef } ) {
 	const popoverAnchor = useAnchor( {
 		editableContentElement: contentRef.current,
+		settings
 	} );
 
 	return (
@@ -108,7 +122,14 @@ function Edit(props) {
       ]
     }
 
-    const element = renderIcon(attributes, {wrapperElement: 'span', extraProps: {wrapperProps: {className: FONT_AWESOME_RICH_TEXT_ICON_CLASS}}})
+    const element = renderIcon(attributes, {
+      wrapperElement: 'span',
+      extraProps: {
+        wrapperProps: {
+          className: FONT_AWESOME_RICH_TEXT_ICON_CLASS
+        }
+      }
+    })
     const html = renderToString(element)
 
     let iconValue = create({html})
@@ -177,15 +198,3 @@ function Edit(props) {
     </Fragment>
   )
 }
-
-const settings = {
-  name,
-  title,
-  keywords: [__("icon"), __("awesome")],
-  tagName: 'span',
-  className: FONT_AWESOME_RICH_TEXT_ICON_CLASS,
-  contentEditable: false,
-  edit: Edit,
-};
-
-registerFormatType(name, settings);
