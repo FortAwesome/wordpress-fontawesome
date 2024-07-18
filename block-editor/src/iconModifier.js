@@ -181,7 +181,7 @@ export default function (
 
   const updateTransform = (transformParams) => {
     const newIconLayers = [...iconLayers];
-    const prevTransform =  (newIconLayers[selectedLayerIndex].transform || {})
+    const prevTransform =  (newIconLayers[0]?.transform || {})
 
     const updates = {}
 

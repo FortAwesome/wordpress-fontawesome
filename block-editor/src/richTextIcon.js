@@ -25,6 +25,7 @@ import { default as IconModifier, ANIMATIONS } from './iconModifier'
 import { toIconDefinition } from './iconDefinitions'
 export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
+const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform';
 export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
 
 const { IconChooserModal } = get(window, [GLOBAL_KEY, "iconChooser"], {});
@@ -39,6 +40,9 @@ const settings = {
   tagName: FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME,
   className: FONT_AWESOME_RICH_TEXT_ICON_CLASS,
   contentEditable: false,
+  attributes: {
+    transformJSON: FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR 
+  },
   edit: Edit
 };
 
@@ -75,7 +79,7 @@ function isFocused(value) {
   return replacement?.type === name;
 }
 
-// This does not quite yet handle layers. It returns attributes with
+// This does not fully support layers. It returns attributes with
 // an `iconLayers` property, but it doesn't yet read icon layers out of the HTML,
 // so that iconLayers array will always have a length of 1.
 function deriveAttributes(value) {
@@ -143,6 +147,15 @@ function deriveAttributes(value) {
     iconLayer.color = color
   }
 
+  const transformJSON = replacement?.attributes?.transformJSON
+
+  if(transformJSON) {
+    const transform = transformJSON ? JSON.parse(transformJSON) : undefined
+    if(transform) {
+      iconLayer.transform = transform
+    }
+  }
+
   for(const animation of ANIMATIONS) {
     const animationClass = `fa-${kebabCase(animation)}`
     if(svg.classList.contains(animationClass)){
@@ -153,13 +166,14 @@ function deriveAttributes(value) {
   return {iconLayers: [iconLayer]}
 }
 
-function InlineUI( { value, onChange, contentRef, handleSelect, attributes, setAttributesAndChangeValue } ) {
+function InlineUI( { value, changeValue, contentRef, handleSelect, attributes, setAttributes } ) {
 	const popoverAnchor = useAnchor( {
 		editableContentElement: contentRef.current,
 		settings
 	} );
 
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+	const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
 
   return (
     <Popover
@@ -173,18 +187,21 @@ function InlineUI( { value, onChange, contentRef, handleSelect, attributes, setA
           Change Icon
         </button>
         <button onClick={() => setIsEditModalOpen(true)}>
-          Add Styling
+          Style
         </button>
 
-        {attributes && isEditModalOpen && (
+        {hasIcon && isEditModalOpen && (
           <Modal
             title="Add Icon Styling"
-            onRequestClose={() => setIsEditModalOpen(false)}
+            onRequestClose={() => {
+              changeValue(attributes)
+              setIsEditModalOpen(false)
+            }}
             className={`fawp-icon-styling-modal`}
           >
             <IconModifier
               attributes={attributes}
-              setAttributes={setAttributesAndChangeValue}
+              setAttributes={setAttributes}
               IconChooserModal={IconChooserModal}
               prepareHandleSelect={() => handleSelect}
             />
@@ -205,27 +222,28 @@ function Edit(props) {
    * Deriving attributes:
    *
    * - color: color attr on svg
+   * - animations: each class corresponds to a boolean.
+   *
+   * Via Power Transforms:
    * - size: will it be fa-4x? or the power transforms? probably power transforms.
    * - rotation: will it be fa-rotate? or power transforms?
    * - flip: will it be fa-flip-vertical or power transforms?
-   * - animations: each class corresonds to a boolean.
    */
 
   const handleFormatButtonClick = () => {
     document.dispatchEvent(modalOpenEvent);
   };
 
-  const setAttributesAndChangeValue = (attributes) => {
-    setAttributes(attributes)
+  const changeValue = (attributes) => {
+    const wrapperProps = {
+      className: FONT_AWESOME_RICH_TEXT_ICON_CLASS
+    }
 
     const element = renderIcon(attributes, {
       wrapperElement: 'span',
-      extraProps: {
-        wrapperProps: {
-          className: FONT_AWESOME_RICH_TEXT_ICON_CLASS
-        }
-      }
+      extraProps: { wrapperProps }
     })
+
     const html = renderToString(element)
 
     let iconValue = create({ html });
@@ -280,6 +298,15 @@ function Edit(props) {
     // The solution is to make sure that our replacement format covers exactly the same
     // indices of content that correspond to the text being inserted.
     const replacement = iconValue.replacements[0];
+
+    const transform = (attributes?.iconLayers || [])[0]?.transform
+    if(transform) {
+      // The transform is one attribute that we can't easily map forward and backward
+      // to and from the rendered HTML, so when present, we store it as JSON in an attribute
+      // on the wrapper element.
+      replacement.attributes[FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR] = JSON.stringify(transform)
+    }
+
     iconValue.replacements[iconValue.replacements.length - 1] = replacement;
 
     const insertStartIndex = value.start
@@ -310,7 +337,8 @@ function Edit(props) {
       iconLayers: [iconLayer],
     };
 
-    setAttributesAndChangeValue(newAttributes)
+    setAttributes(newAttributes)
+    changeValue(newAttributes, onChange)
   };
 
   return (
@@ -324,11 +352,11 @@ function Edit(props) {
       {isFormatIconFocused && (
         <InlineUI
           value={value}
-          onChange={onChange}
+          changeValue={changeValue}
           contentRef={contentRef}
           handleSelect={handleSelect}
           attributes={attributes}
-          setAttributesAndChangeValue={setAttributesAndChangeValue}
+          setAttributes={setAttributes}
         />
       )}
     </Fragment>
