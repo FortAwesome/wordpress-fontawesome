@@ -159,7 +159,7 @@ export function Edit(props) {
           </Modal>
         )}
       </BlockControls>
-      {renderIcon(attributes, extraProps)}
+        {renderIcon(attributes, { extraProps })}
     </Fragment>
   ) : (
     <Fragment>
@@ -181,7 +181,6 @@ export function Edit(props) {
           onClick={() => document.dispatchEvent(openIconChooserForAddLayerEvent)}>
             Choose Icon
         </Button>
-        {renderIcon(attributes, {extraProps})}
         </Placeholder>
       </Fragment>
     );

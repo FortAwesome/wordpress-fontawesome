@@ -7,18 +7,15 @@ import {
   insert,
   insertObject,
   registerFormatType,
-  useAnchor
+  useAnchor,
 } from "@wordpress/rich-text";
 import {
   BlockControls,
   RichTextToolbarButton,
   useBlockProps,
 } from "@wordpress/block-editor";
-import {
-  Button
-} from "@wordpress/components";
 import get from "lodash/get";
-import { faBrandIcon } from './icons';
+import { faBrandIcon } from "./icons";
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
@@ -27,10 +24,7 @@ export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
 export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
 
-const { IconChooserModal } = get(window, [
-  GLOBAL_KEY,
-  "iconChooser",
-], {});
+const { IconChooserModal } = get(window, [GLOBAL_KEY, "iconChooser"], {});
 
 const name = "font-awesome/rich-text-icon";
 const title = __("Font Awesome Icon");
@@ -50,11 +44,11 @@ registerFormatType(name, settings);
 const modalOpenEvent = createCustomEvent()
 
 function isFocused(value) {
-  if(!Array.isArray(value.replacements) || !Number.isInteger(value.start)) {
-    return false
+  if (!Array.isArray(value.replacements) || !Number.isInteger(value.start)) {
+    return false;
   }
-  const replacement = value.replacements[value.start]
-  return replacement?.type === name
+  const replacement = value.replacements[value.start];
+  return replacement?.type === name;
 }
 
 function InlineUI( { value, onChange, contentRef } ) {
@@ -63,7 +57,7 @@ function InlineUI( { value, onChange, contentRef } ) {
 		settings
 	} );
 
-	return (
+  return (
     <Popover
       placement="bottom"
       focusOnMount={false}
@@ -72,13 +66,12 @@ function InlineUI( { value, onChange, contentRef } ) {
     >
       <div>
         <p>
-          <Button
-            variant="link"
-            onClick={() => document.dispatchEvent(modalOpenEvent)}
-          >
-            Switch Icon
-          </Button>
+          TODO: Add some inline UI capabilities here. Note that "Change Icon"
+          currently inserts an additional one. That should be fixed.
         </p>
+        <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
+          Change Icon
+        </button>
       </div>
     </Popover>
   );
@@ -87,17 +80,17 @@ function InlineUI( { value, onChange, contentRef } ) {
 function Edit(props) {
   const { value, onChange, contentRef } = props;
 
-  const isFormatIconFocused = isFocused(value)
+  const isFormatIconFocused = isFocused(value);
 
   const handleFormatButtonClick = () => {
     document.dispatchEvent(modalOpenEvent);
-  }
+  };
 
   const handleSelect = (event) => {
     if (!event?.detail) return;
     event.preventDefault();
 
-    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event)
+    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event);
 
     if (!iconDefinition) return;
 
@@ -119,14 +112,12 @@ function Edit(props) {
     // which might be more than one character, using `insertObject()`.
     // Since `insertObject()` *is* part of the RichText API, this ought to continue
     // working even if the implementation details change underneath.
-    const emptyValue = create({text: ''})
-    const objectValue = insertObject(emptyValue, {})
+    const emptyValue = create({ text: "" });
+    const objectValue = insertObject(emptyValue, {});
 
     const attributes = {
-      iconLayers: [
-        {iconDefinition}
-      ]
-    }
+      iconLayers: [{ iconDefinition }],
+    };
 
     const element = renderIcon(attributes, {
       wrapperElement: 'span',
@@ -138,7 +129,7 @@ function Edit(props) {
     })
     const html = renderToString(element)
 
-    let iconValue = create({html})
+    let iconValue = create({ html });
 
     // The object replacement text indicates where the icon should be rendered,
     // replacing that object replacement text. Without it, no SVG would be rendered.
@@ -147,8 +138,13 @@ function Edit(props) {
     // in a normal intuitive way, such as when moving across it with arrow keys.
     // It also allows for placing the caret at the end of the rich text value
     // when an icon SVG is at the end, and then backspacing to delete the icon.
-    const zeroWidthSpaceIndex = iconValue.text.length
-    iconValue = insert(iconValue, ZERO_WIDTH_SPACE, zeroWidthSpaceIndex, zeroWidthSpaceIndex)
+    const zeroWidthSpaceIndex = iconValue.text.length;
+    iconValue = insert(
+      iconValue,
+      ZERO_WIDTH_SPACE,
+      zeroWidthSpaceIndex,
+      zeroWidthSpaceIndex,
+    );
 
     // Now that we've extended the value's text by a single character, we need to
     // fix up the replacements so that our object replacement format
@@ -177,12 +173,12 @@ function Edit(props) {
     //
     // The solution is to make sure that our replacement format covers exactly the same
     // indices of content that correspond to the text being inserted.
-    const replacement = iconValue.replacements[0]
-    iconValue.replacements[iconValue.replacements.length - 1] = replacement
+    const replacement = iconValue.replacements[0];
+    iconValue.replacements[iconValue.replacements.length - 1] = replacement;
 
-    const newValue = insert(value, iconValue)
+    const newValue = insert(value, iconValue);
     onChange(newValue);
-  }
+  };
 
   return (
     <Fragment>
@@ -191,16 +187,10 @@ function Edit(props) {
         title={title}
         onClick={handleFormatButtonClick}
       />
-      <IconChooserModal
-        onSubmit={handleSelect}
-        openEvent={modalOpenEvent}
-      />
-      {isFormatIconFocused &&
-      <InlineUI
-          value={ value }
-          onChange={ onChange }
-          contentRef={ contentRef }
-        />}
+      <IconChooserModal onSubmit={handleSelect} openEvent={modalOpenEvent} />
+      {isFormatIconFocused && (
+        <InlineUI value={value} onChange={onChange} contentRef={contentRef} />
+      )}
     </Fragment>
-  )
+  );
 }

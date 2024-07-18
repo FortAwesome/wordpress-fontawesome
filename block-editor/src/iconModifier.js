@@ -33,7 +33,7 @@ import { renderIcon, computeIconLayerCount } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
-import { ColorPalette, Tooltip, TabPanel } from '@wordpress/components';
+import { ColorPalette, Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n'
 
 const ORIGINAL_SIZE = 16
