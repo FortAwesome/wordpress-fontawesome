@@ -11,13 +11,11 @@ import {
   faRight,
   faLeft,
   faUp,
-  faDown,
-  faMask
+  faDown
 } from "@fortawesome/pro-solid-svg-icons";
 import {
   faBan,
   faBolt,
-  faLayerGroup,
   faPlus,
   faPalette,
   faFilm,
@@ -25,11 +23,10 @@ import {
   faCircle,
   faRotateRight,
   faRotateLeft,
-  faSpinner,
-  faCircleHalfStroke
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 import createCustomEvent from './createCustomEvent';
-import { renderIcon, computeIconLayerCount } from './rendering';
+import { renderIcon } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
@@ -40,12 +37,8 @@ const ORIGINAL_SIZE = 16
 const NO_TAB = 0;
 const STYLES_TAB = 1;
 const ANIMATIONS_TAB = 2;
-const LAYERS_TAB = 3;
 const POWER_TRANSFORMS_TAB = 4;
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
-
-const openIconChooserForAddLayerEvent = createCustomEvent()
-const openIconChooserForAddMaskEvent = createCustomEvent()
 
 function OptionalTooltip({ enabled, text, children }) {
   return enabled
@@ -57,68 +50,6 @@ function OptionalTooltip({ enabled, text, children }) {
   </>
 }
 
-function IconLayer(
-  {
-    handleSelectForReplace,
-    layer,
-    layerIndex,
-    IconChooserModal,
-    canMoveUp,
-    canMoveDown,
-    moveUp,
-    moveDown,
-    remove,
-    selectLayer,
-    selectedLayerIndex,
-    clearLayerSelection
-  },
-) {
-  const { iconDefinition, inverse: _ignore_inverse, transform: _ignore_transform, ...rest } = layer;
-  const openEvent = createCustomEvent()
-
-  const handleLayerSelection = () => {
-    if(layerIndex === selectedLayerIndex) {
-      clearLayerSelection()
-    } else {
-      selectLayer(layerIndex)
-    }
-  }
-
-  return (
-    <>
-      <IconChooserModal
-        onSubmit={handleSelectForReplace}
-        openEvent={openEvent}
-      />
-      <div>
-        <button className={classnames({'selected-layer': layerIndex === selectedLayerIndex})} onClick={handleLayerSelection}>
-          {
-            renderIcon({iconLayers: [{iconDefinition, fixedWidth: true, ...rest}]})
-          }
-        </button>
-        <button onClick={() => document.dispatchEvent(openEvent)}>
-          change
-        </button>
-        {canMoveUp &&
-          (
-            <button onClick={() => moveUp(layerIndex)}>
-              backward
-            </button>
-          )}
-        {canMoveDown &&
-          (
-            <button onClick={() => moveDown(layerIndex)}>
-              forward
-            </button>
-          )}
-        <button onClick={() => remove(layerIndex)}>
-          remove
-        </button>
-      </div>
-    </>
-  );
-}
-
 export default function (
   {
     attributes,
@@ -128,32 +59,29 @@ export default function (
   },
 ) {
   const iconLayers = attributes.iconLayers || [];
-  const iconLayerCount = computeIconLayerCount(attributes)
-  const isMultiLayer = iconLayerCount > 1;
-  const [ selectedLayerIndex, setSelectedLayerIndex ] = useState(isMultiLayer ? null : 0)
   const [ selectedTab, setSelectedTab ] = useState(NO_TAB)
 
   const setColor = (color) => {
     const newIconLayers = [...iconLayers];
-    newIconLayers[selectedLayerIndex].color = color
+    newIconLayers[0].color = color
     setAttributes({ iconLayers: newIconLayers });
   }
 
   const setSize = (size) => {
     const newIconLayers = [...iconLayers];
-    newIconLayers[selectedLayerIndex].size = size
+    newIconLayers[0].size = size
     setAttributes({ iconLayers: newIconLayers });
   }
 
   const setRotation = (rotation) => {
     const newIconLayers = [...iconLayers];
-    newIconLayers[selectedLayerIndex].rotation = rotation
+    newIconLayers[0].rotation = rotation
     setAttributes({ iconLayers: newIconLayers });
   }
 
   const setFlip = (flip) => {
     const newIconLayers = [...iconLayers];
-    newIconLayers[selectedLayerIndex].flip = flip
+    newIconLayers[0].flip = flip
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -161,21 +89,14 @@ export default function (
     const newIconLayers = [...iconLayers];
     for(const currentAnimation of ANIMATIONS) {
       // Turn off every animation, except the one being currently set.
-      newIconLayers[selectedLayerIndex][currentAnimation] = animation === currentAnimation
+      newIconLayers[0][currentAnimation] = animation === currentAnimation
     }
 
     // Special case: when setting spinReverse, spin must also be set.
     if('spinReverse' === animation) {
-      newIconLayers[selectedLayerIndex].spin = true
+      newIconLayers[0].spin = true
     }
 
-    setAttributes({ iconLayers: newIconLayers });
-  }
-
-  const toggleInverse = () => {
-    const newIconLayers = [...iconLayers];
-    const prev = newIconLayers[selectedLayerIndex]?.inverse
-    newIconLayers[selectedLayerIndex].inverse = !prev
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -228,7 +149,7 @@ export default function (
       delete updatedTransform.rotate
     }
 
-    newIconLayers[selectedLayerIndex].transform = reset ? null : updatedTransform
+    newIconLayers[0].transform = reset ? null : updatedTransform
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -236,75 +157,46 @@ export default function (
 
   const settings = getSettings();
 
-  const optionsControlsDisabled = !Number.isInteger(selectedLayerIndex)
-
-  const extraProps = {}
-
-  if(isMultiLayer) {
-    extraProps.wrapperProps = {className: 'fa-layers'}
-  }
-
-  if(Number.isInteger(selectedLayerIndex)) {
-    extraProps.classNamesByLayer = []
-    extraProps.classNamesByLayer[selectedLayerIndex] = 'selected-layer'
-  }
-
   return (
     <div className="fa-icon-modifier">
       <div className="fa-icon-modifier-preview-container">
         <div className="fa-icon-modifier-preview">
-          {renderIcon(attributes, {extraProps})}
+          {renderIcon(attributes)}
         </div>
-        <OptionalTooltip
-          enabled={optionsControlsDisabled}
-          text={__("Select a layer to set these options", "font-awesome")}
+        <div
+          className={classnames("fa-icon-modifier-preview-controls")}
         >
-          <div
-            className={classnames("fa-icon-modifier-preview-controls", {
-              "options-controls-disabled": optionsControlsDisabled,
-            })}
-          >
-            <Tooltip text={__("Set style options", "font-awesome")}>
-              <button
-                disabled={optionsControlsDisabled}
-                onClick={() => setSelectedTab(STYLES_TAB)}
-              >
-                <FontAwesomeIcon
-                  className="fa-icon-modifier-control"
-                  icon={faPalette}
-                />
-              </button>
-            </Tooltip>
-            <Tooltip text={__("Set animation options", "font-awesome")}>
-              <button
-                disabled={optionsControlsDisabled}
-                onClick={() => setSelectedTab(ANIMATIONS_TAB)}
-              >
-                <FontAwesomeIcon
-                  className="fa-icon-modifier-control"
-                  icon={faFilm}
-                />
-              </button>
-            </Tooltip>
-            <Tooltip text={__("Set power transform options", "font-awesome")}>
-              <button
-                disabled={optionsControlsDisabled}
-                onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}
-              >
-                <FontAwesomeIcon
-                  className="fa-icon-modifier-control"
-                  icon={faBolt}
-                />
-              </button>
-            </Tooltip>
-            {Number.isInteger(selectedLayerIndex) && (
-              <IconChooserModal
-                onSubmit={prepareHandleSelect({ mask: selectedLayerIndex })}
-                openEvent={openIconChooserForAddMaskEvent}
+          <Tooltip text={__("Set style options", "font-awesome")}>
+            <button
+              onClick={() => setSelectedTab(STYLES_TAB)}
+            >
+              <FontAwesomeIcon
+                className="fa-icon-modifier-control"
+                icon={faPalette}
               />
-            )}
-          </div>
-        </OptionalTooltip>
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Set animation options", "font-awesome")}>
+            <button
+              onClick={() => setSelectedTab(ANIMATIONS_TAB)}
+            >
+              <FontAwesomeIcon
+                className="fa-icon-modifier-control"
+                icon={faFilm}
+              />
+            </button>
+          </Tooltip>
+          <Tooltip text={__("Set power transform options", "font-awesome")}>
+            <button
+              onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}
+            >
+              <FontAwesomeIcon
+                className="fa-icon-modifier-control"
+                icon={faBolt}
+              />
+            </button>
+          </Tooltip>
+        </div>
       </div>
       {STYLES_TAB == selectedTab && (
         <div className="fa-icon-styling-tab-content-wrapper">
@@ -453,11 +345,6 @@ export default function (
               <FontAwesomeIcon icon={faBan} />
             </button>
           </Tooltip>
-          <Tooltip text={__("Invert", "font-awesome")}>
-            <button onClick={() => toggleInverse()}>
-              <FontAwesomeIcon icon={faCircleHalfStroke} />
-            </button>
-          </Tooltip>
           <Tooltip text={__("Grow", "font-awesome")}>
             <button onClick={() => updateTransform({ grow: 1 })}>
               <FontAwesomeIcon icon={faExpand} />
@@ -527,40 +414,6 @@ export default function (
           </div>
         </div>
       )}
-      {isMultiLayer && (
-        <div className="fa-icon-modifier-layers">
-          <div className="options-section-heading">
-            {__("Layers", "font-awesome")}
-          </div>
-          {iconLayers.map((layer, index) => (
-            <IconLayer
-              key={index}
-              layerIndex={index}
-              layer={layer}
-              selectLayer={selectLayer}
-              clearLayerSelection={clearLayerSelection}
-              selectedLayerIndex={selectedLayerIndex}
-              handleSelectForReplace={prepareHandleSelect({ replace: index })}
-              IconChooserModal={IconChooserModal}
-              canMoveUp={isMultiLayer && index > 0}
-              canMoveDown={isMultiLayer && index <= iconLayers.length - 2}
-              moveUp={moveUp}
-              moveDown={moveDown}
-              remove={removeLayer}
-            />
-          ))}
-          <div>
-            <button onClick={openIconChooserToAddLayer}>
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-            Add Layer
-          </div>
-        </div>
-      )}
-      <IconChooserModal
-        onSubmit={prepareHandleSelect({ append: true })}
-        openEvent={openIconChooserForAddLayerEvent}
-      />
     </div>
   );
 }
