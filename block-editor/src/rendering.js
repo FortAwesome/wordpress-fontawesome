@@ -21,6 +21,9 @@ export function prepareParamsForUseBlock(attributes) {
 export function renderIcon(attributes, options = {}) {
   const {wrapperProps, classNamesByLayer} = options?.extraProps || {}
   const elementType = options?.wrapperElement?.toLowerCase() || 'div'
+  const iconLayers = attributes?.iconLayers
+
+  if(!Array.isArray(iconLayers) || iconLayers.length === 0) return
 
   return createElement(
     elementType,
