@@ -346,12 +346,6 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
-  const setRotation = (rotation) => {
-    const newIconLayers = [...iconLayers];
-    newIconLayers[0].rotation = rotation
-    setAttributes({ iconLayers: newIconLayers });
-  }
-
   const setFlip = (flip) => {
     const newIconLayers = [...iconLayers];
     newIconLayers[0].flip = flip
