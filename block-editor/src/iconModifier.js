@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { wpIconFromFaIconDefinition } from "./icons";
 import {
   faReflectHorizontal,
   faReflectVertical,
@@ -36,7 +37,7 @@ import { __ } from '@wordpress/i18n'
 const ORIGINAL_SIZE = 16
 const NO_TAB = 0;
 const STYLES_TAB = 1;
-const STYLES_TAB_NAME = 'styles';
+const STYLES_TAB_NAME = 'styling';
 const ANIMATIONS_TAB = 2;
 const ANIMATIONS_TAB_NAME = 'animations';
 const POWER_TRANSFORMS_TAB = 4;
@@ -51,16 +52,19 @@ const SettingsTabPanel = ({onSelect}) =>
       tabs={ [
           {
               name: STYLES_TAB_NAME,
-              title: __('Styles', 'font-awesome'),
+              icon: wpIconFromFaIconDefinition(faPalette),
+              title: __('Add Styling', 'font-awesome'),
               className: `fawp-icon-settings-${STYLES_TAB_NAME}`,
           },
           {
               name: ANIMATIONS_TAB_NAME,
-              title: __('Animations', 'font-awesome'),
+              icon: wpIconFromFaIconDefinition(faFilm),
+              title: __('Add Animation', 'font-awesome'),
               className: `fawp-icon-settings-${ANIMATIONS_TAB_NAME}`,
           },
           {
               name: POWER_TRANSFORMS_TAB_NAME,
+              icon: wpIconFromFaIconDefinition(faBolt),
               title: __('Power Transforms', 'font-awesome'),
               className: `fawp-icon-settings-${POWER_TRANSFORMS_TAB_NAME}`,
           },
@@ -182,43 +186,13 @@ export default function (
         <div className="fa-icon-modifier-preview">
           {renderIcon(attributes)}
         </div>
-        <div
-          className={classnames("fa-icon-modifier-preview-controls")}
-        >
-          <SettingsTabPanel onSelect={setSelectedTab}/>
-          <Tooltip text={__("Set style options", "font-awesome")}>
-            <button
-              onClick={() => setSelectedTab(STYLES_TAB)}
-            >
-              <FontAwesomeIcon
-                className="fa-icon-modifier-control"
-                icon={faPalette}
-              />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Set animation options", "font-awesome")}>
-            <button
-              onClick={() => setSelectedTab(ANIMATIONS_TAB)}
-            >
-              <FontAwesomeIcon
-                className="fa-icon-modifier-control"
-                icon={faFilm}
-              />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Set power transform options", "font-awesome")}>
-            <button
-              onClick={() => setSelectedTab(POWER_TRANSFORMS_TAB)}
-            >
-              <FontAwesomeIcon
-                className="fa-icon-modifier-control"
-                icon={faBolt}
-              />
-            </button>
-          </Tooltip>
-        </div>
       </div>
-      {STYLES_TAB == selectedTab && (
+      <div
+        className={classnames("fa-icon-modifier-preview-controls")}
+      >
+        <SettingsTabPanel onSelect={setSelectedTab}/>
+      </div>
+      {STYLES_TAB_NAME == selectedTab && (
         <div className="fa-icon-styling-tab-content-wrapper">
           <div className="fa-icon-styling-tab-content icon-styling-color">
             <div className="options-section-heading">
@@ -304,7 +278,7 @@ export default function (
           </div>
         </div>
       )}
-      {ANIMATIONS_TAB == selectedTab && (
+      {ANIMATIONS_TAB_NAME == selectedTab && (
         <div className="fa-icon-animations-tab-content-wrapper">
           <div className="fa-icon-animations-tab-content icon-animations">
             <div className="options-section-heading">
@@ -354,7 +328,7 @@ export default function (
           </div>
         </div>
       )}
-      {POWER_TRANSFORMS_TAB == selectedTab && (
+      {POWER_TRANSFORMS_TAB_NAME == selectedTab && (
         <div className="fa-icon-modifier-power-transforms">
           <div className="options-section-heading">
             {__("Power Transforms", "font-awesome")}
