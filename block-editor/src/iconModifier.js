@@ -124,8 +124,9 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
   const currentIconLayer = (attributes?.iconLayers || [])[0]
   if('object' !== typeof currentIconLayer) return
-  const currentRotate = currentIconLayer?.transform?.rotate
-  const currentSize = currentIconLayer?.transform?.size
+  const currentTransform = currentIconLayer?.transform
+  const currentRotate = currentTransform?.rotate
+  const currentSize = currentTransform?.size
 
   const resetRotate = () => {
     updateTransform({resetRotate: true})
@@ -167,6 +168,18 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
 
     return multipliedSize === currentSize
   }
+
+  const hasNoFlip = () =>
+    !currentTransform || (!currentTransform?.flipX && !currentTransform?.flipY)
+
+  const flippedHorizontal = () => 
+    currentTransform?.flipX && !currentTransform?.flipY
+
+  const flippedVertical = () =>
+    currentTransform?.flipY && !currentTransform?.flipX
+
+  const flippedBoth = () =>
+    currentTransform?.flipY && currentTransform?.flipX
 
   return <TabPanel
       className="fawp-icon-settings-tab-panel"
@@ -253,22 +266,22 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
             </div>
             <div className="styling-controls">
               <Tooltip text={__("Remove Flipping", "font-awesome")}>
-                <button className="reset" onClick={() => updateTransform({resetFlip: true})}>
+                <button className={classnames({[SELECTED_CLASS]: hasNoFlip()})} className="reset" onClick={() => updateTransform({resetFlip: true})}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Horizontal", "font-awesome")}>
-                <button onClick={() => updateTransform({ toggleFlipX: true })}>
+                <button className={classnames({[SELECTED_CLASS]: flippedHorizontal()})} onClick={() => updateTransform({ toggleFlipX: true })}>
                   <FontAwesomeIcon icon={faReflectHorizontal} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Vertical", "font-awesome")}>
-                <button onClick={() => updateTransform({ toggleFlipY: true })}>
+                <button className={classnames({[SELECTED_CLASS]: flippedVertical()})} onClick={() => updateTransform({ toggleFlipY: true })}>
                   <FontAwesomeIcon icon={faReflectVertical} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Both", "font-awesome")}>
-                <button onClick={() => updateTransform({ toggleFlipX: true, toggleFlipY: true})}>
+                <button className={classnames({[SELECTED_CLASS]: flippedBoth()})} onClick={() => updateTransform({ toggleFlipX: true, toggleFlipY: true})}>
                   <FontAwesomeIcon icon={faReflectBoth} />
                 </button>
               </Tooltip>
