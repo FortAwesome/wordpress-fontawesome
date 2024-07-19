@@ -376,24 +376,12 @@ export default function (
 
     const updates = {}
 
-    const {resetSize, grow, growTimes, shrink, right, left, up, down, resetFlip, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
+    const {resetSize, grow, growTimes, resetFlip, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
 
     if(Number.isFinite(grow) && grow > 0) {
       updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
     } else if(Number.isFinite(growTimes) && growTimes > 0) {
       updates.size = ORIGINAL_SIZE * growTimes
-    }
-
-    if(Number.isFinite(right) && right > 0) {
-      updates.x = (prevTransform.x || 0) + right
-    } else if(Number.isFinite(left) && left > 0) {
-      updates.x = (prevTransform.x || 0) - left
-    }
-
-    if(Number.isFinite(up) && up > 0) {
-      updates.y = (prevTransform.y || 0) - up
-    } else if(Number.isFinite(down) && down > 0) {
-      updates.y = (prevTransform.y || 0) + down
     }
 
     if(toggleFlipX) {
