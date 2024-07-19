@@ -30,15 +30,44 @@ import { renderIcon } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
-import { ColorPalette, Tooltip } from '@wordpress/components';
+import { ColorPalette, TabPanel, Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n'
 
 const ORIGINAL_SIZE = 16
 const NO_TAB = 0;
 const STYLES_TAB = 1;
+const STYLES_TAB_NAME = 'styles';
 const ANIMATIONS_TAB = 2;
+const ANIMATIONS_TAB_NAME = 'animations';
 const POWER_TRANSFORMS_TAB = 4;
+const POWER_TRANSFORMS_TAB_NAME = 'power-transforms';
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
+
+const SettingsTabPanel = ({onSelect}) => 
+  <TabPanel
+      className="fawp-icon-settings-tab-panel"
+      activeClass="fawp-icon-settings-active-tab"
+      onSelect={ onSelect }
+      tabs={ [
+          {
+              name: STYLES_TAB_NAME,
+              title: __('Styles', 'font-awesome'),
+              className: `fawp-icon-settings-${STYLES_TAB_NAME}`,
+          },
+          {
+              name: ANIMATIONS_TAB_NAME,
+              title: __('Animations', 'font-awesome'),
+              className: `fawp-icon-settings-${ANIMATIONS_TAB_NAME}`,
+          },
+          {
+              name: POWER_TRANSFORMS_TAB_NAME,
+              title: __('Power Transforms', 'font-awesome'),
+              className: `fawp-icon-settings-${POWER_TRANSFORMS_TAB_NAME}`,
+          },
+      ] }
+  >
+      { ( tab ) => <p>This Tab! { tab.title }</p> }
+  </TabPanel>
 
 export default function (
   {
@@ -49,7 +78,7 @@ export default function (
   },
 ) {
   const iconLayers = attributes.iconLayers || [];
-  const [ selectedTab, setSelectedTab ] = useState(NO_TAB)
+  const [ selectedTab, setSelectedTab ] = useState(STYLES_TAB_NAME)
 
   const setColor = (color) => {
     const newIconLayers = [...iconLayers];
@@ -156,6 +185,7 @@ export default function (
         <div
           className={classnames("fa-icon-modifier-preview-controls")}
         >
+          <SettingsTabPanel onSelect={setSelectedTab}/>
           <Tooltip text={__("Set style options", "font-awesome")}>
             <button
               onClick={() => setSelectedTab(STYLES_TAB)}
