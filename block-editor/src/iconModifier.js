@@ -35,10 +35,7 @@ import { ColorPicker, ColorPalette, TabPanel, Tooltip } from '@wordpress/compone
 import { __ } from '@wordpress/i18n'
 
 const ORIGINAL_SIZE = 16
-const NO_TAB = 0;
-const STYLES_TAB = 1;
 const STYLES_TAB_NAME = 'styling';
-const ANIMATIONS_TAB = 2;
 const ANIMATIONS_TAB_NAME = 'animations';
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 const NO_CUSTOM_VALUE = ''
