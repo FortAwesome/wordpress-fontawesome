@@ -137,6 +137,10 @@ button:disabled .fa-icon-modifier-control {
   background-color: var(--gray7-fa);
 }
 
+.styling-controls .fawp-selected {
+  border: 1px solid blue;
+}
+
 .icon-styling-rotate button,
 .icon-styling-size button,
 .icon-styling-flip button,
