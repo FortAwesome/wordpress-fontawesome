@@ -43,16 +43,62 @@ const ANIMATIONS_TAB_NAME = 'animations';
 const POWER_TRANSFORMS_TAB = 4;
 const POWER_TRANSFORMS_TAB_NAME = 'power-transforms';
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
-const NO_CUSTOM_ROTATE_VALUE = ''
+const NO_CUSTOM_VALUE = ''
 const SELECTED_CLASS = 'fawp-selected'
 
+const Colors = ({themeColors, onChange, attributes}) => {
+  if(!Array.isArray(themeColors)) return
+  const currentIconLayer = (attributes?.iconLayers || [])[0]
+  if('object' !== typeof currentIconLayer) return
+  const currentColor = currentIconLayer?.color
+  const [customColor, setCustomColor] = useState(NO_CUSTOM_VALUE)
+
+  const setColor = ({color, custom}) => {
+    onChange(color)
+
+    if(custom && 'string' === typeof color) {
+      setCustomColor(color)
+    } else {
+      setCustomColor(NO_CUSTOM_VALUE)
+    }
+  }
+
+  const isColorSelected = (color) => color === currentColor
+
+  return <div className="fawp-color-settings">
+    <button
+        aria-selected={isColorSelected()}
+        className={classnames({[SELECTED_CLASS]: isColorSelected()})}
+        aria-label={__('No Color', 'font-awesome')}
+        onClick={() => setColor({})}>
+        <FontAwesomeIcon icon={faBan} />
+    </button>
+  {
+    themeColors.map((color, index) => 
+      <Tooltip key={index} text={color.name}>
+        <button
+            aria-selected={isColorSelected(color.color)}
+            className={classnames({[SELECTED_CLASS]: isColorSelected(color.color)})}
+            aria-label={color.name}
+            style={{backgroundColor: color.color}}
+            onClick={() => setColor({color: color.color})}>
+            &nbsp;
+        </button>
+      </Tooltip>
+    )
+  }
+  </div>
+}
+
 const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
-  const [customRotate, setCustomRotate] = useState(NO_CUSTOM_ROTATE_VALUE)
-  const currentRotate = (attributes?.iconLayers || [])[0]?.transform?.rotate
+  const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
+  const currentIconLayer = (attributes?.iconLayers || [])[0]
+  if('object' !== typeof currentIconLayer) return
+  const currentRotate = currentIconLayer?.transform?.rotate
 
   const resetRotate = () => {
     updateTransform({resetRotate: true})
-    setCustomRotate(NO_CUSTOM_ROTATE_VALUE)
+    setCustomRotate(NO_CUSTOM_VALUE)
   }
 
   const setRotate = ({rotate, custom}) => {
@@ -66,7 +112,7 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
       if(Number.isFinite(rotate)) {
         updateTransform({rotate})
       }
-      setCustomRotate(NO_CUSTOM_ROTATE_VALUE)
+      setCustomRotate(NO_CUSTOM_VALUE)
     }
   }
 
@@ -111,11 +157,11 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
               {__("Color", "font-awesome")}
             </div>
             <div>
-              <ColorPalette
-                disableCustomColors
-                colors={editorSettings.colors}
+              <Colors
+                themeColors={editorSettings.colors}
                 onChange={setColor}
-              ></ColorPalette>
+                attributes={attributes}
+              />
             </div>
           </div>
           <div className="fa-icon-styling-tab-content icon-styling-rotate">
