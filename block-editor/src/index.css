@@ -137,6 +137,7 @@ button:disabled .fa-icon-modifier-control {
   background-color: var(--gray7-fa);
 }
 
+.animation-controls button.fawp-selected,
 .styling-controls button.fawp-selected {
   border: 1px solid blue;
 }
