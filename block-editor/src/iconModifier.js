@@ -261,22 +261,22 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
             </div>
             <div className="styling-controls">
               <Tooltip text={__("Remove Flipping", "font-awesome")}>
-                <button className="reset" onClick={() => setFlip(null)}>
+                <button className="reset" onClick={() => updateTransform({resetFlip: true})}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Horizontal", "font-awesome")}>
-                <button onClick={() => setFlip("horizontal")}>
+                <button onClick={() => updateTransform({ toggleFlipX: true })}>
                   <FontAwesomeIcon icon={faReflectHorizontal} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Vertical", "font-awesome")}>
-                <button onClick={() => setFlip("vertical")}>
+                <button onClick={() => updateTransform({ toggleFlipY: true })}>
                   <FontAwesomeIcon icon={faReflectVertical} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Both", "font-awesome")}>
-                <button onClick={() => setFlip("both")}>
+                <button onClick={() => updateTransform({ toggleFlipX: true, toggleFlipY: true})}>
                   <FontAwesomeIcon icon={faReflectBoth} />
                 </button>
               </Tooltip>
@@ -465,7 +465,7 @@ export default function (
 
     const updates = {}
 
-    const {resetSize, grow, growTimes, shrink, right, left, up, down, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
+    const {resetSize, grow, growTimes, shrink, right, left, up, down, resetFlip, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
 
     if(Number.isFinite(grow) && grow > 0) {
       updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
@@ -486,11 +486,11 @@ export default function (
     }
 
     if(toggleFlipX) {
-      updates.flipX = !prevTransform?.flipX
+      updates.flipX = true
     }
 
     if(toggleFlipY) {
-      updates.flipY = !prevTransform?.flipY
+      updates.flipY = true
     }
 
     const rotate = parseInt(rotateRaw)
@@ -510,6 +510,11 @@ export default function (
 
     if(resetSize) {
       delete updatedTransform.size
+    }
+
+    if(resetFlip) {
+      delete updatedTransform.flipX
+      delete updatedTransform.flipY
     }
 
     newIconLayers[0].transform = reset ? null : updatedTransform
