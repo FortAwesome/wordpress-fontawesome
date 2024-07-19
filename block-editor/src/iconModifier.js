@@ -181,6 +181,36 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
   const flippedBoth = () =>
     currentTransform?.flipY && currentTransform?.flipX
 
+  const isAnimationSelected = (animation) => {
+    if('object' !== typeof currentIconLayer) return false
+
+    if(!animation) {
+      let foundAnimation = false
+
+      for(const currentAnimation of ANIMATIONS) {
+        if(currentIconLayer[animation]) {
+          foundAnimation = true
+          break
+        }
+      }
+
+      return !foundAnimation
+    }
+
+    if('string' !== typeof animation) return false
+
+    // Special case: spinReverse is modeled as a composite animation: both spin
+    // and reverse. But we want the UI to reflect just one animation selection.
+    // So we need to distinguish between spin and spinReverse.
+    if('spinReverse' === animation) {
+      return currentIconLayer[animation] && currentIconLayer['spin']
+    } else if('spin' === animation) {
+      return currentIconLayer['spin'] && !currentIconLayer['spinReverse']
+    }
+
+    return currentIconLayer[animation]
+  }
+
   return <TabPanel
       className="fawp-icon-settings-tab-panel"
       activeClass="fawp-icon-settings-active-tab"
@@ -297,42 +327,42 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
               {__("Animate", "font-awesome")}
             </div>
             <div className="animation-controls">
-              <button className="reset" onClick={() => setAnimation(null)}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected()})} className="reset" onClick={() => setAnimation(null)}>
                 <FontAwesomeIcon icon={faBan} />{" "}
                 {__("No Animation", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("beat")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('beat')})} onClick={() => setAnimation("beat")}>
                 <FontAwesomeIcon icon={faHeart} /> {__("Beat", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("beatFade")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('beatFade')})} onClick={() => setAnimation("beatFade")}>
                 <FontAwesomeIcon icon={faHeartHalfStroke} />{" "}
                 {__("Beat Fade", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("bounce")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('bounce')})} onClick={() => setAnimation("bounce")}>
                 <FontAwesomeIcon icon={faCircle} />{" "}
                 {__("Bounce", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("fade")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('fade')})} onClick={() => setAnimation("fade")}>
                 <FontAwesomeIcon icon={faSlidersSimple} />{" "}
                 {__("Fade", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("flip")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('flip')})} onClick={() => setAnimation("flip")}>
                 <FontAwesomeIcon icon={faReflectHorizontal} />{" "}
                 {__("Flip", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("shake")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('shake')})} onClick={() => setAnimation("shake")}>
                 <FontAwesomeIcon icon={faBellRing} />{" "}
                 {__("Shake", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("spin")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('spin')})} onClick={() => setAnimation("spin")}>
                 <FontAwesomeIcon icon={faRotateRight} />{" "}
                 {__("Spin", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("spinReverse")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('spinReverse')})} onClick={() => setAnimation("spinReverse")}>
                 <FontAwesomeIcon icon={faRotateLeft} />{" "}
                 {__("Spin Reverse", "font-awesome")}
               </button>
-              <button onClick={() => setAnimation("spinPulse")}>
+              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('spinPulse')})} onClick={() => setAnimation("spinPulse")}>
                 <FontAwesomeIcon icon={faRotateLeft} />{" "}
                 {__("Spin Pulse", "font-awesome")}
               </button>
