@@ -57,19 +57,24 @@ const Colors = ({themeColors, onChange, attributes}) => {
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false)
 
   const setColor = ({color, custom}) => {
-    if(custom) {
-      if('string' === typeof color) {
-        setCustomColor(color)
-        onChange(color)
-        setShowCustomColorPicker(false)
-      } else {
-        setShowCustomColorPicker(true)
-      }
-    } else {
-      onChange(color)
-      setShowCustomColorPicker(false)
+    if(custom && !color) {
+      // We're picking a custom color.
+      setShowCustomColorPicker(true)
+      return
+    }
+
+    if(custom && 'string' === typeof color) {
+      // We've picked a custom color.
+      setCustomColor(color)
+    }
+
+    if(!custom) {
+      // We've picked a theme color.
       setCustomColor(NO_CUSTOM_VALUE)
     }
+
+    setShowCustomColorPicker(false)
+    onChange(color)
   }
 
   const isColorSelected = ({color, custom}) =>
