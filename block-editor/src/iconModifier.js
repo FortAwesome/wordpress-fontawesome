@@ -31,7 +31,7 @@ import { renderIcon } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
-import { ColorPalette, TabPanel, Tooltip } from '@wordpress/components';
+import { ColorPicker, ColorPalette, TabPanel, Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n'
 
 const ORIGINAL_SIZE = 16
@@ -45,6 +45,8 @@ const POWER_TRANSFORMS_TAB_NAME = 'power-transforms';
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 const NO_CUSTOM_VALUE = ''
 const SELECTED_CLASS = 'fawp-selected'
+const NO_COLOR_TEXT = __('No Color', 'font-awesome')
+const CUSTOM_COLOR_TEXT = __('Custom Color', 'font-awesome')
 
 const Colors = ({themeColors, onChange, attributes}) => {
   if(!Array.isArray(themeColors)) return
@@ -52,33 +54,44 @@ const Colors = ({themeColors, onChange, attributes}) => {
   if('object' !== typeof currentIconLayer) return
   const currentColor = currentIconLayer?.color
   const [customColor, setCustomColor] = useState(NO_CUSTOM_VALUE)
+  const [showCustomColorPicker, setShowCustomColorPicker] = useState(false)
 
   const setColor = ({color, custom}) => {
-    onChange(color)
-
-    if(custom && 'string' === typeof color) {
-      setCustomColor(color)
+    if(custom) {
+      if('string' === typeof color) {
+        setCustomColor(color)
+        onChange(color)
+        setShowCustomColorPicker(false)
+      } else {
+        setShowCustomColorPicker(true)
+      }
     } else {
+      onChange(color)
+      setShowCustomColorPicker(false)
       setCustomColor(NO_CUSTOM_VALUE)
     }
   }
 
-  const isColorSelected = (color) => color === currentColor
+  const isColorSelected = ({color, custom}) =>
+    (custom && customColor !== NO_CUSTOM_VALUE)
+    || (color === currentColor)
 
   return <div className="fawp-color-settings">
-    <button
-        aria-selected={isColorSelected()}
-        className={classnames({[SELECTED_CLASS]: isColorSelected()})}
-        aria-label={__('No Color', 'font-awesome')}
-        onClick={() => setColor({})}>
-        <FontAwesomeIcon icon={faBan} />
-    </button>
+    <Tooltip text={NO_COLOR_TEXT}>
+      <button
+          aria-selected={isColorSelected({})}
+          className={classnames({[SELECTED_CLASS]: isColorSelected({})})}
+          aria-label={NO_COLOR_TEXT}
+          onClick={() => setColor({})}>
+          <FontAwesomeIcon icon={faBan} />
+      </button>
+    </Tooltip>
   {
     themeColors.map((color, index) => 
       <Tooltip key={index} text={color.name}>
         <button
             aria-selected={isColorSelected(color.color)}
-            className={classnames({[SELECTED_CLASS]: isColorSelected(color.color)})}
+            className={classnames({[SELECTED_CLASS]: isColorSelected({color: color.color})})}
             aria-label={color.name}
             style={{backgroundColor: color.color}}
             onClick={() => setColor({color: color.color})}>
@@ -87,6 +100,20 @@ const Colors = ({themeColors, onChange, attributes}) => {
       </Tooltip>
     )
   }
+    <Tooltip text={CUSTOM_COLOR_TEXT}>
+      <button
+          aria-selected={isColorSelected({custom: true})}
+          className={classnames({[SELECTED_CLASS]: isColorSelected({custom: true})})}
+          aria-label={CUSTOM_COLOR_TEXT}
+          onClick={() => setColor({custom: true})}
+          style={{background: 'linear-gradient(to right, darkblue, lightgreen)'}}>
+          &nbsp;
+      </button>
+    </Tooltip>
+    {
+      showCustomColorPicker &&
+        <ColorPicker onChange={(color) => setColor({color, custom: true})}/>
+    }
   </div>
 }
 
