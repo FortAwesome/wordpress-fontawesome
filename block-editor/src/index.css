@@ -173,17 +173,3 @@ button:disabled .fa-icon-modifier-control {
   color: unset;
   cursor: unset;
 }
-
-/* dev */
-.fa-icon-modifier button.selected-layer {
-  border: 1px dashed magenta;
-  border-radius: 2px;
-  text-decoration: unset;
-}
-
-.fa-icon-modifier .fa-layers svg.selected-layer path {
-  stroke: magenta;
-  stroke-width: 5px;
-  stroke-dasharray: 5, 5;
-}
-
