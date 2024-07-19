@@ -117,15 +117,15 @@ const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, setRotatio
             </div>
             <div className="styling-controls">
               <Tooltip text={__("Remove Sizing", "font-awesome")}>
-                <button className="reset" onClick={() => setSize(null)}>
+                <button className="reset" onClick={() => updateTransform({resetSize: true})}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
-              <button onClick={() => setSize("2x")}>2x</button>
-              <button onClick={() => setSize("4x")}>4x</button>
-              <button onClick={() => setSize("6x")}>6x</button>
-              <button onClick={() => setSize("8x")}>8x</button>
-              <button onClick={() => setSize("10x")}>10x</button>
+              <button onClick={() => updateTransform({growTimes: 2})}>2x</button>
+              <button onClick={() => updateTransform({growTimes: 4})}>4x</button>
+              <button onClick={() => updateTransform({growTimes: 6})}>6x</button>
+              <button onClick={() => updateTransform({growTimes: 8})}>8x</button>
+              <button onClick={() => updateTransform({growTimes: 10})}>10x</button>
             </div>
           </div>
           <div className="fa-icon-styling-tab-content icon-styling-flip">
@@ -349,12 +349,12 @@ export default function (
 
     const updates = {}
 
-    const {grow, shrink, right, left, up, down, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
+    const {resetSize, grow, growTimes, shrink, right, left, up, down, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
 
     if(Number.isFinite(grow) && grow > 0) {
       updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
-    } else if(Number.isFinite(shrink) && shrink > 0) {
-      updates.size = (prevTransform.size || ORIGINAL_SIZE) - shrink
+    } else if(Number.isFinite(growTimes) && growTimes > 0) {
+      updates.size = ORIGINAL_SIZE * growTimes
     }
 
     if(Number.isFinite(right) && right > 0) {
@@ -390,6 +390,10 @@ export default function (
 
     if(resetRotate && updatedTransform.hasOwnProperty('rotate')) {
       delete updatedTransform.rotate
+    }
+
+    if(resetSize) {
+      delete updatedTransform.size
     }
 
     newIconLayers[0].transform = reset ? null : updatedTransform
