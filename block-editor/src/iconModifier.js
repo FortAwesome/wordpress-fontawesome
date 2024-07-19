@@ -46,7 +46,7 @@ export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', '
 const NO_CUSTOM_ROTATE_VALUE = ''
 const SELECTED_CLASS = 'fawp-selected'
 
-const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTransform, editorSettings, attributes}) => {
+const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_ROTATE_VALUE)
   const currentRotate = (attributes?.iconLayers || [])[0]?.transform?.rotate
 
@@ -346,12 +346,6 @@ export default function (
     setAttributes({ iconLayers: newIconLayers });
   }
 
-  const setSize = (size) => {
-    const newIconLayers = [...iconLayers];
-    newIconLayers[0].size = size
-    setAttributes({ iconLayers: newIconLayers });
-  }
-
   const setRotation = (rotation) => {
     const newIconLayers = [...iconLayers];
     newIconLayers[0].rotation = rotation
@@ -454,7 +448,6 @@ export default function (
           attributes={attributes}
           onSelect={setSelectedTab}
           editorSettings={editorSettings}
-          setSize={setSize}
           updateTransform={updateTransform}
           setColor={setColor}
         />
