@@ -127,6 +127,7 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
   const currentIconLayer = (attributes?.iconLayers || [])[0]
   if('object' !== typeof currentIconLayer) return
   const currentRotate = currentIconLayer?.transform?.rotate
+  const currentSize = currentIconLayer?.transform?.size
 
   const resetRotate = () => {
     updateTransform({resetRotate: true})
@@ -154,6 +155,19 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
     } else if(Number.isFinite(val) && val === currentRotate) {
       return SELECTED_CLASS
     }
+  }
+
+  const isSizeSelected = (size) => {
+    if(!Number.isFinite(size) && !Number.isFinite(currentSize)) {
+      // No size is selected.
+      return true
+    }
+
+    if(!Number.isFinite(size)) return false
+
+    const multipliedSize = size * ORIGINAL_SIZE 
+
+    return multipliedSize === currentSize
   }
 
   return <TabPanel
@@ -230,15 +244,15 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
             </div>
             <div className="styling-controls">
               <Tooltip text={__("Remove Sizing", "font-awesome")}>
-                <button className="reset" onClick={() => updateTransform({resetSize: true})}>
+                <button className={classnames("reset", "size-button", {[SELECTED_CLASS]: isSizeSelected()})} onClick={() => updateTransform({resetSize: true})}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
-              <button onClick={() => updateTransform({growTimes: 2})}>2x</button>
-              <button onClick={() => updateTransform({growTimes: 4})}>4x</button>
-              <button onClick={() => updateTransform({growTimes: 6})}>6x</button>
-              <button onClick={() => updateTransform({growTimes: 8})}>8x</button>
-              <button onClick={() => updateTransform({growTimes: 10})}>10x</button>
+              <button className={classnames('size-button', {[SELECTED_CLASS]: isSizeSelected(2)})} onClick={() => updateTransform({growTimes: 2})}>2x</button>
+              <button className={classnames('size-button', {[SELECTED_CLASS]: isSizeSelected(4)})} onClick={() => updateTransform({growTimes: 4})}>4x</button>
+              <button className={classnames('size-button', {[SELECTED_CLASS]: isSizeSelected(6)})} onClick={() => updateTransform({growTimes: 6})}>6x</button>
+              <button className={classnames('size-button', {[SELECTED_CLASS]: isSizeSelected(8)})} onClick={() => updateTransform({growTimes: 8})}>8x</button>
+              <button className={classnames('size-button', {[SELECTED_CLASS]: isSizeSelected(10)})} onClick={() => updateTransform({growTimes: 10})}>10x</button>
             </div>
           </div>
           <div className="fa-icon-styling-tab-content icon-styling-flip">
