@@ -40,16 +40,6 @@ const ANIMATIONS_TAB = 2;
 const POWER_TRANSFORMS_TAB = 4;
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 
-function OptionalTooltip({ enabled, text, children }) {
-  return enabled
-  ? <Tooltip text={text}>
-  {children}
-  </Tooltip>
-  : <>
-      {children}
-  </>
-}
-
 export default function (
   {
     attributes,
