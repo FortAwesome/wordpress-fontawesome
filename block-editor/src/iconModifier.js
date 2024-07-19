@@ -46,7 +46,7 @@ export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', '
 const NO_CUSTOM_ROTATE_VALUE = ''
 const SELECTED_CLASS = 'fawp-selected'
 
-const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTransform, settings, attributes}) => {
+const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTransform, editorSettings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_ROTATE_VALUE)
   const currentRotate = (attributes?.iconLayers || [])[0]?.transform?.rotate
 
@@ -113,7 +113,7 @@ const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTran
             <div>
               <ColorPalette
                 disableCustomColors
-                colors={settings.colors}
+                colors={editorSettings.colors}
                 onChange={setColor}
               ></ColorPalette>
             </div>
@@ -438,10 +438,7 @@ export default function (
 
   const { getSettings } = select('core/block-editor');
 
-  const settings = getSettings();
-
-  //console.log('ATTRS', attributes)
-  //const customRotate = (attributes?.iconLayers || [])[0]?.transform?.rotate
+  const editorSettings = getSettings();
 
   return (
     <div className="fa-icon-modifier">
@@ -456,7 +453,7 @@ export default function (
         <SettingsTabPanel
           attributes={attributes}
           onSelect={setSelectedTab}
-          settings={settings}
+          editorSettings={editorSettings}
           setSize={setSize}
           updateTransform={updateTransform}
           setColor={setColor}
