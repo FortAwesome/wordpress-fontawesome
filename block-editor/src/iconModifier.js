@@ -44,9 +44,11 @@ const POWER_TRANSFORMS_TAB = 4;
 const POWER_TRANSFORMS_TAB_NAME = 'power-transforms';
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 const NO_CUSTOM_ROTATE_VALUE = ''
+const SELECTED_CLASS = 'fawp-selected'
 
-const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTransform, settings}) => {
+const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTransform, settings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_ROTATE_VALUE)
+  const currentRotate = (attributes?.iconLayers || [])[0]?.transform?.rotate
 
   const resetRotate = () => {
     updateTransform({resetRotate: true})
@@ -65,6 +67,14 @@ const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTran
         updateTransform({rotate})
       }
       setCustomRotate(NO_CUSTOM_ROTATE_VALUE)
+    }
+  }
+
+  const rotateSelectionClass = (val) => {
+    if('custom' === val && customRotate) {
+      return SELECTED_CLASS
+    } else if(Number.isFinite(val) && val === currentRotate) {
+      return SELECTED_CLASS
     }
   }
 
@@ -114,20 +124,21 @@ const SettingsTabPanel = ({onSelect, setColor, setSize, setAnimation, updateTran
             </div>
             <div className="styling-controls">
               <Tooltip text={__("Remove Rotation", "font-awesome")}>
-                <button className="reset" onClick={resetRotate}>
+                <button className={rotateSelectionClass()} className="reset" onClick={resetRotate}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Rotate 90deg to the right", "font-awesome")}>
-                <button onClick={() => setRotate({rotate: 90})}>90°</button>
+                <button className={rotateSelectionClass(90)} onClick={() => setRotate({rotate: 90})}>90°</button>
               </Tooltip>
               <Tooltip text={__("Rotate 180deg to the right", "font-awesome")}>
-                <button onClick={() => setRotate({rotate: 180})}>180°</button>
+                <button className={rotateSelectionClass(180)} onClick={() => setRotate({rotate: 180})}>180°</button>
               </Tooltip>
               <Tooltip text={__("Rotate 270deg to the right", "font-awesome")}>
-                <button onClick={() => setRotate({rotate: 270})}>270°</button>
+                <button className={rotateSelectionClass(270)} onClick={() => setRotate({rotate: 270})}>270°</button>
               </Tooltip>
               <input
+                className={rotateSelectionClass('custom')}
                 type="number"
                 placeholder={__("Custom...", "font-awesome")}
                 value={customRotate}
@@ -443,6 +454,7 @@ export default function (
         className={classnames("fa-icon-modifier-preview-controls")}
       >
         <SettingsTabPanel
+          attributes={attributes}
           onSelect={setSelectedTab}
           settings={settings}
           setSize={setSize}
