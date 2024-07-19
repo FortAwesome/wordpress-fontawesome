@@ -40,8 +40,6 @@ const STYLES_TAB = 1;
 const STYLES_TAB_NAME = 'styling';
 const ANIMATIONS_TAB = 2;
 const ANIMATIONS_TAB_NAME = 'animations';
-const POWER_TRANSFORMS_TAB = 4;
-const POWER_TRANSFORMS_TAB_NAME = 'power-transforms';
 export const ANIMATIONS = Object.freeze(['beat', 'beatFade', 'bounce', 'fade', 'flip', 'shake', 'spin', 'spinReverse', 'spinPulse'])
 const NO_CUSTOM_VALUE = ''
 const SELECTED_CLASS = 'fawp-selected'
@@ -186,13 +184,7 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
               icon: wpIconFromFaIconDefinition(faFilm),
               title: __('Add Animation', 'font-awesome'),
               className: `fawp-icon-settings-${ANIMATIONS_TAB_NAME}`,
-          },
-          {
-              name: POWER_TRANSFORMS_TAB_NAME,
-              icon: wpIconFromFaIconDefinition(faBolt),
-              title: __('Power Transforms', 'font-awesome'),
-              className: `fawp-icon-settings-${POWER_TRANSFORMS_TAB_NAME}`,
-          },
+          }
       ] }
   >
     { ( tab ) => {
@@ -335,87 +327,6 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
           </div>
         </div>
       )
-
-      if(POWER_TRANSFORMS_TAB_NAME == tab.name) return (
-        <div className="fa-icon-modifier-power-transforms">
-          <div className="options-section-heading">
-            {__("Power Transforms", "font-awesome")}
-          </div>
-
-          <Tooltip text={__("Reset Transform", "font-awesome")}>
-            <button onClick={() => updateTransform({ reset: true })}>
-              <FontAwesomeIcon icon={faBan} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Grow", "font-awesome")}>
-            <button onClick={() => updateTransform({ grow: 1 })}>
-              <FontAwesomeIcon icon={faExpand} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Shrink", "font-awesome")}>
-            <button onClick={() => updateTransform({ shrink: 1 })}>
-              <FontAwesomeIcon icon={faCompress} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Move Right", "font-awesome")}>
-            <button onClick={() => updateTransform({ right: 1 })}>
-              <FontAwesomeIcon icon={faRight} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Move Left", "font-awesome")}>
-            <button onClick={() => updateTransform({ left: 1 })}>
-              <FontAwesomeIcon icon={faLeft} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Move Up", "font-awesome")}>
-            <button onClick={() => updateTransform({ up: 1 })}>
-              <FontAwesomeIcon icon={faUp} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Move Down", "font-awesome")}>
-            <button onClick={() => updateTransform({ down: 1 })}>
-              <FontAwesomeIcon icon={faDown} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Toggle Flip Horizontal", "font-awesome")}>
-            <button onClick={() => updateTransform({ toggleFlipX: true })}>
-              <FontAwesomeIcon icon={faReflectHorizontal} />
-            </button>
-          </Tooltip>
-          <Tooltip text={__("Toggle Flip Vertical", "font-awesome")}>
-            <button onClick={() => updateTransform({ toggleFlipY: true })}>
-              <FontAwesomeIcon icon={faReflectVertical} />
-            </button>
-          </Tooltip>
-          <div>
-            <Tooltip text={__("Remove Rotation", "font-awesome")}>
-              <button onClick={() => updateTransform({ resetRotate: true })}>
-                <FontAwesomeIcon icon={faBan} />
-              </button>
-            </Tooltip>
-            <Tooltip text={__("Rotate 90deg to the right", "font-awesome")}>
-              <button onClick={() => updateTransform({ rotate: 90 })}>
-                90°
-              </button>
-            </Tooltip>
-            <Tooltip text={__("Rotate 180deg to the right", "font-awesome")}>
-              <button onClick={() => updateTransform({ rotate: 180 })}>
-                180°
-              </button>
-            </Tooltip>
-            <Tooltip text={__("Rotate 270deg to the right", "font-awesome")}>
-              <button onClick={() => updateTransform({ rotate: 270 })}>
-                270°
-              </button>
-            </Tooltip>
-            <input
-              type="number"
-              placeholder={__("Custom...", "font-awesome")}
-              onChange={(e) => updateTransform({ rotate: e.target.value })}
-            />
-          </div>
-        </div>
-      )
     }
     }
   </TabPanel>
@@ -541,6 +452,7 @@ export default function (
           editorSettings={editorSettings}
           updateTransform={updateTransform}
           setColor={setColor}
+          setAnimation={setAnimation}
         />
       </div>
     </div>
