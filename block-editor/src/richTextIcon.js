@@ -22,7 +22,8 @@ import { GLOBAL_KEY } from "../../admin/src/constants";
 import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
 import { renderIcon } from './rendering'
-import { default as IconModifier, ANIMATIONS } from './iconModifier'
+import IconModifier from './iconModifier'
+import { ANIMATIONS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
 export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
