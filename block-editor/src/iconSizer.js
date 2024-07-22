@@ -10,7 +10,9 @@ const VALID_UNITS = ['px', 'em']
 const STEP_EM = 0.125
 const STEP_PX = 1
 
-export default () => {
+export default (props) => {
+  if('object' !== typeof props) return
+  const { onChange = () => {} } = props
   const [units, setUnits] = useState('em')
   const [value, setValue] = useState(INITIAL_POSITION_EM)
   const [max, setMax] = useState(MAX_EM)
@@ -19,6 +21,18 @@ export default () => {
 
   const unitsOptions = () => {
     return VALID_UNITS.map(u => ({label: u, value: u}))
+  }
+
+  const update = (newValue) => {
+    let value = newValue
+
+    if(!value) {
+      // reset
+      value = 'px' === units ? INITIAL_POSITION_PX : INITIAL_POSITION_EM
+    }
+
+    setValue(value)
+    onChange(`${value}${units}`)
   }
 
   const switchUnits = (newUnits) => {
@@ -52,7 +66,7 @@ export default () => {
     value={value}
     allowReset={true}
     step={step}
-    onChange={setValue}
+    onChange={update}
   /><SelectControl
       options={unitsOptions()}
       size="small"

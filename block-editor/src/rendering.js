@@ -29,10 +29,9 @@ export function renderIcon(attributes, options = {}) {
     elementType,
     {...(wrapperProps || {})},
     attributes.iconLayers.map((layer, index) => {
-      const { iconDefinition, rotation: initialRotation, ...rest } = layer;
+      const { style = {fontSize: '1em'}, iconDefinition, rotation: initialRotation, ...rest } = layer;
       let className = (classNamesByLayer || [])[index]
       let rotation
-      const style = {}
 
       if([0,90,180,270].includes(initialRotation)) {
         rotation = initialRotation

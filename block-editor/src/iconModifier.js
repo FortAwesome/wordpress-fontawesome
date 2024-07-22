@@ -40,9 +40,8 @@ import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, ORIGINAL_SIZE } from './co
 const STYLES_TAB_NAME = 'styling';
 const ANIMATIONS_TAB_NAME = 'animations';
 
-const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
+const SettingsTabPanel = ({onSelect, setSize, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
-  const [size, setSize] = useState('1em')
   const currentIconLayer = (attributes?.iconLayers || [])[0]
   if('object' !== typeof currentIconLayer) return
   const currentTransform = currentIconLayer?.transform
@@ -75,19 +74,6 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
     } else if(Number.isFinite(val) && val === currentRotate) {
       return SELECTED_CLASS
     }
-  }
-
-  const isSizeSelected = (size) => {
-    if(!Number.isFinite(size) && !Number.isFinite(currentSize)) {
-      // No size is selected.
-      return true
-    }
-
-    if(!Number.isFinite(size)) return false
-
-    const multipliedSize = size * ORIGINAL_SIZE 
-
-    return multipliedSize === currentSize
   }
 
   const hasNoFlip = () =>
@@ -199,7 +185,7 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
               {__("Size", "font-awesome")}
             </div>
             <div className="styling-controls">
-              <IconSizer/>
+              <IconSizer onChange={setSize}/>
             </div>
           </div>
           <div className="fa-icon-styling-tab-content icon-styling-flip">
@@ -298,6 +284,14 @@ export default function (
   const iconLayers = attributes.iconLayers || [];
   const [ selectedTab, setSelectedTab ] = useState(STYLES_TAB_NAME)
 
+  const setSize = (size) => {
+    const newIconLayers = [...iconLayers];
+    const style = newIconLayers[0]?.style || {}
+    style.fontSize = size
+    newIconLayers[0].style = style
+    setAttributes({ iconLayers: newIconLayers });
+  }
+
   const setColor = (color) => {
     const newIconLayers = [...iconLayers];
     newIconLayers[0].color = color
@@ -331,13 +325,7 @@ export default function (
 
     const updates = {}
 
-    const {resetSize, grow, growTimes, resetFlip, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
-
-    if(Number.isFinite(grow) && grow > 0) {
-      updates.size = (prevTransform.size || ORIGINAL_SIZE) + grow
-    } else if(Number.isFinite(growTimes) && growTimes > 0) {
-      updates.size = ORIGINAL_SIZE * growTimes
-    }
+    const {resetFlip, toggleFlipX, toggleFlipY, rotate: rotateRaw, resetRotate, reset} = transformParams
 
     if(toggleFlipX) {
       updates.flipX = true
@@ -395,6 +383,7 @@ export default function (
           editorSettings={editorSettings}
           updateTransform={updateTransform}
           setColor={setColor}
+          setSize={setSize}
           setAnimation={setAnimation}
         />
       </div>
