@@ -31,87 +31,14 @@ import { renderIcon } from './rendering';
 import { select } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import classnames from 'classnames';
-import { ColorPicker, ColorPalette, FontSizePicker, SelectControl, RangeControl, TabPanel, Tooltip } from '@wordpress/components';
+import { ColorPicker, ColorPalette, FontSizePicker, TabPanel, Tooltip } from '@wordpress/components';
 import { __ } from '@wordpress/i18n'
 import Colors from './colors'
+import IconSizer from './iconSizer'
 import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, ORIGINAL_SIZE } from './constants'
 
 const STYLES_TAB_NAME = 'styling';
 const ANIMATIONS_TAB_NAME = 'animations';
-/*
-const PRESET_FONT_SIZES = [
-  {name: '2xs', class: 'fa-2xs'},
-  {name: 'xs', class: 'fa-xs'},
-  {name: 'sm', class: 'fa-sm'},
-  {name: 'lg', class: 'fa-lg'},
-  {name: 'xl', class: 'fa-xl'},
-  {name: '2xl', class: 'fa-2xl'},
-  {name: '2x', size: '2em', slug: '2x'},
-  {name: '3x', class: 'fa-3x'},
-  {name: '4x', class: 'fa-4x'},
-  {name: '5x', class: 'fa-5x'}
-]
-*/
-
-const IconSizer = () => {
-  const MAX_EM = 24
-  const MAX_PX = 120
-  const INITIAL_POSITION_EM = 1
-  const INITIAL_POSITION_PX = ORIGINAL_SIZE
-  const VALID_UNITS = ['px', 'em']
-  const STEP_EM = 0.125
-  const STEP_PX = 1
-
-  const [units, setUnits] = useState('em')
-  const [value, setValue] = useState(INITIAL_POSITION_EM)
-  const [max, setMax] = useState(MAX_EM)
-  const [initialPosition, setInitialPosition] = useState(INITIAL_POSITION_EM)
-  const [step, setStep] = useState(STEP_EM)
-
-  const unitsOptions = () => {
-    return VALID_UNITS.map(u => ({label: u, value: u}))
-  }
-
-  const switchUnits = (newUnits) => {
-    if ('px' === newUnits) {
-      if ('em' === units) {
-        setValue(ORIGINAL_SIZE * value)
-      }
-
-      setMax(MAX_PX)
-      setStep(STEP_PX)
-      setInitialPosition(INITIAL_POSITION_PX)
-    }
-
-    if ('em' === newUnits) {
-      if ('px' === units) {
-        setValue(value / ORIGINAL_SIZE)
-      }
-
-      setMax(MAX_EM)
-      setStep(STEP_EM)
-      setInitialPosition(INITIAL_POSITION_EM)
-    }
-
-    setUnits(newUnits)
-  }
-
-  return <div><RangeControl
-    initialPosition={initialPosition}
-    min={0}
-    max={max}
-    value={value}
-    allowReset={true}
-    step={step}
-    onChange={setValue}
-  /><SelectControl
-      options={unitsOptions()}
-      size="small"
-      value={units}
-      variant="minimal"
-      onChange={switchUnits}
-    /></div>
-}
 
 const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
@@ -204,21 +131,6 @@ const SettingsTabPanel = ({onSelect, setColor, setAnimation, updateTransform, ed
 
     return currentIconLayer[animation]
   }
-  /*
-   *
-              <FontSizePicker
-                withReset
-                withSlider
-                fontSizes={PRESET_FONT_SIZES}
-                disableCustomFontSizes={false}
-                value={size}
-                units={['px', 'em']}
-                fallbackFontSize="1em"
-                onChange={(size) => {
-                  setSize(size)
-                }}
-              ></FontSizePicker>
-   */
 
   return <TabPanel
       className="fawp-icon-settings-tab-panel"
