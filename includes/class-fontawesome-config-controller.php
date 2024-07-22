@@ -6,6 +6,7 @@
  */
 namespace FortAwesome;
 
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
@@ -245,6 +246,10 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			'webfont' === $item['technology']
 		) {
 			throw ConfigSchemaException::webfont_v4compat_introduced_later();
+		}
+
+		if ( isset( $given_options['loadMode'] ) && is_string( $given_options['loadMode'] ) && in_array( $given_options['loadMode'], FontAwesome::VALID_LOAD_MODES ) ) {
+			$item['loadMode'] = $given_options['loadMode'];
 		}
 
 		return $item;

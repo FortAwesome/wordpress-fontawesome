@@ -289,6 +289,17 @@ class FontAwesome {
 	);
 
 	/**
+	 * Validate load modes.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	const VALID_LOAD_MODES = array(
+		'selfhost',
+		'cdn'
+	);
+
+	/**
 	 * @internal
 	 * @ignore
 	 */
@@ -1144,6 +1155,13 @@ class FontAwesome {
 			! isset( $options['technology'] ) ||
 			! is_string( $options['technology'] ) ||
 			false === array_search( $options['technology'], array( 'svg', 'webfont' ), true )
+		) {
+			throw new ConfigCorruptionException();
+		}
+
+		if (
+			isset( $options['loadMode'] ) &&
+			! in_array( $options['loadMode'], self::VALID_LOAD_MODES )
 		) {
 			throw new ConfigCorruptionException();
 		}
