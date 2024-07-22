@@ -173,3 +173,6 @@ button:disabled .fa-icon-modifier-control {
   color: unset;
   cursor: unset;
 }
+.fa-icon-styling-tab-content .components-range-control__wrapper {
+  min-width: 100px;
+}
