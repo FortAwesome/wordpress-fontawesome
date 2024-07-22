@@ -11,6 +11,8 @@ import {
  } from './store/actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faDotCircle,
+  faCircle,
   faSpinner,
   faSync,
   faExternalLinkAlt,
@@ -24,6 +26,7 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import size from 'lodash/size'
 import { sprintf, __ } from '@wordpress/i18n'
+const DEFAULT_LOAD_MODE = 'cdn'
 
 export default function KitSelectView({ useOption, masterSubmitButtonShowing, setMasterSubmitButtonShowing }) {
   const dispatch = useDispatch()
@@ -94,6 +97,12 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
     }
 
     dispatch(checkPreferenceConflicts())
+  }
+
+  const handleOptionChange = ({loadMode}) => {
+    dispatch(addPendingOption({
+      loadMode
+    }))
   }
 
   const kitsQueryStatus = useSelector(state => state.kitsQueryStatus)
@@ -256,7 +265,9 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
     apiTokenReadyNoKitsYet: 'apiTokenReadyNoKitsYet'
   }
 
-  function KitSelector() {
+  function KitSelector({ useOption }) {
+    const loadMode = useOption('loadMode') || DEFAULT_LOAD_MODE
+
     const status =
       apiToken
         ? kitsQueryStatus.isSubmitting
@@ -293,7 +304,6 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
         }
         </p></div>
      : null
-
 
       return <div className={ styles['kit-selector-container'] }>
 
@@ -371,6 +381,82 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
               showingOnlyActiveKit:
                 <>
                   { kitRefreshButton }
+
+        <hr className={ styles['option-divider'] }/>
+        <div className={ classnames( sharedStyles['flex'], sharedStyles['flex-row'], styles['features'] ) }>
+          <div className={ styles['option-header'] }>Load Mode</div>
+          <div className={ styles['option-choice-container'] }>
+            <div className={ styles['option-choices'] }>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="load_mode_cdn"
+                  name="load_mode_cdn"
+                  type="radio"
+                  value={ 'cdn' }
+                  checked={ loadMode === 'cdn' }
+                  onChange={ () => handleOptionChange({ loadMode: 'cdn' }) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                />
+                <label htmlFor="load_mode_cdn" className={ styles['option-label'] }>
+                  <span className={ sharedStyles['relative'] }>
+                    <FontAwesomeIcon
+                      icon={ faDotCircle }
+                      className={ sharedStyles['checked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                    <FontAwesomeIcon
+                      icon={ faCircle }
+                      className={ sharedStyles['unchecked-icon'] }
+                      size="lg"
+                      fixedWidth
+                    />
+                  </span>
+                  <span className={ styles['option-label-text'] }>
+                    { __( 'CDN', 'font-awesome' ) }
+                  </span>
+                </label>
+              </div>
+              <div className={ styles['option-choice'] }>
+                <input
+                  id="load_mode_selfhost"
+                  name="load_mode_selfhost"
+                  type="radio"
+                  value={ 'selfhost' }
+                  checked={ loadMode === 'selfhost' }
+                  onChange={ () => handleOptionChange({ loadMode: 'selfhost' }) }
+                  className={ classnames(sharedStyles['sr-only'], sharedStyles['input-radio-custom']) }
+                />
+                <label htmlFor="load_mode_selfhost" className={ styles['option-label'] }>
+                    <span className={ sharedStyles['relative'] }>
+                      <FontAwesomeIcon
+                        icon={ faDotCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ sharedStyles['checked-icon'] }
+                      />
+                      <FontAwesomeIcon
+                        icon={ faCircle }
+                        size="lg"
+                        fixedWidth
+                        className={ sharedStyles['unchecked-icon'] }
+                      />
+                    </span>
+                    <span className={ styles['option-label-text'] }>
+                      { __( 'Easy Self-Host', 'font-awesome' ) }
+                    </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
                 </>
             }[status]
           }
@@ -385,7 +471,7 @@ export default function KitSelectView({ useOption, masterSubmitButtonShowing, se
         hasSavedApiToken
         ? <>
             <ApiTokenControl />
-            <KitSelector />
+            <KitSelector useOption={useOption} handleOptionChange={handleOptionChange}/>
           </>
         : <ApiTokenInput />
       }
