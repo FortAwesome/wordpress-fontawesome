@@ -350,10 +350,6 @@ export default function (
       delete updatedTransform.rotate
     }
 
-    if(resetSize) {
-      delete updatedTransform.size
-    }
-
     if(resetFlip) {
       delete updatedTransform.flipX
       delete updatedTransform.flipY
