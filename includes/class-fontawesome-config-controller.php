@@ -9,6 +9,7 @@ namespace FortAwesome;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 
 use \WP_REST_Controller, \WP_Error, \Exception;
 
@@ -129,6 +130,8 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 				FontAwesome::OPTIONS_KEY,
 				$db_item
 			);
+
+            FontAwesome_SVG_Styles_Manager::maybe_setup_selfhosting($db_item);
 
 			$return_data = $this->build_item( fa() );
 			return new FontAwesome_REST_Response( $return_data, 200 );

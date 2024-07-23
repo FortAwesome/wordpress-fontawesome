@@ -352,7 +352,7 @@ EOD;
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 * @throws ConfigCorruptionException when called with an invalid configuration
-	 * @return array
+	 * @return FontAwesome_ResourceCollection
 	 */
 	public static function get_resource_collection( $version, $flags = array(
 		'use_pro'           => false,
@@ -501,6 +501,17 @@ EOD;
 		} else {
 			return get_option( self::OPTIONS_KEY );
 		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return FontAwesome_Resource
+     */ 
+	public function get_svg_support_styles_resource($version) {
+		return $this->build_resource($version, 'svg-with-js');
 	}
 
 	/**
