@@ -35,18 +35,17 @@ import { ColorPicker, ColorPalette, FontSizePicker, TabPanel, Tooltip } from '@w
 import { __ } from '@wordpress/i18n'
 import Colors from './colors'
 import IconSizer from './iconSizer'
-import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, ORIGINAL_SIZE } from './constants'
+import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE, ORIGINAL_SIZE } from './constants'
 
 const STYLES_TAB_NAME = 'styling';
 const ANIMATIONS_TAB_NAME = 'animations';
 
-const SettingsTabPanel = ({onSelect, setSize, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
+const SettingsTabPanel = ({onSelect, size, setSize, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
   const currentIconLayer = (attributes?.iconLayers || [])[0]
   if('object' !== typeof currentIconLayer) return
   const currentTransform = currentIconLayer?.transform
   const currentRotate = currentTransform?.rotate
-  const currentSize = currentTransform?.size
 
   const resetRotate = () => {
     updateTransform({resetRotate: true})
@@ -186,7 +185,7 @@ const SettingsTabPanel = ({onSelect, setSize, setColor, setAnimation, updateTran
             </div>
             <div className="">
               <FontSizePicker
-                fallbackFontSize={1}
+                value={size}
                 fontSizes={[
                   {
                     name: 'tiny',
@@ -209,7 +208,7 @@ const SettingsTabPanel = ({onSelect, setSize, setColor, setAnimation, updateTran
                     slug: 'xl'
                   }
                 ]}
-                onChange={function noRefCheck(){}}
+                onChange={setSize}
                 withSlider
                 units={['em']}
               />
@@ -307,12 +306,17 @@ export default function (
 ) {
   const iconLayers = attributes.iconLayers || [];
   const [ selectedTab, setSelectedTab ] = useState(STYLES_TAB_NAME)
+  const currentIconLayer = iconLayers[0]
+  const currentSize = currentIconLayer?.style?.fontSize
+  const [size, setSize] = useState(currentSize || DEFAULT_SIZE)
 
-  const setSize = (size) => {
+  const updateSize = (size, b) => {
+    const newSize = size || DEFAULT_SIZE
     const newIconLayers = [...iconLayers];
     const style = newIconLayers[0]?.style || {}
-    style.fontSize = size
+    style.fontSize = newSize
     newIconLayers[0].style = style
+    setSize(newSize)
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -403,7 +407,8 @@ export default function (
           editorSettings={editorSettings}
           updateTransform={updateTransform}
           setColor={setColor}
-          setSize={setSize}
+          size={size}
+          setSize={updateSize}
           setAnimation={setAnimation}
         />
       </div>

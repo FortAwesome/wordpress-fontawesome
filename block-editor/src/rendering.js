@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classnames from "classnames";
 import { createElement } from '@wordpress/element';
+import { DEFAULT_SIZE } from './constants'
 
 export function computeIconLayerCount(attributes) {
   return Array.isArray(attributes?.iconLayers)
@@ -29,7 +30,7 @@ export function renderIcon(attributes, options = {}) {
     elementType,
     {...(wrapperProps || {})},
     attributes.iconLayers.map((layer, index) => {
-      const { style = {fontSize: '1em'}, iconDefinition, rotation: initialRotation, ...rest } = layer;
+      const { style = {fontSize: DEFAULT_SIZE}, iconDefinition, rotation: initialRotation, ...rest } = layer;
       let className = (classNamesByLayer || [])[index]
       let rotation
 
