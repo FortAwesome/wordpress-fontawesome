@@ -184,8 +184,35 @@ const SettingsTabPanel = ({onSelect, setSize, setColor, setAnimation, updateTran
             <div className="options-section-heading">
               {__("Size", "font-awesome")}
             </div>
-            <div className="styling-controls">
-              <IconSizer onChange={setSize}/>
+            <div className="">
+              <FontSizePicker
+                fallbackFontSize={1}
+                fontSizes={[
+                  {
+                    name: 'tiny',
+                    size: '.8em',
+                    slug: 'tiny'
+                  },
+                  {
+                    name: 'normal',
+                    size: '1em',
+                    slug: 'medium'
+                  },
+                  {
+                    name: 'big',
+                    size: '1.5em',
+                    slug: 'large'
+                  },
+                  {
+                    name: 'bigger',
+                    size: '2em',
+                    slug: 'xl'
+                  }
+                ]}
+                onChange={function noRefCheck(){}}
+                withSlider
+                units={['em']}
+              />
             </div>
           </div>
           <div className="fa-icon-styling-tab-content icon-styling-flip tab-content">
