@@ -5,6 +5,20 @@ namespace FortAwesome;
  * Class FontAwesome_SVG_Styles_Manager
  */
 class FontAwesome_SVG_Styles_Manager {
+	/**
+	 * Indicates whether to enqueue the kit.
+	 *
+	 * @since 4.5.0
+	 * @return bool
+	 */
+	public static function skip_enqueue_kit() {
+		/**
+		 * Determines whether to enqueue the kit.
+		 *
+		 * @since 4.5.0
+		 */
+		return apply_filters( 'font_awesome_skip_enqueue_kit', false );
+	}
 
 	/**
      * Given the plugin's options, as would be returned by `get_option(FontAwesome::OPTIONS_KEY)`,
@@ -23,7 +37,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @param $is_skipping_enqueue_kit bool
 	 * @return bool
  	 */
-	public function requires_additional_svg_support_css($options, $is_skipping_enqueue_kit = false) {
+	public static function requires_additional_svg_support_css($options, $is_skipping_enqueue_kit = false) {
 		if ( boolval( $is_skipping_enqueue_kit ) ) {
 			return true;
 		}

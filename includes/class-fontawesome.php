@@ -22,6 +22,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -1978,12 +1979,7 @@ class FontAwesome {
 	 * @throws ConfigCorruptionException if the kit_token is not a string
 	 */
 	public function enqueue_kit( $kit_token ) {
-		/**
-		 * Determines whether to enqueue the kit
-		 *
-		 * @since 4.5.0
-		 */
-		if ( apply_filters( 'font_awesome_skip_enqueue_kit', false ) ) {
+		if ( FontAwesome_SVG_Styles_Manager::skip_enqueue_kit() ) {
 			return;
 		}
 
