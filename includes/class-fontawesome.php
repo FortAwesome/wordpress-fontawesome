@@ -1978,6 +1978,15 @@ class FontAwesome {
 	 * @throws ConfigCorruptionException if the kit_token is not a string
 	 */
 	public function enqueue_kit( $kit_token ) {
+		/**
+		 * Determines whether to enqueue the kit
+		 *
+		 * @since 4.5.0
+		 */
+		if ( apply_filters( 'font_awesome_skip_enqueue_kit', false ) ) {
+			return;
+		}
+
 		if ( ! is_string( $kit_token ) ) {
 			throw new ConfigCorruptionException();
 		}
