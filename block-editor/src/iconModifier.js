@@ -40,12 +40,20 @@ import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE, ORIGINAL_SIZ
 const STYLES_TAB_NAME = 'styling';
 const ANIMATIONS_TAB_NAME = 'animations';
 
-const SettingsTabPanel = ({onSelect, size, setSize, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
+const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updateTransform, editorSettings, attributes}) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
   const currentIconLayer = (attributes?.iconLayers || [])[0]
   if('object' !== typeof currentIconLayer) return
   const currentTransform = currentIconLayer?.transform
   const currentRotate = currentTransform?.rotate
+  const currentSize = currentIconLayer?.style?.fontSize
+  const [size, setSize] = useState(currentSize || DEFAULT_SIZE)
+
+  const updateSize = (size) => {
+    const newSize = size || DEFAULT_SIZE
+    setSize(newSize)
+    onSizeChange(newSize)
+  }
 
   const resetRotate = () => {
     updateTransform({resetRotate: true})
@@ -208,7 +216,7 @@ const SettingsTabPanel = ({onSelect, size, setSize, setColor, setAnimation, upda
                     slug: 'xl'
                   }
                 ]}
-                onChange={setSize}
+                onChange={updateSize}
                 withSlider
                 units={['em']}
               />
@@ -306,17 +314,12 @@ export default function (
 ) {
   const iconLayers = attributes.iconLayers || [];
   const [ selectedTab, setSelectedTab ] = useState(STYLES_TAB_NAME)
-  const currentIconLayer = iconLayers[0]
-  const currentSize = currentIconLayer?.style?.fontSize
-  const [size, setSize] = useState(currentSize || DEFAULT_SIZE)
 
-  const updateSize = (size, b) => {
-    const newSize = size || DEFAULT_SIZE
+  const updateSize = (size) => {
     const newIconLayers = [...iconLayers];
     const style = newIconLayers[0]?.style || {}
-    style.fontSize = newSize
+    style.fontSize = size
     newIconLayers[0].style = style
-    setSize(newSize)
     setAttributes({ iconLayers: newIconLayers });
   }
 
@@ -404,11 +407,10 @@ export default function (
         <SettingsTabPanel
           attributes={attributes}
           onSelect={setSelectedTab}
+          onSizeChange={updateSize}
           editorSettings={editorSettings}
           updateTransform={updateTransform}
           setColor={setColor}
-          size={size}
-          setSize={updateSize}
           setAnimation={setAnimation}
         />
       </div>
