@@ -21,36 +21,88 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
-     * Given the plugin's options, as would be returned by `get_option(FontAwesome::OPTIONS_KEY)`,
-     * returns `true` when the options indicate that webfont technology
-     * is in use, or when `$is_skipping_enqueue_kit` is `false`.
+     * Internal use only. This is not part of the plugin's public API.
      *
-     * These `true` conditions mean that the SVG support styles must be loaded
-     * either via CDN or self-host, in order to support inline SVG icons, such
-     * as those that may be added in the block editor.
+     * However, this relies on the `font_awesome_enqueue_additional_svg_support_styles` filter,
+     * which *is* part of the public API.
      *
-     * When an SVG kit is already being loaded, it's not necessary to separately
-     * load the SVG support styles, because the kit does that itself.
-     *
-	 * @since 4.5.0
+     * @internal
+     * @ignore
 	 * @param $options array
-	 * @param $is_skipping_enqueue_kit bool
-	 * @return bool
+	 * @return string | false
  	 */
-	public static function requires_additional_svg_support_css($options, $is_skipping_enqueue_kit = false) {
-		if ( boolval( $is_skipping_enqueue_kit ) ) {
-			return true;
+	public static function additional_svg_support_css_loading($options) {
+		$using_kit = FontAwesome::__using_kit_given_options($options);
+		$tech = 'webfont';
+		$load_mode = false;
+		$skip_enqueue_kit = self::skip_enqueue_kit();
+		$pro = false;
+
+		if ( isset( $options['usePro'] ) && boolval( $options['usePro'] ) ) {
+			$pro = true;
 		}
 
 		if (
 		    is_array( $options ) &&
-			isset( $options['technology'] ) &&
-			$options['technology'] === 'webfont'
+			isset( $options['technology'] )
 		) {
-			return true;
+			$tech = $options['technology'];
 		}
 
-		return false;
+		// Initial setting.
+		if ( $tech === 'webfont' ){
+			$load_mode = 'cdn';
+		} else if ( $using_kit && $skip_enqueue_kit ) {
+			/* 
+             * When using an SVG kit, and not enqueuing it on the front end,
+             * this implies that supporting styles should also not use the CDN.
+             */
+			$load_mode = 'selfhost';
+		} else {
+			$load_mode = false;
+		}
+
+		/**
+ 	 	 * Determine whether and how to enqueue the SVG support styles asset.
+ 	 	 *
+ 	 	 * As of plugin version 4.5.0, the SVG support styles are required to
+ 	 	 * support the SVG icons added using the icon chooser.
+ 	 	 *
+ 	 	 * When using SVG tech, either with a kit or the legacy CDN, it's not
+ 	 	 * necessary to enqueue this *additional* stylesheet, because the SVG
+ 	 	 * tech's JavaScript automatically injects the support styles into the
+ 	 	 * DOM when loaded in the browser.
+ 	 	 *
+ 	 	 * However, the `font_awesome_skip_enqueue_kit` filter might be used to
+ 	 	 * disable the loading of the kit on the front end, in order not to use
+ 	 	 * a CDN, for example.
+ 	 	 *
+ 	 	 * For such cases, where there will be no automatic injection of the
+ 	 	 * SVG support styles into the DOM, this additional stylesheet can be
+ 	 	 * enqueued separately.
+ 	 	 *
+ 	 	 * It can be loaded from either CDN, or retrieved and stored on the
+ 	 	 * WordPress server for self-hosting.
+ 	 	 *
+ 	 	 * Valid values:
+ 	 	 *
+ 	 	 * - `false`: no additional support styles will be enqueued.
+ 	 	 * - "cdn": enqueue the additional support styles from the Font Awesome CDN.
+ 	 	 * - "selfhost": retrieve the additional stylesheet and store it on the WordPress
+ 	 	 *   server for self-hosting.
+ 	 	 *
+ 	 	 * @since 4.5.0
+ 	 	 */
+		return apply_filters(
+			'font_awesome_enqueue_additional_svg_support_styles',
+			$load_mode,
+			[
+				'using_kit' => $using_kit,
+				'tech' => $tech,
+				'pro' => $pro,
+				'skip_enqueue_kit' => $skip_enqueue_kit
+			]
+		);
 	}
 
 	public static function asset_path($version) {
@@ -103,7 +155,7 @@ class FontAwesome_SVG_Styles_Manager {
 	public static function maybe_setup_selfhosting($options) {
 		$is_skipping_enqueue_kit = self::skip_enqueue_kit();
 
-		if ( ! self::requires_additional_svg_support_css($options, $is_skipping_enqueue_kit) ) {
+		if ( self::additional_svg_support_css_loading($options, $is_skipping_enqueue_kit) !== 'selfhost' ) {
 			return;
 		}
 
