@@ -23,7 +23,7 @@ class FontAwesome_SVG_Styles_Manager {
 	/**
      * Internal use only. This is not part of the plugin's public API.
      *
-     * However, this relies on the `font_awesome_enqueue_additional_svg_support_styles` filter,
+     * However, this relies on the `font_awesome_enqueue_additional_svg_styles` filter,
      * which *is* part of the public API.
      *
      * @internal
@@ -31,8 +31,8 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @param $options array
 	 * @return string | false
  	 */
-	public static function additional_svg_support_css_loading($options) {
-		$using_kit = FontAwesome::__using_kit_given_options($options);
+	public static function additional_svg_styles_loading($options) {
+		$using_kit = FontAwesome::using_kit_given_options($options);
 		$tech = 'webfont';
 		$load_mode = false;
 		$skip_enqueue_kit = self::skip_enqueue_kit();
@@ -94,7 +94,7 @@ class FontAwesome_SVG_Styles_Manager {
  	 	 * @since 4.5.0
  	 	 */
 		return apply_filters(
-			'font_awesome_enqueue_additional_svg_support_styles',
+			'font_awesome_enqueue_additional_svg_styles',
 			$load_mode,
 			[
 				'using_kit' => $using_kit,
@@ -155,23 +155,11 @@ class FontAwesome_SVG_Styles_Manager {
 	public static function maybe_setup_selfhosting($options) {
 		$is_skipping_enqueue_kit = self::skip_enqueue_kit();
 
-		if ( self::additional_svg_support_css_loading($options, $is_skipping_enqueue_kit) !== 'selfhost' ) {
+		if ( self::additional_svg_styles_loading($options, $is_skipping_enqueue_kit) !== 'selfhost' ) {
 			return;
 		}
 
-		$version_option = isset( $options['version'] ) ? $options['version'] : null;
-
-		$concrete_version = null;
-
-		if ( $version_option === 'latest' ) {
-			$concrete_version = fa()->latest_version_5();
-		} else if ( $version_option === '5.x' ) {
-			$concrete_version = fa()->latest_version_5();
-		} else if ( $version_option === '6.x' ) {
-			$concrete_version = fa()->latest_version_6();
-		} else {
-			$concrete_version = $version_option;
-		}
+		$concrete_version = fa()->concrete_version( $options );
 
 		if ( ! $concrete_version ) {
 			// TODO: throw a new kind of exception here.
@@ -192,7 +180,7 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-	    $resource = fa_release_provider()->get_svg_support_styles_resource($concrete_version);
+	    $resource = fa_release_provider()->get_svg_styles_resource($concrete_version);
 
 		if ( ! $resource->source() || ! $resource->integrity_key() ) {
 			// TODO: throw a new kind of exception here.

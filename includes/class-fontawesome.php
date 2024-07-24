@@ -201,6 +201,13 @@ class FontAwesome {
 	const RESOURCE_HANDLE_FA_BLOCKS = 'font-awesome-official-blocks';
 
 	/**
+	 * The handle used when enqueuing additional SVG support CSS.
+	 *
+	 * @since 4.5.0
+	 */
+	const RESOURCE_HANDLE_SVG_STYLES = 'font-awesome-svg-styles';
+
+	/**
 	 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
 	 *
 	 * @ignore
@@ -432,6 +439,8 @@ class FontAwesome {
 				$resource_collection = $this->cdn_resource_collection_for_current_options();
 				$this->enqueue_cdn( $this->options(), $resource_collection );
 			}
+
+			$this->maybe_load_additional_svg_styles();
 		} catch ( Exception $e ) {
 			notify_admin_fatal_error( $e );
 		} catch ( Error $e ) {
@@ -651,17 +660,17 @@ class FontAwesome {
 	public function using_kit() {
 		$options = $this->options();
 		$this->validate_options( $options );
-		return $this->using_kit_given_options( $options );
+		return self::using_kit_given_options( $options );
 	}
 
 	/**
-	 * Internal use only.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
 	 * @return bool
 	 */
-	private function using_kit_given_options( $options ) {
+	public static function using_kit_given_options( $options ) {
 		return isset( $options['kitToken'] )
 			&& isset( $options['apiToken'] )
 			&& $options['apiToken']
@@ -1086,7 +1095,7 @@ class FontAwesome {
 	 * @throws ConfigCorruptionException if options are invalid
 	 */
 	public function validate_options( $options ) {
-		$using_kit = $this->using_kit_given_options( $options );
+		$using_kit = self::using_kit_given_options( $options );
 		$kit_token = isset( $options['kitToken'] ) ? $options['kitToken'] : null;
 		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
 		$version   = isset( $options['version'] ) ? $options['version'] : null;
@@ -1113,8 +1122,7 @@ class FontAwesome {
 			 * "5.x", or "6.x" at this point. It must have already been resolved
 			 * into a concrete version.
 			 */
-			$version_is_concrete = is_string( $version )
-				&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+			$version_is_concrete = self::version_is_concrete( $version );
 
 			if ( ! $version_is_concrete ) {
 				throw new ConfigCorruptionException();
@@ -3258,13 +3266,17 @@ EOT;
 		add_action(
 			'enqueue_block_assets',
 			function () {
+				$concrete_version = $this->concrete_version( $this->options() );
+			    $styles_source = FontAwesome_SVG_Styles_Manager::asset_url( $concrete_version );
+
 				wp_enqueue_style(
-					self::RESOURCE_HANDLE_FA_BLOCKS . '-inline-svg-css',
-					trailingslashit( FONTAWESOME_DIR_URL ) . 'static/svg-with-js.css',
+					self::RESOURCE_HANDLE_SVG_STYLES,
+					$styles_source,
 					array(),
 					self::PLUGIN_VERSION,
 					'all'
 				);
+
 				if ( $this->is_gutenberg_page() ) {
 					// TODO: remove this hack. The block editor support CSS should be
 					// being built into the build directory of the block, and loaded
@@ -3278,6 +3290,134 @@ EOT;
 					);
 				}
 			}
+		);
+	}
+
+	/**
+     * Internal only, not part of this plugin's public API.
+     *
+     * Determine whether the given version is a concrete (semantic) version.
+     *
+     * @internal
+     * @ignore
+     * @return bool 
+     */ 
+	public static function version_is_concrete( $version ) {
+		return is_string( $version )
+			&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+    }
+
+	/**
+     * Internal use only, not part of this plugin's public API.
+     *
+ 	 * Determines the concrete version corresponding to the given options.
+ 	 *
+ 	 * A concrete version is just a semantic version like "6.5.0". This is distinct
+ 	 * from a symbolic version like "latest" or "6.x".
+ 	 *
+ 	 * This function resolves symbolic versions into a concrete versions.
+ 	 *
+ 	 * @internal
+ 	 * @ignore
+ 	 * @return false | string returns false if the version is invalid.
+ 	 */
+	public function concrete_version( $options ) {
+		$version = null;
+
+		if ( isset( $options['version'] ) && is_string( $options['version'] ) ) {
+			$version = $options['version'];
+		}
+
+		if ( ! $version ) {
+			return false;
+		}
+
+		$concrete_version = null;
+
+		if ( $version === 'latest' ) {
+			$concrete_version = $this->latest_version_5();
+		} else if ( $version === '5.x' ) {
+			$concrete_version = $this->latest_version_5();
+		} else if ( $version === '6.x' ) {
+			$concrete_version = $this->latest_version_6();
+		} else {
+			$concrete_version = $version;
+		}
+
+		if ( self::version_is_concrete( $concrete_version ) ) {
+			return $concrete_version;
+		} else {
+			return false;
+		}
+	}
+
+	protected function maybe_load_additional_svg_styles() {
+		$additional_svg_support_style_loading = FontAwesome_SVG_Styles_Manager::additional_svg_styles_loading( $this->options() );
+
+		if ( ! $additional_svg_support_style_loading ) {
+			return;
+		}
+
+		$concrete_version = $this->concrete_version( $this->options() );
+
+		$cdn_resource = fa_release_provider()->get_svg_styles_resource( $concrete_version );
+
+		$integrity_key = $cdn_resource->integrity_key();
+
+		if (! $integrity_key ) {
+			// TODO: throw exception?
+			return;
+		}
+
+		if ( $additional_svg_support_style_loading === 'selfhost' ) {
+			$styles_source = FontAwesome_SVG_Styles_Manager::asset_url( $concrete_version );
+
+			if ( is_string( $styles_source ) ) {
+				wp_enqueue_style(
+					self::RESOURCE_HANDLE_SVG_STYLES,
+					$styles_source,
+					[],
+					null,
+					'all'
+				);
+			}
+		} else if ( $additional_svg_support_style_loading === 'cdn' ) {
+			if (! $cdn_resource->source() ) {
+				// TODO: throw exception?
+				return;
+			}
+
+			wp_enqueue_style(
+				self::RESOURCE_HANDLE_SVG_STYLES,
+				$cdn_resource->source(),
+				[],
+				null,
+				'all'
+			);
+		}
+
+		// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
+		add_filter(
+			'style_loader_tag',
+			function ( $html, $handle ) use ( $integrity_key, $additional_svg_support_style_loading ) {
+				if ( in_array( $handle, array( self::RESOURCE_HANDLE_SVG_STYLES ), true ) ) {
+				   $crossorigin_attr = 'selfhost' === $additional_svg_support_style_loading
+					? '' : ' crossorigin="anonymous"';
+
+				   $integrity_attr = "integrity=\"$integrity_key\"";
+
+					return preg_replace(
+						'/\/>$/',
+						$integrity_attr . $crossorigin_attr . ' />',
+						$html,
+						1
+					);
+				} else {
+					return $html;
+				}
+			},
+			10,
+			2
 		);
 	}
 }
