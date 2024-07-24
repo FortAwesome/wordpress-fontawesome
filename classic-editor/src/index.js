@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
 import get from 'lodash/get'
 import { GLOBAL_KEY } from '../../admin/src/constants'
@@ -26,13 +26,14 @@ function setupClassicEditor() {
   // editors there are.
   const container = document.querySelector(`#${iconChooserContainerId}`)
 
+  const root = createRoot(container)
+
   if(container) {
-    ReactDOM.render(
+    root.render(
       <IconChooserModal
         onSubmit={ handleSubmit }
         openEvent={ modalOpenEvent }
-      />,
-      container
+      />
     )
   }
 }
