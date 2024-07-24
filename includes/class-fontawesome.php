@@ -434,7 +434,13 @@ class FontAwesome {
 			}
 
 			if ( $this->using_kit() ) {
-				$this->enqueue_kit( $this->options()['kitToken'] );
+				if ( FontAwesome_SVG_Styles_Manager::skip_enqueue_kit() ) {
+					// Normally, conflict detection is built into a kit.
+					// However, when not enqueuing the kit, we must enqueue conflict detection separately.
+					$this->maybe_enqueue_conflict_detection();
+				} else {
+					$this->enqueue_kit( $this->options()['kitToken'] );
+				}
 			} else {
 				$resource_collection = $this->cdn_resource_collection_for_current_options();
 				$this->enqueue_cdn( $this->options(), $resource_collection );
@@ -1987,10 +1993,6 @@ class FontAwesome {
 	 * @throws ConfigCorruptionException if the kit_token is not a string
 	 */
 	public function enqueue_kit( $kit_token ) {
-		if ( FontAwesome_SVG_Styles_Manager::skip_enqueue_kit() ) {
-			return;
-		}
-
 		if ( ! is_string( $kit_token ) ) {
 			throw new ConfigCorruptionException();
 		}
@@ -2120,31 +2122,7 @@ EOT;
 
 		$resources = $resource_collection->resources();
 
-		$conflict_detection_enqueue_command = new FontAwesome_Command(
-			function () {
-				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-				wp_enqueue_script(
-					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
-					FontAwesome::CONFLICT_DETECTOR_SOURCE,
-					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
-					null,
-					true
-				);
-			}
-		);
-
-		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
-			// Enqueue the conflict detector.
-			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
-				add_action(
-					$action,
-					array( $conflict_detection_enqueue_command, 'run' ),
-					PHP_INT_MAX
-				);
-			}
-
-			$this->apply_detection_ignore_attr();
-		}
+		$this->maybe_enqueue_conflict_detection();
 
 		if ( ! isset( $resources['all'] ) ) {
 			throw new ConfigCorruptionException();
@@ -3414,6 +3392,36 @@ EOT;
 			10,
 			2
 		);
+	}
+
+	protected function maybe_enqueue_conflict_detection() {
+		if ( ! $this->detecting_conflicts() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$conflict_detection_enqueue_command = new FontAwesome_Command(
+			function () {
+				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+				wp_enqueue_script(
+					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
+					FontAwesome::CONFLICT_DETECTOR_SOURCE,
+					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
+					null,
+					true
+				);
+			}
+		);
+
+		// Enqueue the conflict detector.
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+			add_action(
+				$action,
+				array( $conflict_detection_enqueue_command, 'run' ),
+				PHP_INT_MAX
+			);
+		}
+
+		$this->apply_detection_ignore_attr();
 	}
 }
 
