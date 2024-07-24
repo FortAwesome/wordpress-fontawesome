@@ -238,7 +238,7 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
 }
 
 function Edit(props) {
-  const { value, onChange, contentRef, isObjectActive } = props;
+  const { value, onChange, contentRef } = props;
 
   const isFormatIconFocused = isFocused(value);
   /*
@@ -373,7 +373,7 @@ function Edit(props) {
               icon={faBrandIcon}
               title={title}
               onClick={handleFormatButtonClick}
-              isActive={ isObjectActive }
+              isActive={ isFormatIconFocused }
           />
         </ToolbarGroup>
       </BlockControls>
