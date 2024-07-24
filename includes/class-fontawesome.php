@@ -3364,11 +3364,6 @@ EOT;
 
 		$integrity_key = $cdn_resource->integrity_key();
 
-		if (! $integrity_key ) {
-			// TODO: throw exception?
-			return;
-		}
-
 		if ( $additional_svg_support_style_loading === 'selfhost' ) {
 			$styles_source = FontAwesome_SVG_Styles_Manager::asset_url( $concrete_version );
 
