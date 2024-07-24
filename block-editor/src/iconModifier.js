@@ -309,7 +309,8 @@ export default function (
     attributes,
     setAttributes,
     IconChooserModal,
-    prepareHandleSelect
+    prepareHandleSelect,
+    context
   },
 ) {
   const iconLayers = attributes.iconLayers || [];
@@ -394,10 +395,13 @@ export default function (
 
   const editorSettings = getSettings();
 
+  const { color, fontSize } = context || {}
+  const contextStyle = { color, fontSize }
+
   return (
     <div className="fa-icon-modifier">
       <div className="fa-icon-modifier-preview-container">
-        <div className="fa-icon-modifier-preview">
+        <div className="fa-icon-modifier-preview" style={contextStyle}>
           {renderIcon(attributes)}
         </div>
       </div>

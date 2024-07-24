@@ -190,6 +190,9 @@ function InlineUI( { value, changeValue, contentRef, handleSelect, attributes, s
     }
   }
 
+  const {color, fontSize} = window.getComputedStyle(contentRef.current)
+  const context = {color, fontSize}
+
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 	const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
 
@@ -221,6 +224,7 @@ function InlineUI( { value, changeValue, contentRef, handleSelect, attributes, s
               attributes={attributes}
               setAttributes={setAttributes}
               IconChooserModal={IconChooserModal}
+              context={context}
               prepareHandleSelect={() => handleSelect}
             />
           </Modal>
