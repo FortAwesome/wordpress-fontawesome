@@ -335,9 +335,9 @@ function Edit(props) {
     const insertStartIndex = value.start
     // If we already have an icon at this location, then we should replace it.
     // Otherwise, we're inserting a new one.
-    const insertEndIndex = attributes?.iconLayers ? insertStartIndex + 1 : insertStartIndex
+    //const insertEndIndex = attributes?.iconLayers ? insertStartIndex + 1 : insertStartIndex
 
-    const newValue = insert(value, iconValue, insertStartIndex, insertEndIndex);
+    const newValue = insert(value, iconValue, insertStartIndex);
     onChange(newValue);
   }
 
