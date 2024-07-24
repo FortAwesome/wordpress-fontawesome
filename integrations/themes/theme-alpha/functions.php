@@ -72,3 +72,9 @@ function theme_alpha_fa_classes(){
 
   return implode(' ', $class_list);
 }
+
+add_filter('font_awesome_skip_enqueue_kit', '__return_true');
+
+add_filter('font_awesome_enqueue_additional_svg_styles', function() {
+	return 'selfhost';
+});
