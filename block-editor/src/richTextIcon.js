@@ -169,7 +169,12 @@ function deriveAttributes(value) {
   return {iconLayers: [iconLayer]}
 }
 
-function InlineUI( { value, changeValue, contentRef, handleSelect, attributes, setAttributes } ) {
+function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
+  const [attributes, setAttributes] = useState(deriveAttributes(value))
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
+	const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
+
 	let popoverAnchor = useAnchor( {
 		editableContentElement: contentRef.current,
 		settings
@@ -192,9 +197,6 @@ function InlineUI( { value, changeValue, contentRef, handleSelect, attributes, s
 
   const {color, fontSize} = window.getComputedStyle(contentRef.current)
   const context = {color, fontSize}
-
-	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-	const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
 
   return (
     <Popover
@@ -238,8 +240,6 @@ function Edit(props) {
   const { value, onChange, contentRef } = props;
 
   const isFormatIconFocused = isFocused(value);
-  const [attributes, setAttributes] = useState(isFormatIconFocused ? deriveAttributes(value) : {})
-
   /*
    * Deriving attributes:
    *
@@ -377,8 +377,6 @@ function Edit(props) {
           changeValue={changeValue}
           contentRef={contentRef}
           handleSelect={handleSelect}
-          attributes={attributes}
-          setAttributes={setAttributes}
         />
       )}
     </Fragment>
