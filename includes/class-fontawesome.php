@@ -2480,6 +2480,9 @@ EOT;
 				) {
 					continue;
 				}
+				if ( ! is_string( $details->src ) ) {
+					continue;
+				}
 				if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
 					/**
 					 * For each match we find, we'll update both the main option's
@@ -2527,6 +2530,10 @@ EOT;
 	 * @return bool
 	 */
 	public function is_url_blocked( $url ) {
+		if ( ! is_string( $url ) ) {
+			return false;
+		}
+
 		return false !== array_search( md5( $url ), $this->blocklist(), true );
 	}
 
