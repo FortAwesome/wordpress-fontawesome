@@ -348,7 +348,9 @@ function Edit(props) {
 
     if (!iconDefinition) return;
 
-    const existingIconLayer = (attributes?.iconLayers || [])[0] || {}
+    const existingAttributes = deriveAttributes(value)
+
+    const existingIconLayer = (existingAttributes?.iconLayers || [])[0] || {}
 
     const iconLayer = {
       ...existingIconLayer,
@@ -359,7 +361,6 @@ function Edit(props) {
       iconLayers: [iconLayer],
     };
 
-    setAttributes(newAttributes)
     changeValue(newAttributes, onChange)
   };
 
