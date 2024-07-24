@@ -88,6 +88,7 @@ function isFocused(value) {
 function deriveAttributes(value) {
   if(!Number.isFinite(value?.start)) return
   const replacement = value?.replacements[value.start]
+  if('string' !== typeof replacement?.innerHTML) return
   const parser = new DOMParser();
   const doc = parser.parseFromString(replacement.innerHTML, 'text/html');
   const svg = doc.querySelector('svg')
@@ -237,7 +238,7 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
 }
 
 function Edit(props) {
-  const { value, onChange, contentRef } = props;
+  const { value, onChange, contentRef, isObjectActive } = props;
 
   const isFormatIconFocused = isFocused(value);
   /*
@@ -366,11 +367,16 @@ function Edit(props) {
 
   return (
     <Fragment>
-      <RichTextToolbarButton
-        icon={faBrandIcon}
-        title={title}
-        onClick={handleFormatButtonClick}
-      />
+      <BlockControls>
+        <ToolbarGroup>
+          <ToolbarButton
+              icon={faBrandIcon}
+              title={title}
+              onClick={handleFormatButtonClick}
+              isActive={ isObjectActive }
+          />
+        </ToolbarGroup>
+      </BlockControls>
       <IconChooserModal onSubmit={handleSelect} openEvent={modalOpenEvent} />
       {isFormatIconFocused && (
         <InlineUI
