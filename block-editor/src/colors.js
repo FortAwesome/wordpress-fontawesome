@@ -3,7 +3,7 @@ import { faBan } from "@fortawesome/free-solid-svg-icons";
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { Tooltip } from '@wordpress/components';
+import { ColorPicker, Tooltip } from '@wordpress/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const NO_COLOR_TEXT = __("No Color", "font-awesome");
@@ -59,7 +59,7 @@ export default ({ themeColors, onChange, attributes }) => {
         <Tooltip key={index} text={color.name}>
           <div className="fawp-color-option-wrapper">
             <button
-              aria-selected={isColorSelected(color.color)}
+              aria-selected={isColorSelected({color: color.color})}
               className={classnames({
                 [SELECTED_CLASS]: isColorSelected({ color: color.color }),
               })}
