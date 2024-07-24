@@ -35,11 +35,19 @@ export default ({ themeColors, onChange, attributes }) => {
     if (!custom) {
       // We've picked a theme color.
       setCustomColor(NO_CUSTOM_VALUE);
+      setShowCustomColorPicker(false);
     }
 
-    setShowCustomColorPicker(false);
     onChange(color);
   };
+
+  const customColorPickerDefaultValue = () => {
+    if(currentColorIsCustom) {
+      return currentColor
+    }
+
+    return '#000000'
+  }
 
   const isColorSelected = ({ color, custom }) => {
     if (custom && currentColorIsCustom) {
@@ -102,7 +110,7 @@ export default ({ themeColors, onChange, attributes }) => {
         </div>
       </Tooltip>
       {showCustomColorPicker &&
-        <ColorPicker onChange={(color) => setColor({ color, custom: true })} />}
+        <ColorPicker defaultValue={customColorPickerDefaultValue()} onChange={(color) => setColor({ color, custom: true })} />}
     </div>
   );
 };
