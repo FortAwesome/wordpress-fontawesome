@@ -44,44 +44,50 @@ export default ({ themeColors, onChange, attributes }) => {
   return (
     <div className="fawp-color-settings">
       <Tooltip text={NO_COLOR_TEXT}>
-        <button
-          aria-selected={isColorSelected({})}
-          className={classnames({ [SELECTED_CLASS]: isColorSelected({}) })}
-          aria-label={NO_COLOR_TEXT}
-          onClick={() => setColor({})}
-        >
-          <FontAwesomeIcon icon={faBan} />
-        </button>
+        <div className="fawp-color-option-wrapper">
+          <button
+            aria-selected={isColorSelected({})}
+            className={classnames({ [SELECTED_CLASS]: isColorSelected({}) })}
+            aria-label={NO_COLOR_TEXT}
+            onClick={() => setColor({})}
+          >
+            <FontAwesomeIcon icon={faBan} />
+            </button>
+        </div>
       </Tooltip>
       {themeColors.map((color, index) => (
         <Tooltip key={index} text={color.name}>
-          <button
-            aria-selected={isColorSelected(color.color)}
-            className={classnames({
-              [SELECTED_CLASS]: isColorSelected({ color: color.color }),
-            })}
-            aria-label={color.name}
-            style={{ backgroundColor: color.color }}
-            onClick={() => setColor({ color: color.color })}
-          >
-            &nbsp;
-          </button>
+          <div className="fawp-color-option-wrapper">
+            <button
+              aria-selected={isColorSelected(color.color)}
+              className={classnames({
+                [SELECTED_CLASS]: isColorSelected({ color: color.color }),
+              })}
+              aria-label={color.name}
+              style={{ backgroundColor: color.color }}
+              onClick={() => setColor({ color: color.color })}
+            >
+              &nbsp;
+            </button>
+          </div>
         </Tooltip>
       ))}
       <Tooltip text={CUSTOM_COLOR_TEXT}>
-        <button
-          aria-selected={isColorSelected({ custom: true })}
-          className={classnames({
-            [SELECTED_CLASS]: isColorSelected({ custom: true }),
-          })}
-          aria-label={CUSTOM_COLOR_TEXT}
-          onClick={() => setColor({ custom: true })}
-          style={{
-            background: "linear-gradient(to right, darkblue, lightgreen)",
-          }}
-        >
-          &nbsp;
-        </button>
+        <div className="fawp-color-option-wrapper">
+          <button
+            aria-selected={isColorSelected({ custom: true })}
+            className={classnames({
+              [SELECTED_CLASS]: isColorSelected({ custom: true }),
+            })}
+            aria-label={CUSTOM_COLOR_TEXT}
+            onClick={() => setColor({ custom: true })}
+            style={{
+              background: "linear-gradient(to right, darkblue, lightgreen)",
+            }}
+          >
+            &nbsp;
+          </button>
+        </div>
       </Tooltip>
       {showCustomColorPicker &&
         <ColorPicker onChange={(color) => setColor({ color, custom: true })} />}

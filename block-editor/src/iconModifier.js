@@ -147,7 +147,7 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
     { ( tab ) => {
       if(STYLES_TAB_NAME == tab.name) return (
         <div className="fa-icon-styling-tab-content-wrapper tab-content-wrapper">
-          <div className="fa-icon-styling-tab-content icon-styling-color">
+          <div className="fa-icon-styling-tab-content icon-styling-color tab-content">
             <div className="options-section-heading">
               {__("Color", "font-awesome")}
             </div>

@@ -168,6 +168,40 @@ button:disabled .fa-icon-modifier-control {
   color: var(--white-fa);
 }
 
+.fawp-color-settings {
+  display: flex;
+  gap: 10px;
+}
+
+.fawp-color-settings .fawp-color-option-wrapper {
+  display: inline-block;
+  height: 28px;
+  transform: scale(1);
+  transition: transform .1s ease;
+  vertical-align: top;
+  width: 28px;
+  will-change: transform;
+}
+
+.fawp-color-settings .fawp-color-option-wrapper:hover {
+  transform: scale(1.2);
+}
+
+.fawp-color-settings button {
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--gray5-fa);
+  cursor: pointer;
+  display: inline-block;
+  height: 100%;
+  transition: box-shadow .1s ease;
+  vertical-align: top;
+  width: 100%;
+}
+
+.fawp-color-settings button.fawp-selected {
+  box-shadow: 0 0 0 2px var(--white-fa), 0 0 0 4px var(--black-fa);
+}
 
 .icon-animations .animation-controls button {
   flex: 1 0 33%;
