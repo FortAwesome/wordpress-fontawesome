@@ -13,6 +13,10 @@ export default ({ themeColors, onChange, attributes }) => {
   const currentIconLayer = (attributes?.iconLayers || [])[0];
   if ("object" !== typeof currentIconLayer) return;
   const currentColor = currentIconLayer?.color;
+  const currentColorIsCustom = !!currentColor &&
+    currentColor !== NO_CUSTOM_VALUE &&
+    !themeColors.find(({ color }) => color === currentColor)
+
   const [customColor, setCustomColor] = useState(NO_CUSTOM_VALUE);
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
 
@@ -37,9 +41,17 @@ export default ({ themeColors, onChange, attributes }) => {
     onChange(color);
   };
 
-  const isColorSelected = ({ color, custom }) =>
-    (custom && customColor !== NO_CUSTOM_VALUE) ||
-    (color === currentColor);
+  const isColorSelected = ({ color, custom }) => {
+    if (custom && currentColorIsCustom) {
+      return true
+    }
+
+    if (!custom && color === currentColor) {
+      return true
+    }
+
+    return false
+  }
 
   return (
     <div className="fawp-color-settings">
