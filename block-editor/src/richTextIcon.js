@@ -168,25 +168,10 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
 
 	const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
 
-	let popoverAnchor = useAnchor( {
+	const popoverAnchor = useAnchor( {
 		editableContentElement: contentRef.current,
 		settings
 	} );
-
-  const { width, height, x, y } = popoverAnchor.getBoundingClientRect() || {}
-
-  /* When there's *only* a rich text icon in the block, useAnchor seems to get
-   * confused and puts the Inline UI component way up on the far top left (0,0).
-   * This is a workaround to hardcode the anchor in that case.
-   */
-  if ( 0 === width && 0 === height && 0 === x && 0 === y) {
-    popoverAnchor = {
-      contextElement: contentRef.current,
-      getBoundingClientRect() {
-        return contentRef.current.getBoundingClientRect()
-      }
-    }
-  }
 
   const {color, fontSize} = window.getComputedStyle(contentRef.current)
   const context = {color, fontSize}
