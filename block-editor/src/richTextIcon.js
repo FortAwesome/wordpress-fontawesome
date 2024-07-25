@@ -177,40 +177,41 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
   const context = {color, fontSize}
 
   return (
-    <Popover
-      placement="bottom"
-      focusOnMount={false}
-      anchor={popoverAnchor}
-      className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
-    >
-      <div>
-        <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
-          Change Icon
-        </button>
-        <button onClick={() => setIsEditModalOpen(true)}>
-          Style
-        </button>
-
-        {hasIcon && isEditModalOpen && (
-          <Modal
-            title="Add Icon Styling"
-            onRequestClose={() => {
-              changeValue(attributes)
-              setIsEditModalOpen(false)
-            }}
-            className={`fawp-icon-styling-modal`}
-          >
-            <IconModifier
-              attributes={attributes}
-              setAttributes={setAttributes}
-              IconChooserModal={IconChooserModal}
-              context={context}
-              prepareHandleSelect={() => handleSelect}
-            />
-          </Modal>
-        )}
-      </div>
-    </Popover>
+    <>
+      <Popover
+        placement="bottom"
+        focusOnMount={false}
+        anchor={popoverAnchor}
+        className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
+      >
+        <div>
+          <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
+            Change Icon
+          </button>
+          <button onClick={() => setIsEditModalOpen(true)}>
+            Style
+          </button>
+        </div>
+      </Popover>
+      {hasIcon && isEditModalOpen && (
+        <Modal
+          title="Add Icon Styling"
+          onRequestClose={() => {
+            changeValue(attributes)
+            setIsEditModalOpen(false)
+          }}
+          className={`fawp-icon-styling-modal`}
+        >
+          <IconModifier
+            attributes={attributes}
+            setAttributes={setAttributes}
+            IconChooserModal={IconChooserModal}
+            context={context}
+            prepareHandleSelect={() => handleSelect}
+          />
+        </Modal>
+      )}
+    </>
   );
 }
 
