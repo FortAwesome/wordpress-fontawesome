@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classnames from "classnames";
 import { createElement } from '@wordpress/element';
+import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 
 export function computeIconLayerCount(attributes) {
   return Array.isArray(attributes?.iconLayers)
@@ -12,9 +13,10 @@ export function prepareParamsForUseBlock(attributes) {
   const iconLayerCount = computeIconLayerCount(attributes);
 
   return {
-    className: classnames({
-      "fa-layers": iconLayerCount > 1,
-    }),
+    className: classnames(
+      FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS ,
+      { "fa-layers": iconLayerCount > 1 }
+    ),
   };
 }
 
