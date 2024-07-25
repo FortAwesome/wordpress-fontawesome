@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import { Component, Fragment, renderToString, useState } from "@wordpress/element";
-import { Modal, Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
+import { Button, Modal, Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
   applyFormat,
@@ -186,12 +186,12 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
         className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
       >
         <div>
-          <button onClick={() => document.dispatchEvent(modalOpenEvent)}>
+          <Button variant="secondary" onClick={() => document.dispatchEvent(modalOpenEvent)}>
             Change Icon
-          </button>
-          <button onClick={() => setIsEditModalOpen(true)}>
+          </Button>
+          <Button variant="secondary" onClick={() => setIsEditModalOpen(true)}>
             Style
-          </button>
+          </Button>
         </div>
       </Popover>
       {hasIcon && isEditModalOpen && (

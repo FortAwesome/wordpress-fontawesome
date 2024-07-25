@@ -6,23 +6,10 @@
   border-radius: 2px;
 }
 
-.block-editor-fa-icon-edit__popover {
-  width: 80%;
-  max-width: 300px;
-}
-
-.block-editor-fa-icon-edit__popover .components-popover__content {
-  width: auto;
-}
-
-.block-editor-fa-icon-edit__popover .components-popover__content {
-  width: auto;
-  max-width: 300px;
-}
-
-.block-editor-format-toolbar__font-awesome-rich-text-icon-popover .components-popover__content {
-  width: auto;
-  max-width: 300px;
+.fawp-inline-popover-wrapper {
+  padding: .75rem;
+  display: flex;
+  gap: .5rem;
 }
 
 /* styling modal */
@@ -64,19 +51,19 @@
   border-radius: .75em;
 }
 
-
-.button-icon {
+.fawp-button-icon {
   padding-right: var(--spacing-xs-fa);
 }
 
-.fa-icon-modifier {
+.fawp-icon-modifier {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-xl-fa);
 }
 
 /* icon preview */
-.fa-icon-modifier-preview-container {
+.fawp-icon-modifier-preview-container {
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
@@ -87,41 +74,28 @@
   min-height: 300px;
 }
 
-.fa-icon-modifier-preview {
+.fawp-icon-modifier-preview {
   display: flex;
   margin: auto;
   text-align: center;
   font-size: var(--wp--preset--font-size--medium);
 }
 
-.fa-icon-modifier-preview div {
+.fawp-icon-modifier-preview div {
   display: flex;
   margin: auto;
 }
 
-
-/* tab buttons */
-.fa-icon-modifier-preview-controls.options-controls-disabled {
-  cursor: pointer;
-}
-
-/* tab icon button */
-.fa-icon-modifier-control {
-  cursor: pointer;
-  color: var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
-}
-
-button:disabled .fa-icon-modifier-control {
-  color: grey;
-  cursor: unset;
-}
-
-/* styling tabs */
-.fa-icon-modifier-preview-controls {
+/* tabs */
+.fawp-icon-modifier-preview-controls {
   flex: 1 1 50%;
 }
 
-.tab-content .options-section-heading {
+.fawp-tab-content {
+  margin-block-start: var(--spacing-xl-fa);
+}
+
+.fawp-tab-content .fawp-options-section-heading {
   font-size: .8em;
   font-weight: 900;
   letter-spacing: .2em;
@@ -129,46 +103,47 @@ button:disabled .fa-icon-modifier-control {
   margin-block: var(--spacing-sm-fa);
 }
 
-.styling-controls,
-.animation-controls {
+.fawp-styling-controls,
+.fawp-animation-controls {
   display: flex;
   align-items: stretch;
   gap: var(--spacing-sm-fa);
 }
 
-.animation-controls {
-  flex-wrap: wrap;
-}
-
-.styling-controls button,
-.animation-controls button {
+.fawp-styling-controls .fawp-button,
+.fawp-animation-controls .fawp-button {
   transition: all .2s ease-in-out;
   background-color: var(--white-fa);
   border-radius: var(--border-radius-fa);
   border: var(--border-width-fa) solid var(--gray7-fa);
-  padding: var(--spacing-md-fa)  var(--spacing-lg-fa);
+  padding: var(--spacing-xs-fa)  var(--spacing-sm-fa);
   flex: auto;
   cursor: pointer;
 }
 
-.styling-controls .reset,
-.animation-controls .reset {
+.fawp-animation-controls .fawp-button {
+  padding: var(--spacing-md-fa)  var(--spacing-lg-fa);
+}
+
+.fawp-styling-controls .fawp-reset,
+.fawp-animation-controls .fawp-reset {
   flex-grow: 0;
   background-color: var(--gray7-fa);
 }
 
-.styling-controls button.fawp-selected,
-.animation-controls button.fawp-selected {
+.fawp-styling-controls .fawp-button.fawp-selected,
+.fawp-animation-controls .fawp-button.fawp-selected {
   border-color: var(--black-fa);
 }
 
-.styling-controls button:hover,
-.animation-controls button:hover {
+.fawp-styling-controls .fawp-button:hover,
+.fawp-animation-controls .fawp-button:hover {
   border-color: var(--black-fa);
   background-color: var(--black-fa);
   color: var(--white-fa);
 }
 
+/* styling tab - colors */
 .fawp-color-settings {
   display: flex;
   gap: 10px;
@@ -188,7 +163,7 @@ button:disabled .fa-icon-modifier-control {
   transform: scale(1.2);
 }
 
-.fawp-color-settings button {
+.fawp-color-settings .fawp-button {
   border: none;
   border-radius: 50%;
   box-shadow: 0 0 0 1px var(--gray5-fa);
@@ -200,7 +175,7 @@ button:disabled .fa-icon-modifier-control {
   width: 100%;
 }
 
-.fawp-color-settings button.fawp-selected {
+.fawp-color-settings .fawp-button.fawp-selected {
   box-shadow: 0 0 0 2px var(--white-fa), 0 0 0 4px var(--black-fa);
 }
 
@@ -213,27 +188,21 @@ button:disabled .fa-icon-modifier-control {
   z-index: 1000;
   top: 0;
   right: 0;
+  text-align: right;
 }
 
-.icon-animations .animation-controls button {
+
+/* animation tab */
+.fawp-animation-controls {
+  flex-wrap: wrap;
+}
+
+.fawp-icon-animations .fawp-animation-controls .fawp-button {
   flex: 1 0 33%;
 }
 
-.styling-controls button.is-selected,
-.animation-controls button.is-selected {
-  border-color: var(--black-fa);
-}
-
-.icon-styling-rotate input {
+.fawp-icon-styling-rotate .fawp-input {
   border-radius: var(--border-radius-fa);
   border: var(--border-width-fa) solid var(--gray7-fa);
   max-width: 12ch;
-}
-
-.fa-icon-modifier-styles button:disabled {
-  color: unset;
-  cursor: unset;
-}
-.fa-icon-styling-tab-content .components-range-control__wrapper {
-  min-width: 100px;
 }

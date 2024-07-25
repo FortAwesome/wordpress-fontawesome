@@ -127,18 +127,15 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
 
   return <TabPanel
       className="fawp-icon-settings-tab-panel"
-      activeClass="fawp-icon-settings-active-tab"
       onSelect={ onSelect }
       tabs={ [
           {
               name: STYLES_TAB_NAME,
-              icon: wpIconFromFaIconDefinition(faPalette),
               title: __('Add Styling', 'font-awesome'),
               className: `fawp-icon-settings-${STYLES_TAB_NAME}`,
           },
           {
               name: ANIMATIONS_TAB_NAME,
-              icon: wpIconFromFaIconDefinition(faFilm),
               title: __('Add Animation', 'font-awesome'),
               className: `fawp-icon-settings-${ANIMATIONS_TAB_NAME}`,
           }
@@ -146,9 +143,9 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
   >
     { ( tab ) => {
       if(STYLES_TAB_NAME == tab.name) return (
-        <div className="fa-icon-styling-tab-content-wrapper tab-content-wrapper">
-          <div className="fa-icon-styling-tab-content icon-styling-color tab-content">
-            <div className="options-section-heading">
+        <div className="fawp-icon-styling-tab-content-wrapper fawp-tab-content-wrapper">
+          <div className="fawp-icon-styling-tab-content fawp-icon-styling-color fawp-tab-content">
+            <div className="fawp-options-section-heading">
               {__("Color", "font-awesome")}
             </div>
             <div>
@@ -159,27 +156,27 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
               />
             </div>
           </div>
-          <div className="fa-icon-styling-tab-content icon-styling-rotate tab-content">
-            <div className="options-section-heading">
+          <div className="fawp-icon-styling-tab-content fawp-icon-styling-rotate fawp-tab-content">
+            <div className="fawp-options-section-heading">
               {__("Rotation", "font-awesome")}
             </div>
-            <div className="styling-controls">
+            <div className="fawp-styling-controls">
               <Tooltip text={__("Remove Rotation", "font-awesome")}>
-                <button className={`${rotateSelectionClass()} reset`} onClick={resetRotate}>
+                <button className={`${rotateSelectionClass()} fawp-button fawp-reset`} onClick={resetRotate}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Rotate 90deg to the right", "font-awesome")}>
-                <button className={rotateSelectionClass(90)} onClick={() => setRotate({rotate: 90})}>90°</button>
+                <button className={`${rotateSelectionClass(90)} fawp-button`} onClick={() => setRotate({rotate: 90})}>90°</button>
               </Tooltip>
               <Tooltip text={__("Rotate 180deg to the right", "font-awesome")}>
-                <button className={rotateSelectionClass(180)} onClick={() => setRotate({rotate: 180})}>180°</button>
+                <button className={`${rotateSelectionClass(180)} fawp-button`} onClick={() => setRotate({rotate: 180})}>180°</button>
               </Tooltip>
               <Tooltip text={__("Rotate 270deg to the right", "font-awesome")}>
-                <button className={rotateSelectionClass(270)} onClick={() => setRotate({rotate: 270})}>270°</button>
+                <button className={`${rotateSelectionClass(270)} fawp-button`} onClick={() => setRotate({rotate: 270})}>270°</button>
               </Tooltip>
               <input
-                className={rotateSelectionClass('custom')}
+                className={`${rotateSelectionClass('custom')} fawp-input`}
                 type="number"
                 placeholder={__("Custom...", "font-awesome")}
                 value={customRotate}
@@ -187,8 +184,8 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
               />
             </div>
           </div>
-          <div className="fa-icon-styling-tab-content icon-styling-size tab-content">
-            <div className="options-section-heading">
+          <div className="fawp-icon-styling-tab-content fawp-icon-styling-size fawp-tab-content">
+            <div className="fawp-options-section-heading">
               {__("Size", "font-awesome")}
             </div>
             <div className="">
@@ -207,12 +204,12 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
                   },
                   {
                     name: 'big',
-                    size: '1.5em',
+                    size: '2.5em',
                     slug: 'large'
                   },
                   {
                     name: 'bigger',
-                    size: '2em',
+                    size: '4em',
                     slug: 'xl'
                   }
                 ]}
@@ -222,28 +219,28 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
               />
             </div>
           </div>
-          <div className="fa-icon-styling-tab-content icon-styling-flip tab-content">
-            <div className="options-section-heading">
+          <div className="fawp-icon-styling-tab-content fawp-icon-styling-flip fawp-tab-content">
+            <div className="fawp-options-section-heading">
               {__("Flip", "font-awesome")}
             </div>
-            <div className="styling-controls">
+            <div className="fawp-styling-controls">
               <Tooltip text={__("Remove Flipping", "font-awesome")}>
-                <button className={`${classnames({ [SELECTED_CLASS]: hasNoFlip() })} reset`} onClick={() => updateTransform({resetFlip: true})}>
+                <button className={`${classnames({ [SELECTED_CLASS]: hasNoFlip() })} fawp-button fawp-reset`} onClick={() => updateTransform({resetFlip: true})}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Horizontal", "font-awesome")}>
-                <button className={classnames({[SELECTED_CLASS]: flippedHorizontal()})} onClick={() => updateTransform({ toggleFlipX: true })}>
+                <button className={`${classnames({[SELECTED_CLASS]: flippedHorizontal()})} fawp-button`} onClick={() => updateTransform({ toggleFlipX: true })}>
                   <FontAwesomeIcon icon={faReflectHorizontal} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Vertical", "font-awesome")}>
-                <button className={classnames({[SELECTED_CLASS]: flippedVertical()})} onClick={() => updateTransform({ toggleFlipY: true })}>
+                <button className={`${classnames({[SELECTED_CLASS]: flippedVertical()})} fawp-button`} onClick={() => updateTransform({ toggleFlipY: true })}>
                   <FontAwesomeIcon icon={faReflectVertical} />
                 </button>
               </Tooltip>
               <Tooltip text={__("Flip Both", "font-awesome")}>
-                <button className={classnames({[SELECTED_CLASS]: flippedBoth()})} onClick={() => updateTransform({ toggleFlipX: true, toggleFlipY: true})}>
+                <button className={`${classnames({[SELECTED_CLASS]: flippedBoth()})} fawp-button`} onClick={() => updateTransform({ toggleFlipX: true, toggleFlipY: true})}>
                   <FontAwesomeIcon icon={faReflectBoth} />
                 </button>
               </Tooltip>
@@ -253,45 +250,45 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
       )
 
       if(ANIMATIONS_TAB_NAME == tab.name) return (
-        <div className="fa-icon-animations-tab-content-wrappe tab-content-wrapper">
-          <div className="fa-icon-animations-tab-content icon-animations tab-content">
-            <div className="animation-controls">
-              <button className={`{classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected()})} reset`} onClick={() => setAnimation(null)}>
+        <div className="fawp-icon-animations-tab-content-wrapper fawp-tab-content-wrapper">
+          <div className="fawp-icon-animations-tab-content fawp-icon-animations fawp-tab-content">
+            <div className="fawp-animation-controls">
+              <button className={`{classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected()})} fawp-button fawp-reset`} onClick={() => setAnimation(null)}>
                 <FontAwesomeIcon icon={faBan} />{" "}
                 {__("No Animation", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('beat')})} onClick={() => setAnimation("beat")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('beat')})} onClick={() => setAnimation("beat")}>
                 <FontAwesomeIcon className="button-icon" icon={faHeart} /> {__("Beat", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('beatFade')})} onClick={() => setAnimation("beatFade")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('beatFade')})} onClick={() => setAnimation("beatFade")}>
                 <FontAwesomeIcon className="button-icon" icon={faHeartHalfStroke} />{" "}
                 {__("Beat Fade", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('bounce')})} onClick={() => setAnimation("bounce")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('bounce')})} onClick={() => setAnimation("bounce")}>
                 <FontAwesomeIcon className="button-icon" icon={faCircle} />{" "}
                 {__("Bounce", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('fade')})} onClick={() => setAnimation("fade")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('fade')})} onClick={() => setAnimation("fade")}>
                 <FontAwesomeIcon className="button-icon" icon={faSlidersSimple} />{" "}
                 {__("Fade", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('flip')})} onClick={() => setAnimation("flip")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('flip')})} onClick={() => setAnimation("flip")}>
                 <FontAwesomeIcon className="button-icon" icon={faReflectHorizontal} />{" "}
                 {__("Flip", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('shake')})} onClick={() => setAnimation("shake")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('shake')})} onClick={() => setAnimation("shake")}>
                 <FontAwesomeIcon className="button-icon" icon={faBellRing} />{" "}
                 {__("Shake", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('spin')})} onClick={() => setAnimation("spin")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('spin')})} onClick={() => setAnimation("spin")}>
                 <FontAwesomeIcon className="button-icon" icon={faRotateRight} />{" "}
                 {__("Spin", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('spinReverse')})} onClick={() => setAnimation("spinReverse")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('spinReverse')})} onClick={() => setAnimation("spinReverse")}>
                 <FontAwesomeIcon className="button-icon" icon={faRotateLeft} />{" "}
                 {__("Spin Reverse", "font-awesome")}
               </button>
-              <button className={classnames('animation-button', {[SELECTED_CLASS]: isAnimationSelected('spinPulse')})} onClick={() => setAnimation("spinPulse")}>
+              <button className={classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected('spinPulse')})} onClick={() => setAnimation("spinPulse")}>
                 <FontAwesomeIcon className="button-icon" icon={faRotateLeft} />{" "}
                 {__("Spin Pulse", "font-awesome")}
               </button>
@@ -399,14 +396,14 @@ export default function (
   const contextStyle = { color, fontSize, backgroundColor }
 
   return (
-    <div className="fa-icon-modifier">
-      <div className="fa-icon-modifier-preview-container">
-        <div className="fa-icon-modifier-preview" style={contextStyle}>
+    <div className="fawp-icon-modifier">
+      <div className="fawp-icon-modifier-preview-container">
+        <div className="fawp-icon-modifier-preview" style={contextStyle}>
           {renderIcon(attributes)}
         </div>
       </div>
       <div
-        className={classnames("fa-icon-modifier-preview-controls")}
+        className={classnames("fawp-icon-modifier-preview-controls")}
       >
         <SettingsTabPanel
           attributes={attributes}

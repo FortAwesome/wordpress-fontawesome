@@ -3,7 +3,7 @@ import { faBan } from "@fortawesome/free-solid-svg-icons";
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { ColorPicker, Tooltip } from '@wordpress/components';
+import { Button, ColorPicker, Tooltip } from '@wordpress/components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const NO_COLOR_TEXT = __("No Color", "font-awesome");
@@ -67,7 +67,7 @@ export default ({ themeColors, onChange, attributes }) => {
         <div className="fawp-color-option-wrapper">
           <button
             aria-selected={isColorSelected({})}
-            className={classnames({ [SELECTED_CLASS]: isColorSelected({}) })}
+            className={`${classnames({ [SELECTED_CLASS]: isColorSelected({}) })} fawp-button fawp-reset`}
             aria-label={NO_COLOR_TEXT}
             onClick={() => setColor({})}
           >
@@ -80,9 +80,9 @@ export default ({ themeColors, onChange, attributes }) => {
           <div className="fawp-color-option-wrapper">
             <button
               aria-selected={isColorSelected({color: color.color})}
-              className={classnames({
+              className={`${classnames({
                 [SELECTED_CLASS]: isColorSelected({ color: color.color }),
-              })}
+              })} fawp-button`}
               aria-label={color.name}
               style={{ backgroundColor: color.color }}
               onClick={() => setColor({ color: color.color })}
@@ -96,9 +96,9 @@ export default ({ themeColors, onChange, attributes }) => {
         <div className="fawp-color-option-wrapper">
           <button
             aria-selected={isColorSelected({ custom: true })}
-            className={classnames({
+            className={`${classnames({
               [SELECTED_CLASS]: isColorSelected({ custom: true }),
-            })}
+            })} fawp-button`}
             aria-label={CUSTOM_COLOR_TEXT}
             onClick={() => setColor({ custom: true })}
             style={{
@@ -112,6 +112,7 @@ export default ({ themeColors, onChange, attributes }) => {
       {showCustomColorPicker &&
         <div className="fawp-color-picker-wrapper">
           <ColorPicker defaultValue={customColorPickerDefaultValue()} onChange={(color) => setColor({ color, custom: true })} />
+          <Button variant="secondary" onClick={() => setShowCustomColorPicker(false)}>{__('Close', 'font-awesome')}</Button>
         </div>
       }
     </div>
