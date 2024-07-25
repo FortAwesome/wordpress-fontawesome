@@ -32,8 +32,8 @@
       "lineHeight": true
     }
   },
-  "textdomain": "fa-icon-block",
-  "editorScript": "font-awesome-block-editor-support",
+  "textdomain": "font-awesome",
+  "editorScript": "font-awesome-block-editor",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"
 }

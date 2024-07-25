@@ -19,7 +19,7 @@ if (!function_exists('FortAwesome\fa_handle_init')) {
 		// TODO: maybe rewire so that FontAwesome::init() always runs on init,
 		// which is what it claims to do.
 		wp_register_script(
-			'font-awesome-block-editor-support',
+			'font-awesome-block-editor',
 			trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.js',
 			array(
 				FontAwesome::ADMIN_RESOURCE_HANDLE,
