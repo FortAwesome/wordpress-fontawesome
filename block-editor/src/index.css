@@ -79,6 +79,7 @@
   margin: auto;
   text-align: center;
   font-size: var(--wp--preset--font-size--medium);
+  padding: var(--spacing-md-fa);
 }
 
 .fawp-icon-modifier-preview div {
@@ -97,10 +98,9 @@
 
 .fawp-tab-content .fawp-options-section-heading {
   font-size: .8em;
-  font-weight: 900;
-  letter-spacing: .2em;
+  font-weight: 500;
   text-transform: uppercase;
-  margin-block: var(--spacing-sm-fa);
+  margin-block: var(--spacing-xs-fa);
 }
 
 .fawp-styling-controls,
@@ -179,6 +179,10 @@
   box-shadow: 0 0 0 2px var(--white-fa), 0 0 0 4px var(--black-fa);
 }
 
+.fawp-icon-settings-tab-panel {
+  position: relative;
+}
+
 .fawp-color-picker-wrapper {
   position: absolute;
   padding: 10px;
@@ -187,7 +191,7 @@
   border: 1px solid gray;
   z-index: 1000;
   top: 0;
-  right: 0;
+  right: 10%;
   text-align: right;
 }
 

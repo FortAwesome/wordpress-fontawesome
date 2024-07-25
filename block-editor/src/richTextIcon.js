@@ -185,7 +185,7 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
         anchor={popoverAnchor}
         className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
       >
-        <div>
+        <div className="fawp-inline-popover-wrapper">
           <Button variant="secondary" onClick={() => document.dispatchEvent(modalOpenEvent)}>
             Change Icon
           </Button>
