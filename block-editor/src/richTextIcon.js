@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import { Component, Fragment, renderToString, useState } from "@wordpress/element";
 import { Modal, Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
@@ -23,7 +24,7 @@ import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } 
 import createCustomEvent from './createCustomEvent'
 import { renderIcon } from './rendering'
 import IconModifier from './iconModifier'
-import { ANIMATIONS } from './constants'
+import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
 export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon';
@@ -236,7 +237,10 @@ function Edit(props) {
 
   const changeValue = (attributes) => {
     const wrapperProps = {
-      className: FONT_AWESOME_RICH_TEXT_ICON_CLASS
+      className: classnames(
+        FONT_AWESOME_RICH_TEXT_ICON_CLASS,
+        FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS
+      )
     }
 
     const element = renderIcon(attributes, {
