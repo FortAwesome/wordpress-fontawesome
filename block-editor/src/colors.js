@@ -110,7 +110,10 @@ export default ({ themeColors, onChange, attributes }) => {
         </div>
       </Tooltip>
       {showCustomColorPicker &&
-        <ColorPicker defaultValue={customColorPickerDefaultValue()} onChange={(color) => setColor({ color, custom: true })} />}
+        <div className="fawp-color-picker-wrapper">
+          <ColorPicker defaultValue={customColorPickerDefaultValue()} onChange={(color) => setColor({ color, custom: true })} />
+        </div>
+      }
     </div>
   );
 };

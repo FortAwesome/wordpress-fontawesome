@@ -70,6 +70,7 @@
 }
 
 .fa-icon-modifier {
+  position: relative;
   display: flex;
   gap: var(--spacing-xl-fa);
 }
@@ -201,6 +202,17 @@ button:disabled .fa-icon-modifier-control {
 
 .fawp-color-settings button.fawp-selected {
   box-shadow: 0 0 0 2px var(--white-fa), 0 0 0 4px var(--black-fa);
+}
+
+.fawp-color-picker-wrapper {
+  position: absolute;
+  padding: 10px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,.5);
+  border: 1px solid gray;
+  z-index: 1000;
+  top: 0;
+  right: 0;
 }
 
 .icon-animations .animation-controls button {
