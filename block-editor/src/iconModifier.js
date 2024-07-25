@@ -185,9 +185,6 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
             </div>
           </div>
           <div className="fawp-icon-styling-tab-content fawp-icon-styling-size fawp-tab-content">
-            <div className="fawp-options-section-heading">
-              {__("Size", "font-awesome")}
-            </div>
             <div className="">
               <FontSizePicker
                 value={size}
