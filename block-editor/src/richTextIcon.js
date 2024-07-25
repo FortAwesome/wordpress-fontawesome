@@ -26,7 +26,7 @@ import IconModifier from './iconModifier'
 import { ANIMATIONS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
 export const ZERO_WIDTH_SPACE = '\u200b';
-const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-font-awesome-rich-text-icon';
+const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon';
 const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform';
 export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
 const TRANSFORM_PROPS = ['size', 'x', 'y', 'rotate', 'flipX', 'flipY']
