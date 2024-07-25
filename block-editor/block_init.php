@@ -2,14 +2,38 @@
 
 namespace FortAwesome;
 
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
+
 if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
 function block_init() {
-	// TODO: we may need guard these and issue warnings if these APIs are not
-	// available on earlier versions for WordPress.
-	// Requires WP 5.8.0 for this API to allow the path to the block.json dir.
+	if ( ! function_exists('is_wp_version_compatible') || ! is_wp_version_compatible('5.8.0') ) {
+		return;
+	}
+
+	// We need to register the block-editor script explicitly here, instead of
+	// just relying on `register_block_type` because we need to add some dependencies.
+	wp_register_script(
+		'font-awesome-block-editor',
+		trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.js',
+		array(
+			FontAwesome::ADMIN_RESOURCE_HANDLE,
+			FontAwesome::RESOURCE_HANDLE_ICON_CHOOSER,
+		),
+		FontAwesome::PLUGIN_VERSION
+	);
+
+	wp_register_style(
+		'font-awesome-block-editor',
+		trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.css',
+		array(
+			FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES
+		),
+		FontAwesome::PLUGIN_VERSION
+	);
+
 	register_block_type(__DIR__ . '/build');
 
 	// This will only show up on a page where the block icon is used.

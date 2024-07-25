@@ -6,6 +6,13 @@ namespace FortAwesome;
  */
 class FontAwesome_SVG_Styles_Manager {
 	/**
+	 * The handle used when enqueuing additional SVG support CSS.
+	 *
+	 * @since 4.5.0
+	 */
+	const RESOURCE_HANDLE_SVG_STYLES = 'font-awesome-svg-styles';
+
+	/**
 	 * Indicates whether to enqueue the kit.
 	 *
 	 * @since 4.5.0
@@ -23,7 +30,7 @@ class FontAwesome_SVG_Styles_Manager {
 	/**
      * Internal use only. This is not part of the plugin's public API.
      *
-     * However, this relies on the `font_awesome_enqueue_additional_svg_styles` filter,
+     * However, this relies on the `font_awesome_svg_styles_loading` filter,
      * which *is* part of the public API.
      *
      * @internal
@@ -32,22 +39,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @return string | false
  	 */
 	public static function additional_svg_styles_loading($options) {
-		$using_kit = FontAwesome::using_kit_given_options($options);
-		$tech = 'webfont';
-		$load_mode = false;
-		$skip_enqueue_kit = self::skip_enqueue_kit();
-		$pro = false;
 
-		if ( isset( $options['usePro'] ) && boolval( $options['usePro'] ) ) {
-			$pro = true;
-		}
-
-		if (
-		    is_array( $options ) &&
-			isset( $options['technology'] )
-		) {
-			$tech = $options['technology'];
-		}
 
 		// Initial setting.
 		if ( $tech === 'webfont' ){
@@ -94,18 +86,17 @@ class FontAwesome_SVG_Styles_Manager {
  	 	 * @since 4.5.0
  	 	 */
 		return apply_filters(
-			'font_awesome_enqueue_additional_svg_styles',
+			'font_awesome_svg_styles_loading',
 			$load_mode,
 			[
 				'using_kit' => $using_kit,
 				'tech' => $tech,
-				'pro' => $pro,
 				'skip_enqueue_kit' => $skip_enqueue_kit
 			]
 		);
 	}
 
-	public static function asset_path($version) {
+	public static function selfhost_asset_path($version) {
 		$upload_dir = wp_upload_dir(null, true, false);
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
@@ -126,7 +117,7 @@ class FontAwesome_SVG_Styles_Manager {
 		];
 	}
 
-	public static function asset_url($version) {
+	public static function selfhost_asset_url($version) {
 		$upload_dir = wp_upload_dir(null, false, false);
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
@@ -139,6 +130,78 @@ class FontAwesome_SVG_Styles_Manager {
 		$asset_subpath = "$asset_subpath_subdir/svg-with-js.css";
 
 		return trailingslashit( $upload_dir['baseurl'] ) . $asset_subpath;
+	}
+
+	/**
+     * Internal use only, not part of the plugin's public API.
+     *
+     * However, this relies on the `font_awesome_svg_styles_loading` filter,
+     * which *is* part of the public API.
+     *
+     * This registers the svg styles stylesheet according to cdn or selfhost
+     * loading, using cdn by default, which can be override by the
+     * `font_awesome_svg_styles_loading` filter.
+     *
+     * It also adds an action to update the `<link>` with an sri integrity key,
+     * whether loaded from cdn or selfhost.
+     *
+     * @internal
+     * @ignore
+     */
+	public static function register_svg_styles($fa, $fa_release_provider) {
+		$load_mode = 'cdn';
+
+		$load_mode = apply_filters(
+			'font_awesome_svg_styles_loading',
+			$load_mode,
+			[
+				'using_kit' => $fa->using_kit(),
+				'tech' => $fa->technology()
+			]
+		);
+
+		$concrete_version = $fa->concrete_version( $fa->options() );
+
+		$cdn_resource = $fa_release_provider->get_svg_styles_resource( $concrete_version );
+
+		$integrity_key = $cdn_resource->integrity_key();
+
+		$source = $cdn_resource->source();
+
+		if ( $load_mode === 'selfhost' ) {
+			$source = FontAwesome_SVG_Styles_Manager::selfhost_asset_url( $concrete_version );
+		}
+
+		wp_register_style(
+			self::RESOURCE_HANDLE_SVG_STYLES,
+			$source,
+			[],
+			null,
+			'all'
+		);
+
+		add_filter(
+			'style_loader_tag',
+			function ( $html, $handle ) use ( $integrity_key, $load_mode ) {
+				if ( in_array( $handle, array( self::RESOURCE_HANDLE_SVG_STYLES ), true ) ) {
+				   $crossorigin_attr = 'selfhost' === $load_mode
+					? '' : ' crossorigin="anonymous"';
+
+				   $integrity_attr = "integrity=\"$integrity_key\"";
+
+					return preg_replace(
+						'/\/>$/',
+						$integrity_attr . $crossorigin_attr . ' />',
+						$html,
+						1
+					);
+				} else {
+					return $html;
+				}
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -166,7 +229,7 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-		$asset_path = self::asset_path( $concrete_version );
+		$asset_path = self::selfhost_asset_path( $concrete_version );
 
 		if ( !$asset_path || ! isset($asset_path['dir']) || ! isset($asset_path['file'])) {
 			// TODO: exception

@@ -123,9 +123,8 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 */
 		private function __construct() {
-			add_action( 'wp_loaded', array( &$this, 'run_plugin' ), -1 );
+			add_action( 'init', array( &$this, 'init_plugin' ), -1 );
 			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, array( &$this, 'activate_plugin' ), -1 );
-		    add_action( 'init',  array( &$this, 'handle_init' ) );
 		}
 
 		/**
@@ -202,7 +201,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 * @ignore
 		 */
-		public function run_plugin() {
+		public function init_plugin() {
 			try {
 				$this->select_latest_version_plugin_installation();
 				require self::$loaded['path'] . 'font-awesome-init.php';
@@ -254,32 +253,6 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 				exit;
 			} catch ( Error $e ) {
 				self::emit_admin_error_output( $e, $activation_failed_message );
-				exit;
-			}
-		}
-
-		/**
-		 * Loads the init hook for the plugin installation that has been
-		 * selected for loading.
-		 *
-		 * This is public because it's a callback, but should not be considered
-		 * part of this plugin's API.
-		 *
-		 * @internal
-		 * @ignore
-		 */
-		public function handle_init() {
-			$init_failed_message = __( 'Font Awesome could not be initialized.', 'font-awesome' );
-
-			try {
-				$this->select_latest_version_plugin_installation();
-				require_once self::$loaded['path'] . 'font-awesome-init.php';
-				fa_handle_init();
-			} catch ( Exception $e ) {
-				self::emit_admin_error_output( $e, $init_failed_message );
-				exit;
-			} catch ( Error $e ) {
-				self::emit_admin_error_output( $e, $init_failed_message );
 				exit;
 			}
 		}

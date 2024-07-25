@@ -23,6 +23,9 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/is-gutenberg-page.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/block_init.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -201,13 +204,6 @@ class FontAwesome {
 	const RESOURCE_HANDLE_FA_BLOCKS = 'font-awesome-official-blocks';
 
 	/**
-	 * The handle used when enqueuing additional SVG support CSS.
-	 *
-	 * @since 4.5.0
-	 */
-	const RESOURCE_HANDLE_SVG_STYLES = 'font-awesome-svg-styles';
-
-	/**
 	 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
 	 *
 	 * @ignore
@@ -378,25 +374,9 @@ class FontAwesome {
 	}
 
 	/**
-	 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
-	 *
-	 * Internal only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public function run() {
-		$this->init();
-
-		$this->initialize_rest_api();
-
-		if ( is_admin() ) {
-			$this->initialize_admin();
-		}
-	}
-
-	/**
 	 * Callback for init.
+	 *
+	 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
 	 *
 	 * Internal use only.
 	 *
@@ -407,12 +387,22 @@ class FontAwesome {
 		try {
 			$this->try_upgrade();
 
+			$this->validate_options( fa()->options() );
+
+			$this->initialize_rest_api();
+
+			if ( is_admin() ) {
+				$this->initialize_admin();
+			}
+
 			add_shortcode(
 				self::SHORTCODE_TAG,
 				array( $this, 'process_shortcode' )
 			);
 
-			$this->validate_options( fa()->options() );
+			FontAwesome_SVG_Styles_Manager::register_svg_styles( $this, $this->release_provider() );
+
+			block_init();
 
 			try {
 				$this->gather_preferences();
@@ -433,8 +423,14 @@ class FontAwesome {
 				wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
 			}
 
+
+			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::skip_enqueue_kit();
+
 			if ( $this->using_kit() ) {
-				if ( FontAwesome_SVG_Styles_Manager::skip_enqueue_kit() ) {
+				if ( $skip_enqueue_kit ) {
+					if ( $this->technology() === 'webfont' ) {
+						wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+					}
 					// Normally, conflict detection is built into a kit.
 					// However, when not enqueuing the kit, we must enqueue conflict detection separately.
 					$this->maybe_enqueue_conflict_detection();
@@ -445,8 +441,6 @@ class FontAwesome {
 				$resource_collection = $this->cdn_resource_collection_for_current_options();
 				$this->enqueue_cdn( $this->options(), $resource_collection );
 			}
-
-			$this->maybe_load_additional_svg_styles();
 		} catch ( Exception $e ) {
 			notify_admin_fatal_error( $e );
 		} catch ( Error $e ) {
@@ -1727,7 +1721,7 @@ class FontAwesome {
 						 * like that should be easy to resolve when there's time
 						 * and priority to continue investigating.
 						 */
-						if ( ! $this->is_gutenberg_page() ) {
+						if ( ! is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
 							add_action(
 								'media_buttons',
@@ -1937,7 +1931,7 @@ class FontAwesome {
 			 *
 			 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
 			 */
-			if ( $enable_icon_chooser && $this->is_gutenberg_page() ) {
+			if ( $enable_icon_chooser && is_gutenberg_page() ) {
 				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
 			}
 		}
@@ -1971,7 +1965,7 @@ class FontAwesome {
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
 			'usingCompatJs'                 => $this->compat_js_required(),
-			'isGutenbergPage'               => $this->is_gutenberg_page(),
+			'isGutenbergPage'               => is_gutenberg_page(),
 		);
 	}
 
@@ -3158,34 +3152,6 @@ EOT;
 	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
-	 * Code borrowed from Freemius SDK by way of Benjamin Intal on Stack Overflow,
-	 * under GPL. Thanks Benjamin! Hey everybody, get the Stackable plugin to do
-	 * cool stuff with Font Awesome in your Blocks!
-	 *
-	 * See: https://github.com/Freemius/wordpress-sdk
-	 * See: https://wordpress.stackexchange.com/questions/309862/check-if-gutenberg-is-currently-in-use
-	 * See: https://wordpress.org/plugins/stackable-ultimate-gutenberg-blocks/
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	private function is_gutenberg_page() {
-		if ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) {
-			// The Gutenberg plugin is on.
-			return true;
-		}
-		$current_screen = get_current_screen();
-		if ( is_object( $current_screen ) && method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
-			// Gutenberg page on 5+.
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -3301,71 +3267,6 @@ EOT;
 		} else {
 			return false;
 		}
-	}
-
-	protected function maybe_load_additional_svg_styles() {
-		$additional_svg_support_style_loading = FontAwesome_SVG_Styles_Manager::additional_svg_styles_loading( $this->options() );
-
-		if ( ! $additional_svg_support_style_loading ) {
-			return;
-		}
-
-		$concrete_version = $this->concrete_version( $this->options() );
-
-		$cdn_resource = fa_release_provider()->get_svg_styles_resource( $concrete_version );
-
-		$integrity_key = $cdn_resource->integrity_key();
-
-		if ( $additional_svg_support_style_loading === 'selfhost' ) {
-			$styles_source = FontAwesome_SVG_Styles_Manager::asset_url( $concrete_version );
-
-			if ( is_string( $styles_source ) ) {
-				wp_enqueue_style(
-					self::RESOURCE_HANDLE_SVG_STYLES,
-					$styles_source,
-					[],
-					null,
-					'all'
-				);
-			}
-		} else if ( $additional_svg_support_style_loading === 'cdn' ) {
-			if (! $cdn_resource->source() ) {
-				// TODO: throw exception?
-				return;
-			}
-
-			wp_enqueue_style(
-				self::RESOURCE_HANDLE_SVG_STYLES,
-				$cdn_resource->source(),
-				[],
-				null,
-				'all'
-			);
-		}
-
-		// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
-		add_filter(
-			'style_loader_tag',
-			function ( $html, $handle ) use ( $integrity_key, $additional_svg_support_style_loading ) {
-				if ( in_array( $handle, array( self::RESOURCE_HANDLE_SVG_STYLES ), true ) ) {
-				   $crossorigin_attr = 'selfhost' === $additional_svg_support_style_loading
-					? '' : ' crossorigin="anonymous"';
-
-				   $integrity_attr = "integrity=\"$integrity_key\"";
-
-					return preg_replace(
-						'/\/>$/',
-						$integrity_attr . $crossorigin_attr . ' />',
-						$html,
-						1
-					);
-				} else {
-					return $html;
-				}
-			},
-			10,
-			2
-		);
 	}
 
 	protected function maybe_enqueue_conflict_detection() {
