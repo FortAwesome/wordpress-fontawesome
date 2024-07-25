@@ -74,14 +74,6 @@ const modalOpenEvent = createCustomEvent()
 const EMPTY_VALUE = create({ text: "" });
 const EMPTY_OBJECT_VALUE = insertObject(EMPTY_VALUE, {});
 
-function isFocused(value) {
-  if (!Array.isArray(value.replacements) || !Number.isInteger(value.start)) {
-    return false;
-  }
-  const replacement = value.replacements[value.start];
-  return replacement?.type === name;
-}
-
 // This does not fully support layers. It returns attributes with
 // an `iconLayers` property, but it doesn't yet read icon layers out of the HTML,
 // so that iconLayers array will always have a length of 1.
@@ -238,9 +230,8 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
 }
 
 function Edit(props) {
-  const { value, onChange, contentRef } = props;
+  const { value, onChange, contentRef, isObjectActive } = props;
 
-  const isFormatIconFocused = isFocused(value);
   /*
    * Deriving attributes:
    *
@@ -335,8 +326,7 @@ function Edit(props) {
     const insertStartIndex = value.start
     // If we already have an icon at this location, then we should replace it.
     // Otherwise, we're inserting a new one.
-    const iconPresentHere = (value.replacements[insertStartIndex] || {})?.type === name
-    const insertEndIndex = iconPresentHere ? insertStartIndex + 1 : insertStartIndex
+    const insertEndIndex = isObjectActive ? insertStartIndex + 1 : insertStartIndex
 
     const newValue = insert(value, iconValue, insertStartIndex, insertEndIndex);
     onChange(newValue);
@@ -374,12 +364,12 @@ function Edit(props) {
               icon={faBrandIcon}
               title={title}
               onClick={handleFormatButtonClick}
-              isActive={ isFormatIconFocused }
+              isActive={ isObjectActive }
           />
         </ToolbarGroup>
       </BlockControls>
       <IconChooserModal onSubmit={handleSelect} openEvent={modalOpenEvent} />
-      {isFormatIconFocused && (
+      {isObjectActive && (
         <InlineUI
           value={value}
           changeValue={changeValue}
