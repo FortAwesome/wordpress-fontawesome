@@ -173,8 +173,8 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
 		settings
 	} );
 
-  const {color, fontSize} = window.getComputedStyle(contentRef.current)
-  const context = {color, fontSize}
+  const {color, fontSize, backgroundColor} = window.getComputedStyle(contentRef.current)
+  const context = {color, fontSize, backgroundColor}
 
   return (
     <>

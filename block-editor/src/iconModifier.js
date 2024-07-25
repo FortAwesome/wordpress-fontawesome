@@ -395,8 +395,8 @@ export default function (
 
   const editorSettings = getSettings();
 
-  const { color, fontSize } = context || {}
-  const contextStyle = { color, fontSize }
+  const { color, fontSize, backgroundColor } = context || {}
+  const contextStyle = { color, fontSize, backgroundColor }
 
   return (
     <div className="fa-icon-modifier">
