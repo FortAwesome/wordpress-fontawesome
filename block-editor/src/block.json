@@ -34,6 +34,5 @@
   },
   "textdomain": "font-awesome",
   "editorScript": "font-awesome-block-editor",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css"
+  "editorStyle": "file:./index.css"
 }

@@ -1887,8 +1887,6 @@ class FontAwesome {
 			1
 		);
 */
-
-		$this->enqueue_fa_block_assets();
 	}
 
 	/**
@@ -3245,37 +3243,6 @@ src: url("https://{$license_subdomain}.fontawesome.com/releases/v{$version}/webf
 unicode-range: U+F004-F005,U+F007,U+F017,U+F022,U+F024,U+F02E,U+F03E,U+F044,U+F057-F059,U+F06E,U+F070,U+F075,U+F07B-F07C,U+F080,U+F086,U+F089,U+F094,U+F09D,U+F0A0,U+F0A4-F0A7,U+F0C5,U+F0C7-F0C8,U+F0E0,U+F0EB,U+F0F3,U+F0F8,U+F0FE,U+F111,U+F118-F11A,U+F11C,U+F133,U+F144,U+F146,U+F14A,U+F14D-F14E,U+F150-F152,U+F15B-F15C,U+F164-F165,U+F185-F186,U+F191-F192,U+F1AD,U+F1C1-F1C9,U+F1CD,U+F1D8,U+F1E3,U+F1EA,U+F1F6,U+F1F9,U+F20A,U+F247-F249,U+F24D,U+F254-F25B,U+F25D,U+F267,U+F271-F274,U+F279,U+F28B,U+F28D,U+F2B5-F2B6,U+F2B9,U+F2BB,U+F2BD,U+F2C1-F2C2,U+F2D0,U+F2D2,U+F2DC,U+F2ED,U+F328,U+F358-F35B,U+F3A5,U+F3D1,U+F410,U+F4AD;
 }
 EOT;
-	}
-
-	private function enqueue_fa_block_assets() {
-		add_action(
-			'enqueue_block_assets',
-			function () {
-				$concrete_version = $this->concrete_version( $this->options() );
-			    $styles_source = FontAwesome_SVG_Styles_Manager::asset_url( $concrete_version );
-
-				wp_enqueue_style(
-					self::RESOURCE_HANDLE_SVG_STYLES,
-					$styles_source,
-					array(),
-					self::PLUGIN_VERSION,
-					'all'
-				);
-
-				if ( $this->is_gutenberg_page() ) {
-					// TODO: remove this hack. The block editor support CSS should be
-					// being built into the build directory of the block, and loaded
-					// automatically at the appropriate times due to being declared
-					// in block.json, but it's not. This is a temporary hack to force it.
-					wp_enqueue_style(
-						"font-awesome-block-editor-support",
-						trailingslashit(FONTAWESOME_DIR_URL) . "block-editor/src/index.css",
-						array(),
-						FontAwesome::PLUGIN_VERSION
-					);
-				}
-			}
-		);
 	}
 
 	/**
