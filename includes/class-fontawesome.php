@@ -426,11 +426,12 @@ class FontAwesome {
 
 			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::skip_enqueue_kit();
 
+			if ( $this->technology() === 'webfont' || $skip_enqueue_kit ) {
+				wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+			}
+
 			if ( $this->using_kit() ) {
 				if ( $skip_enqueue_kit ) {
-					if ( $this->technology() === 'webfont' ) {
-						wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
-					}
 					// Normally, conflict detection is built into a kit.
 					// However, when not enqueuing the kit, we must enqueue conflict detection separately.
 					$this->maybe_enqueue_conflict_detection();
