@@ -16,6 +16,8 @@ import {
   useBlockProps,
 } from "@wordpress/block-editor";
 import get from "lodash/get";
+import size from "lodash/size";
+import camelCase from "lodash/camelCase";
 import kebabCase from "lodash/kebabCase";
 import pick from "lodash/pick";
 import { faBrandIcon } from "./icons";
@@ -30,7 +32,10 @@ export const ZERO_WIDTH_SPACE = '\u200b';
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon';
 const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform';
 export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
-const TRANSFORM_PROPS = ['size', 'x', 'y', 'rotate', 'flipX', 'flipY']
+// Paranoia: when deriving attributes from a previously written rich text value,
+// constrain which properties will be allowed.
+const TRANSFORM_PROPS_ALLOWED = Object.freeze(['size', 'x', 'y', 'rotate', 'flipX', 'flipY'])
+const STYLE_PROPS_ALLOWED = Object.freeze(['font-size'])
 
 const { IconChooserModal } = get(window, [GLOBAL_KEY, "iconChooser"], {});
 
@@ -91,7 +96,6 @@ function deriveAttributes(value) {
   const prefix = svg.getAttribute('data-prefix')
   const iconName = svg.getAttribute('data-icon')
   const paths = svg.querySelectorAll('path')
-  const fontSize = svg?.style?.getPropertyValue('font-size')
 
   let primaryPath, secondaryPath
 
@@ -145,16 +149,35 @@ function deriveAttributes(value) {
     iconLayer.color = color
   }
 
-  if(fontSize) {
-    iconLayer.style = { fontSize }
+  const svgStyle = svg?.style;
+  const derivedStyle = {};
+
+  if ('object' === typeof svgStyle) {
+    for(let i=0; i<svgStyle.length; i++) {
+      const propertyName = svgStyle.item(i)
+      const propertyValue = svgStyle.getPropertyValue(propertyName)
+
+      if(propertyValue && STYLE_PROPS_ALLOWED.includes(propertyName)) {
+        derivedStyle[camelCase(propertyName)] = propertyValue;
+      }
+    }
+  }
+
+  if(size(derivedStyle) > 0) {
+    iconLayer.style = derivedStyle
   }
 
   const transformJSON = replacement?.attributes?.transformJSON
 
   if(transformJSON) {
-    const transform = transformJSON ? JSON.parse(transformJSON) : undefined
-    if(transform) {
-      iconLayer.transform = pick(transform, TRANSFORM_PROPS)
+    let transform
+
+    try {
+      transform = JSON.parse(transformJSON)
+    } catch {}
+
+    if('object' === typeof transform) {
+      iconLayer.transform = pick(transform, TRANSFORM_PROPS_ALLOWED)
     }
   }
 
