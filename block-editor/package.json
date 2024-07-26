@@ -17,6 +17,7 @@
 	},
 	"devDependencies": {
 		"@wordpress/block-editor": "wp-6.5",
+		"@wordpress/icons": "wp-6.5",
 		"@wordpress/blocks": "wp-6.5",
 		"@wordpress/components": "wp-6.5",
 		"@wordpress/element": "wp-6.5",
