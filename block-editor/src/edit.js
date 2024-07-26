@@ -155,28 +155,30 @@ export function Edit(props) {
     ? (
       <Fragment>
         <BlockControls>
-        <DropdownMenu
-          controls={[
-            {
-              icon: justifyLeft,
-              onClick: () => setJustification('left'),
-              title: __('Justify Icon Left', 'font-awesome')
-            },
-            {
-              icon: justifyCenter,
-              onClick: () => setJustification('center'),
-              title: __('Justify Icon Center', 'font-awesome')
-            },
-            {
-              icon: justifyRight,
-              onClick: () => setJustification('right'),
-              title: __('Justify Icon Right', 'font-awesome')
-            }
-          ]}
-          icon={justificationDropdownMenuIcon}
-          label={__('Change Icon Justification', 'font-awesome')}
-        />
-
+        <ToolbarGroup>
+          <DropdownMenu
+            controls={[
+              {
+                icon: justifyLeft,
+                onClick: () => setJustification('left'),
+                title: __('Justify Icon Left', 'font-awesome')
+              },
+              {
+                icon: justifyCenter,
+                onClick: () => setJustification('center'),
+                title: __('Justify Icon Center', 'font-awesome')
+              },
+              {
+                icon: justifyRight,
+                onClick: () => setJustification('right'),
+                title: __('Justify Icon Right', 'font-awesome')
+              }
+            ]}
+            icon={justificationDropdownMenuIcon}
+            label={__('Change Icon Justification', 'font-awesome')}
+          />
+        </ToolbarGroup>
+        <ToolbarGroup>
           <ToolbarButton
             showTooltip
             onClick={() => setIsEditModalOpen(!isEditModalOpen)}
@@ -185,6 +187,7 @@ export function Edit(props) {
           label={__("Add Icon Styling")}
             icon={modifyToolbarIcon}
           />
+        </ToolbarGroup>
 
         {isEditModalOpen && (
           <Modal
