@@ -1,3 +1,4 @@
+import { justifyCenter, justifyLeft, justifyRight } from '@wordpress/icons';
 import { faBrush, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 /**
  * Retrieves the translation of text.
@@ -35,6 +36,7 @@ import { Fragment, useRef, useState } from "@wordpress/element";
 import {
   Button,
   Dropdown,
+  DropdownMenu,
   MenuGroup,
   Modal,
   PanelBody,
@@ -96,6 +98,24 @@ export function Edit(props) {
     isSelected,
   } = props;
 
+  const { justification } = attributes || {}
+
+  const [justificationDropdownMenuIcon, setJustificationDropdownMenuIcon] = useState(justifyCenter)
+
+  const setJustification = (justification) => {
+    let menuIcon
+    if('left' === justification) {
+      menuIcon = justifyLeft
+    } else if ('right' === justification) {
+      menuIcon = justifyRight
+    } else {
+      menuIcon = justifyCenter
+    }
+
+    setJustificationDropdownMenuIcon(menuIcon)
+    setAttributes({ ...attributes, justification });
+  }
+
   const prepareHandleSelect = (layerParams) => (event) => {
     const iconLayers = attributes?.iconLayers || [];
 
@@ -135,6 +155,28 @@ export function Edit(props) {
     ? (
       <Fragment>
         <BlockControls>
+        <DropdownMenu
+          controls={[
+            {
+              icon: justifyLeft,
+              onClick: () => setJustification('left'),
+              title: __('Justify Icon Left', 'font-awesome')
+            },
+            {
+              icon: justifyCenter,
+              onClick: () => setJustification('center'),
+              title: __('Justify Icon Center', 'font-awesome')
+            },
+            {
+              icon: justifyRight,
+              onClick: () => setJustification('right'),
+              title: __('Justify Icon Right', 'font-awesome')
+            }
+          ]}
+          icon={justificationDropdownMenuIcon}
+          label={__('Change Icon Justification', 'font-awesome')}
+        />
+
           <ToolbarButton
             showTooltip
             onClick={() => setIsEditModalOpen(!isEditModalOpen)}
