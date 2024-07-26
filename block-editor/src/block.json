@@ -6,7 +6,6 @@
   "title": "Font Awesome Icon",
   "category": "design",
   "description": "Add a Font Awesome icon.",
-  "example": {},
   "attributes": {
     "iconLayers": {
       "type": "array"
