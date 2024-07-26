@@ -1,8 +1,3 @@
-// export function iconLayerAttributesToIconDefinitionsAndParams(attributes) {
-//   return (attributes?.iconLayers || []).reduce((acc, layer) => {
-//     //const { iconName, prefix, width, height, pathData } = attributes;
-//   }, {});
-// }
 import { filterSelectionEvent } from "./attributeValidation";
 
 export function toIconDefinition({ iconName, prefix, width, height, pathData }) {
