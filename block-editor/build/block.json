@@ -10,6 +10,9 @@
   "attributes": {
     "iconLayers": {
       "type": "array"
+    },
+    "justification": {
+      "type": "string"
     }
   },
   "supports": {
