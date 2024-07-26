@@ -17,8 +17,8 @@
     "align": ["left", "center", "right"],
     "ariaLabel": true,
     "color": {
+      "text": false,
       "background": true,
-      "text": true,
       "enableConstrastChecker": true,
       "gradients": true
     },
@@ -26,11 +26,7 @@
       "margin": true,
       "padding": true
     },
-    "html": false,
-    "typography": {
-      "fontSize": true,
-      "lineHeight": true
-    }
+    "html": false
   },
   "textdomain": "font-awesome",
   "editorScript": "font-awesome-block-editor",
