@@ -222,7 +222,7 @@ const SettingsTabPanel = ({onSelect, onSizeChange, setColor, setAnimation, updat
             </div>
             <div className="fawp-styling-controls">
               <Tooltip text={__("Remove Flipping", "font-awesome")}>
-                <button className={`${classnames({ [SELECTED_CLASS]: hasNoFlip() })} fawp-button fawp-reset`} onClick={() => updateTransform({resetFlip: true})}>
+                <button className="fawp-button fawp-reset" onClick={() => updateTransform({resetFlip: true})}>
                   <FontAwesomeIcon icon={faBan} />
                 </button>
               </Tooltip>
