@@ -4,12 +4,12 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from "@wordpress/block-editor";
-import classnames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isBlockValid } from "./attributeValidation";
-import { toIconDefinition } from "./iconDefinitions";
-import { prepareParamsForUseBlock, renderIcon } from "./rendering";
+import { useBlockProps } from '@wordpress/block-editor'
+import classnames from 'classnames'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { isBlockValid } from './attributeValidation'
+import { toIconDefinition } from './iconDefinitions'
+import { prepareParamsForUseBlock, renderIcon } from './rendering'
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -24,12 +24,12 @@ import { prepareParamsForUseBlock, renderIcon } from "./rendering";
  */
 export default function save({ attributes }) {
   if (!isBlockValid(attributes)) {
-    return null;
+    return null
   }
 
   const extraProps = {
     wrapperProps: useBlockProps.save(prepareParamsForUseBlock(attributes))
-  };
+  }
 
-  return renderIcon(attributes, {extraProps});
+  return renderIcon(attributes, { extraProps })
 }

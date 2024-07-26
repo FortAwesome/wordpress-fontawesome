@@ -1,51 +1,40 @@
 import classnames from 'classnames'
-import { Component, Fragment, renderToString, useState } from "@wordpress/element";
-import { Button, Modal, Popover, ToolbarButton, ToolbarGroup } from "@wordpress/components";
-import { __ } from "@wordpress/i18n";
-import {
-  applyFormat,
-  create,
-  insert,
-  insertObject,
-  registerFormatType,
-  useAnchor,
-} from "@wordpress/rich-text";
-import {
-  BlockControls,
-  RichTextToolbarButton,
-  useBlockProps,
-} from "@wordpress/block-editor";
-import get from "lodash/get";
-import size from "lodash/size";
-import camelCase from "lodash/camelCase";
-import kebabCase from "lodash/kebabCase";
-import pick from "lodash/pick";
-import { faBrandIcon } from "./icons";
-import { GLOBAL_KEY } from "../../admin/src/constants";
+import { Component, Fragment, renderToString, useState } from '@wordpress/element'
+import { Button, Modal, Popover, ToolbarButton, ToolbarGroup } from '@wordpress/components'
+import { __ } from '@wordpress/i18n'
+import { applyFormat, create, insert, insertObject, registerFormatType, useAnchor } from '@wordpress/rich-text'
+import { BlockControls, RichTextToolbarButton, useBlockProps } from '@wordpress/block-editor'
+import get from 'lodash/get'
+import size from 'lodash/size'
+import camelCase from 'lodash/camelCase'
+import kebabCase from 'lodash/kebabCase'
+import pick from 'lodash/pick'
+import { faBrandIcon } from './icons'
+import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
 import { renderIcon } from './rendering'
 import IconModifier from './iconModifier'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
-export const ZERO_WIDTH_SPACE = '\u200b';
-const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon';
-const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform';
-export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span';
+export const ZERO_WIDTH_SPACE = '\u200b'
+const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon'
+const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform'
+export const FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME = 'span'
 // Paranoia: when deriving attributes from a previously written rich text value,
 // constrain which properties will be allowed.
 const TRANSFORM_PROPS_ALLOWED = Object.freeze(['size', 'x', 'y', 'rotate', 'flipX', 'flipY'])
 const STYLE_PROPS_ALLOWED = Object.freeze(['font-size'])
 
-const { IconChooserModal } = get(window, [GLOBAL_KEY, "iconChooser"], {});
+const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {})
 
-const name = "font-awesome/rich-text-icon";
-const title = __("Font Awesome Icon");
+const name = 'font-awesome/rich-text-icon'
+const title = __('Font Awesome Icon')
 
 const settings = {
   name,
   title,
-  keywords: [__("icon"), __("awesome")],
+  keywords: [__('icon'), __('awesome')],
   tagName: FONT_AWESOME_RICH_TEXT_ICON_TAG_NAME,
   className: FONT_AWESOME_RICH_TEXT_ICON_CLASS,
   contentEditable: false,
@@ -53,9 +42,9 @@ const settings = {
     transformJSON: FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR
   },
   edit: Edit
-};
+}
 
-registerFormatType(name, settings);
+registerFormatType(name, settings)
 
 const modalOpenEvent = createCustomEvent()
 
@@ -77,20 +66,20 @@ const modalOpenEvent = createCustomEvent()
 // which might be more than one character, using `insertObject()`.
 // Since `insertObject()` *is* part of the RichText API, this ought to continue
 // working even if the implementation details change underneath.
-const EMPTY_VALUE = create({ text: "" });
-const EMPTY_OBJECT_VALUE = insertObject(EMPTY_VALUE, {});
+const EMPTY_VALUE = create({ text: '' })
+const EMPTY_OBJECT_VALUE = insertObject(EMPTY_VALUE, {})
 
 // This does not fully support layers. It returns attributes with
 // an `iconLayers` property, but it doesn't yet read icon layers out of the HTML,
 // so that iconLayers array will always have a length of 1.
 function deriveAttributes(value) {
-  if(!Number.isFinite(value?.start)) return
+  if (!Number.isFinite(value?.start)) return
   const replacement = value?.replacements[value.start]
-  if('string' !== typeof replacement?.innerHTML) return
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(replacement.innerHTML, 'text/html');
+  if ('string' !== typeof replacement?.innerHTML) return
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(replacement.innerHTML, 'text/html')
   const svg = doc.querySelector('svg')
-  if(!svg) return
+  if (!svg) return
 
   const viewBox = svg.getAttribute('viewBox')
   const prefix = svg.getAttribute('data-prefix')
@@ -99,7 +88,7 @@ function deriveAttributes(value) {
 
   let primaryPath, secondaryPath
 
-  if(paths.length < 1) return
+  if (paths.length < 1) return
 
   if (paths[0].classList.contains('fa-secondary')) {
     secondaryPath = paths[0].getAttribute('d')
@@ -107,7 +96,7 @@ function deriveAttributes(value) {
     primaryPath = paths[0].getAttribute('d')
   }
 
-  if(paths.length > 1) {
+  if (paths.length > 1) {
     if (paths[1].classList.contains('fa-secondary')) {
       secondaryPath = paths[1].getAttribute('d')
     } else {
@@ -115,95 +104,95 @@ function deriveAttributes(value) {
     }
   }
 
-  let width, height;
+  let width, height
 
-  if('string' === typeof viewBox) {
+  if ('string' === typeof viewBox) {
     const viewBoxProps = viewBox.split(/\W/)
     width = Number.parseFloat(viewBoxProps[2])
     height = Number.parseFloat(viewBoxProps[3])
   }
 
-  if(!Number.isFinite(width) || !Number.isFinite(height)) {
+  if (!Number.isFinite(width) || !Number.isFinite(height)) {
     return
   }
 
   const pathData = []
 
-  if(secondaryPath) {
+  if (secondaryPath) {
     pathData.push(secondaryPath)
   }
 
-  if(primaryPath) {
+  if (primaryPath) {
     pathData.push(primaryPath)
   }
 
-  const iconDefinition = toIconDefinition({iconName, prefix, width, height, pathData})
+  const iconDefinition = toIconDefinition({ iconName, prefix, width, height, pathData })
 
-  if(!iconDefinition) return
+  if (!iconDefinition) return
 
-  const iconLayer = {iconDefinition}
+  const iconLayer = { iconDefinition }
 
   const color = svg.getAttribute('color')
 
-  if(color) {
+  if (color) {
     iconLayer.color = color
   }
 
-  const svgStyle = svg?.style;
-  const derivedStyle = {};
+  const svgStyle = svg?.style
+  const derivedStyle = {}
 
   if ('object' === typeof svgStyle) {
-    for(let i=0; i<svgStyle.length; i++) {
+    for (let i = 0; i < svgStyle.length; i++) {
       const propertyName = svgStyle.item(i)
       const propertyValue = svgStyle.getPropertyValue(propertyName)
 
-      if(propertyValue && STYLE_PROPS_ALLOWED.includes(propertyName)) {
-        derivedStyle[camelCase(propertyName)] = propertyValue;
+      if (propertyValue && STYLE_PROPS_ALLOWED.includes(propertyName)) {
+        derivedStyle[camelCase(propertyName)] = propertyValue
       }
     }
   }
 
-  if(size(derivedStyle) > 0) {
+  if (size(derivedStyle) > 0) {
     iconLayer.style = derivedStyle
   }
 
   const transformJSON = replacement?.attributes?.transformJSON
 
-  if(transformJSON) {
+  if (transformJSON) {
     let transform
 
     try {
       transform = JSON.parse(transformJSON)
     } catch {}
 
-    if('object' === typeof transform) {
+    if ('object' === typeof transform) {
       iconLayer.transform = pick(transform, TRANSFORM_PROPS_ALLOWED)
     }
   }
 
-  for(const animation of ANIMATIONS) {
+  for (const animation of ANIMATIONS) {
     const animationClass = `fa-${kebabCase(animation)}`
-    if(svg.classList.contains(animationClass)){
+    if (svg.classList.contains(animationClass)) {
       iconLayer[animation] = true
     }
   }
 
-  return {iconLayers: [iconLayer]}
+  return { iconLayers: [iconLayer] }
 }
 
-function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
+function InlineUI({ value, changeValue, contentRef, handleSelect }) {
   const [attributes, setAttributes] = useState(deriveAttributes(value))
-	const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-	const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
+  const hasIcon = Array.isArray(attributes?.iconLayers) && attributes.iconLayers.length > 0
 
-	const popoverAnchor = useAnchor( {
-		editableContentElement: contentRef.current,
-		settings
-	} );
+  const popoverAnchor = useAnchor({
+    editableContentElement: contentRef.current,
+    settings
+  })
 
-  const {color, fontSize, backgroundColor} = window.getComputedStyle(contentRef.current)
-  const context = {color, fontSize, backgroundColor}
+  const { color, fontSize, backgroundColor } = window.getComputedStyle(contentRef.current)
+  const context = { color, fontSize, backgroundColor }
 
   return (
     <>
@@ -214,10 +203,16 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
         className="block-editor-format-toolbar__font-awesome-rich-text-icon-popover"
       >
         <div className="fawp-inline-popover-wrapper">
-          <Button variant="secondary" onClick={() => document.dispatchEvent(modalOpenEvent)}>
+          <Button
+            variant="secondary"
+            onClick={() => document.dispatchEvent(modalOpenEvent)}
+          >
             Change Icon
           </Button>
-          <Button variant="secondary" onClick={() => setIsEditModalOpen(true)}>
+          <Button
+            variant="secondary"
+            onClick={() => setIsEditModalOpen(true)}
+          >
             Style
           </Button>
         </div>
@@ -241,11 +236,11 @@ function InlineUI( { value, changeValue, contentRef, handleSelect } ) {
         </Modal>
       )}
     </>
-  );
+  )
 }
 
 function Edit(props) {
-  const { value, onChange, contentRef, isObjectActive } = props;
+  const { value, onChange, contentRef, isObjectActive } = props
 
   /*
    * Deriving attributes:
@@ -260,15 +255,12 @@ function Edit(props) {
    */
 
   const handleFormatButtonClick = () => {
-    document.dispatchEvent(modalOpenEvent);
-  };
+    document.dispatchEvent(modalOpenEvent)
+  }
 
   const changeValue = (attributes) => {
     const wrapperProps = {
-      className: classnames(
-        FONT_AWESOME_RICH_TEXT_ICON_CLASS,
-        FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS
-      )
+      className: classnames(FONT_AWESOME_RICH_TEXT_ICON_CLASS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS)
     }
 
     const element = renderIcon(attributes, {
@@ -278,7 +270,7 @@ function Edit(props) {
 
     const html = renderToString(element)
 
-    let iconValue = create({ html });
+    let iconValue = create({ html })
 
     // The object replacement text indicates where the icon should be rendered,
     // replacing that object replacement text. Without it, no SVG would be rendered.
@@ -287,19 +279,14 @@ function Edit(props) {
     // in a normal intuitive way, such as when moving across it with arrow keys.
     // It also allows for placing the caret at the end of the rich text value
     // when an icon SVG is at the end, and then backspacing to delete the icon.
-    const zeroWidthSpaceIndex = iconValue.text.length;
+    const zeroWidthSpaceIndex = iconValue.text.length
 
-    if(!attributes?.iconLayers) {
+    if (!attributes?.iconLayers) {
       // If don't yet have any icon layers, then this is the first, so this
       // extra character should be inserted.
       // If we're *changing* the icon, then we'll be only changing the replacement
       // formats below--but don't add additional zero-width space.
-      iconValue = insert(
-        iconValue,
-        ZERO_WIDTH_SPACE,
-        zeroWidthSpaceIndex,
-        zeroWidthSpaceIndex,
-      );
+      iconValue = insert(iconValue, ZERO_WIDTH_SPACE, zeroWidthSpaceIndex, zeroWidthSpaceIndex)
     }
 
     // Now that we've extended the value's text by a single character, we need to
@@ -329,34 +316,34 @@ function Edit(props) {
     //
     // The solution is to make sure that our replacement format covers exactly the same
     // indices of content that correspond to the text being inserted.
-    const replacement = iconValue.replacements[0];
+    const replacement = iconValue.replacements[0]
 
     const transform = (attributes?.iconLayers || [])[0]?.transform
-    if(transform) {
+    if (transform) {
       // The transform is one attribute that we can't easily map forward and backward
       // to and from the rendered HTML, so when present, we store it as JSON in an attribute
       // on the wrapper element.
       replacement.attributes[FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR] = JSON.stringify(transform)
     }
 
-    iconValue.replacements[iconValue.replacements.length - 1] = replacement;
+    iconValue.replacements[iconValue.replacements.length - 1] = replacement
 
     const insertStartIndex = value.start
     // If we already have an icon at this location, then we should replace it.
     // Otherwise, we're inserting a new one.
     const insertEndIndex = isObjectActive ? insertStartIndex + 1 : insertStartIndex
 
-    const newValue = insert(value, iconValue, insertStartIndex, insertEndIndex);
-    onChange(newValue);
+    const newValue = insert(value, iconValue, insertStartIndex, insertEndIndex)
+    onChange(newValue)
   }
 
   const handleSelect = (event) => {
-    if (!event?.detail) return;
-    event.preventDefault();
+    if (!event?.detail) return
+    event.preventDefault()
 
-    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event);
+    const iconDefinition = iconDefinitionFromIconChooserSelectionEvent(event)
 
-    if (!iconDefinition) return;
+    if (!iconDefinition) return
 
     const existingAttributes = deriveAttributes(value)
 
@@ -368,25 +355,28 @@ function Edit(props) {
     }
 
     const newAttributes = {
-      iconLayers: [iconLayer],
-    };
+      iconLayers: [iconLayer]
+    }
 
     changeValue(newAttributes)
-  };
+  }
 
   return (
     <Fragment>
       <BlockControls>
         <ToolbarGroup>
           <ToolbarButton
-              icon={faBrandIcon}
-              title={title}
-              onClick={handleFormatButtonClick}
-              isActive={ isObjectActive }
+            icon={faBrandIcon}
+            title={title}
+            onClick={handleFormatButtonClick}
+            isActive={isObjectActive}
           />
         </ToolbarGroup>
       </BlockControls>
-      <IconChooserModal onSubmit={handleSelect} openEvent={modalOpenEvent} />
+      <IconChooserModal
+        onSubmit={handleSelect}
+        openEvent={modalOpenEvent}
+      />
       {isObjectActive && (
         <InlineUI
           value={value}
@@ -396,5 +386,5 @@ function Edit(props) {
         />
       )}
     </Fragment>
-  );
+  )
 }

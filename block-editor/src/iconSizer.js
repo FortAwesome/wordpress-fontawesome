@@ -11,7 +11,7 @@ const STEP_EM = 0.125
 const STEP_PX = 1
 
 export default (props) => {
-  if('object' !== typeof props) return
+  if ('object' !== typeof props) return
   const { onChange = () => {} } = props
   const [units, setUnits] = useState('em')
   const [value, setValue] = useState(INITIAL_POSITION_EM)
@@ -20,13 +20,13 @@ export default (props) => {
   const [step, setStep] = useState(STEP_EM)
 
   const unitsOptions = () => {
-    return VALID_UNITS.map(u => ({label: u, value: u}))
+    return VALID_UNITS.map((u) => ({ label: u, value: u }))
   }
 
   const update = (newValue) => {
     let value = newValue
 
-    if(!value) {
+    if (!value) {
       // reset
       value = 'px' === units ? INITIAL_POSITION_PX : INITIAL_POSITION_EM
     }
@@ -59,19 +59,24 @@ export default (props) => {
     setUnits(newUnits)
   }
 
-  return <div className="fawp-icon-sizer"><RangeControl
-    initialPosition={initialPosition}
-    min={0}
-    max={max}
-    value={value}
-    allowReset={true}
-    step={step}
-    onChange={update}
-  /><SelectControl
-      options={unitsOptions()}
-      size="small"
-      value={units}
-      variant="minimal"
-      onChange={switchUnits}
-    /></div>
+  return (
+    <div className="fawp-icon-sizer">
+      <RangeControl
+        initialPosition={initialPosition}
+        min={0}
+        max={max}
+        value={value}
+        allowReset={true}
+        step={step}
+        onChange={update}
+      />
+      <SelectControl
+        options={unitsOptions()}
+        size="small"
+        value={units}
+        variant="minimal"
+        onChange={switchUnits}
+      />
+    </div>
+  )
 }

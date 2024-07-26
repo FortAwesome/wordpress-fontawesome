@@ -1,49 +1,44 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import classnames from "classnames";
-import { createElement } from '@wordpress/element';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import classnames from 'classnames'
+import { createElement } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 
 export function computeIconLayerCount(attributes) {
-  return Array.isArray(attributes?.iconLayers)
-    ? attributes.iconLayers.length
-    : 0;
+  return Array.isArray(attributes?.iconLayers) ? attributes.iconLayers.length : 0
 }
 
 export function prepareParamsForUseBlock(attributes) {
-  const iconLayerCount = computeIconLayerCount(attributes);
+  const iconLayerCount = computeIconLayerCount(attributes)
 
   return {
-    className: classnames(
-      FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS ,
-      { "fa-layers": iconLayerCount > 1 }
-    ),
-  };
+    className: classnames(FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, { 'fa-layers': iconLayerCount > 1 })
+  }
 }
 
 export function renderIcon(attributes, options = {}) {
-  const {wrapperProps = {}, classNamesByLayer} = options?.extraProps || {}
+  const { wrapperProps = {}, classNamesByLayer } = options?.extraProps || {}
   const elementType = options?.wrapperElement?.toLowerCase() || 'div'
   const iconLayers = attributes?.iconLayers
   const { justification } = attributes || {}
 
-  if(justification) {
+  if (justification) {
     wrapperProps.style = {
       display: 'flex',
       justifyContent: justification
     }
   }
 
-  if(!Array.isArray(iconLayers) || iconLayers.length === 0) return
+  if (!Array.isArray(iconLayers) || iconLayers.length === 0) return
 
   return createElement(
     elementType,
-    {...(wrapperProps || {})},
+    { ...(wrapperProps || {}) },
     attributes.iconLayers.map((layer, index) => {
-      const { style = {}, iconDefinition, rotation: initialRotation, ...rest } = layer;
+      const { style = {}, iconDefinition, rotation: initialRotation, ...rest } = layer
       let className = (classNamesByLayer || [])[index]
       let rotation
 
-      if([0,90,180,270].includes(initialRotation)) {
+      if ([0, 90, 180, 270].includes(initialRotation)) {
         rotation = initialRotation
       } else if (!Number.isNaN(parseInt(initialRotation))) {
         className = classnames(className ? className.toString() : '', 'fa-rotate-by')
@@ -59,7 +54,7 @@ export function renderIcon(attributes, options = {}) {
           rotation={rotation}
           {...rest}
         />
-      );
+      )
     })
   )
 }
