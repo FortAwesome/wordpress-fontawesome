@@ -91,6 +91,7 @@ function deriveAttributes(value) {
   const prefix = svg.getAttribute('data-prefix')
   const iconName = svg.getAttribute('data-icon')
   const paths = svg.querySelectorAll('path')
+  const fontSize = svg?.style?.getPropertyValue('font-size')
 
   let primaryPath, secondaryPath
 
@@ -142,6 +143,10 @@ function deriveAttributes(value) {
 
   if(color) {
     iconLayer.color = color
+  }
+
+  if(fontSize) {
+    iconLayer.style = { fontSize }
   }
 
   const transformJSON = replacement?.attributes?.transformJSON
