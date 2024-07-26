@@ -427,7 +427,9 @@ class FontAwesome {
 			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::skip_enqueue_kit();
 
 			if ( $this->technology() === 'webfont' || $skip_enqueue_kit ) {
-				wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+				add_action('enqueue_block_assets', function() {
+					wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+				});
 			}
 
 			if ( $this->using_kit() ) {

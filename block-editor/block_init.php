@@ -34,19 +34,34 @@ function block_init() {
 		FontAwesome::PLUGIN_VERSION
 	);
 
+	/* This is to ensure that even when a webfont/css stylesheet is loaded at
+     * the same time as we have inline SVGs in the page, the icon classes
+     * on the <svg> elements don't up with ::before pseudo-elements on them
+     * due to the rules in the webfont/css stylesheet. It probably wouldn't
+     * result in anything rendering there, but it's better for there to be no
+     * pseudo-elements present at all on the <svg> elements.
+	 */
+	$frontend_inline_style = <<< EOT
+.wp-block-font-awesome-icon svg::before,
+.wp-rich-text-font-awesome-icon svg::before {content: unset;}
+EOT;
+	wp_add_inline_style(
+		FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES,
+		$frontend_inline_style
+	);
+
+	/* This is to ensure that the size of SVGs in the block editor content iframe
+	 * don't flash HUGE before the SVG stylesheet is loaded. We'll hook an inline
+	 * style onto an early-loaded stylesheet 
+	 */
+	$editor_inline_style = <<< EOT
+.wp-block-font-awesome-icon svg,
+.wp-rich-text-font-awesome-icon svg {height: 1em;}
+EOT;
+	wp_add_inline_style(
+		'wp-block-editor',
+		$editor_inline_style
+	);
+
 	register_block_type(__DIR__ . '/build');
-
-	// This will only show up on a page where the block icon is used.
-	register_block_style('font-awesome/icon', array(
-		'name' => 'font-awesome-block-icon-base',
-		'label' => 'Font Awesome Block Icon Base',
-		'inline_style' => '.wp-block-font-awesome-icon svg { height: 1em;  } .wp-block-font-awesome-icon svg::before { content: unset;  }'
-	));
-
-	// This will only show up on a page where the rich text icon is used.
-	register_block_style('font-awesome/rich-text-icon', array(
-		'name' => 'font-awesome-rich-text-icon-base',
-		'label' => 'Font Awesome Rich Text Icon Base',
-		'inline_style' => '.wp-rich-text-font-awesome-icon svg { height: 1em; } .wp-rich-text-font-awesome-icon svg::before { content: unset; }'
-	));
 }
