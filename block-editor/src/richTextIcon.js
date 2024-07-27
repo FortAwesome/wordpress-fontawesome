@@ -1,9 +1,9 @@
 import classnames from 'classnames'
-import { Component, Fragment, renderToString, useState } from '@wordpress/element'
+import { Fragment, renderToString, useState } from '@wordpress/element'
 import { Button, Modal, Popover, ToolbarButton, ToolbarGroup } from '@wordpress/components'
 import { __ } from '@wordpress/i18n'
-import { applyFormat, create, insert, insertObject, registerFormatType, useAnchor } from '@wordpress/rich-text'
-import { BlockControls, RichTextToolbarButton, useBlockProps } from '@wordpress/block-editor'
+import { create, insert, registerFormatType, useAnchor } from '@wordpress/rich-text'
+import { BlockControls } from '@wordpress/block-editor'
 import get from 'lodash/get'
 import size from 'lodash/size'
 import camelCase from 'lodash/camelCase'
@@ -11,7 +11,7 @@ import kebabCase from 'lodash/kebabCase'
 import pick from 'lodash/pick'
 import { faBrandIcon } from './icons'
 import { GLOBAL_KEY } from '../../admin/src/constants'
-import { iconDefinitionFromIconChooserSelectionEvent, normalizeIconDefinition } from './iconDefinitions'
+import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
 import { renderIcon } from './rendering'
 import IconModifier from './iconModifier'
@@ -47,27 +47,6 @@ const settings = {
 registerFormatType(name, settings)
 
 const modalOpenEvent = createCustomEvent()
-
-// Use `insertObject()` on an empty value merely for the side effect of
-// producing the text value corresponding to an object.
-//
-// This is sort of bending over backwards to avoid hardcoding an implementation
-// detail of the block editor.
-//
-// We can see in the Gutenberg source code (as of WordPress 6.5) that the text
-// inserted by `insertObject()` is just a single character: U+FFFC, the object
-// replacement character.
-//
-// However, that implementation is not documented as part of the public API.
-// So it might change at any time. So let's not hardcode it here.
-// (In fact, if memory serves, it used to be a different special character.)
-//
-// This technique produces whatever text is used for object replacement,
-// which might be more than one character, using `insertObject()`.
-// Since `insertObject()` *is* part of the RichText API, this ought to continue
-// working even if the implementation details change underneath.
-const EMPTY_VALUE = create({ text: '' })
-const EMPTY_OBJECT_VALUE = insertObject(EMPTY_VALUE, {})
 
 // This does not fully support layers. It returns attributes with
 // an `iconLayers` property, but it doesn't yet read icon layers out of the HTML,
@@ -163,7 +142,7 @@ function deriveAttributes(value) {
 
     try {
       transform = JSON.parse(transformJSON)
-    } catch {}
+    } catch { }
 
     if ('object' === typeof transform) {
       iconLayer.transform = pick(transform, TRANSFORM_PROPS_ALLOWED)
