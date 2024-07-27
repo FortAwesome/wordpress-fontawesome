@@ -1,4 +1,4 @@
-import { NO_CUSTOM_VALUE, SELECTED_CLASS, CUSTOM_COLOR_TEXT } from './constants'
+import { SELECTED_CLASS, CUSTOM_COLOR_TEXT } from './constants'
 import { faBan } from '@fortawesome/free-solid-svg-icons'
 import classnames from 'classnames'
 import { __ } from '@wordpress/i18n'
@@ -13,9 +13,8 @@ export default ({ themeColors, onChange, attributes }) => {
   const currentIconLayer = (attributes?.iconLayers || [])[0]
   if ('object' !== typeof currentIconLayer) return
   const currentColor = currentIconLayer?.color
-  const currentColorIsCustom = !!currentColor && currentColor !== NO_CUSTOM_VALUE && !themeColors.find(({ color }) => color === currentColor)
+  const currentColorIsCustom = !!currentColor && !themeColors.find(({ color }) => color === currentColor)
 
-  const [customColor, setCustomColor] = useState(NO_CUSTOM_VALUE)
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false)
 
   const setColor = ({ color, custom }) => {
@@ -25,14 +24,8 @@ export default ({ themeColors, onChange, attributes }) => {
       return
     }
 
-    if (custom && 'string' === typeof color) {
-      // We've picked a custom color.
-      setCustomColor(color)
-    }
-
     if (!custom) {
       // We've picked a theme color.
-      setCustomColor(NO_CUSTOM_VALUE)
       setShowCustomColorPicker(false)
     }
 

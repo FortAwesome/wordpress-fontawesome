@@ -1,5 +1,5 @@
 import { computeIconLayerCount } from './rendering'
-import { toIconDefinition, normalizeIconDefinition } from './iconDefinitions'
+import { normalizeIconDefinition } from './iconDefinitions'
 
 export function filterSelectionEvent(selectionEvent) {
   if (!selectionEvent.detail) {
