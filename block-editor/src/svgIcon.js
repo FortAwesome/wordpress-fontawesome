@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 
-export default function ({ extraClasses, width, height, isDuotone, primaryPath, secondaryPath }) {
+export default function({ extraClasses, width, height, primaryPath }) {
   const classes = classnames('svg-inline--fa', extraClasses)
 
   return (
