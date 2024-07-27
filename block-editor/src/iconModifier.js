@@ -1,25 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { wpIconFromFaIconDefinition } from './icons'
-import {
-  faReflectHorizontal,
-  faReflectVertical,
-  faReflectBoth,
-  faHeartHalfStroke,
-  faBellRing,
-  faSlidersSimple,
-  faExpand,
-  faCompress,
-  faRight,
-  faLeft,
-  faDown
-} from '@fortawesome/pro-solid-svg-icons'
-import { faBan, faBolt, faPlus, faPalette, faFilm, faHeart, faCircle, faRotateRight, faRotateLeft, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import createCustomEvent from './createCustomEvent'
+import { faReflectHorizontal, faReflectVertical, faReflectBoth, faHeartHalfStroke, faBellRing, faSlidersSimple } from '@fortawesome/pro-solid-svg-icons'
+import { faBan, faHeart, faCircle, faRotateRight, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { renderIcon } from './rendering'
 import { select } from '@wordpress/data'
 import { useState } from '@wordpress/element'
 import classnames from 'classnames'
-import { ColorPicker, ColorPalette, FontSizePicker, TabPanel, Tooltip } from '@wordpress/components'
+import { FontSizePicker, TabPanel, Tooltip } from '@wordpress/components'
 import { __ } from '@wordpress/i18n'
 import Colors from './colors'
 import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE } from './constants'
@@ -70,8 +56,6 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
     }
   }
 
-  const hasNoFlip = () => !currentTransform || (!currentTransform?.flipX && !currentTransform?.flipY)
-
   const flippedHorizontal = () => currentTransform?.flipX && !currentTransform?.flipY
 
   const flippedVertical = () => currentTransform?.flipY && !currentTransform?.flipX
@@ -85,7 +69,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
       let foundAnimation = false
 
       for (const currentAnimation of ANIMATIONS) {
-        if (currentIconLayer[animation]) {
+        if (currentIconLayer[currentAnimation]) {
           foundAnimation = true
           break
         }
@@ -261,7 +245,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
               <div className="fawp-icon-animations-tab-content fawp-icon-animations fawp-tab-content">
                 <div className="fawp-animation-controls">
                   <button
-                    className={`{classnames('fawp-button', {[SELECTED_CLASS]: isAnimationSelected()})} fawp-button fawp-reset`}
+                    className="fawp-button fawp-button fawp-reset"
                     onClick={() => setAnimation(null)}
                   >
                     <FontAwesomeIcon icon={faBan} /> {__('No Animation', 'font-awesome')}
@@ -365,9 +349,8 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   )
 }
 
-export default function({ attributes, setAttributes, IconChooserModal, prepareHandleSelect, context }) {
+export default function({ attributes, setAttributes, context }) {
   const iconLayers = attributes.iconLayers || []
-  const [selectedTab, setSelectedTab] = useState(STYLES_TAB_NAME)
 
   const updateSize = (size) => {
     const newIconLayers = [...iconLayers]
@@ -380,12 +363,6 @@ export default function({ attributes, setAttributes, IconChooserModal, prepareHa
   const setColor = (color) => {
     const newIconLayers = [...iconLayers]
     newIconLayers[0].color = color
-    setAttributes({ iconLayers: newIconLayers })
-  }
-
-  const setFlip = (flip) => {
-    const newIconLayers = [...iconLayers]
-    newIconLayers[0].flip = flip
     setAttributes({ iconLayers: newIconLayers })
   }
 
@@ -464,7 +441,6 @@ export default function({ attributes, setAttributes, IconChooserModal, prepareHa
       <div className={classnames('fawp-icon-modifier-preview-controls')}>
         <SettingsTabPanel
           attributes={attributes}
-          onSelect={setSelectedTab}
           onSizeChange={updateSize}
           editorSettings={editorSettings}
           updateTransform={updateTransform}
