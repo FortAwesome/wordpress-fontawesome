@@ -22,8 +22,7 @@ import classnames from 'classnames'
 import { ColorPicker, ColorPalette, FontSizePicker, TabPanel, Tooltip } from '@wordpress/components'
 import { __ } from '@wordpress/i18n'
 import Colors from './colors'
-import IconSizer from './iconSizer'
-import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE, ORIGINAL_SIZE } from './constants'
+import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE } from './constants'
 
 const STYLES_TAB_NAME = 'styling'
 const ANIMATIONS_TAB_NAME = 'animations'
@@ -366,7 +365,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   )
 }
 
-export default function ({ attributes, setAttributes, IconChooserModal, prepareHandleSelect, context }) {
+export default function({ attributes, setAttributes, IconChooserModal, prepareHandleSelect, context }) {
   const iconLayers = attributes.iconLayers || []
   const [selectedTab, setSelectedTab] = useState(STYLES_TAB_NAME)
 
