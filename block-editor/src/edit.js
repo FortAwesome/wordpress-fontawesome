@@ -3,7 +3,7 @@ import { faBrush } from '@fortawesome/free-solid-svg-icons'
 import { __ } from '@wordpress/i18n'
 import { BlockControls, useBlockProps } from '@wordpress/block-editor'
 import { Fragment, useState } from '@wordpress/element'
-import { Button, DropdownMenu, Modal, Placeholder, ToolbarButton, ToolbarGroup } from '@wordpress/components'
+import { Button, ToolbarDropdownMenu, Modal, Placeholder, ToolbarButton, ToolbarGroup } from '@wordpress/components'
 import get from 'lodash/get'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
@@ -75,7 +75,7 @@ export function Edit(props) {
     <Fragment>
       <BlockControls>
         <ToolbarGroup>
-          <DropdownMenu
+          <ToolbarDropdownMenu
             controls={[
               {
                 icon: justifyLeft,
