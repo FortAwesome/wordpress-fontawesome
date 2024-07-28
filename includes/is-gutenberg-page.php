@@ -24,7 +24,7 @@ function is_gutenberg_page() {
 		return true;
 	}
 
-	if ( function_exists('get_current_screen') ) {
+	if ( function_exists( 'get_current_screen' ) ) {
 		$current_screen = get_current_screen();
 
 		if ( is_object( $current_screen ) && method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {

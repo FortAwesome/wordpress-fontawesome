@@ -423,13 +423,15 @@ class FontAwesome {
 				wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
 			}
 
-
 			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::skip_enqueue_kit();
 
 			if ( $this->technology() === 'webfont' || $skip_enqueue_kit ) {
-				add_action('enqueue_block_assets', function() {
-					wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
-				});
+				add_action(
+					'enqueue_block_assets',
+					function() {
+						wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+					}
+				);
 			}
 
 			if ( $this->using_kit() ) {
@@ -1693,14 +1695,14 @@ class FontAwesome {
 							array(
 								self::ADMIN_RESOURCE_HANDLE,
 								self::RESOURCE_HANDLE_ICON_CHOOSER,
-								'wp-tinymce'
+								'wp-tinymce',
 							),
 							self::PLUGIN_VERSION,
 							true
 						);
 
 						// Required for styling the icon chooser in the Classic Editor.
-                        wp_enqueue_style('wp-components');
+						wp_enqueue_style( 'wp-components' );
 
 						/**
 						 * TODO: re-enable the possibility of integrating with TinyMCE
@@ -1743,14 +1745,14 @@ class FontAwesome {
 							);
 
 							/**
- 	 	 	 	 	 	 	 * "Fires immediately before the TinyMCE settings are printed."
- 	 	 	 	 	 	 	 * See: https://developer.wordpress.org/reference/hooks/before_wp_tiny_mce/
- 	 	 	 	 	 	 	 *
- 	 	 	 	 	 	 	 * This container div must already be available to our setup script.
- 	 	 	 	 	 	 	 * It will be if it's already there prior to the editor's initialization.
- 	 	 	 	 	 	 	 * And if it's printed before the editor's settings are printed, then
- 	 	 	 	 	 	 	 * it's guaranteed to be present before the editor's initialization.
- 	 	 	 	 	 	 	 */
+							 * "Fires immediately before the TinyMCE settings are printed."
+							 * See: https://developer.wordpress.org/reference/hooks/before_wp_tiny_mce/
+							 *
+							 * This container div must already be available to our setup script.
+							 * It will be if it's already there prior to the editor's initialization.
+							 * And if it's printed before the editor's settings are printed, then
+							 * it's guaranteed to be present before the editor's initialization.
+							 */
 							add_action(
 								'before_wp_tiny_mce',
 								function () {
@@ -1761,8 +1763,8 @@ class FontAwesome {
 
 							add_filter(
 								'tiny_mce_before_init',
-								function($mce_init) {
-									$plugins = is_string( $mce_init['plugins'] ) ? explode( ',', $mce_init['plugins'] ) : [];
+								function( $mce_init ) {
+									$plugins = is_string( $mce_init['plugins'] ) ? explode( ',', $mce_init['plugins'] ) : array();
 									array_push( $plugins, 'font-awesome-official' );
 									$mce_init['plugins'] = implode( ',', $plugins );
 									return $mce_init;
@@ -1870,11 +1872,11 @@ class FontAwesome {
 			function($mce_css) {
 				$custom_style_url = trailingslashit( FONTAWESOME_DIR_URL ) . 'static/svg-with-js.css';
 
-    			if (!empty($mce_css)) {
-        			$mce_css .= ',';
-    			}
+				if (!empty($mce_css)) {
+					$mce_css .= ',';
+				}
 
-    			$mce_css .= $custom_style_url;
+				$mce_css .= $custom_style_url;
 
 
 				return $mce_css;
@@ -1883,7 +1885,7 @@ class FontAwesome {
 			10,
 			1
 		);
-*/
+		*/
 	}
 
 	/**
@@ -3215,33 +3217,33 @@ EOT;
 	}
 
 	/**
-     * Internal only, not part of this plugin's public API.
-     *
-     * Determine whether the given version is a concrete (semantic) version.
-     *
-     * @internal
-     * @ignore
-     * @return bool 
-     */ 
+	 * Internal only, not part of this plugin's public API.
+	 *
+	 * Determine whether the given version is a concrete (semantic) version.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
 	public static function version_is_concrete( $version ) {
 		return is_string( $version )
 			&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
-    }
+	}
 
 	/**
-     * Internal use only, not part of this plugin's public API.
-     *
- 	 * Determines the concrete version corresponding to the given options.
- 	 *
- 	 * A concrete version is just a semantic version like "6.5.0". This is distinct
- 	 * from a symbolic version like "latest" or "6.x".
- 	 *
- 	 * This function resolves symbolic versions into a concrete versions.
- 	 *
- 	 * @internal
- 	 * @ignore
- 	 * @return false | string returns false if the version is invalid.
- 	 */
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * Determines the concrete version corresponding to the given options.
+	 *
+	 * A concrete version is just a semantic version like "6.5.0". This is distinct
+	 * from a symbolic version like "latest" or "6.x".
+	 *
+	 * This function resolves symbolic versions into a concrete versions.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return false | string returns false if the version is invalid.
+	 */
 	public function concrete_version( $options ) {
 		$version = null;
 
@@ -3257,9 +3259,9 @@ EOT;
 
 		if ( $version === 'latest' ) {
 			$concrete_version = $this->latest_version_5();
-		} else if ( $version === '5.x' ) {
+		} elseif ( $version === '5.x' ) {
 			$concrete_version = $this->latest_version_5();
-		} else if ( $version === '6.x' ) {
+		} elseif ( $version === '6.x' ) {
 			$concrete_version = $this->latest_version_6();
 		} else {
 			$concrete_version = $version;

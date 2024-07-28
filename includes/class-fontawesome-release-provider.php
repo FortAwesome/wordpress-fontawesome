@@ -509,9 +509,9 @@ EOD;
 	 * @internal
 	 * @ignore
 	 * @return FontAwesome_Resource
-     */ 
-	public function get_svg_styles_resource($version) {
-		return $this->build_resource($version, 'svg-with-js');
+	 */
+	public function get_svg_styles_resource( $version ) {
+		return $this->build_resource( $version, 'svg-with-js' );
 	}
 
 	/**

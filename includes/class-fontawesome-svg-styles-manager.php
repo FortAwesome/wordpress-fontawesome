@@ -28,76 +28,75 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
-     * Internal use only. This is not part of the plugin's public API.
-     *
-     * However, this relies on the `font_awesome_svg_styles_loading` filter,
-     * which *is* part of the public API.
-     *
-     * @internal
-     * @ignore
+	 * Internal use only. This is not part of the plugin's public API.
+	 *
+	 * However, this relies on the `font_awesome_svg_styles_loading` filter,
+	 * which *is* part of the public API.
+	 *
+	 * @internal
+	 * @ignore
 	 * @param $options array
 	 * @return string | false
- 	 */
-	public static function additional_svg_styles_loading($options) {
-
+	 */
+	public static function additional_svg_styles_loading( $options ) {
 
 		// Initial setting.
-		if ( $tech === 'webfont' ){
+		if ( $tech === 'webfont' ) {
 			$load_mode = 'cdn';
-		} else if ( $using_kit && $skip_enqueue_kit ) {
-			/* 
-             * When using an SVG kit, and not enqueuing it on the front end,
-             * this implies that supporting styles should also not use the CDN.
-             */
+		} elseif ( $using_kit && $skip_enqueue_kit ) {
+			/*
+			 * When using an SVG kit, and not enqueuing it on the front end,
+			 * this implies that supporting styles should also not use the CDN.
+			 */
 			$load_mode = 'selfhost';
 		} else {
 			$load_mode = false;
 		}
 
 		/**
- 	 	 * Determine whether and how to enqueue the SVG support styles asset.
- 	 	 *
- 	 	 * As of plugin version 4.5.0, the SVG support styles are required to
- 	 	 * support the SVG icons added using the icon chooser.
- 	 	 *
- 	 	 * When using SVG tech, either with a kit or the legacy CDN, it's not
- 	 	 * necessary to enqueue this *additional* stylesheet, because the SVG
- 	 	 * tech's JavaScript automatically injects the support styles into the
- 	 	 * DOM when loaded in the browser.
- 	 	 *
- 	 	 * However, the `font_awesome_skip_enqueue_kit` filter might be used to
- 	 	 * disable the loading of the kit on the front end, in order not to use
- 	 	 * a CDN, for example.
- 	 	 *
- 	 	 * For such cases, where there will be no automatic injection of the
- 	 	 * SVG support styles into the DOM, this additional stylesheet can be
- 	 	 * enqueued separately.
- 	 	 *
- 	 	 * It can be loaded from either CDN, or retrieved and stored on the
- 	 	 * WordPress server for self-hosting.
- 	 	 *
- 	 	 * Valid values:
- 	 	 *
- 	 	 * - `false`: no additional support styles will be enqueued.
- 	 	 * - "cdn": enqueue the additional support styles from the Font Awesome CDN.
- 	 	 * - "selfhost": retrieve the additional stylesheet and store it on the WordPress
- 	 	 *   server for self-hosting.
- 	 	 *
- 	 	 * @since 4.5.0
- 	 	 */
+		 * Determine whether and how to enqueue the SVG support styles asset.
+		 *
+		 * As of plugin version 4.5.0, the SVG support styles are required to
+		 * support the SVG icons added using the icon chooser.
+		 *
+		 * When using SVG tech, either with a kit or the legacy CDN, it's not
+		 * necessary to enqueue this *additional* stylesheet, because the SVG
+		 * tech's JavaScript automatically injects the support styles into the
+		 * DOM when loaded in the browser.
+		 *
+		 * However, the `font_awesome_skip_enqueue_kit` filter might be used to
+		 * disable the loading of the kit on the front end, in order not to use
+		 * a CDN, for example.
+		 *
+		 * For such cases, where there will be no automatic injection of the
+		 * SVG support styles into the DOM, this additional stylesheet can be
+		 * enqueued separately.
+		 *
+		 * It can be loaded from either CDN, or retrieved and stored on the
+		 * WordPress server for self-hosting.
+		 *
+		 * Valid values:
+		 *
+		 * - `false`: no additional support styles will be enqueued.
+		 * - "cdn": enqueue the additional support styles from the Font Awesome CDN.
+		 * - "selfhost": retrieve the additional stylesheet and store it on the WordPress
+		 *   server for self-hosting.
+		 *
+		 * @since 4.5.0
+		 */
 		return apply_filters(
 			'font_awesome_svg_styles_loading',
 			$load_mode,
-			[
-				'using_kit' => $using_kit,
-				'tech' => $tech,
-				'skip_enqueue_kit' => $skip_enqueue_kit
-			]
+			array(
+				'using_kit'        => $using_kit,
+				'tech'             => $tech,
+				'skip_enqueue_kit' => $skip_enqueue_kit,
+			)
 		);
 	}
 
-	public static function selfhost_asset_path($version) {
-		$upload_dir = wp_upload_dir(null, true, false);
+	public static function selfhost_asset_path( $version ) {
+		$upload_dir = wp_upload_dir( null, true, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
 			// TODO: exception
@@ -111,14 +110,14 @@ class FontAwesome_SVG_Styles_Manager {
 
 		$asset_subpath = "$asset_subdir/$file";
 
-		return [
-			'dir' => trailingslashit( $upload_dir['basedir'] ) . $asset_subdir,
-			'file' => $file
-		];
+		return array(
+			'dir'  => trailingslashit( $upload_dir['basedir'] ) . $asset_subdir,
+			'file' => $file,
+		);
 	}
 
-	public static function selfhost_asset_url($version) {
-		$upload_dir = wp_upload_dir(null, false, false);
+	public static function selfhost_asset_url( $version ) {
+		$upload_dir = wp_upload_dir( null, false, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
 			// TODO: exception
@@ -133,31 +132,31 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
-     * Internal use only, not part of the plugin's public API.
-     *
-     * However, this relies on the `font_awesome_svg_styles_loading` filter,
-     * which *is* part of the public API.
-     *
-     * This registers the svg styles stylesheet according to cdn or selfhost
-     * loading, using cdn by default, which can be override by the
-     * `font_awesome_svg_styles_loading` filter.
-     *
-     * It also adds an action to update the `<link>` with an sri integrity key,
-     * whether loaded from cdn or selfhost.
-     *
-     * @internal
-     * @ignore
-     */
-	public static function register_svg_styles($fa, $fa_release_provider) {
+	 * Internal use only, not part of the plugin's public API.
+	 *
+	 * However, this relies on the `font_awesome_svg_styles_loading` filter,
+	 * which *is* part of the public API.
+	 *
+	 * This registers the svg styles stylesheet according to cdn or selfhost
+	 * loading, using cdn by default, which can be override by the
+	 * `font_awesome_svg_styles_loading` filter.
+	 *
+	 * It also adds an action to update the `<link>` with an sri integrity key,
+	 * whether loaded from cdn or selfhost.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function register_svg_styles( $fa, $fa_release_provider ) {
 		$load_mode = 'cdn';
 
 		$load_mode = apply_filters(
 			'font_awesome_svg_styles_loading',
 			$load_mode,
-			[
+			array(
 				'using_kit' => $fa->using_kit(),
-				'tech' => $fa->technology()
-			]
+				'tech'      => $fa->technology(),
+			)
 		);
 
 		$concrete_version = $fa->concrete_version( $fa->options() );
@@ -169,13 +168,13 @@ class FontAwesome_SVG_Styles_Manager {
 		$source = $cdn_resource->source();
 
 		if ( $load_mode === 'selfhost' ) {
-			$source = FontAwesome_SVG_Styles_Manager::selfhost_asset_url( $concrete_version );
+			$source = self::selfhost_asset_url( $concrete_version );
 		}
 
 		wp_register_style(
 			self::RESOURCE_HANDLE_SVG_STYLES,
 			$source,
-			[],
+			array(),
 			null,
 			'all'
 		);
@@ -184,10 +183,10 @@ class FontAwesome_SVG_Styles_Manager {
 			'style_loader_tag',
 			function ( $html, $handle ) use ( $integrity_key, $load_mode ) {
 				if ( in_array( $handle, array( self::RESOURCE_HANDLE_SVG_STYLES ), true ) ) {
-				   $crossorigin_attr = 'selfhost' === $load_mode
+					$crossorigin_attr = 'selfhost' === $load_mode
 					? '' : ' crossorigin="anonymous"';
 
-				   $integrity_attr = "integrity=\"$integrity_key\"";
+					$integrity_attr = "integrity=\"$integrity_key\"";
 
 					return preg_replace(
 						'/\/>$/',
@@ -205,20 +204,20 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
-    * If self-hosting is required, this ensures that the SVG support style asset(s)
-    * have been retrieved for self-hosting.
-    *
+	 * If self-hosting is required, this ensures that the SVG support style asset(s)
+	 * have been retrieved for self-hosting.
+	 *
 	 * @throws ReleaseMetadataMissingException
 	 * @throws ApiRequestException
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return void
- 	*/
-	public static function maybe_setup_selfhosting($options) {
+	 */
+	public static function maybe_setup_selfhosting( $options ) {
 		$is_skipping_enqueue_kit = self::skip_enqueue_kit();
 
-		if ( self::additional_svg_styles_loading($options, $is_skipping_enqueue_kit) !== 'selfhost' ) {
+		if ( self::additional_svg_styles_loading( $options, $is_skipping_enqueue_kit ) !== 'selfhost' ) {
 			return;
 		}
 
@@ -231,7 +230,7 @@ class FontAwesome_SVG_Styles_Manager {
 
 		$asset_path = self::selfhost_asset_path( $concrete_version );
 
-		if ( !$asset_path || ! isset($asset_path['dir']) || ! isset($asset_path['file'])) {
+		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
 			// TODO: exception
 			return;
 		}
@@ -243,7 +242,7 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-	    $resource = fa_release_provider()->get_svg_styles_resource($concrete_version);
+		$resource = fa_release_provider()->get_svg_styles_resource( $concrete_version );
 
 		if ( ! $resource->source() || ! $resource->integrity_key() ) {
 			// TODO: throw a new kind of exception here.
@@ -277,14 +276,14 @@ class FontAwesome_SVG_Styles_Manager {
 
 		$algo = substr( $resource->integrity_key(), 0, $hyphen_pos );
 
-		if ( ! in_array($algo, hash_algos() ) ) {
+		if ( ! in_array( $algo, hash_algos() ) ) {
 			// TODO: throw exception
 			return;
 		}
 
-		$hash_hex = hash($algo, $response['body']);
+		$hash_hex = hash( $algo, $response['body'] );
 
-		$hash_bin = hex2bin($hash_hex);
+		$hash_bin = hex2bin( $hash_hex );
 		if ( ! $hash_bin ) {
 			// TOOD: exception
 			return;
@@ -304,7 +303,7 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-		$fp = fopen($full_asset_path, 'w');
+		$fp = fopen( $full_asset_path, 'w' );
 
 		if ( $fp === false ) {
 			// TODO: exception

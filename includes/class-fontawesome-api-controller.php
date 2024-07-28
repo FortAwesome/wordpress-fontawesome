@@ -116,7 +116,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $route_base . "/token",
+			'/' . $route_base . '/token',
 			array(
 				array(
 					'methods'             => 'GET',
@@ -147,7 +147,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 */
 	public function check_permission() {
 		return current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' );
-    }
+	}
 
 	/**
 	 * Run the query by delegating to {@see FontAwesome_Metadata_Provider}.
@@ -189,16 +189,16 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	public function provide_access_token() {
 		try {
 			$access_token = fa_api_settings()->current_access_token();
-		    $expires_at   = fa_api_settings()->access_token_expiration_time();
+			$expires_at   = fa_api_settings()->access_token_expiration_time();
 
 			if ( ! boolval( $access_token ) || ! boolval( $expires_at ) ) {
 				// TODO: make a real error response.
-			    return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( "could not get an access token" ), 500 );
+				return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( 'could not get an access token' ), 500 );
 			}
 
 			$response_body = array(
 				'access_token' => $access_token,
-				'expires_at' => $expires_at
+				'expires_at'   => $expires_at,
 			);
 
 			return new FontAwesome_REST_Response( $response_body, 200 );
