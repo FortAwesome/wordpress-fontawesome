@@ -24,13 +24,13 @@ export function mountConflictDetectionReporter(store) {
     faStyle.appendChild(cssText)
 
     const shadowContainer = document.createElement('DIV')
-    const root = createRoot( shadowContainer )
+    const root = createRoot(shadowContainer)
 
     shadow.appendChild(faStyle)
     shadow.appendChild(shadowContainer)
 
     root.render(
-      <Provider store={ store }>
+      <Provider store={store}>
         <ConflictDetectionReporter />
       </Provider>
     )
@@ -39,7 +39,7 @@ export function mountConflictDetectionReporter(store) {
 
 export function isConflictDetectionReporterMounted() {
   const shadowHost = document.getElementById(CONFLICT_DETECTION_SHADOW_HOST_ID)
-  if(! shadowHost ) return false
+  if (!shadowHost) return false
 
   return !!shadowHost.shadowRoot
 }

@@ -12,24 +12,21 @@ import {
   resetPendingBlocklistSubmissionStatus,
   resetUnregisteredClientsDeletionStatus
 } from './store/actions'
-import {
-  faCheck,
-  faSkull,
-  faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faSkull, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import classnames from 'classnames'
 import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 
 export default function TroubleshootTab() {
   const dispatch = useDispatch()
-  const hasV3DeprecationWarning = useSelector(state => !!state.v3DeprecationWarning)
-  const unregisteredClients = useSelector(state => state.unregisteredClients)
+  const hasV3DeprecationWarning = useSelector((state) => !!state.v3DeprecationWarning)
+  const unregisteredClients = useSelector((state) => state.unregisteredClients)
 
-  const blocklistUpdateStatus = useSelector(state => state.blocklistUpdateStatus)
-  const unregisteredClientsDeletionStatus = useSelector(state => state.unregisteredClientsDeletionStatus)
+  const blocklistUpdateStatus = useSelector((state) => state.blocklistUpdateStatus)
+  const unregisteredClientsDeletionStatus = useSelector((state) => state.unregisteredClientsDeletionStatus)
 
-  const showSubmitButton = size( unregisteredClients ) > 0
-  const hasPendingChanges = null !== blocklistUpdateStatus.pending || size( unregisteredClientsDeletionStatus.pending ) > 0
+  const showSubmitButton = size(unregisteredClients) > 0
+  const hasPendingChanges = null !== blocklistUpdateStatus.pending || size(unregisteredClientsDeletionStatus.pending) > 0
   const hasSubmitted = unregisteredClientsDeletionStatus.hasSubmitted || blocklistUpdateStatus.hasSubmitted
   const isSubmitting = unregisteredClientsDeletionStatus.isSubmitting || blocklistUpdateStatus.isSubmitting
 
@@ -41,68 +38,74 @@ export default function TroubleshootTab() {
   function handleSubmitClick(e) {
     e.preventDefault()
 
-    if ( blocklistUpdateStatus.pending ) {
+    if (blocklistUpdateStatus.pending) {
       dispatch(submitPendingBlocklist())
     } else {
       dispatch(resetPendingBlocklistSubmissionStatus())
     }
 
-    if ( size( unregisteredClientsDeletionStatus.pending ) > 0 ) {
+    if (size(unregisteredClientsDeletionStatus.pending) > 0) {
       dispatch(submitPendingUnregisteredClientDeletions())
     } else {
       dispatch(resetUnregisteredClientsDeletionStatus())
     }
   }
 
-  return <>
-    <div className={ sharedStyles['wrapper-div'] }>
-      { hasV3DeprecationWarning && <V3DeprecationWarning /> }
-      <ConflictDetectionScannerSection />
-      <ManageFontAwesomeVersionsSection />
-      <UnregisteredClientsView />
-    </div>
-    {
-      showSubmitButton &&
-        <div className={ classnames(sharedStyles['submit-wrapper'], ['submit']) }>
+  return (
+    <>
+      <div className={sharedStyles['wrapper-div']}>
+        {hasV3DeprecationWarning && <V3DeprecationWarning />}
+        <ConflictDetectionScannerSection />
+        <ManageFontAwesomeVersionsSection />
+        <UnregisteredClientsView />
+      </div>
+      {showSubmitButton && (
+        <div className={classnames(sharedStyles['submit-wrapper'], ['submit'])}>
           <input
             type="submit"
             name="submit"
             id="submit"
             className="button button-primary"
-            value={ __( 'Save Changes', 'font-awesome' ) }
-            disabled={ !hasPendingChanges }
-            onClick={ handleSubmitClick }
+            value={__('Save Changes', 'font-awesome')}
+            disabled={!hasPendingChanges}
+            onClick={handleSubmitClick}
           />
-          { hasSubmitted 
-            ? submitSuccess
-              ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['success']) }>
-                  <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faCheck } />
-                </span>
-              : <div className={ classnames(sharedStyles['submit-status'], sharedStyles['fail']) }>
-                  <div className={ classnames(sharedStyles['fail-icon-container']) }>
-                    <FontAwesomeIcon className={ sharedStyles['icon'] } icon={ faSkull } />
-                  </div>
-                  <div className={ sharedStyles['explanation'] }>
-                    {
-                      !!blocklistUpdateStatus.message && <p> { blocklistUpdateStatus.message } </p>
-                    }
-                    {
-                      !!unregisteredClientsDeletionStatus.message && <p> { unregisteredClientsDeletionStatus.message } </p>
-                    }
-                  </div>
-                </div>
-            : null
-          }
-          {
-            isSubmitting
-            ? <span className={ classnames(sharedStyles['submit-status'], sharedStyles['submitting']) }>
-                <FontAwesomeIcon className={ sharedStyles['icon'] } icon={faSpinner} spin/>
+          {hasSubmitted ? (
+            submitSuccess ? (
+              <span className={classnames(sharedStyles['submit-status'], sharedStyles['success'])}>
+                <FontAwesomeIcon
+                  className={sharedStyles['icon']}
+                  icon={faCheck}
+                />
               </span>
-            : hasPendingChanges
-              ? <span className={ sharedStyles['submit-status'] }>{ __( 'you have pending changes', 'font-awesome' ) }</span>
-              : null
-          }
+            ) : (
+              <div className={classnames(sharedStyles['submit-status'], sharedStyles['fail'])}>
+                <div className={classnames(sharedStyles['fail-icon-container'])}>
+                  <FontAwesomeIcon
+                    className={sharedStyles['icon']}
+                    icon={faSkull}
+                  />
+                </div>
+                <div className={sharedStyles['explanation']}>
+                  {!!blocklistUpdateStatus.message && <p> {blocklistUpdateStatus.message} </p>}
+                  {!!unregisteredClientsDeletionStatus.message && <p> {unregisteredClientsDeletionStatus.message} </p>}
+                </div>
+              </div>
+            )
+          ) : null}
+          {isSubmitting ? (
+            <span className={classnames(sharedStyles['submit-status'], sharedStyles['submitting'])}>
+              <FontAwesomeIcon
+                className={sharedStyles['icon']}
+                icon={faSpinner}
+                spin
+              />
+            </span>
+          ) : hasPendingChanges ? (
+            <span className={sharedStyles['submit-status']}>{__('you have pending changes', 'font-awesome')}</span>
+          ) : null}
         </div>
-    }
-  </>
+      )}
+    </>
+  )
 }

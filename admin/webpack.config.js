@@ -1,17 +1,15 @@
-const defaultConfig = require("@wordpress/scripts/config/webpack.config");
-const get = require("lodash/get");
-const { basename, dirname } = require("path");
+const defaultConfig = require('@wordpress/scripts/config/webpack.config')
+const get = require('lodash/get')
+const { basename, dirname } = require('path')
 
 /**
  * There have apparently been problems with webpack chunk loading and caches.
  * So we should add hashes to the chunk file names.
  * See: https://wordpress.org/support/topic/plugin-settings-page-is-empty-2/#post-14855904
  */
-const miniCssExtractPlugin = defaultConfig.plugins.find((p) =>
-  "MiniCssExtractPlugin" === p.constructor.name
-);
-miniCssExtractPlugin.options.filename = "[name]-[contenthash].css";
-miniCssExtractPlugin.options.chunkFilename = "[name]-[chunkhash].css";
+const miniCssExtractPlugin = defaultConfig.plugins.find((p) => 'MiniCssExtractPlugin' === p.constructor.name)
+miniCssExtractPlugin.options.filename = '[name]-[contenthash].css'
+miniCssExtractPlugin.options.chunkFilename = '[name]-[chunkhash].css'
 
 // After updating to @wordpress/scripts wp-6.5, when using --webpack-no-externals
 // there was an error:
@@ -35,21 +33,13 @@ miniCssExtractPlugin.options.chunkFilename = "[name]-[chunkhash].css";
 //
 // Using the empty string here instead of null seems to result in that asset still
 // loading as expected and styling everything as expected.
-defaultConfig.optimization.splitChunks.cacheGroups.style.name = (
-  _,
-  chunks,
-  cacheGroupKey,
-) => {
-  const chunkName = chunks[0].name || "";
-  return `${
-    dirname(
-      chunkName,
-    )
-  }/${cacheGroupKey}-${basename(chunkName)}`;
-};
+defaultConfig.optimization.splitChunks.cacheGroups.style.name = (_, chunks, cacheGroupKey) => {
+  const chunkName = chunks[0].name || ''
+  return `${dirname(chunkName)}/${cacheGroupKey}-${basename(chunkName)}`
+}
 
 // This causes the JavaScript chunks to include the chunk hash in the filename,
 // which is important for cache busting purposes.
-defaultConfig.output.chunkFilename = "[name]-[chunkhash].js";
+defaultConfig.output.chunkFilename = '[name]-[chunkhash].js'
 
-module.exports = defaultConfig;
+module.exports = defaultConfig

@@ -19,8 +19,8 @@ const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport
  */
 let conflictDetectionReport = null
 
-if( get(initialData, 'showConflictDetectionReporter') ) {
-  const reportEvent = new Event(CONFLICT_DETECTION_REPORT_EVENT_TYPE, { "bubbles": true, "cancelable": false })
+if (get(initialData, 'showConflictDetectionReporter')) {
+  const reportEvent = new Event(CONFLICT_DETECTION_REPORT_EVENT_TYPE, { bubbles: true, cancelable: false })
 
   /**
    * If we're doing conflict detection, we must set this up before DOMContentLoaded,
@@ -28,63 +28,51 @@ if( get(initialData, 'showConflictDetectionReporter') ) {
    */
   window.FontAwesomeDetection = {
     ...(window.FontAwesomeDetection || {}),
-    report: params => {
+    report: (params) => {
       conflictDetectionReport = params
       document.dispatchEvent(reportEvent)
     }
   }
 }
 
-if(! initialData){
-  console.error( __( 'Font Awesome plugin is broken: initial state data missing.', 'font-awesome' ) )
+if (!initialData) {
+  console.error(__('Font Awesome plugin is broken: initial state data missing.', 'font-awesome'))
 }
 
 const store = createStore(initialData)
 
 set(window, [GLOBAL_KEY, 'createInterpolateElement'], createInterpolateElement)
 
-const {
-  showAdmin,
-  showConflictDetectionReporter,
-  enableIconChooser,
-  usingCompatJs,
-  isGutenbergPage
-} = store.getState()
+const { showAdmin, showConflictDetectionReporter, enableIconChooser, usingCompatJs, isGutenbergPage } = store.getState()
 
-if( showAdmin ) {
+if (showAdmin) {
   import('./mountAdminView')
-  .then(({ default: mountAdminView }) => {
-    mountAdminView(store)
-  })
-  .catch(error => {
-    console.error( __( 'Font Awesome plugin error when initializing admin settings view', 'font-awesome' ), error )
-  })
+    .then(({ default: mountAdminView }) => {
+      mountAdminView(store)
+    })
+    .catch((error) => {
+      console.error(__('Font Awesome plugin error when initializing admin settings view', 'font-awesome'), error)
+    })
 }
 
-if( showConflictDetectionReporter ) {
-  Promise.all([
-    import('./store/actions'),
-    import('./mountConflictDetectionReporter')
-  ])
-  .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
-    const report = params => store.dispatch(reportDetectedConflicts(params))
+if (showConflictDetectionReporter) {
+  Promise.all([import('./store/actions'), import('./mountConflictDetectionReporter')])
+    .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
+      const report = (params) => store.dispatch(reportDetectedConflicts(params))
 
-    /**
-     * If the conflict detection report is already available, just use it;
-     * otherwise, listen for the reporting event.
-     */
-    if( conflictDetectionReport ) {
-      report(conflictDetectionReport)
-    } else {
-      document.addEventListener(
-        CONFLICT_DETECTION_REPORT_EVENT_TYPE,
-        _event => report(conflictDetectionReport)
-      )
-    }
+      /**
+       * If the conflict detection report is already available, just use it;
+       * otherwise, listen for the reporting event.
+       */
+      if (conflictDetectionReport) {
+        report(conflictDetectionReport)
+      } else {
+        document.addEventListener(CONFLICT_DETECTION_REPORT_EVENT_TYPE, (_event) => report(conflictDetectionReport))
+      }
 
-    mountConflictDetectionReporter(store)
-  })
-  .catch(error => {
-    console.error( __( 'Font Awesome plugin error when initializing conflict detection scanner', 'font-awesome' ), error )
-  })
+      mountConflictDetectionReporter(store)
+    })
+    .catch((error) => {
+      console.error(__('Font Awesome plugin error when initializing conflict detection scanner', 'font-awesome'), error)
+    })
 }

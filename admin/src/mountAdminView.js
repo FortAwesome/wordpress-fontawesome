@@ -7,12 +7,12 @@ import domReady from '@wordpress/dom-ready'
 
 const root = createRoot(document.getElementById('font-awesome-admin'))
 
-export default function(store) {
+export default function (store) {
   domReady(() =>
     root.render(
       <ErrorBoundary>
-        <Provider store={ store }>
-          <FontAwesomeAdminView/>
+        <Provider store={store}>
+          <FontAwesomeAdminView />
         </Provider>
       </ErrorBoundary>
     )
