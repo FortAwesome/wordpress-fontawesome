@@ -4,13 +4,13 @@ import { buildShortCodeFromIconChooserResult } from './shortcode'
 import get from 'lodash/get'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 
-const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {});
+const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {})
 const iconChooserContainerId = 'font-awesome-icon-chooser-container'
 
-const modalOpenEvent = new Event("classicEditorFontAwesomeIconChooserOpen", {
-  "bubbles": true,
-  "cancelable": false,
-});
+const modalOpenEvent = new Event('classicEditorFontAwesomeIconChooserOpen', {
+  bubbles: true,
+  cancelable: false
+})
 
 const openIconChooser = () => {
   document.dispatchEvent(modalOpenEvent)
@@ -18,7 +18,7 @@ const openIconChooser = () => {
 
 export function handleSubmit(event) {
   const insert = get(window, 'wp.media.editor.insert')
-  insert && insert( buildShortCodeFromIconChooserResult(event.detail) )
+  insert && insert(buildShortCodeFromIconChooserResult(event.detail))
 }
 
 function setupClassicEditor() {
@@ -28,11 +28,11 @@ function setupClassicEditor() {
 
   const root = createRoot(container)
 
-  if(container) {
+  if (container) {
     root.render(
       <IconChooserModal
-        onSubmit={ handleSubmit }
-        openEvent={ modalOpenEvent }
+        onSubmit={handleSubmit}
+        openEvent={modalOpenEvent}
       />
     )
   }
@@ -48,7 +48,7 @@ class FontAwesomeOfficialPlugin {
     editor.on('init', () => {
       const button = document.querySelector('button.font-awesome-icon-chooser-media-button')
 
-      if(button) {
+      if (button) {
         button.addEventListener('click', openIconChooser)
       }
 
@@ -62,7 +62,7 @@ class FontAwesomeOfficialPlugin {
        *
        * TODO: Need to figure out how to navigate the caret past the icon so it can be deleted.
        * Or to make it selectable by clicking.
-      */
+       */
       // editor.schema.addValidElements('svg[class|viewbox|xmlns]')
       // editor.schema.addValidElements('path[class|d]')
     })
@@ -71,6 +71,6 @@ class FontAwesomeOfficialPlugin {
   }
 }
 
-if(window.tinymce) {
+if (window.tinymce) {
   tinymce.PluginManager.add('font-awesome-official', FontAwesomeOfficialPlugin)
 }
