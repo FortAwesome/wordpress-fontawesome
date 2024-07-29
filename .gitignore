@@ -21,3 +21,4 @@ admin/src/playwright/.auth/
 admin/artifacts/
 admin/test-results/
 .npmrc
+.php-cs-fixer.cache
