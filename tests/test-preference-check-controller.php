@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

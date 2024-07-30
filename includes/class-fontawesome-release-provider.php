@@ -6,7 +6,7 @@
  */
 namespace FortAwesome;
 
-use \WP_Error, \Error, \Exception;
+use WP_Error, Error, Exception;
 
 /**
  * Provides metadata about Font Awesome releases.
@@ -327,7 +327,7 @@ EOD;
 		$versions = array_keys( $this->releases() );
 		usort(
 			$versions,
-			function( $first, $second ) {
+			function ( $first, $second ) {
 				return version_compare( $second, $first );
 			}
 		);

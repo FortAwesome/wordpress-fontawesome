@@ -8,7 +8,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
-use \WP_REST_Controller, \WP_Error, \Error, \Exception;
+use WP_REST_Controller, WP_Error, Error, Exception;
 
 /**
  * Controller class for the plugin's GraphQL API REST endpoint.

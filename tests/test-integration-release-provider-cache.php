@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-use \WP_Error;
+use WP_Error;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -14,8 +14,8 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
 require_once FONTAWESOME_DIR_PATH . 'font-awesome.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/fixtures/graphql-releases-query-fixture.php';
 
 /**
  * Class ReleaseProviderIntegrationTest
@@ -43,7 +43,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 				$this,
 				FontAwesome_Metadata_Provider::class,
 				'metadata_query',
-				function( $method ) use ( $arg ) {
+				function ( $method ) use ( $arg ) {
 					$method->will( $this->throwException( new ApiRequestException() ) );
 				}
 			);
@@ -52,7 +52,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 				$this,
 				FontAwesome_Metadata_Provider::class,
 				'metadata_query',
-				function( $method ) use ( $arg ) {
+				function ( $method ) use ( $arg ) {
 					$method->will( $this->onConsecutiveCalls( ...$arg ) );
 				}
 			);
@@ -91,8 +91,8 @@ class ReleaseProviderIntegrationTest extends TestCase {
 
 		$enqueued_count = 0;
 
-		$enqueued_callback = function() use ( &$enqueued_count ) {
-			$enqueued_count++;
+		$enqueued_callback = function () use ( &$enqueued_count ) {
+			++$enqueued_count;
 			$this->assertEquals( fa()->latest_version_6(), fa()->version() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
@@ -136,7 +136,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 
 		add_filter(
 			'pre_option_' . FontAwesome_Release_Provider::OPTIONS_KEY,
-			function( $value ) use ( &$all_releases_query_count ) {
+			function ( $value ) use ( &$all_releases_query_count ) {
 				$all_releases_query_count++;
 				return $value;
 			},
@@ -145,7 +145,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 
 		add_filter(
 			'pre_transient_' . FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
-			function() use ( &$last_used_release_query_count ) {
+			function () use ( &$last_used_release_query_count ) {
 				$last_used_release_query_count++;
 				return false;
 			},
@@ -232,7 +232,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( ! ! FontAwesome_Release_Provider::get_option() );
+		$this->assertTrue( (bool) FontAwesome_Release_Provider::get_option() );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
 			'5.4.1',
@@ -243,7 +243,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( ! ! $resource_collection );
+		$this->assertTrue( (bool) $resource_collection );
 
 		$this->assertEquals(
 			get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT ),

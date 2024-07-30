@@ -6,7 +6,7 @@
  */
 namespace FortAwesome;
 
-use \WP_Error, \Error, \Exception;
+use WP_Error, Error, Exception;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 

@@ -4,7 +4,7 @@ namespace FortAwesome;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_Error, \Error, \Exception;
+use WP_REST_Controller, WP_Error, Error, Exception;
 
 /**
  * Module for this plugin's Preference Check controller
@@ -53,7 +53,7 @@ class FontAwesome_Preference_Check_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'check_preferences' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),

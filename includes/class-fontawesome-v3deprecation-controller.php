@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
-use \WP_REST_Controller, \WP_Error, \Error, \Exception;
+use WP_REST_Controller, WP_Error, Error, Exception;
 
 /**
  * Controller class for REST endpoint
@@ -51,14 +51,14 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'GET',
 					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_item' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),

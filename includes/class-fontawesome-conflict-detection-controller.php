@@ -4,7 +4,7 @@ namespace FortAwesome;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_Error, \Error, \Exception;
+use WP_REST_Controller, WP_Error, Error, Exception;
 
 /**
  * REST Controller for managing data on the FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY.
@@ -56,7 +56,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_detect_conflicts_until' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -70,7 +70,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'report_conflicts' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -84,7 +84,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'DELETE',
 					'callback'            => array( $this, 'delete_conflicts' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -103,7 +103,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_blocklist' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -458,7 +458,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				0 === count(
 					array_filter(
 						$data,
-						function( $md5 ) {
+						function ( $md5 ) {
 							return ! is_string( $md5 ) || strlen( $md5 ) !== 32;
 						}
 					)

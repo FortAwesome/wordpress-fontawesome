@@ -1,9 +1,9 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-exception.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
@@ -90,7 +90,7 @@ class MultisiteActivationTest extends TestCase {
 			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 
 			for_each_blog(
-				function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+				function ( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
 					$site_count     = ++$site_count;
 					$actual_options = get_option( FontAwesome::OPTIONS_KEY );
 					$test_obj->assertEquals( $expected_options, $actual_options );
@@ -159,7 +159,7 @@ class MultisiteActivationTest extends TestCase {
 		$this->assertEquals( $expected_options, $options_for_main_blog_id );
 
 		for_each_blog(
-			function( $blog_id ) use ( $test_obj, $expected_options ) {
+			function ( $blog_id ) use ( $test_obj, $expected_options ) {
 				$actual_options = fa()->options();
 				$test_obj->assertEquals( $expected_options, $actual_options );
 			}
@@ -219,7 +219,7 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 		$all_site_blog_ids = array_map(
-			function( $site ) {
+			function ( $site ) {
 				return $site->blog_id;
 			},
 			get_sites(
@@ -237,7 +237,7 @@ class MultisiteActivationTest extends TestCase {
 		$visited_blog_ids = array();
 
 		for_each_blog(
-			function( $blog_id ) use ( &$visited_blog_ids ) {
+			function ( $blog_id ) use ( &$visited_blog_ids ) {
 				array_push( $visited_blog_ids, $blog_id );
 			}
 		);

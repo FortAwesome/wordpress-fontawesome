@@ -15,6 +15,6 @@ if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
 	}
 }
 
-require_once dirname( __FILE__ ) . '/../../../../index.php';
+require_once __DIR__ . '/../../../../index.php';
 
 FontAwesome_Loader::instance()->add( __DIR__, false );

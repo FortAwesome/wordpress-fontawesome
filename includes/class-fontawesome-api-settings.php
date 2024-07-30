@@ -6,7 +6,7 @@ namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
-use \WP_Error, \InvalidArgumentException;
+use WP_Error, InvalidArgumentException;
 
 /**
  * Provides read/write access to the Font Awesome API settings.

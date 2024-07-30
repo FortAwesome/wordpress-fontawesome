@@ -9,10 +9,10 @@ namespace FortAwesome;
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-metadata-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-api-settings.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/fixtures/graphql-releases-query-fixture.php';
 
-use \Exception, \WP_Error;
+use Exception, WP_Error;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -83,7 +83,7 @@ class MetadataProviderTest extends TestCase {
 			$this,
 			FontAwesome_Metadata_Provider::class,
 			'post',
-			function( $method ) use ( $response ) {
+			function ( $method ) use ( $response ) {
 				$method->willReturn(
 					$response
 				);
@@ -329,7 +329,7 @@ class MetadataProviderTest extends TestCase {
 	public function test_query_with_variables() {
 		add_filter(
 			'pre_http_request',
-			function( $_prempt, $parsed_args ) {
+			function ( $_prempt, $parsed_args ) {
 				$query = json_decode( $parsed_args['body'] );
 				$this->assertMatchesRegularExpression( '/Search/', $query->query );
 				$this->assertEquals( '6.x', $query->variables->version );

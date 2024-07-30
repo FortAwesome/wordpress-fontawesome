@@ -4,8 +4,8 @@ namespace FortAwesome;
 /**
  * Module for RemoveBlocklistTest
  */
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -104,7 +104,7 @@ class RemoveBlocklistTest extends TestCase {
 			$this,
 			FontAwesome::class,
 			'options',
-			function( $method ) {
+			function ( $method ) {
 				$opts = wp_parse_args(
 					array(
 						'version' => '5.0.13',
@@ -121,7 +121,7 @@ class RemoveBlocklistTest extends TestCase {
 
 		add_action(
 			'font_awesome_preferences',
-			function() use ( $fa ) {
+			function () use ( $fa ) {
 				$fa->register(
 					array(
 						'name' => 'clientA',
@@ -185,7 +185,7 @@ class RemoveBlocklistTest extends TestCase {
 
 		add_action(
 			'font_awesome_preferences',
-			function() {
+			function () {
 				fa()->register(
 					array(
 						'name' => 'clientA',
@@ -281,7 +281,7 @@ class RemoveBlocklistTest extends TestCase {
 
 		add_action(
 			'font_awesome_preferences',
-			function() {
+			function () {
 				fa()->register(
 					array(
 						'name' => 'clientA',
@@ -312,4 +312,3 @@ class RemoveBlocklistTest extends TestCase {
 		}
 	}
 }
-

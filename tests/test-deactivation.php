@@ -1,8 +1,8 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-deactivator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
+require_once __DIR__ . '/../includes/class-fontawesome-deactivator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-api-settings.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

@@ -4,7 +4,7 @@
  */
 namespace FortAwesome;
 
-use \WP_REST_Response;
+use WP_REST_Response;
 
 /**
  * Handles FontAwesome-specific enhancements to a REST response.

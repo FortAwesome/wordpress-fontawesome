@@ -1,9 +1,9 @@
 <?php
 namespace FortAwesome;
 
-require_once trailingslashit( dirname( __FILE__ ) ) . '../defines.php';
-require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome.php';
-require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome-release-provider.php';
+require_once trailingslashit( __DIR__ ) . '../defines.php';
+require_once trailingslashit( __DIR__ ) . 'class-fontawesome.php';
+require_once trailingslashit( __DIR__ ) . 'class-fontawesome-release-provider.php';
 
 /**
  * Plugin activation logic.
@@ -59,7 +59,7 @@ class FontAwesome_Activator {
 
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog(
-				function( $blog_id ) use ( $force ) {
+				function ( $blog_id ) use ( $force ) {
 					self::initialize_current_site( $force );
 				}
 			);
@@ -124,4 +124,3 @@ class FontAwesome_Activator {
 		update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS );
 	}
 }
-

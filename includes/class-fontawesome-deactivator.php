@@ -1,9 +1,9 @@
 <?php
 namespace FortAwesome;
 
-require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome.php';
-require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome-api-settings.php';
-require_once trailingslashit( dirname( __FILE__ ) ) . 'class-fontawesome-release-provider.php';
+require_once trailingslashit( __DIR__ ) . 'class-fontawesome.php';
+require_once trailingslashit( __DIR__ ) . 'class-fontawesome-api-settings.php';
+require_once trailingslashit( __DIR__ ) . 'class-fontawesome-release-provider.php';
 
 /**
  * Fired during plugin deactivation.
@@ -19,7 +19,7 @@ class FontAwesome_Deactivator {
 	public static function deactivate() {
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog(
-				function( $blog_id ) {
+				function ( $blog_id ) {
 					self::delete_transients();
 				}
 			);
@@ -39,7 +39,7 @@ class FontAwesome_Deactivator {
 	public static function uninstall() {
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog(
-				function( $blog_id ) {
+				function ( $blog_id ) {
 					self::delete_options();
 				}
 			);

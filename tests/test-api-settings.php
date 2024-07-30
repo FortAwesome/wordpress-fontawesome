@@ -4,12 +4,12 @@ namespace FortAwesome;
 /**
  * Class ApiSettingsTest
  */
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-api-settings.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
-use \WP_Error, \InvalidArgumentException;
+use WP_Error, InvalidArgumentException;
 use FortAwesome\ApiTokenMissingException;
 use FortAwesome\ApiTokenInvalidException;
 
@@ -34,7 +34,7 @@ class ApiSettingsTest extends TestCase {
 			$this,
 			FontAwesome_API_Settings::class,
 			'post',
-			function( $method ) use ( $response ) {
+			function ( $method ) use ( $response ) {
 				$method->willReturn(
 					$response
 				);
@@ -360,7 +360,7 @@ class ApiSettingsTest extends TestCase {
 			$this,
 			FontAwesome_API_Settings::class,
 			'prepare_encryption',
-			function( $method ) {
+			function ( $method ) {
 				$method->willReturn(
 					null
 				);
@@ -394,7 +394,7 @@ class ApiSettingsTest extends TestCase {
 			$this,
 			FontAwesome_API_Settings::class,
 			'prepare_encryption',
-			function( $method ) {
+			function ( $method ) {
 				$method->willReturn(
 					null
 				);
@@ -451,6 +451,5 @@ class ApiSettingsTest extends TestCase {
 		$this->assertEquals( 'bar', $api_settings->access_token() );
 		$this->assertEquals( 42, $api_settings->access_token_expiration_time() );
 		$this->assertTrue( is_int( $api_settings->access_token_expiration_time() ) );
-
 	}
 }

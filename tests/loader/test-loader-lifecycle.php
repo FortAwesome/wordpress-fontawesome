@@ -11,7 +11,7 @@ class FontAwesomeLoaderTestLifecycle extends TestCase {
 		parent::set_up();
 		\delete_site_transient( 'font-awesome-releases' );
 		\delete_option( 'font-awesome' );
-		require_once dirname( __FILE__ ) . '/mock_installations/ver_c/index.php';
+		require_once __DIR__ . '/mock_installations/ver_c/index.php';
 		global $fa_deactivate_call_count;
 		global $fa_uninstall_call_count;
 		global $fa_initialize_call_count;
