@@ -16,7 +16,10 @@
 	<arg name="extensions" value="php"/>
 	<file>includes</file>
 	<file>tests</file>
+	<!-- TODO: maybe re-enable this. It's crashing phpcbf. -->
+	<!--
 	<file>font-awesome.php</file>
+  -->
 	<file>font-awesome-init.php</file>
 	<file>index.php</file>
 	<file>v3shims.php</file>
