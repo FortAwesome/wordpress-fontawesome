@@ -1,10 +1,9 @@
-import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 const example = {
   attributes: {
-    iconLayers: [
-      {iconDefinition: faGear}
-    ]
+    iconLayers: [{ iconDefinition: faStar, style: { fontSize: '50px' } }],
+    justification: 'center'
   }
 }
 
