@@ -144,7 +144,7 @@ class ApiTokenMissingException extends FontAwesome_ClientException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Whoops, it looks like you have not provided a Font Awesome API Token. Enter one on the Font Awesome plugin settings page.',
 				'font-awesome'
@@ -169,7 +169,7 @@ class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Your WordPress server failed when trying to communicate with the Font Awesome API token endpoint.',
 				'font-awesome'
@@ -193,7 +193,7 @@ class ApiTokenInvalidException extends FontAwesome_ClientException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Whoops, it looks like that API Token is not valid. Try another one?',
 				'font-awesome'
@@ -219,7 +219,7 @@ class ApiTokenEndpointResponseException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Oh no! It looks like your API Token was valid, but the Font Awesome API server returned an invalid response.',
 				'font-awesome'
@@ -244,7 +244,7 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Your API Token was valid but we couldn\'t save it for some reason.',
 				'font-awesome'
@@ -372,7 +372,7 @@ class PreferenceRegistrationException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'A theme or plugin registered with Font Awesome threw an exception.',
 				'font-awesome'
@@ -397,7 +397,7 @@ class ApiRequestException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Your WordPress server failed trying to send a request to the Font Awesome API server.',
 				'font-awesome'
@@ -423,7 +423,7 @@ class ApiResponseException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'An unexpected response was received from the Font Awesome API server.',
 				'font-awesome'
@@ -448,7 +448,7 @@ class ReleaseProviderStorageException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Something went wrong when we tried to store the list of available Font Awesome versions in your WordPress database.',
 				'font-awesome'
@@ -472,7 +472,7 @@ class ReleaseMetadataMissingException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Eek! We\'re missing the information we need to load the version of Font Awesome you have selected. Go to your Font Awesome plugin settings page, re-select a version, and save. If that doesn\'t work, try deactivating and then re-activating the plugin. If that doesn\'t work either, you might need to delete and re-install the plug-in.',
 				'font-awesome'
@@ -501,7 +501,7 @@ class ConfigCorruptionException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'When trying to load Font Awesome, the plugin\'s configuration was invalid. Try deactivating, uninstalling, and re-activating the Font Awesome plugin.',
 				'font-awesome'
@@ -527,7 +527,7 @@ class ConflictDetectionSchemaException extends FontAwesome_ClientException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'Inconceivable! Somehow the conflict detection information got garbled into something we can\'t understand.',
 				'font-awesome'
@@ -551,7 +551,7 @@ class ConflictDetectionStorageException extends FontAwesome_ServerException {
 	 * @internal
 	 */
 	public function __construct( $message = null, $code = 0, $previous = null ) {
-		return parent::__construct(
+		parent::__construct(
 			esc_html__(
 				'We were not able to save conflict detection data to your WordPress database.',
 				'font-awesome'

@@ -209,7 +209,7 @@ class FontAwesome_API_Settings {
 			 * Remove the old API settings file if it exists.
 			 * Anything previously stored in it will be obsolete.
 			 */
-			@unlink( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' );
+			wp_delete_file( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' );
 		}
 
 		return $this->update_option( $new_option_value );
@@ -364,10 +364,12 @@ class FontAwesome_API_Settings {
 		);
 
 		if ( is_wp_error( $response ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenEndpointRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
 		}
 
 		if ( 200 !== $response['response']['code'] ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenInvalidException::with_wp_response( $response );
 		}
 
@@ -379,6 +381,7 @@ class FontAwesome_API_Settings {
 			! isset( $body['expires_in'] ) ||
 			! is_int( $body['expires_in'] )
 		) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 
@@ -387,6 +390,7 @@ class FontAwesome_API_Settings {
 		try {
 			$this->set_access_token_expiration_time( $body['expires_in'] + time() );
 		} catch ( InvalidArgumentException $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 
@@ -547,6 +551,8 @@ class FontAwesome_API_Settings {
 		);
 	}
 }
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
 
 /**
  * Convenience global function to get a singleton instance of the API Settings.

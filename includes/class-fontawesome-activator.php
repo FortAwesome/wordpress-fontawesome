@@ -59,7 +59,7 @@ class FontAwesome_Activator {
 
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog(
-				function ( $blog_id ) use ( $force ) {
+				function () use ( $force ) {
 					self::initialize_current_site( $force );
 				}
 			);

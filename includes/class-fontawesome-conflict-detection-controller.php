@@ -37,9 +37,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	/**
 	 * @ignore
 	 */
-	public function __construct( $plugin_slug, $namespace ) {
+	public function __construct( $plugin_slug, $rest_namespace ) {
 		$this->plugin_slug = $plugin_slug;
-		$this->namespace   = $namespace;
+		$this->namespace   = $rest_namespace;
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -429,21 +429,21 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 		return $validated;
 	}
 
-	protected function unregistered_clients_array_has_changes( $old, $new ) {
-		if ( ! is_array( $old ) ) {
+	protected function unregistered_clients_array_has_changes( $old_value, $new_value ) {
+		if ( ! is_array( $old_value ) ) {
 			return true;
 		}
 
-		if ( count( array_diff_key( $old, $new ) ) > 0 || count( array_diff_key( $new, $old ) ) > 0 ) {
+		if ( count( array_diff_key( $old_value, $new_value ) ) > 0 || count( array_diff_key( $new_value, $old_value ) ) > 0 ) {
 			return true;
 		} else {
-			foreach ( $old as $key => $value ) {
-				if ( count( array_diff_assoc( $old[ $key ], $new[ $key ] ) ) > 0 ) {
+			foreach ( $old_value as $key => $value ) {
+				if ( count( array_diff_assoc( $old_value[ $key ], $new_value[ $key ] ) ) > 0 ) {
 					return true;
 				}
 			}
-			foreach ( $new as $key => $value ) {
-				if ( count( array_diff_assoc( $new[ $key ], $old[ $key ] ) ) > 0 ) {
+			foreach ( $new_value as $key => $value ) {
+				if ( count( array_diff_assoc( $new_value[ $key ], $old_value[ $key ] ) ) > 0 ) {
 					return true;
 				}
 			}
@@ -453,6 +453,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 
 	protected function is_array_of_md5( $data ) {
 		return \is_array( $data ) &&
+			(
 			count( $data ) === 0 ||
 			(
 				0 === count(
@@ -463,6 +464,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 						}
 					)
 				)
+					)
 			);
 	}
 }

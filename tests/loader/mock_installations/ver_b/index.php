@@ -1,11 +1,11 @@
 <?php
-namespace FortAwesome;
-
 /**
  * Plugin Name:       Fake Font Awesome 42.0.1-rc12
  * Description:       Fake Font Awesome 42.0.1-rc12
  * Version:           42.0.1-rc12
  */
+
+namespace FortAwesome;
 
 defined( 'WPINC' ) || die;
 

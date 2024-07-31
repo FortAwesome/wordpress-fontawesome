@@ -1,11 +1,11 @@
 <?php
-namespace FortAwesome;
-
 /**
  * Tests the release provider.
  *
  * @noinspection PhpIncludeInspection
  */
+
+namespace FortAwesome;
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-metadata-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-api-settings.php';

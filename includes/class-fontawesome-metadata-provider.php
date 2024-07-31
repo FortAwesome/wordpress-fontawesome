@@ -135,16 +135,20 @@ class FontAwesome_Metadata_Provider {
 		$response = $this->post( FONTAWESOME_API_URL, $args );
 
 		if ( $response instanceof WP_Error ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
 		}
 
 		if ( 200 === $response['response']['code'] ) {
 			return $response['body'];
 		} else {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiResponseException::with_wp_response( $response );
 		}
 	}
 }
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
 
 /**
  * Convenience global function to get a singleton instance of the Metadata Provider.

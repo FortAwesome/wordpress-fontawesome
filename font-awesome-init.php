@@ -10,7 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once trailingslashit( __DIR__ ) . 'defines.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
 if ( defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
@@ -18,14 +17,33 @@ if ( defined( 'FONTAWESOME_OFFICIAL_LOADED' ) ) {
 }
 
 /**
- * Convenience global function to get a singleton instance of the Release Provider.
- * Normally, plugins and themes should not need to access this directly.
+ * This hook ensures that when we're in multisite mode, and a new site is activated
+ * after an initial plugin activation, that the plugin is initialized for that newly
+ * created site, but only if this plugin is otherwise network activated.
  *
- * @see FontAwesome_Release_Provider::instance()
- * @return FontAwesome_Release_Provider
+ * If the plugin is only activated on a per-site basis, then creating a new site should
+ * not result in this plugin automatically being activated for it.
  */
-function fa_release_provider() {
-	return FontAwesome_Release_Provider::instance();
+if ( is_multisite() ) {
+	add_action(
+		'wp_initialize_site',
+		function ( $site ) {
+			if ( ! is_network_admin( FONTAWESOME_PLUGIN_FILE ) ) {
+				return;
+			}
+
+			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
+			switch_to_blog( $site->blog_id );
+
+			try {
+				FontAwesome_Activator::initialize_current_site( false );
+			} finally {
+				restore_current_blog();
+			}
+		},
+		99,
+		1
+	);
 }
 
 register_deactivation_hook(

@@ -561,3 +561,16 @@ EOD;
 		return delete_transient( self::LAST_USED_RELEASE_TRANSIENT );
 	}
 }
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
+
+/**
+ * Convenience global function to get a singleton instance of the Release Provider.
+ * Normally, plugins and themes should not need to access this directly.
+ *
+ * @see FontAwesome_Release_Provider::instance()
+ * @return FontAwesome_Release_Provider
+ */
+function fa_release_provider() {
+	return FontAwesome_Release_Provider::instance();
+}

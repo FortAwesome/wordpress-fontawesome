@@ -908,7 +908,8 @@ class FontAwesome {
 	 * @internal
 	 * @return string|null
 	 */
-	private function active_admin_tab() {       // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	private function active_admin_tab() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) || empty( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) ) {
 			return null;
 		}
@@ -1033,7 +1034,7 @@ class FontAwesome {
 		);
 
 		$multi_version_warning_command = new FontAwesome_Command(
-			function ( $plugin_file, $plugin_data, $status ) {
+			function ( $plugin_file, $plugin_data ) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
 					?>
@@ -1324,8 +1325,10 @@ class FontAwesome {
 		try {
 			do_action( 'font_awesome_preferences' );
 		} catch ( Exception $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw PreferenceRegistrationException::with_thrown( $e );
 		} catch ( Error $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw PreferenceRegistrationException::with_thrown( $e );
 		}
 	}
@@ -1626,8 +1629,8 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	protected function specified_preference_or_default( $preference, $default ) {
-		return array_key_exists( 'value', $preference ) ? $preference['value'] : $default;
+	protected function specified_preference_or_default( $preference, $default_value ) {
+		return array_key_exists( 'value', $preference ) ? $preference['value'] : $default_value;
 	}
 
 	/**
@@ -1799,8 +1802,8 @@ class FontAwesome {
 					$originals_global = '__originalsBeforeFontAwesome';
 
 					$originals = array_map(
-						function ( $var ) {
-							return "$var: window.$var";
+						function ( $variable_name ) {
+							return "$variable_name: window.$variable_name";
 						},
 						$vendor_globals
 					);
@@ -1818,8 +1821,8 @@ class FontAwesome {
 					);
 
 					$original_restore_conditions = array_map(
-						function ( $var ) {
-							return "if(window.__originalsBeforeFontAwesome.$var){window.$var = window.__originalsBeforeFontAwesome.$var}";
+						function ( $variable_name ) {
+							return "if(window.__originalsBeforeFontAwesome.$variable_name){window.$variable_name = window.__originalsBeforeFontAwesome.$variable_name}";
 						},
 						$vendor_globals
 					);
@@ -1869,27 +1872,6 @@ class FontAwesome {
 				);
 			}
 		}
-
-		/*
-		add_filter(
-			'mce_css',
-			function($mce_css) {
-				$custom_style_url = trailingslashit( FONTAWESOME_DIR_URL ) . 'static/svg-with-js.css';
-
-				if (!empty($mce_css)) {
-					$mce_css .= ',';
-				}
-
-				$mce_css .= $custom_style_url;
-
-
-				return $mce_css;
-
-			},
-			10,
-			1
-		);
-		*/
 	}
 
 	/**
@@ -2002,11 +1984,11 @@ class FontAwesome {
 			$enqueue_command = new FontAwesome_Command(
 				function () use ( $kit_token ) {
 					try {
-                        // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_script(
 							FontAwesome::RESOURCE_HANDLE,
 							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 							array(),
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 							null,
 							false
 						);
@@ -3261,11 +3243,11 @@ EOT;
 
 		$concrete_version = null;
 
-		if ( $version === 'latest' ) {
+		if ( 'latest' === $version ) {
 			$concrete_version = $this->latest_version_5();
-		} elseif ( $version === '5.x' ) {
+		} elseif ( '5.x' === $version ) {
 			$concrete_version = $this->latest_version_5();
-		} elseif ( $version === '6.x' ) {
+		} elseif ( '6.x' === $version ) {
 			$concrete_version = $this->latest_version_6();
 		} else {
 			$concrete_version = $version;
@@ -3285,11 +3267,11 @@ EOT;
 
 		$conflict_detection_enqueue_command = new FontAwesome_Command(
 			function () {
-                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 				wp_enqueue_script(
 					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
 					FontAwesome::CONFLICT_DETECTOR_SOURCE,
 					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 					null,
 					true
 				);
@@ -3307,6 +3289,21 @@ EOT;
 
 		$this->apply_detection_ignore_attr();
 	}
+}
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
+
+/**
+ * Convenience global function to get a singleton instance of the main Font Awesome
+ * class.
+ *
+ * @since 4.0.0
+ *
+ * @see FontAwesome::instance()
+ * @returns FontAwesome
+ */
+function fa() {
+	return FontAwesome::instance();
 }
 
 /**
@@ -3352,47 +3349,4 @@ function for_each_blog( $cb ) {
 
 		$offset = $offset + $limit;
 	}
-}
-
-/**
- * Convenience global function to get a singleton instance of the main Font Awesome
- * class.
- *
- * @since 4.0.0
- *
- * @see FontAwesome::instance()
- * @returns FontAwesome
- */
-function fa() {
-	return FontAwesome::instance();
-}
-
-/**
- * This hook ensures that when we're in multisite mode, and a new site is activated
- * after an initial plugin activation, that the plugin is initialized for that newly
- * created site, but only if this plugin is otherwise network activated.
- *
- * If the plugin is only activated on a per-site basis, then creating a new site should
- * not result in this plugin automatically being activated for it.
- */
-if ( is_multisite() ) {
-	add_action(
-		'wp_initialize_site',
-		function ( $site ) {
-			if ( ! is_network_admin( FONTAWESOME_PLUGIN_FILE ) ) {
-				return;
-			}
-
-			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
-			switch_to_blog( $site->blog_id );
-
-			try {
-				FontAwesome_Activator::initialize_current_site( false );
-			} finally {
-				restore_current_blog();
-			}
-		},
-		99,
-		1
-	);
 }

@@ -90,7 +90,7 @@ class MultisiteActivationTest extends TestCase {
 			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 
 			for_each_blog(
-				function ( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+				function () use ( $test_obj, $expected_options, &$site_count ) {
 					$site_count     = ++$site_count;
 					$actual_options = get_option( FontAwesome::OPTIONS_KEY );
 					$test_obj->assertEquals( $expected_options, $actual_options );
@@ -159,7 +159,7 @@ class MultisiteActivationTest extends TestCase {
 		$this->assertEquals( $expected_options, $options_for_main_blog_id );
 
 		for_each_blog(
-			function ( $blog_id ) use ( $test_obj, $expected_options ) {
+			function () use ( $test_obj, $expected_options ) {
 				$actual_options = fa()->options();
 				$test_obj->assertEquals( $expected_options, $actual_options );
 			}

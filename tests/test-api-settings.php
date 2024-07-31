@@ -1,9 +1,10 @@
 <?php
+/**
+ * Tests ApiSettings.
+ */
+
 namespace FortAwesome;
 
-/**
- * Class ApiSettingsTest
- */
 require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
 require_once __DIR__ . '/../includes/class-fontawesome-api-settings.php';
 require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';

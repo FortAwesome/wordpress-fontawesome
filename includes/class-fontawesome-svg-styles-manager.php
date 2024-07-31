@@ -112,7 +112,7 @@ class FontAwesome_SVG_Styles_Manager {
 		$skip_enqueue_kit = $this->skip_enqueue_kit();
 
 		// Initial setting.
-		if ( $tech === 'webfont' ) {
+		if ( 'webfont' === $tech ) {
 			$load_mode = 'cdn';
 		} elseif ( $using_kit && $skip_enqueue_kit ) {
 			/*
@@ -187,7 +187,7 @@ class FontAwesome_SVG_Styles_Manager {
 		$upload_dir = wp_upload_dir( null, true, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-			// TODO: exception
+			// TODO: exception.
 			return;
 		}
 
@@ -209,7 +209,7 @@ class FontAwesome_SVG_Styles_Manager {
 		$upload_dir = wp_upload_dir( null, false, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-			// TODO: exception
+			// TODO: exception.
 			return;
 		}
 
@@ -282,7 +282,7 @@ class FontAwesome_SVG_Styles_Manager {
 
 		$source = $cdn_resource->source();
 
-		if ( $load_mode === 'selfhost' ) {
+		if ( 'selfhost' === $load_mode ) {
 			$source = self::selfhost_asset_url( $concrete_version );
 		}
 
@@ -290,6 +290,7 @@ class FontAwesome_SVG_Styles_Manager {
 			self::RESOURCE_HANDLE_SVG_STYLES,
 			$source,
 			array(),
+		    // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			null,
 			'all'
 		);
@@ -351,7 +352,7 @@ class FontAwesome_SVG_Styles_Manager {
 		$asset_path = $this->selfhost_asset_path( $concrete_version );
 
 		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
-			// TODO: exception
+			// TODO: exception.
 			return;
 		}
 
@@ -372,7 +373,7 @@ class FontAwesome_SVG_Styles_Manager {
 		$response = wp_remote_get( $resource->source() );
 
 		if ( is_wp_error( $response ) ) {
-			// TODO: throw an exception
+			// TODO: throw an exception.
 			return;
 		}
 
@@ -383,21 +384,21 @@ class FontAwesome_SVG_Styles_Manager {
 		}
 
 		if ( ! $code || $code >= 400 || ! isset( $response['body'] ) ) {
-			// TODO: throw exception
+			// TODO: throw exception.
 			return;
 		}
 
 		$hyphen_pos = strpos( $resource->integrity_key(), '-' );
 
-		if ( $hyphen_pos === false ) {
-			// TODO: exception
+		if ( false === $hyphen_pos ) {
+			// TODO: exception.
 			return;
 		}
 
 		$algo = substr( $resource->integrity_key(), 0, $hyphen_pos );
 
-		if ( ! in_array( $algo, hash_algos() ) ) {
-			// TODO: throw exception
+		if ( ! in_array( $algo, hash_algos(), true ) ) {
+			// TODO: throw exception.
 			return;
 		}
 
@@ -405,35 +406,36 @@ class FontAwesome_SVG_Styles_Manager {
 
 		$hash_bin = hex2bin( $hash_hex );
 		if ( ! $hash_bin ) {
-			// TOOD: exception
+			// TODO: exception.
 			return;
 		}
 
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$hash = base64_encode( $hash_bin );
 
 		if ( "$algo-$hash" !== $resource->integrity_key() ) {
-			// TODO: throw exception
+			// TODO: throw exception.
 			return;
 		}
 
 		wp_mkdir_p( $asset_path['dir'] );
 
 		if ( ! file_exists( $asset_path['dir'] ) ) {
-			// TODO: exception
+			// TODO: exception.
 			return;
 		}
 
 		$fp = fopen( $full_asset_path, 'w' );
 
-		if ( $fp === false ) {
-			// TODO: exception
+		if ( false === $fp ) {
+			// TODO: exception.
 			return;
 		}
 
 		$write_result = fwrite( $fp, $response['body'] );
 
-		if ( $write_result === false ) {
-			// TODO: exception
+		if ( false === $write_result ) {
+			// TODO: exception.
 			return;
 		}
 	}

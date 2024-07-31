@@ -31,10 +31,10 @@ class FontAwesome_V3Deprecation_Controller extends WP_REST_Controller {
 	/**
 	 * @ignore
 	 */
-	public function __construct( $plugin_slug, $namespace ) {
+	public function __construct( $plugin_slug, $rest_namespace ) {
 		$this->plugin_slug = $plugin_slug;
 
-		$this->namespace = $namespace;
+		$this->namespace = $rest_namespace;
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort

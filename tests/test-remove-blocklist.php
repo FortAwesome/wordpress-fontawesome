@@ -1,9 +1,10 @@
 <?php
-namespace FortAwesome;
-
 /**
  * Module for RemoveBlocklistTest
  */
+
+namespace FortAwesome;
+
 require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
 require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;

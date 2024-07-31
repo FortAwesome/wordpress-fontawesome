@@ -19,7 +19,7 @@ class FontAwesome_Deactivator {
 	public static function deactivate() {
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog(
-				function ( $blog_id ) {
+				function () {
 					self::delete_transients();
 				}
 			);
@@ -39,7 +39,7 @@ class FontAwesome_Deactivator {
 	public static function uninstall() {
 		if ( is_multisite() && is_network_admin() ) {
 			for_each_blog(
-				function ( $blog_id ) {
+				function () {
 					self::delete_options();
 				}
 			);

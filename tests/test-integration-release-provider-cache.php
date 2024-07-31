@@ -1,15 +1,15 @@
 <?php
-namespace FortAwesome;
-
-use WP_Error;
-use Yoast\WPTestUtils\WPIntegration\TestCase;
-
 /**
  * Tests the release provider, integrated with the main Font Awesome class simulating loading and
  * caching scenarios.
  *
  * @noinspection PhpIncludeInspection
  */
+
+namespace FortAwesome;
+
+use WP_Error;
+use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome.php';
