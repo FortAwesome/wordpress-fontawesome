@@ -222,11 +222,13 @@ EOD;
 		$latest_version_6 = isset( $body['data']['latest_version_6']['version'] ) ? $body['data']['latest_version_6']['version'] : null;
 
 		if ( is_null( $latest_version_5 ) ) {
-			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_5' ) );
+			$e = ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_5' ) );
+			throw $e;
 		}
 
 		if ( is_null( $latest_version_6 ) ) {
-			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_6' ) );
+			$e = ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_6' ) );
+			throw $e;
 		}
 
 		$option_value = array(
@@ -558,15 +560,4 @@ EOD;
 	public static function delete_last_used_release() {
 		return delete_transient( self::LAST_USED_RELEASE_TRANSIENT );
 	}
-}
-
-/**
- * Convenience global function to get a singleton instance of the Release Provider.
- * Normally, plugins and themes should not need to access this directly.
- *
- * @see FontAwesome_Release_Provider::instance()
- * @return FontAwesome_Release_Provider
- */
-function fa_release_provider() {
-	return FontAwesome_Release_Provider::instance();
 }
