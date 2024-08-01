@@ -6,6 +6,10 @@
  */
 namespace FortAwesome;
 
+if (!defined('ABSPATH')) {
+	exit; // Exit if accessed directly.
+}
+
 use WP_Error, Error, Exception;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
