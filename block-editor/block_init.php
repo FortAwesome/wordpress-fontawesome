@@ -2,11 +2,11 @@
 
 namespace FortAwesome;
 
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
-
 if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
+
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 
 function block_init() {
 	if ( ! function_exists('is_wp_version_compatible') || ! is_wp_version_compatible('5.8.0') ) {
