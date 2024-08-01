@@ -335,6 +335,11 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @return void
 	 */
 	public function maybe_setup_selfhosting( $fa, $fa_release_provider ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			// TODO: exception for lack of permissions.
+			return;
+		}
+
 		$is_skipping_enqueue_kit = self::skip_enqueue_kit();
 		$options                 = $fa->options();
 
@@ -358,7 +363,18 @@ class FontAwesome_SVG_Styles_Manager {
 
 		$full_asset_path = trailingslashit( $asset_path['dir'] ) . $asset_path['file'];
 
-		if ( file_exists( $full_asset_path ) ) {
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		if ( ! WP_Filesystem( false ) ) {
+			// TODO: filesystem initialization exception.
+			return;
+		}
+
+		global $wp_filesystem;
+
+		if ( $wp_filesystem->exists( $full_asset_path ) ) {
 			// Nothing more to do.
 			return;
 		}
@@ -418,24 +434,13 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-		wp_mkdir_p( $asset_path['dir'] );
-
-		if ( ! file_exists( $asset_path['dir'] ) ) {
+		if ( ! $wp_filesystem->mkdir( $asset_path['dir'] ) ) {
 			// TODO: exception.
 			return;
 		}
 
-		$fp = fopen( $full_asset_path, 'w' );
-
-		if ( false === $fp ) {
-			// TODO: exception.
-			return;
-		}
-
-		$write_result = fwrite( $fp, $response['body'] );
-
-		if ( false === $write_result ) {
-			// TODO: exception.
+		if ( ! $wp_filesystem->put_contents( $full_asset_path, $response['body'] ) ) {
+			// TODO: throw exception.
 			return;
 		}
 	}
