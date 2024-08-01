@@ -420,6 +420,7 @@ class ApiSettingsTest extends TestCase {
 		// Start with nothing and force re-read.
 		$api_settings = FontAwesome_API_Settings::reset();
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		$write_results = @file_put_contents( $file, 'foo' );
 
 		$this->assertTrue( boolval( $write_results ) );
