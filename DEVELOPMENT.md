@@ -41,7 +41,7 @@ to install any development dependencies inside the container.
 
 The `integration` option does _not_ mount this plugin code in the container. Instead, it expects you
 to install the plugin. You could do so by uploading a zip file on the Add New Plugin page in
-WordPress admin: build a zip using `composer dist` or by downloading one from the [plugin's WordPress
+WordPress admin: build a zip using the release steps below or by downloading one from the [plugin's WordPress
 plugin directory entry](https://wordpress.org/plugins/font-awesome/). Or you could install directly
 from the WordPress plugin directory by searching for plugins by author "fontawesome".
 
@@ -845,7 +845,7 @@ When `mod_security` is enabled, it'll look like this:
 
 - `git add docs` to stage them for commit (and eventually commit them)
 
-7. Build production admin app and WordPress distribution layout into `wp-dist`
+7. Build production distribution archive.
 
 ```bash
 bin/composer dist
@@ -856,20 +856,7 @@ the default dev `latest` container, which you should be running via `bin/dev`.
 This will cause everything to be built inside the container, which will hopefully
 keep the built assets more consistent, regardless of the host environment.)
 
-This will delete the previous build assets and produce the following:
-
-`admin/build`: production build of the admin UI React app. This needs to be committed, so that it
-can be included in the composer package (which is really just a pull of this repo)
-
-`compat-js/build`: production build of the compatibility JS bundled. This also needs to be committed.
-
-8. Build the zip file
-
-```bash
-bin/make-wp-dist-zip
-```
-
-This builds the following:
+This will delete the previous build assets and produce:
 
 `wp-dist/`: the contents of this directory contains everything that will be used in
 subsequent steps to both build an installable zip file, and to copy into the
