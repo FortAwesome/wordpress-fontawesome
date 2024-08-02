@@ -433,7 +433,6 @@ export default combineReducers({
   rootUrl: simple,
   mainCdnAssetUrl: simple,
   mainCdnAssetIntegrity: simple,
-  enableIconChooser: coerceBool,
   releases: simple,
   settingsPageUrl: simple,
   showAdmin: coerceBool,

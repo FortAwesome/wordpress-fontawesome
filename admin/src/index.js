@@ -43,7 +43,7 @@ const store = createStore(initialData)
 
 set(window, [GLOBAL_KEY, 'createInterpolateElement'], createInterpolateElement)
 
-const { showAdmin, showConflictDetectionReporter, enableIconChooser, usingCompatJs, isGutenbergPage } = store.getState()
+const { showAdmin, showConflictDetectionReporter } = store.getState()
 
 if (showAdmin) {
   import('./mountAdminView')
