@@ -27,8 +27,6 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-conflict-detector.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-check-controller.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-conflict-detection-controller.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3deprecation-controller.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
@@ -246,18 +244,6 @@ class FontAwesome {
 	 * @ignore
 	 */
 	public const ADMIN_RESOURCE_LOCALIZATION_NAME = '__FontAwesomeOfficialPlugin__';
-
-	/**
-	 * @ignore
-	 * @deprecated
-	 */
-	public const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
-
-	/**
-	 * @ignore
-	 * @deprecated
-	 */
-	public const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 	/**
 	 * Refresh the ReleaseProvider automatically no more often than this
@@ -741,13 +727,6 @@ class FontAwesome {
 				'register_routes',
 			)
 		);
-		add_action(
-			'rest_api_init',
-			array(
-				new FontAwesome_V3Deprecation_Controller( self::PLUGIN_NAME, self::REST_API_NAMESPACE ),
-				'register_routes',
-			)
-		);
 	}
 
 	/**
@@ -933,48 +912,6 @@ class FontAwesome {
 	}
 
 	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	private function emit_v3_deprecation_admin_notice( $data ) {
-		?>
-		<div class="notice notice-warning is-dismissible">
-			<p>
-				<?php esc_html_e( 'Hey there, from the Font Awesome plugin!', 'font-awesome' ); ?>
-			</p>
-			<p>
-				<?php
-				printf(
-					/* translators: 1: detected icon name 2: literal icon shortcode */
-					esc_html__(
-						'Looks like you\'re using an %2$s shortcode with an old Font Awesome 3 icon name: %1$s. We\'re phasing those out, so it will stop working on your site soon.',
-						'font-awesome'
-					),
-					'<code>' . esc_html( $data['atts']['name'] ) . '</code>',
-					'<code>[icon]</code>'
-				);
-				?>
-			</p>
-			<p>
-				<?php
-				printf(
-				/* translators: 1: opening anchor tag with url 2: closing anchor tag */
-					esc_html__(
-						'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, or snooze this warning for a while.',
-						'font-awesome'
-					),
-					'<a href="' . esc_html( $this->settings_page_url() ) . '&tab=ts">',
-					'</a>'
-				);
-				?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
 	 * Initalizes everything about the admin environment except the React app
 	 * bundle, which is handled in maybe_enqueue_admin_assets().
 	 *
@@ -984,25 +921,6 @@ class FontAwesome {
 	 * @internal
 	 */
 	public function initialize_admin() {
-		$v3deprecation_warning_data = $this->get_v3deprecation_warning_data();
-
-		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
-
-			$v3_deprecation_command = new FontAwesome_Command(
-				function () use ( $v3deprecation_warning_data ) {
-					$current_screen = get_current_screen();
-					if ( $current_screen && fa()->screen_id !== $current_screen->id ) {
-						fa()->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
-					}
-				}
-			);
-
-			add_action(
-				'admin_notices',
-				array( $v3_deprecation_command, 'run' )
-			);
-		}
-
 		$admin_menu_command = new FontAwesome_Command(
 			function () {
 				fa()->screen_id = add_options_page(
@@ -1670,17 +1588,16 @@ class FontAwesome {
 							array_merge(
 								$this->common_data_for_js_bundle(),
 								array(
-									'showAdmin'            => true,
-									'onSettingsPage'       => true,
-									'clientPreferences'    => $this->client_preferences(),
-									'releases'             => array(
+									'showAdmin'           => true,
+									'onSettingsPage'      => true,
+									'clientPreferences'   => $this->client_preferences(),
+									'releases'            => array(
 										'available'        => $this->release_provider()->versions(),
 										'latest_version_5' => $this->latest_version_5(),
 										'latest_version_6' => $this->latest_version_6(),
 									),
-									'pluginVersion'        => FontAwesome::PLUGIN_VERSION,
-									'preferenceConflicts'  => $this->conflicts_by_option(),
-									'v3DeprecationWarning' => $this->get_v3deprecation_warning_data(),
+									'pluginVersion'       => FontAwesome::PLUGIN_VERSION,
+									'preferenceConflicts' => $this->conflicts_by_option(),
 								)
 							)
 						);
@@ -2995,36 +2912,13 @@ EOT;
 			}
 		}
 
-		/**
-		 * TODO: add extras to shortcode
-		 * class: just add extra classes
-		 */
 		$atts = shortcode_atts(
 			$defaults,
 			$escaped_params,
 			self::SHORTCODE_TAG
 		);
 
-		// Handle version 3 compatibility and setting data for a deprecation warning.
-		if ( preg_match( '/^icon-/', $atts['name'] ) ) {
-			$prefix_and_name_classes = FontAwesome_V3Mapper::instance()->map_v3_to_v5( $atts['name'] );
-
-			$v3deprecation_data = $this->get_v3deprecation_warning_data();
-			if ( ! $v3deprecation_data ) {
-				$v5_prefix_name_arr = explode( ' ', $prefix_and_name_classes );
-
-				$v5name = explode( '-', $v5_prefix_name_arr[1] )[1];
-
-				$v3deprecation_data = array(
-					'atts'     => $atts,
-					'v5name'   => $v5name,
-					'v5prefix' => $v5_prefix_name_arr[0],
-				);
-				$this->set_v3_deprecation_warning_data( $v3deprecation_data );
-			}
-		} else {
-			$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
-		}
+		$prefix_and_name_classes = $atts['prefix'] . ' fa-' . $atts['name'];
 
 		$classes    = rtrim( implode( ' ', array( $prefix_and_name_classes, $atts['class'] ) ) );
 		$class_attr = "class=\"$classes\"";
@@ -3038,49 +2932,6 @@ EOT;
 		}
 
 		return '<i ' . implode( ' ', $tag_attrs ) . '></i>';
-	}
-
-	/**
-	 * Sets a v3 deprecation warning.
-	 *
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @deprecated Only for temporary internal plugin use while deprecating
-	 * @ignore
-	 * @internal
-	 * @param array $data
-	 * @return void
-	 */
-	public function set_v3_deprecation_warning_data( $data ) {
-		set_transient( self::V3DEPRECATION_TRANSIENT, $data );
-	}
-
-	/**
-	 * Retrieves transient warning data for v3 icon name usage.
-	 *
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @deprecated Only for temporary internal plugin use while deprecating
-	 * @return array
-	 * @ignore
-	 * @internal
-	 */
-	public function get_v3deprecation_warning_data() {
-		return get_transient( self::V3DEPRECATION_TRANSIENT );
-	}
-
-	/**
-	 * Dismisses the v3 deprecation warning for a while.
-	 *
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @deprecated Only for temporary internal plugin use while deprecating
-	 * @ignore
-	 * @internal
-	 */
-	public function snooze_v3deprecation_warning() {
-		delete_transient( self::V3DEPRECATION_TRANSIENT );
-		set_transient( self::V3DEPRECATION_TRANSIENT, array( 'snooze' => true ), self::V3DEPRECATION_EXPIRY );
 	}
 
 	/**

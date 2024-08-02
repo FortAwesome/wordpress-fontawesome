@@ -30,7 +30,6 @@ class FontAwesome_Deactivator {
 
 	private static function delete_transients() {
 		FontAwesome_Release_Provider::delete_last_used_release();
-		delete_transient( FontAwesome::V3DEPRECATION_TRANSIENT );
 	}
 
 	/**
