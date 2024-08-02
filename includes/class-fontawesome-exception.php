@@ -592,3 +592,24 @@ class UpgradeException extends FontAwesome_ServerException {
 		);
 	}
 }
+
+/**
+ * Thrown on one of several errors conditions when setting up assets for self-hosting.
+ *
+ * @since 5.0.0
+ */
+class SelfhostSetupException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function __construct( $message = null, $code = 0, $previous = null ) {
+		parent::__construct(
+			$message,
+			$code,
+			$previous
+		);
+	}
+}
