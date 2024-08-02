@@ -1628,14 +1628,7 @@ class FontAwesome {
 							$this->common_data_for_js_bundle()
 						);
 
-
 						wp_enqueue_script( self::RESOURCE_HANDLE_ICON_CHOOSER );
-
-						// TODO: only enqueue this when the classic editor will be loaded.
-						wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
-
-						// Required for styling the icon chooser in the Classic Editor.
-						wp_enqueue_style( 'wp-components' );
 
 						/**
 						 * TODO: re-enable the possibility of integrating with TinyMCE
@@ -1661,6 +1654,13 @@ class FontAwesome {
 						 */
 						if ( ! is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
+							add_filter('tiny_mce_plugins', function ($plugins) {
+								wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
+								// Required for styling the icon chooser in the Classic Editor.
+								wp_enqueue_style( 'wp-components' );
+								return $plugins;
+							});
+
 							add_action(
 								'media_buttons',
 								function () {
