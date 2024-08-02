@@ -4,9 +4,13 @@
  */
 namespace FortAwesome;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 
-use \WP_Error, \InvalidArgumentException;
+use WP_Error, InvalidArgumentException;
 
 /**
  * Provides read/write access to the Font Awesome API settings.
@@ -209,7 +213,7 @@ class FontAwesome_API_Settings {
 			 * Remove the old API settings file if it exists.
 			 * Anything previously stored in it will be obsolete.
 			 */
-			@unlink( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' );
+			wp_delete_file( trailingslashit( ABSPATH ) . 'font-awesome-api.ini' );
 		}
 
 		return $this->update_option( $new_option_value );
@@ -302,6 +306,39 @@ class FontAwesome_API_Settings {
 	}
 
 	/**
+	 * Returns a current access_token, if available. Attempts to refresh an
+	 * access_token if the one we have is near or past expiration and an api_token
+	 * is present.
+	 *
+	 * Returns WP_Error indicating any error when trying to refresh an access_token.
+	 * Returns null when there is no api_token.
+	 * Otherwise, returns the current access_token as a string.
+	 *
+	 * @throws ApiTokenMissingException
+	 * @throws ApiTokenEndpointRequestException
+	 * @throws ApiTokenEndpointResponseException
+	 * @throws ApiTokenInvalidException
+	 * @throws AccessTokenStorageException
+	 * @return string|null access_token if available; null if unavailable
+	 */
+	public function current_access_token() {
+		if ( ! boolval( $this->api_token() ) ) {
+			return null;
+		}
+
+		$exp          = $this->access_token_expiration_time();
+		$access_token = $this->access_token();
+
+		if ( is_string( $access_token ) && $exp > ( time() - 5 ) ) {
+			return $access_token;
+		} else {
+			// refresh the access token.
+			$this->request_access_token();
+			return $this->access_token();
+		}
+	}
+
+	/**
 	 * Requests an access_token with the current api_token. Stores the result
 	 * upon successfully retrieving an access token.
 	 *
@@ -331,10 +368,12 @@ class FontAwesome_API_Settings {
 		);
 
 		if ( is_wp_error( $response ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenEndpointRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
 		}
 
 		if ( 200 !== $response['response']['code'] ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenInvalidException::with_wp_response( $response );
 		}
 
@@ -346,6 +385,7 @@ class FontAwesome_API_Settings {
 			! isset( $body['expires_in'] ) ||
 			! is_int( $body['expires_in'] )
 		) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 
@@ -354,6 +394,7 @@ class FontAwesome_API_Settings {
 		try {
 			$this->set_access_token_expiration_time( $body['expires_in'] + time() );
 		} catch ( InvalidArgumentException $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiTokenEndpointResponseException::with_wp_response( $response );
 		}
 
@@ -514,6 +555,8 @@ class FontAwesome_API_Settings {
 		);
 	}
 }
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
 
 /**
  * Convenience global function to get a singleton instance of the API Settings.

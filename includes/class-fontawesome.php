@@ -1,10 +1,21 @@
 <?php
+
 /**
  * Main plugin logic.
  */
+
 namespace FortAwesome;
 
-use \Exception, \Error, \DateTime, \DateInterval, \DateTimeInterface, \DateTimeZone;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+use Exception;
+use Error;
+use DateTime;
+use DateInterval;
+use DateTimeInterface;
+use DateTimeZone;
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
@@ -20,6 +31,10 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-v3mapper.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/is-gutenberg-page.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/block_init.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -90,13 +105,13 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const SHORTCODE_TAG = 'icon';
+	public const SHORTCODE_TAG = 'icon';
 	/**
 	 * Default style prefix.
 	 *
 	 * @since 4.0.0
 	 */
-	const DEFAULT_PREFIX = 'fas';
+	public const DEFAULT_PREFIX = 'fas';
 	/**
 	 * Key where this plugin's saved options data are stored in the WordPress options table.
 	 *
@@ -105,7 +120,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const OPTIONS_KEY = 'font-awesome';
+	public const OPTIONS_KEY = 'font-awesome';
 	/**
 	 * Key where this plugin stores conflict detection data in the WordPress options table.
 	 *
@@ -114,19 +129,19 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	const CONFLICT_DETECTION_OPTIONS_KEY = 'font-awesome-conflict-detection';
+	public const CONFLICT_DETECTION_OPTIONS_KEY = 'font-awesome-conflict-detection';
 	/**
 	 * The unique WordPress plugin slug for this plugin.
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_NAME = 'font-awesome';
+	public const PLUGIN_NAME = 'font-awesome';
 	/**
 	 * The version of this WordPress plugin.
 	 *
 	 * @since 4.0.0
 	 */
-	const PLUGIN_VERSION = '4.5.0';
+	public const PLUGIN_VERSION = '4.5.0';
 	/**
 	 * The namespace for this plugin's REST API.
 	 *
@@ -134,13 +149,13 @@ class FontAwesome {
 	 * @deprecated
 	 * @ignore
 	 */
-	const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v1';
+	public const REST_API_NAMESPACE = self::PLUGIN_NAME . '/v1';
 	/**
 	 * The name of this plugin's options page, or WordPress admin dashboard page.
 	 *
 	 * @since 4.0.0
 	 */
-	const OPTIONS_PAGE = 'font-awesome';
+	public const OPTIONS_PAGE = 'font-awesome';
 
 	/**
 	 * GET param used for linking to a particular starting tab in the admin UI.
@@ -148,7 +163,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const ADMIN_TAB_QUERY_VAR = 'tab';
+	public const ADMIN_TAB_QUERY_VAR = 'tab';
 
 	/**
 	 * The handle used when enqueuing this plugin's resulting resource.
@@ -156,13 +171,13 @@ class FontAwesome {
 	 *
 	 * @since 4.0.0
 	 */
-	const RESOURCE_HANDLE = 'font-awesome-official';
+	public const RESOURCE_HANDLE = 'font-awesome-official';
 	/**
 	 * The handle used when enqueuing the v4shim.
 	 *
 	 * @since 4.0.0
 	 */
-	const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
+	public const RESOURCE_HANDLE_V4SHIM = 'font-awesome-official-v4shim';
 
 	/**
 	 * The handle used when enqueuing the conflict detector.
@@ -170,7 +185,31 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
+	public const RESOURCE_HANDLE_CONFLICT_DETECTOR = 'font-awesome-official-conflict-detector';
+
+	/**
+	 * The handle used when enqueuing the icon chooser.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public const RESOURCE_HANDLE_ICON_CHOOSER = 'font-awesome-official-icon-chooser';
+
+	/**
+	 * The handle used when enqueuing the bundle for supporting the Classic Editor.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public const RESOURCE_HANDLE_CLASSIC_EDITOR = 'font-awesome-official-classic-editor';
+
+	/**
+	 * The handle used when enqueuing block editor assets.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public const RESOURCE_HANDLE_FA_BLOCKS = 'font-awesome-official-blocks';
 
 	/**
 	 * The source URL for the conflict detector, a feature introduced in Font Awesome 5.10.0.
@@ -178,7 +217,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v6.1.1/js/conflict-detection.js';
+	public const CONFLICT_DETECTOR_SOURCE = 'https://use.fontawesome.com/releases/v6.1.1/js/conflict-detection.js';
 
 	/**
 	 * The custom data attribute added to script, link, and style elements enqueued
@@ -188,7 +227,7 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	const CONFLICT_DETECTION_IGNORE_ATTR = 'data-fa-detection-ignore';
+	public const CONFLICT_DETECTION_IGNORE_ATTR = 'data-fa-detection-ignore';
 
 	/**
 	 * The base name of the handle used for enqueuing this plugin's admin assets, those required for running
@@ -197,7 +236,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const ADMIN_RESOURCE_HANDLE = self::RESOURCE_HANDLE . '-admin';
+	public const ADMIN_RESOURCE_HANDLE = self::RESOURCE_HANDLE . '-admin';
 
 	/**
 	 * Name used for inline data attached to the JavaScript admin bundle.
@@ -206,19 +245,19 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	const ADMIN_RESOURCE_LOCALIZATION_NAME = '__FontAwesomeOfficialPlugin__';
+	public const ADMIN_RESOURCE_LOCALIZATION_NAME = '__FontAwesomeOfficialPlugin__';
 
 	/**
 	 * @ignore
 	 * @deprecated
 	 */
-	const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
+	public const V3DEPRECATION_TRANSIENT = 'font-awesome-v3-deprecation-data';
 
 	/**
 	 * @ignore
 	 * @deprecated
 	 */
-	const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
+	public const V3DEPRECATION_EXPIRY = WEEK_IN_SECONDS;
 
 	/**
 	 * Refresh the ReleaseProvider automatically no more often than this
@@ -229,7 +268,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const RELEASES_REFRESH_INTERVAL = 10 * 60;
+	public const RELEASES_REFRESH_INTERVAL = 10 * 60;
 
 	/**
 	 * We will not use a default for version, since we want the version stored in the options
@@ -239,7 +278,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const DEFAULT_USER_OPTIONS = array(
+	public const DEFAULT_USER_OPTIONS = array(
 		'usePro'         => false,
 		'compat'         => true,
 		'technology'     => 'webfont',
@@ -256,7 +295,7 @@ class FontAwesome {
 	 * @ignore
 	 * @internal
 	 */
-	const DEFAULT_CONFLICT_DETECTION_OPTIONS = array(
+	public const DEFAULT_CONFLICT_DETECTION_OPTIONS = array(
 		'detectConflictsUntil' => 0,
 		'unregisteredClients'  => array(),
 	);
@@ -343,25 +382,9 @@ class FontAwesome {
 	}
 
 	/**
-	 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
-	 *
-	 * Internal only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public function run() {
-		$this->init();
-
-		$this->initialize_rest_api();
-
-		if ( is_admin() ) {
-			$this->initialize_admin();
-		}
-	}
-
-	/**
 	 * Callback for init.
+	 *
+	 * Main entry point for running the plugin. Called automatically when the plugin is loaded.
 	 *
 	 * Internal use only.
 	 *
@@ -372,16 +395,26 @@ class FontAwesome {
 		try {
 			$this->try_upgrade();
 
+			$this->validate_options( fa()->options() );
+
+			$this->initialize_rest_api();
+
+			if ( is_admin() ) {
+				$this->initialize_admin();
+			}
+
 			add_shortcode(
 				self::SHORTCODE_TAG,
 				array( $this, 'process_shortcode' )
 			);
 
-			$this->validate_options( fa()->options() );
+			FontAwesome_SVG_Styles_Manager::instance()->register_svg_styles( $this, $this->release_provider() );
+
+			block_init();
 
 			try {
 				$this->gather_preferences();
-			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+                // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			} catch ( PreferenceRegistrationException $e ) {
 				/**
 				 * Ignore this on normal page loads.
@@ -398,8 +431,25 @@ class FontAwesome {
 				wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
 			}
 
+			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::instance()->skip_enqueue_kit();
+
+			if ( $this->technology() === 'webfont' || $skip_enqueue_kit ) {
+				add_action(
+					'enqueue_block_assets',
+					function () {
+						wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+					}
+				);
+			}
+
 			if ( $this->using_kit() ) {
-				$this->enqueue_kit( $this->options()['kitToken'] );
+				if ( $skip_enqueue_kit ) {
+					// Normally, conflict detection is built into a kit.
+					// However, when not enqueuing the kit, we must enqueue conflict detection separately.
+					$this->maybe_enqueue_conflict_detection();
+				} else {
+					$this->enqueue_kit( $this->options()['kitToken'] );
+				}
 			} else {
 				$resource_collection = $this->cdn_resource_collection_for_current_options();
 				$this->enqueue_cdn( $this->options(), $resource_collection );
@@ -623,17 +673,17 @@ class FontAwesome {
 	public function using_kit() {
 		$options = $this->options();
 		$this->validate_options( $options );
-		return $this->using_kit_given_options( $options );
+		return self::using_kit_given_options( $options );
 	}
 
 	/**
-	 * Internal use only.
+	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
 	 * @ignore
 	 * @return bool
 	 */
-	private function using_kit_given_options( $options ) {
+	public static function using_kit_given_options( $options ) {
 		return isset( $options['kitToken'] )
 			&& isset( $options['apiToken'] )
 			&& $options['apiToken']
@@ -729,13 +779,13 @@ class FontAwesome {
 	 *
 	 * ```
 	 * wp.apiFetch( {
-     *     path: '/font-awesome/v1/api',
-     *     method: 'POST',
-     *     headers: {'Content-Type': 'application/json'},
-     *     body: '{ "query": "query Version5x($ver: String!) { release(version: $ver){ version } }", "variables": {"ver": "5.x"} }'
-     * } ).then( res => {
-     *     console.log( res );
-     * } )
+	 *     path: '/font-awesome/v1/api',
+	 *     method: 'POST',
+	 *     headers: {'Content-Type': 'application/json'},
+	 *     body: '{ "query": "query Version5x($ver: String!) { release(version: $ver){ version } }", "variables": {"ver": "5.x"} }'
+	 * } ).then( res => {
+	 *     console.log( res );
+	 * } )
 	 * ```
 	 *
 	 * Or you could issue your own `POST` request directly `api.fontawesome.com`.
@@ -868,7 +918,7 @@ class FontAwesome {
 			return null;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$value = $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ];
 
 		// These values are defined in the Redux reducer module of the admin JS React app.
@@ -896,28 +946,28 @@ class FontAwesome {
 			</p>
 			<p>
 				<?php
-					printf(
-						/* translators: 1: detected icon name 2: literal icon shortcode */
-						esc_html__(
-							'Looks like you\'re using an %2$s shortcode with an old Font Awesome 3 icon name: %1$s. We\'re phasing those out, so it will stop working on your site soon.',
-							'font-awesome'
-						),
-						'<code>' . esc_html( $data['atts']['name'] ) . '</code>',
-						'<code>[icon]</code>'
-					);
+				printf(
+					/* translators: 1: detected icon name 2: literal icon shortcode */
+					esc_html__(
+						'Looks like you\'re using an %2$s shortcode with an old Font Awesome 3 icon name: %1$s. We\'re phasing those out, so it will stop working on your site soon.',
+						'font-awesome'
+					),
+					'<code>' . esc_html( $data['atts']['name'] ) . '</code>',
+					'<code>[icon]</code>'
+				);
 				?>
 			</p>
 			<p>
 				<?php
-					printf(
-						/* translators: 1: opening anchor tag with url 2: closing anchor tag */
-						esc_html__(
-							'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, or snooze this warning for a while.',
-							'font-awesome'
-						),
-						'<a href="' . esc_html( $this->settings_page_url() ) . '&tab=ts">',
-						'</a>'
-					);
+				printf(
+				/* translators: 1: opening anchor tag with url 2: closing anchor tag */
+					esc_html__(
+						'Head over to the %1$sFont Awesome Settings%2$s page to see how you can fix it up, or snooze this warning for a while.',
+						'font-awesome'
+					),
+					'<a href="' . esc_html( $this->settings_page_url() ) . '&tab=ts">',
+					'</a>'
+				);
 				?>
 			</p>
 		</div>
@@ -939,7 +989,7 @@ class FontAwesome {
 		if ( $v3deprecation_warning_data && ! ( isset( $v3deprecation_warning_data['snooze'] ) && $v3deprecation_warning_data['snooze'] ) ) {
 
 			$v3_deprecation_command = new FontAwesome_Command(
-				function() use ( $v3deprecation_warning_data ) {
+				function () use ( $v3deprecation_warning_data ) {
 					$current_screen = get_current_screen();
 					if ( $current_screen && fa()->screen_id !== $current_screen->id ) {
 						fa()->emit_v3_deprecation_admin_notice( $v3deprecation_warning_data );
@@ -954,7 +1004,7 @@ class FontAwesome {
 		}
 
 		$admin_menu_command = new FontAwesome_Command(
-			function() {
+			function () {
 				fa()->screen_id = add_options_page(
 					/* translators: add_options_page page_title */
 					esc_html__( 'Font Awesome Settings', 'font-awesome' ),
@@ -988,34 +1038,34 @@ class FontAwesome {
 		);
 
 		$multi_version_warning_command = new FontAwesome_Command(
-			function( $plugin_file, $plugin_data, $status ) {
+			function ( $plugin_file, $plugin_data ) {
 				if ( version_compare( FontAwesome::PLUGIN_VERSION, $plugin_data['Version'], 'ne' ) ) {
 					$loader_version = FontAwesome_Loader::instance()->loaded_path();
 					?>
-					<tr>
-						<td>&nbsp;</td>
-						<td colspan="2" class="notice notice-info notice-alt">
-							<p>
-								<b><?php esc_html_e( 'Great Scott!', 'font-awesome' ); ?></b>
-								<?php
-									printf(
-										/* translators: 1: path to plugin or theme code file 2: current Font Awesome plugin version number */
-										esc_html__(
-											'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s since it\'s the newest (%2$s). We recommend you update the plugin above to the latest version. In the meantime, we\'ll use that newer version for editing your Font Awesome settings so you\'ll be sure to hit 88mph with those icons.',
-											'font-awesome'
-										),
-										'<code>' . esc_html( $loader_version ) . '</code>',
-										'<b>ver. ' . esc_html( FontAwesome::PLUGIN_VERSION ) . '</b>'
-									);
-								?>
-							</p>
-							<p>
-								<?php
-									esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', 'font-awesome' );
-								?>
-							</p>
-						</td>
-					</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td colspan="2" class="notice notice-info notice-alt">
+						<p>
+							<b><?php esc_html_e( 'Great Scott!', 'font-awesome' ); ?></b>
+							<?php
+							printf(
+								/* translators: 1: path to plugin or theme code file 2: current Font Awesome plugin version number */
+								esc_html__(
+									'The active version of the Font Awesome plugin is being loaded by this plugin or theme: %1$s since it\'s the newest (%2$s). We recommend you update the plugin above to the latest version. In the meantime, we\'ll use that newer version for editing your Font Awesome settings so you\'ll be sure to hit 88mph with those icons.',
+									'font-awesome'
+								),
+								'<code>' . esc_html( $loader_version ) . '</code>',
+								'<b>ver. ' . esc_html( FontAwesome::PLUGIN_VERSION ) . '</b>'
+							);
+							?>
+						</p>
+						<p>
+							<?php
+							esc_html_e( 'You\'ve got more than one version of the Font Awesome plugin installed.', 'font-awesome' );
+							?>
+						</p>
+					</td>
+				</tr>
 					<?php
 				}
 			}
@@ -1059,7 +1109,7 @@ class FontAwesome {
 	 * @throws ConfigCorruptionException if options are invalid
 	 */
 	public function validate_options( $options ) {
-		$using_kit = $this->using_kit_given_options( $options );
+		$using_kit = self::using_kit_given_options( $options );
 		$kit_token = isset( $options['kitToken'] ) ? $options['kitToken'] : null;
 		$api_token = isset( $options['apiToken'] ) ? $options['apiToken'] : null;
 		$version   = isset( $options['version'] ) ? $options['version'] : null;
@@ -1086,8 +1136,7 @@ class FontAwesome {
 			 * "5.x", or "6.x" at this point. It must have already been resolved
 			 * into a concrete version.
 			 */
-			$version_is_concrete = is_string( $version )
-				&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+			$version_is_concrete = self::version_is_concrete( $version );
 
 			if ( ! $version_is_concrete ) {
 				throw new ConfigCorruptionException();
@@ -1144,7 +1193,7 @@ class FontAwesome {
 
 		$blocklist = array_reduce(
 			array_keys( $unregistered_clients ),
-			function( $carry, $md5 ) use ( $unregistered_clients ) {
+			function ( $carry, $md5 ) use ( $unregistered_clients ) {
 				if (
 					isset( $unregistered_clients[ $md5 ]['blocked'] )
 					&& boolval( $unregistered_clients[ $md5 ]['blocked'] )
@@ -1216,12 +1265,12 @@ class FontAwesome {
 			 */
 			$converted_options['pseudoElements'] =
 				'webfont' === $converted_options['technology']
-					? true
-					: (
-						isset( $options['lockedLoadSpec']['pseudoElements'] )
-							? $options['lockedLoadSpec']['pseudoElements']
-							: false
-					);
+				? true
+				: (
+					isset( $options['lockedLoadSpec']['pseudoElements'] )
+					? $options['lockedLoadSpec']['pseudoElements']
+					: false
+				);
 
 			$converted_options['compat'] = $options['lockedLoadSpec']['v4shim'];
 		} elseif ( isset( $options['adminClientLoadSpec'] ) ) {
@@ -1273,15 +1322,17 @@ class FontAwesome {
 	 */
 	public function gather_preferences() {
 		/**
-		 * Fired when the plugin is ready for clients to register their preferences.
-		 *
-		 * @since 4.0.0
-		 */
+			* Fired when the plugin is ready for clients to register their preferences.
+			*
+			* @since 4.0.0
+			*/
 		try {
 			do_action( 'font_awesome_preferences' );
 		} catch ( Exception $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw PreferenceRegistrationException::with_thrown( $e );
 		} catch ( Error $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw PreferenceRegistrationException::with_thrown( $e );
 		}
 	}
@@ -1582,8 +1633,8 @@ class FontAwesome {
 	 * @internal
 	 * @ignore
 	 */
-	protected function specified_preference_or_default( $preference, $default ) {
-		return array_key_exists( 'value', $preference ) ? $preference['value'] : $default;
+	protected function specified_preference_or_default( $preference, $default_value ) {
+		return array_key_exists( 'value', $preference ) ? $preference['value'] : $default_value;
 	}
 
 	/**
@@ -1602,7 +1653,7 @@ class FontAwesome {
 	public function maybe_enqueue_admin_assets() {
 		add_action(
 			'admin_enqueue_scripts',
-			function( $hook ) {
+			function ( $hook ) {
 				$should_enable_icon_chooser = $this->should_icon_chooser_be_enabled( $hook );
 
 				try {
@@ -1637,13 +1688,32 @@ class FontAwesome {
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
-							array_merge(
-								$this->common_data_for_js_bundle(),
-								array(
-									'enableIconChooser' => true,
-								)
-							)
+							$this->common_data_for_js_bundle()
 						);
+
+						wp_enqueue_script(
+							self::RESOURCE_HANDLE_ICON_CHOOSER,
+							trailingslashit( FONTAWESOME_DIR_URL ) . 'icon-chooser/build/index.js',
+							array( self::ADMIN_RESOURCE_HANDLE ),
+							self::PLUGIN_VERSION,
+							true
+						);
+
+						// TODO: only enqueue this when the classic editor will be loaded.
+						wp_enqueue_script(
+							self::RESOURCE_HANDLE_CLASSIC_EDITOR,
+							trailingslashit( FONTAWESOME_DIR_URL ) . 'classic-editor/build/index.js',
+							array(
+								self::ADMIN_RESOURCE_HANDLE,
+								self::RESOURCE_HANDLE_ICON_CHOOSER,
+								'wp-tinymce',
+							),
+							self::PLUGIN_VERSION,
+							true
+						);
+
+						// Required for styling the icon chooser in the Classic Editor.
+						wp_enqueue_style( 'wp-components' );
 
 						/**
 						 * TODO: re-enable the possibility of integrating with TinyMCE
@@ -1667,30 +1737,51 @@ class FontAwesome {
 						 * like that should be easy to resolve when there's time
 						 * and priority to continue investigating.
 						 */
-						if ( ! $this->is_gutenberg_page() ) {
+						if ( ! is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
 							add_action(
 								'media_buttons',
-								function() {
+								function () {
 									printf(
 										/* translators: 1: open button tag and icon tag 2: close button tag */
 										esc_html__(
 											'%1$sAdd Font Awesome%2$s',
 											'font-awesome'
 										),
-										'<button type="button" onclick="__FontAwesomeOfficialPlugin__openIconChooserModal()" class="button font-awesome-icon-chooser-media-button"><i class="fab fa-font-awesome-flag"></i> ',
+										'<button type="button" class="button font-awesome-icon-chooser-media-button"><svg xmlns="http://www.w3.org/2000/svg" style="height: 1em; box-sizing: content-box; display: inline-block; vertical-align: -.125em;" viewBox="0 0 512 512"><path fill="currentColor" d="M91.7 96C106.3 86.8 116 70.5 116 52C116 23.3 92.7 0 64 0S12 23.3 12 52c0 16.7 7.8 31.5 20 41l0 3 0 352 0 64 64 0 0-64 373.6 0c14.6 0 26.4-11.8 26.4-26.4c0-3.7-.8-7.3-2.3-10.7L432 272l61.7-138.9c1.5-3.4 2.3-7 2.3-10.7c0-14.6-11.8-26.4-26.4-26.4L91.7 96z"/></svg> ',
 										'</button>'
 									);
 								},
 								99
 							);
 
+							/**
+							 * "Fires immediately before the TinyMCE settings are printed."
+							 * See: https://developer.wordpress.org/reference/hooks/before_wp_tiny_mce/
+							 *
+							 * This container div must already be available to our setup script.
+							 * It will be if it's already there prior to the editor's initialization.
+							 * And if it's printed before the editor's settings are printed, then
+							 * it's guaranteed to be present before the editor's initialization.
+							 */
 							add_action(
 								'before_wp_tiny_mce',
-								function() {
+								function () {
 									printf( '<div id="font-awesome-icon-chooser-container"></div>' );
 								},
 								99
+							);
+
+							add_filter(
+								'tiny_mce_before_init',
+								function ( $mce_init ) {
+									$plugins = is_string( $mce_init['plugins'] ) ? explode( ',', $mce_init['plugins'] ) : array();
+									array_push( $plugins, 'font-awesome-official' );
+									$mce_init['plugins'] = implode( ',', $plugins );
+									return $mce_init;
+								},
+								10,
+								1
 							);
 						}
 					} else {
@@ -1715,8 +1806,8 @@ class FontAwesome {
 					$originals_global = '__originalsBeforeFontAwesome';
 
 					$originals = array_map(
-						function ( $var ) {
-							return "$var: window.$var";
+						function ( $variable_name ) {
+							return "$variable_name: window.$variable_name";
 						},
 						$vendor_globals
 					);
@@ -1734,8 +1825,8 @@ class FontAwesome {
 					);
 
 					$original_restore_conditions = array_map(
-						function ( $var ) {
-							return "if(window.__originalsBeforeFontAwesome.$var){window.$var = window.__originalsBeforeFontAwesome.$var}";
+						function ( $variable_name ) {
+							return "if(window.__originalsBeforeFontAwesome.$variable_name){window.$variable_name = window.__originalsBeforeFontAwesome.$variable_name}";
 						},
 						$vendor_globals
 					);
@@ -1835,33 +1926,9 @@ class FontAwesome {
 			 *
 			 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
 			 */
-			if ( $enable_icon_chooser && $this->is_gutenberg_page() ) {
+			if ( $enable_icon_chooser && is_gutenberg_page() ) {
 				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
 			}
-		}
-
-		if ( $enable_icon_chooser ) {
-			/**
-			 * TODO: re-enable the case where TinyMCE and Gutenberg are present on the same
-			 * page load. For now, we're eliminating that case because
-			 * some customers experienced Gutenberg failures on pages where both
-			 * editors were active.
-			 *
-			 * If we're not on a Gutenberg (as plugin) or Block Editor (as WP 5 Core editor),
-			 * then we want to enable our TinyMCE integration. We'll initialize it
-			 * on the wp_tiny_mce_init action hook.
-			 *
-			 * According to the docs:
-			 * "Fires after tinymce.js is loaded, but before any TinyMCE editor instances are created."
-			 *
-			 * So we expect this to only fire once, even if multiple instances of the editor
-			 * are added to a single page.
-			 *
-			 * If TinyMCE is not present or not active, then this action hook will
-			 * never be fired and thus our TinyMCE integration will never be setup,
-			 * which is what we want.
-			 */
-			add_action( 'wp_tiny_mce_init', array( $this, 'print_classic_editor_icon_chooser_setup_script' ) );
 		}
 
 		wp_enqueue_script(
@@ -1893,7 +1960,7 @@ class FontAwesome {
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
 			'usingCompatJs'                 => $this->compat_js_required(),
-			'isGutenbergPage'               => $this->is_gutenberg_page(),
+			'isGutenbergPage'               => is_gutenberg_page(),
 		);
 	}
 
@@ -1921,11 +1988,11 @@ class FontAwesome {
 			$enqueue_command = new FontAwesome_Command(
 				function () use ( $kit_token ) {
 					try {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 						wp_enqueue_script(
 							FontAwesome::RESOURCE_HANDLE,
 							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 							array(),
+							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 							null,
 							false
 						);
@@ -2042,31 +2109,7 @@ EOT;
 
 		$resources = $resource_collection->resources();
 
-		$conflict_detection_enqueue_command = new FontAwesome_Command(
-			function () {
-				// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
-				wp_enqueue_script(
-					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
-					FontAwesome::CONFLICT_DETECTOR_SOURCE,
-					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
-					null,
-					true
-				);
-			}
-		);
-
-		if ( $this->detecting_conflicts() && current_user_can( 'manage_options' ) ) {
-			// Enqueue the conflict detector.
-			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
-				add_action(
-					$action,
-					array( $conflict_detection_enqueue_command, 'run' ),
-					PHP_INT_MAX
-				);
-			}
-
-			$this->apply_detection_ignore_attr();
-		}
+		$this->maybe_enqueue_conflict_detection();
 
 		if ( ! isset( $resources['all'] ) ) {
 			throw new ConfigCorruptionException();
@@ -2081,7 +2124,7 @@ EOT;
 				add_action(
 					$action,
 					function () use ( $all_source ) {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+                        // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 						wp_enqueue_style( self::RESOURCE_HANDLE, $all_source, null, null );
 					}
 				);
@@ -2090,17 +2133,17 @@ EOT;
 			// Filter the <link> tag to add the integrity and crossorigin attributes for completeness.
 			add_filter(
 				'style_loader_tag',
-				function( $html, $handle ) use ( $all_integrity ) {
+				function ( $html, $handle ) use ( $all_integrity ) {
 					if ( in_array( $handle, array( self::RESOURCE_HANDLE ), true ) ) {
-								return preg_replace(
-									'/\/>$/',
-									'integrity="' . $all_integrity .
-									'" crossorigin="anonymous" />',
-									$html,
-									1
-								);
+						return preg_replace(
+							'/\/>$/',
+							'integrity="' . $all_integrity .
+								'" crossorigin="anonymous" />',
+							$html,
+							1
+						);
 					} else {
-								return $html;
+						return $html;
 					}
 				},
 				10,
@@ -2130,7 +2173,7 @@ EOT;
 					add_action(
 						$action,
 						function () use ( $v4_shims_source, $v4_shims_integrity, $options, $version ) {
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+                            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null );
 
 							/**
@@ -2161,7 +2204,7 @@ EOT;
 								return preg_replace(
 									'/\/>$/',
 									'integrity="' . $v4_shims_integrity .
-									'" crossorigin="anonymous" />',
+										'" crossorigin="anonymous" />',
 									$html,
 									1
 								);
@@ -2179,7 +2222,7 @@ EOT;
 				add_action(
 					$action,
 					function () use ( $all_source, $options ) {
-						// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+                        // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 						wp_enqueue_script( self::RESOURCE_HANDLE, $all_source, null, null, false );
 
 						if ( $options['pseudoElements'] ) {
@@ -2200,7 +2243,7 @@ EOT;
 							$extra_tag_attributes .= ' integrity="' . $all_integrity . '"';
 						}
 						$modified_script_tag = preg_replace(
-							// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+                            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 							'/<script\s*(.*?src=.*?)>/',
 							"<script $extra_tag_attributes " . '\1>',
 							$tag,
@@ -2227,7 +2270,7 @@ EOT;
 					add_action(
 						$action,
 						function () use ( $v4_shims_source ) {
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+                            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_script( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null, false );
 						}
 					);
@@ -2242,7 +2285,7 @@ EOT;
 								$extra_tag_attributes .= ' integrity="' . $v4_shims_integrity . '"';
 							}
 							$modified_script_tag = preg_replace(
-								// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+                                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 								'/<script\s*(.*?src=.*?)>/',
 								"<script $extra_tag_attributes " . '\1>',
 								$tag,
@@ -2273,7 +2316,7 @@ EOT;
 
 		add_filter(
 			'style_loader_tag',
-			function( $html, $handle ) {
+			function ( $html, $handle ) {
 				if (
 					in_array(
 						$handle,
@@ -2340,16 +2383,16 @@ EOT;
 	 */
 	private function common_enqueue_actions() {
 		/**
-		 * If we're upgrading from the v1 option schema and the previous
-		 * removeUnregisteredClients feature had been enabled, then we will
-		 * run some server-side detection like that old feature worked and
-		 * add what we find to the new-style blocklist.
-		 */
+		* If we're upgrading from the v1 option schema and the previous
+		* removeUnregisteredClients feature had been enabled, then we will
+		* run some server-side detection like that old feature worked and
+		* add what we find to the new-style blocklist.
+		*/
 		if ( $this->old_remove_unregistered_clients ) {
 			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 				add_action(
 					$action,
-					function() {
+					function () {
 						try {
 							fa()->infer_unregistered_clients_by_resource_url();
 						} catch ( Exception $e ) {
@@ -2374,7 +2417,7 @@ EOT;
 		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 			add_action(
 				$action,
-				function() {
+				function () {
 					try {
 						fa()->remove_blocklist();
 					} catch ( Exception $e ) {
@@ -2418,8 +2461,13 @@ EOT;
 
 		foreach ( $collections as $key => $collection ) {
 			foreach ( $collection->registered as $handle => $details ) {
-				if ( preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle )
-					|| preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle ) ) {
+				if (
+					preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle )
+					|| preg_match( '/' . self::RESOURCE_HANDLE . '/', $handle )
+				) {
+					continue;
+				}
+				if ( ! is_string( $details->src ) ) {
 					continue;
 				}
 				if ( strpos( $details->src, 'fontawesome' ) || strpos( $details->src, 'font-awesome' ) ) {
@@ -2469,6 +2517,10 @@ EOT;
 	 * @return bool
 	 */
 	public function is_url_blocked( $url ) {
+		if ( ! is_string( $url ) ) {
+			return false;
+		}
+
 		return false !== array_search( md5( $url ), $this->blocklist(), true );
 	}
 
@@ -3095,59 +3147,6 @@ EOT;
 	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
-	 * Code borrowed from Freemius SDK by way of Benjamin Intal on Stack Overflow,
-	 * under GPL. Thanks Benjamin! Hey everybody, get the Stackable plugin to do
-	 * cool stuff with Font Awesome in your Blocks!
-	 *
-	 * See: https://github.com/Freemius/wordpress-sdk
-	 * See: https://wordpress.stackexchange.com/questions/309862/check-if-gutenberg-is-currently-in-use
-	 * See: https://wordpress.org/plugins/stackable-ultimate-gutenberg-blocks/
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	private function is_gutenberg_page() {
-		if ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) {
-			// The Gutenberg plugin is on.
-			return true;
-		}
-		$current_screen = get_current_screen();
-		if ( is_object( $current_screen ) && method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
-			// Gutenberg page on 5+.
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * We can't guarantee the timing of when this global hook will be set.
-	 * So if we find that it's already set, we'll invoke it. Otherwise, we'll
-	 * assign a truthy value to it to indicate that it should be invoked as
-	 * soon as the hook is ready.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public function print_classic_editor_icon_chooser_setup_script() {
-		?>
-	<script type="text/javascript">
-		if( window.tinymce ) {
-			if( typeof window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser === 'function' ) {
-				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser()
-			} else {
-				window.__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser = true
-			}
-		}
-	</script>
-		<?php
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
 	 * @internal
 	 * @ignore
 	 */
@@ -3206,6 +3205,109 @@ unicode-range: U+F004-F005,U+F007,U+F017,U+F022,U+F024,U+F02E,U+F03E,U+F044,U+F0
 }
 EOT;
 	}
+
+	/**
+	 * Internal only, not part of this plugin's public API.
+	 *
+	 * Determine whether the given version is a concrete (semantic) version.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	public static function version_is_concrete( $version ) {
+		return is_string( $version )
+			&& 1 === preg_match( '/^[0-9]+\.[0-9]+\.[0-9]+/', $version );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * Determines the concrete version corresponding to the given options.
+	 *
+	 * A concrete version is just a semantic version like "6.5.0". This is distinct
+	 * from a symbolic version like "latest" or "6.x".
+	 *
+	 * This function resolves symbolic versions into a concrete versions.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return false | string returns false if the version is invalid.
+	 */
+	public function concrete_version( $options ) {
+		$version = null;
+
+		if ( isset( $options['version'] ) && is_string( $options['version'] ) ) {
+			$version = $options['version'];
+		}
+
+		if ( ! $version ) {
+			return false;
+		}
+
+		$concrete_version = null;
+
+		if ( 'latest' === $version ) {
+			$concrete_version = $this->latest_version_5();
+		} elseif ( '5.x' === $version ) {
+			$concrete_version = $this->latest_version_5();
+		} elseif ( '6.x' === $version ) {
+			$concrete_version = $this->latest_version_6();
+		} else {
+			$concrete_version = $version;
+		}
+
+		if ( self::version_is_concrete( $concrete_version ) ) {
+			return $concrete_version;
+		} else {
+			return false;
+		}
+	}
+
+	protected function maybe_enqueue_conflict_detection() {
+		if ( ! $this->detecting_conflicts() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$conflict_detection_enqueue_command = new FontAwesome_Command(
+			function () {
+				wp_enqueue_script(
+					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
+					FontAwesome::CONFLICT_DETECTOR_SOURCE,
+					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
+					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+					null,
+					true
+				);
+			}
+		);
+
+		// Enqueue the conflict detector.
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+			add_action(
+				$action,
+				array( $conflict_detection_enqueue_command, 'run' ),
+				PHP_INT_MAX
+			);
+		}
+
+		$this->apply_detection_ignore_attr();
+	}
+}
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
+
+/**
+ * Convenience global function to get a singleton instance of the main Font Awesome
+ * class.
+ *
+ * @since 4.0.0
+ *
+ * @see FontAwesome::instance()
+ * @returns FontAwesome
+ */
+function fa() {
+	return FontAwesome::instance();
 }
 
 /**
@@ -3251,47 +3353,4 @@ function for_each_blog( $cb ) {
 
 		$offset = $offset + $limit;
 	}
-}
-
-/**
- * Convenience global function to get a singleton instance of the main Font Awesome
- * class.
- *
- * @since 4.0.0
- *
- * @see FontAwesome::instance()
- * @returns FontAwesome
- */
-function fa() {
-	return FontAwesome::instance();
-}
-
-/**
- * This hook ensures that when we're in multisite mode, and a new site is activated
- * after an initial plugin activation, that the plugin is initialized for that newly
- * created site, but only if this plugin is otherwise network activated.
- *
- * If the plugin is only activated on a per-site basis, then creating a new site should
- * not result in this plugin automatically being activated for it.
- */
-if ( is_multisite() ) {
-	add_action(
-		'wp_initialize_site',
-		function ( $site ) {
-			if ( ! is_network_admin( FONTAWESOME_PLUGIN_FILE ) ) {
-				return;
-			}
-
-			require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-activator.php';
-			switch_to_blog( $site->blog_id );
-
-			try {
-				FontAwesome_Activator::initialize_current_site( false );
-			} finally {
-				restore_current_blog();
-			}
-		},
-		99,
-		1
-	);
 }

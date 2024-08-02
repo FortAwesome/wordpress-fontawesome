@@ -1,9 +1,9 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-exception.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 

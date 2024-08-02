@@ -8,7 +8,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
-use \WP_REST_Controller, \WP_Error, \Error, \Exception;
+use WP_REST_Controller, WP_Error, Error, Exception;
 
 /**
  * Controller class for the plugin's GraphQL API REST endpoint.
@@ -86,9 +86,9 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @ignore
 	 * @internal
 	 */
-	public function __construct( $plugin_slug, $namespace ) {
+	public function __construct( $plugin_slug, $rest_namespace ) {
 		$this->plugin_slug       = $plugin_slug;
-		$this->namespace         = $namespace;
+		$this->namespace         = $rest_namespace;
 		$this->metadata_provider = fa_metadata_provider();
 	}
 
@@ -108,22 +108,45 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'query' ),
-					'permission_callback' => function() {
-						/**
-						 * It's possible that a non-admin user may need to be able
-						 * to issue requests through this API Controller, such as
-						 * when searching through the Font Awesome API search via
-						 * an icon chooser. That's why 'edit_posts' is allowed here.
-						 *
-						 * However, it seems there are cases where a user may be
-						 * able to manage_options but not edit_posts, so we'll include
-						 * that permission separately.
-						 */
-						return current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' ); },
+					'permission_callback' => array( $this, 'check_permission' ),
 					'args'                => array(),
 				),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $route_base . '/token',
+			array(
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'provide_access_token' ),
+					'permission_callback' => array( $this, 'check_permission' ),
+					'args'                => array(),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Internal use only. This method is not part of this plugin's public API.
+	 *
+	 * It's possible that a non-admin user may need to be able
+	 * to issue requests through this API Controller, such as
+	 * when searching through the Font Awesome API search via
+	 * an icon chooser. That's why 'edit_posts' is allowed here.
+	 *
+	 * However, it seems there are cases where a user may be
+	 * able to manage_options but not edit_posts, so we'll include
+	 * that permission separately.
+	 *
+	 * @ignore
+	 * @internal
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return FontAwesome_REST_Response
+	 */
+	public function check_permission() {
+		return current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' );
 	}
 
 	/**
@@ -143,6 +166,42 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 			$result = $this->metadata_provider()->metadata_query( $query_body );
 
 			return new FontAwesome_REST_Response( json_decode( $result, true ), 200 );
+		} catch ( FontAwesome_ServerException $e ) {
+			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
+		} catch ( FontAwesome_Exception $e ) {
+			return new FontAwesome_REST_Response( wpe_fontawesome_client_exception( $e ), 400 );
+		} catch ( Exception $e ) {
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
+		} catch ( Error $e ) {
+			return new FontAwesome_REST_Response( wpe_fontawesome_unknown_error( $e ), 500 );
+		}
+	}
+
+	/**
+	 * Respond with the access token, refreshing it first if need be.
+	 *
+	 * Internal use only. This method is not part of this plugin's public API.
+	 *
+	 * @ignore
+	 * @internal
+	 * @return FontAwesome_REST_Response
+	 */
+	public function provide_access_token() {
+		try {
+			$access_token = fa_api_settings()->current_access_token();
+			$expires_at   = fa_api_settings()->access_token_expiration_time();
+
+			if ( ! boolval( $access_token ) || ! boolval( $expires_at ) ) {
+				// TODO: make a real error response.
+				return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( 'could not get an access token' ), 500 );
+			}
+
+			$response_body = array(
+				'access_token' => $access_token,
+				'expires_at'   => $expires_at,
+			);
+
+			return new FontAwesome_REST_Response( $response_body, 200 );
 		} catch ( FontAwesome_ServerException $e ) {
 			return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( $e ), 500 );
 		} catch ( FontAwesome_Exception $e ) {

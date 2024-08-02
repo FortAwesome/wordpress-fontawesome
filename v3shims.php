@@ -363,5 +363,4 @@ function get_font_awesome_v3shims() {
 		'icon-zoom-in'                => 'fas fa-search-plus',
 		'icon-zoom-out'               => 'fas fa-search-minus',
 	);
-
 }

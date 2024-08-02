@@ -1,11 +1,11 @@
 <?php
-namespace FortAwesome;
-
 /**
  * Plugin Name:       Fake Font Awesome 42.0.1-rc12
  * Description:       Fake Font Awesome 42.0.1-rc12
  * Version:           42.0.1-rc12
  */
+
+namespace FortAwesome;
 
 defined( 'WPINC' ) || die;
 
@@ -15,6 +15,6 @@ if ( ! function_exists( 'FortAwesome\font_awesome_load' ) ) {
 	}
 }
 
-require_once dirname( __FILE__ ) . '/../../../../index.php';
+require_once __DIR__ . '/../../../../index.php';
 
 FontAwesome_Loader::instance()->add( __DIR__, false );

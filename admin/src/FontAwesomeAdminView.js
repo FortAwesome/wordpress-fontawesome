@@ -9,30 +9,30 @@ import { setActiveAdminTab } from './store/actions'
 import { __ } from '@wordpress/i18n'
 
 export default function FontAwesomeAdminView() {
-  const activeAdminTab = useSelector(state => state.activeAdminTab || ADMIN_TAB_SETTINGS )
+  const activeAdminTab = useSelector((state) => state.activeAdminTab || ADMIN_TAB_SETTINGS)
   const dispatch = useDispatch()
 
-  return ( 
-    <div className={ classnames(styles['font-awesome-admin-view']) }>
+  return (
+    <div className={classnames(styles['font-awesome-admin-view'])}>
       <h1>Font Awesome</h1>
       <div className={styles['tab-header']}>
-        <button 
+        <button
           onClick={() => dispatch(setActiveAdminTab(ADMIN_TAB_SETTINGS))}
-          disabled={ activeAdminTab === ADMIN_TAB_SETTINGS }
+          disabled={activeAdminTab === ADMIN_TAB_SETTINGS}
         >
-          { __( 'Settings', 'font-awesome' ) }
+          {__('Settings', 'font-awesome')}
         </button>
         <button
           onClick={() => dispatch(setActiveAdminTab(ADMIN_TAB_TROUBLESHOOT))}
-          disabled={ activeAdminTab === ADMIN_TAB_TROUBLESHOOT }
+          disabled={activeAdminTab === ADMIN_TAB_TROUBLESHOOT}
         >
-          { __( 'Troubleshoot', 'font-awesome' ) }
+          {__('Troubleshoot', 'font-awesome')}
         </button>
       </div>
       {
         {
-          [ADMIN_TAB_SETTINGS]: <SettingsTab/>,
-          [ADMIN_TAB_TROUBLESHOOT]: <TroubleshootTab/>
+          [ADMIN_TAB_SETTINGS]: <SettingsTab />,
+          [ADMIN_TAB_TROUBLESHOOT]: <TroubleshootTab />
         }[activeAdminTab]
       }
     </div>

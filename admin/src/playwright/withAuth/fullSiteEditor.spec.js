@@ -1,51 +1,43 @@
-import {
-  Editor,
-  expect,
-  test,
-} from "@wordpress/e2e-test-utils-playwright";
+import { Editor, expect, test } from '@wordpress/e2e-test-utils-playwright'
 
 test.describe('full site editor', async () => {
-  test.use( {
-	  editor: async ( { page }, use ) => {
-		  await use( new Editor( { page } ) )
-	  },
-  } )
+  test.use({
+    editor: async ({ page }, use) => {
+      await use(new Editor({ page }))
+    }
+  })
 
-  test("insert with icon chooser", async ({ page, editor,pageUtils }) => {
-    const pageLoadPromise = page.waitForResponse(
-      '**/wp/v2/pages*'
-    );
+  test('insert with icon chooser', async ({ page, editor, pageUtils }) => {
+    const pageLoadPromise = page.waitForResponse('**/wp/v2/pages*')
 
-    await page.goto("/wp-admin/site-editor.php?canvas=edit");
+    await page.goto('/wp-admin/site-editor.php?canvas=edit')
 
-    await pageLoadPromise;
+    await pageLoadPromise
 
-    const getStartedCount = await page.getByRole('button', { name: 'Get started' }).count();
+    const getStartedCount = await page.getByRole('button', { name: 'Get started' }).count()
 
     if (getStartedCount > 0) {
-      await page.getByRole('button', { name: 'Get started' }).click();
+      await page.getByRole('button', { name: 'Get started' }).click()
     }
 
-		await editor.insertBlock( {
-			name: 'core/paragraph',
-		} );
-		await page.keyboard.type( 'Here comes an icon: ' )
+    await editor.insertBlock({
+      name: 'core/paragraph'
+    })
+    await page.keyboard.type('Here comes an icon: ')
 
-		await editor.clickBlockToolbarButton( 'More' )
+    await editor.clickBlockToolbarButton('More')
 
-		await pageUtils.pressKeys('Enter', 1)
+    await pageUtils.pressKeys('Enter', 1)
 
-		await page.waitForSelector( 'fa-icon-chooser input#search' );
+    await page.waitForSelector('fa-icon-chooser input#search')
 
-    const searchResponsePromise = page.waitForResponse(
-      '**/font-awesome/v1/api*'
-    );
+    const searchResponsePromise = page.waitForResponse('**/font-awesome/v1/api*')
 
-    await page.locator( 'fa-icon-chooser input#search' ).fill('coffee')
+    await page.locator('fa-icon-chooser input#search').fill('coffee')
 
     await searchResponsePromise
 
-    await page.locator( 'fa-icon-chooser button.icon' ).first().click()
+    await page.locator('fa-icon-chooser button.icon').first().click()
 
     let blocks = null
 
@@ -56,7 +48,6 @@ test.describe('full site editor', async () => {
       blocks = await editor.getBlocks()
       expect(blocks).toHaveLength(1)
       expect(blocks[0].attributes.content).toMatch(/\[icon.*?\]$/)
-    } catch(_e) {}
-  });
-});
-
+    } catch (_e) {}
+  })
+})

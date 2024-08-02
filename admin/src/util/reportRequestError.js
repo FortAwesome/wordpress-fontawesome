@@ -3,19 +3,40 @@ import set from 'lodash/set'
 import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 
-export const ERROR_REPORT_PREAMBLE = __( 'Font Awesome WordPress Plugin Error Report', 'font-awesome' )
-const UI_MESSAGE_DEFAULT = __( 'D\'oh! That failed big time.', 'font-awesome' )
-const ERROR_REPORTING_ERROR = __( 'There was an error attempting to report the error.', 'font-awesome' )
-const REST_NO_ROUTE_ERROR = __( 'Oh no! Your web browser could not reach your WordPress server.', 'font-awesome' )
-const REST_COOKIE_INVALID_NONCE_ERROR = __( 'It looks like your web browser session expired. Try logging out and log back in to WordPress admin.', 'font-awesome' )
-const OK_ERROR_PREAMBLE = __( 'The last request was successful, but it also returned the following error(s), which might be helpful for troubleshooting.', 'font-awesome' )
-const ONE_OF_MANY_ERRORS_GROUP_LABEL = __( 'Error', 'font-awesome' )
-const FALSE_POSITIVE_MESSAGE = __( 'WARNING: The last request contained errors, though your WordPress server reported it as a success. This usually means there\'s a problem with your theme or one of your other plugins emitting output that is causing problems.', 'font-awesome' )
-const UNCONFIRMED_RESPONSE_MESSAGE = __( 'WARNING: The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.', 'font-awesome')
-const CONFIRMED_RESPONSE_MESSAGE = __( 'CONFIRMED: The last response from your WordPress server included the confirmation header that is expected for all valid responses from the Font Awesome plugin\'s code running on your WordPress server.', 'font-awesome')
-const TRIMMED_RESPONSE_PREAMBLE = __( 'WARNING: Invalid Data Trimmed from Server Response', 'font-awesome' )
-const EXPECTED_EMPTY_MESSAGE = __( 'WARNING: We expected the last response from the server to contain no data, but it contained something unexpected.', 'font-awesome' )
-const MISSING_ERROR_DATA_MESSAGE = __( 'Your WordPress server returned an error for that last request, but there was no information about the error.', 'font-awesome' )
+export const ERROR_REPORT_PREAMBLE = __('Font Awesome WordPress Plugin Error Report', 'font-awesome')
+const UI_MESSAGE_DEFAULT = __("D'oh! That failed big time.", 'font-awesome')
+const ERROR_REPORTING_ERROR = __('There was an error attempting to report the error.', 'font-awesome')
+const REST_NO_ROUTE_ERROR = __('Oh no! Your web browser could not reach your WordPress server.', 'font-awesome')
+const REST_COOKIE_INVALID_NONCE_ERROR = __(
+  'It looks like your web browser session expired. Try logging out and log back in to WordPress admin.',
+  'font-awesome'
+)
+const OK_ERROR_PREAMBLE = __(
+  'The last request was successful, but it also returned the following error(s), which might be helpful for troubleshooting.',
+  'font-awesome'
+)
+const ONE_OF_MANY_ERRORS_GROUP_LABEL = __('Error', 'font-awesome')
+const FALSE_POSITIVE_MESSAGE = __(
+  "WARNING: The last request contained errors, though your WordPress server reported it as a success. This usually means there's a problem with your theme or one of your other plugins emitting output that is causing problems.",
+  'font-awesome'
+)
+const UNCONFIRMED_RESPONSE_MESSAGE = __(
+  'WARNING: The last response from your WordPress server did not include the confirmation header that should be in all valid Font Awesome responses. This is a clue that some code from another theme or plugin is acting badly and causing the wrong headers to be sent.',
+  'font-awesome'
+)
+const CONFIRMED_RESPONSE_MESSAGE = __(
+  "CONFIRMED: The last response from your WordPress server included the confirmation header that is expected for all valid responses from the Font Awesome plugin's code running on your WordPress server.",
+  'font-awesome'
+)
+const TRIMMED_RESPONSE_PREAMBLE = __('WARNING: Invalid Data Trimmed from Server Response', 'font-awesome')
+const EXPECTED_EMPTY_MESSAGE = __(
+  'WARNING: We expected the last response from the server to contain no data, but it contained something unexpected.',
+  'font-awesome'
+)
+const MISSING_ERROR_DATA_MESSAGE = __(
+  'Your WordPress server returned an error for that last request, but there was no information about the error.',
+  'font-awesome'
+)
 const REPORT_INFO_PARAM_KEYS = [
   'requestMethod',
   'responseStatus',
@@ -31,8 +52,8 @@ const REPORT_INFO_PARAM_KEYS = [
  * This both sends appropriately formatted output to the console via console.info,
  * and returns a uiMessage that would be appropriate to display to an admin user.
  */
-function handleSingleWpErrorOutput( wpError ) {
-  if( ! get(wpError, 'code') ) {
+function handleSingleWpErrorOutput(wpError) {
+  if (!get(wpError, 'code')) {
     console.info(ERROR_REPORTING_ERROR)
     return UI_MESSAGE_DEFAULT
   }
@@ -41,16 +62,16 @@ function handleSingleWpErrorOutput( wpError ) {
   let output = ''
 
   const message = get(wpError, 'message')
-  if(message) {
+  if (message) {
     output = output.concat(`message: ${message}\n`)
     uiMessage = message
   }
 
   const code = get(wpError, 'code')
-  if(code) {
+  if (code) {
     output = output.concat(`code: ${code}\n`)
 
-    switch(code) {
+    switch (code) {
       case 'rest_no_route':
         uiMessage = REST_NO_ROUTE_ERROR
         break
@@ -66,30 +87,30 @@ function handleSingleWpErrorOutput( wpError ) {
 
   const data = get(wpError, 'data')
 
-  if ( 'string' === typeof data ) {
+  if ('string' === typeof data) {
     output = output.concat(`data: ${data}\n`)
   } else {
     const status = get(wpError, 'data.status')
-    if(status) output = output.concat(`status: ${status}\n`)
+    if (status) output = output.concat(`status: ${status}\n`)
 
     const trace = get(wpError, 'data.trace')
-    if(trace) output = output.concat(`trace:\n${trace}\n`)
+    if (trace) output = output.concat(`trace:\n${trace}\n`)
   }
 
-  if( output && '' !== output ) {
+  if (output && '' !== output) {
     console.info(output)
   } else {
     console.info(wpError)
   }
 
   const request = get(wpError, 'data.request')
-  if(request) {
+  if (request) {
     console.info(request)
   }
 
   const failedRequestMessage = get(wpError, 'data.failedRequestMessage')
 
-  if(failedRequestMessage) {
+  if (failedRequestMessage) {
     console.info(failedRequestMessage)
   }
 
@@ -97,7 +118,7 @@ function handleSingleWpErrorOutput( wpError ) {
 }
 
 function handleAllWpErrorOutput(errorData = {}) {
-  const wpErrors = Object.keys(errorData.errors || []).map(code => {
+  const wpErrors = Object.keys(errorData.errors || []).map((code) => {
     // get the first error message available for this code
     const message = get(errorData, `errors.${code}.0`)
     const data = get(errorData, `error_data.${code}`)
@@ -109,7 +130,7 @@ function handleAllWpErrorOutput(errorData = {}) {
     }
   })
 
-  if(0 === size(wpErrors)) {
+  if (0 === size(wpErrors)) {
     wpErrors.push({
       code: 'fontawesome_unknown_error',
       message: ERROR_REPORTING_ERROR
@@ -119,41 +140,32 @@ function handleAllWpErrorOutput(errorData = {}) {
   const uiMessage = wpErrors.reduce((acc, error) => {
     console.group(ONE_OF_MANY_ERRORS_GROUP_LABEL)
 
-    const msg = handleSingleWpErrorOutput( error )
+    const msg = handleSingleWpErrorOutput(error)
 
     console.groupEnd()
 
     // The uiMessage we should return will be the first error message that isn't
     // from a 'previous_exception'
-    return (!acc && error.code !== 'previous_exception')
-      ? msg
-      : acc
+    return !acc && error.code !== 'previous_exception' ? msg : acc
   }, null)
 
   return uiMessage
 }
 
 function report(params) {
-  const {
-    error = null,
-    ok = false,
-    falsePositive = false,
-    confirmed = false,
-    expectEmpty = false,
-    trimmed = ''
-  } = params
+  const { error = null, ok = false, falsePositive = false, confirmed = false, expectEmpty = false, trimmed = '' } = params
 
   console.group(ERROR_REPORT_PREAMBLE)
 
-  if( ok ) {
+  if (ok) {
     console.info(OK_ERROR_PREAMBLE)
   }
 
-  if( falsePositive ) {
+  if (falsePositive) {
     console.info(FALSE_POSITIVE_MESSAGE)
   }
 
-  if( confirmed ) {
+  if (confirmed) {
     console.info(CONFIRMED_RESPONSE_MESSAGE)
   } else {
     console.info(UNCONFIRMED_RESPONSE_MESSAGE)
@@ -162,18 +174,18 @@ function report(params) {
   // Strings to later join with newlines, making a report.
   const info = []
 
-  for(const key of REPORT_INFO_PARAM_KEYS) {
+  for (const key of REPORT_INFO_PARAM_KEYS) {
     const val = get(params, key)
 
-    if('undefined' !== typeof val) {
+    if ('undefined' !== typeof val) {
       const valType = typeof val
 
-      if('string' === valType || 'number' === valType) {
+      if ('string' === valType || 'number' === valType) {
         info.push(`${key}: ${val}`)
-      } else if ('object' === valType){
+      } else if ('object' === valType) {
         info.push(`${key}:`)
 
-        for(const innerKey in val) {
+        for (const innerKey in val) {
           info.push(`\t${innerKey}: ${val[innerKey].toString()}`)
         }
       } else {
@@ -182,24 +194,22 @@ function report(params) {
     }
   }
 
-  if(size(info) > 0) {
+  if (size(info) > 0) {
     console.info(`Extra Info:\n${info.join('\n')}`)
   }
 
-  if( '' !== trimmed ) {
+  if ('' !== trimmed) {
     console.group(TRIMMED_RESPONSE_PREAMBLE)
-    if( expectEmpty ) {
+    if (expectEmpty) {
       console.info(EXPECTED_EMPTY_MESSAGE)
     }
     console.info(trimmed)
     console.groupEnd()
   }
 
-  const uiMessage = null !== error
-    ? handleAllWpErrorOutput( error )
-    : null
+  const uiMessage = null !== error ? handleAllWpErrorOutput(error) : null
 
-  if ( error && trimmed === '' && confirmed ) {
+  if (error && trimmed === '' && confirmed) {
     console.info(MISSING_ERROR_DATA_MESSAGE)
   }
 
@@ -215,7 +225,7 @@ export function redactRequestData(response = {}) {
 
   let redacted = ''
 
-  if('application/json' === requestContentType) {
+  if ('application/json' === requestContentType) {
     try {
       const data = JSON.parse(requestData)
       const apiTokenValue = get(data, 'options.apiToken')
@@ -227,12 +237,12 @@ export function redactRequestData(response = {}) {
        * that boolean. It's useful to leave it so the error report indicates whether an
        * apiToken has been successfully saved.
        */
-      if('boolean' !== typeof apiTokenValue) {
+      if ('boolean' !== typeof apiTokenValue) {
         set(data, 'options.apiToken', 'REDACTED')
       }
 
       redacted = JSON.stringify(data)
-    } catch(e) {
+    } catch (e) {
       redacted = `ERROR while redacting request data: ${e.toString()}`
     }
 
@@ -243,10 +253,10 @@ export function redactRequestData(response = {}) {
 }
 
 export function redactHeaders(headers = {}) {
-  const redacted = {...headers}
+  const redacted = { ...headers }
 
-  for(const key in redacted) {
-    if('x-wp-nonce' === key.toLowerCase()) {
+  for (const key in redacted) {
+    if ('x-wp-nonce' === key.toLowerCase()) {
       redacted[key] = 'REDACTED'
     }
   }

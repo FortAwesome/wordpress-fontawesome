@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-v3mapper.php';
+require_once __DIR__ . '/../includes/class-fontawesome-v3mapper.php';
 
 use FortAwesome\FontAwesome_V3Mapper;
 use Yoast\WPTestUtils\WPIntegration\TestCase;

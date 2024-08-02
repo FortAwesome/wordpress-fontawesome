@@ -1,0 +1,7 @@
+SKIP_KIT_ENQUEUE: true, false
+TECH: svg, webfont
+LOAD_ADDITIONAL_SVG_STYLES: none, cdn, selfhost
+USING_KIT: true, false
+LICENSE: pro, free
+
+IF [LICENSE] = "pro" THEN [USING_KIT] = "true";
