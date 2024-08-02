@@ -171,7 +171,7 @@ class ApiTokenEndpointRequestException extends FontAwesome_ServerException {
 	public function __construct( $message = null, $code = 0, $previous = null ) {
 		parent::__construct(
 			esc_html__(
-				'Your WordPress server failed when trying to communicate with the Font Awesome API token endpoint.',
+				'Your WordPress server failed when trying to communicate with the Font Awesome API token endpoint. Try again to update your API token.',
 				'font-awesome'
 			),
 			$code,
