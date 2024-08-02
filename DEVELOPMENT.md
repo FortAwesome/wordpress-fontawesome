@@ -457,27 +457,6 @@ brew install composer
 </details>
 
 <details>
-<summary>The WordPress 4 compat bundle</summary>
-For older versions of WordPress, we build and load this separate "compat-js" bundle. It includes some WordPress dependencies that are available at runtime on newer versions of WordPress, but which this plugin provides itself when it detects that
-it's being loaded on older versions of WordPress.
-
-This bundle will probably not change very much, so it may not be necessary to rebuild at all.
-If you're doing development work only in WordPress 5, you can skip this altogether.
-
-If you do need to update what's in this bundle, though, then you just build another
-static production build like this:
-
-```
-$ cd compat-js
-$ npm install
-$ npm run build
-```
-
-This will create `compat-js/build/compat.js`, which the plugin looks for and
-enqueues automatically when it detects that it's running under WordPress 4.
-</details>
-
-<details>
 <summary>If you have an older version of Docker or one that doesn't support host.docker.internal</summary>
 
 The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
@@ -820,7 +799,7 @@ When `mod_security` is enabled, it'll look like this:
 
 3. Update the plugin version const in `includes/class-fontawesome.php`
 
-4. Update the versions in `admin/package.json` and `compat-js/package.json`
+4. Update the versions in `admin/package.json`, `block-editor/package.json`, `classic-editor/package.json`, `icon-chooser/package.json`
 
 5. Wait on changing the "Stable Tag" in `readme.txt` until after we've made the changes in the `svn` repo below.
 
@@ -1334,7 +1313,7 @@ wp --allow-root core update --version=5.4 /tmp/wordpress-5.4-latest.zip
 
 # Analyze Webpack Bundle
 
-The webpack configs for both `admin/` and `compat-js/` include the `BundleAnalyzerPlugin`,
+The webpack configs for the `admin/` JavaScript bundle includes the `BundleAnalyzerPlugin`,
 which produces a corresponding `webpack-stats.html` file in the corresponding
 directory on each build.
 

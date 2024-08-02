@@ -40,8 +40,6 @@
             "jest-e2e.config.js",
             "admin/webpack.config.js",
             "admin/package*.json",
-            "/compat-js",
-            "!/compat-js/build",
             "webpack.config.js",
             ".env",
             "DEVELOPMENT.md",
@@ -64,7 +62,6 @@
         "test": "phpunit",
         "clean": "rm -fR wp-dist && rm -fR admin/build && rm -fR vendor && rm -f font-awesome.zip",
         "build.admin": "cd admin; npm install && npm run build",
-        "build.compat": "cd compat-js; npm install && npm run build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
         "dist": "composer clean && composer build.admin && composer build.compat"
     },

@@ -441,7 +441,5 @@ export default combineReducers({
   unregisteredClients,
   unregisteredClientsDeletionStatus,
   userAttemptedToStopScanner,
-  webpackPublicPath: simple,
-  isGutenbergPage: coerceBool,
-  usingCompatJs: coerceBool
+  webpackPublicPath: simple
 })

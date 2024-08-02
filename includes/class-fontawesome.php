@@ -1811,41 +1811,17 @@ class FontAwesome {
 
 		$deps = array();
 
+		$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
+
 		/**
-		 * If we're on a recent enough version of WordPress 5, then the supporting
-		 * libraries are adequate for us to use as externals.
+		 * We don't need these Gutenberg dependencies unless we're on a Gutenberg
+		 * page. Declaring them unnecessarily (when not on a Gutenberg page)
+		 * has resulted in conflict for at least one other plugin: RankMath.
 		 *
-		 * For earlier versions, we'll need to load our own compatibility bundle,
-		 * and disable Gutenberg integration, since our compatibility bundle
-		 * uses a newer version of React than what would be available in WordPress
-		 * Core in that earlier version.
+		 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
 		 */
-		if ( $this->compat_js_required() ) {
-			$wp4_compat_resource_handle = self::ADMIN_RESOURCE_HANDLE . '-compat';
-
-			wp_enqueue_script(
-				$wp4_compat_resource_handle,
-				trailingslashit( FONTAWESOME_DIR_URL ) . 'compat-js/build/compat.js',
-				array(),
-				self::PLUGIN_VERSION,
-				true
-			);
-
-			// We need our main bundle to depend on the compat bundle.
-			array_push( $deps, $wp4_compat_resource_handle );
-		} else {
-			$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
-
-			/**
-			 * We don't need these Gutenberg dependencies unless we're on a Gutenberg
-			 * page. Declaring them unnecessarily (when not on a Gutenberg page)
-			 * has resulted in conflict for at least one other plugin: RankMath.
-			 *
-			 * See: https://wordpress.org/support/topic/plugin-conflicts-with-rankmath
-			 */
-			if ( $enable_icon_chooser && is_gutenberg_page() ) {
-				$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
-			}
+		if ( $enable_icon_chooser && is_gutenberg_page() ) {
+			$deps = array_merge( $deps, array( 'wp-blocks', 'wp-editor', 'wp-rich-text', 'wp-block-editor' ) );
 		}
 
 		wp_enqueue_script(
@@ -1875,9 +1851,7 @@ class FontAwesome {
 			'settingsPageUrl'               => $this->settings_page_url(),
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
-			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
-			'usingCompatJs'                 => $this->compat_js_required(),
-			'isGutenbergPage'               => is_gutenberg_page(),
+			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/'
 		);
 	}
 
@@ -2993,18 +2967,6 @@ EOT;
 		}
 
 		return false !== array_search( $screen_id, $this->icon_chooser_screens, true );
-	}
-
-	/**
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	private function compat_js_required() {
-		global $wp_version;
-
-		return ! version_compare( $wp_version, '5.4', '>=' );
 	}
 
 	/**
