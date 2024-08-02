@@ -71,11 +71,13 @@
         "phpcs": "phpcs --standard=.phpcs.xml",
         "phpcbf": "phpcbf --standard=.phpcs.xml",
         "test": "phpunit",
-        "clean": "rm -fR wp-dist && rm -fR admin/build && rm -fR vendor && rm -f font-awesome.zip",
+        "clean": "rm -fR wp-dist && rm -fR admin/build && rm -fR block-editor/build && rm -fR classic-editor/build && rm -fR icon-chooser/build && rm -fR vendor && rm -f font-awesome.zip",
         "build.admin": "cd admin; npm install && npm run build",
-        "build.compat": "cd compat-js; npm install && npm run build",
+        "build.block-editor": "cd block-editor; npm install && npm run build",
+        "build.classic-editor": "cd classic-editor; npm install && npm run build",
+        "build.icon-chooser": "cd icon-chooser; npm install && npm run build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
-        "dist": "composer clean && composer build.admin && composer build.compat"
+        "dist": "composer clean && composer build.admin && composer build.block-editor && composer build.classic-editor && composer build.icon-chooser && bin/make-wp-dist-zip"
     },
     "config": {
         "allow-plugins": {
