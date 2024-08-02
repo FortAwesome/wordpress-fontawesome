@@ -24,16 +24,6 @@ foreach ( $js_bundles as $bundle_dir => $roots ) {
   }
 }
 
-# $admin_dist_dir = $dist_dir . '/admin';
-# if (! file_exists($admin_dist_dir)) mkdir($admin_dist_dir);
-# copy($plugin_dir . '/admin/index.php', $dist_dir . '/admin/index.php');
-# rcp($plugin_dir . '/admin/build', $dist_dir . '/admin/build');
-# rcp($plugin_dir . '/admin/views', $dist_dir . '/admin/views');
-# 
-# $compat_js_dist_dir = $dist_dir . '/compat-js';
-# if (! file_exists($compat_js_dist_dir)) mkdir($compat_js_dist_dir);
-# rcp($plugin_dir . '/compat-js/build', $compat_js_dist_dir . '/build');
-
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
 copy($plugin_dir . '/defines.php', $dist_dir . '/defines.php');
 copy($plugin_dir . '/font-awesome.php', $dist_dir . '/font-awesome.php');
@@ -41,7 +31,6 @@ copy($plugin_dir . '/font-awesome-init.php', $dist_dir . '/font-awesome-init.php
 copy($plugin_dir . '/uninstall.php', $dist_dir . '/uninstall.php');
 copy($repo_dir . '/readme.txt', $dist_dir . '/readme.txt');
 copy($repo_dir . '/LICENSE', $dist_dir . '/LICENSE');
-copy($plugin_dir . '/v3shims.php', $dist_dir . '/v3shims.php');
 
 // zip dist
 $zip_filename = $repo_dir . '/font-awesome.zip';
