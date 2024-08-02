@@ -1574,6 +1574,26 @@ class FontAwesome {
 			function ( $hook ) {
 				$should_enable_icon_chooser = $this->should_icon_chooser_be_enabled( $hook );
 
+				wp_register_script(
+					self::RESOURCE_HANDLE_ICON_CHOOSER,
+					trailingslashit( FONTAWESOME_DIR_URL ) . 'icon-chooser/build/index.js',
+					array( self::ADMIN_RESOURCE_HANDLE ),
+					self::PLUGIN_VERSION,
+					true
+				);
+
+				wp_register_script(
+					self::RESOURCE_HANDLE_CLASSIC_EDITOR,
+					trailingslashit( FONTAWESOME_DIR_URL ) . 'classic-editor/build/index.js',
+					array(
+						self::ADMIN_RESOURCE_HANDLE,
+						self::RESOURCE_HANDLE_ICON_CHOOSER,
+						'wp-tinymce',
+					),
+					self::PLUGIN_VERSION,
+					true
+				);
+
 				try {
 					if ( $this->detecting_conflicts() || $hook === $this->screen_id || $should_enable_icon_chooser ) {
 						$this->enqueue_admin_js_assets( $should_enable_icon_chooser );
@@ -1608,26 +1628,11 @@ class FontAwesome {
 							$this->common_data_for_js_bundle()
 						);
 
-						wp_enqueue_script(
-							self::RESOURCE_HANDLE_ICON_CHOOSER,
-							trailingslashit( FONTAWESOME_DIR_URL ) . 'icon-chooser/build/index.js',
-							array( self::ADMIN_RESOURCE_HANDLE ),
-							self::PLUGIN_VERSION,
-							true
-						);
+
+						wp_enqueue_script( self::RESOURCE_HANDLE_ICON_CHOOSER );
 
 						// TODO: only enqueue this when the classic editor will be loaded.
-						wp_enqueue_script(
-							self::RESOURCE_HANDLE_CLASSIC_EDITOR,
-							trailingslashit( FONTAWESOME_DIR_URL ) . 'classic-editor/build/index.js',
-							array(
-								self::ADMIN_RESOURCE_HANDLE,
-								self::RESOURCE_HANDLE_ICON_CHOOSER,
-								'wp-tinymce',
-							),
-							self::PLUGIN_VERSION,
-							true
-						);
+						wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
 
 						// Required for styling the icon chooser in the Classic Editor.
 						wp_enqueue_style( 'wp-components' );
