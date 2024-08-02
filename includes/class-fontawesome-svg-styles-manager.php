@@ -188,10 +188,12 @@ class FontAwesome_SVG_Styles_Manager {
 		$upload_dir = wp_upload_dir( null, true, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed to get or initialize WP uploads directory.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to get or initialize WP uploads directory.',
+					'font-awesome'
+				)
+			);
 		}
 
 		return array(
@@ -213,10 +215,12 @@ class FontAwesome_SVG_Styles_Manager {
 		$upload_dir = wp_upload_dir( null, false, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed to get WP uploads directory.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to get WP uploads directory.',
+					'font-awesome'
+				)
+			);
 		}
 
 		return trailingslashit( $upload_dir['baseurl'] ) . $this->selfhost_asset_subpath( $version );
@@ -343,10 +347,12 @@ class FontAwesome_SVG_Styles_Manager {
 	 */
 	public function maybe_setup_selfhosting( $fa, $fa_release_provider ) {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Current user lacks permissions required to set up asset self-hosting.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Current user lacks permissions required to set up asset self-hosting.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$is_skipping_enqueue_kit = self::skip_enqueue_kit();
@@ -359,19 +365,23 @@ class FontAwesome_SVG_Styles_Manager {
 		$concrete_version = fa()->concrete_version( $options );
 
 		if ( ! $concrete_version ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed to determine Font Awesome version when setting up self-hosted assets.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to determine Font Awesome version when setting up self-hosted assets.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$asset_path = $this->selfhost_asset_path( $concrete_version );
 
 		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed to determine filesystem location for self-hosted asset.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to determine filesystem location for self-hosted asset.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$full_asset_path = trailingslashit( $asset_path['dir'] ) . $asset_path['file'];
@@ -381,10 +391,12 @@ class FontAwesome_SVG_Styles_Manager {
 		}
 
 		if ( ! WP_Filesystem( false ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed to initialize filesystem usage for creating self-hosted assets.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to initialize filesystem usage for creating self-hosted assets.',
+					'font-awesome'
+				)
+			);
 		}
 
 		global $wp_filesystem;
@@ -397,10 +409,12 @@ class FontAwesome_SVG_Styles_Manager {
 		$resource = $fa_release_provider->get_svg_styles_resource( $concrete_version );
 
 		if ( ! $resource->source() || ! $resource->integrity_key() ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Invalid metadata for self-hosted asset.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Invalid metadata for self-hosted asset.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$response = wp_remote_get( $resource->source() );
@@ -411,63 +425,77 @@ class FontAwesome_SVG_Styles_Manager {
 			$code = $response['response']['code'];
 		}
 
-		if ( is_wp_error( $response ) || ! $code || $code >= 400 |  ! isset( $response['body'] ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed retrieving an asset for self-hosting. Try again.',
-				'font-awesome'
-			) );
+		if ( is_wp_error( $response ) || ! $code || $code >= 400 | ! isset( $response['body'] ) ) {
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed retrieving an asset for self-hosting. Try again.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$hyphen_pos = strpos( $resource->integrity_key(), '-' );
 
 		if ( false === $hyphen_pos ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Invalid integrity key metadata for a self-hosted asset.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Invalid integrity key metadata for a self-hosted asset.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$algo = substr( $resource->integrity_key(), 0, $hyphen_pos );
 
 		if ( ! in_array( $algo, hash_algos(), true ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'WordPress server does not support hash algorithm required securely fetch assets for self-hosting.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'WordPress server does not support hash algorithm required securely fetch assets for self-hosting.',
+					'font-awesome'
+				)
+			);
 		}
 
 		$hash_hex = hash( $algo, $response['body'] );
 
 		$hash_bin = hex2bin( $hash_hex );
 		if ( ! $hash_bin ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed computing hash for self-hosted asset.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed computing hash for self-hosted asset.',
+					'font-awesome'
+				)
+			);
 		}
 
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		$hash = base64_encode( $hash_bin );
 
 		if ( "$algo-$hash" !== $resource->integrity_key() ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Asset integrity key does not match for self-hosted asset.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Asset integrity key does not match for self-hosted asset.',
+					'font-awesome'
+				)
+			);
 		}
 
 		if ( ! wp_mkdir_p( $asset_path['dir'] ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed creating a directory for self-hosted assets.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed creating a directory for self-hosted assets.',
+					'font-awesome'
+				)
+			);
 		}
 
 		if ( ! $wp_filesystem->put_contents( $full_asset_path, $response['body'] ) ) {
-			throw new SelfhostSetupException( esc_html__(
-				'Failed creating self-hosted assets.',
-				'font-awesome'
-			) );
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed creating self-hosted assets.',
+					'font-awesome'
+				)
+			);
 		}
 	}
 }
