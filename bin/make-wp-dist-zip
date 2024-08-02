@@ -10,15 +10,29 @@ initialize_dist_dir($dist_dir);
 $rc = null;
 
 rcp($plugin_dir . '/includes', $dist_dir . '/includes');
-$admin_dist_dir = $dist_dir . '/admin';
-if (! file_exists($admin_dist_dir)) mkdir($admin_dist_dir);
-copy($plugin_dir . '/admin/index.php', $dist_dir . '/admin/index.php');
-rcp($plugin_dir . '/admin/build', $dist_dir . '/admin/build');
-rcp($plugin_dir . '/admin/views', $dist_dir . '/admin/views');
 
-$compat_js_dist_dir = $dist_dir . '/compat-js';
-if (! file_exists($compat_js_dist_dir)) mkdir($compat_js_dist_dir);
-rcp($plugin_dir . '/compat-js/build', $compat_js_dist_dir . '/build');
+$js_bundles = [
+  'admin' => ['build', 'views', 'index.php'],
+  'block-editor' => ['build', 'block_init.php'],
+  'classic-editor' => ['build'],
+  'icon-chooser' => ['build']
+];
+
+foreach ( $js_bundles as $bundle_dir => $roots ) {
+  foreach( $roots as $root ) {
+    rcp($plugin_dir . "/$bundle_dir/" . $root, $dist_dir . "/$bundle_dir/" . $root);
+  }
+}
+
+# $admin_dist_dir = $dist_dir . '/admin';
+# if (! file_exists($admin_dist_dir)) mkdir($admin_dist_dir);
+# copy($plugin_dir . '/admin/index.php', $dist_dir . '/admin/index.php');
+# rcp($plugin_dir . '/admin/build', $dist_dir . '/admin/build');
+# rcp($plugin_dir . '/admin/views', $dist_dir . '/admin/views');
+# 
+# $compat_js_dist_dir = $dist_dir . '/compat-js';
+# if (! file_exists($compat_js_dist_dir)) mkdir($compat_js_dist_dir);
+# rcp($plugin_dir . '/compat-js/build', $compat_js_dist_dir . '/build');
 
 copy($plugin_dir . '/index.php', $dist_dir . '/index.php');
 copy($plugin_dir . '/defines.php', $dist_dir . '/defines.php');
@@ -104,22 +118,38 @@ function ignore_file($file) {
   return $found_ignore_pattern;
 }
 
+function copy_with_mkdir_p( $src, $dst ) {
+  $dst_path_info = pathinfo( $dst );
+
+  if ( ! isset($dst_path_info['dirname']) ) {
+    throw new Exception("invalid path: $dst");
+  }
+
+  if ( ! is_dir( $dst_path_info['dirname'] ) ) {
+    if ( ! mkdir( $dst_path_info['dirname'], 0755, true ) ) {
+      throw new Exception( "failed creating dir: " . $dst_path_info['dirname'] );
+    }
+  }
+
+  copy( $src, $dst );
+}
+
 // Copy recursively
 // Parts borrowed from http://php.net/manual/en/function.copy.php#91010
 function rcp($src, $dst){
   if(is_dir($src)){
-    if(! file_exists($dst)) mkdir($dst);
+    if(! file_exists($dst)) mkdir($dst, 0755, true);
     $dir = opendir($src);
     while(false !== ($file = readdir($dir))){
       if ( ! ignore_file($file) ) {
         if( is_dir($src . '/' . $file)){
           rcp($src . '/' . $file, $dst . '/' . $file);
         } else {
-          copy($src . '/' . $file, $dst . '/' . $file);
+          copy_with_mkdir_p($src . '/' . $file, $dst . '/' . $file);
         }
       }
     }
   } else {
-    copy($src, $dst);
+    copy_with_mkdir_p($src, $dst);
   }
 }
