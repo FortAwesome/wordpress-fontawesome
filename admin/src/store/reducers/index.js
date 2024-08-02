@@ -364,38 +364,6 @@ function conflictDetectionScannerStatus(
   }
 }
 
-function v3DeprecationWarningStatus(
-  state = {
-    isSubmitting: false,
-    hasSubmitted: false,
-    success: false,
-    message: ''
-  },
-  action = {}
-) {
-  const { type, success, message } = action
-
-  switch (type) {
-    case 'SNOOZE_V3DEPRECATION_WARNING_START':
-      return { ...state, isSubmitting: true, hasSubmitted: true }
-    case 'SNOOZE_V3DEPRECATION_WARNING_END':
-      return { ...state, isSubmitting: false, success, message }
-    default:
-      return state
-  }
-}
-
-function v3DeprecationWarning(state = {}, action = {}) {
-  const { type, snooze = false } = action
-
-  switch (type) {
-    case 'SNOOZE_V3DEPRECATION_WARNING_END':
-      return { ...state, snooze }
-    default:
-      return state
-  }
-}
-
 function showConflictDetectionReporter(state = false, action = {}) {
   const { type } = action
 
@@ -474,8 +442,6 @@ export default combineReducers({
   unregisteredClients,
   unregisteredClientsDeletionStatus,
   userAttemptedToStopScanner,
-  v3DeprecationWarning,
-  v3DeprecationWarningStatus,
   webpackPublicPath: simple,
   isGutenbergPage: coerceBool,
   usingCompatJs: coerceBool

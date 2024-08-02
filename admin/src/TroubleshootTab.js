@@ -1,7 +1,6 @@
 import React from 'react'
 import ManageFontAwesomeVersionsSection from './ManageFontAwesomeVersionsSection'
 import UnregisteredClientsView from './UnregisteredClientsView'
-import V3DeprecationWarning from './V3DeprecationWarning'
 import ConflictDetectionScannerSection from './ConflictDetectionScannerSection'
 import sharedStyles from './App.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -19,7 +18,6 @@ import { __ } from '@wordpress/i18n'
 
 export default function TroubleshootTab() {
   const dispatch = useDispatch()
-  const hasV3DeprecationWarning = useSelector((state) => !!state.v3DeprecationWarning)
   const unregisteredClients = useSelector((state) => state.unregisteredClients)
 
   const blocklistUpdateStatus = useSelector((state) => state.blocklistUpdateStatus)
@@ -54,7 +52,6 @@ export default function TroubleshootTab() {
   return (
     <>
       <div className={sharedStyles['wrapper-div']}>
-        {hasV3DeprecationWarning && <V3DeprecationWarning />}
         <ConflictDetectionScannerSection />
         <ManageFontAwesomeVersionsSection />
         <UnregisteredClientsView />

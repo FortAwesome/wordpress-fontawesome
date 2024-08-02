@@ -476,15 +476,6 @@ describe('some action failure cases', () => {
       }
     },
     {
-      action: 'snoozeV3DeprecationWarning',
-      state: {},
-      route: 'v3deprecation',
-      method: 'POST',
-      startAction: 'SNOOZE_V3DEPRECATION_WARNING_START',
-      endAction: 'SNOOZE_V3DEPRECATION_WARNING_END',
-      params: {}
-    },
-    {
       action: 'setConflictDetectionScanner',
       desc: 'when enabling',
       state: {},
@@ -697,10 +688,6 @@ describe('updateApiToken', () => {
 describe('reportDetectedConflicts', () => {
   test.todo('return early when not showing conflict detector')
   test.todo('dispatches NONE_FOUND when no conflicts are reported')
-  test.todo('success')
-})
-
-describe('snoozeV3DeprecationWarning', () => {
   test.todo('success')
 })
 

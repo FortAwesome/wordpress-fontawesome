@@ -674,48 +674,6 @@ export function reportDetectedConflicts({ nodesTested = {} }) {
   }
 }
 
-export function snoozeV3DeprecationWarning() {
-  return (dispatch, getState) => {
-    const { apiNonce, apiUrl } = getState()
-
-    dispatch({ type: 'SNOOZE_V3DEPRECATION_WARNING_START' })
-
-    const handleError = ({ uiMessage }) => {
-      dispatch({
-        type: 'SNOOZE_V3DEPRECATION_WARNING_END',
-        success: false,
-        message: uiMessage || COULD_NOT_SNOOZE_MESSAGE
-      })
-    }
-
-    return restApiAxios
-      .post(
-        `${apiUrl}/v3deprecation`,
-        { snooze: true },
-        {
-          headers: {
-            'X-WP-Nonce': apiNonce
-          }
-        }
-      )
-      .then((response) => {
-        const { falsePositive } = response
-
-        if (falsePositive) {
-          handleError(response)
-        } else {
-          dispatch({
-            type: 'SNOOZE_V3DEPRECATION_WARNING_END',
-            success: true,
-            snooze: true,
-            message: ''
-          })
-        }
-      })
-      .catch(handleError)
-  }
-}
-
 export function setActiveAdminTab(tab) {
   return {
     type: 'SET_ACTIVE_ADMIN_TAB',
