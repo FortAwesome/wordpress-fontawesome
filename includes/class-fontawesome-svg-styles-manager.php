@@ -434,7 +434,7 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-		if ( ! $wp_filesystem->mkdir( $asset_path['dir'] ) ) {
+		if ( ! wp_mkdir_p( $asset_path['dir'] ) ) {
 			// TODO: exception.
 			return;
 		}
