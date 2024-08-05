@@ -1,8 +1,8 @@
 {
-  "name": "fa-icon-block",
-  "version": "0.1.0",
-  "description": "Display your site's copyright date.",
-  "author": "The WordPress Contributors",
+  "name": "wp-font-awesome-icon",
+  "version": "5.0.0",
+  "description": "Block editor support for Font Awesome icons.",
+  "author": "Font Awesome",
   "license": "GPL-2.0-or-later",
   "main": "build/index.js",
   "scripts": {
