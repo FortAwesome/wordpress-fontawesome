@@ -1,6 +1,6 @@
 {
-  "name": "classic-editor",
-  "version": "0.1.0",
+  "name": "wp-font-awesome-classic-editor",
+  "version": "5.0.0",
   "description": "Use the Font Awesome Icon Chooser in the Classic Editor",
   "author": "Font Awesome",
   "license": "GPL-2.0-or-later",
