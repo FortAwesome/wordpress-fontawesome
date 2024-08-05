@@ -1,7 +1,7 @@
 {
-  "name": "icon-chooser",
-  "version": "0.1.0",
-  "description": "Choose a Font Awesome icon",
+  "name": "wordpress-icon-chooser",
+  "version": "5.0.0",
+  "description": "Choose a Font Awesome icon in WordPress",
   "author": "Font Awesome",
   "license": "GPL-2.0-or-later",
   "main": "build/index.js",
