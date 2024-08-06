@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch'
 import md5 from 'blueimp-md5'
 import { __ } from '@wordpress/i18n'
+import * as queryCache from '../../admin/src/queryCache'
 
 let accessToken;
 
@@ -8,12 +9,13 @@ const configureQueryHandler = params => async (query, variables, options) => {
   try {
     const { faApiUrl, apiNonce, rootUrl, restApiNamespace } = params
 
-    const cacheKey = md5(`${query}${JSON.stringify(variables)}`)
+    const cacheKey = `icon-chooser-${md5(`${query}${JSON.stringify(variables)}`)}`
 
-    const data = localStorage.getItem(cacheKey)
+    const data = queryCache.get(cacheKey)
 
     if (data) {
-      return JSON.parse(data)
+      console.log('CACHE_HIT!')
+      return data
     }
 
     // If apiFetch is from wp.apiFetch, it may already have RootURLMiddleware set up.
@@ -63,7 +65,7 @@ const configureQueryHandler = params => async (query, variables, options) => {
     const hasErrors = Array.isArray(responseBody?.errors) && responseBody.errors.length > 0
 
     if (options?.cache && !hasErrors) {
-      localStorage.setItem(cacheKey, JSON.stringify(responseBody))
+      queryCache.set(cacheKey, responseBody)
     }
 
     return responseBody
