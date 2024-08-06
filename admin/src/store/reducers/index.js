@@ -415,6 +415,7 @@ export default combineReducers({
   activeAdminTab,
   apiNonce: simple,
   apiUrl: simple,
+  faApiUrl: simple,
   blocklistUpdateStatus,
   clientPreferences: coerceEmptyArrayToEmptyObject,
   conflictDetectionScannerStatus,
