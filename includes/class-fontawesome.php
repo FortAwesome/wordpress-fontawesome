@@ -12,9 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Exception;
 use Error;
-use DateTime;
-use DateInterval;
-use DateTimeInterface;
 use DateTimeZone;
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
