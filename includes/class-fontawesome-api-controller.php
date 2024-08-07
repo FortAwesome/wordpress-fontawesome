@@ -223,9 +223,10 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 * @ignore
 	 */
-	protected function metadata_provider() {
+	protected function metadata_provider(): FontAwesome_Metadata_Provider {
 		return $this->metadata_provider;
 	}
+
 	/**
 	 * @param mixed $request
 	 */
