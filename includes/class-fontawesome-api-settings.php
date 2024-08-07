@@ -321,7 +321,7 @@ class FontAwesome_API_Settings {
 	 * @throws AccessTokenStorageException
 	 * @return string|null access_token if available; null if unavailable
 	 */
-	public function current_access_token() {
+	public function current_access_token(): string|null {
 		if ( ! boolval( $this->api_token() ) ) {
 			return null;
 		}
