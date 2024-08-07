@@ -282,6 +282,8 @@ class FontAwesome_API_Settings {
 	 *
 	 * @param int $access_token_expiration_time time in unix epoch seconds as non-zero integer value
 	 * @throws InvalidArgumentException if the given param is zero or cannot be cast as an integer
+	 * @internal
+	 * @ignore
 	 */
 	public function set_access_token_expiration_time( $access_token_expiration_time ) {
 		$int_val = intval( $access_token_expiration_time );
@@ -306,7 +308,9 @@ class FontAwesome_API_Settings {
 	}
 
 	/**
-	 * Returns a current access_token, if available. Attempts to refresh an
+	 * Internal use only, not part of this plugin's public API.
+	 *
+     * Returns a current access_token, if available. Attempts to refresh an
 	 * access_token if the one we have is near or past expiration and if an api_token
 	 * is present.
 	 *
@@ -320,6 +324,8 @@ class FontAwesome_API_Settings {
 	 * @throws ApiTokenInvalidException
 	 * @throws AccessTokenStorageException
 	 * @return string|null access_token if available; null if unavailable
+	 * @ignore
+	 * @internal
 	 */
 	public function current_access_token(): string|null {
 		if ( ! boolval( $this->api_token() ) ) {
