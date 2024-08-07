@@ -2,54 +2,11 @@ import apiFetch from "@wordpress/api-fetch";
 import md5 from "blueimp-md5";
 import { __ } from "@wordpress/i18n";
 import * as queryCache from "../../admin/src/queryCache";
+import { prepareAccessTokenGetter } from "./accessToken";
 
-const ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS = 60;
-
-function currentTimeUnixEpochSeconds() {
-  return Math.floor(Date.now() / 1000);
-}
-
-const configureQueryHandler = (params) => {
+const prepareQueryHandler = (params) => {
   const restApiNamespace = params?.restApiNamespace;
-
-  const getAccessToken = (() => {
-    let accessToken;
-    let accessTokenExpiresAt;
-
-    const shouldRefresh = () => {
-      if (!accessToken) return true;
-      if (!Number.isFinite(accessTokenExpiresAt)) return true;
-
-      const remainingSeconds =
-        accessTokenExpiresAt - currentTimeUnixEpochSeconds();
-
-      return remainingSeconds <= ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS;
-    };
-
-    return async () => {
-      if (!accessToken || !accessTokenExpiresAt || shouldRefresh()) {
-        console.log("WILL_REFRESH", accessToken, accessTokenExpiresAt);
-        const accessTokenResponse = await apiFetch({
-          path: `${restApiNamespace}/api/token`,
-          method: "GET",
-        });
-
-        accessToken = accessTokenResponse?.access_token;
-        accessTokenExpiresAt = accessTokenResponse?.expires_at;
-      }
-
-      if (!accessToken) {
-        const error = __(
-          "Font Awesome Icon Chooser could not get an access token from the WordPress server.",
-          "font-awesome",
-        );
-        console.error(error);
-        throw new Error(error);
-      }
-
-      return accessToken;
-    };
-  })();
+  const getAccessToken = prepareAccessTokenGetter(restApiNamespace);
 
   return async (query, variables, options) => {
     try {
@@ -113,4 +70,4 @@ const configureQueryHandler = (params) => {
   };
 };
 
-export default configureQueryHandler;
+export default prepareQueryHandler;

@@ -1,27 +1,27 @@
 import set from "lodash/set";
 import get from "lodash/get";
-import { GLOBAL_KEY } from "../../admin/src/constants"
-import configureQueryHandler from "./handleQuery.js"
-import getUrlText from "./getUrlText.js"
-import configureIconChooserModal from "./IconChooserModal.js"
+import { GLOBAL_KEY } from "../../admin/src/constants";
+import prepareQueryHandler from "./handleQuery.js";
+import getUrlText from "./getUrlText.js";
+import configureIconChooserModal from "./IconChooserModal.js";
 
-const initialData = window[GLOBAL_KEY]
-const kitToken = get(initialData, 'options.kitToken')
-const version = get(initialData, 'options.version')
-const pro = get(initialData, 'options.usePro')
+const initialData = window[GLOBAL_KEY];
+const kitToken = get(initialData, "options.kitToken");
+const version = get(initialData, "options.version");
+const pro = get(initialData, "options.usePro");
 
 const params = {
   ...initialData,
   kitToken,
   version,
   getUrlText,
-  pro
-}
+  pro,
+};
 
-params.handleQuery = configureQueryHandler(params) 
+params.handleQuery = prepareQueryHandler(params);
 
-const IconChooserModal = configureIconChooserModal(params)
+const IconChooserModal = configureIconChooserModal(params);
 
-set(window, [GLOBAL_KEY, 'iconChooser'], {
-  IconChooserModal
+set(window, [GLOBAL_KEY, "iconChooser"], {
+  IconChooserModal,
 });
