@@ -1,4 +1,10 @@
 {
-    "$schema": "/phpactor.schema.json",
-    "php_code_sniffer.enabled": true
+  "$schema": "/phpactor.schema.json",
+  "php_code_sniffer.enabled": true,
+  "language_server": {
+    "diagnostic_exclude_paths": ["**/wp-dist", "**/integrations/**/vendor"]
+  },
+  "indexer": {
+    "exclude_patterns": ["**/wp-dist", "**/integrations/**/vendor"]
+  }
 }
