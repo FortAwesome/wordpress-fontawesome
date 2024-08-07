@@ -307,7 +307,7 @@ class FontAwesome_API_Settings {
 
 	/**
 	 * Returns a current access_token, if available. Attempts to refresh an
-	 * access_token if the one we have is near or past expiration and an api_token
+	 * access_token if the one we have is near or past expiration and if an api_token
 	 * is present.
 	 *
 	 * Returns WP_Error indicating any error when trying to refresh an access_token.
