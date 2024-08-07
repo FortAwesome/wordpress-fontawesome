@@ -14,7 +14,6 @@ const configureQueryHandler = params => async (query, variables, options) => {
     const data = queryCache.get(cacheKey)
 
     if (data) {
-      console.log('CACHE_HIT!')
       return data
     }
 
