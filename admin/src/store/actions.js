@@ -7,6 +7,7 @@ import reportRequestError, { redactRequestData, redactHeaders } from '../util/re
 import { __ } from '@wordpress/i18n'
 import has from 'lodash/has'
 import sliceJson from '../util/sliceJson'
+import { clearQueryCache } from '../queryCache'
 
 const restApiAxios = axios.create()
 
@@ -393,6 +394,8 @@ export function queryKits() {
     const initialKitToken = get(options, 'kitToken', null)
 
     dispatch({ type: 'KITS_QUERY_START' })
+
+    clearQueryCache()
 
     const handleKitsQueryError = ({ uiMessage }) => {
       dispatch({
