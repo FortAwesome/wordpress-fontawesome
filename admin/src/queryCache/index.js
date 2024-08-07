@@ -1,5 +1,9 @@
 const CACHE_KEY_PREFIX = 'wp-font-awesome-cache'
 
+function buildPrefixedKey(key) {
+  return `${CACHE_KEY_PREFIX}-${key}`
+}
+
 export function remove(prefixedCacheKey) {
   if('function' !== typeof window?.localStorage?.removeItem) return
   localStorage.removeItem(prefixedCacheKey)
@@ -15,7 +19,7 @@ export function remove(prefixedCacheKey) {
 export function get(key) {
   if('function' !== typeof window?.localStorage?.getItem) return
 
-  const prefixedCacheKey = `${CACHE_KEY_PREFIX}-${key}`
+  const prefixedCacheKey = buildPrefixedKey(key)
 
   const cacheValueJson = localStorage.getItem(prefixedCacheKey)
 
@@ -42,7 +46,7 @@ export function get(key) {
 export function set(key, value) {
   if('function' !== typeof window?.localStorage?.setItem) return
 
-  const prefixedCacheKey = `${CACHE_KEY_PREFIX}-${key}`
+  const prefixedCacheKey = buildPrefixedKey(key)
 
   try {
     const valueJson = JSON.stringify(value)
