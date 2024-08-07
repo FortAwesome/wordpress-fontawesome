@@ -8,6 +8,11 @@ function currentTimeUnixEpochSeconds() {
 }
 
 export function prepareAccessTokenGetter(restApiNamespace) {
+  // It's more secure to store the accessToken here in JavaScript memory, rather
+  // than somewhere like localStorage that might be accessed by other scripts.
+  // It'll only be stored here as long as this JavaScript module is in memory.
+  // Thus, it'll be re-fetched from the WordPress REST /api/token endpoint on each
+  // page load.
   let accessToken;
   let accessTokenExpiresAt;
 
@@ -23,6 +28,11 @@ export function prepareAccessTokenGetter(restApiNamespace) {
 
   return async () => {
     if (!accessToken || !accessTokenExpiresAt || shouldRefresh()) {
+      // This request does not necessarily refresh the access token with the Font Awesome API.
+      // It simply requests a current access token from this plugin's /api/token REST
+      // endpoint on the WordPress server.
+      // It's the responsibility of the controller on that REST endpoint to handle any
+      // refreshing that may be required.
       const accessTokenResponse = await apiFetch({
         path: `${restApiNamespace}/api/token`,
         method: "GET",
