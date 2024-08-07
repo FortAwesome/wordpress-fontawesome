@@ -194,8 +194,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 			$expires_at   = fa_api_settings()->access_token_expiration_time();
 
 			if ( ! boolval( $access_token ) || ! boolval( $expires_at ) ) {
-				// TODO: make a real error response.
-				return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( 'could not get an access token' ), 500 );
+				throw new NoAccessTokenException();
 			}
 
 			$response_body = array(

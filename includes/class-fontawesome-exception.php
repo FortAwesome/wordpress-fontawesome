@@ -256,6 +256,33 @@ class AccessTokenStorageException extends FontAwesome_ServerException {
 }
 
 /**
+ * Thrown when an access token is requested from this plugin's REST API, but no access token
+ * be retrieved. This probably indicates some invalid state condition or programming error in
+ * this plugin's server-side, rather than a problem with communicating with the Font Awesome API
+ * service.
+ *
+ * @since 5.0.0
+ */
+class NoAccessTokenException extends FontAwesome_ServerException {
+	/**
+	 * Internal use only.
+	 *
+	 * @ignore
+	 * @internal
+	 */
+	public function __construct( $message = null, $code = 0, $previous = null ) {
+		parent::__construct(
+			esc_html__(
+				'The requested access token could not be retrieved.',
+				'font-awesome'
+			),
+			$code,
+			$previous
+		);
+	}
+}
+
+/**
  * Thrown when an options configuration is attempted that does not pass validation.
  *
  * @since 4.0.0
