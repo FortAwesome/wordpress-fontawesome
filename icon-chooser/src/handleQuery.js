@@ -1,77 +1,116 @@
-import apiFetch from '@wordpress/api-fetch'
-import md5 from 'blueimp-md5'
-import { __ } from '@wordpress/i18n'
-import * as queryCache from '../../admin/src/queryCache'
+import apiFetch from "@wordpress/api-fetch";
+import md5 from "blueimp-md5";
+import { __ } from "@wordpress/i18n";
+import * as queryCache from "../../admin/src/queryCache";
 
-let accessToken;
+const ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS = 60;
 
-const configureQueryHandler = params => async (query, variables, options) => {
-  try {
-    const { faApiUrl, apiNonce, rootUrl, restApiNamespace } = params
-
-    const cacheKey = `icon-chooser-${md5(`${query}${JSON.stringify(variables)}`)}`
-
-    const data = queryCache.get(cacheKey)
-
-    if (data) {
-      return data
-    }
-
-    // If apiFetch is from wp.apiFetch, it may already have RootURLMiddleware set up.
-    // If we're using the fallback (i.e. when running in the Classic Editor), then
-    // it doesn't yet have thr RootURLMiddleware.
-    // We want to guarantee that it's there, so we'll always add it.
-    // So what if it was already there? Experiment seems to have shown that this
-    // is idempotent. It doesn't seem to hurt to just do it again, so we will.
-    apiFetch.use(apiFetch.createRootURLMiddleware(rootUrl))
-
-    // We need the nonce to be set up because we're going to run our query through
-    // the API controller end point, which requires non-public authorization.
-    apiFetch.use(apiFetch.createNonceMiddleware(apiNonce))
-
-    const accessTokenResponse = await apiFetch({
-      path: `${restApiNamespace}/api/token`,
-      method: 'GET'
-    })
-
-    accessToken = accessTokenResponse?.access_token
-
-    if (!accessToken) {
-      const error = __('Font Awesome Icon Chooser could not get an access token from the WordPress server.', 'font-awesome')
-      console.error(error)
-      throw new Error(error)
-    }
-
-    const response = await fetch(
-      faApiUrl,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables })
-      }
-    )
-
-    if (!response.ok) {
-      const error = __('Font Awesome Icon Chooser received an error response from the Font Awesome API server. See developer console.', 'font-awesome')
-      console.error(error)
-      throw new Error(error)
-    }
-
-    const responseBody = await response.json()
-    const hasErrors = Array.isArray(responseBody?.errors) && responseBody.errors.length > 0
-
-    if (options?.cache && !hasErrors) {
-      queryCache.set(cacheKey, responseBody)
-    }
-
-    return responseBody
-  } catch (error) {
-    console.error('CAUGHT:', error)
-    throw new Error(error)
-  }
+function currentTimeUnixEpochSeconds() {
+  return Math.floor(Date.now() / 1000);
 }
 
-export default configureQueryHandler
+const configureQueryHandler = (params) => {
+  const restApiNamespace = params?.restApiNamespace;
+
+  const getAccessToken = (() => {
+    let accessToken;
+    let accessTokenExpiresAt;
+
+    const shouldRefresh = () => {
+      if (!accessToken) return true;
+      if (!Number.isFinite(accessTokenExpiresAt)) return true;
+
+      const remainingSeconds =
+        accessTokenExpiresAt - currentTimeUnixEpochSeconds();
+
+      return remainingSeconds <= ACCESS_TOKEN_REFRESH_THRESHOLD_SECONDS;
+    };
+
+    return async () => {
+      if (!accessToken || !accessTokenExpiresAt || shouldRefresh()) {
+        console.log("WILL_REFRESH", accessToken, accessTokenExpiresAt);
+        const accessTokenResponse = await apiFetch({
+          path: `${restApiNamespace}/api/token`,
+          method: "GET",
+        });
+
+        accessToken = accessTokenResponse?.access_token;
+        accessTokenExpiresAt = accessTokenResponse?.expires_at;
+      }
+
+      if (!accessToken) {
+        const error = __(
+          "Font Awesome Icon Chooser could not get an access token from the WordPress server.",
+          "font-awesome",
+        );
+        console.error(error);
+        throw new Error(error);
+      }
+
+      return accessToken;
+    };
+  })();
+
+  return async (query, variables, options) => {
+    try {
+      const { faApiUrl, apiNonce, rootUrl } = params;
+
+      const cacheKey = `icon-chooser-${md5(
+        `${query}${JSON.stringify(variables)}`,
+      )}`;
+
+      const data = queryCache.get(cacheKey);
+
+      if (data) {
+        return data;
+      }
+
+      // If apiFetch is from wp.apiFetch, it may already have RootURLMiddleware set up.
+      // If we're using the fallback (i.e. when running in the Classic Editor), then
+      // it doesn't yet have thr RootURLMiddleware.
+      // We want to guarantee that it's there, so we'll always add it.
+      // So what if it was already there? Experiment seems to have shown that this
+      // is idempotent. It doesn't seem to hurt to just do it again, so we will.
+      apiFetch.use(apiFetch.createRootURLMiddleware(rootUrl));
+
+      // We need the nonce to be set up because we're going to run our query through
+      // the API controller end point, which requires non-public authorization.
+      apiFetch.use(apiFetch.createNonceMiddleware(apiNonce));
+
+      const accessToken = await getAccessToken();
+
+      const response = await fetch(faApiUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables }),
+      });
+
+      if (!response.ok) {
+        const error = __(
+          "Font Awesome Icon Chooser received an error response from the Font Awesome API server. See developer console.",
+          "font-awesome",
+        );
+        console.error(error);
+        throw new Error(error);
+      }
+
+      const responseBody = await response.json();
+      const hasErrors =
+        Array.isArray(responseBody?.errors) && responseBody.errors.length > 0;
+
+      if (options?.cache && !hasErrors) {
+        queryCache.set(cacheKey, responseBody);
+      }
+
+      return responseBody;
+    } catch (error) {
+      console.error("CAUGHT:", error);
+      throw new Error(error);
+    }
+  };
+};
+
+export default configureQueryHandler;
