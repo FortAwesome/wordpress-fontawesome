@@ -1677,23 +1677,6 @@ class FontAwesome {
 								99
 							);
 
-							/**
-							 * "Fires immediately before the TinyMCE settings are printed."
-							 * See: https://developer.wordpress.org/reference/hooks/before_wp_tiny_mce/
-							 *
-							 * This container div must already be available to our setup script.
-							 * It will be if it's already there prior to the editor's initialization.
-							 * And if it's printed before the editor's settings are printed, then
-							 * it's guaranteed to be present before the editor's initialization.
-							 */
-							add_action(
-								'before_wp_tiny_mce',
-								function () {
-									printf( '<div id="font-awesome-icon-chooser-container"></div>' );
-								},
-								99
-							);
-
 							add_filter(
 								'tiny_mce_before_init',
 								function ( $mce_init ) {
