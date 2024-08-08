@@ -10,10 +10,10 @@ import { faDotCircle, faSpinner, faCheck, faSkull } from '@fortawesome/free-soli
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import classnames from 'classnames'
 import styles from './SettingsTab.module.css'
-import has from 'lodash/has'
+import has from 'lodash-es/has'
+import size from 'lodash-es/size'
 import { addPendingOption, submitPendingOptions, chooseAwayFromKitConfig, chooseIntoKitConfig } from './store/actions'
 import CheckingOptionStatusIndicator from './CheckingOptionsStatusIndicator'
-import size from 'lodash/size'
 import { __ } from '@wordpress/i18n'
 
 export default function SettingsTab() {

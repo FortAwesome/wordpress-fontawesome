@@ -4,11 +4,11 @@ import { Button, Modal, Popover, ToolbarButton, ToolbarGroup } from '@wordpress/
 import { __ } from '@wordpress/i18n'
 import { create, insert, registerFormatType, useAnchor } from '@wordpress/rich-text'
 import { BlockControls } from '@wordpress/block-editor'
-import get from 'lodash/get'
-import size from 'lodash/size'
-import camelCase from 'lodash/camelCase'
-import kebabCase from 'lodash/kebabCase'
-import pick from 'lodash/pick'
+import get from 'lodash-es/get'
+import size from 'lodash-es/size'
+import camelCase from 'lodash-es/camelCase'
+import kebabCase from 'lodash-es/kebabCase'
+import pick from 'lodash-es/pick'
 import { faBrandIcon } from './icons'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
@@ -142,7 +142,7 @@ function deriveAttributes(value) {
 
     try {
       transform = JSON.parse(transformJSON)
-    } catch { }
+    } catch {}
 
     if ('object' === typeof transform) {
       iconLayer.transform = pick(transform, TRANSFORM_PROPS_ALLOWED)

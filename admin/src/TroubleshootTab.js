@@ -13,7 +13,7 @@ import {
 } from './store/actions'
 import { faCheck, faSkull, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import classnames from 'classnames'
-import size from 'lodash/size'
+import size from 'lodash-es/size'
 import { __ } from '@wordpress/i18n'
 
 export default function TroubleshootTab() {

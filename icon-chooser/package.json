@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "@fortawesome/fa-icon-chooser-react": "^0.8.0-1",
-    "blueimp-md5": "^2.19.0"
+    "blueimp-md5": "^2.19.0",
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@wordpress/scripts": "wp-6.5"

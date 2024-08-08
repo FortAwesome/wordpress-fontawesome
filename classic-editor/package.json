@@ -18,5 +18,8 @@
   "devDependencies": {
     "@wordpress/element": "wp-6.5",
     "@wordpress/scripts": "wp-6.5"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
   }
 }
