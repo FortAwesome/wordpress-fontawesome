@@ -6,6 +6,6 @@
   "indexer": {
     "exclude_patterns": ["**/wp-dist", "**/integrations/**/vendor"]
   },
-  "php_code_sniffer.enabled": true,
+  "php_code_sniffer.enabled": false,
   "php_code_sniffer.args": ["--standard=.phpcs.xml"]
 }
