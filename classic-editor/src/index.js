@@ -46,7 +46,12 @@ function newIconChooser(editor) {
 class FontAwesomeOfficialPlugin {
   constructor(editor, _url, _c) {
     editor.on('init', () => {
-      const button = document.querySelector('button.font-awesome-icon-chooser-media-button')
+      const button = document.querySelector(`#fawp-tinymce-${editor.id}`)
+
+      if (!button) {
+        console.error(__('Font Awesome Plugin: no Font Awesome media button found for TinyMCE editor id:', 'font-awesome'), editor.id)
+        return
+      }
 
       const openIconChooser = newIconChooser(editor)
 
