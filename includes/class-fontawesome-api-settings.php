@@ -310,7 +310,7 @@ class FontAwesome_API_Settings {
 	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
-     * Returns a current access_token, if available. Attempts to refresh an
+	 * Returns a current access_token, if available. Attempts to refresh an
 	 * access_token if the one we have is near or past expiration and if an api_token
 	 * is present.
 	 *
