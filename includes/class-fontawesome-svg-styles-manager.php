@@ -349,7 +349,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Current user lacks permissions required to set up asset self-hosting.',
+					'Current user lacks permissions required to set up asset self-hosting. Try logging in as an admin user.',
 					'font-awesome'
 				)
 			);
@@ -378,7 +378,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Failed to determine filesystem location for self-hosted asset.',
+					'Failed to determine filesystem location for self-hosted asset. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
 				)
 			);
@@ -393,7 +393,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! WP_Filesystem( false ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Failed to initialize filesystem usage for creating self-hosted assets.',
+					'Failed to initialize filesystem usage for creating self-hosted assets. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
 				)
 			);
@@ -411,7 +411,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! $resource->source() || ! $resource->integrity_key() ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Invalid metadata for self-hosted asset.',
+					'Invalid metadata for self-hosted asset. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
 				)
 			);
@@ -439,7 +439,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( false === $hyphen_pos ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Invalid integrity key metadata for a self-hosted asset.',
+					'Invalid integrity key metadata for a self-hosted asset. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
 				)
 			);
@@ -450,7 +450,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! in_array( $algo, hash_algos(), true ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'WordPress server does not support hash algorithm required securely fetch assets for self-hosting.',
+					'WordPress server\'s PHP environment does not support a hash algorithm required to securely fetch assets for self-hosting. Contact your WordPress server administrator.',
 					'font-awesome'
 				)
 			);
@@ -462,7 +462,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! $hash_bin ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Failed computing hash for self-hosted asset.',
+					'Failed computing hash for self-hosted asset. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
 				)
 			);
@@ -474,7 +474,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( "$algo-$hash" !== $resource->integrity_key() ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Asset integrity key does not match for self-hosted asset.',
+					'Asset integrity key does not match for self-hosted asset. Try removing your font_awesome_svg_styles_loading filter.',
 					'font-awesome'
 				)
 			);
@@ -483,7 +483,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! wp_mkdir_p( $asset_path['dir'] ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Failed creating a directory for self-hosted assets.',
+					'Failed creating a directory for self-hosted assets. Contact your WordPress server administrator.',
 					'font-awesome'
 				)
 			);
@@ -492,7 +492,7 @@ class FontAwesome_SVG_Styles_Manager {
 		if ( ! $wp_filesystem->put_contents( $full_asset_path, $response['body'] ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Failed creating self-hosted assets.',
+					'Failed creating self-hosted assets. Contact your WordPress server administrator.',
 					'font-awesome'
 				)
 			);
