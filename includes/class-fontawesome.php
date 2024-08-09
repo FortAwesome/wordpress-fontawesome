@@ -1802,7 +1802,7 @@ class FontAwesome {
 
 		$deps = array();
 
-		$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
+		$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch', 'lodash' ) );
 
 		/**
 		 * We don't need these Gutenberg dependencies unless we're on a Gutenberg

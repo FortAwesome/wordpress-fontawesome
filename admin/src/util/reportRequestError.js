@@ -1,6 +1,4 @@
-import get from 'lodash-es/get'
-import set from 'lodash-es/set'
-import size from 'lodash-es/size'
+import { get, set, size } from 'lodash'
 import { __ } from '@wordpress/i18n'
 
 export const ERROR_REPORT_PREAMBLE = __('Font Awesome WordPress Plugin Error Report', 'font-awesome')

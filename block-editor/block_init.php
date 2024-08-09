@@ -91,11 +91,15 @@ function block_init() {
 	 *     the `window.lodash  = _.noConflict()` is not duplicated, and thus the `_` global is not
 	 *     reset to `undefined`.
 	 *
-	 *     At the time of writing this plugin depends on neither the 'lodash' nor 'underscore' script
-	 *     handles. So it's not that this plugin load a conflicting version of lodash. It's that other
+	 *     At the time of writing, this plugin depended on neither the 'lodash' nor 'underscore' script
+	 *     handles. So wasn't that this plugin had loaded a conflicting version of lodash. It's that other
 	 *     code in WordPress core *does* load conflicting versions, and it depends on the proper functioning
 	 *     of `_.noConflict()` to resolve that. So we need to avoid running our code in such a way that causes
 	 *     the side effect of calling `_.noConflict()` twice.
+	 *
+	 *     (Since resolving this problem, this plugin *did* take a dependency on the 'lodash' version that
+	 *      ships with WordPress core, to eliminate the need for bundle it separately. It still has no
+	 *      direct or transitive dependencies on underscore--the older version of lodash).
 	 *
 	 *  2. We need these assets to be loaded for the block editor, on the back end only, never on
 	 *       frontend page loads. The docs indicate that we should prefer using `enqueue_block_assets`.
