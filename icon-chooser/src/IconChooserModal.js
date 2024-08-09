@@ -3,7 +3,7 @@ import { Modal } from "@wordpress/components";
 import { FaIconChooser } from "@fortawesome/fa-icon-chooser-react";
 import { __ } from "@wordpress/i18n";
 import { GLOBAL_KEY } from "../../admin/src/constants";
-import get from "lodash-es/get";
+import { get } from "lodash";
 const createInterpolateElement = get(window, [
   GLOBAL_KEY,
   "createInterpolateElement",

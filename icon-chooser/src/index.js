@@ -1,5 +1,4 @@
-import set from "lodash-es/set";
-import get from "lodash-es/get";
+import { set, get } from "lodash";
 import { GLOBAL_KEY } from "../../admin/src/constants";
 import prepareQueryHandler from "./handleQuery.js";
 import getUrlText from "./getUrlText.js";
