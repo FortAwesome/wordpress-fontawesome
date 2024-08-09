@@ -1,7 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { buildShortCodeFromIconChooserResult } from './shortcode'
-import get from 'lodash-es/get'
+import { get } from 'lodash'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import createCustomEvent from '../../block-editor/src/createCustomEvent'
 import { __ } from '@wordpress/i18n'
