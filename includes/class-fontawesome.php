@@ -1699,51 +1699,6 @@ class FontAwesome {
 							$this->common_data_for_js_bundle()
 						);
 					}
-
-					/**
-					 * There are some vendor dependencies in WP5 that create globals
-					 * as side effects. We might use those in our JS bundle and
-					 * we need to make sure that we don't accidently change the global
-					 * version that other themes or plugins might be depending upon.
-					 *
-					 * Here's the recommendation we're following here:
-					 * https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/
-					 */
-					$vendor_globals = array( '_', 'React', 'ReactDOM', 'moment' );
-
-					$originals_global = '__originalsBeforeFontAwesome';
-
-					$originals = array_map(
-						function ( $variable_name ) {
-							return "$variable_name: window.$variable_name";
-						},
-						$vendor_globals
-					);
-
-					$capture_vendor_global_originals_script = sprintf(
-						'window.%1$s = { %2$s }',
-						$originals_global,
-						implode( ',', $originals )
-					);
-
-					wp_add_inline_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						$capture_vendor_global_originals_script,
-						'before'
-					);
-
-					$original_restore_conditions = array_map(
-						function ( $variable_name ) {
-							return "if(window.__originalsBeforeFontAwesome.$variable_name){window.$variable_name = window.__originalsBeforeFontAwesome.$variable_name}";
-						},
-						$vendor_globals
-					);
-
-					wp_add_inline_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						implode( ' ', $original_restore_conditions ),
-						'after'
-					);
 				} catch ( Exception $e ) {
 					notify_admin_fatal_error( $e );
 				} catch ( Error $e ) {
