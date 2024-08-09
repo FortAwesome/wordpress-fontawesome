@@ -6,6 +6,7 @@ import { prepareAccessTokenGetter } from "./accessToken";
 
 const prepareQueryHandler = (params) => {
   const restApiNamespace = params?.restApiNamespace;
+  const usingKit = !!params?.kitToken;
   const getAccessToken = prepareAccessTokenGetter(restApiNamespace);
 
   return async (query, variables, options) => {
@@ -34,14 +35,18 @@ const prepareQueryHandler = (params) => {
       // the API controller end point, which requires non-public authorization.
       apiFetch.use(apiFetch.createNonceMiddleware(apiNonce));
 
-      const accessToken = await getAccessToken();
+      const headers = {
+        "content-type": "application/json",
+      };
+
+      if (usingKit) {
+        const accessToken = await getAccessToken();
+        headers.authorization = `Bearer ${accessToken}`;
+      }
 
       const response = await fetch(faApiUrl, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${accessToken}`,
-        },
+        headers,
         body: JSON.stringify({ query: query.replace(/\s+/g, " "), variables }),
       });
 
