@@ -1,12 +1,9 @@
 import axios from 'axios'
-import toPairs from 'lodash/toPairs'
-import size from 'lodash/size'
-import get from 'lodash/get'
-import find from 'lodash/find'
+import { toPairs, size, get, has, find } from 'lodash'
 import reportRequestError, { redactRequestData, redactHeaders } from '../util/reportRequestError'
 import { __ } from '@wordpress/i18n'
-import has from 'lodash/has'
 import sliceJson from '../util/sliceJson'
+import { clearQueryCache } from '../queryCache'
 
 const restApiAxios = axios.create()
 
@@ -393,6 +390,8 @@ export function queryKits() {
     const initialKitToken = get(options, 'kitToken', null)
 
     dispatch({ type: 'KITS_QUERY_START' })
+
+    clearQueryCache()
 
     const handleKitsQueryError = ({ uiMessage }) => {
       dispatch({

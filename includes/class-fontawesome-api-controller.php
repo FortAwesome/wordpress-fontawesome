@@ -8,7 +8,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
-use WP_REST_Controller, WP_Error, Error, Exception;
+use WP_REST_Controller, Error, Exception;
 
 /**
  * Controller class for the plugin's GraphQL API REST endpoint.
@@ -85,6 +85,8 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	/**
 	 * @ignore
 	 * @internal
+	 * @param string $plugin_slug
+	 * @param string $rest_namespace
 	 */
 	public function __construct( $plugin_slug, $rest_namespace ) {
 		$this->plugin_slug       = $plugin_slug;
@@ -98,7 +100,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 * @ignore
 	 */
-	public function register_routes() {
+	public function register_routes(): void {
 		$route_base = 'api';
 
 		register_rest_route(
@@ -145,7 +147,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return FontAwesome_REST_Response
 	 */
-	public function check_permission() {
+	public function check_permission(): bool {
 		return current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' );
 	}
 
@@ -159,7 +161,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return FontAwesome_REST_Response
 	 */
-	public function query( $request ) {
+	public function query( $request ): FontAwesome_REST_Response {
 		try {
 			$query_body = $this->get_query_body( $request );
 
@@ -186,14 +188,14 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 * @return FontAwesome_REST_Response
 	 */
-	public function provide_access_token() {
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
+	public function provide_access_token(): FontAwesome_REST_Response {
 		try {
 			$access_token = fa_api_settings()->current_access_token();
 			$expires_at   = fa_api_settings()->access_token_expiration_time();
 
 			if ( ! boolval( $access_token ) || ! boolval( $expires_at ) ) {
-				// TODO: make a real error response.
-				return new FontAwesome_REST_Response( wpe_fontawesome_server_exception( 'could not get an access token' ), 500 );
+				throw new NoAccessTokenException();
 			}
 
 			$response_body = array(
@@ -221,10 +223,14 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 * @ignore
 	 */
-	protected function metadata_provider() {
+	protected function metadata_provider(): FontAwesome_Metadata_Provider {
 		return $this->metadata_provider;
 	}
 
+	/**
+	 * @param mixed $request
+	 * @return string|array
+	 */
 	private function get_query_body( $request ) {
 		if ( $request->get_header( 'Content-Type' ) === 'application/json' ) {
 			return $request->get_json_params();

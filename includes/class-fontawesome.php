@@ -12,9 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Exception;
 use Error;
-use DateTime;
-use DateInterval;
-use DateTimeInterface;
 use DateTimeZone;
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
@@ -31,7 +28,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/is-gutenberg-page.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/block_init.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-icon-block-init.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
@@ -892,7 +889,7 @@ class FontAwesome {
 	 * @return string|null
 	 */
 	private function active_admin_tab() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) || empty( $_REQUEST[ self::ADMIN_TAB_QUERY_VAR ] ) ) {
 			return null;
 		}
@@ -1247,10 +1244,10 @@ class FontAwesome {
 		try {
 			do_action( 'font_awesome_preferences' );
 		} catch ( Exception $e ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw PreferenceRegistrationException::with_thrown( $e );
 		} catch ( Error $e ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw PreferenceRegistrationException::with_thrown( $e );
 		}
 	}
@@ -1654,44 +1651,33 @@ class FontAwesome {
 						 */
 						if ( ! is_gutenberg_page() ) {
 							// These are needed for the Tiny MCE Classic Editor.
-							add_filter('tiny_mce_plugins', function ($plugins) {
-								wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
-								// Required for styling the icon chooser in the Classic Editor.
-								wp_enqueue_style( 'wp-components' );
-								return $plugins;
-							});
+							add_filter(
+								'tiny_mce_plugins',
+								function ( $plugins ) {
+									wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
+									// Required for styling the icon chooser in the Classic Editor.
+									wp_enqueue_style( 'wp-components' );
+									return $plugins;
+								}
+							);
 
 							add_action(
 								'media_buttons',
-								function () {
+								function ( $editor_id ) {
 									printf(
-										/* translators: 1: open button tag and icon tag 2: close button tag */
+										/* translators: 1: open button tag, 2: editor id, 3: remaining button tag open and icon svg tag, 4: close button tag */
 										esc_html__(
-											'%1$sAdd Font Awesome%2$s',
+											'%1$s%2$s%3$sAdd Font Awesome%4$s',
 											'font-awesome'
 										),
-										'<button type="button" class="button font-awesome-icon-chooser-media-button"><svg xmlns="http://www.w3.org/2000/svg" style="height: 1em; box-sizing: content-box; display: inline-block; vertical-align: -.125em;" viewBox="0 0 512 512"><path fill="currentColor" d="M91.7 96C106.3 86.8 116 70.5 116 52C116 23.3 92.7 0 64 0S12 23.3 12 52c0 16.7 7.8 31.5 20 41l0 3 0 352 0 64 64 0 0-64 373.6 0c14.6 0 26.4-11.8 26.4-26.4c0-3.7-.8-7.3-2.3-10.7L432 272l61.7-138.9c1.5-3.4 2.3-7 2.3-10.7c0-14.6-11.8-26.4-26.4-26.4L91.7 96z"/></svg> ',
+										'<button type="button" id="fawp-tinymce-',
+										esc_html( $editor_id ),
+										'" class="button font-awesome-icon-chooser-media-button"><svg xmlns="http://www.w3.org/2000/svg" style="height: 1em; box-sizing: content-box; display: inline-block; vertical-align: -.125em;" viewBox="0 0 512 512"><path fill="currentColor" d="M91.7 96C106.3 86.8 116 70.5 116 52C116 23.3 92.7 0 64 0S12 23.3 12 52c0 16.7 7.8 31.5 20 41l0 3 0 352 0 64 64 0 0-64 373.6 0c14.6 0 26.4-11.8 26.4-26.4c0-3.7-.8-7.3-2.3-10.7L432 272l61.7-138.9c1.5-3.4 2.3-7 2.3-10.7c0-14.6-11.8-26.4-26.4-26.4L91.7 96z"/></svg> ',
 										'</button>'
 									);
 								},
-								99
-							);
-
-							/**
-							 * "Fires immediately before the TinyMCE settings are printed."
-							 * See: https://developer.wordpress.org/reference/hooks/before_wp_tiny_mce/
-							 *
-							 * This container div must already be available to our setup script.
-							 * It will be if it's already there prior to the editor's initialization.
-							 * And if it's printed before the editor's settings are printed, then
-							 * it's guaranteed to be present before the editor's initialization.
-							 */
-							add_action(
-								'before_wp_tiny_mce',
-								function () {
-									printf( '<div id="font-awesome-icon-chooser-container"></div>' );
-								},
-								99
+								99,
+								1
 							);
 
 							add_filter(
@@ -1713,51 +1699,6 @@ class FontAwesome {
 							$this->common_data_for_js_bundle()
 						);
 					}
-
-					/**
-					 * There are some vendor dependencies in WP5 that create globals
-					 * as side effects. We might use those in our JS bundle and
-					 * we need to make sure that we don't accidently change the global
-					 * version that other themes or plugins might be depending upon.
-					 *
-					 * Here's the recommendation we're following here:
-					 * https://make.wordpress.org/core/2018/12/06/javascript-packages-and-interoperability-in-5-0-and-beyond/
-					 */
-					$vendor_globals = array( '_', 'React', 'ReactDOM', 'moment' );
-
-					$originals_global = '__originalsBeforeFontAwesome';
-
-					$originals = array_map(
-						function ( $variable_name ) {
-							return "$variable_name: window.$variable_name";
-						},
-						$vendor_globals
-					);
-
-					$capture_vendor_global_originals_script = sprintf(
-						'window.%1$s = { %2$s }',
-						$originals_global,
-						implode( ',', $originals )
-					);
-
-					wp_add_inline_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						$capture_vendor_global_originals_script,
-						'before'
-					);
-
-					$original_restore_conditions = array_map(
-						function ( $variable_name ) {
-							return "if(window.__originalsBeforeFontAwesome.$variable_name){window.$variable_name = window.__originalsBeforeFontAwesome.$variable_name}";
-						},
-						$vendor_globals
-					);
-
-					wp_add_inline_script(
-						self::ADMIN_RESOURCE_HANDLE,
-						implode( ' ', $original_restore_conditions ),
-						'after'
-					);
 				} catch ( Exception $e ) {
 					notify_admin_fatal_error( $e );
 				} catch ( Error $e ) {
@@ -1816,7 +1757,7 @@ class FontAwesome {
 
 		$deps = array();
 
-		$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch' ) );
+		$deps = array_merge( $deps, array( 'react', 'react-dom', 'wp-i18n', 'wp-element', 'wp-components', 'wp-api-fetch', 'lodash' ) );
 
 		/**
 		 * We don't need these Gutenberg dependencies unless we're on a Gutenberg
@@ -1848,6 +1789,7 @@ class FontAwesome {
 		return array(
 			'apiNonce'                      => wp_create_nonce( 'wp_rest' ),
 			'apiUrl'                        => rest_url( self::REST_API_NAMESPACE ),
+			'faApiUrl'                      => FONTAWESOME_API_URL,
 			'restApiNamespace'              => self::REST_API_NAMESPACE,
 			'rootUrl'                       => rest_url(),
 			'detectConflictsUntil'          => $this->detect_conflicts_until(),
@@ -1856,7 +1798,7 @@ class FontAwesome {
 			'settingsPageUrl'               => $this->settings_page_url(),
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
-			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/'
+			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
 		);
 	}
 
@@ -1888,7 +1830,7 @@ class FontAwesome {
 							FontAwesome::RESOURCE_HANDLE,
 							trailingslashit( FONTAWESOME_KIT_LOADER_BASE_URL ) . $kit_token . '.js',
 							array(),
-							// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+                            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 							null,
 							false
 						);
@@ -3093,7 +3035,7 @@ EOT;
 					FontAwesome::RESOURCE_HANDLE_CONFLICT_DETECTOR,
 					FontAwesome::CONFLICT_DETECTOR_SOURCE,
 					array( FontAwesome::ADMIN_RESOURCE_HANDLE ),
-					// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+                    // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 					null,
 					true
 				);

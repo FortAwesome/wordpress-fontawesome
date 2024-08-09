@@ -1,6 +1,5 @@
 import { createStore } from './store'
-import get from 'lodash/get'
-import set from 'lodash/set'
+import { get, set } from 'lodash'
 import { GLOBAL_KEY } from './constants'
 import createInterpolateElement from './createInterpolateElement'
 import { __ } from '@wordpress/i18n'

@@ -22,3 +22,4 @@ admin/artifacts/
 admin/test-results/
 .npmrc
 .php-cs-fixer.cache
+.zed/

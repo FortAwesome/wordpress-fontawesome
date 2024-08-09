@@ -1,6 +1,4 @@
-import size from 'lodash/size'
-import omit from 'lodash/omit'
-import get from 'lodash/get'
+import { size, omit, get } from 'lodash'
 import { combineReducers } from 'redux'
 
 export const ADMIN_TAB_SETTINGS = 'ADMIN_TAB_SETTINGS'
@@ -415,6 +413,7 @@ export default combineReducers({
   activeAdminTab,
   apiNonce: simple,
   apiUrl: simple,
+  faApiUrl: simple,
   blocklistUpdateStatus,
   clientPreferences: coerceEmptyArrayToEmptyObject,
   conflictDetectionScannerStatus,

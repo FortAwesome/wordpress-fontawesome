@@ -9,7 +9,7 @@ import styles from './KitSelectView.module.css'
 import sharedStyles from './App.module.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import size from 'lodash/size'
+import { size } from 'lodash'
 import { sprintf, __ } from '@wordpress/i18n'
 
 export default function KitSelectView({ useOption, masterSubmitButtonShowing, setMasterSubmitButtonShowing }) {

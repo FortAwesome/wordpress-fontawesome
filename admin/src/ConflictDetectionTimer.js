@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector, useDispatch } from 'react-redux'
 import sharedStyles from './App.module.css'
-import padStart from 'lodash/padStart'
-import dropWhile from 'lodash/dropWhile'
+import { padStart, dropWhile } from 'lodash'
 import { __, sprintf } from '@wordpress/i18n'
 
 const SECONDS_PER_DAY = 60 * 60 * 24
