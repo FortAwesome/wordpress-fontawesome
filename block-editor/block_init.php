@@ -13,26 +13,69 @@ function block_init() {
 		return;
 	}
 
-	// We need to register the block-editor script explicitly here, instead of
-	// just relying on `register_block_type` because we need to add some dependencies.
-	wp_register_script(
-		'font-awesome-block-editor',
-		trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.js',
-		array(
-			FontAwesome::ADMIN_RESOURCE_HANDLE,
-			FontAwesome::RESOURCE_HANDLE_ICON_CHOOSER,
-		),
-		FontAwesome::PLUGIN_VERSION
-	);
+	add_action('enqueue_block_editor_assets', function() {
+	    /**
+		 *	We need to register the block-editor script explicitly here, instead of
+		 *	just relying on `register_block_type` because we need to add some dependencies.
+		 *  Thus, our block.json does not express its "editorScript" as something like "file:./index.js",
+		 *  it will reference the resource handle used in this registration, like: "font-awesome-block-editor".
+		 *
+		 *  It's also important that it happens on the `enqueue_block_editor_assets` action, because:
+		 *
+		 *  1. otherwise, it would happen on the `init` hook, and apparently this always triggers `wp_default_packages_vendor`
+		 *	   in WordPress core wp-includes/script-loader.php to run, and when it does, if there are
+		 *     any `lodash` dependencies, it adds a duplicate inline `after` script like this:
+		 *     ```
+		 *     window.lodash = _.noConflict()
+		 *     window.lodash = _.noConflict()
+		 *	   ```
+		 *
+		 *     This is not idempotent: so calling it twice has the effect of making the global `_` undefined,
+		 *     which breaks other scripts that depend on the global `_`.
+		 *
+		 *     By invoking `wp_register_script()` within the `enqueue_block_editor_assets` hook,
+		 *     that `wp_default_packages_vendor` function doesn't get called a second time, and thus,
+		 *     the `window.lodash  = _.noConflict()` is not duplicated, and thus the `_` global is not
+		 *     reset to `undefined`.
+		 *
+		 *     At the time of writing this plugin depends on neither the 'lodash' nor 'underscore' script
+		 *     handles. So it's not that this plugin load a conflicting version of lodash. It's that other
+		 *     code in WordPress core *does* load conflicting versions, and it depends on the proper functioning
+		 *     of `_.noConflict()` to resolve that. So we need to avoid running our code in such a way that causes
+		 *     the side effect of calling `_.noConflict()` twice.
+		 *
+		 *  2. We need these assets to be loaded for the block editor, on the back end only, never on
+		 *	   frontend page loads. The docs indicate that we should prefer using `enqueue_block_assets`.
+		 *     However, since this plugin needs to be compatible with WordPress earlier than 6.3, we can't,
+		 *     because it was only in WP 6.3 that assets enqueued under `enqueue_block_assets` would be
+		 *     added to the editor content iframe as well as outside the iframe. So we need to continue
+		 *     using the older hook. It's no big deal, though, since--for our plugin--the older mechanism
+		 *     happens to accomplish exactly what we want:
+		 *     (a) load the assets in the editor UI, and
+		 *	   (b) load them inside the editor's content iframe,
+		 *     (c) but only load them there on the back end, never on the front end.
+		 *
+		 *     https://developer.wordpress.org/block-editor/how-to-guides/enqueueing-assets-in-the-editor/
+		 */
+    	wp_register_script(
+    		'font-awesome-block-editor',
+    		trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.js',
+    		array(
+    			FontAwesome::ADMIN_RESOURCE_HANDLE,
+    			FontAwesome::RESOURCE_HANDLE_ICON_CHOOSER,
+    		),
+    		FontAwesome::PLUGIN_VERSION
+    	);
 
-	wp_register_style(
-		'font-awesome-block-editor',
-		trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.css',
-		array(
-			FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES
-		),
-		FontAwesome::PLUGIN_VERSION
-	);
+        wp_register_style(
+    		'font-awesome-block-editor',
+    		trailingslashit(FONTAWESOME_DIR_URL) . 'block-editor/build/index.css',
+    		array(
+    			FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES
+    		),
+    		FontAwesome::PLUGIN_VERSION
+    	);
+	});
 
 	/* This is to ensure that even when a webfont/css stylesheet is loaded at
      * the same time as we have inline SVGs in the page, the icon classes
@@ -52,7 +95,7 @@ EOT;
 
 	/* This is to ensure that the size of SVGs in the block editor content iframe
 	 * don't flash HUGE before the SVG stylesheet is loaded. We'll hook an inline
-	 * style onto an early-loaded stylesheet 
+	 * style onto an early-loaded stylesheet
 	 */
 	$editor_inline_style = <<< EOT
 .wp-block-font-awesome-icon svg,
