@@ -188,6 +188,7 @@ class FontAwesome_API_Controller extends WP_REST_Controller {
 	 * @internal
 	 * @return FontAwesome_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.Missing
 	public function provide_access_token(): FontAwesome_REST_Response {
 		try {
 			$access_token = fa_api_settings()->current_access_token();

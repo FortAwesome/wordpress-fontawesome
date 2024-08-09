@@ -28,7 +28,7 @@ require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontaweso
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/is-gutenberg-page.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/block_init.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-icon-block-init.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
@@ -1671,7 +1671,7 @@ class FontAwesome {
 											'font-awesome'
 										),
 										'<button type="button" id="fawp-tinymce-',
-										$editor_id,
+										esc_html( $editor_id ),
 										'" class="button font-awesome-icon-chooser-media-button"><svg xmlns="http://www.w3.org/2000/svg" style="height: 1em; box-sizing: content-box; display: inline-block; vertical-align: -.125em;" viewBox="0 0 512 512"><path fill="currentColor" d="M91.7 96C106.3 86.8 116 70.5 116 52C116 23.3 92.7 0 64 0S12 23.3 12 52c0 16.7 7.8 31.5 20 41l0 3 0 352 0 64 64 0 0-64 373.6 0c14.6 0 26.4-11.8 26.4-26.4c0-3.7-.8-7.3-2.3-10.7L432 272l61.7-138.9c1.5-3.4 2.3-7 2.3-10.7c0-14.6-11.8-26.4-26.4-26.4L91.7 96z"/></svg> ',
 										'</button>'
 									);

@@ -449,10 +449,13 @@ class FontAwesome_SVG_Styles_Manager {
 
 		if ( ! in_array( $algo, hash_algos(), true ) ) {
 			throw new SelfhostSetupException(
-				/* translators: 1: hash algorithm name */
 				sprintf(
-					__( 'Your WordPress server\'s PHP environment does not support the %s hash algorithm required to securely fetch assets for self-hosting. Contact your WordPress server administrator.', 'font-awesome' ),
-					$algo
+					/* translators: 1: hash algorithm name */
+					esc_html__(
+						'Your WordPress server\'s PHP environment does not support the %s hash algorithm required to securely fetch assets for self-hosting. Contact your WordPress server administrator.',
+						'font-awesome'
+					),
+					esc_html( $algo )
 				)
 			);
 		}
