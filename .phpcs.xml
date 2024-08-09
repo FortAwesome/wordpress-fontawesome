@@ -21,6 +21,7 @@
 	<file>font-awesome.php</file>
   -->
 	<file>font-awesome-init.php</file>
+	<file>block-editor/block_init.php</file>
 	<file>index.php</file>
 	<file>defines.php</file>
 	<file>admin/index.php</file>
