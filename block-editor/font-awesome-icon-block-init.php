@@ -23,7 +23,8 @@ function enqueue_font_awesome_block_editor_assets() {
 			FontAwesome::ADMIN_RESOURCE_HANDLE,
 			FontAwesome::RESOURCE_HANDLE_ICON_CHOOSER,
 		),
-		FontAwesome::PLUGIN_VERSION
+		FontAwesome::PLUGIN_VERSION,
+		array( 'in_footer' => false )
 	);
 
 	wp_register_style(
