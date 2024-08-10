@@ -1,5 +1,5 @@
-import get from 'lodash-es/get'
-import set from 'lodash-es/set'
+const get = require('lodash/get')
+const set = require('lodash/set')
 
 // NOTE: the Jest docs on manual mocks indicate that mocks for things under
 // node_modules should be in a __mocks__ directory that is adjacent to node_modules.
