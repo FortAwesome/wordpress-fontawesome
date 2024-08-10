@@ -13,7 +13,7 @@ rcp($plugin_dir . '/includes', $dist_dir . '/includes');
 
 $js_bundles = [
   'admin' => ['build', 'views', 'index.php'],
-  'block-editor' => ['build', 'block_init.php'],
+  'block-editor' => ['build', 'font-awesome-icon-block-init.php'],
   'classic-editor' => ['build'],
   'icon-chooser' => ['build']
 ];
