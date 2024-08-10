@@ -6,7 +6,6 @@ import { __ } from '@wordpress/i18n'
 
 const initialData = window[GLOBAL_KEY]
 // See: https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = get(initialData, 'webpackPublicPath')
 const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport'
 /**
  * This will start out as falsy, when there's a report, we'll set it with those
