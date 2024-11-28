@@ -309,8 +309,16 @@ class FontAwesome_SVG_Styles_Manager {
 			'style_loader_tag',
 			function ( $html, $handle ) use ( $integrity_key, $load_mode ) {
 				if ( in_array( $handle, array( self::RESOURCE_HANDLE_SVG_STYLES ), true ) ) {
-					$crossorigin_attr = 'selfhost' === $load_mode
-					? '' : ' crossorigin="anonymous"';
+					if ( 'selfhost' === $load_mode ) {
+						/**
+						 * If self-hosting:
+						 * - do not add the integrity key because it may conflict with CSS bundling optimizations.
+						 * - do not add crossorigin because it is not needed for same-origin stylesheets.
+						 */
+						return $html;
+					}
+
+					$crossorigin_attr = ' crossorigin="anonymous"';
 
 					$integrity_attr = "integrity=\"$integrity_key\"";
 
