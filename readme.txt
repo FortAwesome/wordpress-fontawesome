@@ -3,7 +3,7 @@ Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.5.0
 Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
 Requires at least: 4.7
-Tested up to: 6.6
+Tested up to: 6.7.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -33,9 +33,9 @@ Our official plugin lets you use Font Awesome the way you want:
 (See the Installation tab for details)
 
 **Add icons to your pages and posts**
-Adding icons works in both the block editor and the classic editor. 
+Adding icons works in both the block editor and the classic editor.
 
-Once you’ve set up your plugin, you can search and add icons to your pages and posts by choosing the Font Awesome option in the format bar from any text block to open the Icon Chooser. (If you want to search and add Pro icons in the Icon Chooser, you'll need to use a Pro Kit.) 
+Once you’ve set up your plugin, you can search and add icons to your pages and posts by choosing the Font Awesome option in the format bar from any text block to open the Icon Chooser. (If you want to search and add Pro icons in the Icon Chooser, you'll need to use a Pro Kit.)
 
 Or you can [use the icon names in shortcodes or HTML](https://fontawesome.com/icons?d=gallery). When you use shortcodes, you add the name of the icon and a prefix, where [the prefix is the style of icon](https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use) you want to use. Note that you don’t need to include the `fa-` part of the name. And if you don’t include any prefix, the icon will default to the Solid style.
 
@@ -53,9 +53,9 @@ You can also use basic HTML with [standard Font Awesome syntax](https://fontawes
 
 
 **Using Pro Icons and Features**
-To use a Kit, create a [Kit on FontAwesome.com](https://fontawesome.com/kits) and select "Pro icons" in the settings. Then grab your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens) to add into the WordPress Kit settings. 
+To use a Kit, create a [Kit on FontAwesome.com](https://fontawesome.com/kits) and select "Pro icons" in the settings. Then grab your [API Token from your Font Awesome account page](https://fontawesome.com/account#api-tokens) to add into the WordPress Kit settings.
 
-To add Pro icons with the CDN, you'll need to add your domain to the list allowed domains on your [Font Awesome account CDN Settings page](https://fontawesome.com/account/cdn) and use shortcodes or HTML to add the icons into your content. 
+To add Pro icons with the CDN, you'll need to add your domain to the list allowed domains on your [Font Awesome account CDN Settings page](https://fontawesome.com/account/cdn) and use shortcodes or HTML to add the icons into your content.
 
 If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can only search and add Free icons - use shortcodes or HTML to add Pro icons when using the CDN).
 
@@ -290,7 +290,7 @@ You can get more information about all the available settings and troubleshootin
   disabled. Everything else works as before in WP4, just not the new Icon Chooser.
 
 = 4.0.0 =
-* OFFICIAL 4.0.0 STABLE RELEASE 
+* OFFICIAL 4.0.0 STABLE RELEASE
 * FEATURES: Includes all the features from the early 4.0.0 release candidates (details below)
 * FEATURE: Visual icon chooser lets you search and easily insert the correct shortcode.
 * Fixed regression on overriding global lodash version.
@@ -456,4 +456,3 @@ You can get more information about all the available settings and troubleshootin
 = 3.2.1 =
 
 * Last stable version of the old plugin
-
