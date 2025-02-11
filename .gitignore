@@ -20,3 +20,7 @@ webpack-stats.json
 admin/src/playwright/.auth/
 admin/artifacts/
 admin/test-results/
+.npmrc
+.php-cs-fixer.cache
+.zed/
+.phpactor.json
