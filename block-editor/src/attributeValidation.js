@@ -1,5 +1,6 @@
 import { computeIconLayerCount } from './rendering'
 import { normalizeIconDefinition } from './iconDefinitions'
+import { __ } from '@wordpress/i18n'
 
 export function filterSelectionEvent(selectionEvent) {
   if (!selectionEvent.detail) {
