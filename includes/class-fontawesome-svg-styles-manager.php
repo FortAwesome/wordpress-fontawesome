@@ -49,53 +49,6 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
-	 * Indicates whether to enqueue the kit.
-	 *
-	 * Internal use only, not part of the plugin's public API.
-	 *
-	 * However, this depends on the `font_awesome_skip_enqueue_kit` filter
-	 * which is part of the public API.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public function skip_enqueue_kit() {
-		/**
-		 * Determines whether to skip the kit enqueue.
-		 *
-		 * When the plugin is configured to use a kit, the normal behavior is
-		 * to use `wp_enqueue_script()` to enqueue the kit's embed code, a JavaScript
-		 * loaded from the Font Awesome Kits CDN. The kit being loaded on front end page
-		 * renderings enables rendering `<i>` tags, for example, as Font Awesome icons.
-		 *
-		 * By setting this to `true`, that `wp_enqueue_script()` will be skipped. Thus, the
-		 * kit will not be loaded from the Font Awesome CDN on front end page loads. As a
-		 * consequence, this plugin will not render `<i>` tags as Font Awesome icons.
-		 *
-		 * You may prefer to skip loading the kit if:
-		 *
-		 * 1. You only use the block editor.
-		 *
-		 * As of version 5.0.0 of this plugin, icons are added in the
-		 * block editor as `<svg>` elements and require no further rendering like `<i>` tags.
-		 *
-		 * 2. You want to avoid using a CDN for front end page loads.
-		 *
-		 * If you want to avoid using the CDN for front end page loads, you should also use the
-		 * `font_awesome_svg_styles_loading` filter and return a value of "selfhost" in order
-		 * to fetch and selfhost the support styles for those SVGs inserted in the block editor.
-		 *
-		 * Even when disabling the use of CDN for front end page loads, the back end still uses the CDN
-		 * for editing content.
-		 *
-		 * Default: false (that is, by default, enqueue the kit to be loaded from the CDN)
-		 *
-		 * @since 5.0.0
-		 */
-		return apply_filters( 'font_awesome_skip_enqueue_kit', false );
-	}
-
-	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * The asset path on the server's filesystem, where the svg support stylesheet
