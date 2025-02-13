@@ -391,7 +391,7 @@ class FontAwesome {
 				array( $this, 'process_shortcode' )
 			);
 
-			FontAwesome_SVG_Styles_Manager::instance()->register_svg_styles( $this, $this->release_provider() );
+			FontAwesome_SVG_Styles_Manager::instance()->register_svg_styles( $this );
 
 			block_init();
 
@@ -416,14 +416,12 @@ class FontAwesome {
 
 			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::instance()->skip_enqueue_kit();
 
-			if ( $this->technology() === 'webfont' || $skip_enqueue_kit ) {
-				add_action(
-					'enqueue_block_assets',
-					function () {
-						wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
-					}
-				);
-			}
+			add_action(
+				'enqueue_block_assets',
+				function () {
+					wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+				}
+			);
 
 			if ( $this->using_kit() ) {
 				if ( $skip_enqueue_kit ) {

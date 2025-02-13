@@ -135,7 +135,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 				$db_item
 			);
 
-			FontAwesome_SVG_Styles_Manager::instance()->maybe_setup_selfhosting( fa(), $this->release_provider() );
+			FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles( fa(), $this->release_provider() );
 
 			$return_data = $this->build_item( fa() );
 			return new FontAwesome_REST_Response( $return_data, 200 );

@@ -44,7 +44,7 @@ class ConfigControllerTest extends TestCase
         mock_singleton_method(
             $this,
             FontAwesome_SVG_Styles_Manager::class,
-            'maybe_setup_selfhosting',
+            'fetch_svg_styles',
             function ($method) {
                 $method->willReturn(null);
             }

@@ -96,85 +96,6 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
-	 * Internal use only. This is not part of the plugin's public API.
-	 *
-	 * However, this relies on the `font_awesome_svg_styles_loading` filter,
-	 * which *is* part of the public API.
-	 *
-	 * @internal
-	 * @ignore
-	 * @param $fa FontAwesome
-	 * @return string | false
-	 */
-	public function additional_svg_styles_loading( $fa ) {
-		$tech             = $fa->technology();
-		$using_kit        = $fa->using_kit();
-		$skip_enqueue_kit = $this->skip_enqueue_kit();
-
-		// Initial setting.
-		if ( 'webfont' === $tech ) {
-			$load_mode = 'cdn';
-		} elseif ( $using_kit && $skip_enqueue_kit ) {
-			/*
-			 * When using an SVG kit, and not enqueuing it on the front end,
-			 * this implies that supporting styles should also not use the CDN.
-			 */
-			$load_mode = 'selfhost';
-		} else {
-			$load_mode = false;
-		}
-
-		/**
-		 * Determine whether and how to enqueue the SVG support styles asset.
-		 *
-		 * As of plugin version 4.5.0, the SVG support styles are required to
-		 * support the SVG icons added using the icon chooser.
-		 *
-		 * When using SVG tech, either with a kit or the legacy CDN, it's not
-		 * necessary to enqueue this *additional* stylesheet, because the SVG
-		 * tech's JavaScript automatically injects the support styles into the
-		 * DOM when loaded in the browser.
-		 *
-		 * However, the `font_awesome_skip_enqueue_kit` filter might be used to
-		 * disable the loading of the kit on the front end, in order not to use
-		 * a CDN, for example.
-		 *
-		 * For such cases, where there will be no automatic injection of the
-		 * SVG support styles into the DOM, this additional stylesheet can be
-		 * enqueued separately.
-		 *
-		 * It can be loaded from either CDN, or retrieved and stored on the
-		 * WordPress server for self-hosting.
-		 *
-		 * The first filter argument is either "cdn" or "selfhost", the current value
-		 * for `font_awesome_svg_styles_loading`.
-		 *
-		 * The second filter argument is an associative array with the following keys:
-		 * - `using_kit`: boolean, whether the plugin is configured to use a kit.
-		 * - `tech`: string, either "svg" or "webfont".
-		 * - `skip_enqueue_kit`: boolean, whether the kit's enqueue is being skipped.
-		 *
-		 * Valid return values:
-		 *
-		 * - `false`: no additional support styles will be enqueued.
-		 * - "cdn": enqueue the additional support styles from the Font Awesome CDN.
-		 * - "selfhost": retrieve the additional stylesheet and store it on the WordPress
-		 *   server for self-hosting.
-		 *
-		 * @since 5.0.0
-		 */
-		return apply_filters(
-			'font_awesome_svg_styles_loading',
-			$load_mode,
-			array(
-				'using_kit'        => $using_kit,
-				'tech'             => $tech,
-				'skip_enqueue_kit' => $skip_enqueue_kit,
-			)
-		);
-	}
-
-	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * The asset path on the server's filesystem, where the svg support stylesheet
@@ -259,42 +180,14 @@ class FontAwesome_SVG_Styles_Manager {
 	/**
 	 * Internal use only, not part of the plugin's public API.
 	 *
-	 * However, this relies on the `font_awesome_svg_styles_loading` filter,
-	 * which *is* part of the public API.
-	 *
-	 * This registers the svg styles stylesheet according to cdn or selfhost
-	 * loading, using cdn by default, which can be override by the
-	 * `font_awesome_svg_styles_loading` filter.
-	 *
-	 * It also adds an action to update the `<link>` with an sri integrity key,
-	 * whether loaded from cdn or selfhost.
+	 * This registers the self-hosted svg support stylesheet.
 	 *
 	 * @internal
 	 * @ignore
 	 */
-	public function register_svg_styles( $fa, $fa_release_provider ) {
-		$load_mode = 'cdn';
-
-		$load_mode = apply_filters(
-			'font_awesome_svg_styles_loading',
-			$load_mode,
-			array(
-				'using_kit' => $fa->using_kit(),
-				'tech'      => $fa->technology(),
-			)
-		);
-
+	public function register_svg_styles( $fa ) {
 		$concrete_version = $fa->concrete_version( $fa->options() );
-
-		$cdn_resource = $fa_release_provider->get_svg_styles_resource( $concrete_version );
-
-		$integrity_key = $cdn_resource->integrity_key();
-
-		$source = $cdn_resource->source();
-
-		if ( 'selfhost' === $load_mode ) {
-			$source = self::selfhost_asset_url( $concrete_version );
-		}
+		$source           = self::selfhost_asset_url( $concrete_version );
 
 		wp_register_style(
 			self::RESOURCE_HANDLE_SVG_STYLES,
@@ -304,44 +197,12 @@ class FontAwesome_SVG_Styles_Manager {
 			null,
 			'all'
 		);
-
-		add_filter(
-			'style_loader_tag',
-			function ( $html, $handle ) use ( $integrity_key, $load_mode ) {
-				if ( in_array( $handle, array( self::RESOURCE_HANDLE_SVG_STYLES ), true ) ) {
-					if ( 'selfhost' === $load_mode ) {
-						/**
-						 * If self-hosting:
-						 * - do not add the integrity key because it may conflict with CSS bundling optimizations.
-						 * - do not add crossorigin because it is not needed for same-origin stylesheets.
-						 */
-						return $html;
-					}
-
-					$crossorigin_attr = ' crossorigin="anonymous"';
-
-					$integrity_attr = "integrity=\"$integrity_key\"";
-
-					return preg_replace(
-						'/\/>$/',
-						$integrity_attr . $crossorigin_attr . ' />',
-						$html,
-						1
-					);
-				} else {
-					return $html;
-				}
-			},
-			10,
-			2
-		);
 	}
 
 	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
-	 * If self-hosting is required, this ensures that the SVG support style asset(s)
-	 * have been retrieved for self-hosting.
+	 * Fetches SVG support style asset(s) for self-hosting.
 	 *
 	 * @param $fa FontAwesome
 	 * @param $fa_release_provider FontAwesome_Release_Provider
@@ -353,23 +214,17 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return void
 	 */
-	public function maybe_setup_selfhosting( $fa, $fa_release_provider ) {
+	public function fetch_svg_styles( $fa, $fa_release_provider ) {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Current user lacks permissions required to set up asset self-hosting. Try logging in as an admin user.',
+					'Current user lacks permissions required to fetch Font Awesome SVG stylesheets for self-hosting. Try logging in as an admin user.',
 					'font-awesome'
 				)
 			);
 		}
 
-		$is_skipping_enqueue_kit = self::skip_enqueue_kit();
-		$options                 = $fa->options();
-
-		if ( $this->additional_svg_styles_loading( $fa, $is_skipping_enqueue_kit ) !== 'selfhost' ) {
-			return;
-		}
-
+		$options          = $fa->options();
 		$concrete_version = fa()->concrete_version( $options );
 
 		if ( ! $concrete_version ) {
