@@ -64,13 +64,6 @@ To use a Kit to power your icons, [create a Kit on FontAwesome.com](https://font
 
 To use the CDN to power your icons, know that you will **only be able to use icons from Version 5**. To enable Pro icons, add your site's domain to the list allowed domains on your [Font Awesome CDN Settings page](https://fontawesome.com/account/cdn) and then use shortcodes or HTML to add the icons into your content.
 
-**Using Inline SVGs, even with a Webfont Kit**
-When using the Icon Chooser in the Block Editor, icons are always added as inline SVG elements.
-
-This is the case even if the kit you've configured the plugin to use is a Webfont kit. When you
-add an icon to any pages or posts using `[icon]` shortcode or `<i>` tag, the icon will be rendered
-using a Webfont. But any icons added using the Icon Chooser in the Block Editor will be inline SVGs.
-
 **Troubleshooting with the Plugin**
 Font Awesome icons are popular, so lots of themes and plugins also load Font Awesome, and sometimes their version can conflict with yours. So we created a way to help you find and prevent those conflicting versions from affecting your icons: **The Conflict Detection Scanner**.
 
@@ -88,41 +81,12 @@ The plugin is set to serve Font Awesome Free icons as a Web Font via the Font Aw
 
 You can get more information about all the available settings and troubleshooting on the [Font Awesome WordPress docs](https://docs.fontawesome.com/web/use-with/wordpress).
 
-= Self-hosting: Use Without CDN =
-
-Plugin version 5 makes it possible to use Font Awesome Kits on your WordPress site without
-relying on a CDN for front-end page loads. A front-end page load is when a visitor
-views a page on your website. This is distinguished from back-end page loads, such as when
-you are logged is a WordPress admin to configure your site or edit page content.
-
-This has been requested by some users who prefer not to use a CDN for front-end page loads.
-Self-hosting might be preferred for GDPR compliance, for example.
-
-When configured in this way, the plugin still uses the Font Awesome CDN for some back-end operations:
-
-1. When editing content in the Block Editor, the Icon Chooser fetches SVG icons from the Font Awesome Kits CDN for preview. Once an icon is selected, the Icon Chooser inserts inline `<svg>` icon elements directly into the page content.
-2. When saving the plugin's settings, the plugin fetches from the Font Awesome CDN a stylesheet for SVG icons and stores it in your WordPress server's uploads directory. That stylesheet is self-hosted from your WordPress site's uploads directory when loaded in the browser for any front-end page loads.
-
-To configure the plugin to work this way:
-
-1. Use a Kit
-2. Add this filter to your theme's functions.php file, or equivalent:
-
-```
-add_filter( 'font_awesome_skip_enqueue_kit', '__return_true' );
-```
-
-Use only the Icon Chooser in the Block Editor to add icons to your content. No `[icon]` shortcodes or `<i>` tags.
-
-This mode is not compatible with the use of `[icon]` shortcodes or icons from `<i>` tags.
-For those to render as expected, the kit must be loaded.
-
 == Upgrading from Plugin Version 4 ==
 
-* `[icon]` shortcodes found in Block Editor content will continue to work as before, as long
-as you do not use the `font_awesome_skip_enqueue_kit` filter (see above). They
-will not automatically be converted into the new inline SVG format. If you want them to
-be converted, delete each old `[icon]` shortcode and use the Icon Chooser to re-add it.
+* `[icon]` shortcodes found in Block Editor content and elsewehre will continue to work as before,
+though new icons added with the Icon Chooser in the Block Editor will be inline SVGs.
+Previously added `[icon]` shortcodes will not be automatically be converted into the new inline SVG
+format. If you want to convert an `[icon]` shortcode, delete it and re-add the icon using the Icon Chooser in the Block Editor.
 
 == Screenshots ==
 
@@ -151,7 +115,7 @@ You can get more information about using the plugin, details for available setti
 == Upgrade Notice ==
 = 5.0.0 =
 * In the Block Editor, the Icon Chooser now inserts inline SVGs instead of shortcodes.
-* Removes support for `[icon]` shortcode compatibility with Font Awesome 3.
+* Removes support for Font Awesome 3 icon names in `[icon]` shortcodes.
 * Minimum required version of WordPress is now 5.8.
 * Minimum required version of PHP is now 7.4.
 
@@ -213,6 +177,15 @@ If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can onl
 
 
 == Changelog ==
+= 5.0.0 =
+* Enhance support for the Block Editor. Add icons as blocks or as inline Rich Text using the
+  Icon Chooser. Icons added in the Block Editor using the Icon Chooser are added as inline SVGs,
+  and can be visually previewed, styled, sized, and animated within the Block Editor. This works
+  for pages, posts, and in the Full Site Editor.
+* Improve Icon Chooser performance.
+* Remove support for Font Awesome 3 icon names in the `[icon]` shortcode.
+* Change minimum supported WordPress to 5.8.
+* Change minimum supported PHP to 7.4.
 
 = 4.5.0 =
 * Update the Icon Chooser to support all available family styles for the active version of
