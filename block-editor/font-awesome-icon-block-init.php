@@ -115,11 +115,11 @@ function block_init() {
 	 *
 	 *     https://developer.wordpress.org/block-editor/how-to-guides/enqueueing-assets-in-the-editor/
 	 */
-    if ( is_wp_version_compatible( '6.3.0' ) ) {
-    	add_action( 'enqueue_block_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
-    } else {
-    	add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
-    }
+	if ( is_wp_version_compatible( '6.3.0' ) ) {
+		add_action( 'enqueue_block_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
+	} else {
+		add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
+	}
 
 	register_block_type( __DIR__ . '/build' );
 }
