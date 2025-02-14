@@ -327,7 +327,7 @@ class FontAwesome_API_Settings {
 	 * @ignore
 	 * @internal
 	 */
-	public function current_access_token(): string|null {
+	public function current_access_token() {
 		if ( ! boolval( $this->api_token() ) ) {
 			return null;
 		}

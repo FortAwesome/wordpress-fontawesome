@@ -99,7 +99,7 @@ function block_init() {
 	 *     the side effect of calling `_.noConflict()` twice.
 	 *
 	 *     (Since resolving this problem, this plugin *did* take a dependency on the 'lodash' version that
-	 *      ships with WordPress core, to eliminate the need for bundle it separately. It still has no
+	 *      ships with WordPress core, to eliminate the need to bundle it separately. It still has no
 	 *      direct or transitive dependencies on underscore--the older version of lodash).
 	 *
 	 *  2. We need these assets to be loaded for the block editor, on the back end only, never on
@@ -115,7 +115,11 @@ function block_init() {
 	 *
 	 *     https://developer.wordpress.org/block-editor/how-to-guides/enqueueing-assets-in-the-editor/
 	 */
-	add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
+    if ( is_wp_version_compatible( '6.3.0' ) ) {
+    	add_action( 'enqueue_block_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
+    } else {
+    	add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
+    }
 
 	register_block_type( __DIR__ . '/build' );
 }

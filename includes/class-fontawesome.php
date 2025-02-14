@@ -391,7 +391,7 @@ class FontAwesome {
 				array( $this, 'process_shortcode' )
 			);
 
-			FontAwesome_SVG_Styles_Manager::instance()->register_svg_styles( $this, $this->release_provider() );
+			FontAwesome_SVG_Styles_Manager::instance()->register_svg_styles( $this );
 
 			block_init();
 
@@ -414,19 +414,15 @@ class FontAwesome {
 				wp_set_script_translations( self::ADMIN_RESOURCE_HANDLE, 'font-awesome' );
 			}
 
-			$skip_enqueue_kit = FontAwesome_SVG_Styles_Manager::instance()->skip_enqueue_kit();
-
-			if ( $this->technology() === 'webfont' || $skip_enqueue_kit ) {
-				add_action(
-					'enqueue_block_assets',
-					function () {
-						wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
-					}
-				);
-			}
+			add_action(
+				'enqueue_block_assets',
+				function () {
+					wp_enqueue_style( FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES );
+				}
+			);
 
 			if ( $this->using_kit() ) {
-				if ( $skip_enqueue_kit ) {
+				if ( $this->skip_enqueue_kit() ) {
 					// Normally, conflict detection is built into a kit.
 					// However, when not enqueuing the kit, we must enqueue conflict detection separately.
 					$this->maybe_enqueue_conflict_detection();
@@ -442,6 +438,50 @@ class FontAwesome {
 		} catch ( Error $e ) {
 			notify_admin_fatal_error( $e );
 		}
+	}
+
+	/**
+	 * Indicates whether to enqueue the kit.
+	 *
+	 * Internal use only, not part of the plugin's public API.
+	 *
+	 * However, this depends on the `font_awesome_skip_enqueue_kit` filter
+	 * which is part of the public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	protected function skip_enqueue_kit() {
+		/**
+		 * Determines whether to skip the kit enqueue.
+		 *
+		 * When the plugin is configured to use a kit, the normal behavior is
+		 * to use `wp_enqueue_script()` to enqueue the kit's embed code, a JavaScript
+		 * loaded from the Font Awesome Kits CDN. The kit being loaded on front end page
+		 * renderings enables rendering `<i>` tags as Font Awesome icons, for example.
+		 *
+		 * By setting this to `true`, that `wp_enqueue_script()` will be skipped. Thus, the
+		 * kit will not be loaded from the Font Awesome CDN on front end page loads. As a
+		 * consequence, this plugin will not render `<i>` tags as Font Awesome icons.
+		 *
+		 * You may prefer to skip loading the kit if:
+		 *
+		 * 1. You only use the block editor.
+		 *
+		 * As of version 5.0.0 of this plugin, icons are added in the
+		 * block editor as `<svg>` elements and require no further rendering like `<i>` tags.
+		 *
+		 * 2. You want to avoid using a CDN for front end page loads.
+		 *
+		 * Even when disabling the use of the CDN for front end page loads, the CDN is still used
+		 * when editing pages on the back with the icon chooser. The icon chooser loads SVG icons
+		 * from the CDN. When you choose one, the SVG content for that icon is added to your page.
+		 *
+		 * Default: false (that is, by default, enqueue the kit to be loaded from the CDN)
+		 *
+		 * @since 5.0.0
+		 */
+		return apply_filters( 'font_awesome_skip_enqueue_kit', false );
 	}
 
 	/**
