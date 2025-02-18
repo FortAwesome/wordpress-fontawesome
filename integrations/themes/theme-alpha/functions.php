@@ -87,10 +87,3 @@ function theme_alpha_fa_classes() {
 }
 
 add_filter( 'font_awesome_skip_enqueue_kit', '__return_true' );
-
-add_filter(
-	'font_awesome_svg_styles_loading',
-	function() {
-		return 'selfhost';
-	}
-);
