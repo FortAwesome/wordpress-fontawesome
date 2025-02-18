@@ -12,8 +12,9 @@ const prepareQueryHandler = (params) => {
   return async (query, variables, options) => {
     try {
       const { faApiUrl, apiNonce, rootUrl } = params;
+      const kitKeyPart = usingKit ? `kit-${params.kitToken}-` : "";
 
-      const cacheKey = `icon-chooser-${md5(
+      const cacheKey = `icon-chooser-${kitKeyPart}${md5(
         `${query}${JSON.stringify(variables)}`,
       )}`;
 
