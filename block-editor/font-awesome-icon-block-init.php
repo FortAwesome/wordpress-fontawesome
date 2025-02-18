@@ -52,20 +52,6 @@ EOT;
 		FontAwesome_SVG_Styles_Manager::RESOURCE_HANDLE_SVG_STYLES,
 		$frontend_inline_style
 	);
-
-	/**
-	 * This is to ensure that the size of SVGs in the block editor content iframe
-	 * don't flash HUGE before the SVG stylesheet is loaded. We'll hook an inline
-	 * style onto an early-loaded stylesheet
-	 */
-	$editor_inline_style = <<< EOT
-   .wp-block-font-awesome-icon svg,
-   .wp-rich-text-font-awesome-icon svg {height: 1em;}
-EOT;
-	wp_add_inline_style(
-		'wp-block-editor',
-		$editor_inline_style
-	);
 }
 
 function block_init() {
