@@ -349,7 +349,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   )
 }
 
-export default function({ attributes, setAttributes, context }) {
+export default function ({ attributes, setAttributes, context }) {
   const iconLayers = attributes.iconLayers || []
 
   const updateSize = (size) => {
