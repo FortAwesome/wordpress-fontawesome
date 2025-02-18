@@ -7,20 +7,20 @@ function buildPrefixedKey(key) {
 // This removes all items in localStorage whose keys begin
 // with this modules CACHE_KEY_PREFIX.
 export function clearQueryCache() {
-  if(!window?.localStorage) return
+  if (!window?.localStorage) return
 
-  if(localStorage.length == 0) return
+  if (localStorage.length === 0) return
 
-  for(let i=localStorage.length - 1; i>=0; i--) {
+  for (let i = localStorage.length - 1; i >= 0; i--) {
     const key = localStorage.key(i)
-    if(key.startsWith(CACHE_KEY_PREFIX)) {
+    if (key.startsWith(CACHE_KEY_PREFIX)) {
       localStorage.removeItem(key)
     }
   }
 }
 
 export function remove(prefixedCacheKey) {
-  if('function' !== typeof window?.localStorage?.removeItem) return
+  if ('function' !== typeof window?.localStorage?.removeItem) return
   localStorage.removeItem(prefixedCacheKey)
 }
 
@@ -32,7 +32,7 @@ export function remove(prefixedCacheKey) {
 // On failure, returns undefined: if there's no matching key, or an error
 // in JSON parsing.
 export function get(key) {
-  if('function' !== typeof window?.localStorage?.getItem) return
+  if ('function' !== typeof window?.localStorage?.getItem) return
 
   const prefixedCacheKey = buildPrefixedKey(key)
 
@@ -41,7 +41,7 @@ export function get(key) {
   try {
     const cacheValue = JSON.parse(cacheValueJson)
 
-    if(cacheValue) {
+    if (cacheValue) {
       return cacheValue
     } else {
       return
@@ -59,7 +59,7 @@ export function get(key) {
 //
 // Always returns undefined.
 export function set(key, value) {
-  if('function' !== typeof window?.localStorage?.setItem) return
+  if ('function' !== typeof window?.localStorage?.setItem) return
 
   const prefixedCacheKey = buildPrefixedKey(key)
 
