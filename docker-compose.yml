@@ -1,5 +1,3 @@
-version: "3.6"
-
 x-dev_env_volumes: &dev_env_volumes
   volumes:
     # This wordpress bind mount could be uncommented in order to get access in the host
@@ -253,6 +251,21 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
     container_name: "com.fontawesome.wordpress-6.0-dev"
+
+  wordpress-6.0-integration:
+    <<:
+      - *wordpress_defaults
+      - *integration_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-6.0
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
+    container_name: "com.fontawesome.wordpress-6.0-integration"
 
 volumes:
   wpdb_data:
