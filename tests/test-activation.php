@@ -17,6 +17,7 @@ class ActivationTest extends TestCase {
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
+		mock_fetch_svg_styles( $this );
 		FontAwesome::reset();
 		$this->setup_metadata_provider_mock();
 	}
