@@ -13,8 +13,8 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class MultisiteActivationTest
  */
 class MultisiteActivationTest extends TestCase {
-	protected $sub_sites                      = array();
-	protected $original_blog_id               = null;
+	protected $sub_sites        = array();
+	protected $original_blog_id = null;
 
 	public function set_up() {
 		parent::set_up();
