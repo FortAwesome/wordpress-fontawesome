@@ -4,6 +4,7 @@ namespace FortAwesome;
 require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
 require_once __DIR__ . '/../includes/class-fontawesome-exception.php';
 require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-svg-styles-manager.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
@@ -11,8 +12,9 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  * Class MultisiteActivationTest
  */
 class MultisiteActivationTest extends TestCase {
-	protected $sub_sites        = array();
-	protected $original_blog_id = null;
+	protected $sub_sites                      = array();
+	protected $original_blog_id               = null;
+	protected $svg_styles_manager_fetch_count = 0;
 
 	public function set_up() {
 		parent::set_up();
@@ -59,6 +61,8 @@ class MultisiteActivationTest extends TestCase {
 
 			switch_to_blog( $this->original_blog_id );
 		}
+
+		mock_fetch_svg_styles( $this );
 	}
 
 	public function tear_down() {
@@ -103,6 +107,7 @@ class MultisiteActivationTest extends TestCase {
 			);
 
 			$this->assertEquals( $site_count, 3 );
+			$this->assertTrue( get_svg_styles_manager_fetch_count() > 0 );
 		} else {
 			$this->assertEquals( count( $this->sub_sites ), 2 );
 
@@ -125,6 +130,7 @@ class MultisiteActivationTest extends TestCase {
 
 			// The network wide release metadata will have been initialized.
 			$this->assertTrue( boolval( get_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
+			$this->assertTrue( get_svg_styles_manager_fetch_count() > 0 );
 		}
 	}
 
@@ -174,6 +180,7 @@ class MultisiteActivationTest extends TestCase {
 		try {
 			$this->assertEquals( $expected_options, fa()->options() );
 		} catch ( FontAwesome_Exception $e ) {
+			error_log( $e->getTraceAsString() );
 			$this->assertTrue( false );
 		}
 	}
