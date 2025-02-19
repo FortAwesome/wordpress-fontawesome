@@ -178,7 +178,7 @@ function reset_svg_styles_manager_fetch_count() {
 }
 
 function mock_fetch_svg_styles( $obj ) {
-	mock_singleton_method(
+	return mock_singleton_method(
 		$obj,
 		FontAwesome_SVG_Styles_Manager::class,
 		'fetch_svg_styles',

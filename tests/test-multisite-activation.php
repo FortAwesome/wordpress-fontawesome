@@ -1,6 +1,7 @@
 <?php
 namespace FortAwesome;
 
+require_once __DIR__ . '/../font-awesome-init.php';
 require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
 require_once __DIR__ . '/../includes/class-fontawesome-exception.php';
 require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
@@ -36,6 +37,7 @@ class MultisiteActivationTest extends TestCase {
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters( 'wp_is_large_network' );
 		FontAwesome::reset();
+		mock_fetch_svg_styles( $this );
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
 				wp_json_encode(
@@ -61,8 +63,6 @@ class MultisiteActivationTest extends TestCase {
 
 			switch_to_blog( $this->original_blog_id );
 		}
-
-		mock_fetch_svg_styles( $this );
 	}
 
 	public function tear_down() {
