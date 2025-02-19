@@ -1839,7 +1839,7 @@ class FontAwesome {
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
-			'disableRichTextIcons' 			=> $this->disable_rich_text_icons()
+			'disableRichTextIcons'          => $this->disable_rich_text_icons(),
 		);
 	}
 
