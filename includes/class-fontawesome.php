@@ -520,6 +520,10 @@ class FontAwesome {
 	public function try_upgrade() {
 		$options = get_option( self::OPTIONS_KEY );
 
+		if ( ! $options || ! is_array( $options ) ) {
+			throw new ConfigCorruptionException();
+		}
+
 		$should_upgrade = false;
 
 		// Upgrade from v1 schema: 4.0.0-rc13 or earlier.
