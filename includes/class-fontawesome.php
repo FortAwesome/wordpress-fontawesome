@@ -1839,6 +1839,7 @@ class FontAwesome {
 			'activeAdminTab'                => $this->active_admin_tab(),
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
+			'disableRichTextIcons' 			=> $this->disable_rich_text_icons()
 		);
 	}
 
@@ -3092,6 +3093,22 @@ EOT;
 		}
 
 		$this->apply_detection_ignore_attr();
+	}
+
+	/**
+	 * Returns boolean indicating whether RichText icons should be enabled in the block editor.
+	 * This feature is only compatible with WordPress 6.3 and above.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	private function disable_rich_text_icons() {
+		if ( function_exists( 'is_wp_version_compatible' ) && is_wp_version_compatible( '6.3.0' ) ) {
+			return false;
+		}
+
+		return true;
 	}
 }
 

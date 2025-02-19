@@ -40,9 +40,11 @@ const settings = {
   edit: Edit
 }
 
-registerFormatType(name, settings)
-
 const modalOpenEvent = createCustomEvent()
+
+export function initialize() {
+  registerFormatType(name, settings)
+}
 
 // This does not fully support layers. It returns attributes with
 // an `iconLayers` property, but it doesn't yet read icon layers out of the HTML,
