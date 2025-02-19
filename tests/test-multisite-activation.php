@@ -15,7 +15,6 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class MultisiteActivationTest extends TestCase {
 	protected $sub_sites                      = array();
 	protected $original_blog_id               = null;
-	protected $svg_styles_manager_fetch_count = 0;
 
 	public function set_up() {
 		parent::set_up();
