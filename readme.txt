@@ -24,6 +24,8 @@ Our official plugin makes it easy to add Font Awesome icons to your pages, posts
 * Turn on automatic **compatibility for Font Awesome Version 4** if you - or your plugins - are still using Version 4 syntax.
 * **Troubleshoot and resolve issues** when multiple versions of Font Awesome are loading on your site from other plugins/themes, which can cause unexpected icon display or technical issues.
 
+
+
 == How to Use ==
 
 **Install And Enable The Plugin**
@@ -35,13 +37,15 @@ Full docs on how to use the plugin and add icons are available on the [Font Awes
 **Add Icons in the Block Editor**
 Once you’ve set up your plugin, you can add icons as blocks or inline with text.
 
-To add icons as blocks, select the "Font Awesome Icon" block, and then click the "Choose Icon button" to open the Icon Chooser.
+To add icons as blocks, select the "Font Awesome Icon" block, and then click the "Choose Icon button" to open the Icon Chooser. 
 
-To add icons inline, select the Font Awesome option in the format toolbar to open the Icon Chooser. Then in the Icon Chooser:
+To add icons inline, select the Font Awesome option in the format toolbar to open the Icon Chooser. (Note: Inline icons require at least WP 6.3.)
 
-1. Search for the icon you want - you can **search by icon name, category, or keyword**.
-2. Change the Family and Style using the drop downs if you want an icon in a different style.
-3. When you see the icon you want, click it to enter it into the content of your page or post.
+Once you open the Icon Chooser, add icons by:
+
+1. Searching for the icon you want - you can **search by icon name, category, or keyword**.
+2. Changing the Family and Style using the drop downs if you want an icon in a different style.
+3. When you see the icon you want, clicking it to enter it into the content of your page or post.
 
 _Note: If you want to search and add Pro icons in the Icon Chooser, make sure you set your plugin to use a Pro Kit._
 
