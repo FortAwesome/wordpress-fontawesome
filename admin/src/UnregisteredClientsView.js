@@ -8,7 +8,7 @@ import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckSquare, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import { faSquare } from '@fortawesome/free-regular-svg-icons'
-import { get, truncate, size, isEqual, sortedUnique, difference } from 'lodash'
+import { get, truncate, size, isEqual, sortedUniq, difference } from 'lodash'
 import { __ } from '@wordpress/i18n'
 import createInterpolateElement from './createInterpolateElement'
 
@@ -68,8 +68,8 @@ export default function UnregisteredClientsView() {
         ? blocklist.filter((x) => x !== md5)
         : [...blocklist, md5]
 
-    const orig = sortedUnique(savedBlocklist)
-    const updated = sortedUnique(newBlocklist)
+    const orig = sortedUniq(savedBlocklist)
+    const updated = sortedUniq(newBlocklist)
 
     if (orig.length === updated.length && 0 === size(difference(orig, updated)) && 0 === size(difference(updated, orig))) {
       dispatch(updatePendingBlocklist(null))
