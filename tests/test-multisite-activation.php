@@ -179,7 +179,6 @@ class MultisiteActivationTest extends TestCase {
 		try {
 			$this->assertEquals( $expected_options, fa()->options() );
 		} catch ( FontAwesome_Exception $e ) {
-			error_log( $e->getTraceAsString() );
 			$this->assertTrue( false );
 		}
 	}
