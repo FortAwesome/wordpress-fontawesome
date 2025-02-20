@@ -9,12 +9,7 @@ import { __ } from '@wordpress/i18n'
 const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {})
 
 // Creates a new icon chooser with its own open event and submit handler.
-function newIconChooser(editor) {
-  if ('function' !== typeof editor?.insertContent) {
-    console.error(__('Font Awesome Plugin: failed to initialize TinyMCE plugin.', 'font-awesome'))
-    return () => {}
-  }
-
+function newIconChooser(editorContainer, editorInsert) {
   const modalOpenEvent = createCustomEvent()
 
   const openIconChooser = () => {
@@ -22,23 +17,21 @@ function newIconChooser(editor) {
   }
 
   function handleSubmit(event) {
-    editor.insertContent(buildShortCodeFromIconChooserResult(event.detail))
+    editorInsert(buildShortCodeFromIconChooserResult(event.detail))
   }
 
-  const container = editor.container
   const iconChooserWrapper = document.createElement('div')
-  container.appendChild(iconChooserWrapper)
+
+  editorContainer.appendChild(iconChooserWrapper)
 
   const root = createRoot(iconChooserWrapper)
 
-  if (container) {
-    root.render(
-      <IconChooserModal
-        onSubmit={handleSubmit}
-        openEvent={modalOpenEvent}
-      />
-    )
-  }
+  root.render(
+    <IconChooserModal
+      onSubmit={handleSubmit}
+      openEvent={modalOpenEvent}
+    />
+  )
 
   return openIconChooser
 }
@@ -53,7 +46,7 @@ class FontAwesomeOfficialPlugin {
         return
       }
 
-      const openIconChooser = newIconChooser(editor)
+      const openIconChooser = newIconChooser(editor.container, editor.insertContent.bind(editor))
 
       if (button) {
         button.addEventListener('click', openIconChooser)
