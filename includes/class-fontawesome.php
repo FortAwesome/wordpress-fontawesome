@@ -1694,17 +1694,6 @@ class FontAwesome {
 						 * and priority to continue investigating.
 						 */
 						if ( ! is_gutenberg_page() ) {
-							// These are needed for the Tiny MCE Classic Editor.
-							add_filter(
-								'tiny_mce_plugins',
-								function ( $plugins ) {
-									wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
-									// Required for styling the icon chooser in the Classic Editor.
-									wp_enqueue_style( 'wp-components' );
-									return $plugins;
-								}
-							);
-
 							add_action(
 								'media_buttons',
 								function ( $editor_id ) {
@@ -1724,9 +1713,21 @@ class FontAwesome {
 								1
 							);
 
+							add_action('after_wp_tiny_mce', function ( $mce_settings ) {
+								$editor_ids = array_keys( $mce_settings );
+								?>
+								<script type="text/javascript">
+								__FontAwesomeOfficialPlugin_tinymce__ = { editors: <?php echo json_encode( $editor_ids ) ?>}
+								</script>
+								<?php
+							}, 10, 1);
+
 							add_filter(
 								'tiny_mce_before_init',
 								function ( $mce_init ) {
+									wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
+									// Required for styling the icon chooser in the Classic Editor.
+									wp_enqueue_style( 'wp-components' );
 									$plugins = is_string( $mce_init['plugins'] ) ? explode( ',', $mce_init['plugins'] ) : array();
 									array_push( $plugins, 'font-awesome-official' );
 									$mce_init['plugins'] = implode( ',', $plugins );
