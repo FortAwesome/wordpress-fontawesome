@@ -36,21 +36,25 @@ function newIconChooser(editorContainer, editorInsert) {
   return openIconChooser
 }
 
+function initializeIconChooserForEditor(editorId, editorContainer, editorInsert) {
+  const button = document.querySelector(`#fawp-tinymce-${editorId}`)
+
+  if (!button) {
+    console.error(__('Font Awesome Plugin: no Font Awesome media button found for TinyMCE editor id:', 'font-awesome'), editor.id)
+    return
+  }
+
+  const openIconChooser = newIconChooser(editorContainer, editorInsert)
+
+  if (button) {
+    button.addEventListener('click', openIconChooser)
+  }
+}
+
 class FontAwesomeOfficialPlugin {
   constructor(editor, _url, _c) {
     editor.on('init', () => {
-      const button = document.querySelector(`#fawp-tinymce-${editor.id}`)
-
-      if (!button) {
-        console.error(__('Font Awesome Plugin: no Font Awesome media button found for TinyMCE editor id:', 'font-awesome'), editor.id)
-        return
-      }
-
-      const openIconChooser = newIconChooser(editor.container, editor.insertContent.bind(editor))
-
-      if (button) {
-        button.addEventListener('click', openIconChooser)
-      }
+      initializeIconChooserForEditor(editor.id, editor.container, editor.insertContent.bind(editor))
     })
   }
 }
