@@ -1,7 +1,7 @@
 === Font Awesome ===
 Contributors: fontawesome, mlwilkerson, robmadole, frrrances, deathnfudge
 Stable tag: 4.5.0
-Tags: font, awesome, fontawesome, font-awesome, icon, svg, webfont
+Tags: FontAwesome, icon, svg icon, iconfont, webfont
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -37,7 +37,7 @@ Full docs on how to use the plugin and add icons are available on the [Font Awes
 **Add Icons in the Block Editor**
 Once you’ve set up your plugin, you can add icons as blocks or inline with text.
 
-To add icons as blocks, select the "Font Awesome Icon" block, and then click the "Choose Icon button" to open the Icon Chooser. 
+To add icons as blocks, select the "Font Awesome Icon" block, and then click the "Choose Icon button" to open the Icon Chooser.
 
 To add icons inline, select the Font Awesome option in the format toolbar to open the Icon Chooser. (Note: Inline icons require at least WP 6.3.)
 
