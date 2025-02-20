@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Plugin Nu
  * Plugin URI:        https://fontawesome.com/
- * Description:       Adds a tinymce (Classic) editor instance to the page. On a Gutenber page, this can exercise Icon Chooser integration where both kinds of editors are present (not yet supported). On a Classic Editor page, this excercises integration with the Icon Chooser, with the expectation that each Icon Chooser instance should be bound to its own editor: clicking to add an icon for an editor should result in the icon being added only to that editor.
+ * Description:       Adds a tinymce (Classic) editor instance to the page. On a Gutenberg page, this can exercise Icon Chooser integration where both kinds of editors are present (not yet supported). On a Classic Editor page, this excercises integration with the Icon Chooser, with the expectation that each Icon Chooser instance should be bound to its own editor: clicking to add an icon for an editor should result in the icon being added only to that editor.
  * Version:           0.0.2
  * Author:            Font Awesome
  * Author URI:        https://fontawesome.com/
