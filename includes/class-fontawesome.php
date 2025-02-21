@@ -1713,14 +1713,19 @@ class FontAwesome {
 								1
 							);
 
-							add_action('after_wp_tiny_mce', function ( $mce_settings ) {
-								$editor_ids = array_keys( $mce_settings );
-								?>
+							add_action(
+								'after_wp_tiny_mce',
+								function ( $mce_settings ) {
+									$editor_ids = array_keys( $mce_settings );
+									?>
 								<script type="text/javascript">
-								__FontAwesomeOfficialPlugin_tinymce__ = { editors: <?php echo json_encode( $editor_ids ) ?>}
+								__FontAwesomeOfficialPlugin_tinymce__ = { editors: <?php echo wp_json_encode( $editor_ids ); ?>}
 								</script>
-								<?php
-							}, 10, 1);
+									<?php
+								},
+								10,
+								1
+							);
 
 							add_filter(
 								'tiny_mce_before_init',
