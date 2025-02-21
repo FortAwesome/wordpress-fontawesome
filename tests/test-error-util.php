@@ -1,12 +1,12 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/error-util.php';
+require_once __DIR__ . '/../includes/error-util.php';
 
 use function FortAwesome\unknown_error_500;
 use function FortAwesome\fa_400;
 use function FortAwesome\fa_500;
-use \Exception, \Error;
+use Exception, Error;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

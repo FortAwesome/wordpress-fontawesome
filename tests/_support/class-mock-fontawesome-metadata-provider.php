@@ -2,9 +2,9 @@
 
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../fixtures/graphql-releases-query-fixture.php';
+require_once __DIR__ . '/../fixtures/graphql-releases-query-fixture.php';
 
-use \PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class Mock_FontAwesome_Metadata_Provider
@@ -23,7 +23,7 @@ class Mock_FontAwesome_Metadata_Provider extends TestCase {
 			$obj,
 			FontAwesome_Metadata_Provider::class,
 			'metadata_query',
-			function( $method ) use ( $responses ) {
+			function ( $method ) use ( $responses ) {
 				$method->will( $this->onConsecutiveCalls( ...$responses ) );
 			}
 		);

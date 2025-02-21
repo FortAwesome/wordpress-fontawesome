@@ -1,9 +1,11 @@
 import { createStore } from './store'
-import get from 'lodash/get'
+import { get, set } from 'lodash'
+import { GLOBAL_KEY } from './constants'
+import createInterpolateElement from './createInterpolateElement'
+import { __ } from '@wordpress/i18n'
 
-const initialData = window['__FontAwesomeOfficialPlugin__']
+const initialData = window[GLOBAL_KEY]
 // See: https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = get(initialData, 'webpackPublicPath')
 const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport'
 /**
  * This will start out as falsy, when there's a report, we'll set it with those
@@ -15,8 +17,8 @@ const CONFLICT_DETECTION_REPORT_EVENT_TYPE = 'fontAwesomeConflictDetectionReport
  */
 let conflictDetectionReport = null
 
-if( get(initialData, 'showConflictDetectionReporter') ) {
-  const reportEvent = new Event(CONFLICT_DETECTION_REPORT_EVENT_TYPE, { "bubbles": true, "cancelable": false })
+if (get(initialData, 'showConflictDetectionReporter')) {
+  const reportEvent = new Event(CONFLICT_DETECTION_REPORT_EVENT_TYPE, { bubbles: true, cancelable: false })
 
   /**
    * If we're doing conflict detection, we must set this up before DOMContentLoaded,
@@ -24,127 +26,51 @@ if( get(initialData, 'showConflictDetectionReporter') ) {
    */
   window.FontAwesomeDetection = {
     ...(window.FontAwesomeDetection || {}),
-    report: params => {
+    report: (params) => {
       conflictDetectionReport = params
       document.dispatchEvent(reportEvent)
     }
   }
 }
 
-/**
- * First, we need to resolve whether we're using external dependencies available
- * in WordPress 5 core, or whether we've loaded our WordPress 4 compatibility
- * bundle. Regardless, the webpack config will use this global for settting up
- * externals.
- */
-if( !window.__Font_Awesome_Webpack_Externals__ ) {
-  window.__Font_Awesome_Webpack_Externals__ = {
-    React: get(window, 'React'),
-    ReactDOM: get(window, 'ReactDOM'),
-    i18n: get(window, 'wp.i18n'),
-    apiFetch: get(window, 'wp.apiFetch'),
-    components: get(window, 'wp.components'),
-    element: get(window, 'wp.element'),
-    richText: get(window, 'wp.richText'),
-    blockEditor: get(window, 'wp.blockEditor'),
-    domReady: get(window, 'wp.domReady')
-  }
-}
-
-const { __ } = __Font_Awesome_Webpack_Externals__.i18n
-
-if(! initialData){
-  console.error( __( 'Font Awesome plugin is broken: initial state data missing.', 'font-awesome' ) )
+if (!initialData) {
+  console.error(__('Font Awesome plugin is broken: initial state data missing.', 'font-awesome'))
 }
 
 const store = createStore(initialData)
 
-const {
-  showAdmin,
-  showConflictDetectionReporter,
-  enableIconChooser,
-  usingCompatJs,
-  isGutenbergPage
-} = store.getState()
+set(window, [GLOBAL_KEY, 'createInterpolateElement'], createInterpolateElement)
 
-if( showAdmin ) {
+const { showAdmin, showConflictDetectionReporter } = store.getState()
+
+if (showAdmin) {
   import('./mountAdminView')
-  .then(({ default: mountAdminView }) => {
-    mountAdminView(store)
-  })
-  .catch(error => {
-    console.error( __( 'Font Awesome plugin error when initializing admin settings view', 'font-awesome' ), error )
-  })
+    .then(({ default: mountAdminView }) => {
+      mountAdminView(store)
+    })
+    .catch((error) => {
+      console.error(__('Font Awesome plugin error when initializing admin settings view', 'font-awesome'), error)
+    })
 }
 
-if( showConflictDetectionReporter ) {
-  Promise.all([
-    import('./store/actions'),
-    import('./mountConflictDetectionReporter')
-  ])
-  .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
-    const report = params => store.dispatch(reportDetectedConflicts(params))
-
-    /**
-     * If the conflict detection report is already available, just use it;
-     * otherwise, listen for the reporting event.
-     */
-    if( conflictDetectionReport ) {
-      report(conflictDetectionReport)
-    } else {
-      document.addEventListener(
-        CONFLICT_DETECTION_REPORT_EVENT_TYPE,
-        _event => report(conflictDetectionReport)
-      )
-    }
-
-    mountConflictDetectionReporter(store)
-  })
-  .catch(error => {
-    console.error( __( 'Font Awesome plugin error when initializing conflict detection scanner', 'font-awesome' ), error )
-  })
-}
-
-if ( enableIconChooser ) {
-  if ( usingCompatJs && isGutenbergPage ) {
-    console.warn( __( 'Font Awesome Plugin cannot enable the Icon Chooser on a page that includes the block editor (Gutenberg) because it is not compatible with your WordPress installation. Upgrading to at least WordPress 5.4.6 will probably resolve this.', 'font-awesome' ) )
-  } else {
-    Promise.all([
-      import('./chooser'),
-      import('./chooser/handleQuery'),
-      import('./chooser/getUrlText')
-    ])
-    .then(([{ setupIconChooser }, { default: configureQueryHandler }, { default: getUrlText } ]) => {
-      const kitToken = get(initialData, 'options.kitToken')
-      const version = get(initialData, 'options.version')
-
-      const params = {
-        ...initialData,
-        kitToken,
-        version,
-        getUrlText,
-        pro: get(initialData, 'options.usePro')
-      }
-
-      const handleQuery = configureQueryHandler(params)
-
-      const { setupClassicEditorIconChooser } = setupIconChooser({ ...params, handleQuery })
+if (showConflictDetectionReporter) {
+  Promise.all([import('./store/actions'), import('./mountConflictDetectionReporter')])
+    .then(([{ reportDetectedConflicts }, { mountConflictDetectionReporter }]) => {
+      const report = (params) => store.dispatch(reportDetectedConflicts(params))
 
       /**
-       * Tiny MCE will probably be loaded later, but since this code runs async,
-       * we can't guarantee the timing. So if this runs first, it will set this
-       * global to a function that the post-tiny-mce inline code can invoke.
-       * But if that code runs first, it will set this global to some truthy value,
-       * which tells us to invoke this setup immediately.
+       * If the conflict detection report is already available, just use it;
+       * otherwise, listen for the reporting event.
        */
-      if( window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] ) {
-        setupClassicEditorIconChooser()
+      if (conflictDetectionReport) {
+        report(conflictDetectionReport)
       } else {
-        window['__FontAwesomeOfficialPlugin__setupClassicEditorIconChooser'] = setupClassicEditorIconChooser
+        document.addEventListener(CONFLICT_DETECTION_REPORT_EVENT_TYPE, (_event) => report(conflictDetectionReport))
       }
+
+      mountConflictDetectionReporter(store)
     })
-    .catch(error => {
-      console.error( __( 'Font Awesome plugin error when initializing Icon Chooser', 'font-awesome' ), error )
+    .catch((error) => {
+      console.error(__('Font Awesome plugin error when initializing conflict detection scanner', 'font-awesome'), error)
     })
-  }
 }

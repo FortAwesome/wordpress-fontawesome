@@ -1,7 +1,14 @@
 {
     "name": "fortawesome/wordpress-fontawesome",
     "description": "Official Font Awesome WordPress plugin composer package.",
-    "keywords": [ "font awesome", "font-awesome", "icon", "icons", "webfont", "svg" ],
+    "keywords": [
+        "font awesome",
+        "font-awesome",
+        "icon",
+        "icons",
+        "webfont",
+        "svg"
+    ],
     "homepage": "https://fontawesome.com",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -31,7 +38,7 @@
             ".gitignore",
             ".travis.yml",
             "phpunit.xml.dist",
-            "phpcs.xml.dist",
+            ".phpcs.xml",
             "phpdoc.dist.xml",
             "readme.txt",
             "docker-php-ext-xdebug.ini",
@@ -40,33 +47,42 @@
             "jest-e2e.config.js",
             "admin/webpack.config.js",
             "admin/package*.json",
-            "/compat-js",
-            "!/compat-js/build",
+            "/block-editor",
+            "!/block-editor/build",
+            "!/block-editor/block_init.php",
+            "/classic-editor",
+            "!/classic-editor/build",
+            "/icon-chooser",
+            "!/icon-chooser/build",
             "webpack.config.js",
             ".env",
             "DEVELOPMENT.md",
             "/composer-php*.json",
             "/composer-php*.lock",
-            ".editorconfig"
+            ".editorconfig",
+            ".npmrc",
+            ".php-cs-fixer.cache"
         ]
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.5.8",
-        "wp-coding-standards/wpcs": "^2.3.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+        "squizlabs/php_codesniffer": "^3.10.2",
+        "wp-coding-standards/wpcs": "^3.1.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1",
         "phpunit/phpunit": "^8",
         "yoast/phpunit-polyfills": "^1.1",
         "yoast/wp-test-utils": "^1.0"
     },
     "scripts": {
-        "phpcs": "phpcs --standard=phpcs.xml.dist",
-        "phpcbf": "phpcbf --standard=phpcs.xml.dist",
+        "phpcs": "phpcs --standard=.phpcs.xml",
+        "phpcbf": "phpcbf --standard=.phpcs.xml",
         "test": "phpunit",
-        "clean": "rm -fR wp-dist && rm -fR admin/build && rm -fR vendor && rm -f font-awesome.zip",
+        "clean": "rm -fR wp-dist && rm -fR admin/build && rm -fR block-editor/build && rm -fR classic-editor/build && rm -fR icon-chooser/build && rm -fR vendor && rm -f font-awesome.zip",
         "build.admin": "cd admin; npm install && npm run build",
-        "build.compat": "cd compat-js; npm install && npm run build",
+        "build.block-editor": "cd block-editor; npm install && npm run build",
+        "build.classic-editor": "cd classic-editor; npm install && npm run build",
+        "build.icon-chooser": "cd icon-chooser; npm install && npm run build",
         "cleandocs": "rm -fR $TMPDIR/phpdoc-twig-cache && rm -fR phpdoc-data && rm -fR docs",
-        "dist": "composer clean && composer build.admin && composer build.compat"
+        "dist": "composer clean && composer build.admin && composer build.block-editor && composer build.classic-editor && composer build.icon-chooser && bin/make-wp-dist-zip"
     },
     "config": {
         "allow-plugins": {

@@ -4,7 +4,7 @@
  */
 namespace FortAwesome;
 
-use \WP_REST_Response;
+use WP_REST_Response;
 
 /**
  * Handles FontAwesome-specific enhancements to a REST response.
@@ -29,7 +29,7 @@ class FontAwesome_REST_Response extends WP_REST_Response {
 	 * @internal
 	 */
 	public function __construct( $data = null, $status = 200, $headers = array() ) {
-		return parent::__construct(
+		parent::__construct(
 			$data,
 			$status,
 			array_merge(

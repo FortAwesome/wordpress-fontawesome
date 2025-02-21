@@ -4,7 +4,7 @@ use Yoast\WPTestUtils\WPIntegration;
 if ( getenv( 'WP_PLUGIN_DIR' ) !== false ) {
 	define( 'WP_PLUGIN_DIR', getenv( 'WP_PLUGIN_DIR' ) );
 } else {
-	define( 'WP_PLUGIN_DIR', dirname( __FILE__ ) . '/../..' );
+	define( 'WP_PLUGIN_DIR', __DIR__ . '/../..' );
 }
 
 $active_plugins = ( defined( 'LOAD_PLUGIN' ) && boolval( LOAD_PLUGIN ) )

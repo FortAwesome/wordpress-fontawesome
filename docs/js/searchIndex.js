@@ -171,6 +171,11 @@ Search.appendIndex(
             "summary": "Indicates\u0020a\u0020problem\u0020during\u0020upgrade\u0020process.",
             "url": "classes/FortAwesome-UpgradeException.html"
         },                {
+            "fqsen": "\\FortAwesome\\SelfhostSetupException",
+            "name": "SelfhostSetupException",
+            "summary": "Thrown\u0020on\u0020one\u0020of\u0020several\u0020errors\u0020conditions\u0020when\u0020setting\u0020up\u0020assets\u0020for\u0020self\u002Dhosting.",
+            "url": "classes/FortAwesome-SelfhostSetupException.html"
+        },                {
             "fqsen": "\\FortAwesome\\FontAwesome_REST_Response",
             "name": "FontAwesome_REST_Response",
             "summary": "Handles\u0020FontAwesome\u002Dspecific\u0020enhancements\u0020to\u0020a\u0020REST\u0020response.",
@@ -275,6 +280,11 @@ Search.appendIndex(
             "name": "query",
             "summary": "Runs\u0020a\u0020GraphQL\u0020query\u0020against\u0020the\u0020Font\u0020Awesome\u0020GraphQL\u0020API.",
             "url": "classes/FortAwesome-FontAwesome.html#method_query"
+        },                {
+            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Amaybe_enqueue_conflict_detection\u0028\u0029",
+            "name": "maybe_enqueue_conflict_detection",
+            "summary": "",
+            "url": "classes/FortAwesome-FontAwesome.html#method_maybe_enqueue_conflict_detection"
         },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003ASHORTCODE_TAG",
             "name": "SHORTCODE_TAG",

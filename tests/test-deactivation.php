@@ -1,8 +1,8 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-deactivator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-api-settings.php';
+require_once __DIR__ . '/../includes/class-fontawesome-deactivator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-api-settings.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -18,7 +18,6 @@ class DeactivationTest extends TestCase {
 
 	public function test_deactivate_preserves_options_deletes_transients() {
 		$foobar = array( 'foo' => 'bar' );
-		set_transient( FontAwesome::V3DEPRECATION_TRANSIENT, $foobar );
 		update_option( FontAwesome::OPTIONS_KEY, $foobar );
 		update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $foobar );
 		update_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY, $foobar );
@@ -38,10 +37,6 @@ class DeactivationTest extends TestCase {
 		$this->assertEquals(
 			get_option( FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY ),
 			$foobar
-		);
-
-		$this->assertFalse(
-			get_transient( FontAwesome::V3DEPRECATION_TRANSIENT )
 		);
 	}
 

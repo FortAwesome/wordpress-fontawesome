@@ -30,14 +30,18 @@ describe('addPendingOption', () => {
   test('when multiple pending options are adjusted together, all are updated', () => {
     store.dispatch(addPendingOption({ technology: 'webfont', pseudoElements: true }))
     expect(store.getActions().length).toEqual(2)
-    expect(store.getActions()[0]).toEqual(expect.objectContaining({
-      type: 'ADD_PENDING_OPTION',
-      change: { technology: 'webfont' }
-    }))
-    expect(store.getActions()[1]).toEqual(expect.objectContaining({
-      type: 'ADD_PENDING_OPTION',
-      change: { pseudoElements: true }
-    }))
+    expect(store.getActions()[0]).toEqual(
+      expect.objectContaining({
+        type: 'ADD_PENDING_OPTION',
+        change: { technology: 'webfont' }
+      })
+    )
+    expect(store.getActions()[1]).toEqual(
+      expect.objectContaining({
+        type: 'ADD_PENDING_OPTION',
+        change: { pseudoElements: true }
+      })
+    )
   })
 })
 
@@ -63,7 +67,7 @@ describe('submitPendingOptions and interceptors', () => {
   afterEach(() => {
     resetAxiosMocks()
   })
-  
+
   describe('when HTTP 200', () => {
     describe('when confirmation header is present', () => {
       describe('successful JSON response also includes error information', () => {
@@ -74,11 +78,11 @@ describe('submitPendingOptions and interceptors', () => {
             options: pendingOptions,
             error: {
               errors: {
-                "code1": ["message1"],
+                code1: ['message1']
               },
               error_data: {
-                "code1": {
-                  "trace": 'some stack trace'
+                code1: {
+                  trace: 'some stack trace'
                 }
               }
             }
@@ -98,36 +102,42 @@ describe('submitPendingOptions and interceptors', () => {
           })
         })
 
-        test('submits successfully with successful ui message and also reports error to console', done => {
-          store.dispatch(submitPendingOptions()).then(() => {
-            expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              error: expect.objectContaining({
-                errors: {
-                  code1: expect.anything()
-                },
-                error_data: {
-                  code1: expect.anything()
-                }
-              }),
-              confirmed: true,
-              ok: true
-            }))
-            expect(store.getActions().length).toEqual(2)
-            expect(store.getActions()).toEqual(expect.arrayContaining([
-              expect.objectContaining({
-                type: 'OPTIONS_FORM_SUBMIT_START'
-              }),
-              expect.objectContaining({
-                type: 'OPTIONS_FORM_SUBMIT_END',
-                success: true,
-                data,
-                message: expect.stringContaining('saved')
-              })
-            ]))
-            done()
-          })
-          .catch(e => done(e))
+        test('submits successfully with successful ui message and also reports error to console', (done) => {
+          store
+            .dispatch(submitPendingOptions())
+            .then(() => {
+              expect(reportRequestError).toHaveBeenCalledTimes(1)
+              expect(reportRequestError).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  error: expect.objectContaining({
+                    errors: {
+                      code1: expect.anything()
+                    },
+                    error_data: {
+                      code1: expect.anything()
+                    }
+                  }),
+                  confirmed: true,
+                  ok: true
+                })
+              )
+              expect(store.getActions().length).toEqual(2)
+              expect(store.getActions()).toEqual(
+                expect.arrayContaining([
+                  expect.objectContaining({
+                    type: 'OPTIONS_FORM_SUBMIT_START'
+                  }),
+                  expect.objectContaining({
+                    type: 'OPTIONS_FORM_SUBMIT_END',
+                    success: true,
+                    data,
+                    message: expect.stringContaining('saved')
+                  })
+                ])
+              )
+              done()
+            })
+            .catch((e) => done(e))
         })
       })
     })
@@ -152,30 +162,36 @@ describe('submitPendingOptions and interceptors', () => {
           })
         })
 
-        test('reports warning but completes successfully', done => {
-          store.dispatch(submitPendingOptions()).then(() => {
-            expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              error: null,
-              confirmed: false,
-              ok: true,
-              trimmed: INVALID_JSON_RESPONSE_DATA
-            }))
-            expect(store.getActions().length).toEqual(2)
-            expect(store.getActions()).toEqual(expect.arrayContaining([
-              expect.objectContaining({
-                type: 'OPTIONS_FORM_SUBMIT_START'
-              }),
-              expect.objectContaining({
-                type: 'OPTIONS_FORM_SUBMIT_END',
-                success: true,
-                data,
-                message: expect.stringContaining('saved')
-              })
-            ]))
-            done()
-          })
-          .catch(e => done(e))
+        test('reports warning but completes successfully', (done) => {
+          store
+            .dispatch(submitPendingOptions())
+            .then(() => {
+              expect(reportRequestError).toHaveBeenCalledTimes(1)
+              expect(reportRequestError).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  error: null,
+                  confirmed: false,
+                  ok: true,
+                  trimmed: INVALID_JSON_RESPONSE_DATA
+                })
+              )
+              expect(store.getActions().length).toEqual(2)
+              expect(store.getActions()).toEqual(
+                expect.arrayContaining([
+                  expect.objectContaining({
+                    type: 'OPTIONS_FORM_SUBMIT_START'
+                  }),
+                  expect.objectContaining({
+                    type: 'OPTIONS_FORM_SUBMIT_END',
+                    success: true,
+                    data,
+                    message: expect.stringContaining('saved')
+                  })
+                ])
+              )
+              done()
+            })
+            .catch((e) => done(e))
         })
 
         describe('axios request', () => {
@@ -185,23 +201,25 @@ describe('submitPendingOptions and interceptors', () => {
             changeImpl({ name: 'post', fn: mockPost })
           })
 
-          test('submits pendingOptions', done => {
-            store.dispatch(submitPendingOptions()).then(() => {
-              expect(mockPost).toHaveBeenCalledTimes(1)
-              expect(mockPost).toHaveBeenCalledWith(
-                `${apiUrl}/config`,
-                expect.objectContaining({
-                  options: pendingOptions
-                }),
-                expect.objectContaining({
-                  headers: {
-                    'X-WP-Nonce': fakeNonce
-                  }
-                })
-              )
-              done()
-            })
-            .catch(e => done(e))
+          test('submits pendingOptions', (done) => {
+            store
+              .dispatch(submitPendingOptions())
+              .then(() => {
+                expect(mockPost).toHaveBeenCalledTimes(1)
+                expect(mockPost).toHaveBeenCalledWith(
+                  `${apiUrl}/config`,
+                  expect.objectContaining({
+                    options: pendingOptions
+                  }),
+                  expect.objectContaining({
+                    headers: {
+                      'X-WP-Nonce': fakeNonce
+                    }
+                  })
+                )
+                done()
+              })
+              .catch((e) => done(e))
           })
         })
       })
@@ -210,68 +228,74 @@ describe('submitPendingOptions and interceptors', () => {
 
   describe('when HTTP 400', () => {
     describe('when errors payload is absent', () => {
-        const responseData = {foo: 42}
-        const url = `${apiUrl}/config`
-        const method = 'POST'
-        const status = 400
-        const statusText = 'Bad Request'
-        const requestData = JSON.stringify({bar: 43})
-        const responseHeaders = {
-          'fontawesome-confirmation': 1
-        }
-        const requestHeaders = {
-          'Content-Type': 'application/json'
-        }
+      const responseData = { foo: 42 }
+      const url = `${apiUrl}/config`
+      const method = 'POST'
+      const status = 400
+      const statusText = 'Bad Request'
+      const requestData = JSON.stringify({ bar: 43 })
+      const responseHeaders = {
+        'fontawesome-confirmation': 1
+      }
+      const requestHeaders = {
+        'Content-Type': 'application/json'
+      }
 
-        beforeEach(() => {
-          respondWith({
-            url,
-            method,
-            response: {
-              status,
-              statusText,
-              data: responseData,
-              headers: responseHeaders,
-              config: {
-                method,
-                url,
-                data: requestData,
-                headers: requestHeaders
-              }
-            },
-          })
+      beforeEach(() => {
+        respondWith({
+          url,
+          method,
+          response: {
+            status,
+            statusText,
+            data: responseData,
+            headers: responseHeaders,
+            config: {
+              method,
+              url,
+              data: requestData,
+              headers: requestHeaders
+            }
+          }
         })
+      })
 
-        test('displays default ui message and emits console message', done => {
-          reportRequestError.mockReturnValueOnce(null)
-          store.dispatch(submitPendingOptions()).then(() => {
+      test('displays default ui message and emits console message', (done) => {
+        reportRequestError.mockReturnValueOnce(null)
+        store
+          .dispatch(submitPendingOptions())
+          .then(() => {
             expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              confirmed: true,
-              requestMethod: method,
-              //requestData,
-              requestUrl: url,
-              // responseHeaders: expect.any(Object),
-              // requestHeaders: expect.any(Object),
-              responseStatus: status,
-              responseStatusText: statusText,
-              responseData
-            }))
-            expect(store.getActions().length).toEqual(2)
-            expect(store.getActions()).toEqual(expect.arrayContaining([
+            expect(reportRequestError).toHaveBeenCalledWith(
               expect.objectContaining({
-                type: 'OPTIONS_FORM_SUBMIT_START'
-              }),
-              expect.objectContaining({
-                type: 'OPTIONS_FORM_SUBMIT_END',
-                success: false,
-                message: expect.stringContaining("Couldn't save")
+                confirmed: true,
+                requestMethod: method,
+                //requestData,
+                requestUrl: url,
+                // responseHeaders: expect.any(Object),
+                // requestHeaders: expect.any(Object),
+                responseStatus: status,
+                responseStatusText: statusText,
+                responseData
               })
-            ]))
+            )
+            expect(store.getActions().length).toEqual(2)
+            expect(store.getActions()).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  type: 'OPTIONS_FORM_SUBMIT_START'
+                }),
+                expect.objectContaining({
+                  type: 'OPTIONS_FORM_SUBMIT_END',
+                  success: false,
+                  message: expect.stringContaining("Couldn't save")
+                })
+              ])
+            )
             done()
           })
-          .catch(e => done(e))
-        })
+          .catch((e) => done(e))
+      })
     })
   })
 
@@ -286,34 +310,40 @@ describe('submitPendingOptions and interceptors', () => {
       reportRequestError.mockImplementation(() => MOCK_UI_MESSAGE)
     })
 
-    test('failed request is reported to console and failure with uiMessage is dispatched to store', done => {
-      store.dispatch(submitPendingOptions()).then(() => {
-        expect(reportRequestError).toHaveBeenCalledTimes(1)
-        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-          error: {
-            errors: expect.objectContaining({
-              fontawesome_request_noresponse: [ expect.any(String) ]
-            }),
-            error_data: {
-              fontawesome_request_noresponse: {
-                request: expect.any(XMLHttpRequest)
+    test('failed request is reported to console and failure with uiMessage is dispatched to store', (done) => {
+      store
+        .dispatch(submitPendingOptions())
+        .then(() => {
+          expect(reportRequestError).toHaveBeenCalledTimes(1)
+          expect(reportRequestError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              error: {
+                errors: expect.objectContaining({
+                  fontawesome_request_noresponse: [expect.any(String)]
+                }),
+                error_data: {
+                  fontawesome_request_noresponse: {
+                    request: expect.any(XMLHttpRequest)
+                  }
+                }
               }
-            }
-          },
-        }))
-        expect(store.getActions()).toEqual(expect.arrayContaining([
-          expect.objectContaining({
-            type: 'OPTIONS_FORM_SUBMIT_START'
-          }),
-          expect.objectContaining({
-            type: 'OPTIONS_FORM_SUBMIT_END',
-            success: false,
-            message: MOCK_UI_MESSAGE
-          })
-        ]))
-        done()
-      })
-      .catch(e => done(e))
+            })
+          )
+          expect(store.getActions()).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_START'
+              }),
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_END',
+                success: false,
+                message: MOCK_UI_MESSAGE
+              })
+            ])
+          )
+          done()
+        })
+        .catch((e) => done(e))
     })
   })
 
@@ -328,34 +358,40 @@ describe('submitPendingOptions and interceptors', () => {
       reportRequestError.mockImplementation(() => MOCK_UI_MESSAGE)
     })
 
-    test('failure is reported to console and failure with uiMessage is dispatched to store', done => {
-      store.dispatch(submitPendingOptions()).then(() => {
-        expect(reportRequestError).toHaveBeenCalledTimes(1)
-        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-          error: {
-            errors: expect.objectContaining({
-              fontawesome_request_failed: [ expect.stringContaining('server failed') ]
-            }),
-            error_data: {
-              fontawesome_request_failed: {
-                failedRequestMessage: 'some axios error'
+    test('failure is reported to console and failure with uiMessage is dispatched to store', (done) => {
+      store
+        .dispatch(submitPendingOptions())
+        .then(() => {
+          expect(reportRequestError).toHaveBeenCalledTimes(1)
+          expect(reportRequestError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              error: {
+                errors: expect.objectContaining({
+                  fontawesome_request_failed: [expect.stringContaining('server failed')]
+                }),
+                error_data: {
+                  fontawesome_request_failed: {
+                    failedRequestMessage: 'some axios error'
+                  }
+                }
               }
-            }
-          },
-        }))
-        expect(store.getActions()).toEqual(expect.arrayContaining([
-          expect.objectContaining({
-            type: 'OPTIONS_FORM_SUBMIT_START'
-          }),
-          expect.objectContaining({
-            type: 'OPTIONS_FORM_SUBMIT_END',
-            success: false,
-            message: MOCK_UI_MESSAGE
-          })
-        ]))
-        done()
-      })
-      .catch(e => done(e))
+            })
+          )
+          expect(store.getActions()).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_START'
+              }),
+              expect.objectContaining({
+                type: 'OPTIONS_FORM_SUBMIT_END',
+                success: false,
+                message: MOCK_UI_MESSAGE
+              })
+            ])
+          )
+          done()
+        })
+        .catch((e) => done(e))
     })
   })
 })
@@ -364,7 +400,6 @@ describe('some action failure cases', () => {
   const STATE_TECH_CHANGE = {
     options: {
       technology: 'webfont'
-
     },
     pendingOptions: {
       technology: 'svg'
@@ -394,14 +429,14 @@ describe('some action failure cases', () => {
       endAction: 'OPTIONS_FORM_SUBMIT_END',
       params: {
         apiToken: 'xyz456',
-        runQueryKits: false 
+        runQueryKits: false
       }
     },
     {
       action: 'submitPendingBlocklist',
       state: {
         blocklistUpdateStatus: {
-          pending: [ 'abc123' ]
+          pending: ['abc123']
         }
       },
       route: 'conflict-detection/conflicts/blocklist',
@@ -414,7 +449,7 @@ describe('some action failure cases', () => {
       action: 'submitPendingUnregisteredClientDeletions',
       state: {
         unregisteredClientsDeletionStatus: {
-          pending: [ 'abc123' ]
+          pending: ['abc123']
         }
       },
       route: 'conflict-detection/conflicts',
@@ -435,19 +470,10 @@ describe('some action failure cases', () => {
       params: {
         nodesTested: {
           conflict: {
-            'abc123': {}
+            abc123: {}
           }
         }
       }
-    },
-    {
-      action: 'snoozeV3DeprecationWarning',
-      state: {},
-      route: 'v3deprecation',
-      method: 'POST',
-      startAction: 'SNOOZE_V3DEPRECATION_WARNING_START',
-      endAction: 'SNOOZE_V3DEPRECATION_WARNING_END',
-      params: {}
     },
     {
       action: 'setConflictDetectionScanner',
@@ -493,11 +519,11 @@ describe('some action failure cases', () => {
 
   const data = {
     errors: {
-      "code1": ["message1"],
+      code1: ['message1']
     },
     error_data: {
-      "code1": {
-        "trace": 'some stack trace'
+      code1: {
+        trace: 'some stack trace'
       }
     }
   }
@@ -510,8 +536,8 @@ describe('some action failure cases', () => {
     resetAxiosMocks()
   })
 
-  cases.map(c => {
-    describe(`${c.action}${ c.desc || ''}`, () => {
+  cases.map((c) => {
+    describe(`${c.action}${c.desc || ''}`, () => {
       let store = null
 
       beforeEach(() => {
@@ -530,38 +556,44 @@ describe('some action failure cases', () => {
             response: {
               status: 200,
               statusText: 'OK',
-              data: `${garbage}${JSON.stringify(data)}`,
+              data: `${garbage}${JSON.stringify(data)}`
               // no confirmation header
             }
           })
         })
 
-        test('reports warning and dispatches a failure action despite the garbage', done => {
-          store.dispatch(actions[c.action](c.params)).then(() => {
-            expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              error: expect.objectContaining({
-                errors: expect.anything(),
-                'error_data': expect.anything()
-              }),
-              confirmed: false,
-              falsePositive: true,
-              trimmed: garbage
-            }))
-            expect(store.getActions().length).toEqual(2)
-            expect(store.getActions()).toEqual(expect.arrayContaining([
-              expect.objectContaining({
-                type: c.startAction
-              }),
-              expect.objectContaining({
-                type: c.endAction,
-                success: false,
-                message: expect.stringMatching(/[a-z]/)
-              })
-            ]))
-            done()
-          })
-          .catch(e => done(e))
+        test('reports warning and dispatches a failure action despite the garbage', (done) => {
+          store
+            .dispatch(actions[c.action](c.params))
+            .then(() => {
+              expect(reportRequestError).toHaveBeenCalledTimes(1)
+              expect(reportRequestError).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  error: expect.objectContaining({
+                    errors: expect.anything(),
+                    error_data: expect.anything()
+                  }),
+                  confirmed: false,
+                  falsePositive: true,
+                  trimmed: garbage
+                })
+              )
+              expect(store.getActions().length).toEqual(2)
+              expect(store.getActions()).toEqual(
+                expect.arrayContaining([
+                  expect.objectContaining({
+                    type: c.startAction
+                  }),
+                  expect.objectContaining({
+                    type: c.endAction,
+                    success: false,
+                    message: expect.stringMatching(/[a-z]/)
+                  })
+                ])
+              )
+              done()
+            })
+            .catch((e) => done(e))
         })
       })
 
@@ -581,32 +613,38 @@ describe('some action failure cases', () => {
           })
         })
 
-        test('reports ui and console error messages', done => {
+        test('reports ui and console error messages', (done) => {
           reportRequestError.mockReturnValueOnce(null)
-          store.dispatch(actions[c.action](c.params)).then(() => {
-            expect(reportRequestError).toHaveBeenCalledTimes(1)
-            expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-              error: expect.objectContaining({
-                errors: expect.anything(),
-                'error_data': expect.anything()
-              }),
-              confirmed: true,
-              trimmed: ''
-            }))
-            expect(store.getActions().length).toEqual(2)
-            expect(store.getActions()).toEqual(expect.arrayContaining([
-              expect.objectContaining({
-                type: c.startAction
-              }),
-              expect.objectContaining({
-                type: c.endAction,
-                success: false,
-                message: expect.stringMatching(/[a-z]/)
-              })
-            ]))
-            done()
-          })
-          .catch(e => done(e))
+          store
+            .dispatch(actions[c.action](c.params))
+            .then(() => {
+              expect(reportRequestError).toHaveBeenCalledTimes(1)
+              expect(reportRequestError).toHaveBeenCalledWith(
+                expect.objectContaining({
+                  error: expect.objectContaining({
+                    errors: expect.anything(),
+                    error_data: expect.anything()
+                  }),
+                  confirmed: true,
+                  trimmed: ''
+                })
+              )
+              expect(store.getActions().length).toEqual(2)
+              expect(store.getActions()).toEqual(
+                expect.arrayContaining([
+                  expect.objectContaining({
+                    type: c.startAction
+                  }),
+                  expect.objectContaining({
+                    type: c.endAction,
+                    success: false,
+                    message: expect.stringMatching(/[a-z]/)
+                  })
+                ])
+              )
+              done()
+            })
+            .catch((e) => done(e))
         })
       })
     })
@@ -653,10 +691,6 @@ describe('reportDetectedConflicts', () => {
   test.todo('success')
 })
 
-describe('snoozeV3DeprecationWarning', () => {
-  test.todo('success')
-})
-
 describe('setConflictDetectionScanner', () => {
   test.todo('success when enabling')
   test.todo('success when disabling')
@@ -678,7 +712,7 @@ describe('preprocessResponse', () => {
 
       actions.preprocessResponse(response)
 
-      expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({confirmed: true}))
+      expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({ confirmed: true }))
     })
   })
 
@@ -687,7 +721,7 @@ describe('preprocessResponse', () => {
     const method = 'PUT'
     const status = 405
     const statusText = 'Method Not Allowed'
-    const requestData = JSON.stringify({bar: 43})
+    const requestData = JSON.stringify({ bar: 43 })
     const requestHeaders = {
       'Content-Type': 'application/json'
     }
@@ -739,17 +773,19 @@ describe('preprocessResponse', () => {
 
         actions.preprocessResponse(response)
 
-        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-          confirmed: false,
-          requestData,
-          requestMethod: method,
-          requestUrl: url,
-          responseStatus: status,
-          responseStatusText: statusText,
-          requestData: REDACTED_REQUEST_DATA,
-          responseHeaders: REDACTED_HEADERS,
-          requestHeaders: REDACTED_HEADERS
-        }))
+        expect(reportRequestError).toHaveBeenCalledWith(
+          expect.objectContaining({
+            confirmed: false,
+            requestData,
+            requestMethod: method,
+            requestUrl: url,
+            responseStatus: status,
+            responseStatusText: statusText,
+            requestData: REDACTED_REQUEST_DATA,
+            responseHeaders: REDACTED_HEADERS,
+            requestHeaders: REDACTED_HEADERS
+          })
+        )
       })
     })
 
@@ -780,17 +816,19 @@ describe('preprocessResponse', () => {
 
         actions.preprocessResponse(response)
 
-        expect(reportRequestError).toHaveBeenCalledWith(expect.objectContaining({
-          confirmed: false,
-          requestMethod: method,
-          requestUrl: url,
-          responseStatus: status,
-          responseStatusText: statusText,
-          responseData,
-          requestData: REDACTED_REQUEST_DATA,
-          responseHeaders: REDACTED_HEADERS,
-          requestHeaders: REDACTED_HEADERS
-        }))
+        expect(reportRequestError).toHaveBeenCalledWith(
+          expect.objectContaining({
+            confirmed: false,
+            requestMethod: method,
+            requestUrl: url,
+            responseStatus: status,
+            responseStatusText: statusText,
+            responseData,
+            requestData: REDACTED_REQUEST_DATA,
+            responseHeaders: REDACTED_HEADERS,
+            requestHeaders: REDACTED_HEADERS
+          })
+        )
       })
     })
   })

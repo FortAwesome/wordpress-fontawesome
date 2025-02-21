@@ -9,7 +9,7 @@ describe('options', () => {
 
   describe('no action match', () => {
     test('return unchanged state', () => {
-      expect(options({ foo: 42 })).toEqual({foo: 42})
+      expect(options({ foo: 42 })).toEqual({ foo: 42 })
     })
   })
 
@@ -21,7 +21,7 @@ describe('options', () => {
           usePro: true,
           compat: false,
           pseudoElements: true,
-          version: '5.11.2',
+          version: '5.11.2'
         }
       }
 
@@ -38,7 +38,7 @@ describe('options', () => {
         type: 'OPTIONS_FORM_SUBMIT_END'
       }
 
-      expect(options({ foo: 42 }, action)).toEqual({foo: 42})
+      expect(options({ foo: 42 }, action)).toEqual({ foo: 42 })
     })
   })
 })
