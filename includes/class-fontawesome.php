@@ -1728,9 +1728,6 @@ class FontAwesome {
 									wp_enqueue_script( self::RESOURCE_HANDLE_CLASSIC_EDITOR );
 									// Required for styling the icon chooser in the Classic Editor.
 									wp_enqueue_style( 'wp-components' );
-									$plugins = is_string( $mce_init['plugins'] ) ? explode( ',', $mce_init['plugins'] ) : array();
-									array_push( $plugins, 'font-awesome-official' );
-									$mce_init['plugins'] = implode( ',', $plugins );
 									return $mce_init;
 								},
 								10,
