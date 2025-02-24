@@ -1,7 +1,4 @@
-import {
-  expect,
-  test,
-} from "@wordpress/e2e-test-utils-playwright";
+import { expect, test } from '@wordpress/e2e-test-utils-playwright'
 import { prepareRestApi } from '../support/testHelpers'
 
 const QUERY = 'query { search(version: "6.x", query: "coffee", first: 1) { id } }'
@@ -15,23 +12,23 @@ const QUERY = 'query { search(version: "6.x", query: "coffee", first: 1) { id } 
 // MIME type is known to result in a 403 due to the OWASP default core ruleset
 // as of OWASP 4.3.0.
 test('query as plain text', async ({ storageState, baseURL }) => {
-  expect(process.env.ENABLE_MOD_SECURITY).toEqual("false")
+  expect(process.env.ENABLE_MOD_SECURITY).toEqual('false')
 
-  const {requestUtils, requestContext} = await prepareRestApi({ storageState, baseURL })
+  const { requestUtils, requestContext } = await prepareRestApi({ storageState, baseURL })
 
-	const url = `http://${process.env.WP_DOMAIN}/wp-json/font-awesome/v1/api?_locale=user`;
+  const url = `http://${process.env.WP_DOMAIN}/wp-json/font-awesome/v1/api?_locale=user`
 
-	const response = await requestUtils.request.fetch(url, {
-	    method: 'POST',
-	    data: QUERY,
-	    headers: {
-				'X-WP-Nonce': requestUtils.storageState.nonce
-	    }
-	});
+  const response = await requestUtils.request.fetch(url, {
+    method: 'POST',
+    data: QUERY,
+    headers: {
+      'X-WP-Nonce': requestUtils.storageState.nonce
+    }
+  })
 
-	expect(response.status()).toEqual(200);
+  expect(response.status()).toEqual(200)
 
-	const responseObj = await response.json();
+  const responseObj = await response.json()
 
-	expect(responseObj).toHaveProperty('data.search')
+  expect(responseObj).toHaveProperty('data.search')
 })

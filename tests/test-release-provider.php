@@ -1,16 +1,16 @@
 <?php
-namespace FortAwesome;
-
 /**
  * Tests the release provider.
  *
  * @noinspection PhpIncludeInspection
  */
 
+namespace FortAwesome;
+
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-release-provider.php';
 require_once FONTAWESOME_DIR_PATH . 'includes/class-fontawesome-exception.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
-require_once dirname( __FILE__ ) . '/fixtures/graphql-releases-query-fixture.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/fixtures/graphql-releases-query-fixture.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -70,7 +70,7 @@ class ReleaseProviderTest extends TestCase {
 			$this,
 			FontAwesome_Metadata_Provider::class,
 			'metadata_query',
-			function( $method ) use ( $response ) {
+			function ( $method ) use ( $response ) {
 				$method->willReturn(
 					$response
 				);
@@ -87,7 +87,7 @@ class ReleaseProviderTest extends TestCase {
 			$this,
 			FontAwesome_Metadata_Provider::class,
 			'metadata_query',
-			function( $method ) use ( $exception ) {
+			function ( $method ) use ( $exception ) {
 				$method->willReturn( array() );
 			}
 		);

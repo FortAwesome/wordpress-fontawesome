@@ -1,7 +1,7 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-preference-conflict-detector.php';
+require_once __DIR__ . '/../includes/class-fontawesome-preference-conflict-detector.php';
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**

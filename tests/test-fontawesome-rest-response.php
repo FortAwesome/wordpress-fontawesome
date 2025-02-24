@@ -2,7 +2,7 @@
 namespace FortAwesome;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
-use \WP_REST_Response;
+use WP_REST_Response;
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
 /**
@@ -27,6 +27,5 @@ class RestResponseTest extends TestCase {
 		$this->assertArrayHasKey( FontAwesome_REST_Response::CONFIRMATION_HEADER, $r->get_headers() );
 		$this->assertArrayHasKey( 'FakeHeader', $r->get_headers() );
 		$this->assertEquals( 42, $r->get_headers()['FakeHeader'] );
-
 	}
 }

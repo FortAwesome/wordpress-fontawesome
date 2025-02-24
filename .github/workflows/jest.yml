@@ -2,33 +2,33 @@ name: Jest
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - "**"
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   jest:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '18'
-        check-latest: true
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18"
+          check-latest: true
 
-    - name: Cache node_module
-      id: node-modules-cache
-      uses: actions/cache@v2
-      with:
-        path: admin/node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
+      - name: Cache node_module
+        id: node-modules-cache
+        uses: actions/cache@v2
+        with:
+          path: admin/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
 
-    - name: Install node dependencies
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
-      run: cd admin && npm install
+      - name: Install node dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: cd admin && npm install
 
-    - name: Run Jest
-      run: cd admin && npm run test
+      - name: Run Jest
+        run: cd admin && npm run test

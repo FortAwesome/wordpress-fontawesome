@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "font-awesome/icon",
+  "version": "0.1.0",
+  "title": "Font Awesome Icon",
+  "category": "design",
+  "description": "Add a Font Awesome icon.",
+  "attributes": {
+    "iconLayers": {
+      "type": "array"
+    },
+    "justification": {
+      "type": "string"
+    }
+  },
+  "supports": {
+    "anchor": true,
+    "align": [
+      "left",
+      "center",
+      "right"
+    ],
+    "ariaLabel": true,
+    "color": {
+      "text": false,
+      "background": true,
+      "enableConstrastChecker": true,
+      "gradients": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "html": false
+  },
+  "textdomain": "font-awesome",
+  "editorScript": "font-awesome-block-editor",
+  "editorStyle": "font-awesome-block-editor"
+}

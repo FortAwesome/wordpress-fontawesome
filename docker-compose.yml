@@ -1,5 +1,3 @@
-version: '3.6'
-
 x-dev_env_volumes: &dev_env_volumes
   volumes:
     # This wordpress bind mount could be uncommented in order to get access in the host
@@ -52,7 +50,9 @@ x-dev_env_volumes: &dev_env_volumes
     # in sync between the host and container.
     #
     # ignores for the local plugin repo and working directory
-    - /var/www/html/wp-content/plugins/font-awesome/compat-js/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/block-editor/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/classic-editor/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/icon-chooser/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
     - /var/www/html/wp-content/plugins/font-awesome/docs
     - /var/www/html/wp-content/plugins/font-awesome/docsrv
@@ -103,7 +103,9 @@ x-integration_env_volumes: &integration_env_volumes
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
-    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/compat-js/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/block-editor/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/classic-editor/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/icon-chooser/src
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
@@ -121,370 +123,152 @@ x-wordpress-dev-defaults: &wordpress_dev_defaults
   <<: *wordpress_defaults
 
 services:
-   wpdb:
-     image: mariadb:10.5.8
-     ports:
-       - "3306:3306"
-     volumes:
-       - wpdb_data:/var/lib/mysql
-     env_file:
-       - ".env"
-     container_name: "com.fontawesome.wpdb"
+  wpdb:
+    image: mariadb:10.5.8
+    ports:
+      - "3306:3306"
+    volumes:
+      - wpdb_data:/var/lib/mysql
+    env_file:
+      - ".env"
+    container_name: "com.fontawesome.wpdb"
 
-   db-5.9:
-     image: mariadb:10.5.8
-     ports:
-       - "3312:3312"
-     env_file:
-       - ".env"
-     environment:
-       MYSQL_TCP_PORT: 3312
-     volumes:
-       - db_data-5.9:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-5.9"
+  wordpress-latest-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-latest
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      FONTAWESOME_ENV: development
+      COMPOSER: ${WP_FA_DIR}/composer.json
+    container_name: "com.fontawesome.wordpress-latest-dev"
 
-   db-4.9:
-     image: mariadb:10.5.8
-     ports:
-       - "3309:3309"
-     env_file:
-       - ".env"
-     environment:
-       MYSQL_TCP_PORT: 3309
-     volumes:
-       - db_data-4.9:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-4.9"
+  wordpress-php8.1-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-php8.1
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      FONTAWESOME_ENV: development
+      COMPOSER: ${WP_FA_DIR}/composer-php8.1.json
+    container_name: "com.fontawesome.wordpress-php8.1-dev"
 
-   db-4.8:
-     image: mariadb:10.5.8
-     ports:
-       - "3310:3310"
-     env_file:
-       - ".env"
-     environment:
-       MYSQL_TCP_PORT: 3310
-     volumes:
-       - db_data-4.8:/var/lib/mysql
-     container_name: "com.fontawesome.wpdb-4.8"
+  wordpress-php8.0-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-php8.0
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-php8.0.json
+    container_name: "com.fontawesome.wordpress-php8.0-dev"
 
-   wordpress-latest-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-latest
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       FONTAWESOME_ENV: development
-       COMPOSER: ${WP_FA_DIR}/composer.json
-     container_name: "com.fontawesome.wordpress-latest-dev"
+  wordpress-php7.4-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-php7.4
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
+    container_name: "com.fontawesome.wordpress-php7.4-dev"
 
-   wordpress-php8.1-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php8.1
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       FONTAWESOME_ENV: development
-       COMPOSER: ${WP_FA_DIR}/composer-php8.1.json
-     container_name: "com.fontawesome.wordpress-php8.1-dev"
+  wordpress-php8.3-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-php8.3
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-php8.3.json
+    container_name: "com.fontawesome.wordpress-php8.3-dev"
 
-   wordpress-php8.0-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php8.0
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php8.0.json
-     container_name: "com.fontawesome.wordpress-php8.0-dev"
+  wordpress-latest-integration:
+    <<:
+      - *wordpress_defaults
+      - *integration_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-latest
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      FONTAWESOME_ENV: production
+      WORDPRESS_DB_HOST: wpdb:3306
+    container_name: "com.fontawesome.wordpress-latest-integration"
 
-   wordpress-php7.3-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php7.3
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php7.3.json
-     container_name: "com.fontawesome.wordpress-php7.3-dev"
+  wordpress-5.8-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-5.8
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-wp5.8.json
+    container_name: "com.fontawesome.wordpress-5.8-dev"
 
-   wordpress-php7.4-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php7.4
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
-     container_name: "com.fontawesome.wordpress-php7.4-dev"
+  wordpress-6.0-dev:
+    <<:
+      - *wordpress_defaults
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-6.0
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
+    container_name: "com.fontawesome.wordpress-6.0-dev"
 
-   wordpress-php8.3-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php8.3
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php8.3.json
-     container_name: "com.fontawesome.wordpress-php8.3-dev"
-
-   wordpress-php7.2-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php7.2
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php7.2.json
-     container_name: "com.fontawesome.wordpress-php7.2-dev"
-
-   wordpress-php7.1-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php7.1
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php7.1.json
-     container_name: "com.fontawesome.wordpress-php7.1-dev"
-
-   wordpress-php5.6-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-php5.6
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-php5.6.json
-     container_name: "com.fontawesome.wordpress-php5.6-dev"
-
-   wordpress-latest-integration:
-     <<:
-       - *wordpress_defaults
-       - *integration_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-latest
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: wpdb:3306
-     container_name: "com.fontawesome.wordpress-latest-integration"
-
-   wordpress-5.0-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-5.0
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-wp5.0.json
-     container_name: "com.fontawesome.wordpress-5.0-dev"
-
-   wordpress-5.4-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-5.4
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer.json
-     container_name: "com.fontawesome.wordpress-5.4-dev"
-
-   wordpress-6.0-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     depends_on:
-       - wpdb
-     image: wordpress-fontawesome-dev-6.0
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-       COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
-     container_name: "com.fontawesome.wordpress-6.0-dev"
-
-   wordpress-5.0-integration:
-     <<:
-       - *wordpress_defaults
-       - *integration_env_volumes
-     image: wordpress-fontawesome-dev-5.0
-     depends_on:
-       - wpdb
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: wpdb:3306
-     container_name: "com.fontawesome.wordpress-5.0-integration"
-
-   wordpress-5.4-integration:
-     <<:
-       - *wordpress_defaults
-       - *integration_env_volumes
-     image: wordpress-fontawesome-dev-5.4
-     depends_on:
-       - wpdb
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: wpdb:3306
-     container_name: "com.fontawesome.wordpress-5.4-integration"
-
-   wordpress-4.9-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     image: wordpress-fontawesome-dev-4.9
-     depends_on:
-       - db-4.9
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: db-4.9:3309
-       COMPOSER: ${WP_FA_DIR}/composer-wp4.9.json
-     container_name: "com.fontawesome.wordpress-4.9-dev"
-
-   wordpress-4.9-integration:
-     <<:
-       - *wordpress_defaults
-       - *integration_env_volumes
-     image: wordpress-fontawesome-dev-4.9
-     depends_on:
-       - db-4.9
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: db-4.9:3309
-     container_name: "com.fontawesome.wordpress-4.9-integration"
-
-   wordpress-4.7-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     image: wordpress-fontawesome-dev-4.7
-     depends_on:
-       - wpdb
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: wpdb:3306
-     container_name: "com.fontawesome.wordpress-4.7-dev"
-
-   wordpress-4.7-integration:
-     <<:
-       - *wordpress_defaults
-       - *integration_env_volumes
-     image: wordpress-fontawesome-dev-4.7
-     depends_on:
-       - wpdb
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: wpdb:3306
-     container_name: "com.fontawesome.wordpress-4.7-integration"
-
-   wordpress-4.8-dev:
-     <<:
-       - *wordpress_defaults
-       - *dev_env_volumes
-     image: wordpress-fontawesome-dev-4.8
-     depends_on:
-       - db-4.8
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       WORDPRESS_DB_HOST: db-4.8:3310
-     container_name: "com.fontawesome.wordpress-4.8-dev"
-
-   wordpress-4.8-integration:
-     <<:
-       - *wordpress_defaults
-       - *integration_env_volumes
-     image: wordpress-fontawesome-dev-4.8
-     depends_on:
-       - db-4.8
-     env_file:
-       - ".env"
-       - ".env.local"
-     environment:
-       FONTAWESOME_ENV: production
-       WORDPRESS_DB_HOST: db-4.8:3310
-     container_name: "com.fontawesome.wordpress-4.8-integration"
+  wordpress-6.0-integration:
+    <<:
+      - *wordpress_defaults
+      - *integration_env_volumes
+    depends_on:
+      - wpdb
+    image: wordpress-fontawesome-dev-6.0
+    env_file:
+      - ".env"
+      - ".env.local"
+    environment:
+      WORDPRESS_DB_HOST: wpdb:3306
+      COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
+    container_name: "com.fontawesome.wordpress-6.0-integration"
 
 volumes:
-    wpdb_data:
-    db_data-4.8:
-    db_data-4.9:
-    db_data-5.9:
-    db_data-6.0:
+  wpdb_data:

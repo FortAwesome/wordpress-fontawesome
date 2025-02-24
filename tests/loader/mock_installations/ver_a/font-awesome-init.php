@@ -7,4 +7,3 @@ if ( ! function_exists( 'FortAwesome\loader_scenario_version' ) ) {
 	function loader_scenario_version() {
 		return '42.0.1'; }
 }
-

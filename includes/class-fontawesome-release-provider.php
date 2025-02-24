@@ -6,7 +6,11 @@
  */
 namespace FortAwesome;
 
-use \WP_Error, \Error, \Exception;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+use WP_Error, Error, Exception;
 
 /**
  * Provides metadata about Font Awesome releases.
@@ -222,11 +226,13 @@ EOD;
 		$latest_version_6 = isset( $body['data']['latest_version_6']['version'] ) ? $body['data']['latest_version_6']['version'] : null;
 
 		if ( is_null( $latest_version_5 ) ) {
-			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_5' ) );
+			$e = ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_5' ) );
+			throw $e;
 		}
 
 		if ( is_null( $latest_version_6 ) ) {
-			throw ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_6' ) );
+			$e = ApiResponseException::with_wp_error( new WP_Error( 'missing_latest_version_6' ) );
+			throw $e;
 		}
 
 		$option_value = array(
@@ -327,7 +333,7 @@ EOD;
 		$versions = array_keys( $this->releases() );
 		usort(
 			$versions,
-			function( $first, $second ) {
+			function ( $first, $second ) {
 				return version_compare( $second, $first );
 			}
 		);
@@ -352,7 +358,7 @@ EOD;
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 * @throws ConfigCorruptionException when called with an invalid configuration
-	 * @return array
+	 * @return FontAwesome_ResourceCollection
 	 */
 	public static function get_resource_collection( $version, $flags = array(
 		'use_pro'           => false,
@@ -508,6 +514,17 @@ EOD;
 	 *
 	 * @internal
 	 * @ignore
+	 * @return FontAwesome_Resource
+	 */
+	public function get_svg_styles_resource( $version ) {
+		return $this->build_resource( $version, 'svg-with-js' );
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
 	 */
 	public static function delete_option() {
 		if ( is_multisite() ) {
@@ -548,6 +565,8 @@ EOD;
 		return delete_transient( self::LAST_USED_RELEASE_TRANSIENT );
 	}
 }
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
 
 /**
  * Convenience global function to get a singleton instance of the Release Provider.

@@ -6,7 +6,11 @@
  */
 namespace FortAwesome;
 
-use \WP_Error, \Error, \Exception;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+use WP_Error, Error, Exception;
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
 
@@ -128,56 +132,27 @@ class FontAwesome_Metadata_Provider {
 		);
 
 		if ( ! $ignore_auth ) {
-			$access_token                     = $this->current_access_token();
+			$access_token                     = fa_api_settings()->current_access_token();
 			$args['headers']['authorization'] = "Bearer $access_token";
 		}
 
 		$response = $this->post( FONTAWESOME_API_URL, $args );
 
 		if ( $response instanceof WP_Error ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
 		}
 
 		if ( 200 === $response['response']['code'] ) {
 			return $response['body'];
 		} else {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw ApiResponseException::with_wp_response( $response );
 		}
 	}
-
-	/**
-	 * Returns a current access_token, if available. Attempts to refresh an
-	 * access_token if the one we have is near or past expiration and an api_token
-	 * is present.
-	 *
-	 * Returns WP_Error indicating any error when trying to refresh an access_token.
-	 * Returns null when there is no api_token.
-	 * Otherwise, returns the current access_token as a string.
-	 *
-	 * @throws ApiTokenMissingException
-	 * @throws ApiTokenEndpointRequestException
-	 * @throws ApiTokenEndpointResponseException
-	 * @throws ApiTokenInvalidException
-	 * @throws AccessTokenStorageException
-	 * @return string|null access_token if available; null if unavailable
-	 */
-	protected function current_access_token() {
-		if ( ! boolval( fa_api_settings()->api_token() ) ) {
-			return null;
-		}
-
-		$exp          = fa_api_settings()->access_token_expiration_time();
-		$access_token = fa_api_settings()->access_token();
-
-		if ( is_string( $access_token ) && $exp > ( time() - 5 ) ) {
-			return $access_token;
-		} else {
-			// refresh the access token.
-			fa_api_settings()->request_access_token();
-			return fa_api_settings()->access_token();
-		}
-	}
 }
+
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
 
 /**
  * Convenience global function to get a singleton instance of the Metadata Provider.

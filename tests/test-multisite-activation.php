@@ -1,9 +1,11 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../font-awesome-init.php';
+require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-exception.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-svg-styles-manager.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
@@ -34,6 +36,7 @@ class MultisiteActivationTest extends TestCase {
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters( 'wp_is_large_network' );
 		FontAwesome::reset();
+		mock_fetch_svg_styles( $this );
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
 				wp_json_encode(
@@ -90,7 +93,7 @@ class MultisiteActivationTest extends TestCase {
 			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
 
 			for_each_blog(
-				function( $blog_id ) use ( $test_obj, $expected_options, &$site_count ) {
+				function () use ( $test_obj, $expected_options, &$site_count ) {
 					$site_count     = ++$site_count;
 					$actual_options = get_option( FontAwesome::OPTIONS_KEY );
 					$test_obj->assertEquals( $expected_options, $actual_options );
@@ -103,6 +106,7 @@ class MultisiteActivationTest extends TestCase {
 			);
 
 			$this->assertEquals( $site_count, 3 );
+			$this->assertTrue( get_svg_styles_manager_fetch_count() > 0 );
 		} else {
 			$this->assertEquals( count( $this->sub_sites ), 2 );
 
@@ -125,6 +129,7 @@ class MultisiteActivationTest extends TestCase {
 
 			// The network wide release metadata will have been initialized.
 			$this->assertTrue( boolval( get_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
+			$this->assertTrue( get_svg_styles_manager_fetch_count() > 0 );
 		}
 	}
 
@@ -159,7 +164,7 @@ class MultisiteActivationTest extends TestCase {
 		$this->assertEquals( $expected_options, $options_for_main_blog_id );
 
 		for_each_blog(
-			function( $blog_id ) use ( $test_obj, $expected_options ) {
+			function () use ( $test_obj, $expected_options ) {
 				$actual_options = fa()->options();
 				$test_obj->assertEquals( $expected_options, $actual_options );
 			}
@@ -219,7 +224,7 @@ class MultisiteActivationTest extends TestCase {
 			)
 		);
 		$all_site_blog_ids = array_map(
-			function( $site ) {
+			function ( $site ) {
 				return $site->blog_id;
 			},
 			get_sites(
@@ -237,7 +242,7 @@ class MultisiteActivationTest extends TestCase {
 		$visited_blog_ids = array();
 
 		for_each_blog(
-			function( $blog_id ) use ( &$visited_blog_ids ) {
+			function ( $blog_id ) use ( &$visited_blog_ids ) {
 				array_push( $visited_blog_ids, $blog_id );
 			}
 		);

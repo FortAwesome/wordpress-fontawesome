@@ -1,0 +1,213 @@
+.wp-rich-text-font-awesome-icon:hover {
+  cursor: pointer;
+  border: 1px solid var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
+  margin-left: -1px;
+  margin-right: -1px;
+  border-radius: 2px;
+}
+
+.fawp-inline-popover-wrapper {
+  padding: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* styling modal */
+.fawp-icon-styling-modal {
+  --border-radius-fa: 0.5rem;
+  --border-width-fa: 2px;
+
+  --spacing-xs-fa: 0.5rem;
+  --spacing-sm-fa: 0.75rem;
+  --spacing-md-fa: 1rem;
+  --spacing-lg-fa: 1.25rem;
+  --spacing-xl-fa: 1.5rem;
+  --spacing-2xl-fa: 2rem;
+
+  --black-fa: hsl(213, 100%, 13%); /* fa-dk-navy */
+  --gray1-fa: hsl(215, 55%, 21%); /* fa-navy */
+  --gray2-fa: hsl(221, 21%, 40%); /* fa-dk-gravy */
+  --gray3-fa: hsl(222, 17%, 46%); /* fa-md-gravy */
+  --gray4-fa: hsl(224, 14%, 69%);
+  --gray5-fa: hsl(227, 13%, 79%); /* fa-gravy */
+  --gray6-fa: hsl(225, 15%, 89%);
+  --gray7-fa: hsl(220, 11%, 95%); /* fa-lt-gravy */
+  --white-fa: hsl(0, 0%, 100%); /* "white" */
+
+  --red-fa: hsla(360, 74%, 54%, 1);
+  --yellow-fa: hsla(42, 96%, 50%, 1);
+  --teal-fa: hsla(162, 85%, 35%, 1);
+  --blue-fa: hsla(208, 83%, 41%, 1);
+  --purple-fa: hsla(288, 54%, 46%, 1);
+  --violet-fa: hsla(255, 67%, 55%, 1);
+
+  --input-border-color: var(--fa-navy);
+  --input-border-width: 0.15rem;
+}
+
+.fawp-icon-styling-modal {
+  width: 80vw;
+  max-width: 130ch;
+  border-radius: 0.75em;
+}
+
+.fawp-button-icon {
+  padding-right: var(--spacing-xs-fa);
+}
+
+.fawp-icon-modifier {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xl-fa);
+}
+
+/* icon preview */
+.fawp-icon-modifier-preview-container {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md-fa);
+  border: 2px solid var(--gray7-fa);
+  border-radius: var(--border-radius-fa);
+  width: 350px;
+  min-height: 300px;
+}
+
+.fawp-icon-modifier-preview {
+  display: flex;
+  margin: auto;
+  text-align: center;
+  font-size: var(--wp--preset--font-size--medium);
+  padding: var(--spacing-md-fa);
+}
+
+.fawp-icon-modifier-preview div {
+  display: flex;
+  margin: auto;
+}
+
+/* tabs */
+.fawp-icon-modifier-preview-controls {
+  flex: 1 1 50%;
+}
+
+.fawp-tab-content {
+  margin-block-start: var(--spacing-2xl-fa);
+}
+
+.fawp-tab-content .fawp-options-section-heading {
+  font-size: 0.8em;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-block: var(--spacing-xs-fa);
+}
+
+.fawp-styling-controls,
+.fawp-animation-controls {
+  display: flex;
+  align-items: stretch;
+  gap: var(--spacing-sm-fa);
+}
+
+.fawp-styling-controls .fawp-button,
+.fawp-animation-controls .fawp-button {
+  transition: all 0.2s ease-in-out;
+  background-color: var(--white-fa);
+  border-radius: var(--border-radius-fa);
+  border: var(--border-width-fa) solid var(--gray7-fa);
+  padding: var(--spacing-xs-fa) var(--spacing-sm-fa);
+  flex: auto;
+  cursor: pointer;
+}
+
+.fawp-animation-controls .fawp-button {
+  padding: var(--spacing-md-fa) var(--spacing-lg-fa);
+}
+
+.fawp-styling-controls .fawp-reset,
+.fawp-animation-controls .fawp-reset {
+  flex-grow: 0;
+  background-color: var(--gray7-fa);
+}
+
+.fawp-styling-controls .fawp-button.fawp-selected,
+.fawp-animation-controls .fawp-button.fawp-selected {
+  border-color: var(--black-fa);
+}
+
+.fawp-styling-controls .fawp-button:hover,
+.fawp-animation-controls .fawp-button:hover {
+  border-color: var(--black-fa);
+  background-color: var(--black-fa);
+  color: var(--white-fa);
+}
+
+/* styling tab - colors */
+.fawp-color-settings {
+  display: flex;
+  gap: 10px;
+}
+
+.fawp-color-settings .fawp-color-option-wrapper {
+  display: inline-block;
+  height: 28px;
+  transform: scale(1);
+  transition: transform 0.1s ease;
+  vertical-align: top;
+  width: 28px;
+  will-change: transform;
+}
+
+.fawp-color-settings .fawp-color-option-wrapper:hover {
+  transform: scale(1.2);
+}
+
+.fawp-color-settings .fawp-button {
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--gray5-fa);
+  cursor: pointer;
+  display: inline-block;
+  height: 100%;
+  transition: box-shadow 0.1s ease;
+  vertical-align: top;
+  width: 100%;
+}
+
+.fawp-color-settings .fawp-button.fawp-selected {
+  box-shadow:
+    0 0 0 2px var(--white-fa),
+    0 0 0 4px var(--black-fa);
+}
+
+.fawp-icon-settings-tab-panel {
+  position: relative;
+}
+
+.fawp-color-picker-wrapper {
+  position: absolute;
+  padding: 10px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  border: 1px solid gray;
+  z-index: 1000;
+  top: 0;
+  right: 10%;
+  text-align: right;
+}
+
+/* animation tab */
+.fawp-animation-controls {
+  flex-wrap: wrap;
+}
+
+.fawp-icon-animations .fawp-animation-controls .fawp-button {
+  flex: 1 0 33%;
+}
+
+.fawp-icon-styling-rotate .fawp-input {
+  border-radius: var(--border-radius-fa);
+  border: var(--border-width-fa) solid var(--gray7-fa);
+  max-width: 12ch;
+}

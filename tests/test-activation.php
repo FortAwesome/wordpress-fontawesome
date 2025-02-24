@@ -1,9 +1,9 @@
 <?php
 namespace FortAwesome;
 
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-activator.php';
-require_once dirname( __FILE__ ) . '/../includes/class-fontawesome-exception.php';
-require_once dirname( __FILE__ ) . '/_support/font-awesome-phpunit-util.php';
+require_once __DIR__ . '/../includes/class-fontawesome-activator.php';
+require_once __DIR__ . '/../includes/class-fontawesome-exception.php';
+require_once __DIR__ . '/_support/font-awesome-phpunit-util.php';
 
 use Yoast\WPTestUtils\WPIntegration\TestCase;
 
@@ -17,6 +17,7 @@ class ActivationTest extends TestCase {
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
+		mock_fetch_svg_styles( $this );
 		FontAwesome::reset();
 		$this->setup_metadata_provider_mock();
 	}

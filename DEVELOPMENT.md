@@ -41,7 +41,7 @@ to install any development dependencies inside the container.
 
 The `integration` option does _not_ mount this plugin code in the container. Instead, it expects you
 to install the plugin. You could do so by uploading a zip file on the Add New Plugin page in
-WordPress admin: build a zip using `composer dist` or by downloading one from the [plugin's WordPress
+WordPress admin: build a zip using the release steps below or by downloading one from the [plugin's WordPress
 plugin directory entry](https://wordpress.org/plugins/font-awesome/). Or you could install directly
 from the WordPress plugin directory by searching for plugins by author "fontawesome".
 
@@ -457,27 +457,6 @@ brew install composer
 </details>
 
 <details>
-<summary>The WordPress 4 compat bundle</summary>
-For older versions of WordPress, we build and load this separate "compat-js" bundle. It includes some WordPress dependencies that are available at runtime on newer versions of WordPress, but which this plugin provides itself when it detects that
-it's being loaded on older versions of WordPress.
-
-This bundle will probably not change very much, so it may not be necessary to rebuild at all.
-If you're doing development work only in WordPress 5, you can skip this altogether.
-
-If you do need to update what's in this bundle, though, then you just build another
-static production build like this:
-
-```
-$ cd compat-js
-$ npm install
-$ npm run build
-```
-
-This will create `compat-js/build/compat.js`, which the plugin looks for and
-enqueues automatically when it detects that it's running under WordPress 4.
-</details>
-
-<details>
 <summary>If you have an older version of Docker or one that doesn't support host.docker.internal</summary>
 
 The local dev environment here is configured to use [host.docker.internal](https://docs.docker.com/docker-for-mac/networking/), which will work with Docker for Mac Desktop and some other versions of Docker.
@@ -607,7 +586,7 @@ When specifying a container with `-c`, to add additional command-line arguments,
 bin/phpunit -c com.fontawesome.wordpress-php7.1-dev -- --filter EnqueueTest
 ```
 
-Everything before the `--` are the options do the `bin/phpunit` script, and everything after the `--` are what get passed through 
+Everything before the `--` are the options do the `bin/phpunit` script, and everything after the `--` are what get passed through
 to the `phpunit` command inside the container.
 </details>
 
@@ -820,7 +799,7 @@ When `mod_security` is enabled, it'll look like this:
 
 3. Update the plugin version const in `includes/class-fontawesome.php`
 
-4. Update the versions in `admin/package.json` and `compat-js/package.json`
+4. Update the versions in `admin/package.json`, `block-editor/package.json`, `classic-editor/package.json`, `icon-chooser/package.json`
 
 5. Wait on changing the "Stable Tag" in `readme.txt` until after we've made the changes in the `svn` repo below.
 
@@ -845,7 +824,7 @@ When `mod_security` is enabled, it'll look like this:
 
 - `git add docs` to stage them for commit (and eventually commit them)
 
-7. Build production admin app and WordPress distribution layout into `wp-dist`
+7. Build production distribution archive.
 
 ```bash
 bin/composer dist
@@ -856,20 +835,7 @@ the default dev `latest` container, which you should be running via `bin/dev`.
 This will cause everything to be built inside the container, which will hopefully
 keep the built assets more consistent, regardless of the host environment.)
 
-This will delete the previous build assets and produce the following:
-
-`admin/build`: production build of the admin UI React app. This needs to be committed, so that it
-can be included in the composer package (which is really just a pull of this repo)
-
-`compat-js/build`: production build of the compatibility JS bundled. This also needs to be committed.
-
-8. Build the zip file
-
-```bash
-bin/make-wp-dist-zip
-```
-
-This builds the following:
+This will delete the previous build assets and produce:
 
 `wp-dist/`: the contents of this directory contains everything that will be used in
 subsequent steps to both build an installable zip file, and to copy into the
@@ -884,13 +850,7 @@ a GitHub release.
 
 9. Run through some manual acceptance testing
 
-**WordPress 4.7, 4.8, 4.9**
-
-For each of these 4.x environments, run and setup the corresponding integration container, like:
-```
-bin/integration 4.7
-bin/setup -c com.fontawesome.wordpress-4.7-integration
-```
+**WordPress 6.0**
 
 Install and activate the Font Awesome plugin from the admin dashboard by uploading the `font-awesome.zip` file
 that was created in the previous step.
@@ -899,31 +859,16 @@ Run through the following, with the JavaScript console open, looking for any war
 
 1. Load the plugin settings page.
 1. Change from Web Font to SVG and save.
-1. Create a new post (which will be in the Classic Editor)
+1. Install the Classic Editor plugin
+1. Create a new post with the Classic Editor
 1. Click the "Add Font Awesome" button
 1. Search for something, and click to insert an icon from the results
-
-**WordPress 5.0**
-
-Setup the integration environment as above, but also do the following editor
-integration tests intead:
-
-1. Install the Classic Editor plugin
-1. Create a post with the Classic Editor
-1. Click the "Add Font Awesome" media button
-1. Search for something, and click to insert an icon from the results
 1. Create a new post, switching to the Gutenberg / Block Editor
-1. Expect to see a compatibility warning that the Icon Chooser is not enabled,
-    but otherwise expect the Block Editor to function normally
-
-**WordPress 5.4**
-
-Setup the integration environment as above. Do the same tests as on 5.0, but also
-expect the Icon Chooser to be enabled within the Block Editor:
-
-1. Create a post with the Block Editor
-1. Activate the Icon Chooser
+1. Add an icon block to a post
 1. Search for something, and click to insert an icon from the results
+1. style the icon
+1. Add a RichText icon (inline)
+1. style that too
 
 **WordPress latest**
 
@@ -1347,7 +1292,7 @@ wp --allow-root core update --version=5.4 /tmp/wordpress-5.4-latest.zip
 
 # Analyze Webpack Bundle
 
-The webpack configs for both `admin/` and `compat-js/` include the `BundleAnalyzerPlugin`,
+The webpack configs for the `admin/` JavaScript bundle includes the `BundleAnalyzerPlugin`,
 which produces a corresponding `webpack-stats.html` file in the corresponding
 directory on each build.
 

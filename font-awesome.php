@@ -123,7 +123,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 */
 		private function __construct() {
-			add_action( 'wp_loaded', array( &$this, 'run_plugin' ), -1 );
+			add_action( 'init', array( &$this, 'init_plugin' ), -1 );
 			add_action( 'activate_' . FONTAWESOME_PLUGIN_FILE, array( &$this, 'activate_plugin' ), -1 );
 		}
 
@@ -201,7 +201,7 @@ if ( ! class_exists( 'FortAwesome\FontAwesome_Loader' ) ) :
 		 * @internal
 		 * @ignore
 		 */
-		public function run_plugin() {
+		public function init_plugin() {
 			try {
 				$this->select_latest_version_plugin_installation();
 				require self::$loaded['path'] . 'font-awesome-init.php';

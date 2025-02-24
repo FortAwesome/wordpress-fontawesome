@@ -1,0 +1,37 @@
+{
+  "name": "wp-font-awesome-icon",
+  "version": "5.0.0",
+  "description": "Block editor support for Font Awesome icons.",
+  "author": "Font Awesome",
+  "license": "GPL-2.0-or-later",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start",
+    "env": "wp-env"
+  },
+  "devDependencies": {
+    "@wordpress/block-editor": "wp-6.7",
+    "@wordpress/blocks": "wp-6.7",
+    "@wordpress/components": "wp-6.7",
+    "@wordpress/element": "wp-6.7",
+    "@wordpress/env": "^10.0.0",
+    "@wordpress/i18n": "wp-6.7",
+    "@wordpress/icons": "wp-6.7",
+    "@wordpress/rich-text": "wp-6.7",
+    "@wordpress/scripts": "wp-6.7",
+    "classnames": "^2.3.1"
+  },
+  "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/pro-solid-svg-icons": "^6.5.2",
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.2"
+  }
+}

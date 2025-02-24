@@ -18,7 +18,7 @@ class MockFontAwesome extends FontAwesome {
 	public function __construct() {
 		// no-op
 	}
-	
+
 	public static function instance() {
 		self::$instance = new self();
 	}
@@ -34,6 +34,7 @@ class FontAwesomeTest extends TestCase {
 		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
+		mock_fetch_svg_styles( $this );
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
@@ -434,7 +435,7 @@ class FontAwesomeTest extends TestCase {
 			array(
 				wp_json_encode(
 					array(
-						'data' => 
+						'data' =>
 							array(
 								'latest_version_5'   => array(
 									'version' => '5.15.2',
@@ -485,7 +486,7 @@ class FontAwesomeTest extends TestCase {
 			array(
 				wp_json_encode(
 					array(
-						'data' => 
+						'data' =>
 							array(
 								'latest_version_5'   => array(
 									'version' => '5.15.2',

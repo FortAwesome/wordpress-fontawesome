@@ -12,6 +12,7 @@ wp_cli() {
 echo "Adding WordPress debug configuration..."
 wp_cli config set WP_DEBUG true \
 && wp_cli config set WP_DEBUG_LOG true \
+&& wp_cli config set SCRIPT_DEBUG_LOG true \
 && wp_cli config set WP_DEBUG_DISPLAY false \
 && wp_cli config set SAVEQUERIES true \
 && wp_cli plugin install debug-bar \

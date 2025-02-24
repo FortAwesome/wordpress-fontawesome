@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import ConflictDetectionReporter from './ConflictDetectionReporter'
 import { dom } from '@fortawesome/fontawesome-svg-core'
 import { Provider } from 'react-redux'
@@ -24,22 +24,22 @@ export function mountConflictDetectionReporter(store) {
     faStyle.appendChild(cssText)
 
     const shadowContainer = document.createElement('DIV')
+    const root = createRoot(shadowContainer)
 
     shadow.appendChild(faStyle)
     shadow.appendChild(shadowContainer)
 
-    ReactDOM.render(
-      <Provider store={ store }>
+    root.render(
+      <Provider store={store}>
         <ConflictDetectionReporter />
-      </Provider>,
-      shadowContainer
+      </Provider>
     )
   })
 }
 
 export function isConflictDetectionReporterMounted() {
   const shadowHost = document.getElementById(CONFLICT_DETECTION_SHADOW_HOST_ID)
-  if(! shadowHost ) return false
+  if (!shadowHost) return false
 
   return !!shadowHost.shadowRoot
 }

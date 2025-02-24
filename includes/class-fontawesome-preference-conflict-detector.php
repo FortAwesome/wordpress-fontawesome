@@ -48,7 +48,7 @@ class FontAwesome_Preference_Conflict_Detector {
 	public static function detect( $configured_options = array(), $client_preferences = array(), $latest_version_5 = null, $latest_version_6 = null ) {
 		return array_reduce(
 			array_keys( $configured_options ),
-			function( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version_5, $latest_version_6 ) {
+			function ( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version_5, $latest_version_6 ) {
 				$resolve_method_candidate = 'resolve_' . $option;
 				if ( isset( $client_preferences[ $option ] ) ) {
 					if ( method_exists( __CLASS__, $resolve_method_candidate ) ) {
@@ -125,6 +125,3 @@ class FontAwesome_Preference_Conflict_Detector {
 		return $result_so_far;
 	}
 }
-
-
-

@@ -4,7 +4,7 @@ namespace FortAwesome;
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-rest-response.php';
 
-use \WP_REST_Controller, \WP_Error, \Error, \Exception;
+use WP_REST_Controller, WP_Error, Error, Exception;
 
 /**
  * REST Controller for managing data on the FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY.
@@ -37,9 +37,9 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 	/**
 	 * @ignore
 	 */
-	public function __construct( $plugin_slug, $namespace ) {
+	public function __construct( $plugin_slug, $rest_namespace ) {
 		$this->plugin_slug = $plugin_slug;
-		$this->namespace   = $namespace;
+		$this->namespace   = $rest_namespace;
 	}
 
 	// phpcs:ignore Generic.Commenting.DocComment.MissingShort
@@ -56,7 +56,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_detect_conflicts_until' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -70,7 +70,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'report_conflicts' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -84,7 +84,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'DELETE',
 					'callback'            => array( $this, 'delete_conflicts' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -103,7 +103,7 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 				array(
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'update_blocklist' ),
-					'permission_callback' => function() {
+					'permission_callback' => function () {
 						return current_user_can( 'manage_options' ); },
 					'args'                => array(),
 				),
@@ -429,21 +429,21 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 		return $validated;
 	}
 
-	protected function unregistered_clients_array_has_changes( $old, $new ) {
-		if ( ! is_array( $old ) ) {
+	protected function unregistered_clients_array_has_changes( $old_value, $new_value ) {
+		if ( ! is_array( $old_value ) ) {
 			return true;
 		}
 
-		if ( count( array_diff_key( $old, $new ) ) > 0 || count( array_diff_key( $new, $old ) ) > 0 ) {
+		if ( count( array_diff_key( $old_value, $new_value ) ) > 0 || count( array_diff_key( $new_value, $old_value ) ) > 0 ) {
 			return true;
 		} else {
-			foreach ( $old as $key => $value ) {
-				if ( count( array_diff_assoc( $old[ $key ], $new[ $key ] ) ) > 0 ) {
+			foreach ( $old_value as $key => $value ) {
+				if ( count( array_diff_assoc( $old_value[ $key ], $new_value[ $key ] ) ) > 0 ) {
 					return true;
 				}
 			}
-			foreach ( $new as $key => $value ) {
-				if ( count( array_diff_assoc( $new[ $key ], $old[ $key ] ) ) > 0 ) {
+			foreach ( $new_value as $key => $value ) {
+				if ( count( array_diff_assoc( $new_value[ $key ], $old_value[ $key ] ) ) > 0 ) {
 					return true;
 				}
 			}
@@ -453,16 +453,18 @@ class FontAwesome_Conflict_Detection_Controller extends WP_REST_Controller {
 
 	protected function is_array_of_md5( $data ) {
 		return \is_array( $data ) &&
+			(
 			count( $data ) === 0 ||
 			(
 				0 === count(
 					array_filter(
 						$data,
-						function( $md5 ) {
+						function ( $md5 ) {
 							return ! is_string( $md5 ) || strlen( $md5 ) !== 32;
 						}
 					)
 				)
+					)
 			);
 	}
 }
