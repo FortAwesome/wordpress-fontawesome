@@ -10,13 +10,13 @@
  * License:           UNLICENSED
  */
 
-defined( 'WPINC' ) || die;
-define( 'SIGMA_PLUGIN_VERSION', '0.0.1' );
-define( 'SIGMA_PLUGIN_LOG_PREFIX', 'sigma-plugin' );
+defined("WPINC") || die();
+define("SIGMA_PLUGIN_VERSION", "0.0.1");
+define("SIGMA_PLUGIN_LOG_PREFIX", "sigma-plugin");
 
 // index.php is the entry point that must be required in order to leverage
 // the FontAwesome_Loader.
-require_once __DIR__ . '/vendor/fortawesome/wordpress-fontawesome/index.php';
+require_once __DIR__ . "/vendor/fortawesome/wordpress-fontawesome/index.php";
 
 use function FortAwesome\fa;
 
@@ -26,7 +26,7 @@ use function FortAwesome\fa;
 // are handled, preserved, or overwritten.
 register_activation_hook(
 	__FILE__,
-	'FortAwesome\FontAwesome_Loader::initialize'
+	"FortAwesome\FontAwesome_Loader::initialize"
 );
 
 // A client should invoke FortAwesome\FontAwesome_Loader::maybe_deactivate()
@@ -34,7 +34,7 @@ register_activation_hook(
 // last remaining plugin installation.
 register_deactivation_hook(
 	__FILE__,
-	'FortAwesome\FontAwesome_Loader::maybe_deactivate'
+	"FortAwesome\FontAwesome_Loader::maybe_deactivate"
 );
 
 // A client should invoke FortAwesome\FontAwesome_Loader::maybe_uninstall()
@@ -42,26 +42,21 @@ register_deactivation_hook(
 // last remaining plugin installation.
 register_uninstall_hook(
 	__FILE__,
-	'FortAwesome\FontAwesome_Loader::maybe_uninstall'
+	"FortAwesome\FontAwesome_Loader::maybe_uninstall"
 );
 
 // It is good to register as a client, even if no configuration preferences
 // are being specified, because the plugin's settings page may show the site owner
 // a listing of which plugins or themes are actively using Font Awesome and
 // what their preferences are.
-add_action(
-	'font_awesome_preferences',
-	function() {
-		fa()->register(
-			array(
-				'name' => SIGMA_PLUGIN_LOG_PREFIX,
-			)
-		);
-	}
-);
+add_action("font_awesome_preferences", function () {
+	fa()->register([
+		"name" => SIGMA_PLUGIN_LOG_PREFIX,
+	]);
+});
 
-add_action('wp_print_footer_scripts', function() use($pre_content) {
-?>
+add_action("wp_print_footer_scripts", function () {
+	?>
 <div class="plugin-sigma-pre-content" style="border: 1px solid grey;">
   <h2>Plugin Sigma</h2>
   <p>Expected by plugin-sigma: "fab fa-fort-awesome": <i class="fab fa-fort-awesome"></i></p>
