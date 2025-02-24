@@ -90,10 +90,10 @@
 
     <article class="phpdocumentor-element -class">
         <h2 class="phpdocumentor-content__title">
-    FontAwesome_API_Controller
+    NoAccessTokenException
 
         <span class="phpdocumentor-element__extends">
-        extends <abbr title="\WP_REST_Controller">WP_REST_Controller</abbr>
+        extends <a href="classes/FortAwesome-FontAwesome-ServerException.html"><abbr title="\FortAwesome\FontAwesome_ServerException">FontAwesome_ServerException</abbr></a>
     </span>
     
             <div class="phpdocumentor-element__package">
@@ -112,61 +112,40 @@
 </div>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-api-controller.php"><a href="files/includes-class-fontawesome-api-controller.html"><abbr title="includes/class-fontawesome-api-controller.php">class-fontawesome-api-controller.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-exception.php"><a href="files/includes-class-fontawesome-exception.html"><abbr title="includes/class-fontawesome-exception.php">class-fontawesome-exception.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">65</span>
+    <span class="phpdocumentor-element-found-in__line">266</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Controller class for the plugin&#039;s GraphQL API REST endpoint.</p>
-
-    <section class="phpdocumentor-description"><p>This controller provides a REST route for WordPress client access to the
-Font Awesome GraphQL API. It delegates to <a href="classes/FortAwesome-FontAwesome.html#method_query"><abbr title="\FortAwesome\FontAwesome::query()">FontAwesome::query()</abbr></a>.
-The plugin's setting page is a React app that acts as such a client,
-querying kits.</p>
-<p>Requests to this REST route should have the following headers and body:</p>
-<h3>Headers</h3>
-<ul>
-<li>
-<code class="prettyprint">X-WP-Nonce</code>: include an appropriate nonce from WordPress.</li>
-<li>
-<code class="prettyprint">Content-Type: application/json</code>
-</li>
-</ul>
-<h3>Body</h3>
-<p>The request body must contain JSON with a GraphQL query document on the <code class="prettyprint">&quot;query&quot;</code>
-property. For example, the following query would return all available Font Awesome
-version numbers:</p>
-<pre class="prettyprint"><code class="prettyprint">{ &quot;query&quot;: &quot;query { releases { version } }&quot; }
-</code></pre>
-<p>It may also contain a &quot;variables&quot; property whose value is an object with variable
-assignments. For example, the following returns all icon identifiers for the
-latest version of Font Awesome 6.</p>
-<pre class="prettyprint"><code class="prettyprint">{
-  &quot;query&quot;: &quot;query Icons($ver: String!) { release(version:$ver) { icons { id } } }&quot;,
-  &quot;variables&quot;: { &quot;ver&quot;: &quot;6.x&quot; }
-}
-</code></pre>
-<p>For compatibility with prior versions, this API end point still also allows for
-sending the request with a plain text body of the query document only, with an
-implied <code class="prettyprint">content-type: text/plain</code> header (the default). However, this format is
-penalized by the OWASP core ruleset used by <code class="prettyprint">mod_security</code>, so it should not be used.</p>
-<h3>Internal Use vs. Public API</h3>
-<p>The PHP methods in this controller class are not part of this plugin's
-public API, but the REST route it exposes is.</p>
-<p>If you need to issue a query from server-side PHP code to the
-Font Awesome API server, use the <a href="classes/FortAwesome-FontAwesome.html#method_query"><abbr title="\FortAwesome\FontAwesome::query()">FontAwesome::query()</abbr></a> method.</p>
-<p>If you need to issue a query from client-side JavaScript, send
-an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1/api</code>.</p>
-</section>
+            <p class="phpdocumentor-summary">Thrown when an access token is requested from this plugin&#039;s REST API, but no access token
+be retrieved. This probably indicates some invalid state condition or programming error in
+this plugin&#039;s server-side, rather than a problem with communicating with the Font Awesome API
+service.</p>
 
 
+
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/FortAwesome-NoAccessTokenException.html#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">5.0.0</span>
+                                                                                
+                                             
+                                    </dd>
+                                            </dl>
 
 
 
 <h3 id="toc">
     Table of Contents
-    <a href="classes/FortAwesome-FontAwesome-API-Controller.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
+    <a href="classes/FortAwesome-NoAccessTokenException.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h3>
 
@@ -181,15 +160,23 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
 
 <h4 id="toc-methods">
     Methods
-    <a href="classes/FortAwesome-FontAwesome-API-Controller.html#toc-methods" class="headerlink"><i class="fas fa-link"></i></a>
+    <a href="classes/FortAwesome-NoAccessTokenException.html#toc-methods" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h4>
 <dl class="phpdocumentor-table-of-contents">
-            <dt class="phpdocumentor-table-of-contents__entry -method -private">
-    <a href="classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body">get_query_body()</a>
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_error">get_wp_error()</a>
     <span>
-                                &nbsp;: string|array&lt;string|int, mixed&gt;    </span>
+                                &nbsp;: null|<abbr title="\FortAwesome\WP_Error">WP_Error</abbr>    </span>
 </dt>
+<dd>The WP_Error associated with this exception, if any.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_response">get_wp_response()</a>
+    <span>
+                                &nbsp;: null|array&lt;string|int, mixed&gt;    </span>
+</dt>
+<dd>The response object associated with this exception, if any.</dd>
 
     </dl>
 
@@ -203,51 +190,113 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
             Methods
-            <a href="classes/FortAwesome-FontAwesome-API-Controller.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/FortAwesome-NoAccessTokenException.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
 
         </h3>
                     <article
         class="phpdocumentor-element
             -method
-            -private
+            -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_get_query_body">
-        get_query_body()
-        <a href="classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_get_wp_error">
+        get_wp_error()
+        <a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_error" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-api-controller.php"><a href="files/includes-class-fontawesome-api-controller.html"><abbr title="includes/class-fontawesome-api-controller.php">class-fontawesome-api-controller.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-exception.php"><a href="files/includes-class-fontawesome-exception.html"><abbr title="includes/class-fontawesome-exception.php">class-fontawesome-exception.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">234</span>
+    <span class="phpdocumentor-element-found-in__line">104</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">The WP_Error associated with this exception, if any.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">private</span>
-                    <span class="phpdocumentor-signature__name">get_query_body</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$request</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|array&lt;string|int, mixed&gt;</span></code>
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">get_wp_error</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">null|<abbr title="\FortAwesome\WP_Error">WP_Error</abbr></span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$request</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                
-            </dd>
-            </dl>
-
     
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_error#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                             
+                                    </dd>
+                                            </dl>
 
             <section>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-        <span class="phpdocumentor-signature__response_type">string|array&lt;string|int, mixed&gt;</span>
+        <span class="phpdocumentor-signature__response_type">null|<abbr title="\FortAwesome\WP_Error">WP_Error</abbr></span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_get_wp_response">
+        get_wp_response()
+        <a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_response" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome-exception.php"><a href="files/includes-class-fontawesome-exception.html"><abbr title="includes/class-fontawesome-exception.php">class-fontawesome-exception.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">115</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">The response object associated with this exception, if any.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">get_wp_response</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">null|array&lt;string|int, mixed&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_response#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">4.0.0</span>
+                                                                                
+                                             
+                                    </dd>
+                                            </dl>
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">null|array&lt;string|int, mixed&gt;</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>a response array as would be returned by wp_remote_post()
+with keys like: 'headers', 'body', 'response'.</p>
+</section>
+
             </section>
 
 </article>
@@ -257,7 +306,7 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
     <div class="phpdocumentor-modal-bg" data-exit-button></div>
     <div class="phpdocumentor-modal-container">
         <div class="phpdocumentor-modal-content">
-            <pre style="max-height: 500px; overflow-y: scroll" data-src="files/includes/class-fontawesome-api-controller.php.txt" class="language-php line-numbers linkable-line-numbers"></pre>
+            <pre style="max-height: 500px; overflow-y: scroll" data-src="files/includes/class-fontawesome-exception.php.txt" class="language-php line-numbers linkable-line-numbers"></pre>
         </div>
         <button data-exit-button class="phpdocumentor-modal__close">&times;</button>
     </div>
@@ -356,7 +405,7 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                                                                <li><a href="classes/FortAwesome-FontAwesome-API-Controller.html#toc-methods">Methods</a></li>
+                                                                                <li><a href="classes/FortAwesome-NoAccessTokenException.html#toc-methods">Methods</a></li>
                                     </ul>
             </li>
             
@@ -364,7 +413,8 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
                         <li class="phpdocumentor-on-this-page-section__title">Methods</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                            <li><a href="classes/FortAwesome-FontAwesome-API-Controller.html#method_get_query_body">get_query_body()</a></li>
+                                            <li><a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_error">get_wp_error()</a></li>
+                                            <li><a href="classes/FortAwesome-FontAwesome-Exception.html#method_get_wp_response">get_wp_response()</a></li>
                                     </ul>
             </li>
                     </ul>
@@ -384,7 +434,7 @@ an HTTP POST request to WP REST route <code class="prettyprint">/font-awesome/v1
     </section>
 </section>
         </div>
-        <a href="classes/FortAwesome-FontAwesome-API-Controller.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/FortAwesome-NoAccessTokenException.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

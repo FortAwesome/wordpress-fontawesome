@@ -111,6 +111,11 @@ Search.appendIndex(
             "summary": "Thrown\u0020when\u0020there\u0020is\u0020a\u0020failure\u0020to\u0020write\u0020a\u0020file\u0020on\u0020the\u0020WordPress\u0020server\u0020filesystem\nto\u0020store\u0020the\u0020access_token.",
             "url": "classes/FortAwesome-AccessTokenStorageException.html"
         },                {
+            "fqsen": "\\FortAwesome\\NoAccessTokenException",
+            "name": "NoAccessTokenException",
+            "summary": "Thrown\u0020when\u0020an\u0020access\u0020token\u0020is\u0020requested\u0020from\u0020this\u0020plugin\u0027s\u0020REST\u0020API,\u0020but\u0020no\u0020access\u0020token\nbe\u0020retrieved.\u0020This\u0020probably\u0020indicates\u0020some\u0020invalid\u0020state\u0020condition\u0020or\u0020programming\u0020error\u0020in\nthis\u0020plugin\u0027s\u0020server\u002Dside,\u0020rather\u0020than\u0020a\u0020problem\u0020with\u0020communicating\u0020with\u0020the\u0020Font\u0020Awesome\u0020API\nservice.",
+            "url": "classes/FortAwesome-NoAccessTokenException.html"
+        },                {
             "fqsen": "\\FortAwesome\\ConfigSchemaException",
             "name": "ConfigSchemaException",
             "summary": "Thrown\u0020when\u0020an\u0020options\u0020configuration\u0020is\u0020attempted\u0020that\u0020does\u0020not\u0020pass\u0020validation.",
