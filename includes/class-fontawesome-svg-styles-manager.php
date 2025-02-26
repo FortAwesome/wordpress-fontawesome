@@ -170,7 +170,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 */
 	public function selfhost_asset_full_path($fa, $fa_release_provider) {
 		$options          = $fa->options();
-		$concrete_version = $fa()->concrete_version( $options );
+		$concrete_version = $fa->concrete_version( $options );
 
 		if ( ! $concrete_version ) {
 			throw new SelfhostSetupException(
@@ -237,7 +237,7 @@ class FontAwesome_SVG_Styles_Manager {
 
 		global $wp_filesystem;
 
-		return $wp_filesystem->exists( $full_asset_path );
+		return $wp_filesystem->exists( $asset_full_path );
 	}
 
 	/**
@@ -270,7 +270,20 @@ class FontAwesome_SVG_Styles_Manager {
 			return;
 		}
 
-		$asset_full_path = $this->selfhost_asset_full_path($fa, $fa_release_provider);
+		$concrete_version = $fa->concrete_version( $fa->options() );
+
+		$asset_path = $this->selfhost_asset_path( $concrete_version );
+
+		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to determine filesystem location for self-hosted asset. Please report this on the plugin support forum so it can be investigated.',
+					'font-awesome'
+				)
+			);
+		}
+
+		$full_asset_path = trailingslashit( $asset_path['dir'] ) . $asset_path['file'];
 
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
