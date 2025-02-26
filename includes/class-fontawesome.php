@@ -1036,6 +1036,17 @@ class FontAwesome {
 			10,
 			3
 		);
+
+		try {
+			$svg_styles_manager = FontAwesome_SVG_Styles_Manager::instance();
+			if ( ! $svg_styles_manager->is_svg_stylesheet_present( $this ) ) {
+				$svg_styles_manager->fetch_svg_styles( $this, $this->release_provider() );
+			}
+		} catch ( Exception $e ) {
+			notify_admin_fatal_error( $e );
+		} catch ( Error $e ) {
+			notify_admin_fatal_error( $e );
+		}
 	}
 
 	/**

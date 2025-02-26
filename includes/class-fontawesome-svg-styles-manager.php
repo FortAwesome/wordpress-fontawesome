@@ -153,6 +153,94 @@ class FontAwesome_SVG_Styles_Manager {
 	}
 
 	/**
+	 *
+	 * Internal use only, not part of the plugin's public API.
+	 *
+	 * Returns the full path to the SVG support stylesheet on the server's filesystem.
+	 *
+	 * @param $fa FontAwesome
+	 * @param $fa_release_provider FontAwesome_Release_Provider
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ReleaseProviderStorageException
+	 * @throws SelfhostSetupException
+	 * @throws ConfigCorruptionException when called with an invalid configuration
+	 * @internal
+	 * @ignore
+	 * @return string
+	 */
+	public function selfhost_asset_full_path( $fa ) {
+		$options          = $fa->options();
+		$concrete_version = $fa->concrete_version( $options );
+
+		if ( ! $concrete_version ) {
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to determine Font Awesome version when setting up self-hosted assets.',
+					'font-awesome'
+				)
+			);
+		}
+
+		$asset_path = $this->selfhost_asset_path( $concrete_version );
+
+		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to determine filesystem location for self-hosted asset. Please report this on the plugin support forum so it can be investigated.',
+					'font-awesome'
+				)
+			);
+		}
+
+		return trailingslashit( $asset_path['dir'] ) . $asset_path['file'];
+	}
+
+	/**
+	 * Internal use only, not part of the plugin's public API.
+	 *
+	 * This checks whether the SVG support stylesheet is present.
+	 *
+	 * @param $fa FontAwesome
+	 * @param $fa_release_provider FontAwesome_Release_Provider
+	 * @throws ReleaseMetadataMissingException
+	 * @throws ReleaseProviderStorageException
+	 * @throws SelfhostSetupException
+	 * @throws ConfigCorruptionException when called with an invalid configuration
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	public function is_svg_stylesheet_present( $fa ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Current user lacks permissions required to fetch Font Awesome SVG stylesheets for self-hosting. Try logging in as an admin user.',
+					'font-awesome'
+				)
+			);
+		}
+
+		$asset_full_path = $this->selfhost_asset_full_path( $fa );
+
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		if ( ! WP_Filesystem( false ) ) {
+			throw new SelfhostSetupException(
+				esc_html__(
+					'Failed to initialize filesystem usage for creating self-hosted assets. Please report this on the plugin support forum so it can be investigated.',
+					'font-awesome'
+				)
+			);
+		}
+
+		global $wp_filesystem;
+
+		return $wp_filesystem->exists( $asset_full_path );
+	}
+
+	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * Fetches SVG support style asset(s) for self-hosting.
@@ -177,17 +265,12 @@ class FontAwesome_SVG_Styles_Manager {
 			);
 		}
 
-		$options          = $fa->options();
-		$concrete_version = fa()->concrete_version( $options );
-
-		if ( ! $concrete_version ) {
-			throw new SelfhostSetupException(
-				esc_html__(
-					'Failed to determine Font Awesome version when setting up self-hosted assets.',
-					'font-awesome'
-				)
-			);
+		if ( $this->is_svg_stylesheet_present( $fa ) ) {
+			// Nothing more to do.
+			return;
 		}
+
+		$concrete_version = $fa->concrete_version( $fa->options() );
 
 		$asset_path = $this->selfhost_asset_path( $concrete_version );
 
@@ -216,11 +299,6 @@ class FontAwesome_SVG_Styles_Manager {
 		}
 
 		global $wp_filesystem;
-
-		if ( $wp_filesystem->exists( $full_asset_path ) ) {
-			// Nothing more to do.
-			return;
-		}
 
 		$resource = $fa_release_provider->get_svg_styles_resource( $concrete_version );
 
