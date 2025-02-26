@@ -168,7 +168,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @return string
 	 */
-	public function selfhost_asset_full_path($fa, $fa_release_provider) {
+	public function selfhost_asset_full_path( $fa, $fa_release_provider ) {
 		$options          = $fa->options();
 		$concrete_version = $fa->concrete_version( $options );
 
@@ -210,7 +210,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @return bool
 	 */
-	public function is_svg_stylesheet_present($fa, $fa_release_provider) {
+	public function is_svg_stylesheet_present( $fa, $fa_release_provider ) {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			throw new SelfhostSetupException(
 				esc_html__(
@@ -220,7 +220,7 @@ class FontAwesome_SVG_Styles_Manager {
 			);
 		}
 
-		$asset_full_path = $this->selfhost_asset_full_path($fa, $fa_release_provider);
+		$asset_full_path = $this->selfhost_asset_full_path( $fa, $fa_release_provider );
 
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
