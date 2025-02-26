@@ -117,6 +117,12 @@ You can get more information about using the plugin, details for available setti
 
 
 == Upgrade Notice ==
+= 5.0.1 =
+* When upgrading to this version, you'll need to reload the WP admin dashboard, or simply visit the Font Awesome
+plugin's settings page, in order to cause the plugin to fetch a required SVG stylesheet. The correct stylesheet
+is also automatically retrieved any time the plugin's settings are changed. See the Changelog for how to disable
+the loading of this stylesheet if you do not use the Block Editor.
+
 = 5.0.0 =
 * In the Block Editor, the Icon Chooser now inserts inline SVGs instead of shortcodes.
 * Removes support for Font Awesome 3 icon names in `[icon]` shortcodes.
@@ -181,6 +187,19 @@ If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can onl
 
 
 == Changelog ==
+= 5.0.1 =
+* Automatically fetch the SVG stylesheet any time the WP admin dashboard or Font Awesome plugin settings
+page is loaded. This stylesheet is required for the new embedded SVG icons to display correctly when they
+are added using the Icon Chooser in the Block Editor. If you do not use the Block Editor, and do not want
+this additional stylesheet to be loaded, you can disable it from loading by adding the following to
+your theme's functions.php or equivalent:
+
+```
+add_action("wp_enqueue_scripts", function () {
+	wp_dequeue_style("font-awesome-svg-styles");
+});
+```
+
 = 5.0.0 =
 * Enhance support for the Block Editor. Add icons as blocks or as inline Rich Text using the
   Icon Chooser. Icons added in the Block Editor using the Icon Chooser are added as inline SVGs,
