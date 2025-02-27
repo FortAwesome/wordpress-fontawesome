@@ -91,7 +91,9 @@ class FontAwesome_Activator {
 			self::initialize_conflict_detection_options();
 		}
 
-		self::initialize_svg_styles();
+		if ( fa()->is_block_editor_support_enabled() ) {
+			self::initialize_svg_styles();
+		}
 	}
 
 	/**
