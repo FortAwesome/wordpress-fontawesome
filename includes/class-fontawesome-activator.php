@@ -5,6 +5,7 @@ require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( __DIR__ ) . 'class-fontawesome.php';
 require_once trailingslashit( __DIR__ ) . 'class-fontawesome-release-provider.php';
 require_once trailingslashit( __DIR__ ) . 'class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
 /**
  * Plugin activation logic.
@@ -24,7 +25,13 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function activate() {
-		self::initialize();
+		try {
+			self::initialize();
+		} catch ( \Exception $e ) {
+			notify_admin_fatal_error( $e );
+		} catch ( \Error $e ) {
+			notify_admin_fatal_error( $e );
+		}
 	}
 
 	/**
