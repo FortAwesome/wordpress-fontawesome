@@ -141,7 +141,9 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			 * However, this will allow us attempt the fetch, without it causing a fatal error
 			 * if it fails.
 			 */
-			FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles_with_admin_notice_warning( fa(), $this->release_provider() );
+			if ( fa()->is_block_editor_support_enabled() ) {
+				FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles_with_admin_notice_warning( fa(), $this->release_provider() );
+			}
 
 			$return_data = $this->build_item( fa() );
 			return new FontAwesome_REST_Response( $return_data, 200 );
