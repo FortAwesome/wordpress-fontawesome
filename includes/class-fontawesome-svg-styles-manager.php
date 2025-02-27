@@ -210,9 +210,9 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @return bool
 	 */
-	public function is_svg_stylesheet_present( $fa ) {
+	public function is_svg_stylesheet_path_present( $fa ) {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			throw new SelfhostSetupException(
+			throw new SelfhostSetupPermissionsException(
 				esc_html__(
 					'Current user lacks permissions required to fetch Font Awesome SVG stylesheets for self-hosting. Try logging in as an admin user.',
 					'font-awesome'
@@ -227,7 +227,7 @@ class FontAwesome_SVG_Styles_Manager {
 		}
 
 		if ( ! WP_Filesystem( false ) ) {
-			throw new SelfhostSetupException(
+			throw new SelfhostSetupPermissionsException(
 				esc_html__(
 					'Failed to initialize filesystem usage for creating self-hosted assets. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
@@ -238,6 +238,58 @@ class FontAwesome_SVG_Styles_Manager {
 		global $wp_filesystem;
 
 		return $wp_filesystem->exists( $asset_full_path );
+	}
+
+	/**
+	 * Internal use only, not part of the plugin's public API.
+	 *
+	 * This checks whether the SVG support stylesheet is present by making a HEAD
+	 * request on this WordPress server. This can be used when the current process
+	 * lacks filesystem permissions for checking the exists of the file on disk.
+	 *
+	 * @param $version a concrete Font Awesome version
+	 * @throws SelfhostSetupException
+	 * @throws SvgStylesheetCheckException
+	 * @throws ConfigCorruptionException when called with an invalid configuration
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	public function is_svg_stylesheet_url_present( $version ) {
+		$stylesheet_url = $this->selfhost_asset_url( $version );
+
+		$response = wp_remote_head( $stylesheet_url );
+
+		if ( is_wp_error( $response ) ) {
+			throw SvgStylesheetCheckException::with_wp_error( $wp_response );
+		}
+
+		$response_code = wp_remote_retrieve_response_code($response);
+
+		return is_int( $response_code ) && $response_code >= 200 && $response_code < 300;
+	}
+
+	/**
+	 * Internal use only, not part of the plugin's public API.
+	 *
+	 * This checks whether the SVG support stylesheet is present.
+	 *
+	 * @param $fa FontAwesome
+	 * @throws SelfhostSetupException
+	 * @throws ConfigCorruptionException when called with an invalid configuration
+	 * @internal
+	 * @ignore
+	 * @return bool
+	 */
+	public function is_svg_stylesheet_present( $fa ) {
+		try {
+			// First, try using the filesystem.
+			return $this->is_svg_stylesheet_path_present( $fa );
+		} catch ( SelfhostSetupPermissionsException $_e ) {
+			// Fallback to checking the URL via HTTP.
+			$version = $fa->concrete_version( $fa->options() );
+			return $this->is_svg_stylesheet_url_present( $version );
+		}
 	}
 
 	/**
@@ -252,22 +304,23 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @throws ApiResponseException
 	 * @throws ReleaseProviderStorageException
 	 * @throws SelfhostSetupException
+	 * @throws SelfhostSetupPermissionsException
 	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return void
 	 */
 	public function fetch_svg_styles( $fa, $fa_release_provider ) {
+		if ( $this->is_svg_stylesheet_present( $fa ) ) {
+			// Nothing more to do.
+			return;
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
-			throw new SelfhostSetupException(
+			throw new SelfhostSetupPermissionsException(
 				esc_html__(
 					'Current user lacks permissions required to fetch Font Awesome SVG stylesheets for self-hosting. Try logging in as an admin user.',
 					'font-awesome'
 				)
 			);
-		}
-
-		if ( $this->is_svg_stylesheet_present( $fa ) ) {
-			// Nothing more to do.
-			return;
 		}
 
 		$concrete_version = $fa->concrete_version( $fa->options() );
@@ -290,7 +343,7 @@ class FontAwesome_SVG_Styles_Manager {
 		}
 
 		if ( ! WP_Filesystem( false ) ) {
-			throw new SelfhostSetupException(
+			throw new SelfhostSetupPermissionsException(
 				esc_html__(
 					'Failed to initialize filesystem usage for creating self-hosted assets. Please report this on the plugin support forum so it can be investigated.',
 					'font-awesome'
