@@ -135,7 +135,13 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 				$db_item
 			);
 
-			FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles( fa(), $this->release_provider() );
+			/**
+			 * The admin notices will not be shown as a consequence of any failure in this
+			 * function call, since this is a REST controller.
+			 * However, this will allow us attempt the fetch, without it causing a fatal error
+			 * if it fails.
+			 */
+			FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles_with_admin_notice_warning( fa(), $this->release_provider() );
 
 			$return_data = $this->build_item( fa() );
 			return new FontAwesome_REST_Response( $return_data, 200 );
