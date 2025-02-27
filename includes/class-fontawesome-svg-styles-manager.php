@@ -311,7 +311,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @param $fa_release_provider FontAwesome_Release_Provider
 	 * @return void
 	 */
-	public function fetch_svg_styles_with_admin_notice_warning( $fa, $fa_release_provider ) {
+	public function ensure_svg_styles_with_admin_notice_warning( $fa, $fa_release_provider ) {
 		try {
 			$this->fetch_svg_styles( $fa, $fa_release_provider );
 		} catch ( SelfhostSetupPermissionsException $_e ) {

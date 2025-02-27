@@ -147,6 +147,6 @@ class FontAwesome_Activator {
 	 * @throws ConfigCorruptionException
 	 */
 	private static function initialize_svg_styles() {
-		FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles_with_admin_notice_warning( fa(), fa_release_provider() );
+		FontAwesome_SVG_Styles_Manager::instance()->ensure_svg_styles_with_admin_notice_warning( fa(), fa_release_provider() );
 	}
 }
