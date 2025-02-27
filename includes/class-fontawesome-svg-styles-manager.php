@@ -1,6 +1,14 @@
 <?php
-
 namespace FortAwesome;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
+
+use Exception;
+use Error;
 
 /**
  * Class FontAwesome_SVG_Styles_Manager
@@ -261,10 +269,11 @@ class FontAwesome_SVG_Styles_Manager {
 		$response = wp_remote_head( $stylesheet_url );
 
 		if ( is_wp_error( $response ) ) {
-			throw SvgStylesheetCheckException::with_wp_error( $wp_response );
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw SvgStylesheetCheckException::with_wp_error( $response );
 		}
 
-		$response_code = wp_remote_retrieve_response_code($response);
+		$response_code = wp_remote_retrieve_response_code( $response );
 
 		return is_int( $response_code ) && $response_code >= 200 && $response_code < 300;
 	}
@@ -289,6 +298,83 @@ class FontAwesome_SVG_Styles_Manager {
 			// Fallback to checking the URL via HTTP.
 			$version = $fa->concrete_version( $fa->options() );
 			return $this->is_svg_stylesheet_url_present( $version );
+		}
+	}
+
+	/**
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * Fetches SVG support style asset(s) for self-hosting, and
+	 * and emits an admin notice warning when there's a problem.
+	 *
+	 * @param $fa FontAwesome
+	 * @param $fa_release_provider FontAwesome_Release_Provider
+	 * @return void
+	 */
+	public function fetch_svg_styles_with_admin_notice_warning( $fa, $fa_release_provider ) {
+		try {
+			$this->fetch_svg_styles( $fa, $fa_release_provider );
+		} catch ( SelfhostSetupPermissionsException $_e ) {
+			$message_main = __(
+				'We couldn\'t save the stylesheet required to render SVG icons added in the Block Editor. We don\'t have permission to save files on your WordPress site. Make an exception to allow it, or place the stylesheet manually.',
+				'font-awesome'
+			);
+
+			$message_part2 = __(
+				'Due to another issue, we couldn\'t determine the URL where you need to make the stylesheet available.',
+				'font-awesome'
+			);
+
+			$message_part3 = __(
+				'Due to another issue, we couldn\'t find a link to the stylesheet\'s contents for you to manually place.',
+				'font-awesome'
+			);
+
+			try {
+				$concrete_version = $fa->concrete_version( $fa->options() );
+				$url              = $this->selfhost_asset_url( $concrete_version );
+
+				$message_part2 = sprintf(
+					/* translators: 1: newline, 2: self-hosted stylesheet URL,  */
+					__(
+						'Here\'s the URL on your WordPress server where you need to make the stylesheet available:%1$s%2$s',
+						'font-awesome'
+					),
+					"\n",
+					$url
+				);
+
+				$resource = $fa_release_provider->get_svg_styles_resource( $concrete_version );
+
+				if ( $resource->source() ) {
+					$message_part3 = sprintf(
+						/* translators: 1: newline, 2: Font Awesome CDN stylesheet URL */
+						__(
+							'Here\'s a link to the stylesheet whose contents should be copied to that location on your WordPress site:%1$s%2$s',
+							'font-awesome'
+						),
+						"\n",
+						$resource->source()
+					);
+				}
+				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( Exception $_e ) {
+				// Silently ignore to use the default notification message.
+				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( Error $_e ) {
+				// Silently ignore to use the default notification message.
+			}
+
+			$full_message    = $message_main . "\n" . $message_part2 . "\n" . $message_part3;
+			$escaped_message = esc_html( $full_message );
+
+			$e = new SelfhostSetupPermissionsException( $escaped_message );
+
+			notify_admin_warning( $e );
+		} catch ( Exception $e ) {
+			notify_admin_warning( $e );
+		} catch ( Error $e ) {
+			notify_admin_warning( $e );
 		}
 	}
 

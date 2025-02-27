@@ -1040,7 +1040,7 @@ class FontAwesome {
 		try {
 			$svg_styles_manager = FontAwesome_SVG_Styles_Manager::instance();
 			if ( ! $svg_styles_manager->is_svg_stylesheet_present( $this ) ) {
-				$svg_styles_manager->fetch_svg_styles( $this, $this->release_provider() );
+				$svg_styles_manager->fetch_svg_styles_with_admin_notice_warning( $this, $this->release_provider() );
 			}
 		} catch ( Exception $e ) {
 			notify_admin_fatal_error( $e );
