@@ -1056,7 +1056,20 @@ class FontAwesome {
 			3
 		);
 
-		$this->maybe_refresh_releases();
+		add_action(
+			'admin_enqueue_scripts',
+			function ( $hook ) {
+				try {
+					if ( $hook === $this->screen_id ) {
+						$this->maybe_refresh_releases();
+					}
+				} catch ( Exception $e ) {
+					notify_admin_fatal_error( $e );
+				} catch ( Error $e ) {
+					notify_admin_fatal_error( $e );
+				}
+			}
+		);
 
 		if ( $this->is_block_editor_support_enabled() ) {
 			try {
