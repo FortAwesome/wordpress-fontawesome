@@ -1056,6 +1056,8 @@ class FontAwesome {
 			3
 		);
 
+		$this->maybe_refresh_releases();
+
 		if ( $this->is_block_editor_support_enabled() ) {
 			try {
 				$svg_styles_manager = FontAwesome_SVG_Styles_Manager::instance();
@@ -1674,8 +1676,6 @@ class FontAwesome {
 					}
 
 					if ( $hook === $this->screen_id ) {
-						$this->maybe_refresh_releases();
-
 						wp_localize_script(
 							self::ADMIN_RESOURCE_HANDLE,
 							self::ADMIN_RESOURCE_LOCALIZATION_NAME,
