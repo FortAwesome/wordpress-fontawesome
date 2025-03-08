@@ -23,6 +23,15 @@ class FontAwesome_SVG_Styles_Manager {
 	public const RESOURCE_HANDLE_SVG_STYLES = 'font-awesome-svg-styles';
 
 	/**
+	 * The handle used when enqueuing default SVG support styles. This is a stylesheet
+	 * that's bundled with the plugin, and will be loaded when a version-specific stylesheet
+	 * cannot be loaded for some reason.
+	 *
+	 * @since 5.0.2
+	 */
+	public const RESOURCE_HANDLE_SVG_STYLES_DEFAULT = 'font-awesome-svg-styles-default';
+
+	/**
 	 * @internal
 	 * @ignore
 	 */
@@ -150,10 +159,36 @@ class FontAwesome_SVG_Styles_Manager {
 		$concrete_version = $fa->concrete_version( $fa->options() );
 		$source           = self::selfhost_asset_url( $concrete_version );
 
+		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+		wp_register_style(
+			self::RESOURCE_HANDLE_SVG_STYLES_DEFAULT,
+			false
+		);
+
+		/**
+		 * This is a minimal default style for SVGs, which will always be overriden when the
+		 * real stylesheet is loaded successfully. It's only here as a fallback to ensure that,
+		 * in the event that the real stylesheet fails to load, the SVG icons are sized
+		 * correctly, and aren't HUGE.
+		 */
+		$default_svg_style = <<< EOT
+.svg-inline--fa {
+  display: inline-block;
+  height: 1em;
+  overflow: visible;
+  vertical-align: -.125em;
+}
+EOT;
+
+		wp_add_inline_style(
+			self::RESOURCE_HANDLE_SVG_STYLES_DEFAULT,
+			$default_svg_style
+		);
+
 		wp_register_style(
 			self::RESOURCE_HANDLE_SVG_STYLES,
 			$source,
-			array(),
+			array( self::RESOURCE_HANDLE_SVG_STYLES_DEFAULT ),
 		    // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			null,
 			'all'
