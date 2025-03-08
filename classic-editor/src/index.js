@@ -8,6 +8,8 @@ import { __ } from '@wordpress/i18n'
 
 const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {})
 
+const ICON_CHOOSER_OPEN_MODAL_BY_EDITOR_ID = {}
+
 // Creates a new icon chooser with its own open event and submit handler.
 function newIconChooser(editorId, container, editorInsert) {
   const modalOpenEvent = createCustomEvent()
@@ -72,31 +74,36 @@ function insertContentIntoEditor(editorId, content) {
   }
 }
 
-function initialize() {
-  const editorIds = get(window, '__FontAwesomeOfficialPlugin_tinymce__.editors', [])
-
-  for (const editorId of editorIds) {
-    const button = document.querySelector(`#fawp-tinymce-${editorId}`)
-    const editor = document.querySelector(`#${editorId}`)
-    const editorContainer = editor.parentElement
-
-    if (!editor || !button || !editorContainer) {
-      console.error(__('Font Awesome Plugin: could not attach to editor id:', 'font-awesome'), editorId)
-      continue
-    }
-
-    const openIconChooser = newIconChooser(editorId, editorContainer, (editorId, content) => {
-      insertContentIntoEditor(editorId, content)
-    })
-
-    button.addEventListener('click', openIconChooser)
+function getIconChooserOpenModal(editorId) {
+  if (ICON_CHOOSER_OPEN_MODAL_BY_EDITOR_ID[editorId]) {
+    return ICON_CHOOSER_OPEN_MODAL_BY_EDITOR_ID[editorId]
   }
+
+  const editor = document.querySelector(`#${editorId}`)
+  const editorContainer = editor?.parentElement
+
+  if (!editorContainer) {
+    // The editor might be hidden. Bail early.
+    return
+  }
+
+  const openIconChooser = newIconChooser(editorId, editorContainer, (editorId, content) => {
+    insertContentIntoEditor(editorId, content)
+  })
+
+  ICON_CHOOSER_OPEN_MODAL_BY_EDITOR_ID[editorId] = openIconChooser
+
+  return openIconChooser
 }
 
-if (document.readyState === 'complete') {
-  initialize()
-} else {
-  window.addEventListener('DOMContentLoaded', () => {
-    initialize()
-  })
-}
+// Using jQuery seems to be the more idiomatic way to bind click events to the media button
+// in the WordPress editor. Doing it this way seems to resolve a conflict with the ACF plugin,
+// where our click event binding on the media button seemed to be removed on us.
+jQuery(document).on('click', '.font-awesome-icon-chooser-media-button', function(e) {
+  const editorId = e.target.getAttribute('data-fa-editor-id')
+  const iconChooserOpenModal = getIconChooserOpenModal(editorId)
+  // This setTimeout allow for the React component that is the Icon Chooser to be mounted
+  // and ready to receive the event. After the timeout expires, then the "open" event is dispatched.
+  // Without this, the event is dispatched before the React component is mounted and ready to receive it.
+  setTimeout(iconChooserOpenModal, 0)
+});
