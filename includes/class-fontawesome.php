@@ -1662,6 +1662,7 @@ class FontAwesome {
 						self::ADMIN_RESOURCE_HANDLE,
 						self::RESOURCE_HANDLE_ICON_CHOOSER,
 						'wp-tinymce',
+						'jquery',
 					),
 					self::PLUGIN_VERSION,
 					true
