@@ -86,4 +86,9 @@ function theme_alpha_fa_classes() {
 	return implode( ' ', $class_list );
 }
 
-add_filter( 'font_awesome_skip_enqueue_kit', '__return_true' );
+// add_filter( 'font_awesome_skip_enqueue_kit', '__return_true' );
+// add_filter( 'font_awesome_disable_block_editor_support', '__return_true' );
+
+// add_filter('filesystem_method', function() {
+//     return 'none';
+// });
