@@ -1730,16 +1730,7 @@ class FontAwesome {
 								'media_buttons',
 								function ( $editor_id ) {
 									printf(
-										/**
-										 * translators:
-										 * 1: open button tag,
-										 * 2: editor id value,
-										 * 3: data attribute for editor id,
-										 * 4: editor id value,
-										 * 5: closing data attribute value quote,
-										 * 6: remaining button tag open and icon svg tag,
-										 * 7: close button tag
-										 */
+										/* translators: 1: open button tag, 2: editor id value, 3: data attribute for editor id, 4: editor id value, 5: closing data attribute value quote, 6: remaining button tag open and icon svg tag, 7: close button tag */
 										esc_html__(
 											'%1$s%2$s%3$s%4$s%5$s%6$sAdd Font Awesome%7$s',
 											'font-awesome'
