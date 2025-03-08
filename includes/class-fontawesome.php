@@ -1064,9 +1064,9 @@ class FontAwesome {
 						$this->maybe_refresh_releases();
 					}
 				} catch ( Exception $e ) {
-					notify_admin_fatal_error( $e );
+					notify_admin_warning( $e );
 				} catch ( Error $e ) {
-					notify_admin_fatal_error( $e );
+					notify_admin_warning( $e );
 				}
 			}
 		);
@@ -1078,9 +1078,9 @@ class FontAwesome {
 					$svg_styles_manager->ensure_svg_styles_with_admin_notice_warning( $this, $this->release_provider() );
 				}
 			} catch ( Exception $e ) {
-				notify_admin_fatal_error( $e );
+				notify_admin_warning( $e );
 			} catch ( Error $e ) {
-				notify_admin_fatal_error( $e );
+				notify_admin_warning( $e );
 			}
 		}
 	}
