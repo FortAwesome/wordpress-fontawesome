@@ -25,22 +25,20 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function activate() {
-		$error_title = __('Font Awesome Activation Error', 'font-awesome');
-
 		try {
 			self::initialize();
 		} catch ( \Exception $e ) {
 			wp_die(
-	            __($e->getMessage(), 'font-awesome'),
-	            $error_title,
-	            array('back_link' => true)
-            );
+				esc_html( $e->getMessage() ),
+				esc_html( __( 'Font Awesome Activation Error', 'font-awesome' ) ),
+				array( 'back_link' => true )
+			);
 		} catch ( \Error $e ) {
 			wp_die(
-	            __($e->getMessage(), 'font-awesome'),
-	            $error_title,
-	            array('back_link' => true)
-            );
+				esc_html( $e->getMessage() ),
+				esc_html( __( 'Font Awesome Activation Error', 'font-awesome' ) ),
+				array( 'back_link' => true )
+			);
 		}
 	}
 
