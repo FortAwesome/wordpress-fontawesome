@@ -36,7 +36,6 @@ class MultisiteActivationTest extends TestCase {
 		remove_all_actions( 'font_awesome_preferences' );
 		remove_all_filters( 'wp_is_large_network' );
 		FontAwesome::reset();
-		mock_fetch_svg_styles( $this );
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
 			array(
 				wp_json_encode(
@@ -50,6 +49,12 @@ class MultisiteActivationTest extends TestCase {
 					)
 				),
 			)
+		);
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'fetch_svg_styles',
+			null
 		);
 
 		FontAwesome_Release_Provider::load_releases();
@@ -72,6 +77,8 @@ class MultisiteActivationTest extends TestCase {
 		foreach ( $this->sub_sites as $blog_id ) {
 			wp_delete_site( $blog_id );
 		}
+
+		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles' );
 	}
 
 	public function is_wp_version_compatible() {
@@ -85,6 +92,17 @@ class MultisiteActivationTest extends TestCase {
 			$this->assertTrue( true );
 			return;
 		}
+
+		$fetch_svg_styles_call_count = 0;
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'fetch_svg_styles',
+			function () use ( &$fetch_svg_styles_call_count ) {
+				$fetch_svg_styles_call_count++;
+			},
+			true
+		);
 
 		if ( is_network_admin() ) {
 			FontAwesome_Activator::initialize();
@@ -106,7 +124,7 @@ class MultisiteActivationTest extends TestCase {
 			);
 
 			$this->assertEquals( $site_count, 3 );
-			$this->assertTrue( get_svg_styles_manager_fetch_count() > 0 );
+			$this->assertTrue( $fetch_svg_styles_call_count > 0 );
 		} else {
 			$this->assertEquals( count( $this->sub_sites ), 2 );
 
@@ -129,7 +147,7 @@ class MultisiteActivationTest extends TestCase {
 
 			// The network wide release metadata will have been initialized.
 			$this->assertTrue( boolval( get_network_option( get_main_network_id(), FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
-			$this->assertTrue( get_svg_styles_manager_fetch_count() > 0 );
+			$this->assertTrue( $fetch_svg_styles_call_count > 0 );
 		}
 	}
 
