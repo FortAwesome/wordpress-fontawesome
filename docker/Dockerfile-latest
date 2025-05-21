@@ -1,10 +1,14 @@
 FROM wordpress:latest
 
+RUN pecl install uopz
+
+COPY ./docker-php-ext-uopz.ini /usr/local/etc/php/conf.d
+
 # Node installation
 # See: https://deb.nodesource.com/
 RUN apt-get update && apt-get install -y ca-certificates curl gnupg
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /tmp/nodesource.gpg
-ENV NODE_MAJOR=20
+ENV NODE_MAJOR=22
 RUN echo "deb [signed-by=/tmp/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 
 # Install packages
@@ -18,7 +22,12 @@ RUN curl -L -s https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
 RUN groupadd -r user && useradd --no-log-init -r -g user user
 
 # Install composer
-RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'.PHP_EOL; } else { echo 'Installer corrupt'.PHP_EOL; unlink('composer-setup.php'); exit(1); }" && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');" && \
+    mv composer.phar /usr/local/bin/composer && \
+    chmod +x /usr/local/bin/composer
 
 COPY ./install-wp-tests-docker.sh /tmp
 
