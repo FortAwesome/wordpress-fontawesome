@@ -41,14 +41,7 @@ class ConfigControllerTest extends TestCase
             )
         );
 
-        mock_singleton_method(
-            $this,
-            FontAwesome_SVG_Styles_Manager::class,
-            'fetch_svg_styles',
-            function ($method) {
-                $method->willReturn(null);
-            }
-        );
+        uopz_set_return(FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles', null);
 
         FontAwesome_Release_Provider::load_releases();
 

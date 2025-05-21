@@ -32,30 +32,6 @@ class FontAwesome_SVG_Styles_Manager {
 	public const RESOURCE_HANDLE_SVG_STYLES_DEFAULT = 'font-awesome-svg-styles-default';
 
 	/**
-	 * @internal
-	 * @ignore
-	 */
-	protected static $instance = null;
-
-	/**
-	 * Returns the singleton instance of this class.
-	 *
-	 * Internal use only, not part of this plugin's public API.
-	 *
-	 * Ideally, this wouldn't be a singleton, but being a singleton will
-	 * make it mockable with PHPUnit.
-	 *
-	 * @internal
-	 * @ignore
-	 */
-	public static function instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
 	 * Internal use only, not part of this plugin's public API.
 	 *
 	 * @internal
@@ -75,7 +51,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @internal
 	 * @ignore
 	 */
-	public function selfhost_asset_path( $version ) {
+	public static function selfhost_asset_path( $version ) {
 		$upload_dir = wp_upload_dir( null, true, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
@@ -88,8 +64,8 @@ class FontAwesome_SVG_Styles_Manager {
 		}
 
 		return array(
-			'dir'  => trailingslashit( $upload_dir['basedir'] ) . $this->selfhost_asset_subdir( $version ),
-			'file' => $this->selfhost_asset_filename(),
+			'dir'  => trailingslashit( $upload_dir['basedir'] ) . self::selfhost_asset_subdir( $version ),
+			'file' => self::selfhost_asset_filename(),
 		);
 	}
 
@@ -102,7 +78,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @internal
 	 * @ignore
 	 */
-	public function selfhost_asset_url( $version ) {
+	public static function selfhost_asset_url( $version ) {
 		$upload_dir = wp_upload_dir( null, false, false );
 
 		if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
@@ -114,7 +90,7 @@ class FontAwesome_SVG_Styles_Manager {
 			);
 		}
 
-		return trailingslashit( $upload_dir['baseurl'] ) . $this->selfhost_asset_subpath( $version );
+		return trailingslashit( $upload_dir['baseurl'] ) . self::selfhost_asset_subpath( $version );
 	}
 
 	/**
@@ -123,7 +99,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public function selfhost_asset_subdir( $version ) {
+	public static function selfhost_asset_subdir( $version ) {
 		return "font-awesome/v$version/css";
 	}
 
@@ -133,7 +109,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public function selfhost_asset_filename() {
+	public static function selfhost_asset_filename() {
 		return 'svg-with-js.css';
 	}
 
@@ -143,8 +119,8 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public function selfhost_asset_subpath( $version ) {
-		return trailingslashit( $this->selfhost_asset_subdir( $version ) ) . $this->selfhost_asset_filename();
+	public static function selfhost_asset_subpath( $version ) {
+		return trailingslashit( self::selfhost_asset_subdir( $version ) ) . self::selfhost_asset_filename();
 	}
 
 	/**
@@ -155,7 +131,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @internal
 	 * @ignore
 	 */
-	public function register_svg_styles( $fa ) {
+	public static function register_svg_styles( $fa ) {
 		$concrete_version = $fa->concrete_version( $fa->options() );
 		$source           = self::selfhost_asset_url( $concrete_version );
 
@@ -211,7 +187,7 @@ EOT;
 	 * @ignore
 	 * @return string
 	 */
-	public function selfhost_asset_full_path( $fa ) {
+	public static function selfhost_asset_full_path( $fa ) {
 		$options          = $fa->options();
 		$concrete_version = $fa->concrete_version( $options );
 
@@ -224,7 +200,7 @@ EOT;
 			);
 		}
 
-		$asset_path = $this->selfhost_asset_path( $concrete_version );
+		$asset_path = self::selfhost_asset_path( $concrete_version );
 
 		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
 			throw new SelfhostSetupException(
@@ -253,7 +229,7 @@ EOT;
 	 * @ignore
 	 * @return bool
 	 */
-	public function is_svg_stylesheet_path_present( $fa ) {
+	public static function is_svg_stylesheet_path_present( $fa ) {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			throw new SelfhostSetupPermissionsException(
 				esc_html__(
@@ -263,7 +239,7 @@ EOT;
 			);
 		}
 
-		$asset_full_path = $this->selfhost_asset_full_path( $fa );
+		$asset_full_path = self::selfhost_asset_full_path( $fa );
 
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -298,8 +274,8 @@ EOT;
 	 * @ignore
 	 * @return bool
 	 */
-	public function is_svg_stylesheet_url_present( $version ) {
-		$stylesheet_url = $this->selfhost_asset_url( $version );
+	public static function is_svg_stylesheet_url_present( $version ) {
+		$stylesheet_url = self::selfhost_asset_url( $version );
 
 		$response = wp_remote_head( $stylesheet_url );
 
@@ -325,14 +301,14 @@ EOT;
 	 * @ignore
 	 * @return bool
 	 */
-	public function is_svg_stylesheet_present( $fa ) {
+	public static function is_svg_stylesheet_present( $fa ) {
 		try {
 			// First, try using the filesystem.
-			return $this->is_svg_stylesheet_path_present( $fa );
+			return self::is_svg_stylesheet_path_present( $fa );
 		} catch ( SelfhostSetupPermissionsException $_e ) {
 			// Fallback to checking the URL via HTTP.
 			$version = $fa->concrete_version( $fa->options() );
-			return $this->is_svg_stylesheet_url_present( $version );
+			return self::is_svg_stylesheet_url_present( $version );
 		}
 	}
 
@@ -346,9 +322,9 @@ EOT;
 	 * @param $fa_release_provider FontAwesome_Release_Provider
 	 * @return void
 	 */
-	public function ensure_svg_styles_with_admin_notice_warning( $fa, $fa_release_provider ) {
+	public static function ensure_svg_styles_with_admin_notice_warning( $fa, $fa_release_provider ) {
 		try {
-			$this->fetch_svg_styles( $fa, $fa_release_provider );
+			self::fetch_svg_styles( $fa, $fa_release_provider );
 		} catch ( SelfhostSetupPermissionsException $_e ) {
 			$message_main = __(
 				'We couldn\'t save the stylesheet required to render SVG icons added in the Block Editor. We don\'t have permission to save files on your WordPress site. Make an exception to allow it, or place the stylesheet manually.',
@@ -367,7 +343,7 @@ EOT;
 
 			try {
 				$concrete_version = $fa->concrete_version( $fa->options() );
-				$url              = $this->selfhost_asset_url( $concrete_version );
+				$url              = self::selfhost_asset_url( $concrete_version );
 
 				$message_part2 = sprintf(
 					/* translators: 1: newline, 2: self-hosted stylesheet URL,  */
@@ -429,8 +405,8 @@ EOT;
 	 * @throws ConfigCorruptionException when called with an invalid configuration
 	 * @return void
 	 */
-	public function fetch_svg_styles( $fa, $fa_release_provider ) {
-		if ( $this->is_svg_stylesheet_present( $fa ) ) {
+	public static function fetch_svg_styles( $fa, $fa_release_provider ) {
+		if ( self::is_svg_stylesheet_present( $fa ) ) {
 			// Nothing more to do.
 			return;
 		}
@@ -446,7 +422,7 @@ EOT;
 
 		$concrete_version = $fa->concrete_version( $fa->options() );
 
-		$asset_path = $this->selfhost_asset_path( $concrete_version );
+		$asset_path = self::selfhost_asset_path( $concrete_version );
 
 		if ( ! $asset_path || ! isset( $asset_path['dir'] ) || ! isset( $asset_path['file'] ) ) {
 			throw new SelfhostSetupException(

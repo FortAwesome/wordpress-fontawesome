@@ -34,7 +34,7 @@ class FontAwesomeTest extends TestCase {
 		parent::set_up();
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		mock_fetch_svg_styles( $this );
+		uopz_set_return(FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles', null);
 		wp_script_is( 'font-awesome', 'enqueued' ) && wp_dequeue_script( 'font-awesome' );
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );

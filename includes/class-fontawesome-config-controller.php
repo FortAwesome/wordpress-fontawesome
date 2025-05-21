@@ -142,7 +142,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 			 * if it fails.
 			 */
 			if ( fa()->is_block_editor_support_enabled() ) {
-				FontAwesome_SVG_Styles_Manager::instance()->ensure_svg_styles_with_admin_notice_warning( fa(), $this->release_provider() );
+				FontAwesome_SVG_Styles_Manager::ensure_svg_styles_with_admin_notice_warning( fa(), $this->release_provider() );
 			}
 
 			$return_data = $this->build_item( fa() );

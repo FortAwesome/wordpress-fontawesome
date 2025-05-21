@@ -409,7 +409,7 @@ class FontAwesome {
 			);
 
 			if ( $this->is_block_editor_support_enabled() ) {
-				FontAwesome_SVG_Styles_Manager::instance()->register_svg_styles( $this );
+				FontAwesome_SVG_Styles_Manager::register_svg_styles( $this );
 
 				block_init();
 
@@ -1073,9 +1073,8 @@ class FontAwesome {
 
 		if ( $this->is_block_editor_support_enabled() ) {
 			try {
-				$svg_styles_manager = FontAwesome_SVG_Styles_Manager::instance();
-				if ( ! $svg_styles_manager->is_svg_stylesheet_present( $this ) ) {
-					$svg_styles_manager->ensure_svg_styles_with_admin_notice_warning( $this, $this->release_provider() );
+				if ( ! FontAwesome_SVG_Styles_Manager::is_svg_stylesheet_present( $this ) ) {
+					FontAwesome_SVG_Styles_Manager::ensure_svg_styles_with_admin_notice_warning( $this, $this->release_provider() );
 				}
 			} catch ( Exception $e ) {
 				notify_admin_warning( $e );

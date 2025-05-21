@@ -17,7 +17,7 @@ class ActivationTest extends TestCase {
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		mock_fetch_svg_styles( $this );
+		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles', null );
 		FontAwesome::reset();
 		$this->setup_metadata_provider_mock();
 	}
