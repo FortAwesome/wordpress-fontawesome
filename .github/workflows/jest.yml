@@ -21,7 +21,7 @@ jobs:
 
       - name: Cache node_module
         id: node-modules-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: admin/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
