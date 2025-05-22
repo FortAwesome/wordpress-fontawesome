@@ -17,16 +17,11 @@ class ActivationTest extends TestCase {
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles', null );
-		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present' );
-		uopz_unset_return( FontAwesome_Release_Provider::class, 'get_svg_styles_resource' );
-		uopz_unset_return( 'wp_remote_get' );
+		uopz_unset_return( FontAwesome_Release_Provider::class, 'ensure_svg_styles_with_admin_notice_warning' );
 		remove_all_filters( 'font_awesome_disable_block_editor_support' );
 
 		FontAwesome::reset();
 		$this->setup_metadata_provider_mock();
-		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
-		wp_set_current_user( $admin_user->ID, $admin_user->user_login );
 	}
 
 	public function test_before_activation() {
@@ -164,124 +159,42 @@ class ActivationTest extends TestCase {
 		);
 	}
 
-	public function test_no_fetch_svg_styles_when_disabled() {
+	public function test_svg_styles_ensured_when_enabled() {
+		$call_count = 0;
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'ensure_svg_styles_with_admin_notice_warning',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return true;
+			},
+			true
+		);
+
+		FontAwesome_Activator::initialize();
+
+		$this->assertEquals( 1, $call_count );
+	}
+
+	public function test_no_svg_styles_when_disabled() {
+		$call_count = 0;
 		add_filter( 'font_awesome_disable_block_editor_support', '__return_true' );
 		FontAwesome::reset();
-		$fetch_svg_styles_call_count = 0;
 
 		uopz_set_return(
 			FontAwesome_SVG_Styles_Manager::class,
-			'fetch_svg_styles',
-			function () use ( &$fetch_svg_styles_call_count ) {
-				$fetch_svg_styles_call_count++;
-			},
-			true
-		);
-
-		FontAwesome_Activator::initialize();
-		$this->assertEquals( 0, $fetch_svg_styles_call_count );
-	}
-
-	public function test_fetch_svg_styles_when_enabled() {
-		$fetch_svg_styles_call_count = 0;
-
-		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present', false, false );
-
-		uopz_set_return(
-			FontAwesome_SVG_Styles_Manager::class,
-			'fetch_svg_styles',
-			function ( $fa, $fa_release_provider ) use ( &$fetch_svg_styles_call_count ) {
-				$fetch_svg_styles_call_count++;
-				return uopz_call_user_func_array( array( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles' ), array( $fa, $fa_release_provider ) );
-			},
-			true
-		);
-
-		if ( ! function_exists( 'WP_Filesystem' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-		}
-
-		$this->assertTrue( WP_Filesystem( false ) );
-
-		global $wp_filesystem;
-
-		$filesystem_class = get_class( $wp_filesystem );
-
-		$wp_remote_get_call_count = 0;
-
-		$mock_css_contents = 'FAKE_CSS_CONTENTS';
-
-		uopz_set_return(
-			'wp_remote_get',
-			function () use ( &$wp_remote_get_call_count, $mock_css_contents ) {
-				$wp_remote_get_call_count++;
-
-				return array(
-					'response' => array(
-						'code' => 200,
-					),
-					'body'     => $mock_css_contents,
-				);
-			},
-			true
-		);
-
-		$mock_content_sha384_hash_hex = hash( 'sha384', $mock_css_contents );
-
-		$written_asset_path = null;
-
-		$hash_bin = hex2bin( $mock_content_sha384_hash_hex );
-
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-		$mock_integrity_key = 'sha384-' . base64_encode( $hash_bin );
-
-		uopz_set_return(
-			FontAwesome_Release_Provider::class,
-			'get_svg_styles_resource',
-			function () use ( $mock_integrity_key ) {
-				return new FontAwesome_Resource( 'svg-with-js.css', $mock_integrity_key );
-			},
-			true
-		);
-
-		uopz_set_return(
-			$filesystem_class,
-			'put_contents',
-			function ( $asset_path ) use ( &$written_asset_path ) {
-				$written_asset_path = $asset_path;
+			'ensure_svg_styles_with_admin_notice_warning',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return true;
 			},
 			true
 		);
 
 		FontAwesome_Activator::initialize();
 
-		$this->assertEquals( 1, $fetch_svg_styles_call_count );
-		$this->assertEquals( 1, $wp_remote_get_call_count );
-		$this->assertMatchesRegularExpression( '/svg-with-js\.css$/', $written_asset_path );
-	}
-
-	public function test_no_wp_remote_get_for_fetch_svg_styles_when_already_present() {
-		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles' );
-
-		uopz_set_return(
-			FontAwesome_SVG_Styles_Manager::class,
-			'is_svg_stylesheet_present',
-			true,
-			false
-		);
-
-		$wp_remote_get_call_count = 0;
-
-		uopz_set_return(
-			'wp_remote_get',
-			function () use ( &$wp_remote_get_call_count ) {
-				$wp_remote_get_call_count++;
-			},
-			true
-		);
-
-		FontAwesome_Activator::initialize();
-		$this->assertEquals( 0, $wp_remote_get_call_count );
+		$this->assertEquals( 0, $call_count );
 	}
 
 	public function setup_metadata_provider_mock() {
