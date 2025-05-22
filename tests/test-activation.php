@@ -25,8 +25,8 @@ class ActivationTest extends TestCase {
 
 		FontAwesome::reset();
 		$this->setup_metadata_provider_mock();
-		$admin_user = get_users(['role' => 'administrator'])[0];
-        wp_set_current_user($admin_user->ID, $admin_user->user_login);
+		$admin_user = get_users( array( 'role' => 'administrator' ) )[0];
+		wp_set_current_user( $admin_user->ID, $admin_user->user_login );
 	}
 
 	public function test_before_activation() {
@@ -192,7 +192,7 @@ class ActivationTest extends TestCase {
 			'fetch_svg_styles',
 			function ( $fa, $fa_release_provider ) use ( &$fetch_svg_styles_call_count ) {
 				$fetch_svg_styles_call_count++;
-				 return uopz_call_user_func_array([FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles'], [$fa, $fa_release_provider]);
+				return uopz_call_user_func_array( array( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles' ), array( $fa, $fa_release_provider ) );
 			},
 			true
 		);
@@ -213,31 +213,33 @@ class ActivationTest extends TestCase {
 
 		uopz_set_return(
 			'wp_remote_get',
-			function( $path ) use ( &$wp_remote_get_call_count, $mock_css_contents ){
+			function () use ( &$wp_remote_get_call_count, $mock_css_contents ) {
 				$wp_remote_get_call_count++;
 
-				return [
+				return array(
 					'response' => array(
 						'code' => 200,
 					),
-					'body' => $mock_css_contents
-				];
+					'body'     => $mock_css_contents,
+				);
 			},
 			true
 		);
 
-		$mock_content_sha384_hash_hex = hash('sha384', $mock_css_contents );
+		$mock_content_sha384_hash_hex = hash( 'sha384', $mock_css_contents );
 
 		$written_asset_path = null;
 
-        $hash_bin = hex2bin( $mock_content_sha384_hash_hex );
-        $mock_integrity_key = "sha384-" . base64_encode( $hash_bin );
+		$hash_bin = hex2bin( $mock_content_sha384_hash_hex );
 
-        uopz_set_return(
-        	FontAwesome_Release_Provider::class,
-         	'get_svg_styles_resource',
-			function( ) use ( $mock_integrity_key ) {
-				return new FontAwesome_Resource( "svg-with-js.css", $mock_integrity_key );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		$mock_integrity_key = 'sha384-' . base64_encode( $hash_bin );
+
+		uopz_set_return(
+			FontAwesome_Release_Provider::class,
+			'get_svg_styles_resource',
+			function () use ( $mock_integrity_key ) {
+				return new FontAwesome_Resource( 'svg-with-js.css', $mock_integrity_key );
 			},
 			true
 		);
@@ -245,7 +247,7 @@ class ActivationTest extends TestCase {
 		uopz_set_return(
 			$filesystem_class,
 			'put_contents',
-			function( $asset_path, $asset_contents ) use ( &$written_asset_path ){
+			function ( $asset_path ) use ( &$written_asset_path ) {
 				$written_asset_path = $asset_path;
 			},
 			true
@@ -255,7 +257,7 @@ class ActivationTest extends TestCase {
 
 		$this->assertEquals( 1, $fetch_svg_styles_call_count );
 		$this->assertEquals( 1, $wp_remote_get_call_count );
-		$this->assertMatchesRegularExpression('/svg-with-js\.css$/', $written_asset_path);
+		$this->assertMatchesRegularExpression( '/svg-with-js\.css$/', $written_asset_path );
 	}
 
 	public function test_no_wp_remote_get_for_fetch_svg_styles_when_already_present() {
@@ -273,7 +275,6 @@ class ActivationTest extends TestCase {
 		uopz_set_return(
 			'wp_remote_get',
 			function () use ( &$wp_remote_get_call_count ) {
-				error_log("\nDEBUG wp_remote_get\n");
 				$wp_remote_get_call_count++;
 			},
 			true
