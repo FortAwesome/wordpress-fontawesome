@@ -17,9 +17,9 @@ class ActivationTest extends TestCase {
 
 		reset_db();
 		remove_all_actions( 'font_awesome_preferences' );
-		uopz_unset_return( FontAwesome_Release_Provider::class, 'ensure_svg_styles_with_admin_notice_warning' );
+		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'ensure_svg_styles_with_admin_notice_warning', true );
+		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present', false, false );
 		remove_all_filters( 'font_awesome_disable_block_editor_support' );
-
 		FontAwesome::reset();
 		$this->setup_metadata_provider_mock();
 	}
@@ -195,6 +195,34 @@ class ActivationTest extends TestCase {
 		FontAwesome_Activator::initialize();
 
 		$this->assertEquals( 0, $call_count );
+	}
+
+	public function test_fetch_svg_styles_when_no_filesystem_permission() {
+		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'ensure_svg_styles_with_admin_notice_warning' );
+
+		// Simulate the filesystem being inaccessible.
+		uopz_set_return(
+			'WP_Filesystem',
+			false,
+			false
+		);
+
+		$call_count     = 0;
+		$notified_error = null;
+
+		uopz_set_return(
+			'FortAwesome\notify_admin_warning',
+			function ( $e ) use ( &$call_count, &$notified_error ) {
+				$call_count++;
+				$notified_error = $e;
+				return true;
+			},
+			true
+		);
+
+		$this->assertNull( FontAwesome_Activator::initialize() );
+		$this->assertEquals( 1, $call_count );
+		$this->assertMatchesRegularExpression( '/permission to save files/', $notified_error->getMessage() );
 	}
 
 	public function setup_metadata_provider_mock() {
