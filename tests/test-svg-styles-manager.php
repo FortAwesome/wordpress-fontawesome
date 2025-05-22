@@ -18,7 +18,10 @@ class SvgStyleManagerTest extends TestCase {
 		reset_db();
 		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present' );
 		uopz_unset_return( FontAwesome_Release_Provider::class, 'get_svg_styles_resource' );
+		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_url_present' );
+		uopz_unset_return( 'WP_Filesystem' );
 		uopz_unset_return( 'wp_remote_get' );
+		uopz_unset_return( 'wp_remote_head' );
 		remove_all_filters( 'font_awesome_disable_block_editor_support' );
 
 		$this->setup_metadata_provider_mock();
@@ -29,7 +32,14 @@ class SvgStyleManagerTest extends TestCase {
 
 		update_option(
 			FontAwesome::OPTIONS_KEY,
-			FontAwesome::DEFAULT_USER_OPTIONS
+			array_merge(
+				FontAwesome::DEFAULT_USER_OPTIONS,
+				array(
+					'version'  => '6.x',
+					'kitToken' => 'abc123',
+					'apiToken' => true,
+				)
+			)
 		);
 	}
 
@@ -137,6 +147,60 @@ class SvgStyleManagerTest extends TestCase {
 		FontAwesome_SVG_Styles_Manager::fetch_svg_styles( fa(), fa_release_provider() );
 		$this->assertEquals( 0, $wp_remote_get_call_count );
 	}
+
+	public function test_is_svg_stylesheet_present_when_present_with_filesystem_permissions() {
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		global $wp_filesystem;
+
+		if ( ! $wp_filesystem ) {
+			$this->assertTrue( WP_Filesystem( false ) );
+		}
+
+		$this->assertNotNull( $wp_filesystem );
+
+		$filesystem_class = get_class( $wp_filesystem );
+
+		uopz_set_return(
+			$filesystem_class,
+			'exists',
+			true,
+			false
+		);
+
+		// It should not fall back to fetching by URL, but if it does, fail.
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'is_svg_stylesheet_url_present',
+			false
+		);
+
+		$this->assertTrue( FontAwesome_SVG_Styles_Manager::is_svg_stylesheet_present( fa() ) );
+	}
+
+	public function test_is_svg_stylesheet_present_when_present_with_no_filesystem_permissions() {
+		// Simulate the filesystem being inaccessible.
+		uopz_set_return(
+			'WP_Filesystem',
+			false,
+			false
+		);
+
+		uopz_set_return(
+			'wp_remote_head',
+			array(
+				'response' => array(
+					'code' => 200,
+				),
+			)
+		);
+
+		// It should fallback to an HTTP request.
+		$this->assertTrue( FontAwesome_SVG_Styles_Manager::is_svg_stylesheet_present( fa() ) );
+	}
+
 
 	public function setup_metadata_provider_mock() {
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
