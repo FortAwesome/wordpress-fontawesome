@@ -101,6 +101,21 @@ class SvgStyleManagerTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/svg-with-js\.css$/', $written_asset_path );
 	}
 
+	public function test_fetch_svg_styles_when_no_filesystem_permission() {
+		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present', false, false );
+
+		// Simulate the filesystem being inaccessible.
+		uopz_set_return(
+			'WP_Filesystem',
+			false,
+			false
+		);
+
+		$this->expectException( SelfhostSetupPermissionsException::class );
+		$this->expectExceptionMessage( 'Failed to initialize filesystem usage' );
+		FontAwesome_SVG_Styles_Manager::fetch_svg_styles( fa(), fa_release_provider() );
+	}
+
 	public function test_no_wp_remote_get_for_fetch_svg_styles_when_already_present() {
 		uopz_set_return(
 			FontAwesome_SVG_Styles_Manager::class,
