@@ -1,9 +1,5 @@
 FROM wordpress:latest
 
-RUN pecl install uopz
-
-COPY ./docker-php-ext-uopz.ini /usr/local/etc/php/conf.d
-
 # Node installation
 # See: https://deb.nodesource.com/
 RUN apt-get update && apt-get install -y ca-certificates curl gnupg
@@ -47,5 +43,7 @@ COPY ./security2.conf /etc/apache2/mods-enabled/security2.conf
 COPY ./setup-owasp.sh /tmp
 
 RUN /tmp/setup-owasp.sh
+
+RUN pecl install uopz
 
 CMD ["docker-entrypoint.sh"]
