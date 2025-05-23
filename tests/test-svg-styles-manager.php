@@ -19,6 +19,7 @@ class SvgStyleManagerTest extends TestCase {
 		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present' );
 		uopz_unset_return( FontAwesome_Release_Provider::class, 'get_svg_styles_resource' );
 		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_url_present' );
+		uopz_unset_return( FontAwesome_SVG_Styles_Manager::class, 'fetch_svg_styles' );
 		uopz_unset_return( 'WP_Filesystem' );
 		uopz_unset_return( 'wp_remote_get' );
 		uopz_unset_return( 'wp_remote_head' );
@@ -201,6 +202,103 @@ class SvgStyleManagerTest extends TestCase {
 		$this->assertTrue( FontAwesome_SVG_Styles_Manager::is_svg_stylesheet_present( fa() ) );
 	}
 
+	public function test_fetch_svg_styles_when_loading_wp_admin_when_not_yet_present() {
+		$call_count = 0;
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'fetch_svg_styles',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return null;
+			},
+			true
+		);
+
+		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present', false );
+
+		fa()->initialize_admin();
+
+		$this->assertEquals( 1, $call_count );
+	}
+
+	public function test_no_fetch_svg_styles_when_loading_wp_admin_when_already_present() {
+		$call_count = 0;
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'fetch_svg_styles',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return null;
+			},
+			true
+		);
+
+		uopz_set_return( FontAwesome_SVG_Styles_Manager::class, 'is_svg_stylesheet_present', true );
+
+		fa()->initialize_admin();
+
+		$this->assertEquals( 0, $call_count );
+	}
+
+	public function test_no_svg_styles_when_loading_wp_admin_when_block_editor_disabled() {
+		$call_count = 0;
+		add_filter( 'font_awesome_disable_block_editor_support', '__return_true' );
+		FontAwesome::reset();
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'is_svg_stylesheet_present',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return null;
+			},
+			true
+		);
+
+		fa()->initialize_admin();
+
+		$this->assertEquals( 0, $call_count );
+	}
+
+	public function test_register_svg_styles_when_initializing_when_enabled() {
+		$call_count = 0;
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'register_svg_styles',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return null;
+			},
+			true
+		);
+
+		fa()->init();
+
+		$this->assertEquals( 1, $call_count );
+	}
+
+	public function test_no_register_svg_styles_when_initializing_when_disabled() {
+		$call_count = 0;
+		add_filter( 'font_awesome_disable_block_editor_support', '__return_true' );
+		FontAwesome::reset();
+
+		uopz_set_return(
+			FontAwesome_SVG_Styles_Manager::class,
+			'register_svg_styles',
+			function () use ( &$call_count ) {
+				$call_count++;
+				return null;
+			},
+			true
+		);
+
+		fa()->init();
+
+		$this->assertEquals( 0, $call_count );
+	}
 
 	public function setup_metadata_provider_mock() {
 		( new Mock_FontAwesome_Metadata_Provider() )->mock(
