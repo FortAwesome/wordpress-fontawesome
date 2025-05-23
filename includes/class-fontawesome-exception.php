@@ -626,3 +626,18 @@ class UpgradeException extends FontAwesome_ServerException {
  * @since 5.0.0
  */
 class SelfhostSetupException extends FontAwesome_ServerException {}
+
+/**
+ * Thrown when permissions are lacking to setup self-hosting.
+ *
+ * @since 5.0.2
+ */
+class SelfhostSetupPermissionsException extends FontAwesome_ServerException {}
+
+/**
+ * Thrown when the FontAwesome_SVG_Styles_Manager attempts to check for the presence of
+ * the SVG stylesheet via HTTP request, and that request fails.
+ *
+ * @since 5.0.2
+ */
+class SvgStylesheetCheckException extends FontAwesome_ServerException {}

@@ -164,28 +164,3 @@ function match_all( $pattern, $content ) {
 
 	return new MatchResult( $match_result, $matches );
 }
-
-$__svg_styles_manager_fetch_count = 0;
-
-function get_svg_styles_manager_fetch_count() {
-	global $__svg_styles_manager_fetch_count;
-	return $__svg_styles_manager_fetch_count;
-}
-
-function reset_svg_styles_manager_fetch_count() {
-	global $__svg_styles_manager_fetch_count;
-	return $__svg_styles_manager_fetch_count = 0;
-}
-
-function mock_fetch_svg_styles( $obj ) {
-	return mock_singleton_method(
-		$obj,
-		FontAwesome_SVG_Styles_Manager::class,
-		'fetch_svg_styles',
-		function ( $method ) {
-			global $__svg_styles_manager_fetch_count;
-			$__svg_styles_manager_fetch_count++;
-			$method->willReturn( null );
-		}
-	);
-}

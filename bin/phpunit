@@ -4,4 +4,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/.common.bash
 source $DIR/.resolve-container.bash
 
-$WP_SUDO $DOCKER exec -it -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER composer exec phpunit -- $@
+# We need to add the uopz extension to the phpunit command, to enable that extension
+# that is used in the tests for mocking.
+$WP_SUDO $DOCKER exec -it -w /var/www/html/wp-content/plugins/font-awesome $WP_CONTAINER php -d extension=uopz /var/tmp/composer/vendor/bin/phpunit $@

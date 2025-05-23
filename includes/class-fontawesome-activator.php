@@ -5,6 +5,7 @@ require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( __DIR__ ) . 'class-fontawesome.php';
 require_once trailingslashit( __DIR__ ) . 'class-fontawesome-release-provider.php';
 require_once trailingslashit( __DIR__ ) . 'class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/error-util.php';
 
 /**
  * Plugin activation logic.
@@ -24,7 +25,21 @@ class FontAwesome_Activator {
 	 * @throws ReleaseProviderStorageException
 	 */
 	public static function activate() {
-		self::initialize();
+		try {
+			self::initialize();
+		} catch ( \Exception $e ) {
+			wp_die(
+				esc_html( $e->getMessage() ),
+				esc_html( __( 'Font Awesome Activation Error', 'font-awesome' ) ),
+				array( 'back_link' => true )
+			);
+		} catch ( \Error $e ) {
+			wp_die(
+				esc_html( $e->getMessage() ),
+				esc_html( __( 'Font Awesome Activation Error', 'font-awesome' ) ),
+				array( 'back_link' => true )
+			);
+		}
 	}
 
 	/**
@@ -84,7 +99,9 @@ class FontAwesome_Activator {
 			self::initialize_conflict_detection_options();
 		}
 
-		self::initialize_svg_styles();
+		if ( fa()->is_block_editor_support_enabled() ) {
+			self::initialize_svg_styles();
+		}
 	}
 
 	/**
@@ -140,6 +157,6 @@ class FontAwesome_Activator {
 	 * @throws ConfigCorruptionException
 	 */
 	private static function initialize_svg_styles() {
-		FontAwesome_SVG_Styles_Manager::instance()->fetch_svg_styles( fa(), fa_release_provider() );
+		FontAwesome_SVG_Styles_Manager::ensure_svg_styles_with_admin_notice_warning( fa(), fa_release_provider() );
 	}
 }
