@@ -463,13 +463,23 @@ EOT;
 
 		$response = wp_remote_get( $resource->source() );
 
-		$code = null;
+		$is_error = false;
 
-		if ( isset( $response['response']['code'] ) ) {
-			$code = $response['response']['code'];
+		if ( is_wp_error( $response ) ) {
+			$is_error = true;
+		} else {
+			$code = null;
+
+			if ( isset( $response['response']['code'] ) ) {
+				$code = $response['response']['code'];
+			}
+
+			if ( ! $code || $code >= 400 | ! isset( $response['body'] ) ) {
+				$is_error = true;
+			}
 		}
 
-		if ( is_wp_error( $response ) || ! $code || $code >= 400 | ! isset( $response['body'] ) ) {
+		if ( $is_error ) {
 			throw new SelfhostSetupException(
 				esc_html__(
 					'Failed retrieving an asset for self-hosting. Try again.',
