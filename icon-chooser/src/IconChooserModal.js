@@ -64,6 +64,7 @@ export default function (params) {
                 "Find icons by name, category, or keyword",
                 "font-awesome",
               )}
+              _assetsBaseUrl={params.assetsBaseUrlOverride}
             >
               <span slot="fatal-error-heading">
                 {__("Well, this is awkward...", "font-awesome")}
