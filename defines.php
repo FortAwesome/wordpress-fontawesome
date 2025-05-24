@@ -113,3 +113,19 @@ if ( ! defined( 'FONTAWESOME_KIT_LOADER_BASE_URL' ) ) {
 		define( 'FONTAWESOME_KIT_LOADER_BASE_URL', 'https://kit.fontawesome.com' );
 	}
 }
+
+if ( ! defined( 'FONTAWESOME_ASSETS_BASE_URL_OVERRIDE' ) ) {
+	if ( 'development' === getenv( 'FONTAWESOME_ENV' ) && boolval( getenv( 'FONTAWESOME_ASSETS_BASE_URL_OVERRIDE' ) ) ) {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_ASSETS_BASE_URL_OVERRIDE', untrailingslashit( getenv( 'FONTAWESOME_ASSETS_BASE_URL_OVERRIDE' ) ) );
+	} else {
+		/**
+		 * @internal
+		 * @ignore
+		 */
+		define( 'FONTAWESOME_ASSETS_BASE_URL_OVERRIDE', null );
+	}
+}
