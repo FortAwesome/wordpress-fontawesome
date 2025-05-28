@@ -532,7 +532,7 @@ EOT;
 		if ( "$algo-$hash" !== $resource->integrity_key() ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Asset integrity key does not match for self-hosted asset. Try removing your font_awesome_svg_styles_loading filter.',
+					'Asset integrity key does not match for self-hosted asset.',
 					'font-awesome'
 				)
 			);
