@@ -10,7 +10,7 @@ const createInterpolateElement = get(window, [
 ]);
 
 export default function (params) {
-  const { kitToken, version, pro, handleQuery, getUrlText, settingsPageUrl } =
+  const { kitToken, version, pro, handleQuery, getUrlText, settingsPageUrl, assetsBaseUrlOverride } =
     params;
 
   return (props) => {
@@ -64,7 +64,7 @@ export default function (params) {
                 "Find icons by name, category, or keyword",
                 "font-awesome",
               )}
-              _assetsBaseUrl={params.assetsBaseUrlOverride}
+              _assetsBaseUrl={assetsBaseUrlOverride}
             >
               <span slot="fatal-error-heading">
                 {__("Well, this is awkward...", "font-awesome")}
