@@ -65,7 +65,7 @@ class FontAwesome_SVG_Styles_Manager {
 
 		return array(
 			'dir'  => trailingslashit( $upload_dir['basedir'] ) . self::selfhost_asset_subdir( $version ),
-			'file' => self::selfhost_asset_filename(),
+			'file' => self::selfhost_asset_filename( $version ),
 		);
 	}
 
@@ -109,8 +109,10 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public static function selfhost_asset_filename() {
-		return 'svg-with-js.css';
+	public static function selfhost_asset_filename( $version ) {
+		return ( is_string( $version ) && strlen( $version ) > 0 && $version[0] === '7' )
+			? 'svg.css'
+			: 'svg-with-js.css';
 	}
 
 	/**
@@ -120,7 +122,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @internal
 	 */
 	public static function selfhost_asset_subpath( $version ) {
-		return trailingslashit( self::selfhost_asset_subdir( $version ) ) . self::selfhost_asset_filename();
+		return trailingslashit( self::selfhost_asset_subdir( $version ) ) . self::selfhost_asset_filename( $version );
 	}
 
 	/**
