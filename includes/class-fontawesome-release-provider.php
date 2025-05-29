@@ -275,9 +275,9 @@ EOD;
 	 * @return FontAwesome_Resource
 	 */
 	private function build_resource( $version, $file_basename, $flags = array(
-		'use_svg' => false,
-		'use_pro' => false,
-		'cdn_url_template' => null
+		'use_svg'          => false,
+		'use_pro'          => false,
+		'cdn_url_template' => null,
 	) ) {
 		$version = ( isset( $args['version'] ) && ! empty( $args['version'] ) ) ? $args['version'] : $version;
 		$use_svg = isset( $flags['use_svg'] ) && $flags['use_svg'];
@@ -297,7 +297,7 @@ EOD;
 			$base_url  = 'https://';
 			$base_url .= $use_pro ? 'pro.' : 'use.';
 			$base_url .= 'fontawesome.com/releases/v' . $version . '/';
-			$full_url = $base_url . $relative_url;
+			$full_url  = $base_url . $relative_url;
 		}
 
 		$license = $use_pro ? 'pro' : 'free';
@@ -552,7 +552,7 @@ EOD;
 	 * @return FontAwesome_Resource
 	 */
 	public function get_svg_styles_resource( $version ) {
-		$file_basename = ( is_string( $version ) && strlen( $version ) > 0 && $version[0] === '7' )
+		$file_basename = ( is_string( $version ) && strlen( $version ) > 0 && '7' === $version[0] )
 			? 'svg'
 			: 'svg-with-js';
 
@@ -562,9 +562,13 @@ EOD;
 			$cdn_url_template = getenv( 'FONTAWESOME_CDN_URL_TEMPLATE' );
 		}
 
-		return $this->build_resource( $version, $file_basename, array(
-			'cdn_url_template' => $cdn_url_template,
-		) );
+		return $this->build_resource(
+			$version,
+			$file_basename,
+			array(
+				'cdn_url_template' => $cdn_url_template,
+			)
+		);
 	}
 
 	/**

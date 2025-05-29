@@ -1908,7 +1908,7 @@ class FontAwesome {
 			'options'                       => $this->options(),
 			'webpackPublicPath'             => trailingslashit( FONTAWESOME_DIR_URL ) . 'admin/build/',
 			'disableRichTextIcons'          => $this->disable_rich_text_icons(),
-			'assetsBaseUrlOverride'         => FONTAWESOME_ASSETS_BASE_URL_OVERRIDE
+			'assetsBaseUrlOverride'         => FONTAWESOME_ASSETS_BASE_URL_OVERRIDE,
 		);
 	}
 
