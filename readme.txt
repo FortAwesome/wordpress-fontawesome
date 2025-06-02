@@ -187,6 +187,14 @@ If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can onl
 
 
 == Changelog ==
+= 5.0.2 =
+
+* Fix a bug in the Classic Editor involving interaction with some other plugins, where the Font Awesome
+  media button would not be visible.
+* Make it an admin warning instead of an error when the plugin can't fetch SVG support stylesheet.
+* Add a `font_awesome_disable_block_editor_support` filter to allow disabling the block editor support entirely.
+* Changes to enable usage of the self-hosted SVG support stylesheet on systems where file system access is not available.
+
 = 5.0.1 =
 * Automatically fetch the SVG stylesheet any time the WP admin dashboard or Font Awesome plugin settings
 page is loaded. This stylesheet is required for the new embedded SVG icons to display correctly when they
