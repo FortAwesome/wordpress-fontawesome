@@ -65,7 +65,7 @@ class FontAwesome_SVG_Styles_Manager {
 
 		return array(
 			'dir'  => trailingslashit( $upload_dir['basedir'] ) . self::selfhost_asset_subdir( $version ),
-			'file' => self::selfhost_asset_filename(),
+			'file' => self::selfhost_asset_filename( $version ),
 		);
 	}
 
@@ -109,8 +109,10 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public static function selfhost_asset_filename() {
-		return 'svg-with-js.css';
+	public static function selfhost_asset_filename( $version ) {
+		return ( is_string( $version ) && strlen( $version ) > 0 && '7' === $version[0] )
+			? 'svg.css'
+			: 'svg-with-js.css';
 	}
 
 	/**
@@ -120,7 +122,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @internal
 	 */
 	public static function selfhost_asset_subpath( $version ) {
-		return trailingslashit( self::selfhost_asset_subdir( $version ) ) . self::selfhost_asset_filename();
+		return trailingslashit( self::selfhost_asset_subdir( $version ) ) . self::selfhost_asset_filename( $version );
 	}
 
 	/**
@@ -463,13 +465,23 @@ EOT;
 
 		$response = wp_remote_get( $resource->source() );
 
-		$code = null;
+		$is_error = false;
 
-		if ( isset( $response['response']['code'] ) ) {
-			$code = $response['response']['code'];
+		if ( is_wp_error( $response ) ) {
+			$is_error = true;
+		} else {
+			$code = null;
+
+			if ( isset( $response['response']['code'] ) ) {
+				$code = $response['response']['code'];
+			}
+
+			if ( ! $code || $code >= 400 | ! isset( $response['body'] ) ) {
+				$is_error = true;
+			}
 		}
 
-		if ( is_wp_error( $response ) || ! $code || $code >= 400 | ! isset( $response['body'] ) ) {
+		if ( $is_error ) {
 			throw new SelfhostSetupException(
 				esc_html__(
 					'Failed retrieving an asset for self-hosting. Try again.',
@@ -522,7 +534,7 @@ EOT;
 		if ( "$algo-$hash" !== $resource->integrity_key() ) {
 			throw new SelfhostSetupException(
 				esc_html__(
-					'Asset integrity key does not match for self-hosted asset. Try removing your font_awesome_svg_styles_loading filter.',
+					'Asset integrity key does not match for self-hosted asset.',
 					'font-awesome'
 				)
 			);

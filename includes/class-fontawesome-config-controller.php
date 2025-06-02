@@ -242,7 +242,7 @@ class FontAwesome_Config_Controller extends WP_REST_Controller {
 		 */
 		if ( isset( $given_options['kitToken'] ) && is_string( $given_options['kitToken'] ) && $version_is_symbolic_latest ) {
 			$item['version'] = 'latest';
-		} elseif ( $version_is_concrete || '5.x' === $given_options['version'] || '6.x' === $given_options['version'] ) {
+		} elseif ( $version_is_concrete || '5.x' === $given_options['version'] || '6.x' === $given_options['version'] || '7.x' === $given_options['version'] ) {
 			$item['version'] = $given_options['version'];
 		} else {
 			throw ConfigSchemaException::concrete_version_expected();

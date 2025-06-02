@@ -13,6 +13,7 @@ const initialData = window[GLOBAL_KEY];
 const kitToken = get(initialData, "options.kitToken");
 const version = get(initialData, "options.version");
 const pro = get(initialData, "options.usePro");
+const assetsBaseUrlOverride = get(initialData, "assetsBaseUrlOverride");
 
 const params = {
   ...initialData,
@@ -20,6 +21,7 @@ const params = {
   version,
   getUrlText,
   pro,
+  assetsBaseUrlOverride
 };
 
 params.handleQuery = prepareQueryHandler(params);
