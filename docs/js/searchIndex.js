@@ -181,6 +181,16 @@ Search.appendIndex(
             "summary": "Thrown\u0020on\u0020one\u0020of\u0020several\u0020errors\u0020conditions\u0020when\u0020setting\u0020up\u0020assets\u0020for\u0020self\u002Dhosting.",
             "url": "classes/FortAwesome-SelfhostSetupException.html"
         },                {
+            "fqsen": "\\FortAwesome\\SelfhostSetupPermissionsException",
+            "name": "SelfhostSetupPermissionsException",
+            "summary": "Thrown\u0020when\u0020permissions\u0020are\u0020lacking\u0020to\u0020setup\u0020self\u002Dhosting.",
+            "url": "classes/FortAwesome-SelfhostSetupPermissionsException.html"
+        },                {
+            "fqsen": "\\FortAwesome\\SvgStylesheetCheckException",
+            "name": "SvgStylesheetCheckException",
+            "summary": "Thrown\u0020when\u0020the\u0020FontAwesome_SVG_Styles_Manager\u0020attempts\u0020to\u0020check\u0020for\u0020the\u0020presence\u0020of\nthe\u0020SVG\u0020stylesheet\u0020via\u0020HTTP\u0020request,\u0020and\u0020that\u0020request\u0020fails.",
+            "url": "classes/FortAwesome-SvgStylesheetCheckException.html"
+        },                {
             "fqsen": "\\FortAwesome\\FontAwesome_REST_Response",
             "name": "FontAwesome_REST_Response",
             "summary": "Handles\u0020FontAwesome\u002Dspecific\u0020enhancements\u0020to\u0020a\u0020REST\u0020response.",
@@ -290,6 +300,11 @@ Search.appendIndex(
             "name": "maybe_enqueue_conflict_detection",
             "summary": "",
             "url": "classes/FortAwesome-FontAwesome.html#method_maybe_enqueue_conflict_detection"
+        },                {
+            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Ais_block_editor_support_enabled\u0028\u0029",
+            "name": "is_block_editor_support_enabled",
+            "summary": "Whether\u0020to\u0020enable\u0020Font\u0020Awesome\u0020support\u0020for\u0020the\u0020Block\u0020Editor.",
+            "url": "classes/FortAwesome-FontAwesome.html#method_is_block_editor_support_enabled"
         },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003ASHORTCODE_TAG",
             "name": "SHORTCODE_TAG",
