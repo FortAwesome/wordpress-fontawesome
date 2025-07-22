@@ -443,6 +443,9 @@ class FontAwesomeTest extends TestCase {
 								'latest_version_6'   => array(
 									'version' => '6.42.1',
 								),
+								'latest_version_7'   => array(
+									'version' => '7.0.0',
+								),
 								'releases' =>
 								array()
 							)
@@ -493,6 +496,9 @@ class FontAwesomeTest extends TestCase {
 								),
 								'latest_version_6'   => array(
 									'version' => '6.42.1',
+								),
+								'latest_version_7'   => array(
+									'version' => '7.0.0',
 								),
 								'releases' =>
 								array()
