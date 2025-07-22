@@ -22,6 +22,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const pseudoElements = useOption('pseudoElements')
   const isVersion6 = !!version.match(/^6\./)
   const isVersion7 = !!version.match(/^7\./)
+  const isVersion5 = !isVersion6 && !isVersion7
 
   const pendingOptions = useSelector((state) => state.pendingOptions)
   const pendingOptionConflicts = useSelector((state) => state.pendingOptionConflicts)
@@ -178,7 +179,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                 </p>
               </Alert>
             )}
-            {usePro && !isVersion6 && (
+            {usePro && isVersion5 && (
               <Alert
                 title={__('Heads up! Pro requires a Font Awesome subscription', 'font-awesome')}
                 type="info"
