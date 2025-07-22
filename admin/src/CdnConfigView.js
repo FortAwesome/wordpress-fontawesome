@@ -30,13 +30,15 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
 
   const versionOptions = useSelector((state) => {
     const {
-      releases: { available, latest_version_5, latest_version_6 }
+      releases: { available, latest_version_5, latest_version_6, latest_version_7 }
     } = state
 
     return available.reduce((acc, version) => {
       if (latest_version_5 === version) {
         acc[version] = `${version} (latest 5.x)`
       } else if (latest_version_6 === version) {
+        acc[version] = `${version} (latest 6.x)`
+      } else if (latest_version_7 === version) {
         acc[version] = `${version} (latest)`
       } else {
         acc[version] = version

@@ -1714,6 +1714,7 @@ class FontAwesome {
 										'available'        => $this->release_provider()->versions(),
 										'latest_version_5' => $this->latest_version_5(),
 										'latest_version_6' => $this->latest_version_6(),
+										'latest_version_7' => $this->latest_version_7(),
 									),
 									'pluginVersion'       => FontAwesome::PLUGIN_VERSION,
 									'preferenceConflicts' => $this->conflicts_by_option(),
