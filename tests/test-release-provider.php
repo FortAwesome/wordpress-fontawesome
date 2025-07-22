@@ -21,8 +21,10 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
 class ReleaseProviderTest extends TestCase {
 	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
+		'7.0.0',
 		'6.1.1',
 		'6.0.0-beta3',
+		'5.15.4',
 		'5.4.1',
 		'5.3.1',
 		'5.2.0',
@@ -279,7 +281,7 @@ class ReleaseProviderTest extends TestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$this->assertEquals( '5.4.1', $farp->latest_version() );
+		$this->assertEquals( '5.15.4', $farp->latest_version() );
 	}
 
 	public function test_latest_version_5() {
@@ -287,7 +289,7 @@ class ReleaseProviderTest extends TestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$this->assertEquals( '5.4.1', $farp->latest_version_5() );
+		$this->assertEquals( '5.15.4', $farp->latest_version_5() );
 	}
 
 	public function test_latest_version_6() {
@@ -295,7 +297,7 @@ class ReleaseProviderTest extends TestCase {
 
 		$farp = $this->create_release_provider_with_mock_metadata( $mock_response );
 
-		$this->assertEquals( '6.1.1', $farp->latest_version_6() );
+		$this->assertEquals( '6.7.2', $farp->latest_version_6() );
 	}
 
 	// Ensure that the ReleaseProvider sorts versions semantically.
@@ -309,16 +311,14 @@ class ReleaseProviderTest extends TestCase {
 		$this->create_release_provider_with_mock_metadata( $mock_response );
 		$farp = FontAwesome_Release_Provider::reset();
 
-		$versions = $farp->versions();
-
-		$this->assertEquals( '6.1.1', $farp->versions()[0] );
+		$this->assertEquals( '7.0.0', $farp->versions()[0] );
 
 		/**
 		 * The deprecated latest_version() is defined to be the latest 5.x version,
 		 * because that reflects the data available on api.fontawesome.com, even though
 		 * it's not the absolutely latest version.
 		 */
-		$this->assertEquals( '5.4.1', $farp->latest_version() );
+		$this->assertEquals( '5.15.4', $farp->latest_version() );
 	}
 
 	/**
@@ -347,8 +347,8 @@ class ReleaseProviderTest extends TestCase {
 
 		$farp = FontAwesome_Release_Provider::reset();
 
-		$this->assertEquals( '5.4.1', $farp->latest_version_5() );
+		$this->assertEquals( '5.15.4', $farp->latest_version_5() );
 		$this->assertNull( $farp->latest_version_6() );
-		$this->assertEquals( '5.4.1', $farp->latest_version() );
+		$this->assertEquals( '5.15.4', $farp->latest_version() );
 	}
 }
