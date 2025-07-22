@@ -6,7 +6,7 @@ namespace FortAwesome;
  */
 class FontAwesome_Preference_Conflict_Detector {
 
-	protected static function resolve_version( $configured_option, $current_preference, $latest_version_5, $latest_version_6 ) {
+	protected static function resolve_version( $configured_option, $current_preference, $latest_version_5, $latest_version_6, $latest_version_7 ) {
 		/**
 		 * If the version given as configured_option is 'latest', '5.x', or '6.x', as it may be for
 		 * a kit, then we'll resolve that symbolic version into whatever is the corresponding semantic version.
@@ -17,6 +17,7 @@ class FontAwesome_Preference_Conflict_Detector {
 			'latest' => $latest_version_5,
 			'5.x'    => $latest_version_5,
 			'6.x'    => $latest_version_6,
+			'7.x'    => $latest_version_7,
 		);
 
 		$resolved_version = ( is_string( $configured_option ) && isset( $symbolic_versions[ $configured_option ] ) )
@@ -45,10 +46,10 @@ class FontAwesome_Preference_Conflict_Detector {
 	 * @ignore
 	 * @since 4.0.0
 	 */
-	public static function detect( $configured_options = array(), $client_preferences = array(), $latest_version_5 = null, $latest_version_6 = null ) {
+	public static function detect( $configured_options = array(), $client_preferences = array(), $latest_version_5 = null, $latest_version_6 = null, $latest_version_7 = null ) {
 		return array_reduce(
 			array_keys( $configured_options ),
-			function ( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version_5, $latest_version_6 ) {
+			function ( $carry, $option ) use ( $configured_options, $client_preferences, $latest_version_5, $latest_version_6, $latest_version_7 ) {
 				$resolve_method_candidate = 'resolve_' . $option;
 				if ( isset( $client_preferences[ $option ] ) ) {
 					if ( method_exists( __CLASS__, $resolve_method_candidate ) ) {
@@ -57,7 +58,8 @@ class FontAwesome_Preference_Conflict_Detector {
 							$configured_options[ $option ],
 							$client_preferences[ $option ],
 							$latest_version_5,
-							$latest_version_6
+							$latest_version_6,
+							$latest_version_7
 						) ? $carry : array_merge( $carry, array( $option ) );
 					} else {
 						return $configured_options[ $option ] === $client_preferences[ $option ]

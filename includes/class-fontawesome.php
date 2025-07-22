@@ -1428,7 +1428,8 @@ class FontAwesome {
 					$options_for_comparison,
 					$client_preferences,
 					$this->latest_version_5(),
-					$this->latest_version_6()
+					$this->latest_version_6(),
+					$this->latest_version_7()
 				);
 				if ( count( $current_conflicts ) > 0 ) {
 					$conflicts[ $client_name ] = $current_conflicts;
