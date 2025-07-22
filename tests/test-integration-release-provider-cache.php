@@ -99,7 +99,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 
 		fa()->gather_preferences();
 
-		$resource_collection = fa_release_provider()->get_resource_collection( '5.2.0' );
+		$resource_collection = fa_release_provider()->get_resource_collection( '5.15.4' );
 		fa()->enqueue_cdn( fa()->options(), $resource_collection );
 
 		$this->assertEquals( 1, $enqueued_count );
@@ -168,7 +168,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		$this->assertTrue( is_array( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ) ) );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
-			'5.4.1',
+			'5.15.4',
 			array(
 				'use_pro'           => true,
 				'use_svg'           => false,
@@ -181,7 +181,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		$this->assertEquals( 3, $all_releases_query_count );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
-			'5.4.1',
+			'5.15.4',
 			array(
 				'use_pro'           => true,
 				'use_svg'           => false,
@@ -235,7 +235,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 		$this->assertTrue( (bool) FontAwesome_Release_Provider::get_option() );
 
 		$resource_collection = FontAwesome_Release_Provider::get_resource_collection(
-			'5.4.1',
+			'5.15.4',
 			array(
 				'use_pro'           => true,
 				'use_svg'           => false,
