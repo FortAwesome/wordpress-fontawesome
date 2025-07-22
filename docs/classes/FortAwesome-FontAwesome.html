@@ -230,7 +230,7 @@ routes, not to the Font Awesome GraphQL API at <code class="prettyprint">api.fon
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/FortAwesome-FontAwesome.html#constant_PLUGIN_VERSION">PLUGIN_VERSION</a>
     <span>
-        &nbsp;= &#039;5.0.2&#039;                            </span>
+        &nbsp;= &#039;5.1.0&#039;                            </span>
 </dt>
 <dd>The version of this WordPress plugin.</dd>
 
@@ -334,6 +334,15 @@ API server.</dd>
                                 &nbsp;: null|string    </span>
 </dt>
 <dd>Returns the latest available full release version of Font Awesome 6 as a string,
+or null if the releases metadata has not yet been successfully retrieved from the
+API server.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_7">latest_version_7()</a>
+    <span>
+                                &nbsp;: null|string    </span>
+</dt>
+<dd>Returns the latest available version of Font Awesome 7 as a string,
 or null if the releases metadata has not yet been successfully retrieved from the
 API server.</dd>
 
@@ -576,7 +585,7 @@ a concrete, semver parseable value, like 5.15.3.</dd>
     <span class="phpdocumentor-signature__visibility">public</span>
         <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">PLUGIN_VERSION</span>
-    = <span class="phpdocumentor-signature__default-value">&#039;5.0.2&#039;</span>
+    = <span class="phpdocumentor-signature__default-value">&#039;5.1.0&#039;</span>
 </code>
 
 
@@ -758,7 +767,7 @@ a concrete, semver parseable value, like 5.15.3.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1189</span>
+    <span class="phpdocumentor-element-found-in__line">1202</span>
 
     </aside>
 
@@ -812,7 +821,7 @@ Font Awesome that the site owner has chosen to block from being enqueued.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1606</span>
+    <span class="phpdocumentor-element-found-in__line">1619</span>
 
     </aside>
 
@@ -984,7 +993,7 @@ to run the client-side conflict detection scanner.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3180</span>
+    <span class="phpdocumentor-element-found-in__line">3196</span>
 
     </aside>
 
@@ -1039,7 +1048,7 @@ like this:</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1574</span>
+    <span class="phpdocumentor-element-found-in__line">1587</span>
 
     </aside>
 
@@ -1289,6 +1298,59 @@ API server.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_latest_version_7">
+        latest_version_7()
+        <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_7" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">877</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Returns the latest available version of Font Awesome 7 as a string,
+or null if the releases metadata has not yet been successfully retrieved from the
+API server.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">latest_version_7</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">null|string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/FortAwesome-FontAwesome.html#method_latest_version_7#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">since</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                            <span class="phpdocumentor-tag-link">5.1.0</span>
+                                                                                
+                                             
+                                    </dd>
+                                            </dl>
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">null|string</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_pro">
         pro()
         <a href="classes/FortAwesome-FontAwesome.html#method_pro" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1297,7 +1359,7 @@ API server.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1488</span>
+    <span class="phpdocumentor-element-found-in__line">1501</span>
 
     </aside>
 
@@ -1358,7 +1420,7 @@ API server.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1628</span>
+    <span class="phpdocumentor-element-found-in__line">1641</span>
 
     </aside>
 
@@ -1431,7 +1493,7 @@ are always inherently supported by the CSS/Webfont technology.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2898</span>
+    <span class="phpdocumentor-element-found-in__line">2912</span>
 
     </aside>
 
@@ -1645,7 +1707,7 @@ has a HTTP 200 status.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">2720</span>
+    <span class="phpdocumentor-element-found-in__line">2734</span>
 
     </aside>
 
@@ -1856,7 +1918,7 @@ approach, because the performance can be poor. <em>Really</em> poor, in some cas
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">901</span>
+    <span class="phpdocumentor-element-found-in__line">914</span>
 
     </aside>
 
@@ -1912,7 +1974,7 @@ refreshed.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1502</span>
+    <span class="phpdocumentor-element-found-in__line">1515</span>
 
     </aside>
 
@@ -2034,7 +2096,7 @@ Yet this is a valid way to determine that.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1592</span>
+    <span class="phpdocumentor-element-found-in__line">1605</span>
 
     </aside>
 
@@ -2102,7 +2164,7 @@ Yet this is a valid way to determine that.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1559</span>
+    <span class="phpdocumentor-element-found-in__line">1572</span>
 
     </aside>
 
@@ -2214,7 +2276,7 @@ in the db. Otherwise, 5.x, or 6.x, or a semantic version string.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="includes/class-fontawesome.php"><a href="files/includes-class-fontawesome.html"><abbr title="includes/class-fontawesome.php">class-fontawesome.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">3123</span>
+    <span class="phpdocumentor-element-found-in__line">3139</span>
 
     </aside>
 
@@ -2366,6 +2428,7 @@ in the db. Otherwise, 5.x, or 6.x, or a semantic version string.</p>
                                             <li><a href="classes/FortAwesome-FontAwesome.html#method_latest_version">latest_version()</a></li>
                                             <li><a href="classes/FortAwesome-FontAwesome.html#method_latest_version_5">latest_version_5()</a></li>
                                             <li><a href="classes/FortAwesome-FontAwesome.html#method_latest_version_6">latest_version_6()</a></li>
+                                            <li><a href="classes/FortAwesome-FontAwesome.html#method_latest_version_7">latest_version_7()</a></li>
                                             <li><a href="classes/FortAwesome-FontAwesome.html#method_pro">pro()</a></li>
                                             <li><a href="classes/FortAwesome-FontAwesome.html#method_pseudo_elements">pseudo_elements()</a></li>
                                             <li><a href="classes/FortAwesome-FontAwesome.html#method_query">query()</a></li>

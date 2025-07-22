@@ -241,6 +241,11 @@ Search.appendIndex(
             "summary": "Returns\u0020the\u0020latest\u0020available\u0020full\u0020release\u0020version\u0020of\u0020Font\u0020Awesome\u00206\u0020as\u0020a\u0020string,\nor\u0020null\u0020if\u0020the\u0020releases\u0020metadata\u0020has\u0020not\u0020yet\u0020been\u0020successfully\u0020retrieved\u0020from\u0020the\nAPI\u0020server.",
             "url": "classes/FortAwesome-FontAwesome.html#method_latest_version_6"
         },                {
+            "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Alatest_version_7\u0028\u0029",
+            "name": "latest_version_7",
+            "summary": "Returns\u0020the\u0020latest\u0020available\u0020version\u0020of\u0020Font\u0020Awesome\u00207\u0020as\u0020a\u0020string,\nor\u0020null\u0020if\u0020the\u0020releases\u0020metadata\u0020has\u0020not\u0020yet\u0020been\u0020successfully\u0020retrieved\u0020from\u0020the\nAPI\u0020server.",
+            "url": "classes/FortAwesome-FontAwesome.html#method_latest_version_7"
+        },                {
             "fqsen": "\\FortAwesome\\FontAwesome\u003A\u003Areleases_refreshed_at\u0028\u0029",
             "name": "releases_refreshed_at",
             "summary": "Returns\u0020the\u0020time\u0020when\u0020releases\u0020metadata\u0020was\u0020last\nrefreshed.",
