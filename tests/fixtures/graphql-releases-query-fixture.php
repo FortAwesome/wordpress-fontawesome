@@ -13,7 +13,7 @@ function graphql_releases_query_fixture() {
 			'version' => '7.0.0',
 		),
 		'releases'         => array(
-			9  => array(
+			0 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
@@ -126,7 +126,7 @@ function graphql_releases_query_fixture() {
 				),
 				'version'       => '5.0.13',
 			),
-			10 => array(
+			1 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
@@ -247,7 +247,7 @@ function graphql_releases_query_fixture() {
 				),
 				'version'       => '5.1.0',
 			),
-			40 => array(
+			2 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
@@ -384,7 +384,7 @@ function graphql_releases_query_fixture() {
 				),
 				'version'       => '5.15.3',
 			),
-			41 => array(
+			3 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
@@ -521,7 +521,7 @@ function graphql_releases_query_fixture() {
 				),
 				'version'       => '5.15.4',
 			),
-			60 => array(
+			4 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
@@ -593,7 +593,7 @@ function graphql_releases_query_fixture() {
 				),
 				'version'       => '6.7.1',
 			),
-			61 => array(
+			5 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
@@ -665,7 +665,7 @@ function graphql_releases_query_fixture() {
 				),
 				'version'       => '6.7.2',
 			),
-			62 => array(
+			6 => array(
 				'srisByLicense' => array(
 					'free' => array(
 						0  => array(
