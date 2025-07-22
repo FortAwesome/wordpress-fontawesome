@@ -21,6 +21,7 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
   const compat = useOption('compat')
   const pseudoElements = useOption('pseudoElements')
   const isVersion6 = !!version.match(/^6\./)
+  const isVersion7 = !!version.match(/^7\./)
 
   const pendingOptions = useSelector((state) => state.pendingOptions)
   const pendingOptionConflicts = useSelector((state) => state.pendingOptionConflicts)
@@ -166,9 +167,9 @@ export default function CdnConfigView({ useOption, handleSubmit }) {
                 </label>
               </div>
             </div>
-            {usePro && isVersion6 && (
+            {usePro && (isVersion6 || isVersion7) && (
               <Alert
-                title={__('Heads up! Pro Version 6 is not available from CDN', 'font-awesome')}
+                title={isVersion6 ? __('Heads up! Pro Version 6 is not available from CDN', 'font-awesome') : __('Heads up! Pro Version 7 is not available from CDN', 'font-awesome')}
                 type="warning"
               >
                 <p>
