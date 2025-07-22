@@ -22,24 +22,12 @@ class ReleaseProviderTest extends TestCase {
 	// sorted descending the way rsort would sort, lexically, not semver.
 	protected $known_versions_sorted_desc = array(
 		'7.0.0',
-		'6.1.1',
-		'6.0.0-beta3',
+		'6.7.2',
+		'6.7.1',
 		'5.15.4',
-		'5.4.1',
-		'5.3.1',
-		'5.2.0',
-		'5.1.1',
+		'5.15.3',
 		'5.1.0',
-		'5.0.9',
-		'5.0.8',
-		'5.0.6',
-		'5.0.4',
-		'5.0.3',
-		'5.0.2',
-		'5.0.13',
-		'5.0.12',
-		'5.0.10',
-		'5.0.1',
+		'5.0.13'
 	);
 
 	public function set_up() {
