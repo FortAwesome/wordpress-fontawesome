@@ -93,7 +93,7 @@ class ReleaseProviderIntegrationTest extends TestCase {
 
 		$enqueued_callback = function () use ( &$enqueued_count ) {
 			++$enqueued_count;
-			$this->assertEquals( fa()->latest_version_6(), fa()->version() );
+			$this->assertEquals( fa()->latest_version_7(), fa()->version() );
 		};
 		add_action( 'font_awesome_enqueued', $enqueued_callback );
 
