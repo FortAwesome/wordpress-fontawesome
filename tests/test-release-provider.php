@@ -27,7 +27,7 @@ class ReleaseProviderTest extends TestCase {
 		'5.15.4',
 		'5.15.3',
 		'5.1.0',
-		'5.0.13'
+		'5.0.13',
 	);
 
 	public function set_up() {
