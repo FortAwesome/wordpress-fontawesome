@@ -1087,7 +1087,7 @@ $ cd ..
 10. Copy plugin directory assets and wp-dist layout into `wp-svn/trunk`
 
 ```bash
-bin/dist2trunk
+bin/dist-to-trunk
 ```
 
 This script will just `rm *` anything under `wp-svn/trunk/*` and `wp-svn/assets/*` to make sure that if the new dist
@@ -1145,15 +1145,7 @@ password. After the first `svn ci` caches the credentials, you probably won't ne
 
 [See also tips on using SVN with WordPress Plugins](https://developer.wordpress.org/plugins/wordpress-org/how-to-use-subversion/#editing-existing-files).
 
-13. OPTIONAL: Test Installation from WordPress Plugins Directory
-
-Once the trunk has been committed above, this new version is available as the current "Development Version",
-available for download as a ZIP file from the plugin's [Advanced View](https://wordpress.org/plugins/font-awesome/advanced/). (See the dropdown under the header: "Please select a specific version to download.")
-
-To try it out, you could start up a clean integration environment from this repo, and then
-install the plugin using that downloaded ZIP file.
-
-14. Create the new svn release tag
+13. Create the new svn release tag
 
 First, make sure `svn stat` is clean. We want to make sure that the trunk is all committed and clean before we take a
 snapshot of it for the release tag.
@@ -1163,6 +1155,18 @@ This will snapshot `trunk` as a new release tag. Replace the example tag name wi
 ```bash
 svn cp trunk tags/42.1.2
 ```
+
+```bash
+svn ci -m 'Tag release 42.1.2'
+```
+
+14. OPTIONAL: Test Installation from WordPress Plugins Directory
+
+Once the trunk has been committed above, this new version is available as the current "Development Version",
+available for download as a ZIP file from the plugin's [Advanced View](https://wordpress.org/plugins/font-awesome/advanced/). (See the dropdown under the header: "Please select a specific version to download.")
+
+To try it out, you could start up a clean integration environment from this repo, and then
+install the plugin using that downloaded ZIP file.
 
 15. Update `Stable tag` and `Tested up to` tags in `readme.txt`
 
