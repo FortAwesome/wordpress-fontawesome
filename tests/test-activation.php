@@ -144,8 +144,7 @@ class ActivationTest extends TestCase {
 			$initial_conflict_detection_option
 		);
 
-		// 6.1.1 is the latest version 6 in the mock
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => '6.1.1' ) );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => '6.7.2' ) );
 
 		FontAwesome_Activator::initialize( true );
 		$actual_options                   = get_option( FontAwesome::OPTIONS_KEY );

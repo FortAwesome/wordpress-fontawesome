@@ -42,6 +42,6 @@ class Mock_FontAwesome_Metadata_Provider extends TestCase {
 
 		FontAwesome_Release_Provider::load_releases();
 
-		$this->assertEquals( '5.4.1', fa()->latest_version() );
+		$this->assertEquals( '5.15.4', fa()->latest_version() );
 	}
 }

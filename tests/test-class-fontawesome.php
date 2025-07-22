@@ -202,14 +202,14 @@ class FontAwesomeTest extends TestCase {
 		fa()->register(
 			array(
 				'name'     => 'beta',
-				'version'  => [ ['6.1.1', '='] ]
+				'version'  => [ ['6.7.2', '='] ]
 			)
 		);
 
 		fa()->register(
 			array(
 				'name'     => 'gamma',
-				'version'  => [ ['5.4.1', '='] ]
+				'version'  => [ ['5.15.4', '='] ]
 			)
 		);
 
@@ -238,14 +238,14 @@ class FontAwesomeTest extends TestCase {
 		fa()->register(
 			array(
 				'name'     => 'beta',
-				'version'  => [ ['6.1.1', '='] ]
+				'version'  => [ ['6.7.2', '='] ]
 			)
 		);
 
 		fa()->register(
 			array(
 				'name'     => 'gamma',
-				'version'  => [ ['5.4.1', '='] ]
+				'version'  => [ ['5.15.4', '='] ]
 			)
 		);
 
@@ -274,14 +274,14 @@ class FontAwesomeTest extends TestCase {
 		fa()->register(
 			array(
 				'name'     => 'beta',
-				'version'  => [ ['6.1.1', '='] ]
+				'version'  => [ ['6.7.2', '='] ]
 			)
 		);
 
 		fa()->register(
 			array(
 				'name'     => 'gamma',
-				'version'  => [ ['5.4.1', '='] ]
+				'version'  => [ ['5.15.4', '='] ]
 			)
 		);
 
@@ -429,7 +429,7 @@ class FontAwesomeTest extends TestCase {
 
 	public function test_refresh_releases() {
 		// Before
-		$this->assertEquals( '5.4.1', fa()->latest_version() );
+		$this->assertEquals( '5.15.4', fa()->latest_version() );
 
 		(new Mock_FontAwesome_Metadata_Provider())->mock(
 			array(
@@ -442,6 +442,9 @@ class FontAwesomeTest extends TestCase {
 								),
 								'latest_version_6'   => array(
 									'version' => '6.42.1',
+								),
+								'latest_version_7'   => array(
+									'version' => '7.0.0',
 								),
 								'releases' =>
 								array()
@@ -494,6 +497,9 @@ class FontAwesomeTest extends TestCase {
 								'latest_version_6'   => array(
 									'version' => '6.42.1',
 								),
+								'latest_version_7'   => array(
+									'version' => '7.0.0',
+								),
 								'releases' =>
 								array()
 							)
@@ -516,7 +522,7 @@ class FontAwesomeTest extends TestCase {
 	}
 
 	public function test_latest_version() {
-		$this->assertEquals( '5.4.1', fa()->latest_version() );
+		$this->assertEquals( '5.15.4', fa()->latest_version() );
 	}
 
 	public function test_releases_refreshed_at() {
