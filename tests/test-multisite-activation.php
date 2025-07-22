@@ -108,7 +108,7 @@ class MultisiteActivationTest extends TestCase {
 			FontAwesome_Activator::initialize();
 			$site_count       = 0;
 			$test_obj         = $this;
-			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
+			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_7() ) );
 
 			for_each_blog(
 				function () use ( $test_obj, $expected_options, &$site_count ) {
@@ -132,7 +132,7 @@ class MultisiteActivationTest extends TestCase {
 			switch_to_blog( $this->sub_sites[1] );
 
 			FontAwesome_Activator::initialize();
-			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
+			$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_7() ) );
 
 			// It is active there on the second sub-site.
 			$this->assertEquals( $expected_options, get_option( FontAwesome::OPTIONS_KEY ) );
@@ -172,7 +172,7 @@ class MultisiteActivationTest extends TestCase {
 
 		$options_for_main_blog_id = fa()->options();
 
-		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_6() ) );
+		$expected_options = array_merge( FontAwesome::DEFAULT_USER_OPTIONS, array( 'version' => fa()->latest_version_7() ) );
 
 		/**
 		 * We'll first, separately ensure that the options are initialized on the main site,
