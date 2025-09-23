@@ -97,12 +97,13 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  opacity: 0.6;
   transition: opacity 0.2s ease;
+  display: none;
 }
 
 .fawp-icon-modifier-preview:hover .fawp-icon-modifier-pencil {
-  opacity: 1;
+  display: unset;
+  opacity: 0.6;
 }
 
 /* tabs */
