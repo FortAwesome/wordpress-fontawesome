@@ -374,7 +374,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   )
 }
 
-export default function ({ attributes, setAttributes, context }) {
+export default function ({ attributes, setAttributes, context, iconChooserOpenEvent }) {
   const iconLayers = attributes.iconLayers || []
 
   const updateSize = (size) => {
@@ -459,6 +459,7 @@ export default function ({ attributes, setAttributes, context }) {
         <div
           className="fawp-icon-modifier-preview"
           style={contextStyle}
+          onClick={() => document.dispatchEvent(iconChooserOpenEvent)}
         >
           {renderIcon(attributes)}
         </div>

@@ -119,6 +119,11 @@ export function Edit(props) {
               setAttributes={setAttributes}
               IconChooserModal={IconChooserModal}
               prepareHandleSelect={prepareHandleSelect}
+              iconChooserOpenEvent={openIconChooserForAddLayerEvent}
+            />
+            <IconChooserModal
+              onSubmit={prepareHandleSelect({ replace: 0 })}
+              openEvent={openIconChooserForAddLayerEvent}
             />
           </Modal>
         )}
