@@ -95,8 +95,8 @@
 
 .fawp-icon-modifier-pencil {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: 0;
+  right: 0;
   opacity: 0.6;
   transition: opacity 0.2s ease;
 }
