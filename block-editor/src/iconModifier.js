@@ -13,6 +13,29 @@ import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE } from './con
 const STYLES_TAB_NAME = 'styling'
 const ANIMATIONS_TAB_NAME = 'animations'
 
+function buildThemeColors(editorSettings) {
+  // This is a workaround for this Gutenberg bug:
+  // https://github.com/WordPress/gutenberg/issues/64857
+  //
+  // When the user has defined custom colors the Gutenberg editorSettings.colors array
+  // contains only that custom color and not the full set of theme colors.
+  // However, the full set of theme colors is available under the
+  // editorSettings.__experimentalFeatures.
+  //
+  // If we detect that the colors array is shorter than the combined
+  // experimental theme + custom colors arrays, we use the experimental arrays.
+  const canonicalThemeColors = [...editorSettings.colors]
+  const experimentalThemeColors = editorSettings?.__experimentalFeatures?.color?.palette?.theme || []
+  const experimentalCustomColors = editorSettings?.__experimentalFeatures?.color?.palette?.custom || []
+  const experimentalColors = [...experimentalThemeColors, ...experimentalCustomColors]
+
+  if (canonicalThemeColors.length >= experimentalColors.length) {
+    return canonicalThemeColors
+  } else {
+    return experimentalColors
+  }
+}
+
 const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, updateTransform, editorSettings, attributes }) => {
   const [customRotate, setCustomRotate] = useState(NO_CUSTOM_VALUE)
   const currentIconLayer = (attributes?.iconLayers || [])[0]
@@ -110,6 +133,8 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
       ]}
     >
       {(tab) => {
+        const themeColors = buildThemeColors(editorSettings)
+
         if (STYLES_TAB_NAME == tab.name)
           return (
             <div className="fawp-icon-styling-tab-content-wrapper fawp-tab-content-wrapper">
@@ -117,7 +142,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
                 <div className="fawp-options-section-heading">{__('Color', 'font-awesome')}</div>
                 <div>
                   <Colors
-                    themeColors={editorSettings.colors}
+                    themeColors={themeColors}
                     onChange={setColor}
                     attributes={attributes}
                   />
