@@ -42,12 +42,10 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   if ('object' !== typeof currentIconLayer) return
   const currentTransform = currentIconLayer?.transform
   const currentRotate = currentTransform?.rotate
-  const currentSize = currentIconLayer?.style?.fontSize
-  const [size, setSize] = useState(currentSize || DEFAULT_SIZE)
+  const currentSize = currentIconLayer?.style?.fontSize || DEFAULT_SIZE
 
   const updateSize = (size) => {
     const newSize = size || DEFAULT_SIZE
-    setSize(newSize)
     onSizeChange(newSize)
   }
 
@@ -195,7 +193,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
               <div className="fawp-icon-styling-tab-content fawp-icon-styling-size fawp-tab-content">
                 <div className="">
                   <FontSizePicker
-                    value={size}
+                    value={currentSize}
                     fontSizes={[
                       {
                         name: 'tiny',
