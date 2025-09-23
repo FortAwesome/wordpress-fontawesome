@@ -75,6 +75,7 @@
 }
 
 .fawp-icon-modifier-preview {
+  position: relative;
   display: flex;
   margin: auto;
   text-align: center;
@@ -90,6 +91,18 @@
 .fawp-icon-modifier-preview div {
   display: flex;
   margin: auto;
+}
+
+.fawp-icon-modifier-pencil {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.fawp-icon-modifier-preview:hover .fawp-icon-modifier-pencil {
+  opacity: 1;
 }
 
 /* tabs */
