@@ -86,24 +86,12 @@
 .fawp-icon-modifier-preview:hover {
     background: var(--gray7-fa);
     cursor: pointer;
+    border-radius: var(--border-radius-fa);
 }
 
 .fawp-icon-modifier-preview div {
   display: flex;
   margin: auto;
-}
-
-.fawp-icon-modifier-pencil {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  transition: opacity 0.2s ease;
-  display: none;
-}
-
-.fawp-icon-modifier-preview:hover .fawp-icon-modifier-pencil {
-  display: unset;
-  opacity: 0.6;
 }
 
 /* tabs */
