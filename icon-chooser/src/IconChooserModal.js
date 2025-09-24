@@ -30,10 +30,12 @@ export default function (params) {
 
     const isProCdn = !!pro && !kitToken;
 
+    const title = props.title || __("Add a Font Awesome Icon", "font-awesome")
+
     return (
       <>
         {isOpen && (
-          <Modal title="Add a Font Awesome Icon" onRequestClose={closeModal}>
+          <Modal title={title} onRequestClose={closeModal}>
             {isProCdn && (
               <div
                 style={{

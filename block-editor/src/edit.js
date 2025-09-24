@@ -46,18 +46,21 @@ export function Edit(props) {
 
     if (!iconDefinition) return
 
-    const layer = {
-      iconDefinition,
-      ...defaultStylingParams
-    }
-
-    const newIconLayers = [...iconLayers]
     const { replace, append } = layerParams
 
+    const newIconLayers = [...iconLayers]
+
     if (append) {
+      const layer = {
+        iconDefinition,
+        ...defaultStylingParams
+      }
+
       newIconLayers.push(layer)
     } else if (Number.isInteger(replace) && replace < iconLayers.length) {
-      newIconLayers[replace] = layer
+      const oldLayer = iconLayers[replace] || {}
+      const newLayer = {...oldLayer, iconDefinition }
+      newIconLayers[replace] = newLayer
     }
 
     setAttributes({ iconLayers: newIconLayers })
@@ -119,6 +122,7 @@ export function Edit(props) {
               setAttributes={setAttributes}
               IconChooserModal={IconChooserModal}
               prepareHandleSelect={prepareHandleSelect}
+              iconChooserOpenEvent={openIconChooserForAddLayerEvent}
             />
           </Modal>
         )}

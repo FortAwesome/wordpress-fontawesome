@@ -42,12 +42,10 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   if ('object' !== typeof currentIconLayer) return
   const currentTransform = currentIconLayer?.transform
   const currentRotate = currentTransform?.rotate
-  const currentSize = currentIconLayer?.style?.fontSize
-  const [size, setSize] = useState(currentSize || DEFAULT_SIZE)
+  const currentSize = currentIconLayer?.style?.fontSize || DEFAULT_SIZE
 
   const updateSize = (size) => {
     const newSize = size || DEFAULT_SIZE
-    setSize(newSize)
     onSizeChange(newSize)
   }
 
@@ -195,7 +193,7 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
               <div className="fawp-icon-styling-tab-content fawp-icon-styling-size fawp-tab-content">
                 <div className="">
                   <FontSizePicker
-                    value={size}
+                    value={currentSize}
                     fontSizes={[
                       {
                         name: 'tiny',
@@ -374,7 +372,16 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   )
 }
 
-export default function ({ attributes, setAttributes, context }) {
+export default function (params) {
+  const {
+    attributes,
+    setAttributes,
+    context,
+    iconChooserOpenEvent,
+    IconChooserModal,
+    prepareHandleSelect
+  } = params
+
   const iconLayers = attributes.iconLayers || []
 
   const updateSize = (size) => {
@@ -459,6 +466,7 @@ export default function ({ attributes, setAttributes, context }) {
         <div
           className="fawp-icon-modifier-preview"
           style={contextStyle}
+          onClick={() => document.dispatchEvent(iconChooserOpenEvent)}
         >
           {renderIcon(attributes)}
         </div>
@@ -473,6 +481,11 @@ export default function ({ attributes, setAttributes, context }) {
           setAnimation={setAnimation}
         />
       </div>
+      <IconChooserModal
+        title={__('Change Font Awesome Icon', 'font-awesome')}
+        onSubmit={prepareHandleSelect({ replace: 0 })}
+        openEvent={iconChooserOpenEvent}
+      />
     </div>
   )
 }

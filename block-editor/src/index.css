@@ -82,6 +82,12 @@
   padding: var(--spacing-md-fa);
 }
 
+.fawp-icon-modifier-preview:hover {
+    background: var(--gray7-fa);
+    cursor: pointer;
+    border-radius: var(--border-radius-fa);
+}
+
 .fawp-icon-modifier-preview div {
   display: flex;
   margin: auto;
