@@ -109,10 +109,8 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public static function selfhost_asset_filename( $version ) {
-		return ( is_string( $version ) && strlen( $version ) > 0 && '7' === $version[0] )
-			? 'svg.css'
-			: 'svg-with-js.css';
+	public static function selfhost_asset_filename() {
+		return 'svg-with-js.css';
 	}
 
 	/**

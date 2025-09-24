@@ -552,9 +552,7 @@ EOD;
 	 * @return FontAwesome_Resource
 	 */
 	public function get_svg_styles_resource( $version ) {
-		$file_basename = ( is_string( $version ) && strlen( $version ) > 0 && '7' === $version[0] )
-			? 'svg'
-			: 'svg-with-js';
+		$file_basename = 'svg-with-js';
 
 		$cdn_url_template = null;
 
