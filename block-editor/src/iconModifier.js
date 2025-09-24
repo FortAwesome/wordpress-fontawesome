@@ -372,7 +372,16 @@ const SettingsTabPanel = ({ onSelect, onSizeChange, setColor, setAnimation, upda
   )
 }
 
-export default function ({ attributes, setAttributes, context, iconChooserOpenEvent }) {
+export default function (params) {
+  const {
+    attributes,
+    setAttributes,
+    context,
+    iconChooserOpenEvent,
+    IconChooserModal,
+    prepareHandleSelect
+  } = params
+
   const iconLayers = attributes.iconLayers || []
 
   const updateSize = (size) => {
@@ -472,6 +481,11 @@ export default function ({ attributes, setAttributes, context, iconChooserOpenEv
           setAnimation={setAnimation}
         />
       </div>
+      <IconChooserModal
+        title={__('Change Font Awesome Icon', 'font-awesome')}
+        onSubmit={prepareHandleSelect({ replace: 0 })}
+        openEvent={iconChooserOpenEvent}
+      />
     </div>
   )
 }
