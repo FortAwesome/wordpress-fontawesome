@@ -109,7 +109,7 @@ class FontAwesome_SVG_Styles_Manager {
 	 * @ignore
 	 * @internal
 	 */
-	public static function selfhost_asset_filename( $version ) {
+	public static function selfhost_asset_filename() {
 		return 'svg-with-js.css';
 	}
 
