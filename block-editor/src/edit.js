@@ -12,7 +12,6 @@ import { computeIconLayerCount, prepareParamsForUseBlock, renderIcon } from './r
 import IconModifier from './iconModifier'
 import createCustomEvent from './createCustomEvent'
 
-const openIconChooserForAddLayerEvent = createCustomEvent()
 const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {})
 const modifyToolbarIcon = wpIconFromFaIconDefinition(faBrush)
 const defaultStylingParams = {
@@ -22,6 +21,8 @@ const defaultStylingParams = {
 
 export function Edit(props) {
   const { attributes, setAttributes } = props
+
+  const iconChooserOpenEvent = createCustomEvent()
 
   const [justificationDropdownMenuIcon, setJustificationDropdownMenuIcon] = useState(justifyCenter)
 
@@ -121,8 +122,8 @@ export function Edit(props) {
               attributes={attributes}
               setAttributes={setAttributes}
               IconChooserModal={IconChooserModal}
-              prepareHandleSelect={prepareHandleSelect}
-              iconChooserOpenEvent={openIconChooserForAddLayerEvent}
+              handleSelect={prepareHandleSelect({ replace: 0 })}
+              iconChooserOpenEvent={iconChooserOpenEvent}
             />
           </Modal>
         )}
@@ -145,11 +146,11 @@ export function Edit(props) {
       >
         <IconChooserModal
           onSubmit={prepareHandleSelect({ append: true })}
-          openEvent={openIconChooserForAddLayerEvent}
+          openEvent={iconChooserOpenEvent}
         />
         <Button
           variant="secondary"
-          onClick={() => document.dispatchEvent(openIconChooserForAddLayerEvent)}
+          onClick={() => document.dispatchEvent(iconChooserOpenEvent)}
         >
           {__('Choose Icon', 'font-awesome')}
         </Button>

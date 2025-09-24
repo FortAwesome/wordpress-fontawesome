@@ -379,7 +379,7 @@ export default function (params) {
     context,
     iconChooserOpenEvent,
     IconChooserModal,
-    prepareHandleSelect
+    handleSelect
   } = params
 
   const iconLayers = attributes.iconLayers || []
@@ -483,7 +483,7 @@ export default function (params) {
       </div>
       <IconChooserModal
         title={__('Change Font Awesome Icon', 'font-awesome')}
-        onSubmit={prepareHandleSelect({ replace: 0 })}
+        onSubmit={handleSelect}
         openEvent={iconChooserOpenEvent}
       />
     </div>
