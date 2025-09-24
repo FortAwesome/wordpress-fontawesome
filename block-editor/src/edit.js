@@ -122,7 +122,7 @@ export function Edit(props) {
               attributes={attributes}
               setAttributes={setAttributes}
               IconChooserModal={IconChooserModal}
-              prepareHandleSelect={prepareHandleSelect}
+              handleSelect={prepareHandleSelect({ replace: 0 })}
               iconChooserOpenEvent={iconChooserOpenEvent}
             />
           </Modal>
