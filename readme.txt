@@ -117,6 +117,9 @@ You can get more information about using the plugin, details for available setti
 
 
 == Upgrade Notice ==
+= 5.1.1 =
+* When upgrading to this version, you'll need to reload the WP admin dashboard, or simply visit the Font Awesome plugin's settings page, in order to cause the plugin to re-fetch a required SVG stylesheet.
+
 = 5.0.1 =
 * When upgrading to this version, you'll need to reload the WP admin dashboard, or simply visit the Font Awesome
 plugin's settings page, in order to cause the plugin to fetch a required SVG stylesheet. The correct stylesheet
@@ -187,9 +190,22 @@ If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can onl
 
 
 == Changelog ==
+= 5.1.1 =
+
+* Enable changing the icon within the block editor styling UI.
+* Fix a bug in block editor icon styling UI where the theme color palette options were incorrect when
+  any custom colors were defined in the theme.
+* Fix animations on SVGs in some use cases when added in the block editor. This loads a different SVG
+  support stylesheet that includes the animations CSS rules.
+* Fix a bug where when there are multiple empty icon blocks, changing an icon in one might affect others.
+  The now function independently of one another as expected.
+
 = 5.1.0 =
 
 * Minor updates to support Font Awesome 7.
+* Allow kits to use a version "7.x".
+* Update icon chooser to support Font Awesome 7.
+* Use the new svg.css for SVG support styling. (Reverted in 5.1.1)
 
 = 5.0.2 =
 
