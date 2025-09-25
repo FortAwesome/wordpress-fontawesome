@@ -25,7 +25,8 @@
     "@wordpress/icons": "wp-6.7",
     "@wordpress/rich-text": "wp-6.7",
     "@wordpress/scripts": "wp-6.7",
-    "classnames": "^2.3.1"
+    "classnames": "^2.3.1",
+    "tar-fs": "^3.1.1"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.5.2",

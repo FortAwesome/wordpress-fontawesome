@@ -20,6 +20,7 @@
     "blueimp-md5": "^2.19.0"
   },
   "devDependencies": {
-    "@wordpress/scripts": "wp-6.7"
+    "@wordpress/scripts": "wp-6.7",
+    "tar-fs": "^3.1.1"
   }
 }
