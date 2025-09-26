@@ -29,7 +29,6 @@
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",
     "start": "wp-scripts start",
-    "test:e2e": "wp-scripts test-e2e",
     "test:playwright": "npx playwright test",
     "test:unit": "wp-scripts test-unit-js",
     "test": "npm run test:unit"
