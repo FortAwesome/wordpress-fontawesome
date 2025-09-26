@@ -1,4 +1,5 @@
 import { Editor, expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { mockRoutes } from '../../setup/mockApiNetworkRequests'
 
 test.describe('full site editor', async () => {
   test.use({
@@ -8,6 +9,7 @@ test.describe('full site editor', async () => {
   })
 
   test('insert with icon chooser', async ({ page, editor, pageUtils }) => {
+    await mockRoutes(page)
     const pageLoadPromise = page.waitForResponse('**/wp/v2/pages*')
 
     await page.goto('/wp-admin/site-editor.php?canvas=edit')
@@ -15,7 +17,7 @@ test.describe('full site editor', async () => {
     await pageLoadPromise
 
     try {
-      await page.getByRole('button', { name: 'Get started' }).waitFor({ timeout: 3000 })
+      await page.getByRole('button', { name: 'Get started' }).waitFor({ timeout: 1000 })
       await page.getByRole('button', { name: 'Get started' }).click()
     } catch (error) {
       // Button doesn't exist in current WordPress version, continue with test
@@ -32,7 +34,7 @@ test.describe('full site editor', async () => {
 
     await page.waitForSelector('fa-icon-chooser input#search')
 
-    const searchResponsePromise = page.waitForResponse(response => 
+    const searchResponsePromise = page.waitForResponse(response =>
       response.url().includes('fontawesome.com') && response.request().method() === 'POST'
     )
 

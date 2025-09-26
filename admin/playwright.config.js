@@ -72,7 +72,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['mock-api-and-kit-token']
+      dependencies: ['wp-login', 'reset']
     }
   ]
 })
