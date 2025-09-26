@@ -1,4 +1,4 @@
-import { test as setup, expect, RequestUtils } from '@wordpress/e2e-test-utils-playwright'
+import { test as setup } from '@wordpress/e2e-test-utils-playwright'
 import mysql from 'mysql2/promise'
 import { prepareRestApi } from '../support/testHelpers'
 
