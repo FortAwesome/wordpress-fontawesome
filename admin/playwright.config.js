@@ -11,7 +11,7 @@ export default defineConfig({
     baseURL
   },
   projects: [
-    { name: 'auth', testDir, testMatch: 'setup/auth.js' },
+    { name: 'wp-login', testDir, testMatch: 'setup/wp-login.js' },
     {
       name: 'reset',
       testDir,
@@ -27,7 +27,7 @@ export default defineConfig({
       use: {
         storageState: adminStorageStatePath
       },
-      dependencies: ['auth', 'reset']
+      dependencies: ['wp-login', 'reset']
     },
     {
       name: 'with-proKit-chromium',
@@ -45,7 +45,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['auth', 'reset']
+      dependencies: ['wp-login', 'reset']
     }
   ]
 })

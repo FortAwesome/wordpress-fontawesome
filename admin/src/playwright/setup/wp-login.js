@@ -3,7 +3,7 @@ import '../support/env.js'
 
 const authFile = 'src/playwright/.auth/state.json'
 
-setup('authenticate', async ({ page }) => {
+setup('WordPress admin login', async ({ page }) => {
   await page.goto('/wp-login.php')
   await page.getByLabel('Username or Email Address').fill(process.env.WP_ADMIN_USERNAME)
   await page.getByLabel('Password', { exact: true }).fill(process.env.WP_ADMIN_PASSWORD)
