@@ -25,6 +25,13 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Verify Docker is running
+        run: |
+          echo "Checking Docker status..."
+          docker --version
+          docker info
+          echo "Docker is ready!"
+
       - name: Create .wp-env.json configuration
         run: |
           cat > .wp-env.json << 'EOF'
