@@ -2,7 +2,12 @@ import { test as setup } from '@wordpress/e2e-test-utils-playwright'
 import mysql from 'mysql2/promise'
 import { unserialize, serialize } from 'php-serialize'
 
-setup('mock API token and kit token', async ({ storageState, baseURL }) => {
+// The idea here is that we need to mock the _presence_ of an API token
+// and a Pro kitToken in the WordPress database, so that any back end code
+// that checks for those values will find them, but we won't use real
+// values because when these mock db values are used, we'll also be mocking
+// any network requests that would make use of those values.
+setup('mock API token and Pro kit token', async () => {
   const connection = await mysql.createConnection({
     host: 'localhost',
     user: process.env.WORDPRESS_DB_USER,
