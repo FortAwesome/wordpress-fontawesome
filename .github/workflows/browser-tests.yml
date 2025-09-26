@@ -32,13 +32,24 @@ jobs:
           docker info
           echo "Docker is ready!"
 
+      - name: Reorganize files for wp-env
+        run: |
+          echo "Creating font-awesome directory structure..."
+          mkdir -p font-awesome
+          
+          # Move all files and directories except the font-awesome directory itself
+          find . -maxdepth 1 -name "*" ! -name "." ! -name ".." ! -name "font-awesome" ! -name ".git" -exec mv {} font-awesome/ \;
+          
+          echo "Directory structure created:"
+          ls -la font-awesome/
+
       - name: Create .wp-env.json configuration
         run: |
           cat > .wp-env.json << 'EOF'
           {
             "core": "WordPress/WordPress#6.8",
             "plugins": [
-              "."
+              "font-awesome"
             ]
           }
           EOF
@@ -92,28 +103,17 @@ jobs:
 
           echo "WordPress setup complete!"
 
-      - name: Cache node_modules
-        id: node-modules-cache
-        uses: actions/cache@v4
-        with:
-          path: admin/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
-
       - name: Install playwright dependencies
         run: |
-          cd admin
+          cd font-awesome/admin
           sudo npx playwright install-deps
           npx playwright install
 
       - name: Run Non-Kit Tests on Chrome
-        env:
-          WP_DOMAIN: localhost:8888
-        run: cd admin && npm run test:browser-mocked-legacy-cdn-chrome
+        run: cd font-awesome/admin && npm run test:browser-mocked-legacy-cdn-chrome
 
       - name: Run Pro Kit Tests on Chrome
-        env:
-          WP_DOMAIN: localhost:8888
-        run: cd admin && npm run test:browser-mocked-pro-kit-chrome
+        run: cd font-awesome/admin && npm run test:browser-mocked-pro-kit-chrome
 
       - name: Debug on failure
         if: failure()
