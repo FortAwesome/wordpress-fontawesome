@@ -17,13 +17,15 @@ test.describe('blockEditorIconChooser', async () => {
     })
     await page.keyboard.type('Here comes an icon: ')
 
-    await editor.clickBlockToolbarButton('More')
+    await editor.clickBlockToolbarButton('Font Awesome Icon')
 
     await pageUtils.pressKeys('Enter', 1)
 
     await page.waitForSelector('fa-icon-chooser input#search')
 
-    const searchResponsePromise = page.waitForResponse('**/font-awesome/v1/api*')
+    const searchResponsePromise = page.waitForResponse(response =>
+      response.url().includes('fontawesome.com') && response.request().method() === 'POST'
+    )
 
     await page.locator('fa-icon-chooser input#search').fill('coffee')
 
