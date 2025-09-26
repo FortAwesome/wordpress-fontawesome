@@ -9,9 +9,12 @@ test.describe('full site editor', async () => {
     }
   })
 
-  test('insert with icon chooser', async ({ page, editor, pageUtils }) => {
+  test.beforeEach(async ({ page }) => {
     await mockRoutes(page)
     await loadSvgCoreJs(page)
+  })
+
+  test('insert with icon chooser', async ({ page, editor, pageUtils }) => {
     const pageLoadPromise = page.waitForResponse('**/wp/v2/pages*')
 
     await page.goto('/wp-admin/site-editor.php?canvas=edit')
