@@ -32,7 +32,9 @@ test.describe('full site editor', async () => {
 
     await page.waitForSelector('fa-icon-chooser input#search')
 
-    const searchResponsePromise = page.waitForResponse('**/font-awesome/v1/api*')
+    const searchResponsePromise = page.waitForResponse(response => 
+      response.url().includes('fontawesome.com') && response.request().method() === 'POST'
+    )
 
     await page.locator('fa-icon-chooser input#search').fill('coffee')
 
