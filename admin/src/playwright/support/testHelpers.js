@@ -16,3 +16,10 @@ export async function prepareRestApi({ baseURL, storageState }) {
 
   return { requestUtils, requestContext }
 }
+
+// This can be loaded as part of mocking for the Icon Chooser. So it will
+// not need to fetch pro.min.js, since loading this asset will define the
+// global FontAwesome object in the DOM.
+export async function loadSvgCoreJs(page) {
+  await page.addInitScript({ path: 'src/playwright/support/fontawesome.free.7.0.1.min.js' });
+}

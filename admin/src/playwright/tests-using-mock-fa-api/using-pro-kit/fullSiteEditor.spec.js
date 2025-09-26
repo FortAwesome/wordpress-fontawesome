@@ -1,5 +1,6 @@
 import { Editor, expect, test } from '@wordpress/e2e-test-utils-playwright'
 import { mockRoutes } from '../../setup/mockApiNetworkRequests'
+import { loadSvgCoreJs } from '../../support/testHelpers'
 
 test.describe('full site editor', async () => {
   test.use({
@@ -10,6 +11,7 @@ test.describe('full site editor', async () => {
 
   test('insert with icon chooser', async ({ page, editor, pageUtils }) => {
     await mockRoutes(page)
+    await loadSvgCoreJs(page)
     const pageLoadPromise = page.waitForResponse('**/wp/v2/pages*')
 
     await page.goto('/wp-admin/site-editor.php?canvas=edit')

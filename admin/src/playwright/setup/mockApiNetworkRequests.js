@@ -1,12 +1,11 @@
 import mockSearchResult from '../support/mockSearchResult.json';
 import mockKitMetadataResponse from '../support/mockKitMetadataResponse.json';
+import faSquareFull from '../support/square-full.json';
 
 export async function mockRoutes(page) {
   // Mock the FontAwesome GraphQL API endpoints
   await page.route(/https:\/\/api.*\.fontawesome\.com\/.*/, async route => {
     const method = route.request().method()
-    console.log(`Handling GQL API request with method: ${method}, url: ${route.request().url()}`)
-
     if (method === 'OPTIONS') {
       await route.fulfill({
         status: 204,
@@ -30,35 +29,41 @@ export async function mockRoutes(page) {
 
     const isKitMetadataQuery = postData.includes('query KitMetadata')
 
-    console.log(`isKitMetadataQuery: ${isKitMetadataQuery}`)
-
     if (isKitMetadataQuery) {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: mockKitMetadataResponse
+        body: JSON.stringify(mockKitMetadataResponse)
       })
     } else {
       // Assume it's a search query
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: mockSearchResult
+        body: JSON.stringify(mockSearchResult)
       })
     }
   })
 
   // Mock CDN requests
   await page.route(/https:\/\/ka-[pf]\.fontawesome\.com\/.*/, async route => {
-    if (route.request().url().endsWith('.svg')) {
+    const url = new URL(route.request().url());
+
+    if (url.pathname.endsWith('.svg')) {
       await route.fulfill({
         status: 200,
         contentType: 'image/svg+xml',
         // It's just a solid square icon that fills the whole viewBox.
         body: '<svg viewBox="0 0 512 512"><path d="M0 0h512v512H0z"/></svg>'
       })
+    } else if (url.pathname.endsWith('.json')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(faSquareFull)
+      })
     } else {
-      console.log(`UNKNOWN ROUTE: ${route.request().url()}`)
+      console.error(`UNKNOWN ROUTE: ${url}`)
       await route.continue()
     }
   })
@@ -87,8 +92,11 @@ export async function mockRoutes(page) {
     })
   })
 
-  // await page.route(/.*/, async route => {
-  //   console.log(`Continuing unhandled request: ${route.request().url()}`)
-  //   await route.continue()
-  // })
+  await page.route(/pro\.min\.js/, async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/javascript',
+      body: 'console.log("adding fake FA SVG Core scrript")'
+    })
+  })
 }
