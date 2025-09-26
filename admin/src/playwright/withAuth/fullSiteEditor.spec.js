@@ -14,10 +14,11 @@ test.describe('full site editor', async () => {
 
     await pageLoadPromise
 
-    const getStartedCount = await page.getByRole('button', { name: 'Get started' }).count()
-
-    if (getStartedCount > 0) {
+    try {
+      await page.getByRole('button', { name: 'Get started' }).waitFor({ timeout: 3000 })
       await page.getByRole('button', { name: 'Get started' }).click()
+    } catch (error) {
+      // Button doesn't exist in current WordPress version, continue with test
     }
 
     await editor.insertBlock({
@@ -25,7 +26,7 @@ test.describe('full site editor', async () => {
     })
     await page.keyboard.type('Here comes an icon: ')
 
-    await editor.clickBlockToolbarButton('More')
+    await editor.clickBlockToolbarButton('Font Awesome Icon')
 
     await pageUtils.pressKeys('Enter', 1)
 
