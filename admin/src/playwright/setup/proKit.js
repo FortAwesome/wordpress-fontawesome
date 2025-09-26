@@ -11,8 +11,6 @@ setup('pro kit', async ({ page }) => {
   await page.goto('/wp-admin/admin.php?page=font-awesome')
   await page.locator('label').filter({ hasText: 'Use A Kit' }).click()
 
-  const allText = await page.getByRole('heading').allTextContents()
-
   await page.locator('label').filter({ hasText: 'API Token' }).fill(process.env.API_TOKEN)
   const saveAPITokenResponsePromise = page.waitForResponse(CONFIG_ROUTE_PATTERN)
   await page.getByRole('button', { name: 'Save API Token' }).click()
