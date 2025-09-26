@@ -208,7 +208,8 @@ function InlineUI({ value, changeValue, contentRef, handleSelect }) {
             setAttributes={setAttributes}
             IconChooserModal={IconChooserModal}
             context={context}
-            prepareHandleSelect={() => handleSelect}
+            handleSelect={handleSelect}
+            iconChooserOpenEvent={modalOpenEvent}
           />
         </Modal>
       )}
