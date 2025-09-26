@@ -1,0 +1,42 @@
+name: Browser Tests
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches: [master]
+
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "22"
+
+      - name: Cache node_module
+        id: node-modules-cache
+        uses: actions/cache@v4
+        with:
+          path: admin/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
+
+      - name: Install node dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: cd admin && npm install
+
+      - name: Install playwright dependencies
+        run: |
+          cd admin
+          sudo npx playwright install-deps
+          npx playwright install
+
+      - name: Run Non-Kit Tests on Chrome
+        run: cd admin && npm run test:browser-mocked-legacy-cdn-chrome
+
+      - name: Run Pro Kit Tests on Chrome
+        run: cd admin && npm run test:browser-mocked-pro-kit-chrome
