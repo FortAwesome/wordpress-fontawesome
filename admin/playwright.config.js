@@ -21,7 +21,7 @@ export default defineConfig({
       }
     },
     {
-      name: 'setupRealProKit',
+      name: 'setup-real-pro-kit',
       testDir,
       testMatch: 'setup/realProKit.js',
       use: {
@@ -30,17 +30,35 @@ export default defineConfig({
       dependencies: ['wp-login', 'reset']
     },
     {
-      name: 'with-proKit-chromium',
-      testMatch: 'withProKit/*.spec.js',
+      name: 'real-fa-api-pro-kit',
+      testMatch: 'tests-using-real-fa-api/using-pro-kit/*.spec.js',
       use: {
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['setupRealProKit']
+      dependencies: ['setup-real-pro-kit']
     },
     {
-      name: 'withAuth-chromium',
-      testMatch: 'withAuth/*.spec.js',
+      name: 'real-fa-api-legacy-cdn',
+      testMatch: 'tests-using-real-fa-api/using-legacy-cdn/*.spec.js',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: adminStorageStatePath
+      },
+      dependencies: ['wp-login', 'reset']
+    },
+    {
+      name: 'with-mock-fa-api-pro-kit',
+      testMatch: 'tests-using-mock-fa-api/using-pro-kit/*.spec.js',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: adminStorageStatePath
+      },
+      dependencies: ['wp-login', 'reset']
+    },
+    {
+      name: 'with-mock-fa-api-legacy-cdn',
+      testMatch: 'tests-using-mock-fa-api/using-legacy-cdn/*.spec.js',
       use: {
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
