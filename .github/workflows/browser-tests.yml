@@ -7,27 +7,90 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  WORDPRESS_DB_USER: admin
+  WORDPRESS_DB_PASSWORD: password
+  WORDPRESS_DB_NAME: wordpress
+  WP_DOMAIN: localhost:8888
+  ENABLE_MOD_SECURITY: false
+
 jobs:
   tests:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Cache node_module
+      - name: Create .wp-env.json configuration
+        run: |
+          cat > .wp-env.json << 'EOF'
+          {
+            "core": "WordPress/WordPress#6.8",
+            "plugins": [
+              "."
+            ]
+          }
+          EOF
+
+      - name: Install @wordpress/env globally
+        run: npm install -g @wordpress/env
+
+      - name: Create admin .env.local file
+        run: |
+          cat > admin/.env.local << 'EOF'
+          PLAYWRIGHT_HEADLESS=true
+          PLAYWRIGHT_TIMEOUT=30000
+          EOF
+
+      - name: Start WordPress environment
+        run: |
+          echo "Starting WordPress environment..."
+          wp-env start --update
+          echo "WordPress environment started successfully"
+
+      - name: Wait for WordPress to be ready
+        run: |
+          timeout=300
+          echo "Checking WordPress availability at http://localhost:8888..."
+          while ! curl -s http://localhost:8888 > /dev/null; do
+            echo "Waiting for WordPress to be ready... (${timeout}s remaining)"
+            sleep 5
+            timeout=$((timeout - 5))
+            if [ $timeout -le 0 ]; then
+              echo "WordPress failed to start within 5 minutes"
+              echo "Environment status:"
+              wp-env status || true
+              echo "Environment logs:"
+              wp-env logs
+              echo "Docker containers:"
+              docker ps -a
+              exit 1
+            fi
+          done
+          echo "WordPress is ready!"
+          echo "Testing admin access..."
+          curl -I http://localhost:8888/wp-admin/ || echo "Admin not yet accessible"
+
+      - name: Set up WordPress
+        run: |
+          echo "Activating Font Awesome plugin..."
+          wp-env run cli wp plugin activate font-awesome
+
+          echo "Verifying plugin activation..."
+          wp-env run cli wp plugin list --status=active
+
+          echo "WordPress setup complete!"
+
+      - name: Cache node_modules
         id: node-modules-cache
         uses: actions/cache@v4
         with:
           path: admin/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
-
-      - name: Install node dependencies
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
-        run: cd admin && npm install
 
       - name: Install playwright dependencies
         run: |
@@ -36,7 +99,47 @@ jobs:
           npx playwright install
 
       - name: Run Non-Kit Tests on Chrome
+        env:
+          WP_DOMAIN: localhost:8888
         run: cd admin && npm run test:browser-mocked-legacy-cdn-chrome
 
       - name: Run Pro Kit Tests on Chrome
+        env:
+          WP_DOMAIN: localhost:8888
         run: cd admin && npm run test:browser-mocked-pro-kit-chrome
+
+      - name: Debug on failure
+        if: failure()
+        run: |
+          echo "=== Debug Information ==="
+          echo "WordPress environment status:"
+          wp-env status || true
+          echo ""
+          echo "WordPress environment logs:"
+          wp-env logs || true
+          echo ""
+          echo "WordPress site status:"
+          curl -I http://localhost:8888 || echo "Site not accessible"
+          echo ""
+          echo "WordPress admin status:"
+          curl -I http://localhost:8888/wp-admin/ || echo "Admin not accessible"
+          echo ""
+          echo "Plugin status:"
+          wp-env run cli wp plugin list || echo "Cannot check plugins"
+          echo ""
+          echo "WordPress version:"
+          wp-env run cli wp core version || echo "Cannot check WP version"
+          echo ""
+          echo "Docker containers:"
+          docker ps -a || true
+          echo ""
+          echo "Docker logs for WordPress container:"
+          docker logs $(docker ps -q --filter "ancestor=wordpress") || true
+          echo ""
+          echo "Environment variables in admin directory:"
+          ls -la admin/.env* || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          wp-env stop || true
