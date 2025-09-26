@@ -4,7 +4,7 @@ import '../support/env.js'
 const CONFIG_ROUTE_PATTERN = '**/font-awesome/v1/config'
 const API_ROUTE_PATTERN = '**/font-awesome/v1/api*'
 
-setup('pro kit', async ({ page }) => {
+setup('real pro kit', async ({ page }) => {
   expect(process.env.API_TOKEN).toBeTruthy()
   expect(process.env.KIT_TOKEN).toBeTruthy()
 

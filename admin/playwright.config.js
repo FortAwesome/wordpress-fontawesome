@@ -21,9 +21,9 @@ export default defineConfig({
       }
     },
     {
-      name: 'setupProKit',
+      name: 'setupRealProKit',
       testDir,
-      testMatch: 'setup/proKit.js',
+      testMatch: 'setup/realProKit.js',
       use: {
         storageState: adminStorageStatePath
       },
@@ -36,7 +36,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['setupProKit']
+      dependencies: ['setupRealProKit']
     },
     {
       name: 'withAuth-chromium',
