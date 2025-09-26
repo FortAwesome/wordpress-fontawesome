@@ -30,6 +30,15 @@ export default defineConfig({
       dependencies: ['wp-login', 'reset']
     },
     {
+      name: 'mock-api-and-kit-token',
+      testDir,
+      testMatch: 'setup/mockApiAndKitToken.js',
+      use: {
+        storageState: adminStorageStatePath
+      },
+      dependencies: ['wp-login', 'reset']
+    },
+    {
       name: 'real-fa-api-pro-kit',
       testMatch: 'tests-using-real-fa-api/using-pro-kit/*.spec.js',
       use: {
@@ -54,7 +63,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['wp-login', 'reset']
+      dependencies: ['mock-api-and-kit-token']
     },
     {
       name: 'with-mock-fa-api-legacy-cdn',
@@ -63,7 +72,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: adminStorageStatePath
       },
-      dependencies: ['wp-login', 'reset']
+      dependencies: ['mock-api-and-kit-token']
     }
   ]
 })
