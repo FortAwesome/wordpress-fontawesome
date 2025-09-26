@@ -8,7 +8,7 @@ on:
     branches: [master]
 
 jobs:
-  jest:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
