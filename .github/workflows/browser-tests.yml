@@ -7,19 +7,33 @@ on:
   pull_request:
     branches: [master]
 
-env:
-  WORDPRESS_DB_USER: admin
-  WORDPRESS_DB_PASSWORD: password
-  WORDPRESS_DB_NAME: wordpress
-  WP_DOMAIN: localhost:8888
-  ENABLE_MOD_SECURITY: false
-
 jobs:
   tests:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Load environment variables
+        run: |
+          if [ -f .env ]; then
+            echo "Loading .env file..."
+            while IFS= read -r line || [ -n "$line" ]; do
+              # Skip empty lines and comments
+              if [[ ! -z "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+                echo "$line" >> $GITHUB_ENV
+              fi
+            done < .env
+          fi
+          if [ -f .env.ci ]; then
+            echo "Loading .env.ci file..."
+            while IFS= read -r line || [ -n "$line" ]; do
+              # Skip empty lines and comments
+              if [[ ! -z "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+                echo "$line" >> $GITHUB_ENV
+              fi
+            done < .env.ci
+          fi
 
       - uses: actions/setup-node@v4
         with:
