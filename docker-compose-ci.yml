@@ -1,0 +1,101 @@
+x-dev_env_volumes: &dev_env_volumes
+  volumes:
+
+    - .:/var/www/html/wp-content/plugins/font-awesome
+
+    # Bind mounts for integration themes or plugins
+    - ./integrations/js:/var/www/html/wp-content/js
+    - ./integrations/themes/theme-alpha:/var/www/html/wp-content/themes/theme-alpha
+    - ./integrations/themes/theme-mu:/var/www/html/wp-content/themes/theme-mu
+    - ./integrations/plugins/plugin-beta:/var/www/html/wp-content/plugins/plugin-beta
+    - ./integrations/plugins/plugin-gamma:/var/www/html/wp-content/plugins/plugin-gamma
+    - ./integrations/plugins/plugin-delta:/var/www/html/wp-content/plugins/plugin-delta
+    - ./integrations/plugins/plugin-epsilon:/var/www/html/wp-content/plugins/plugin-epsilon
+    - ./integrations/plugins/plugin-zeta:/var/www/html/wp-content/plugins/plugin-zeta
+    - ./integrations/plugins/plugin-eta:/var/www/html/wp-content/plugins/plugin-eta
+    - ./integrations/plugins/plugin-lambda:/var/www/html/wp-content/plugins/plugin-lambda
+    - ./integrations/plugins/plugin-kappa:/var/www/html/wp-content/plugins/plugin-kappa
+    - ./integrations/plugins/plugin-sigma:/var/www/html/wp-content/plugins/plugin-sigma
+    - ./integrations/plugins/plugin-nu:/var/www/html/wp-content/plugins/plugin-nu
+    - ./integrations/plugins/font-awesome-cleanup:/var/www/html/wp-content/plugins/font-awesome-cleanup
+
+    # Explicitly ignore various subdirectories like this, listing the target path
+    # on the container filesystem. The result will be that the directory will exist
+    # but it will be empty, thus relieving Docker of the burden to keep its files
+    # in sync between the host and container.
+    #
+    # ignores for the local plugin repo and working directory
+    - /var/www/html/wp-content/plugins/font-awesome/block-editor/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/classic-editor/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/icon-chooser/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/admin/node_modules
+    - /var/www/html/wp-content/plugins/font-awesome/docs
+    - /var/www/html/wp-content/plugins/font-awesome/docsrv
+    - /var/www/html/wp-content/plugins/font-awesome/phpdoc-data
+    - /var/www/html/wp-content/plugins/font-awesome/tmp
+    - /var/www/html/wp-content/plugins/font-awesome/volumes
+    - /var/www/html/wp-content/plugins/font-awesome/wp-dist
+    - /var/www/html/wp-content/plugins/font-awesome/images
+    - /var/www/html/wp-content/plugins/font-awesome/assets
+    - /var/www/html/wp-content/plugins/font-awesome/.vscode
+    - /var/www/html/wp-content/plugins/font-awesome/.idea
+    - /var/www/html/wp-content/plugins/font-awesome/.git
+    - /var/www/html/wp-content/plugins/font-awesome/docker
+    - /var/www/html/wp-content/plugins/font-awesome/integrations
+    # ignores for the stuff that plugin-sigma may pull into its vendor bundle
+    # when doing composer update
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docs
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/bin
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docsrv
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/images
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/tests
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/admin/src
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/integrations
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/.git
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
+    - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docker
+
+services:
+  wpdb:
+    image: mariadb:10.5.8
+    ports:
+      - "3306:3306"
+    volumes:
+      - wpdb_data:/var/lib/mysql
+    env_file:
+      - ".env"
+      - ".env.ci"
+
+  wordpress:
+    <<:
+      - *dev_env_volumes
+    depends_on:
+      - wpdb
+    ports:
+      - "8888:80"
+    image: wordpress:latest
+    volumes:
+      - wordpress_data:/var/www/html
+    env_file:
+      - ".env"
+      - ".env.ci"
+
+  wp-cli:
+    <<:
+      - *dev_env_volumes
+    depends_on:
+      - wordpress
+    user: www-data
+    image: wordpress:cli
+    volumes:
+      - wordpress_data:/var/www/html
+    env_file:
+      - ".env"
+      - ".env.ci"
+    entrypoint: wp
+    profiles: ["cli"]
+    command: ["--info"]
+
+volumes:
+  wpdb_data:
+  wordpress_data:
