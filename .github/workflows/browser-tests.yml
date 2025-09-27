@@ -90,7 +90,7 @@ jobs:
       #   uses: actions/cache@v4
       #   with:
       #     path: admin/node_modules
-      #     key: ${{ runner.os }}-node-modules-${{ hashFiles('admin/package-lock.json') }}
+      #     key: ${{ runner.os }}-browser-tests-node-modules-${{ hashFiles('admin/package-lock.json') }}
 
       - name: Install node dependencies
         # if: steps.node-modules-cache.outputs.cache-hit != 'true'
