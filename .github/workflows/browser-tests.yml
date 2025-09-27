@@ -46,6 +46,23 @@ jobs:
           docker info
           echo "Docker is ready!"
 
+      # - name: Cache node_modules
+      #   id: node-modules-cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: admin/node_modules
+      #     key: ${{ runner.os }}-browser-tests-node-modules-${{ hashFiles('admin/package-lock.json') }}
+
+      - name: Install node dependencies
+        # if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: cd admin && npm install
+
+      - name: Install playwright dependencies
+        run: |
+          cd admin
+          sudo npx playwright install-deps
+          npx playwright install
+
       - name: Start WordPress environment
         run: |
           echo "Starting WordPress environment..."
@@ -84,23 +101,6 @@ jobs:
           bin/wp-cli-ci plugin activate font-awesome
 
           echo "WordPress setup complete!"
-
-      # - name: Cache node_modules
-      #   id: node-modules-cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: admin/node_modules
-      #     key: ${{ runner.os }}-browser-tests-node-modules-${{ hashFiles('admin/package-lock.json') }}
-
-      - name: Install node dependencies
-        # if: steps.node-modules-cache.outputs.cache-hit != 'true'
-        run: cd admin && npm install
-
-      - name: Install playwright dependencies
-        run: |
-          cd admin
-          sudo npx playwright install-deps
-          npx playwright install
 
       - name: Run Non-Kit Tests on Chrome
         run: cd admin && npm run test:browser-mocked-legacy-cdn-chrome
