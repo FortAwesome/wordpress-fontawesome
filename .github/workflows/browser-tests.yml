@@ -49,7 +49,7 @@ jobs:
       - name: Start WordPress environment
         run: |
           echo "Starting WordPress environment..."
-          docker compose -f docker-compose-ci.yml up -d --quiet
+          docker compose -f docker-compose-ci.yml up -d --quiet-pull
           echo "WordPress environment started successfully"
 
       - name: Wait for WordPress to be ready
