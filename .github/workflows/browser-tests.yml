@@ -32,49 +32,17 @@ jobs:
           docker info
           echo "Docker is ready!"
 
-      - name: Reorganize files for wp-env
-        run: |
-          echo "Creating font-awesome directory structure..."
-          mkdir -p font-awesome
-          
-          # Move all files and directories except the font-awesome directory itself
-          find . -maxdepth 1 -name "*" ! -name "." ! -name ".." ! -name "font-awesome" ! -name ".git" -exec mv {} font-awesome/ \;
-          
-          echo "Directory structure created:"
-          ls -la font-awesome/
-
-      - name: Create .wp-env.json configuration
-        run: |
-          cat > .wp-env.json << 'EOF'
-          {
-            "core": "WordPress/WordPress#6.8",
-            "plugins": [
-              "font-awesome"
-            ]
-          }
-          EOF
-
-      - name: Install @wordpress/env globally
-        run: npm install -g @wordpress/env
-
-      - name: Create admin .env.local file
-        run: |
-          cat > admin/.env.local << 'EOF'
-          PLAYWRIGHT_HEADLESS=true
-          PLAYWRIGHT_TIMEOUT=30000
-          EOF
-
       - name: Start WordPress environment
         run: |
           echo "Starting WordPress environment..."
-          wp-env start --update
+          docker compose -f docker-compose-ci.yml up -d
           echo "WordPress environment started successfully"
 
       - name: Wait for WordPress to be ready
         run: |
           timeout=300
-          echo "Checking WordPress availability at http://localhost:8888..."
-          while ! curl -s http://localhost:8888 > /dev/null; do
+          echo "Checking WordPress availability at http://${WP_DOMAIN}..."
+          while ! curl -s http://${WP_DOMAIN} > /dev/null; do
             echo "Waiting for WordPress to be ready... (${timeout}s remaining)"
             sleep 5
             timeout=$((timeout - 5))
@@ -91,62 +59,53 @@ jobs:
           done
           echo "WordPress is ready!"
           echo "Testing admin access..."
-          curl -I http://localhost:8888/wp-admin/ || echo "Admin not yet accessible"
+          curl -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not yet accessible"
 
       - name: Set up WordPress
         run: |
-          echo "Activating Font Awesome plugin..."
-          wp-env run cli wp plugin activate font-awesome
+          echo "Setting up WordPress..."
+          bin/setup-wordpress.sh
 
-          echo "Verifying plugin activation..."
-          wp-env run cli wp plugin list --status=active
+          echo "Activating Font Awesome plugin..."
+          docker compose -f docker-compose-ci.yml run --rm wp-cli plugin activate font-awesome
 
           echo "WordPress setup complete!"
 
       - name: Install playwright dependencies
         run: |
-          cd font-awesome/admin
+          cd admin
           sudo npx playwright install-deps
           npx playwright install
 
       - name: Run Non-Kit Tests on Chrome
-        run: cd font-awesome/admin && npm run test:browser-mocked-legacy-cdn-chrome
+        run: cd admin && npm run test:browser-mocked-legacy-cdn-chrome
 
       - name: Run Pro Kit Tests on Chrome
-        run: cd font-awesome/admin && npm run test:browser-mocked-pro-kit-chrome
+        run: cd admin && npm run test:browser-mocked-pro-kit-chrome
 
       - name: Debug on failure
         if: failure()
         run: |
           echo "=== Debug Information ==="
-          echo "WordPress environment status:"
-          wp-env status || true
-          echo ""
-          echo "WordPress environment logs:"
-          wp-env logs || true
-          echo ""
           echo "WordPress site status:"
-          curl -I http://localhost:8888 || echo "Site not accessible"
+          curl -I http://${WP_DOMAIN} || echo "Site not accessible"
           echo ""
           echo "WordPress admin status:"
-          curl -I http://localhost:8888/wp-admin/ || echo "Admin not accessible"
+          curl -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not accessible"
           echo ""
           echo "Plugin status:"
-          wp-env run cli wp plugin list || echo "Cannot check plugins"
+          docker compose -f docker-compose-ci.yml run --rm wp-cli plugin list || echo "Cannot check plugins"
           echo ""
           echo "WordPress version:"
-          wp-env run cli wp core version || echo "Cannot check WP version"
+          docker compose -f docker-compose-ci.yml run --rm wp-cli core version || echo "Cannot check WP version"
           echo ""
           echo "Docker containers:"
           docker ps -a || true
           echo ""
           echo "Docker logs for WordPress container:"
           docker logs $(docker ps -q --filter "ancestor=wordpress") || true
-          echo ""
-          echo "Environment variables in admin directory:"
-          ls -la admin/.env* || true
 
       - name: Cleanup
         if: always()
         run: |
-          wp-env stop || true
+          docker compose -f docker-compose-ci.yml down || true
