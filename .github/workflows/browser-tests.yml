@@ -100,7 +100,7 @@ jobs:
 
       - name: Install node dependencies
         #if: steps.node-modules-cache.outputs.cache-hit != 'true'
-        run: cd admin && npm install
+        run: cd admin && npm install --unsafe-perm
 
       - name: Run Non-Kit Tests on Chrome
         run: cd admin && npm run test:browser-mocked-legacy-cdn-chrome
