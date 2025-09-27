@@ -1,5 +1,6 @@
 x-dev_env_volumes: &dev_env_volumes
   volumes:
+    - wordpress_data:/var/www/html
 
     - .:/var/www/html/wp-content/plugins/font-awesome
 
@@ -74,8 +75,6 @@ services:
     ports:
       - "8888:80"
     image: wordpress:latest
-    volumes:
-      - wordpress_data:/var/www/html
     env_file:
       - ".env"
       - ".env.ci"
@@ -87,8 +86,6 @@ services:
       - wordpress
     user: www-data
     image: wordpress:cli
-    volumes:
-      - wordpress_data:/var/www/html
     env_file:
       - ".env"
       - ".env.ci"
