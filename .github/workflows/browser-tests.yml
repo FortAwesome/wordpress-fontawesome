@@ -81,7 +81,7 @@ jobs:
           bin/setup-wordpress-ci.sh
 
           echo "Activating Font Awesome plugin..."
-          docker compose -f docker-compose-ci.yml run --rm wp-cli plugin activate font-awesome
+          bin/wp-cli-ci plugin activate font-awesome
 
           echo "WordPress setup complete!"
 
@@ -110,10 +110,10 @@ jobs:
           curl -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not accessible"
           echo ""
           echo "Plugin status:"
-          docker compose -f docker-compose-ci.yml run --rm wp-cli plugin list || echo "Cannot check plugins"
+          bin/wp-cli-ci plugin list || echo "Cannot check plugins"
           echo ""
           echo "WordPress version:"
-          docker compose -f docker-compose-ci.yml run --rm wp-cli core version || echo "Cannot check WP version"
+          bin/wp-cli-ci core version || echo "Cannot check WP version"
           echo ""
           echo "Docker containers:"
           docker ps -a || true
