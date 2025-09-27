@@ -49,7 +49,7 @@ jobs:
       - name: Start WordPress environment
         run: |
           echo "Starting WordPress environment..."
-          docker compose -f docker-compose-ci.yml up -d
+          docker compose -f docker-compose-ci.yml up -d --quiet
           echo "WordPress environment started successfully"
 
       - name: Wait for WordPress to be ready
@@ -101,6 +101,8 @@ jobs:
         if: failure()
         run: |
           echo "=== Debug Information ==="
+          echo "Docker version: "
+          docker --version || echo "Docker not found"
           echo "WordPress site status:"
           curl -I http://${WP_DOMAIN} || echo "Site not accessible"
           echo ""
