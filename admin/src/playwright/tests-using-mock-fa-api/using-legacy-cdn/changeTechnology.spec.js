@@ -1,4 +1,4 @@
-import { expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { test } from '@wordpress/e2e-test-utils-playwright'
 
 test('change technology', async ({ page }) => {
   await page.goto('/wp-admin/admin.php?page=font-awesome')

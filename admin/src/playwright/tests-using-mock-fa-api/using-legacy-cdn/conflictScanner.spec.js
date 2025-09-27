@@ -1,8 +1,10 @@
 import { expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { mockRoutes } from '../../setup/mockApiNetworkRequests'
 
 test.describe('conflictScanner', async () => {
-  test.beforeEach(async ({ requestUtils }) => {
+  test.beforeEach(async ({ requestUtils, page }) => {
     await requestUtils.activatePlugin('plugin-gamma')
+    await mockRoutes(page)
   })
 
   test.afterEach(async ({ requestUtils }) => {
