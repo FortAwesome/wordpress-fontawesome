@@ -73,12 +73,12 @@ jobs:
           done
           echo "WordPress is ready!"
           echo "Testing admin access..."
-          curl -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not yet accessible"
+          curl -L -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not yet accessible"
 
       - name: Set up WordPress
         run: |
           echo "Setting up WordPress..."
-          bin/setup-wordpress.sh
+          bin/setup-wordpress-ci.sh
 
           echo "Activating Font Awesome plugin..."
           docker compose -f docker-compose-ci.yml run --rm wp-cli plugin activate font-awesome
