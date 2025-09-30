@@ -19,6 +19,15 @@ rc=`curl \
 
 if [ "$rc" == "200" ]; then
   echo "SUCCESS initializing WordPress\n\tAdmin dashboard here:\n\thttp://$WP_DOMAIN/wp-admin"
+  
+  # Configure permalinks for REST API to work properly
+  echo "Configuring WordPress permalinks..."
+  docker compose -f "$( dirname "${BASH_SOURCE[0]}" )/../docker-compose-ci.yml" run --rm -T wp-cli rewrite structure '/%postname%/'
+  if [ "$?" == "0" ]; then
+    echo "SUCCESS configuring permalinks"
+  else
+    echo "WARNING: Failed to configure permalinks - REST API may not work properly"
+  fi
 else
   echo "FAIL with HTTP $rc"
   exit 1
