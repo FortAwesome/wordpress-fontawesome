@@ -21,7 +21,7 @@ const testConfigs = [
   {
     name: 'real-fa-api-legacy-cdn',
     testMatch: 'tests-using-real-fa-api/using-legacy-cdn/*.spec.js',
-    dependencies: ['wp-login', 'reset']
+    dependencies: ['reset']
   },
   {
     name: 'with-mock-fa-api-pro-kit',
@@ -31,7 +31,7 @@ const testConfigs = [
   {
     name: 'with-mock-fa-api-legacy-cdn',
     testMatch: 'tests-using-mock-fa-api/using-legacy-cdn/*.spec.js',
-    dependencies: ['wp-login', 'reset']
+    dependencies: ['reset']
   }
 ]
 
@@ -53,14 +53,15 @@ export default defineConfig({
     baseURL
   },
   projects: [
-    { name: 'wp-login', testDir, testMatch: 'setup/wp-login.js' },
+    { name: 'wp-login', testDir, testMatch: 'setup/wpLogin.js' },
     {
       name: 'reset',
       testDir,
       testMatch: 'setup/reset.js',
       use: {
         storageState: adminStorageStatePath
-      }
+      },
+      dependencies: ['wp-login']
     },
     {
       name: 'setup-real-pro-kit',
