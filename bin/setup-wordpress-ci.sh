@@ -22,7 +22,7 @@ if [ "$rc" == "200" ]; then
   
   # Configure permalinks for REST API to work properly
   echo "Configuring WordPress permalinks..."
-  docker compose -f "$( dirname "${BASH_SOURCE[0]}" )/../docker-compose-ci.yml" run --rm -T wp-cli rewrite structure '/%postname%/'
+  docker compose -f "$( dirname "${BASH_SOURCE[0]}" )/../docker-compose-ci.yml" cp "$( dirname "${BASH_SOURCE[0]}" )/../docker/htaccess" wordpress:/var/www/html/.htaccess
   if [ "$?" == "0" ]; then
     echo "SUCCESS configuring permalinks"
   else
