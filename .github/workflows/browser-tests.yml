@@ -94,9 +94,6 @@ jobs:
 
       - name: Set up WordPress
         run: |
-          echo "Setting up WordPress..."
-          bin/setup-wordpress-ci.sh
-
           echo "Activating Font Awesome plugin..."
           bin/wp-cli-ci plugin activate font-awesome
 
