@@ -1,10 +1,10 @@
 import './support/env.js'
+import { authFile } from './support/testHelpers.js'
 import { defineConfig, devices } from '@playwright/test'
 
 const testDir = '.'
 const baseURL = `http://${process.env.WP_DOMAIN}`
 process.env.WP_BASE_URL = baseURL
-const adminStorageStatePath = '.auth/state.json'
 
 const browsers = [
   { name: 'chrome', device: 'Desktop Chrome' },
@@ -42,7 +42,7 @@ const browserProjects = browsers.flatMap(browser =>
     testMatch: config.testMatch,
     use: {
       ...devices[browser.device],
-      storageState: adminStorageStatePath
+      storageState: authFile
     },
     dependencies: config.dependencies
   }))
@@ -59,7 +59,7 @@ export default defineConfig({
       testDir,
       testMatch: 'setup/reset.js',
       use: {
-        storageState: adminStorageStatePath
+        storageState: authFile
       },
       dependencies: ['wp-login']
     },
@@ -68,7 +68,7 @@ export default defineConfig({
       testDir,
       testMatch: 'setup/realProKit.js',
       use: {
-        storageState: adminStorageStatePath
+        storageState: authFile
       },
       dependencies: ['wp-login', 'reset']
     },
@@ -77,7 +77,7 @@ export default defineConfig({
       testDir,
       testMatch: 'setup/mockApiAndKitToken.js',
       use: {
-        storageState: adminStorageStatePath
+        storageState: authFile
       },
       dependencies: ['wp-login', 'reset']
     },

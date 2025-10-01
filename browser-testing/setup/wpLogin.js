@@ -1,7 +1,6 @@
 import { test as setup } from '@wordpress/e2e-test-utils-playwright'
 import '../support/env.js'
-
-const authFile = '.auth/state.json'
+import { authFile } from '../support/testHelpers.js'
 
 setup('WordPress admin login', async ({ page }) => {
   await page.goto('/wp-login.php')

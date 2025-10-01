@@ -1,6 +1,8 @@
 import { request } from '@playwright/test'
 import { RequestUtils } from '@wordpress/e2e-test-utils-playwright'
 
+export const authFile = '.auth/state.json'
+
 export async function prepareRestApi({ baseURL, storageState }) {
   const requestContext = await request.newContext({
     baseURL
