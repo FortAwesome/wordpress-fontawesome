@@ -1,4 +1,4 @@
-import { expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { expect, test } from '../../fixtures.js'
 import { prepareRestApi } from '../../support/testHelpers'
 
 const QUERY = 'query { search(version: "6.x", query: "coffee", first: 1) { id } }'

@@ -1,4 +1,4 @@
-import { Editor, test, expect } from '@wordpress/e2e-test-utils-playwright'
+import { Editor, expect, test } from '../../fixtures.js'
 
 test.describe('blockEditorIconChooser', async () => {
   test.beforeEach(async ({ admin }) => {

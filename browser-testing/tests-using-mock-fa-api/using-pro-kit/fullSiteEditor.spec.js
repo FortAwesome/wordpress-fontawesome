@@ -1,4 +1,4 @@
-import { Editor, expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { expect, test } from '../../fixtures.js'
 import { mockRoutes } from '../../setup/mockApiNetworkRequests'
 import { loadSvgCoreJs } from '../../support/testHelpers'
 
