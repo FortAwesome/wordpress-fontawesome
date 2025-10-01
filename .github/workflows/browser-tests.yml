@@ -103,10 +103,10 @@ jobs:
           echo "WordPress setup complete!"
 
       - name: Run Non-Kit Tests
-        run: cd admin && npm run test:ci:browser-non-kit
+        run: cd browser-tests && npm run test:ci:browser-non-kit
 
       - name: Run Pro Kit Tests
-        run: cd admin && npm run test:ci:browser-pro-kit
+        run: cd browser-tests && npm run test:ci:browser-pro-kit
 
       - name: Debug on failure
         if: failure()
