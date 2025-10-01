@@ -12,7 +12,8 @@ setup('mock API token and Pro kit token', async () => {
     host: 'localhost',
     user: process.env.WORDPRESS_DB_USER,
     password: process.env.WORDPRESS_DB_PASSWORD,
-    database: process.env.WORDPRESS_DB_NAME
+    database: process.env.WORDPRESS_DB_NAME,
+    port: process.env.WORDPRESS_DB_PORT
   })
 
   const selectSql = 'SELECT option_id, option_value FROM `wp_options` WHERE `option_name` = ? LIMIT 1'
