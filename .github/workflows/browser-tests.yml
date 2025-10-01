@@ -55,11 +55,11 @@ jobs:
 
       - name: Install node dependencies
         # if: steps.node-modules-cache.outputs.cache-hit != 'true'
-        run: cd browser-tests && npm install
+        run: cd browser-testing && npm install
 
       - name: Install playwright dependencies
         run: |
-          cd browser-tests
+          cd browser-testing
           sudo npx playwright install-deps
           npx playwright install
 
@@ -103,10 +103,10 @@ jobs:
           echo "WordPress setup complete!"
 
       - name: Run Non-Kit Tests
-        run: cd browser-tests && npm run test:ci:browser-non-kit
+        run: cd browser-testing && npm run test:ci:browser-non-kit
 
       - name: Run Pro Kit Tests
-        run: cd browser-tests && npm run test:ci:browser-pro-kit
+        run: cd browser-testing && npm run test:ci:browser-pro-kit
 
       - name: Debug on failure
         if: failure()
