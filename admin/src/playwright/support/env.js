@@ -5,7 +5,8 @@ import { accessSync } from 'fs'
 
 const ROOT_DIR = path.resolve(__dirname, '../../../..')
 
-const envFile = process.env.CI === 'true' ? '.env.ci' : '.env.local'
+const envSpecificFile = process.env.CI === 'true' ? '.env.ci' : '.env.local'
+const envSpecificFilePath = path.resolve(ROOT_DIR, envSpecificFile)
 
 dotenvExpand.expand(
   dotenv.config({ path: path.resolve(ROOT_DIR, '.env'), override: true })
@@ -14,12 +15,12 @@ dotenvExpand.expand(
 let foundEnvFile = false
 
 try {
-  accessSync()
+  accessSync(envSpecificFilePath)
   foundEnvFile = true
 } catch {}
 
 if (foundEnvFile) {
   dotenvExpand.expand(
-    dotenv.config({ path: path.resolve(ROOT_DIR, envFile), override: true })
+    dotenv.config({ path: envSpecificFilePath, override: true })
   )
 }
