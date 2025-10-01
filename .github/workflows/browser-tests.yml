@@ -55,11 +55,11 @@ jobs:
 
       - name: Install node dependencies
         # if: steps.node-modules-cache.outputs.cache-hit != 'true'
-        run: cd admin && npm install
+        run: cd browser-tests && npm install
 
       - name: Install playwright dependencies
         run: |
-          cd admin
+          cd browser-tests
           sudo npx playwright install-deps
           npx playwright install
 
