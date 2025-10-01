@@ -22,11 +22,18 @@ if [ "$rc" == "200" ]; then
 
   # Configure permalinks for REST API to work properly
   echo "Configuring WordPress permalinks..."
-  $DIR/wp-cli-ci option update permalink_structure '/%postname%/'
+  $DIR/wp-cli-ci option update permalink_structure '/%year%/%monthnum%/%day%/%postname%/'
   if [ "$?" == "0" ]; then
     echo "SUCCESS configuring permalinks"
   else
     echo "WARNING: Failed to configure permalinks - REST API may not work properly"
+  fi
+
+  docker compose -f $DIR/../docker-compose-ci.yml exec wordpress cp /usr/src/wordpress/.htaccess /var/www/html/.htaccess
+  if [ "$?" == "0" ]; then
+    echo "SUCCESS copying .htaccess"
+  else
+    echo "WARNING: Failed to .htaccess - REST API may not work properly"
   fi
 else
   echo "FAIL with HTTP $rc"
