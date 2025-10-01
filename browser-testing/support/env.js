@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import dotenvExpand from "dotenv-expand"
 import { accessSync } from 'fs'
 
-const ROOT_DIR = path.resolve(__dirname, '../../../..')
+const ROOT_DIR = path.resolve(__dirname, '../..')
 
 const envSpecificFile = process.env.CI === 'true' ? '.env.ci' : '.env.local'
 const envSpecificFilePath = path.resolve(ROOT_DIR, envSpecificFile)

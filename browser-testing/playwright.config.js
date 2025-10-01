@@ -1,10 +1,10 @@
-import './src/playwright/support/env.js'
+import './support/env.js'
 import { defineConfig, devices } from '@playwright/test'
 
-const testDir = 'src/playwright'
+const testDir = '.'
 const baseURL = `http://${process.env.WP_DOMAIN}`
 process.env.WP_BASE_URL = baseURL
-const adminStorageStatePath = 'src/playwright/.auth/state.json'
+const adminStorageStatePath = '.auth/state.json'
 
 const browsers = [
   { name: 'chrome', device: 'Desktop Chrome' },
