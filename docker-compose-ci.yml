@@ -56,6 +56,10 @@ x-dev_env_volumes: &dev_env_volumes
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/assets
     - /var/www/html/wp-content/plugins/plugin-sigma/vendor/fortawesome/wordpress-fontawesome/docker
 
+networks:
+    wordpress_network:
+      name: wordpress_ci_network
+
 services:
   wpdb:
     image: mariadb:10.5.8
@@ -66,6 +70,8 @@ services:
     env_file:
       - ".env"
       - ".env.ci"
+    networks:
+      - wordpress_network
 
   wordpress:
     <<:
@@ -78,6 +84,8 @@ services:
     env_file:
       - ".env"
       - ".env.ci"
+    networks:
+      - wordpress_network
 
   wp-cli:
     <<:
@@ -92,7 +100,11 @@ services:
     entrypoint: wp
     profiles: ["cli"]
     command: ["--info"]
+    networks:
+      - wordpress_network
 
 volumes:
   wpdb_data:
+    name: wpdb_data_ci
   wordpress_data:
+    name: wordpress_data_ci
