@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "test:ci:browser-basic-kit": "CI=true npm run test:browser-mocked-pro-kit-chrome",
-    "test:ci:browser-basic-non-kit": "CI=true npm run test:browser-mocked-legacy-cdn-chrome",
+    "test:ci:browser-pro-kit": "CI=true npm run test:browser-mocked-pro-kit-chrome",
+    "test:ci:browser-non-kit": "CI=true npm run test:browser-mocked-legacy-cdn-chrome",
     "test:browser-mocked-legacy-cdn-chrome": "npx playwright test --project=with-mock-fa-api-legacy-cdn-chrome",
     "test:browser-mocked-pro-kit-chrome": "npx playwright test --project=with-mock-fa-api-pro-kit-chrome"
   },

@@ -29,10 +29,6 @@
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",
     "start": "wp-scripts start",
-    "test:browser-basic-kit": "npm run test:browser-mocked-pro-kit-chrome",
-    "test:browser-basic-non-kit": "npm run test:browser-mocked-legacy-cdn-chrome",
-    "test:browser-mocked-legacy-cdn-chrome": "npx playwright test --project=with-mock-fa-api-legacy-cdn-chrome",
-    "test:browser-mocked-pro-kit-chrome": "npx playwright test --project=with-mock-fa-api-pro-kit-chrome",
     "test:unit": "wp-scripts test-unit-js",
     "test": "npm run test:unit"
   },
