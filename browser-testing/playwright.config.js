@@ -24,12 +24,12 @@ const testConfigs = [
     dependencies: ['reset']
   },
   {
-    name: 'with-mock-fa-api-pro-kit',
+    name: 'mock-fa-api-pro-kit',
     testMatch: 'tests-using-mock-fa-api/using-pro-kit/*.spec.js',
     dependencies: ['mock-api-and-kit-token']
   },
   {
-    name: 'with-mock-fa-api-legacy-cdn',
+    name: 'mock-fa-api-legacy-cdn',
     testMatch: 'tests-using-mock-fa-api/using-legacy-cdn/*.spec.js',
     dependencies: ['reset']
   }
