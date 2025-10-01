@@ -1,3 +1,5 @@
+name: wordpress-fontawesome-local-dev
+
 x-dev_env_volumes: &dev_env_volumes
   volumes:
     # This wordpress bind mount could be uncommented in order to get access in the host
@@ -132,7 +134,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - wpdb_data:/var/lib/mysql-wp-local-dev
+      - wpdb_data:/var/lib/mysql
     env_file:
       - ".env"
     container_name: "com.fontawesome.wpdb"

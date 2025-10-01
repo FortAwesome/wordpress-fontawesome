@@ -1,3 +1,5 @@
+name: wordpress-fontawesome-ci
+
 x-dev_env_volumes: &dev_env_volumes
   volumes:
     - wordpress_data:/var/www/html
@@ -64,12 +66,13 @@ services:
   wpdb:
     image: mariadb:10.5.8
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - wpdb_data:/var/lib/mysql
     env_file:
       - ".env"
       - ".env.ci"
+    container_name: "wpdb-ci"
     networks:
       - wordpress_network
 
@@ -84,6 +87,7 @@ services:
     env_file:
       - ".env"
       - ".env.ci"
+    container_name: "wordpress-ci"
     networks:
       - wordpress_network
 
@@ -100,6 +104,7 @@ services:
     entrypoint: wp
     profiles: ["cli"]
     command: ["--info"]
+    container_name: "wordpress-cli-ci"
     networks:
       - wordpress_network
 
