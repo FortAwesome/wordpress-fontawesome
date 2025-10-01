@@ -79,7 +79,7 @@ export async function mockRoutes(page) {
   })
 
   // Mock the plugin's WP REST API route for fetching an access token.
-  await page.route(/.*\/api\/token/, async route => {
+  await page.route(/.*\/api\/token|rest_route=.*token/, async route => {
     const mockData = {
       access_token: 'fake_access_token',
       expires_at: '2099-12-31T23:59:59Z'
