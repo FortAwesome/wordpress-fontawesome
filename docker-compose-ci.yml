@@ -90,6 +90,8 @@ services:
     container_name: "wordpress-ci"
     networks:
       - wordpress_network
+    extra_hosts:
+      - "localhost:host-gateway"
 
   wp-cli:
     <<:
