@@ -70,6 +70,7 @@
     "@wordpress/scripts": "wp-6.7",
     "decode-uri-component": "^0.4.1",
     "dotenv": "^14.3.2",
+    "dotenv-expand": "^12.0.3",
     "eslint-config-react-app": "^7.0.1",
     "lodash": "^4.17.21",
     "mysql2": "^3.9.9",
