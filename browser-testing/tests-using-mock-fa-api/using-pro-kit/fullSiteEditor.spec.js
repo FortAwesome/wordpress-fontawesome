@@ -1,4 +1,4 @@
-import { expect, test } from '../../fixtures.js'
+import { Editor, expect, test } from '../../fixtures.js'
 import { mockRoutes } from '../../setup/mockApiNetworkRequests'
 import { loadSvgCoreJs } from '../../support/testHelpers'
 
