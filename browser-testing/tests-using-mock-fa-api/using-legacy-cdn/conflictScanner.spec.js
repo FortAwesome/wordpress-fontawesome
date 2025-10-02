@@ -1,11 +1,19 @@
-import { expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { expect, test } from '../../fixtures.js'
+import { mockRoutes } from '../../setup/mockApiNetworkRequests'
+import { prepareRestApi } from '../../support/testHelpers'
 
 test.describe('conflictScanner', async () => {
-  test.beforeEach(async ({ requestUtils }) => {
+  let requestUtils = null;
+
+  test.beforeEach(async ({ page, baseURL }) => {
+    // Use prepareRestApi with page context for proper authentication
+    const prep = await prepareRestApi({ baseURL, page })
+    requestUtils = prep.requestUtils
     await requestUtils.activatePlugin('plugin-gamma')
+    await mockRoutes(page)
   })
 
-  test.afterEach(async ({ requestUtils }) => {
+  test.afterEach(async () => {
     await requestUtils.deactivatePlugin('plugin-gamma')
   })
 

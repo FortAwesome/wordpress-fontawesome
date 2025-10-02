@@ -12,4 +12,4 @@ else
   IMAGE_TAG=$1
 fi
 
-$WP_SUDO $DOCKER compose up wordpress-${IMAGE_TAG}-dev
+$WP_SUDO $DOCKER compose -f $DIR/../docker-compose.yml up wordpress-${IMAGE_TAG}-dev

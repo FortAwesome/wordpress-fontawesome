@@ -1,4 +1,4 @@
-import { test as setup, expect, RequestUtils } from '@wordpress/e2e-test-utils-playwright'
+import { test as setup } from '@wordpress/e2e-test-utils-playwright'
 import mysql from 'mysql2/promise'
 import { prepareRestApi } from '../support/testHelpers'
 
@@ -10,7 +10,8 @@ setup('reset', async ({ storageState, baseURL }) => {
     host: 'localhost',
     user: process.env.WORDPRESS_DB_USER,
     password: process.env.WORDPRESS_DB_PASSWORD,
-    database: process.env.WORDPRESS_DB_NAME
+    database: process.env.WORDPRESS_DB_NAME,
+    port: process.env.WORDPRESS_DB_PORT
   })
 
   const sql = 'DELETE FROM `wp_options` WHERE `option_name` = ? LIMIT 1'

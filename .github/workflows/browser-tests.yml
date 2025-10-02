@@ -1,0 +1,138 @@
+name: Browser Tests
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches: [master]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load environment variables
+        run: |
+          if [ -f .env ]; then
+            echo "Loading .env file..."
+            while IFS= read -r line || [ -n "$line" ]; do
+              # Skip empty lines and comments
+              if [[ ! -z "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+                echo "$line" >> $GITHUB_ENV
+              fi
+            done < .env
+          fi
+          if [ -f .env.ci ]; then
+            echo "Loading .env.ci file..."
+            while IFS= read -r line || [ -n "$line" ]; do
+              # Skip empty lines and comments
+              if [[ ! -z "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+                echo "$line" >> $GITHUB_ENV
+              fi
+            done < .env.ci
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify Docker is running
+        run: |
+          echo "Checking Docker status..."
+          docker --version
+          docker info
+          echo "Docker is ready!"
+
+      # - name: Cache node_modules
+      #   id: node-modules-cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: admin/node_modules
+      #     key: ${{ runner.os }}-browser-tests-node-modules-${{ hashFiles('admin/package-lock.json') }}
+
+      - name: Install node dependencies
+        # if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: cd browser-testing && npm install
+
+      - name: Install playwright dependencies
+        run: |
+          cd browser-testing
+          sudo npx playwright install-deps
+          npx playwright install
+
+      - name: Start WordPress environment
+        run: |
+          echo "Starting WordPress environment..."
+          docker compose -f docker-compose-ci.yml up -d --quiet-pull
+          echo "WordPress environment started successfully"
+
+      - name: Wait for WordPress to be ready
+        run: |
+          timeout=300
+          echo "Checking WordPress availability at http://${WP_DOMAIN}..."
+          while ! curl -s http://${WP_DOMAIN} > /dev/null; do
+            echo "Waiting for WordPress to be ready... (${timeout}s remaining)"
+            sleep 5
+            timeout=$((timeout - 5))
+            if [ $timeout -le 0 ]; then
+              echo "WordPress failed to start within 5 minutes"
+              echo "Environment status:"
+              wp-env status || true
+              echo "Environment logs:"
+              wp-env logs
+              echo "Docker containers:"
+              docker ps -a
+              exit 1
+            fi
+          done
+          echo "WordPress is ready!"
+          echo "Testing admin access..."
+          curl -L -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not yet accessible"
+
+      - name: Set up WordPress
+        run: |
+          echo "Setting up WordPress..."
+          bin/setup-wordpress-ci.sh
+
+          echo "Activating Font Awesome plugin..."
+          bin/wp-cli-ci plugin activate font-awesome
+
+          echo "WordPress setup complete!"
+
+      - name: Run Non-Kit Tests
+        run: cd browser-testing && npm run test:ci:browser-non-kit
+
+      - name: Run Pro Kit Tests
+        run: cd browser-testing && npm run test:ci:browser-pro-kit
+
+      - name: Debug on failure
+        if: failure()
+        run: |
+          echo "=== Debug Information ==="
+          echo "Docker version: "
+          docker --version || echo "Docker not found"
+          echo "WordPress site status:"
+          curl -I http://${WP_DOMAIN} || echo "Site not accessible"
+          echo ""
+          echo "WordPress admin status:"
+          curl -I http://${WP_DOMAIN}/wp-admin/ || echo "Admin not accessible"
+          echo ""
+          echo "Plugin status:"
+          bin/wp-cli-ci plugin list || echo "Cannot check plugins"
+          echo ""
+          echo "WordPress version:"
+          bin/wp-cli-ci core version || echo "Cannot check WP version"
+          echo ""
+          echo "Docker containers:"
+          docker ps -a || true
+          echo ""
+          echo "Docker logs for WordPress container:"
+          docker logs $(docker ps -q --filter "ancestor=wordpress") || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f docker-compose-ci.yml down || true
