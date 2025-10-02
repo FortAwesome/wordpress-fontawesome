@@ -4,14 +4,12 @@ import '../support/env.js'
 const CONFIG_ROUTE_PATTERN = '**/font-awesome/v1/config'
 const API_ROUTE_PATTERN = '**/font-awesome/v1/api*'
 
-setup('pro kit', async ({ page }) => {
+setup('real pro kit', async ({ page }) => {
   expect(process.env.API_TOKEN).toBeTruthy()
   expect(process.env.KIT_TOKEN).toBeTruthy()
 
   await page.goto('/wp-admin/admin.php?page=font-awesome')
   await page.locator('label').filter({ hasText: 'Use A Kit' }).click()
-
-  const allText = await page.getByRole('heading').allTextContents()
 
   await page.locator('label').filter({ hasText: 'API Token' }).fill(process.env.API_TOKEN)
   const saveAPITokenResponsePromise = page.waitForResponse(CONFIG_ROUTE_PATTERN)

@@ -1,3 +1,5 @@
+name: wordpress-fontawesome-local-dev
+
 x-dev_env_volumes: &dev_env_volumes
   volumes:
     # This wordpress bind mount could be uncommented in order to get access in the host
@@ -122,6 +124,10 @@ x-wordpress-defaults: &wordpress_defaults
 x-wordpress-dev-defaults: &wordpress_dev_defaults
   <<: *wordpress_defaults
 
+networks:
+    wordpress_network:
+      name: wordpress_local_dev_network
+
 services:
   wpdb:
     image: mariadb:10.5.8
@@ -132,6 +138,8 @@ services:
     env_file:
       - ".env"
     container_name: "com.fontawesome.wpdb"
+    networks:
+      - wordpress_network
 
   wordpress-latest-dev:
     <<:
@@ -148,6 +156,8 @@ services:
       FONTAWESOME_ENV: development
       COMPOSER: ${WP_FA_DIR}/composer.json
     container_name: "com.fontawesome.wordpress-latest-dev"
+    networks:
+      - wordpress_network
 
   wordpress-php8.1-dev:
     <<:
@@ -164,6 +174,8 @@ services:
       FONTAWESOME_ENV: development
       COMPOSER: ${WP_FA_DIR}/composer-php8.1.json
     container_name: "com.fontawesome.wordpress-php8.1-dev"
+    networks:
+      - wordpress_network
 
   wordpress-php8.0-dev:
     <<:
@@ -179,6 +191,8 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-php8.0.json
     container_name: "com.fontawesome.wordpress-php8.0-dev"
+    networks:
+      - wordpress_network
 
   wordpress-php7.4-dev:
     <<:
@@ -194,6 +208,8 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-php7.4.json
     container_name: "com.fontawesome.wordpress-php7.4-dev"
+    networks:
+      - wordpress_network
 
   wordpress-php8.3-dev:
     <<:
@@ -209,6 +225,8 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-php8.3.json
     container_name: "com.fontawesome.wordpress-php8.3-dev"
+    networks:
+      - wordpress_network
 
   wordpress-latest-integration:
     <<:
@@ -224,6 +242,8 @@ services:
       FONTAWESOME_ENV: production
       WORDPRESS_DB_HOST: wpdb:3306
     container_name: "com.fontawesome.wordpress-latest-integration"
+    networks:
+      - wordpress_network
 
   wordpress-5.8-dev:
     <<:
@@ -239,6 +259,8 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-wp5.8.json
     container_name: "com.fontawesome.wordpress-5.8-dev"
+    networks:
+      - wordpress_network
 
   wordpress-6.0-dev:
     <<:
@@ -254,6 +276,8 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
     container_name: "com.fontawesome.wordpress-6.0-dev"
+    networks:
+      - wordpress_network
 
   wordpress-6.0-integration:
     <<:
@@ -269,6 +293,9 @@ services:
       WORDPRESS_DB_HOST: wpdb:3306
       COMPOSER: ${WP_FA_DIR}/composer-wp6.0.json
     container_name: "com.fontawesome.wordpress-6.0-integration"
+    networks:
+      - wordpress_network
 
 volumes:
   wpdb_data:
+    name: wpdb_data_local_dev

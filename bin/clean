@@ -4,4 +4,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/../.env
 source $DIR/.common.bash
 
-$DOCKER compose down -v
+$DOCKER compose -f $DIR/../docker-compose.yml down -v --remove-orphans

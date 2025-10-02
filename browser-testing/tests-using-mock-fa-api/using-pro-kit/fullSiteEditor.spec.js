@@ -1,10 +1,17 @@
-import { Editor, expect, test } from '@wordpress/e2e-test-utils-playwright'
+import { Editor, expect, test } from '../../fixtures.js'
+import { mockRoutes } from '../../setup/mockApiNetworkRequests'
+import { loadSvgCoreJs } from '../../support/testHelpers'
 
 test.describe('full site editor', async () => {
   test.use({
     editor: async ({ page }, use) => {
       await use(new Editor({ page }))
     }
+  })
+
+  test.beforeEach(async ({ page }) => {
+    await mockRoutes(page)
+    await loadSvgCoreJs(page)
   })
 
   test('insert with icon chooser', async ({ page, editor, pageUtils }) => {
@@ -14,10 +21,11 @@ test.describe('full site editor', async () => {
 
     await pageLoadPromise
 
-    const getStartedCount = await page.getByRole('button', { name: 'Get started' }).count()
-
-    if (getStartedCount > 0) {
+    try {
+      await page.getByRole('button', { name: 'Get started' }).waitFor({ timeout: 1000 })
       await page.getByRole('button', { name: 'Get started' }).click()
+    } catch (error) {
+      // Button doesn't exist in current WordPress version, continue with test
     }
 
     await editor.insertBlock({
@@ -25,13 +33,15 @@ test.describe('full site editor', async () => {
     })
     await page.keyboard.type('Here comes an icon: ')
 
-    await editor.clickBlockToolbarButton('More')
+    await editor.clickBlockToolbarButton('Font Awesome Icon')
 
     await pageUtils.pressKeys('Enter', 1)
 
     await page.waitForSelector('fa-icon-chooser input#search')
 
-    const searchResponsePromise = page.waitForResponse('**/font-awesome/v1/api*')
+    const searchResponsePromise = page.waitForResponse(response =>
+      response.url().includes('fontawesome.com') && response.request().method() === 'POST'
+    )
 
     await page.locator('fa-icon-chooser input#search').fill('coffee')
 

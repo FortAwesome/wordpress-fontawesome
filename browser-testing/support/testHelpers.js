@@ -1,6 +1,8 @@
 import { request } from '@playwright/test'
 import { RequestUtils } from '@wordpress/e2e-test-utils-playwright'
 
+export const authFile = '.auth/state.json'
+
 export async function prepareRestApi({ baseURL, storageState }) {
   const requestContext = await request.newContext({
     baseURL
@@ -15,4 +17,11 @@ export async function prepareRestApi({ baseURL, storageState }) {
   await requestUtils.setupRest()
 
   return { requestUtils, requestContext }
+}
+
+// This can be loaded as part of mocking for the Icon Chooser. So it will
+// not need to fetch pro.min.js, since loading this asset will define the
+// global FontAwesome object in the DOM.
+export async function loadSvgCoreJs(page) {
+  await page.addInitScript({ path: 'support/fontawesome.free.7.0.1.min.js' });
 }

@@ -1,5 +1,5 @@
-import { expect, test } from '@wordpress/e2e-test-utils-playwright'
-import { prepareRestApi } from '../support/testHelpers'
+import { expect, test } from '../../fixtures.js'
+import { prepareRestApi } from '../../support/testHelpers'
 
 const QUERY = 'query { search(version: "6.x", query: "coffee", first: 1) { id } }'
 
@@ -14,7 +14,7 @@ const QUERY = 'query { search(version: "6.x", query: "coffee", first: 1) { id } 
 test('query as plain text', async ({ storageState, baseURL }) => {
   expect(process.env.ENABLE_MOD_SECURITY).toEqual('false')
 
-  const { requestUtils, requestContext } = await prepareRestApi({ storageState, baseURL })
+  const { requestUtils } = await prepareRestApi({ storageState, baseURL })
 
   const url = `http://${process.env.WP_DOMAIN}/wp-json/font-awesome/v1/api?_locale=user`
 

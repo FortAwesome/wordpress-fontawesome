@@ -1,0 +1,23 @@
+{
+  "name": "font-awesome-browser-testing",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "test:ci:browser-pro-kit": "CI=true npm run test:browser-mocked-fa-api-pro-kit-all-browsers",
+    "test:ci:browser-non-kit": "CI=true npm run test:browser-mocked-fa-api-legacy-cdn-all-browsers",
+    "test:local:browser-pro-kit": "npm run test:browser-real-fa-api-pro-kit-all-browsers",
+    "test:local:browser-non-kit": "npm run test:browser-real-fa-api-legacy-cdn-all-browsers",
+    "test:browser-mocked-fa-api-legacy-cdn-all-browsers": "for browser in chrome webkit firefox; do npx playwright test --project=mock-fa-api-legacy-cdn-$browser; done",
+    "test:browser-mocked-fa-api-pro-kit-all-browsers": "for browser in chrome webkit firefox; do npx playwright test --project=mock-fa-api-pro-kit-$browser; done",
+    "test:browser-real-fa-api-legacy-cdn-all-browsers": "for browser in chrome webkit firefox; do npx playwright test --project=real-fa-api-legacy-cdn-chrome; done",
+    "test:browser-real-fa-api-pro-kit-all-browsers": "for browser in chrome webkit firefox; do npx playwright test --project=real-fa-api-pro-kit-$browser; done"
+  },
+  "devDependencies": {
+    "@wordpress/e2e-test-utils-playwright": "^1.31.0",
+    "dotenv": "^14.3.2",
+    "dotenv-expand": "^12.0.3",
+    "lodash": "^4.17.21",
+    "mysql2": "^3.9.9",
+    "php-serialize": "^5.1.3"
+  }
+}

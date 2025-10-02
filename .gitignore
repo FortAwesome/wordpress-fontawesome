@@ -17,9 +17,9 @@ tmp/
 webpack-stats.html
 webpack-stats.json
 .phpunit.result.cache
-admin/src/playwright/.auth/
+browser-testing/.auth/
+browser-testing/test-results/
 admin/artifacts/
-admin/test-results/
 .npmrc
 .php-cs-fixer.cache
 .zed/
