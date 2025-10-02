@@ -1683,13 +1683,17 @@ class FontAwesome {
 					true
 				);
 
+				/** While this plugin's Classic Editor support does depend on tinymce
+				 * being loaded, the wp-tinymce dependency has intentionally been omitted
+				 * here due to compatibility problems with Toolset.
+				 * See: https://wordpress.org/support/topic/cant-edit-post_content-in-classic-editor-if-plugin-v5-0-1-or-v5-0-2-is-active/
+				 */
 				wp_register_script(
 					self::RESOURCE_HANDLE_CLASSIC_EDITOR,
 					trailingslashit( FONTAWESOME_DIR_URL ) . 'classic-editor/build/index.js',
 					array(
 						self::ADMIN_RESOURCE_HANDLE,
 						self::RESOURCE_HANDLE_ICON_CHOOSER,
-						'wp-tinymce',
 						'jquery',
 					),
 					self::PLUGIN_VERSION,
