@@ -64,7 +64,7 @@ function render_svg_from_icon_layer( $icon_layer = [] ) {
 		return;
 	}
 
-	$svg = "<svg aria-hidden=\"true\" focusable=\"false\" data-prefix=\"$prefix\" data-icon=\"$icon_name\" class=\"svg-inline--fa fa-$icon_name\" role=\"img\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 $width $height\">";
+	$svg = '<svg aria-hidden="true" focusable="false" data-prefix="' . esc_attr( $prefix ) . '" data-icon="' . esc_attr( $icon_name ) . '" class="svg-inline--fa fa-' . esc_attr( $icon_name ) . '" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="' . esc_attr( "0 0 $width $height" ) . '">';
 
 	$path_or_paths = $icon_data[4];
 
