@@ -74,7 +74,7 @@ function allowed_html(){
 	 */
     return [
         'svg' => [
-            'xmlns', 'viewBox', 'width', 'height', 'class', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby',
+            'xmlns', 'viewBox', 'width', 'height', 'class', 'color', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby',
             'data-prefix', 'data-icon', 'data-fa-i2svg', 'data-fa-pseudo-element', 'style', 'transform-origin'
         ],
         'path' => [
