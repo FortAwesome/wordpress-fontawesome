@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-icon-block-render-callback.php';
 
 /**
  *  We need to register the block-editor script explicitly, instead of
@@ -107,5 +108,9 @@ function block_init() {
 		add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
 	}
 
-	register_block_type( __DIR__ . '/build' );
+	register_block_type( __DIR__ . '/build',
+		[
+            'render_callback' => 'FortAwesome\font_awesome_icon_render_callback'
+        ]
+	);
 }

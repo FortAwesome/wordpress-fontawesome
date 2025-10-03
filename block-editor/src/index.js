@@ -1,6 +1,5 @@
 import { registerBlockType } from '@wordpress/blocks'
 import { Edit } from './edit'
-import save from './save'
 import metadata from './block.json'
 import { faBrandIcon } from './icons'
 import { initialize as initializeRichTextIcon } from './richTextIcon'
@@ -19,6 +18,8 @@ if (!disableRichTextIcons) {
 registerBlockType(metadata.name, {
   icon: faBrandIcon,
   edit: Edit,
-  save,
+  // No HTML will be saved with the block.
+  // The back end render callback will render the icon on the front end.
+  save: () => null,
   example
 })
