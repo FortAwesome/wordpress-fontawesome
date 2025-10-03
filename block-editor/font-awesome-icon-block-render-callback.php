@@ -11,93 +11,99 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function font_awesome_icon_render_callback( $attributes ) {
-	$svg         = '';
-	$icon_layers = $attributes['iconLayers'] ?? null;
+	$html = '<div class="wp-block-font-awesome-icon wp-font-awesome-icon">';
+	$abstract = $attributes['abstract'] ?? [];
+	$allowed_html = allowed_html();
 
-	if ( is_array( $icon_layers ) && ! empty( $icon_layers ) ) {
-		// We do not yet support multiple layers in this application, so just use the first one.
-		$svg = render_svg_from_icon_layer( $icon_layers[0] ) ?? '';
+	if ( is_array( $abstract ) && ! empty( $abstract ) ) {
+		foreach ($abstract as $abstract_tag) {
+			$html .= render_abstract_tag( $abstract_tag, $allowed_html );
+		}
 	}
 
-	$html = "<div class=\"wp-block-font-awesome-icon wp-font-awesome-icon\">$svg</div>";
+	return "$html</div>";
+}
+
+function render_abstract_tag( $abstract_tag, $allowed_html ) {
+	$empty_result = '';
+
+	$html = $empty_result;
+
+	if ( !is_array( $abstract_tag ) || empty( $abstract_tag ) ) {
+		return $empty_result;
+	}
+
+	$tag = $abstract_tag['tag'] ?? null;
+	$attributes = $abstract_tag['attributes'] ?? [];
+	$children = $abstract_tag['children'] ?? [];
+	$allowed_attributes = $allowed_html[$tag] ?? [];
+
+	if (!is_string($tag) || !isset( $allowed_html[$tag] ) || !is_array($attributes) || !is_array($children)) {
+		return $empty_result;
+	}
+
+	$html .= "<$tag";
+
+	$allowed_attributes = $allowed_html[$tag] ?? [];
+
+	if (!is_array($allowed_attributes)) {
+		return $empty_result;
+	}
+
+	foreach ( $attributes as $attribute_name => $attribute_value ) {
+		if ( in_array( $attribute_name, $allowed_attributes, true ) ) {
+			$html .= ' ' . esc_attr( $attribute_name ) . '="' . esc_attr( $attribute_value ) . '"';
+		}
+	}
+
+	$html .= '>';
+
+	foreach ( $children as $child ) {
+		$html .= render_abstract_tag( $child, $allowed_html );
+	}
+
+	$html .= "</$tag>";
+
 	return $html;
 }
 
-function render_svg_from_icon_layer( $icon_layer = array() ) {
-	if ( ! is_array( $icon_layer ) || empty( $icon_layer ) ) {
-		return;
-	}
-
-	$icon_definition = $icon_layer['iconDefinition'] ?? null;
-
-	if ( null === $icon_definition || ! is_array( $icon_definition ) ) {
-		return;
-	}
-
-	$icon_name = $icon_definition['iconName'] ?? null;
-
-	if ( null === $icon_name || ! is_string( $icon_name ) ) {
-		return;
-	}
-
-	$prefix = $icon_definition['prefix'] ?? null;
-
-	if ( null === $prefix || ! is_string( $prefix ) ) {
-		return;
-	}
-
-	$icon_data = $icon_definition['icon'] ?? null;
-
-	if ( null === $icon_data || ! is_array( $icon_data ) || count( $icon_data ) < 5 ) {
-		return;
-	}
-
-	$width = $icon_data[0];
-
-	if ( ! is_numeric( $width ) ) {
-		return;
-	}
-
-	$height = $icon_data[1];
-
-	if ( ! is_numeric( $height ) ) {
-		return;
-	}
-
-	$svg = '<svg aria-hidden="true" focusable="false" data-prefix="'
-		. esc_attr( $prefix )
-		. '" data-icon="' . esc_attr( $icon_name )
-		. '" class="svg-inline--fa fa-'
-		. esc_attr( $icon_name )
-		. '" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="'
-		. esc_attr( "0 0 $width $height" )
-		. '">';
-
-	$path_or_paths = $icon_data[4];
-
-	$normalized_paths = array();
-
-	if ( is_string( $path_or_paths ) ) {
-		$normalized_paths = array( $path_or_paths );
-	} elseif ( is_array( $path_or_paths ) ) {
-		$normalized_paths = $path_or_paths;
-	}
-
-	foreach ( $normalized_paths as $index => $path ) {
-		if ( ! is_string( $path ) ) {
-			continue;
-		}
-
-		$opacity_attribute       = count( $normalized_paths ) > 1 && 0 === $index
-			? 'opacity="0.4" '
-			: $opacity_attribute = '';
-
-		$svg = $svg . '<path ' . $opacity_attribute . 'fill="currentColor" d="' . esc_attr( $path ) . '"/>';
-	}
-
-	// TODO: handle spin and transform attributes.
-
-	$svg = "$svg</svg>";
-
-	return $svg;
+function allowed_html(){
+	/**
+	 * This is based on an analysis of the code in `@fortawesome/fontawesome-svg-core` that is responsible
+	 * for building the SVG elements. It may need to be updated if that code changes.
+	 */
+    return [
+        'svg' => [
+            'xmlns', 'viewBox', 'width', 'height', 'class', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby',
+            'data-prefix', 'data-icon', 'data-fa-i2svg', 'data-fa-pseudo-element', 'style', 'transform-origin'
+        ],
+        'path' => [
+            'fill', 'opacity', 'd', 'class', 'transform'
+        ],
+        'span' => [
+            'class', 'style', 'aria-label', 'data-fa-i2svg'
+        ],
+        'g' => [
+            'class', 'transform'
+        ],
+        'symbol' => [
+            'id', 'viewBox', 'class', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby', 'data-prefix', 'data-icon'
+        ],
+        'rect' => [
+            'x', 'y', 'width', 'height', 'fill', 'clip-path', 'mask'
+        ],
+        'circle' => [
+            'cx', 'cy', 'r', 'fill'
+        ],
+        'mask' => [
+            'x', 'y', 'width', 'height', 'id', 'maskUnits', 'maskContentUnits'
+        ],
+        'defs' => [],
+        'clipPath' => [
+            'id'
+        ],
+        'animate' => [
+            'attributeType', 'repeatCount', 'dur', 'attributeName', 'values'
+        ]
+    ];
 }

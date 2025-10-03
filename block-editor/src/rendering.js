@@ -1,7 +1,42 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
-import { createElement } from '@wordpress/element'
+import { createElement, useEffect } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
+import { icon, layer } from '@fortawesome/fontawesome-svg-core'
+
+export function useUpdateOnSave( attributes, setAttributes ) {
+    useEffect( () => {
+        const iconLayers = attributes?.iconLayers || []
+
+        if (!Array.isArray(iconLayers) || iconLayers.length === 0) {
+          return
+        }
+
+        let abs
+
+        if (iconLayers.length > 1) {
+          abs = layer((push) => {
+            for (const iconLayer of iconLayers) {
+              const iconDefinition = iconLayer?.iconDefinition
+              if (iconDefinition) {
+                // TODO: add params
+                push(icon(iconDefinition))
+              }
+            }
+          }).abstract
+        } else {
+          const iconLayer = iconLayers[0] || {}
+          const iconDefinition = iconLayer?.iconDefinition
+          if (iconDefinition) {
+            abs = icon(iconDefinition).abstract
+          }
+        }
+
+        if (abs) {
+          setAttributes( { ...attributes, abstract: abs } );
+        }
+    }, [ attributes.iconLayers ] );
+}
 
 export function computeIconLayerCount(attributes) {
   return Array.isArray(attributes?.iconLayers) ? attributes.iconLayers.length : 0

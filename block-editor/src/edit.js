@@ -8,7 +8,7 @@ import { get } from 'lodash'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import { wpIconFromFaIconDefinition } from './icons'
-import { computeIconLayerCount, prepareParamsForUseBlock, renderIcon } from './rendering'
+import { computeIconLayerCount, prepareParamsForUseBlock, renderIcon, useUpdateOnSave } from './rendering'
 import IconModifier from './iconModifier'
 import createCustomEvent from './createCustomEvent'
 
@@ -21,6 +21,8 @@ const defaultStylingParams = {
 
 export function Edit(props) {
   const { attributes, setAttributes } = props
+
+  useUpdateOnSave( attributes, setAttributes )
 
   const iconChooserOpenEvent = createCustomEvent()
 
