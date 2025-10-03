@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
 import { createElement, useEffect } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
-import { icon, layer } from '@fortawesome/fontawesome-svg-core'
+import { icon } from '@fortawesome/fontawesome-svg-core'
 
 export function useUpdateOnSave( attributes, setAttributes ) {
     useEffect( () => {
@@ -14,26 +14,30 @@ export function useUpdateOnSave( attributes, setAttributes ) {
 
         let abs
 
-        if (iconLayers.length > 1) {
-          abs = layer((push) => {
-            for (const iconLayer of iconLayers) {
-              const iconDefinition = iconLayer?.iconDefinition
-              if (iconDefinition) {
-                // TODO: add params
-                push(icon(iconDefinition))
-              }
-            }
-          }).abstract
-        } else {
-          const iconLayer = iconLayers[0] || {}
-          const iconDefinition = iconLayer?.iconDefinition
+        // TODO: add wrapper props--test with justification
+
+        // We don't support multiple layers yet.
+        if (iconLayers.length === 1) {
+          const { iconDefinition, color } = iconLayers[0]
+          const {className, ...params} = resolveSpecialProps(iconLayers[0], 0, [])
+
+          if ('string' === typeof className) {
+            params.classes = className.split(' ').filter(c => c.length > 0)
+          }
+
+          params.attributes = {}
+
+          if ('string' === typeof color) {
+            params.attributes.color = color
+          }
+
           if (iconDefinition) {
-            abs = icon(iconDefinition).abstract
+            abs = icon(iconDefinition, params).abstract
           }
         }
 
         if (abs) {
-          setAttributes( { ...attributes, abstract: abs } );
+          setAttributes( { abstract: abs } );
         }
     }, [ attributes.iconLayers ] );
 }
@@ -69,27 +73,36 @@ export function renderIcon(attributes, options = {}) {
     elementType,
     { ...(wrapperProps || {}) },
     attributes.iconLayers.map((layer, index) => {
-      const { style = {}, iconDefinition, rotation: initialRotation, ...rest } = layer
-      let className = (classNamesByLayer || [])[index]
-      let rotation
-
-      if ([0, 90, 180, 270].includes(initialRotation)) {
-        rotation = initialRotation
-      } else if (!Number.isNaN(parseInt(initialRotation))) {
-        className = classnames(className ? className.toString() : '', 'fa-rotate-by')
-        style['--fa-rotate-angle'] = `${initialRotation}deg`
-      }
+      const { iconDefinition, ...restLayer } = layer
+      const props = resolveSpecialProps(restLayer, index, classNamesByLayer)
 
       return (
         <FontAwesomeIcon
           key={index}
-          className={className}
-          style={style}
           icon={iconDefinition}
-          rotation={rotation}
-          {...rest}
+          {...props}
         />
       )
     })
   )
+}
+
+function resolveSpecialProps(layer = {}, layerIndex = 0, classNamesByLayer = []) {
+  const { style = {}, iconDefinition, rotation: initialRotation, ...rest } = layer
+  let className = (classNamesByLayer || [])[layerIndex]
+  let rotation
+
+  if ([0, 90, 180, 270].includes(initialRotation)) {
+    rotation = initialRotation
+  } else if (!Number.isNaN(parseInt(initialRotation))) {
+    className = classnames(className ? className.toString() : '', 'fa-rotate-by')
+    style['--fa-rotate-angle'] = `${initialRotation}deg`
+  }
+
+  return {
+    style,
+    rotation,
+    className,
+    ...rest
+  }
 }
