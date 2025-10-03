@@ -108,9 +108,10 @@ function block_init() {
 		add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
 	}
 
-	register_block_type( __DIR__ . '/build',
-		[
-            'render_callback' => 'FortAwesome\font_awesome_icon_render_callback'
-        ]
+	register_block_type(
+		__DIR__ . '/build',
+		array(
+			'render_callback' => 'FortAwesome\font_awesome_icon_render_callback',
+		)
 	);
 }
