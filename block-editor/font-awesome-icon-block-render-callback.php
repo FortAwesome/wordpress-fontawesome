@@ -11,9 +11,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function font_awesome_icon_render_callback( $attributes ) {
-	$html = '<div class="wp-block-font-awesome-icon wp-font-awesome-icon">';
-	$abstract = $attributes['abstract'] ?? [];
 	$allowed_html = allowed_html();
+	$wrapper_attributes = $attributes['wrapperAttributes'] ?? [];
+	$html = '<div';
+	$allowed_attributes = $allowed_html['div'] ?? [];
+
+	foreach ( $wrapper_attributes as $attribute_name => $attribute_value ) {
+		if ( in_array( $attribute_name, $allowed_attributes, true ) && is_string( $attribute_value ) ) {
+			$html .= ' ' . esc_attr( $attribute_name ) . '="' . esc_attr( $attribute_value ) . '"';
+		}
+	}
+
+	$html .= '>';
+
+	$abstract = $attributes['abstract'] ?? [];
 
 	if ( is_array( $abstract ) && ! empty( $abstract ) ) {
 		foreach ($abstract as $abstract_tag) {
@@ -51,7 +62,7 @@ function render_abstract_tag( $abstract_tag, $allowed_html ) {
 	}
 
 	foreach ( $attributes as $attribute_name => $attribute_value ) {
-		if ( in_array( $attribute_name, $allowed_attributes, true ) ) {
+		if ( in_array( $attribute_name, $allowed_attributes, true ) && is_string( $attribute_value ) ) {
 			$html .= ' ' . esc_attr( $attribute_name ) . '="' . esc_attr( $attribute_value ) . '"';
 		}
 	}
@@ -73,6 +84,9 @@ function allowed_html(){
 	 * for building the SVG elements. It may need to be updated if that code changes.
 	 */
     return [
+    	'div' => [
+			'class', 'style'
+		],
         'svg' => [
             'xmlns', 'viewBox', 'width', 'height', 'class', 'color', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby',
             'data-prefix', 'data-icon', 'data-fa-i2svg', 'data-fa-pseudo-element', 'style', 'transform-origin'

@@ -3,6 +3,9 @@ import classnames from 'classnames'
 import { createElement, useEffect } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { icon } from '@fortawesome/fontawesome-svg-core'
+import { useBlockProps } from '@wordpress/block-editor'
+import { isBlockValid } from './attributeValidation'
+import kebabCase from 'lodash/kebabCase'
 
 export function useUpdateOnSave( attributes, setAttributes ) {
     useEffect( () => {
@@ -12,23 +15,46 @@ export function useUpdateOnSave( attributes, setAttributes ) {
           return
         }
 
+        if (!isBlockValid(attributes)) {
+          return
+        }
+
         let abs
+        const wrapperAttributes = {}
 
         // TODO: add wrapper props--test with justification
 
         // We don't support multiple layers yet.
         if (iconLayers.length === 1) {
-          const { iconDefinition, color } = iconLayers[0]
-          const {className, ...params} = resolveSpecialProps(iconLayers[0], 0, [])
+          const { iconDefinition, color, style } = iconLayers[0]
+
+          const { className: wrapperClassName, ...restWrapperAttrs} = useBlockProps.save(prepareParamsForUseBlock(attributes))
+
+          if ('string' === typeof wrapperClassName) {
+            wrapperAttributes.class = wrapperClassName
+          }
+
+          for (const key in restWrapperAttrs) {
+            wrapperAttributes[key] = restWrapperAttrs[key]
+          }
+
+          const {className, transform, ...rest} = resolveSpecialProps(iconLayers[0], 0, [])
+
+          const params = { attributes: rest, transform, styles: {} }
 
           if ('string' === typeof className) {
             params.classes = className.split(' ').filter(c => c.length > 0)
           }
 
-          params.attributes = {}
-
           if ('string' === typeof color) {
             params.attributes.color = color
+          }
+
+          if ('object' === typeof style) {
+            for (const styleKey in style) {
+              const kebabKey = kebabCase(styleKey)
+              params.styles[kebabKey] = style[styleKey]
+            }
           }
 
           if (iconDefinition) {
@@ -36,9 +62,13 @@ export function useUpdateOnSave( attributes, setAttributes ) {
           }
         }
 
+        const newAttributes = { wrapperAttributes }
+
         if (abs) {
-          setAttributes( { abstract: abs } );
+          newAttributes.abstract = abs
         }
+
+        setAttributes( newAttributes );
     }, [ attributes.iconLayers ] );
 }
 
