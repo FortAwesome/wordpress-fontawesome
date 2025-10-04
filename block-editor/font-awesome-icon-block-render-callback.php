@@ -11,10 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function font_awesome_icon_render_callback( $attributes ) {
-	$allowed_html = allowed_html();
-	$wrapper_attributes = $attributes['wrapperAttributes'] ?? [];
-	$html = '<div';
-	$allowed_attributes = $allowed_html['div'] ?? [];
+	$allowed_html       = allowed_html();
+	$wrapper_attributes = $attributes['wrapperAttributes'] ?? array();
+	$html               = '<div';
+	$allowed_attributes = $allowed_html['div'] ?? array();
 
 	foreach ( $wrapper_attributes as $attribute_name => $attribute_value ) {
 		if ( in_array( $attribute_name, $allowed_attributes, true ) && is_string( $attribute_value ) ) {
@@ -24,10 +24,10 @@ function font_awesome_icon_render_callback( $attributes ) {
 
 	$html .= '>';
 
-	$abstract = $attributes['abstract'] ?? [];
+	$abstract = $attributes['abstract'] ?? array();
 
 	if ( is_array( $abstract ) && ! empty( $abstract ) ) {
-		foreach ($abstract as $abstract_tag) {
+		foreach ( $abstract as $abstract_tag ) {
 			$html .= render_abstract_tag( $abstract_tag, $allowed_html );
 		}
 	}
@@ -40,24 +40,24 @@ function render_abstract_tag( $abstract_tag, $allowed_html ) {
 
 	$html = $empty_result;
 
-	if ( !is_array( $abstract_tag ) || empty( $abstract_tag ) ) {
+	if ( ! is_array( $abstract_tag ) || empty( $abstract_tag ) ) {
 		return $empty_result;
 	}
 
-	$tag = $abstract_tag['tag'] ?? null;
-	$attributes = $abstract_tag['attributes'] ?? [];
-	$children = $abstract_tag['children'] ?? [];
-	$allowed_attributes = $allowed_html[$tag] ?? [];
+	$tag                = $abstract_tag['tag'] ?? null;
+	$attributes         = $abstract_tag['attributes'] ?? array();
+	$children           = $abstract_tag['children'] ?? array();
+	$allowed_attributes = $allowed_html[ $tag ] ?? array();
 
-	if (!is_string($tag) || !isset( $allowed_html[$tag] ) || !is_array($attributes) || !is_array($children)) {
+	if ( ! is_string( $tag ) || ! isset( $allowed_html[ $tag ] ) || ! is_array( $attributes ) || ! is_array( $children ) ) {
 		return $empty_result;
 	}
 
 	$html .= "<$tag";
 
-	$allowed_attributes = $allowed_html[$tag] ?? [];
+	$allowed_attributes = $allowed_html[ $tag ] ?? array();
 
-	if (!is_array($allowed_attributes)) {
+	if ( ! is_array( $allowed_attributes ) ) {
 		return $empty_result;
 	}
 
@@ -78,46 +78,96 @@ function render_abstract_tag( $abstract_tag, $allowed_html ) {
 	return $html;
 }
 
-function allowed_html(){
+function allowed_html() {
 	/**
 	 * This is based on an analysis of the code in `@fortawesome/fontawesome-svg-core` that is responsible
 	 * for building the SVG elements. It may need to be updated if that code changes.
 	 */
-    return [
-    	'div' => [
-			'class', 'style'
-		],
-        'svg' => [
-            'xmlns', 'viewBox', 'width', 'height', 'class', 'color', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby',
-            'data-prefix', 'data-icon', 'data-fa-i2svg', 'data-fa-pseudo-element', 'style', 'transform-origin'
-        ],
-        'path' => [
-            'fill', 'opacity', 'd', 'class', 'transform'
-        ],
-        'span' => [
-            'class', 'style', 'aria-label', 'data-fa-i2svg'
-        ],
-        'g' => [
-            'class', 'transform'
-        ],
-        'symbol' => [
-            'id', 'viewBox', 'class', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby', 'data-prefix', 'data-icon'
-        ],
-        'rect' => [
-            'x', 'y', 'width', 'height', 'fill', 'clip-path', 'mask'
-        ],
-        'circle' => [
-            'cx', 'cy', 'r', 'fill'
-        ],
-        'mask' => [
-            'x', 'y', 'width', 'height', 'id', 'maskUnits', 'maskContentUnits'
-        ],
-        'defs' => [],
-        'clipPath' => [
-            'id'
-        ],
-        'animate' => [
-            'attributeType', 'repeatCount', 'dur', 'attributeName', 'values'
-        ]
-    ];
+	return array(
+		'div'      => array(
+			'class',
+			'style',
+		),
+		'svg'      => array(
+			'xmlns',
+			'viewBox',
+			'width',
+			'height',
+			'class',
+			'color',
+			'role',
+			'aria-hidden',
+			'aria-label',
+			'aria-labelledby',
+			'data-prefix',
+			'data-icon',
+			'data-fa-i2svg',
+			'data-fa-pseudo-element',
+			'style',
+			'transform-origin',
+		),
+		'path'     => array(
+			'fill',
+			'opacity',
+			'd',
+			'class',
+			'transform',
+		),
+		'span'     => array(
+			'class',
+			'style',
+			'aria-label',
+			'data-fa-i2svg',
+		),
+		'g'        => array(
+			'class',
+			'transform',
+		),
+		'symbol'   => array(
+			'id',
+			'viewBox',
+			'class',
+			'role',
+			'aria-hidden',
+			'aria-label',
+			'aria-labelledby',
+			'data-prefix',
+			'data-icon',
+		),
+		'rect'     => array(
+			'x',
+			'y',
+			'width',
+			'height',
+			'fill',
+			'clip-path',
+			'mask',
+		),
+		'circle'   => array(
+			'cx',
+			'cy',
+			'r',
+			'fill',
+		),
+		'mask'     => array(
+			'x',
+			'y',
+			'width',
+			'height',
+			'id',
+			'maskUnits',
+			'maskContentUnits',
+		),
+		'defs'     => array(),
+		'clipPath' => array(
+			'id',
+		),
+		'animate'  => array(
+			'attributeType',
+			'repeatCount',
+			'dur',
+			'attributeName',
+			'values',
+		),
+	);
 }
