@@ -22,53 +22,62 @@ export function useUpdateOnSave( attributes, setAttributes ) {
         let abs
         const wrapperAttributes = {}
 
-        // TODO: add wrapper props--test with justification
+        // We don't support multiple layers yet, so we'll only handle the first layer.
+        const { iconDefinition, color, style } = iconLayers[0]
 
-        // We don't support multiple layers yet.
-        if (iconLayers.length === 1) {
-          const { iconDefinition, color, style } = iconLayers[0]
+        const { justification } = attributes || {}
 
-          const { className: wrapperClassName, ...restWrapperAttrs} = useBlockProps.save(prepareParamsForUseBlock(attributes))
+        const { className: wrapperClassName, ...restWrapperAttrs} = useBlockProps.save(prepareParamsForUseBlock(attributes))
 
-          if ('string' === typeof wrapperClassName) {
-            wrapperAttributes.class = wrapperClassName
-          }
+        if ('string' === typeof wrapperClassName) {
+          wrapperAttributes.class = wrapperClassName
+        }
 
-          for (const key in restWrapperAttrs) {
-            wrapperAttributes[key] = restWrapperAttrs[key]
-          }
+        for (const key in restWrapperAttrs) {
+          wrapperAttributes[key] = restWrapperAttrs[key]
+        }
 
-          const {className, transform, ...rest} = resolveSpecialProps(iconLayers[0], 0, [])
+        if (justification) {
+          const justificationStyle = `display: flex; justify-content: ${justification};`
 
-          const params = { attributes: rest, transform, styles: {} }
-
-          if ('string' === typeof className) {
-            params.classes = className.split(' ').filter(c => c.length > 0)
-          }
-
-          if ('string' === typeof color) {
-            params.attributes.color = color
-          }
-
-          if ('object' === typeof style) {
-            for (const styleKey in style) {
-              const kebabKey = kebabCase(styleKey)
-              params.styles[kebabKey] = style[styleKey]
-            }
-          }
-
-          if (iconDefinition) {
-            abs = icon(iconDefinition, params).abstract
+          if ('string' === typeof wrapperAttributes.style) {
+            // TODO: maybe remove the extra semi-colon
+            wrapperAttributes.style = `${wrapperAttributes.style}; ${justificationStyle}`
+          } else {
+            wrapperAttributes.style = justificationStyle
           }
         }
 
-        const newAttributes = { wrapperAttributes }
+        const {className, transform, ...rest} = resolveSpecialProps(iconLayers[0], 0, [])
 
-        if (abs) {
-          newAttributes.abstract = abs
+        const params = { attributes: rest, transform, styles: {} }
+
+        if ('string' === typeof className) {
+          params.classes = className.split(' ').filter(c => c.length > 0)
         }
 
-        setAttributes( newAttributes );
+        if ('string' === typeof color) {
+          params.attributes.color = color
+        }
+
+        if ('object' === typeof style) {
+          for (const styleKey in style) {
+            const kebabKey = kebabCase(styleKey)
+            params.styles[kebabKey] = style[styleKey]
+          }
+        }
+
+        if (iconDefinition) {
+          abs = icon(iconDefinition, params).abstract
+        }
+
+      const newAttributes = { wrapperAttributes }
+
+      if (abs) {
+        newAttributes.abstract = abs
+      }
+
+      setAttributes( newAttributes );
     }, [ attributes.iconLayers ] );
 }
 
