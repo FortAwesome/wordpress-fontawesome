@@ -12,6 +12,12 @@
     },
     "justification": {
       "type": "string"
+    },
+    "abstract": {
+      "type": "array"
+    },
+    "wrapperAttributes": {
+      "type": "object"
     }
   },
   "supports": {
