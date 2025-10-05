@@ -1,14 +1,28 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
-import { createElement, useEffect, useMemo } from '@wordpress/element'
+import { createElement, useEffect, useMemo, useRef } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
 
+// Custom hook to create stable references for deep comparison
+function useDeepCompareMemo(value) {
+    const ref = useRef()
+
+    return useMemo(() => {
+        const stringified = JSON.stringify(value)
+        if (ref.current?.stringified !== stringified) {
+            ref.current = { value, stringified }
+        }
+        return ref.current.value
+    }, [JSON.stringify(value)])
+}
+
 export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
-    // Memoize blockProps with deep comparison
-    const memoizedBlockProps = useMemo(() => blockProps, [JSON.stringify(blockProps)])
+    // Create stable references that only change when content changes
+    const stableBlockProps = useDeepCompareMemo(blockProps)
+    const stableAttributes = useDeepCompareMemo(attributes)
 
     useEffect( () => {
         const iconLayers = attributes?.iconLayers || []
@@ -84,7 +98,7 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
 
           setAttributes( { abstract: wrappedAbstract } );
         }
-    }, [ attributes.iconLayers, attributes.justification, attributes.color, memoizedBlockProps] );
+    }, [ stableAttributes, stableBlockProps ] );
 }
 
 export function computeIconLayerCount(attributes) {
