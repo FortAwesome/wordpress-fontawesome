@@ -22,7 +22,9 @@ const defaultStylingParams = {
 export function Edit(props) {
   const { attributes, setAttributes } = props
 
-  useUpdateOnSave( attributes, setAttributes )
+  const blockProps = useBlockProps.save(prepareParamsForUseBlock(attributes))
+
+  useUpdateOnSave( blockProps, attributes, setAttributes )
 
   const iconChooserOpenEvent = createCustomEvent()
 

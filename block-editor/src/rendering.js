@@ -3,11 +3,10 @@ import classnames from 'classnames'
 import { createElement, useEffect } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { icon } from '@fortawesome/fontawesome-svg-core'
-import { useBlockProps } from '@wordpress/block-editor'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
 
-export function useUpdateOnSave( attributes, setAttributes ) {
+export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
     useEffect( () => {
         const iconLayers = attributes?.iconLayers || []
 
@@ -27,7 +26,7 @@ export function useUpdateOnSave( attributes, setAttributes ) {
 
         const { justification } = attributes || {}
 
-        const { className: wrapperClassName, ...restWrapperAttrs} = useBlockProps.save(prepareParamsForUseBlock(attributes))
+        const { className: wrapperClassName, ...restWrapperAttrs } = blockProps || {}
 
         if ('string' === typeof wrapperClassName) {
           wrapperAttributes.class = wrapperClassName
@@ -82,7 +81,7 @@ export function useUpdateOnSave( attributes, setAttributes ) {
 
           setAttributes( { abstract: wrappedAbstract } );
         }
-    }, [ attributes.iconLayer,  ] );
+    }, [ attributes.iconLayer, attributes.justification ] );
 }
 
 export function computeIconLayerCount(attributes) {
