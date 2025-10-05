@@ -11,17 +11,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function font_awesome_icon_render_callback( $attributes ) {
-	$allowed_html       = allowed_html();
-	$html               = '';
+	$allowed_html = allowed_html();
+	$abstract     = $attributes['abstract'] ?? array();
+	return render_abstract_tags( $abstract, $allowed_html );
+}
 
-	$abstract = $attributes['abstract'] ?? array();
-
+function render_abstract_tags( $abstract, $allowed_html ) {
+	$html = '';
 	if ( is_array( $abstract ) && ! empty( $abstract ) ) {
 		foreach ( $abstract as $abstract_tag ) {
 			$html .= render_abstract_tag( $abstract_tag, $allowed_html );
 		}
 	}
-
 	return $html;
 }
 
@@ -59,9 +60,7 @@ function render_abstract_tag( $abstract_tag, $allowed_html ) {
 
 	$html .= '>';
 
-	foreach ( $children as $child ) {
-		$html .= render_abstract_tag( $child, $allowed_html );
-	}
+	$html .= render_abstract_tags( $children, $allowed_html );
 
 	$html .= "</$tag>";
 
