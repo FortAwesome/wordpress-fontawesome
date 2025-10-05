@@ -12,17 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function font_awesome_icon_render_callback( $attributes ) {
 	$allowed_html       = allowed_html();
-	$wrapper_attributes = $attributes['wrapperAttributes'] ?? array();
-	$html               = '<div';
-	$allowed_attributes = $allowed_html['div'] ?? array();
-
-	foreach ( $wrapper_attributes as $attribute_name => $attribute_value ) {
-		if ( in_array( $attribute_name, $allowed_attributes, true ) && is_string( $attribute_value ) ) {
-			$html .= ' ' . esc_attr( $attribute_name ) . '="' . esc_attr( $attribute_value ) . '"';
-		}
-	}
-
-	$html .= '>';
+	$html               = '';
 
 	$abstract = $attributes['abstract'] ?? array();
 
@@ -32,7 +22,7 @@ function font_awesome_icon_render_callback( $attributes ) {
 		}
 	}
 
-	return "$html</div>";
+	return $html;
 }
 
 function render_abstract_tag( $abstract_tag, $allowed_html ) {

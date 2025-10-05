@@ -71,14 +71,18 @@ export function useUpdateOnSave( attributes, setAttributes ) {
           abs = icon(iconDefinition, params).abstract
         }
 
-      const newAttributes = { wrapperAttributes }
+        if (abs) {
+          // Wrap the Font Awesome Icon abstract in a div that represents the block.
+          // This abstract format is defined by the @fortawesome/fontawesome-svg-core package.
+          const wrappedAbstract = [{
+            tag: 'div',
+            attributes: wrapperAttributes,
+            children: abs
+          }]
 
-      if (abs) {
-        newAttributes.abstract = abs
-      }
-
-      setAttributes( newAttributes );
-    }, [ attributes.iconLayers ] );
+          setAttributes( { abstract: wrappedAbstract } );
+        }
+    }, [ attributes.iconLayer,  ] );
 }
 
 export function computeIconLayerCount(attributes) {
