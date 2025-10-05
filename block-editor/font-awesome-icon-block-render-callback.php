@@ -6,6 +6,8 @@
 
 namespace FortAwesome;
 
+const MAX_ABSTRACT_NESTING_DEPTH = 20;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -13,20 +15,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function font_awesome_icon_render_callback( $attributes ) {
 	$allowed_html = allowed_html();
 	$abstract     = $attributes['abstract'] ?? array();
-	return render_abstract_tags( $abstract, $allowed_html );
+	return render_abstract_tags( $abstract, $allowed_html, 1 );
 }
 
-function render_abstract_tags( $abstract, $allowed_html ) {
+function render_abstract_tags( $abstract, $allowed_html, $depth ) {
+	if ( $depth > MAX_ABSTRACT_NESTING_DEPTH ) {
+		return '';
+	}
+
 	$html = '';
 	if ( is_array( $abstract ) && ! empty( $abstract ) ) {
 		foreach ( $abstract as $abstract_tag ) {
-			$html .= render_abstract_tag( $abstract_tag, $allowed_html );
+			$html .= render_abstract_tag( $abstract_tag, $allowed_html, $depth );
 		}
 	}
 	return $html;
 }
 
-function render_abstract_tag( $abstract_tag, $allowed_html ) {
+function render_abstract_tag( $abstract_tag, $allowed_html, $depth ) {
 	$empty_result = '';
 
 	$html = $empty_result;
@@ -60,7 +66,7 @@ function render_abstract_tag( $abstract_tag, $allowed_html ) {
 
 	$html .= '>';
 
-	$html .= render_abstract_tags( $children, $allowed_html );
+	$html .= render_abstract_tags( $children, $allowed_html, $depth + 1 );
 
 	$html .= "</$tag>";
 
