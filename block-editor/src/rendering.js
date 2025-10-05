@@ -1,12 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
-import { createElement, useEffect } from '@wordpress/element'
+import { createElement, useEffect, useMemo } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
 
 export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
+    // Memoize blockProps with deep comparison
+    const memoizedBlockProps = useMemo(() => blockProps, [JSON.stringify(blockProps)])
+
     useEffect( () => {
         const iconLayers = attributes?.iconLayers || []
 
@@ -81,7 +84,7 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
 
           setAttributes( { abstract: wrappedAbstract } );
         }
-    }, [ attributes.iconLayer, attributes.justification ] );
+    }, [ attributes.iconLayers, attributes.justification, attributes.color, memoizedBlockProps] );
 }
 
 export function computeIconLayerCount(attributes) {
