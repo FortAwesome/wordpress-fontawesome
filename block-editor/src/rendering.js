@@ -5,7 +5,8 @@ import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
-import { useBlockProps } from '@wordpress/block-editor'
+
+const DEFAULT_BLOCK_WRAPPER_TAG = 'div'
 
 /**
  *  Rendering overview:
@@ -19,9 +20,7 @@ import { useBlockProps } from '@wordpress/block-editor'
  *     rendering of the icon. It is a way to avoid saving raw HTML in the block content,
  *     while still allowing for complex HTML structures.
  */
-export function updateAbstractOnChange( attributes, setAttributes ) {
-  const blockProps = useBlockProps.save(prepareParamsForUseBlock(attributes))
-
+export function updateAbstractOnChange(blockProps, attributes, setAttributes ) {
   // Create stable references that only change when content changes
   const stableBlockProps = useDeepCompareMemo(blockProps)
   const stableAttributes = useDeepCompareMemo(attributes)
@@ -32,14 +31,13 @@ export function updateAbstractOnChange( attributes, setAttributes ) {
   }, [ stableAttributes, stableBlockProps ] );
 }
 
-export function renderIconForEditor(attributes, options = {}) {
-  const { wrapperProps = {} } = options?.extraProps || {}
-  const elementType = options?.wrapperElement?.toLowerCase() || 'div'
+export function renderIconForEditor(blockProps, attributes, options = {}) {
+  const elementType = options?.blockWrapperTag || DEFAULT_BLOCK_WRAPPER_TAG
   const iconLayers = attributes?.iconLayers
   const { justification } = attributes || {}
 
   if (justification) {
-    wrapperProps.style = {
+    blockProps.style = {
       display: 'flex',
       justifyContent: justification
     }
@@ -49,7 +47,7 @@ export function renderIconForEditor(attributes, options = {}) {
 
   return createElement(
     elementType,
-    { ...(wrapperProps || {}) },
+    { ...blockProps },
     attributes.iconLayers.map((layer, index) => {
       const { iconDefinition, style: initialStyle, className: initialClassName, ...restLayer } = layer
       const { style, rotation, className: rotationClassName } = resolveRotation(restLayer)
@@ -128,7 +126,7 @@ function useDeepCompareMemo(value) {
     }, [JSON.stringify(value)])
 }
 
-function renderWrappedAbstract(blockProps, attributes, options = {tag: 'div'}) {
+function renderWrappedAbstract(blockProps, attributes, options = {}) {
   const iconLayers = attributes?.iconLayers || []
 
   if (!Array.isArray(iconLayers) || iconLayers.length === 0) {
@@ -142,7 +140,7 @@ function renderWrappedAbstract(blockProps, attributes, options = {tag: 'div'}) {
   // Wrap the Font Awesome Icon abstract in a div that represents the block wrapper.
   // The abstract schema is defined by the @fortawesome/fontawesome-svg-core package.
   return [{
-    tag: options.tag,
+    tag: options?.blockWrapperTag || DEFAULT_BLOCK_WRAPPER_TAG,
     attributes: resolveWrapperAttributes(blockProps, attributes),
     children: renderIconAbstract(iconLayers)
   }]

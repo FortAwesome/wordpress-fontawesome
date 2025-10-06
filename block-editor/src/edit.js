@@ -21,8 +21,10 @@ const defaultStylingParams = {
 
 export function Edit(props) {
   const { attributes, setAttributes } = props
+  const blockPropsForEdit = useBlockProps(prepareParamsForUseBlock(attributes))
+  const blockPropsForSave = useBlockProps.save(prepareParamsForUseBlock(attributes))
 
-  updateAbstractOnChange( attributes, setAttributes )
+  updateAbstractOnChange( blockPropsForSave, attributes, setAttributes )
 
   const iconChooserOpenEvent = createCustomEvent()
 
@@ -70,10 +72,6 @@ export function Edit(props) {
   }
 
   const iconLayerCount = computeIconLayerCount(attributes)
-
-  const extraProps = {
-    wrapperProps: useBlockProps(prepareParamsForUseBlock(attributes))
-  }
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
@@ -130,7 +128,7 @@ export function Edit(props) {
           </Modal>
         )}
       </BlockControls>
-      {renderIconForEditor(attributes, { extraProps })}
+      {renderIconForEditor(blockPropsForEdit, attributes)}
     </Fragment>
   ) : (
     <Fragment>

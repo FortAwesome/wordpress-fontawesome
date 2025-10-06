@@ -11,7 +11,7 @@ import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
 import { renderIconForEditor } from './rendering'
 import IconModifier from './iconModifier'
-import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
+import { ANIMATIONS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
 export const ZERO_WIDTH_SPACE = '\u200b'
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon'
@@ -237,13 +237,12 @@ function Edit(props) {
   }
 
   const changeValue = (attributes) => {
-    const wrapperProps = {
+    const blockProps = {
       className: classnames(FONT_AWESOME_RICH_TEXT_ICON_CLASS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS)
     }
 
-    const element = renderIconForEditor(attributes, {
-      wrapperElement: 'span',
-      extraProps: { wrapperProps }
+    const element = renderIconForEditor(blockProps, attributes, {
+      blockWrapperTag: 'span'
     })
 
     const html = renderToString(element)
