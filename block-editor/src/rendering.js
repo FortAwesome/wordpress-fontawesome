@@ -97,8 +97,8 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
           const justificationStyle = `display: flex; justify-content: ${justification};`
 
           if ('string' === typeof wrapperAttributes.style) {
-            // TODO: maybe remove the extra semi-colon
-            wrapperAttributes.style = `${wrapperAttributes.style}; ${justificationStyle}`
+            const maybeSemicolon = wrapperAttributes.style.trim().endsWith(';') ? '' : ';'
+            wrapperAttributes.style = `${wrapperAttributes.style}${maybeSemicolon} ${justificationStyle}`
           } else {
             wrapperAttributes.style = justificationStyle
           }
