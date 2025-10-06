@@ -6,7 +6,36 @@ import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
 
-// Custom hook to create stable references for deep comparison
+// Custom hook to create stable references for deep comparison.
+//
+// This seems like a lot of bending over backwards to achieve a simple goal.
+// Here's the gist of what's going on here:
+//
+// Ultimately, the purpose of this is to produce values that can be used in the monitoring
+// of the useEffect() below. What we need for useEffect() are object references that change
+// only when the values inside the objects change. If we only cared about changes to the
+// icon layers, we could just monitor changes to attributes.iconLayers. However, we also need
+// to monitor changes to justification, which is attributes.justification, and attributes.color.
+// And we don't really want to have to list out all the individual attributes we care about,
+// because when a new attribute is added, we'd have to remember to separately add it to the list
+// of monitors.
+//
+// However, if we just set the monitor to `[ attributes ]`, there are two problems:
+//
+// 1. It changes every time the function is called, which causes an infinite loop, since
+//    the useEffect() callback will invoke setAttributes(). React crashes.
+//
+// 2. It doesn't account for the block wrapper div's blockProps. Those also need to be taken into
+//    account for our rendering of the `abstract`, but they are not part of `attributes`.
+//    Also, if every invocation receives a new `blockProps` object, with its own identity,
+//    then we're back to the problem of having a monitor that is triggered on every invocation
+//    of useUpdateOnSave().
+//
+// So the useRef() here solves the problem of keeping a stable object reference identity.
+// Its value will only change when the actual values inside the object change.
+// And the useMemo() is the way to get React to only update the current value of the useRef()
+// when the underlying values change. JSON.stringify() is how we represent the underlying values in a way
+// that can be compared for deep equality.
 function useDeepCompareMemo(value) {
     const ref = useRef()
 
@@ -98,7 +127,7 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
 
           setAttributes( { abstract: wrappedAbstract } );
         }
-    }, [ stableAttributes, stableBlockProps ] );
+      }, [ stableAttributes, stableBlockProps ] );
 }
 
 export function computeIconLayerCount(attributes) {
