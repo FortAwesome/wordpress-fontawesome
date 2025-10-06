@@ -5,6 +5,7 @@ import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
+import { useBlockProps } from '@wordpress/block-editor'
 
 /**
  *  Rendering overview:
@@ -18,15 +19,17 @@ import kebabCase from 'lodash/kebabCase'
  *     rendering of the icon. It is a way to avoid saving raw HTML in the block content,
  *     while still allowing for complex HTML structures.
  */
-export function updateAbstractOnChange( blockProps, attributes, setAttributes ) {
-    // Create stable references that only change when content changes
-    const stableBlockProps = useDeepCompareMemo(blockProps)
-    const stableAttributes = useDeepCompareMemo(attributes)
+export function updateAbstractOnChange( attributes, setAttributes ) {
+  const blockProps = useBlockProps.save(prepareParamsForUseBlock(attributes))
 
-    useEffect( () => {
-      const abstract = renderWrappedAbstract(blockProps, attributes)
-      setAttributes({ abstract });
-    }, [ stableAttributes, stableBlockProps ] );
+  // Create stable references that only change when content changes
+  const stableBlockProps = useDeepCompareMemo(blockProps)
+  const stableAttributes = useDeepCompareMemo(attributes)
+
+  useEffect( () => {
+    const abstract = renderWrappedAbstract(blockProps, attributes)
+    setAttributes({ abstract });
+  }, [ stableAttributes, stableBlockProps ] );
 }
 
 export function renderIconForEditor(attributes, options = {}) {
