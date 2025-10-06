@@ -76,32 +76,8 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
         }
 
         let abs
-        const wrapperAttributes = {}
         // We don't support multiple layers yet, so we'll only handle the first layer.
         const iconLayerIndex = 0
-
-        const { justification } = attributes || {}
-
-        const { className: wrapperClassName, ...restWrapperAttrs } = blockProps || {}
-
-        if ('string' === typeof wrapperClassName) {
-          wrapperAttributes.class = wrapperClassName
-        }
-
-        for (const key in restWrapperAttrs) {
-          wrapperAttributes[key] = restWrapperAttrs[key]
-        }
-
-        if (justification) {
-          const justificationStyle = `display: flex; justify-content: ${justification};`
-
-          if ('string' === typeof wrapperAttributes.style) {
-            const maybeSemicolon = wrapperAttributes.style.trim().endsWith(';') ? '' : ';'
-            wrapperAttributes.style = `${wrapperAttributes.style}${maybeSemicolon} ${justificationStyle}`
-          } else {
-            wrapperAttributes.style = justificationStyle
-          }
-        }
 
         const { iconDefinition, color, style: initialStyle, transform = {}, ...iconLayerRest } = iconLayers[iconLayerIndex]
         const { style: rotationStyle, className: rotationClassName, rotation } = resolveRotation(iconLayerRest)
@@ -137,6 +113,8 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
           abs = icon(iconDefinition, params).abstract
         }
 
+        const wrapperAttributes = resolveWrapperAttributes(attributes, blockProps)
+
         if (abs) {
           // Wrap the Font Awesome Icon abstract in a div that represents the block.
           // This abstract format is defined by the @fortawesome/fontawesome-svg-core package.
@@ -149,6 +127,33 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
           setAttributes( { abstract: wrappedAbstract } );
         }
       }, [ stableAttributes, stableBlockProps ] );
+}
+
+function resolveWrapperAttributes(attributes, blockProps) {
+  const { justification } = attributes || {}
+  const { className: wrapperClassName, ...restWrapperAttrs } = blockProps || {}
+  const wrapperAttributes = {}
+
+  if ('string' === typeof wrapperClassName) {
+    wrapperAttributes.class = wrapperClassName
+  }
+
+  for (const key in restWrapperAttrs) {
+    wrapperAttributes[key] = restWrapperAttrs[key]
+  }
+
+  if (justification) {
+    const justificationStyle = `display: flex; justify-content: ${justification};`
+
+    if ('string' === typeof wrapperAttributes.style) {
+      const maybeSemicolon = wrapperAttributes.style.trim().endsWith(';') ? '' : ';'
+      wrapperAttributes.style = `${wrapperAttributes.style}${maybeSemicolon} ${justificationStyle}`
+    } else {
+      wrapperAttributes.style = justificationStyle
+    }
+  }
+
+  return wrapperAttributes
 }
 
 export function computeIconLayerCount(attributes) {
