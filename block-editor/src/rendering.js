@@ -65,71 +65,74 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
     const stableAttributes = useDeepCompareMemo(attributes)
 
     useEffect( () => {
-        const iconLayers = attributes?.iconLayers || []
-
-        if (!Array.isArray(iconLayers) || iconLayers.length === 0) {
-          return
-        }
-
-        if (!isBlockValid(attributes)) {
-          return
-        }
-
-        let abs
-        // We don't support multiple layers yet, so we'll only handle the first layer.
-        const iconLayerIndex = 0
-
-        const { iconDefinition, color, style: initialStyle, transform = {}, ...iconLayerRest } = iconLayers[iconLayerIndex]
-        const { style: rotationStyle, className: rotationClassName, rotation } = resolveRotation(iconLayerRest)
-        const { classes: animationClasses } = resolveAnimations(iconLayerRest)
-        const rotationClasses = rotationClassName ? rotationClassName.split(' ').filter(c => c.length > 0) : []
-
-        if ('undefined' !== typeof rotation) {
-          transform.rotate = rotation
-        }
-
-        const params = {
-          attributes: iconLayerRest,
-          transform,
-          styles: rotationStyle,
-          classes: [
-            ...rotationClasses,
-            ...animationClasses
-          ]
-        }
-
-        if ('string' === typeof color) {
-          params.attributes.color = color
-        }
-
-        if ('object' === typeof initialStyle) {
-          for (const styleKey in initialStyle) {
-            const kebabKey = kebabCase(styleKey)
-            params.styles[kebabKey] = initialStyle[styleKey]
-          }
-        }
-
-        if (iconDefinition) {
-          abs = icon(iconDefinition, params).abstract
-        }
-
-        const wrapperAttributes = resolveWrapperAttributes(attributes, blockProps)
-
-        if (abs) {
-          // Wrap the Font Awesome Icon abstract in a div that represents the block.
-          // This abstract format is defined by the @fortawesome/fontawesome-svg-core package.
-          const wrappedAbstract = [{
-            tag: 'div',
-            attributes: wrapperAttributes,
-            children: abs
-          }]
-
-          setAttributes( { abstract: wrappedAbstract } );
-        }
-      }, [ stableAttributes, stableBlockProps ] );
+      const abstract = renderWrappedAbstract(blockProps, attributes)
+      setAttributes({ abstract });
+    }, [ stableAttributes, stableBlockProps ] );
 }
 
-function resolveWrapperAttributes(attributes, blockProps) {
+function renderWrappedAbstract(blockProps, attributes) {
+  const iconLayers = attributes?.iconLayers || []
+
+  if (!Array.isArray(iconLayers) || iconLayers.length === 0) {
+    return []
+  }
+
+  if (!isBlockValid(attributes)) {
+    return []
+  }
+
+  // Wrap the Font Awesome Icon abstract in a div that represents the block wrapper.
+  // The abstract schema is defined by the @fortawesome/fontawesome-svg-core package.
+  return [{
+    tag: 'div',
+    attributes: resolveWrapperAttributes(blockProps, attributes),
+    children: renderIconAbstract(iconLayers)
+  }]
+}
+
+function renderIconAbstract(iconLayers) {
+  // We don't support multiple layers yet, so we'll only handle the first layer.
+  const iconLayerIndex = 0
+
+  const { iconDefinition, color, style: initialStyle, transform = {}, ...iconLayerRest } = iconLayers[iconLayerIndex]
+
+  if (!iconDefinition) {
+    return []
+  }
+
+  const { style: rotationStyle, className: rotationClassName, rotation } = resolveRotation(iconLayerRest)
+  const { classes: animationClasses } = resolveAnimations(iconLayerRest)
+  const rotationClasses = rotationClassName ? rotationClassName.split(' ').filter(c => c.length > 0) : []
+
+  if ('undefined' !== typeof rotation) {
+    transform.rotate = rotation
+  }
+
+  const params = {
+    attributes: iconLayerRest,
+    transform,
+    styles: rotationStyle,
+    classes: [
+      ...rotationClasses,
+      ...animationClasses
+    ]
+  }
+
+  if ('string' === typeof color) {
+    params.attributes.color = color
+  }
+
+  if ('object' === typeof initialStyle) {
+    for (const styleKey in initialStyle) {
+      const kebabKey = kebabCase(styleKey)
+      params.styles[kebabKey] = initialStyle[styleKey]
+    }
+  }
+
+  return icon(iconDefinition, params).abstract
+}
+
+function resolveWrapperAttributes(blockProps, attributes) {
   const { justification } = attributes || {}
   const { className: wrapperClassName, ...restWrapperAttrs } = blockProps || {}
   const wrapperAttributes = {}
@@ -169,7 +172,7 @@ export function prepareParamsForUseBlock(attributes) {
 }
 
 export function renderIcon(attributes, options = {}) {
-  const { wrapperProps = {}, classNamesByLayer } = options?.extraProps || {}
+  const { wrapperProps = {} } = options?.extraProps || {}
   const elementType = options?.wrapperElement?.toLowerCase() || 'div'
   const iconLayers = attributes?.iconLayers
   const { justification } = attributes || {}
