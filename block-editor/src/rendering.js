@@ -31,11 +31,22 @@ import kebabCase from 'lodash/kebabCase'
 //    then we're back to the problem of having a monitor that is triggered on every invocation
 //    of useUpdateOnSave().
 //
-// So the useRef() here solves the problem of keeping a stable object reference identity.
-// Its value will only change when the actual values inside the object change.
-// And the useMemo() is the way to get React to only update the current value of the useRef()
-// when the underlying values change. JSON.stringify() is how we represent the underlying values in a way
+// The `useRef()` here provides a stable reference that persists between renders.
+// It stores the last known value and its serialized (stringified) form.
+//
+// The useMemo() ensures that the comparison and possible update of the ref only occur when the
+// serialized (JSON.stringify) value changes.
+//
+// JSON.stringify() is how we represent the underlying values in a way
 // that can be compared for deep equality.
+//
+// In short: this hook returns a stable object reference that only updates when the
+// *contents* of the input value change, not when new objects are created with the
+// same data.
+//
+// It seems like the `use-deep-compare-effect` NPM should do this for us. By its description,
+// it's designed just for this purpose. However, it doesn't work for all of our cases:
+// it doesn't update the abstract when changing the icon's color.
 function useDeepCompareMemo(value) {
     const ref = useRef()
 
