@@ -125,7 +125,7 @@ function useDeepCompareMemo(value) {
     }, [JSON.stringify(value)])
 }
 
-function renderWrappedAbstract(blockProps, attributes) {
+function renderWrappedAbstract(blockProps, attributes, options = {tag: 'div'}) {
   const iconLayers = attributes?.iconLayers || []
 
   if (!Array.isArray(iconLayers) || iconLayers.length === 0) {
@@ -139,7 +139,7 @@ function renderWrappedAbstract(blockProps, attributes) {
   // Wrap the Font Awesome Icon abstract in a div that represents the block wrapper.
   // The abstract schema is defined by the @fortawesome/fontawesome-svg-core package.
   return [{
-    tag: 'div',
+    tag: options.tag,
     attributes: resolveWrapperAttributes(blockProps, attributes),
     children: renderIconAbstract(iconLayers)
   }]
