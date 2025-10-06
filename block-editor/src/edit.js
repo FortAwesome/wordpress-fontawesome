@@ -8,7 +8,7 @@ import { get } from 'lodash'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import { wpIconFromFaIconDefinition } from './icons'
-import { computeIconLayerCount, prepareParamsForUseBlock, renderIconForEditor, useUpdateOnSave } from './rendering'
+import { computeIconLayerCount, prepareParamsForUseBlock, renderIconForEditor, updateAbstractOnChange } from './rendering'
 import IconModifier from './iconModifier'
 import createCustomEvent from './createCustomEvent'
 
@@ -24,7 +24,7 @@ export function Edit(props) {
 
   const blockProps = useBlockProps.save(prepareParamsForUseBlock(attributes))
 
-  useUpdateOnSave( blockProps, attributes, setAttributes )
+  updateAbstractOnChange( blockProps, attributes, setAttributes )
 
   const iconChooserOpenEvent = createCustomEvent()
 

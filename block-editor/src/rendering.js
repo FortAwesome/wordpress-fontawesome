@@ -59,7 +59,7 @@ function useDeepCompareMemo(value) {
     }, [JSON.stringify(value)])
 }
 
-export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
+export function updateAbstractOnChange( blockProps, attributes, setAttributes ) {
     // Create stable references that only change when content changes
     const stableBlockProps = useDeepCompareMemo(blockProps)
     const stableAttributes = useDeepCompareMemo(attributes)
