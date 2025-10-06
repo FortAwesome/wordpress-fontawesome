@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
 import { createElement, useEffect, useMemo, useRef } from '@wordpress/element'
-import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
+import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
@@ -77,9 +77,8 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
 
         let abs
         const wrapperAttributes = {}
-
         // We don't support multiple layers yet, so we'll only handle the first layer.
-        const { iconDefinition, color, style } = iconLayers[0]
+        const iconLayerIndex = 0
 
         const { justification } = attributes || {}
 
@@ -104,22 +103,33 @@ export function useUpdateOnSave( blockProps, attributes, setAttributes ) {
           }
         }
 
-        const {className, transform, ...rest} = resolveSpecialProps(iconLayers[0], 0, [])
+        const { iconDefinition, color, style: initialStyle, transform = {}, ...iconLayerRest } = iconLayers[iconLayerIndex]
+        const { style: rotationStyle, className: rotationClassName, rotation } = resolveRotation(iconLayerRest)
+        const { classes: animationClasses } = resolveAnimations(iconLayerRest)
+        const rotationClasses = rotationClassName ? rotationClassName.split(' ').filter(c => c.length > 0) : []
 
-        const params = { attributes: rest, transform, styles: {} }
+        if ('undefined' !== typeof rotation) {
+          transform.rotate = rotation
+        }
 
-        if ('string' === typeof className) {
-          params.classes = className.split(' ').filter(c => c.length > 0)
+        const params = {
+          attributes: iconLayerRest,
+          transform,
+          styles: rotationStyle,
+          classes: [
+            ...rotationClasses,
+            ...animationClasses
+          ]
         }
 
         if ('string' === typeof color) {
           params.attributes.color = color
         }
 
-        if ('object' === typeof style) {
-          for (const styleKey in style) {
+        if ('object' === typeof initialStyle) {
+          for (const styleKey in initialStyle) {
             const kebabKey = kebabCase(styleKey)
-            params.styles[kebabKey] = style[styleKey]
+            params.styles[kebabKey] = initialStyle[styleKey]
           }
         }
 
@@ -172,8 +182,18 @@ export function renderIcon(attributes, options = {}) {
     elementType,
     { ...(wrapperProps || {}) },
     attributes.iconLayers.map((layer, index) => {
-      const { iconDefinition, ...restLayer } = layer
-      const props = resolveSpecialProps(restLayer, index, classNamesByLayer)
+      const { iconDefinition, style: initialStyle, className: initialClassName, ...restLayer } = layer
+      const { style, rotation, className: rotationClassName } = resolveRotation(restLayer)
+
+      const initialClassNameString = 'string' === typeof initialClassName ? initialClassName.trim() : ''
+      const updatedClassName = classnames(initialClassNameString, rotationClassName)
+
+      const props = {
+        ...restLayer,
+        style: { ...(initialStyle || {}), ...(style || {}) },
+        rotation,
+        className: updatedClassName
+      }
 
       return (
         <FontAwesomeIcon
@@ -186,10 +206,26 @@ export function renderIcon(attributes, options = {}) {
   )
 }
 
-function resolveSpecialProps(layer = {}, layerIndex = 0, classNamesByLayer = []) {
-  const { style = {}, iconDefinition, rotation: initialRotation, ...rest } = layer
-  let className = (classNamesByLayer || [])[layerIndex]
+// A layer may have props that set animations. Those translate directly to props on the
+// FontAwesomeIcon React component, but when rendering the abstract for saving in the block content,
+// they must be turned into kebab-cased class names (which is what the React component does internally anyway).
+function resolveAnimations(layer = {}) {
+  const classes = []
+
+  for (const animationProp of ANIMATIONS) {
+    if (layer[animationProp]) {
+      classes.push(`fa-${kebabCase(animationProp)}`)
+    }
+  }
+
+  return { classes }
+}
+
+function resolveRotation(layer = {}) {
+  const { rotation: initialRotation } = layer
+  let className = ''
   let rotation
+  const style = {}
 
   if ([0, 90, 180, 270].includes(initialRotation)) {
     rotation = initialRotation
@@ -201,7 +237,6 @@ function resolveSpecialProps(layer = {}, layerIndex = 0, classNamesByLayer = [])
   return {
     style,
     rotation,
-    className,
-    ...rest
+    className
   }
 }
