@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faReflectHorizontal, faReflectVertical, faReflectBoth, faHeartHalfStroke, faBellRing, faSlidersSimple } from '@fortawesome/pro-solid-svg-icons'
 import { faBan, faHeart, faCircle, faRotateRight, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
-import { renderIcon } from './rendering'
+import { renderIconForEditor } from './rendering'
 import { select } from '@wordpress/data'
 import { useState } from '@wordpress/element'
 import classnames from 'classnames'
@@ -468,7 +468,7 @@ export default function (params) {
           style={contextStyle}
           onClick={() => document.dispatchEvent(iconChooserOpenEvent)}
         >
-          {renderIcon(attributes)}
+          {renderIconForEditor(attributes)}
         </div>
       </div>
       <div className={classnames('fawp-icon-modifier-preview-controls')}>

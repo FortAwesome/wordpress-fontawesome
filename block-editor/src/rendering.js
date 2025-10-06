@@ -171,7 +171,7 @@ export function prepareParamsForUseBlock(attributes) {
   }
 }
 
-export function renderIcon(attributes, options = {}) {
+export function renderIconForEditor(attributes, options = {}) {
   const { wrapperProps = {} } = options?.extraProps || {}
   const elementType = options?.wrapperElement?.toLowerCase() || 'div'
   const iconLayers = attributes?.iconLayers

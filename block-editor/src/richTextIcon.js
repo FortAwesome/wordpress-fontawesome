@@ -9,7 +9,7 @@ import { faBrandIcon } from './icons'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
-import { renderIcon } from './rendering'
+import { renderIconForEditor } from './rendering'
 import IconModifier from './iconModifier'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
@@ -241,7 +241,7 @@ function Edit(props) {
       className: classnames(FONT_AWESOME_RICH_TEXT_ICON_CLASS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS)
     }
 
-    const element = renderIcon(attributes, {
+    const element = renderIconForEditor(attributes, {
       wrapperElement: 'span',
       extraProps: { wrapperProps }
     })

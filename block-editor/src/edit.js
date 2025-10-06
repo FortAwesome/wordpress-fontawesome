@@ -8,7 +8,7 @@ import { get } from 'lodash'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import { wpIconFromFaIconDefinition } from './icons'
-import { computeIconLayerCount, prepareParamsForUseBlock, renderIcon, useUpdateOnSave } from './rendering'
+import { computeIconLayerCount, prepareParamsForUseBlock, renderIconForEditor, useUpdateOnSave } from './rendering'
 import IconModifier from './iconModifier'
 import createCustomEvent from './createCustomEvent'
 
@@ -132,7 +132,7 @@ export function Edit(props) {
           </Modal>
         )}
       </BlockControls>
-      {renderIcon(attributes, { extraProps })}
+      {renderIconForEditor(attributes, { extraProps })}
     </Fragment>
   ) : (
     <Fragment>
