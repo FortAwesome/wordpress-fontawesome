@@ -241,8 +241,9 @@ function Edit(props) {
       className: classnames(FONT_AWESOME_RICH_TEXT_ICON_CLASS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS)
     }
 
-    const element = renderIconForEditor(blockProps, attributes, {
-      blockWrapperTag: 'span'
+    const element = renderIconForEditor(attributes, {
+      blockWrapperTag: 'span',
+      blockProps
     })
 
     const html = renderToString(element)

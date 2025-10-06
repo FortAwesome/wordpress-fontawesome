@@ -468,7 +468,7 @@ export default function (params) {
           style={contextStyle}
           onClick={() => document.dispatchEvent(iconChooserOpenEvent)}
         >
-          {renderIconForEditor({}, attributes)}
+          {renderIconForEditor(attributes)}
         </div>
       </div>
       <div className={classnames('fawp-icon-modifier-preview-controls')}>

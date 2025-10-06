@@ -31,8 +31,9 @@ export function updateAbstractOnChange(blockProps, attributes, setAttributes ) {
   }, [ stableAttributes, stableBlockProps ] );
 }
 
-export function renderIconForEditor(blockProps, attributes, options = {}) {
+export function renderIconForEditor(attributes, options = {}) {
   const elementType = options?.blockWrapperTag || DEFAULT_BLOCK_WRAPPER_TAG
+  const blockProps = options?.blockProps || {}
   const iconLayers = attributes?.iconLayers
   const { justification } = attributes || {}
 

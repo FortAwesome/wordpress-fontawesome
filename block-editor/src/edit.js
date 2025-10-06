@@ -128,7 +128,7 @@ export function Edit(props) {
           </Modal>
         )}
       </BlockControls>
-      {renderIconForEditor(blockPropsForEdit, attributes)}
+      {renderIconForEditor(attributes, { blockProps: blockPropsForEdit })}
     </Fragment>
   ) : (
     <Fragment>
