@@ -6,6 +6,72 @@ import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
 
+/**
+ *  Rendering overview:
+ *
+ *  As far as this module is concerned, there are two rendering targets:
+ *
+ *  1. For the block editor. This corresponds to the `edit` function or `Edit` component
+ *     for a block. This is how the icon is rendered in the block editor interface.
+ *
+ *  2. The `abstract` attribute of the block. This abstract will drive the back end
+ *     rendering of the icon. It is a way to avoid saving raw HTML in the block content,
+ *     while still allowing for complex HTML structures.
+ */
+export function updateAbstractOnChange( blockProps, attributes, setAttributes ) {
+    // Create stable references that only change when content changes
+    const stableBlockProps = useDeepCompareMemo(blockProps)
+    const stableAttributes = useDeepCompareMemo(attributes)
+
+    useEffect( () => {
+      const abstract = renderWrappedAbstract(blockProps, attributes)
+      setAttributes({ abstract });
+    }, [ stableAttributes, stableBlockProps ] );
+}
+
+export function renderIconForEditor(attributes, options = {}) {
+  const { wrapperProps = {} } = options?.extraProps || {}
+  const elementType = options?.wrapperElement?.toLowerCase() || 'div'
+  const iconLayers = attributes?.iconLayers
+  const { justification } = attributes || {}
+
+  if (justification) {
+    wrapperProps.style = {
+      display: 'flex',
+      justifyContent: justification
+    }
+  }
+
+  if (!Array.isArray(iconLayers) || iconLayers.length === 0) return
+
+  return createElement(
+    elementType,
+    { ...(wrapperProps || {}) },
+    attributes.iconLayers.map((layer, index) => {
+      const { iconDefinition, style: initialStyle, className: initialClassName, ...restLayer } = layer
+      const { style, rotation, className: rotationClassName } = resolveRotation(restLayer)
+
+      const initialClassNameString = 'string' === typeof initialClassName ? initialClassName.trim() : ''
+      const updatedClassName = classnames(initialClassNameString, rotationClassName)
+
+      const props = {
+        ...restLayer,
+        style: { ...(initialStyle || {}), ...(style || {}) },
+        rotation,
+        className: updatedClassName
+      }
+
+      return (
+        <FontAwesomeIcon
+          key={index}
+          icon={iconDefinition}
+          {...props}
+        />
+      )
+    })
+  )
+}
+
 // Custom hook to create stable references for deep comparison.
 //
 // This seems like a lot of bending over backwards to achieve a simple goal.
@@ -57,17 +123,6 @@ function useDeepCompareMemo(value) {
         }
         return ref.current.value
     }, [JSON.stringify(value)])
-}
-
-export function updateAbstractOnChange( blockProps, attributes, setAttributes ) {
-    // Create stable references that only change when content changes
-    const stableBlockProps = useDeepCompareMemo(blockProps)
-    const stableAttributes = useDeepCompareMemo(attributes)
-
-    useEffect( () => {
-      const abstract = renderWrappedAbstract(blockProps, attributes)
-      setAttributes({ abstract });
-    }, [ stableAttributes, stableBlockProps ] );
 }
 
 function renderWrappedAbstract(blockProps, attributes) {
@@ -169,49 +224,6 @@ export function prepareParamsForUseBlock(attributes) {
   return {
     className: classnames(FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, { 'fa-layers': iconLayerCount > 1 })
   }
-}
-
-export function renderIconForEditor(attributes, options = {}) {
-  const { wrapperProps = {} } = options?.extraProps || {}
-  const elementType = options?.wrapperElement?.toLowerCase() || 'div'
-  const iconLayers = attributes?.iconLayers
-  const { justification } = attributes || {}
-
-  if (justification) {
-    wrapperProps.style = {
-      display: 'flex',
-      justifyContent: justification
-    }
-  }
-
-  if (!Array.isArray(iconLayers) || iconLayers.length === 0) return
-
-  return createElement(
-    elementType,
-    { ...(wrapperProps || {}) },
-    attributes.iconLayers.map((layer, index) => {
-      const { iconDefinition, style: initialStyle, className: initialClassName, ...restLayer } = layer
-      const { style, rotation, className: rotationClassName } = resolveRotation(restLayer)
-
-      const initialClassNameString = 'string' === typeof initialClassName ? initialClassName.trim() : ''
-      const updatedClassName = classnames(initialClassNameString, rotationClassName)
-
-      const props = {
-        ...restLayer,
-        style: { ...(initialStyle || {}), ...(style || {}) },
-        rotation,
-        className: updatedClassName
-      }
-
-      return (
-        <FontAwesomeIcon
-          key={index}
-          icon={iconDefinition}
-          {...props}
-        />
-      )
-    })
-  )
 }
 
 // A layer may have props that set animations. Those translate directly to props on the
