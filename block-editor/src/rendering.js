@@ -1,10 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
 import { createElement, useEffect, useMemo, useRef } from '@wordpress/element'
 import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import { isBlockValid } from './attributeValidation'
 import kebabCase from 'lodash/kebabCase'
+import camelCase from 'lodash/camelCase'
 
 const DEFAULT_BLOCK_WRAPPER_TAG = 'div'
 
@@ -34,44 +34,42 @@ export function updateAbstractOnChange(blockProps, attributes, setAttributes ) {
 export function renderIconForEditor(attributes, options = {}) {
   const elementType = options?.blockWrapperTag || DEFAULT_BLOCK_WRAPPER_TAG
   const blockProps = options?.blockProps || {}
-  const iconLayers = attributes?.iconLayers
-  const { justification } = attributes || {}
-
-  if (justification) {
-    blockProps.style = {
-      display: 'flex',
-      justifyContent: justification
-    }
-  }
-
-  if (!Array.isArray(iconLayers) || iconLayers.length === 0) return
-
+  const abstract = attributes?.abstract || []
+  const [ wrapperDiv ] = abstract
+  const children = wrapperDiv?.children || []
   return createElement(
     elementType,
-    { ...blockProps },
-    attributes.iconLayers.map((layer, index) => {
-      const { iconDefinition, style: initialStyle, className: initialClassName, ...restLayer } = layer
-      const { style, rotation, className: rotationClassName } = resolveRotation(restLayer)
-
-      const initialClassNameString = 'string' === typeof initialClassName ? initialClassName.trim() : ''
-      const updatedClassName = classnames(initialClassNameString, rotationClassName)
-
-      const props = {
-        ...restLayer,
-        style: { ...(initialStyle || {}), ...(style || {}) },
-        rotation,
-        className: updatedClassName
-      }
-
-      return (
-        <FontAwesomeIcon
-          key={index}
-          icon={iconDefinition}
-          {...props}
-        />
-      )
-    })
+    blockProps,
+    createReactElementsFromAbstract(children)
   )
+}
+
+function createReactElementsFromAbstract(abstract) {
+  return abstract.map((node, index) => {
+    const { tag, attributes = {}, children = [] } = node
+    const { class: className, spin: _spin, style, ...restAttributes } = attributes || {}
+
+    const styleObject = 'string' === typeof style ? parseStyleAttribute(style) : {}
+
+    return createElement(
+      tag,
+      { key: index, ...restAttributes, className, style: styleObject },
+      children.length > 0 ? createReactElementsFromAbstract(children) : null
+    )
+  })
+}
+
+function parseStyleAttribute(styleString) {
+  const el = document.createElement('div');
+  el.style.cssText = styleString;
+
+  const styleObj = {};
+  for (let i = 0; i < el.style.length; i++) {
+    const prop = el.style[i];
+    const camelProp = camelCase(prop);
+    styleObj[camelProp] = el.style[prop];
+  }
+  return styleObj;
 }
 
 // Custom hook to create stable references for deep comparison.
@@ -159,6 +157,14 @@ function renderIconAbstract(iconLayers) {
 
   const { style: rotationStyle, className: rotationClassName, rotation } = resolveRotation(iconLayerRest)
   const { classes: animationClasses } = resolveAnimations(iconLayerRest)
+  const attributes = {...iconLayerRest }
+
+  // Remove any animation props from attributes, since they are handled via classes.
+  // They aren't valid HTML attributes.
+  for (const a of ANIMATIONS) {
+    delete attributes[a]
+  }
+
   const rotationClasses = rotationClassName ? rotationClassName.split(' ').filter(c => c.length > 0) : []
 
   if ('undefined' !== typeof rotation) {
@@ -166,7 +172,7 @@ function renderIconAbstract(iconLayers) {
   }
 
   const params = {
-    attributes: iconLayerRest,
+    attributes,
     transform,
     styles: rotationStyle,
     classes: [
