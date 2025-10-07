@@ -16,9 +16,12 @@ const DEFAULT_BLOCK_WRAPPER_TAG = 'div'
  *  1. For the block editor. This corresponds to the `edit` function or `Edit` component
  *     for a block. This is how the icon is rendered in the block editor interface.
  *
- *  2. The `abstract` attribute of the block. This abstract will drive the back end
- *     rendering of the icon. It is a way to avoid saving raw HTML in the block content,
- *     while still allowing for complex HTML structures.
+ *  2. The abstract representation of the block, stored in the `abstract` attribute.
+ *     This abstract drives the back end rendering of the icon in the dynamic block `render_callback`.
+ *     It is a way to avoid saving raw HTML in the block content, while still allowing for complex HTML structures.
+ *
+ *  In order to ensure that these two renderings are consistent, the rendering for the block editor
+ *  is also based on the abstract representation. The abstract is rendered to React elements.
  */
 export function updateAbstractOnChange(blockProps, attributes, setAttributes ) {
   // Create stable references that only change when content changes
