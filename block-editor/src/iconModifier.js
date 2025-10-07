@@ -405,6 +405,10 @@ export default function (params) {
       newIconLayers[0][currentAnimation] = animation === currentAnimation
     }
 
+    // Special case: when setting spinReverse, spin must also be set.
+    if ('spinReverse' === animation) {
+      newIconLayers[0].spin = true
+    }
 
     setAttributes({ iconLayers: newIconLayers })
   }
