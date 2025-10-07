@@ -3,6 +3,7 @@ import { isBlockValid } from '../attributeValidation'
 import { prepareParamsForUseBlock } from '../rendering'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
+import { createElement } from '@wordpress/element'
 
 export default function save({ attributes }) {
   if (!isBlockValid(attributes)) {
