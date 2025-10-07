@@ -47,6 +47,9 @@ export function renderIconForEditor(attributes, options = {}) {
 function createReactElementsFromAbstract(abstract) {
   return abstract.map((node, index) => {
     const { tag, attributes = {}, children = [] } = node
+    // We strip away the `spin` attribute, since that is not a valid HTML attribute,
+    // and it's only used for internal state management to distinguish between different
+    // styles of spinning.
     const { class: className, spin: _spin, style, ...restAttributes } = attributes || {}
 
     const styleObject = 'string' === typeof style ? parseStyleAttribute(style) : {}
