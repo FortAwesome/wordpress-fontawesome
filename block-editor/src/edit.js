@@ -15,7 +15,6 @@ import createCustomEvent from './createCustomEvent'
 const { IconChooserModal } = get(window, [GLOBAL_KEY, 'iconChooser'], {})
 const modifyToolbarIcon = wpIconFromFaIconDefinition(faBrush)
 const defaultStylingParams = {
-  spin: false,
   transform: null
 }
 
