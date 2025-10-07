@@ -26,7 +26,14 @@ const DEFAULT_BLOCK_WRAPPER_TAG = 'div'
 export function updateAbstractOnChange(blockProps, attributes, setAttributes ) {
   // Create stable references that only change when content changes
   const stableBlockProps = useDeepCompareMemo(blockProps)
-  const stableAttributes = useDeepCompareMemo(attributes)
+  // We want to ignore changes to the `abstract` attribute itself, since that would
+  // cause the useEffect callback to fire as a consequence of its own updating of the `abstract`.
+  // It wouldn't be an infinite loop, but it would result in two updates for every change to any
+  // other attribute.
+  //
+  // eslint-disable-next-line no-unused-vars
+  const { abstract: _abstract, ...attributesWithoutAbstract } = attributes || {}
+  const stableAttributes = useDeepCompareMemo(attributesWithoutAbstract)
 
   useEffect( () => {
     const abstract = renderWrappedAbstract(blockProps, attributes)
