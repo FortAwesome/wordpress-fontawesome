@@ -15,9 +15,6 @@
     },
     "abstract": {
       "type": "array"
-    },
-    "wrapperAttributes": {
-      "type": "object"
     }
   },
   "supports": {
