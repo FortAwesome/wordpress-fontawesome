@@ -7,7 +7,6 @@ import './index.css'
 import example from './example'
 import { config } from '@fortawesome/fontawesome-svg-core'
 import deprecatedSaveV1 from './deprecated/deprecatedSaveV1'
-import migrateAttributesV1ToV2 from './deprecated/deprecatedSaveV1'
 
 config.autoAddCss = false
 config.autoReplaceSvg = false
@@ -19,7 +18,7 @@ if (!disableRichTextIcons) {
 }
 
 // eslint-disable-next-line no-unused-vars
-const { abstract: _abstract, ...deprecatedAttributes} = metadata?.attributes || {}
+const { abstract: _abstract, ...attributesV1} = metadata?.attributes || {}
 
 registerBlockType(metadata.name, {
   icon: faBrandIcon,
@@ -28,9 +27,8 @@ registerBlockType(metadata.name, {
   // The back end render callback will render the icon on the front end.
   save: () => null,
   deprecated: [{
-    attributes: deprecatedAttributes,
+    attributes: attributesV1,
     save: deprecatedSaveV1,
-    migrate: migrateAttributesV1ToV2
   }],
   example
 })
