@@ -122,18 +122,20 @@ function allow_font_awesome_html() {
 function fontawesome_extend_kses( $tags, $context ) {
 	$allowed_html = FontAwesome_Allowed_HTML::instance()->get_allowed_html();
 
+	error_log( 'FILTER KSES' );
+
 	$contexts = array( 'post', 'data', 'widget_text' );
 
-	if (in_array($context, $contexts, true)) {
+	if ( in_array( $context, $contexts, true ) ) {
 		foreach ( $allowed_html as $tag => $attributes ) {
-			if (isset($tags[$tag]) && is_array($tags[$tag])) {
+			if ( isset( $tags[ $tag ] ) && is_array( $tags[ $tag ] ) ) {
 				// Merge with existing attributes
-				$tags[$tag] = array_merge($tags[$tag], $attributes);
+				$tags[ $tag ] = array_merge( $tags[ $tag ], $attributes );
 			} else {
-				$tags[$tag] = $attributes;
+				$tags[ $tag ] = $attributes;
 			}
 		}
 	}
 
-    return $tags;
+	return $tags;
 }
