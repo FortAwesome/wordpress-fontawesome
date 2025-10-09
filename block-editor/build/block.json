@@ -12,6 +12,9 @@
     },
     "justification": {
       "type": "string"
+    },
+    "abstract": {
+      "type": "array"
     }
   },
   "supports": {

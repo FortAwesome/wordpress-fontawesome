@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faReflectHorizontal, faReflectVertical, faReflectBoth, faHeartHalfStroke, faBellRing, faSlidersSimple } from '@fortawesome/pro-solid-svg-icons'
 import { faBan, faHeart, faCircle, faRotateRight, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
-import { renderIcon } from './rendering'
+import { renderIconForEditor } from './rendering'
 import { select } from '@wordpress/data'
 import { useState } from '@wordpress/element'
 import classnames from 'classnames'
@@ -9,6 +9,7 @@ import { FontSizePicker, TabPanel, Tooltip } from '@wordpress/components'
 import { __ } from '@wordpress/i18n'
 import Colors from './colors'
 import { NO_CUSTOM_VALUE, SELECTED_CLASS, ANIMATIONS, DEFAULT_SIZE } from './constants'
+import { deprecatedRenderIconV1 } from './deprecated/deprecatedSaveV1'
 
 const STYLES_TAB_NAME = 'styling'
 const ANIMATIONS_TAB_NAME = 'animations'
@@ -379,7 +380,8 @@ export default function (params) {
     context,
     iconChooserOpenEvent,
     IconChooserModal,
-    handleSelect
+    handleSelect,
+    isInlineRichText = false
   } = params
 
   const iconLayers = attributes.iconLayers || []
@@ -459,6 +461,8 @@ export default function (params) {
 
   const { color, fontSize, backgroundColor } = context || {}
   const contextStyle = { color, fontSize, backgroundColor }
+
+  const renderIcon = isInlineRichText ? deprecatedRenderIconV1 : renderIconForEditor
 
   return (
     <div className="fawp-icon-modifier">

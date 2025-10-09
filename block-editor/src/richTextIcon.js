@@ -9,10 +9,11 @@ import { faBrandIcon } from './icons'
 import { GLOBAL_KEY } from '../../admin/src/constants'
 import { iconDefinitionFromIconChooserSelectionEvent } from './iconDefinitions'
 import createCustomEvent from './createCustomEvent'
-import { renderIcon } from './rendering'
+import { renderIconForEditor } from './rendering'
 import IconModifier from './iconModifier'
-import { FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS, ANIMATIONS } from './constants'
+import { ANIMATIONS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
+import { deprecatedRenderIconV1 } from './deprecated/deprecatedSaveV1'
 export const ZERO_WIDTH_SPACE = '\u200b'
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon'
 const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform'
@@ -210,6 +211,7 @@ function InlineUI({ value, changeValue, contentRef, handleSelect }) {
             context={context}
             handleSelect={handleSelect}
             iconChooserOpenEvent={modalOpenEvent}
+            isInlineRichText={true}
           />
         </Modal>
       )}
@@ -241,7 +243,7 @@ function Edit(props) {
       className: classnames(FONT_AWESOME_RICH_TEXT_ICON_CLASS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS)
     }
 
-    const element = renderIcon(attributes, {
+    const element = deprecatedRenderIconV1(attributes, {
       wrapperElement: 'span',
       extraProps: { wrapperProps }
     })
