@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-allowed-html.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/class-fontawesome-allowed-html.php';
 
 /**
  *  We need to register the block-editor script explicitly, instead of
@@ -108,7 +108,32 @@ function block_init() {
 		add_action( 'enqueue_block_editor_assets', 'FortAwesome\enqueue_font_awesome_block_editor_assets' );
 	}
 
-	register_block_type( __DIR__ . '/build' );
+	allow_font_awesome_html();
 
-	allow_font_awesome_html( allowed_html() );
+	register_block_type( __DIR__ . '/build' );
+}
+
+function allow_font_awesome_html() {
+	if ( ! has_filter( 'wp_kses_allowed_html', __NAMESPACE__ . '\\fontawesome_extend_kses' ) ) {
+		add_filter( 'wp_kses_allowed_html', __NAMESPACE__ . '\\fontawesome_extend_kses', 10, 2 );
+	}
+}
+
+function fontawesome_extend_kses( $tags, $context ) {
+	$allowed_html = FontAwesome_Allowed_HTML::instance()->get_allowed_html();
+
+	$contexts = array( 'post', 'data', 'widget_text' );
+
+	if (in_array($context, $contexts, true)) {
+		foreach ( $allowed_html as $tag => $attributes ) {
+			if (isset($tags[$tag]) && is_array($tags[$tag])) {
+				// Merge with existing attributes
+				$tags[$tag] = array_merge($tags[$tag], $attributes);
+			} else {
+				$tags[$tag] = $attributes;
+			}
+		}
+	}
+
+    return $tags;
 }
