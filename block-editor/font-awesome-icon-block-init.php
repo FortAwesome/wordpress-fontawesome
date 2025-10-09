@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-allowed-html.php';
 
 /**
  *  We need to register the block-editor script explicitly, instead of
@@ -108,4 +109,6 @@ function block_init() {
 	}
 
 	register_block_type( __DIR__ . '/build' );
+
+	allow_font_awesome_html( allowed_html() );
 }
