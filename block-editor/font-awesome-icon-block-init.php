@@ -122,8 +122,6 @@ function allow_font_awesome_html() {
 function fontawesome_extend_kses( $tags, $context ) {
 	$allowed_html = FontAwesome_Allowed_HTML::instance()->get_allowed_html();
 
-	error_log( 'FILTER KSES' );
-
 	$contexts = array( 'post', 'data', 'widget_text' );
 
 	if ( in_array( $context, $contexts, true ) ) {
