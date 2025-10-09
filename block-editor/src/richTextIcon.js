@@ -211,6 +211,7 @@ function InlineUI({ value, changeValue, contentRef, handleSelect }) {
             context={context}
             handleSelect={handleSelect}
             iconChooserOpenEvent={modalOpenEvent}
+            isInlineRichText={true}
           />
         </Modal>
       )}
