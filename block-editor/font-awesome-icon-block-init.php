@@ -127,7 +127,7 @@ function fontawesome_extend_kses( $tags, $context ) {
 	if ( in_array( $context, $contexts, true ) ) {
 		foreach ( $allowed_html as $tag => $attributes ) {
 			if ( isset( $tags[ $tag ] ) && is_array( $tags[ $tag ] ) ) {
-				// Merge with existing attributes
+				// Merge with existing attributes.
 				$tags[ $tag ] = array_merge( $tags[ $tag ], $attributes );
 			} else {
 				$tags[ $tag ] = $attributes;
