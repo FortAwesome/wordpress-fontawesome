@@ -17,7 +17,7 @@ export default function save({ attributes }) {
   return deprecatedRenderIconV1(attributes, { extraProps })
 }
 
-function deprecatedRenderIconV1(attributes, options = {}) {
+export function deprecatedRenderIconV1(attributes, options = {}) {
   const { wrapperProps = {}, classNamesByLayer } = options?.extraProps || {}
   const elementType = options?.wrapperElement?.toLowerCase() || 'div'
   const iconLayers = attributes?.iconLayers

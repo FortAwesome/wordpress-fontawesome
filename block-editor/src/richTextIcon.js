@@ -13,6 +13,7 @@ import { renderIconForEditor } from './rendering'
 import IconModifier from './iconModifier'
 import { ANIMATIONS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS } from './constants'
 import { toIconDefinition } from './iconDefinitions'
+import { deprecatedRenderIconV1 } from './deprecated/deprecatedSaveV1'
 export const ZERO_WIDTH_SPACE = '\u200b'
 const FONT_AWESOME_RICH_TEXT_ICON_CLASS = 'wp-rich-text-font-awesome-icon'
 const FONT_AWESOME_RICH_TEXT_ICON_TRANSFORM_ATTR = 'data-transform'
@@ -237,13 +238,13 @@ function Edit(props) {
   }
 
   const changeValue = (attributes) => {
-    const blockProps = {
+    const wrapperProps = {
       className: classnames(FONT_AWESOME_RICH_TEXT_ICON_CLASS, FONT_AWESOME_COMMON_BLOCK_WRAPPER_CLASS)
     }
 
-    const element = renderIconForEditor(attributes, {
-      blockWrapperTag: 'span',
-      blockProps
+    const element = deprecatedRenderIconV1(attributes, {
+      wrapperElement: 'span',
+      extraProps: { wrapperProps }
     })
 
     const html = renderToString(element)
