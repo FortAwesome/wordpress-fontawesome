@@ -247,7 +247,8 @@ function get_style_shorthand($family, $style) {
 function replace_font_awesome( $settings ) {
 	$upload_dir = get_upload_dir();
 	$fa_version = '7.1.0';
-	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metdata_relative_path($fa_version) ) . '%s.js';
+
+	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
 	$icons['fa-regular'] = [
 		'name' => 'fa-regular',
 		'label' => esc_html__( 'Font Awesome - Regular Pro', 'elementor-pro' ),
@@ -317,7 +318,19 @@ function replace_font_awesome( $settings ) {
 	return array_merge( $icons, $settings );
 }
 
+function enqueue_fa_pro_css() {
+	$upload_dir = get_upload_dir();
+	$fa_version = FA_VERSION;
+	$fa_pro_css_path = trailingslashit( get_versioned_selfhost_dir( $upload_dir, $fa_version ) ) . 'css/all.min.css';
+	if ( file_exists( $fa_pro_css_path ) ) {
+		$fa_pro_css_url = trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( get_versioned_selfhost_relative_path( $fa_version ) ) . 'css/all.min.css';
+		wp_enqueue_style( 'font-awesome-pro', $fa_pro_css_url, [], $fa_version );
+	}
+}
+
 add_filter( 'elementor/icons_manager/native', 'replace_font_awesome' );
+add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
+add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 
 /**
  * Recursively delete a directory
