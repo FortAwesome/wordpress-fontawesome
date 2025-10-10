@@ -181,8 +181,10 @@ function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_jso
 							"height" => $svg_data['height'],
 							"path" => $svg_data['path']
 						];
+
+						$style_shorthand = get_style_shorthand($family, $style);
 						$svg_object_json = json_encode($svg_object);
-						$family_style_dir = trailingslashit($svg_objects_dir) . "$family/$style";
+						$family_style_dir = trailingslashit($svg_objects_dir) . $style_shorthand;
 
 						if ( ! wp_mkdir_p( $family_style_dir ) ) {
 							throw new Exception(
@@ -210,6 +212,18 @@ function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_jso
 	        error_log( 'JSON parse error: ' . json_last_error_msg() );
 	    }
 	}
+}
+
+function get_style_shorthand($family, $style) {
+	if ('classic' === $family) {
+		return $style;
+	}
+
+	if ('duotone' === $family && 'solid' === $style) {
+		return 'duotone';
+	}
+
+	return "$family-$style";
 }
 
 function replace_font_awesome( $settings ) {
