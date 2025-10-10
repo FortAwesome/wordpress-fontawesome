@@ -173,6 +173,8 @@ function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_jso
 	    $data = json_decode( $json_str, true );
 
 	    if ( json_last_error() === JSON_ERROR_NONE ) {
+			$icons_by_shorthand = [];
+
 			foreach ($data as $icon_name => $icon_data) {
 				foreach ($icon_data['svgs'] as $family => $style_map) {
 					foreach ($style_map as $style => $svg_data) {
@@ -205,7 +207,23 @@ function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_jso
 								)
 							);
 						}
+
+						if (!isset($icons_by_shorthand[$style_shorthand])) {
+							$icons_by_shorthand[$style_shorthand] = [];
+						}
+
+						$icons_by_shorthand[$style_shorthand][] = $icon_name;
 					}
+				}
+			}
+
+			foreach ($icons_by_shorthand as $style_shorthand => $icon_names) {
+				$icon_names_json = json_encode(["icons" => $icon_names]);
+				$file_name = "$style_shorthand.js";
+				$metadata_file_path = build_metadata_disk_path($upload_dir, $fa_version, $file_name);
+
+				if ( ! $wp_filesystem->put_contents( $metadata_file_path, $icon_names_json, FS_CHMOD_FILE ) ) {
+					throw new Exception("failed creating metadata file: $metadata_file_path" );
 				}
 			}
 	    } else {
