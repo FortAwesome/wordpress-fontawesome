@@ -287,62 +287,6 @@ function replace_font_awesome( $settings ) {
 
 add_filter( 'elementor/icons_manager/native', 'replace_font_awesome' );
 
-function myplugin_download_and_extract( $fa_version, $wp_upload_dir ) {
-    require_once ABSPATH . 'wp-admin/includes/file.php';
-    require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-
-    // Initialize filesystem
-    WP_Filesystem();
-
-    // Requires that this file is already present
-    $tmp_file = "/tmp/fontawesome-pro-$fa_version-web.zip";
-
-    // 2. Create a temp extraction dir (WordPress will create it under wp-content/upgrade)
-    $temp_dir = WP_CONTENT_DIR . '/upgrade/myplugin-temp-' . wp_generate_password( 8, false );
-
-    // 3. Unzip into that temp dir
-    $result = unzip_file( $tmp_file, $temp_dir );
-    @unlink( $tmp_file );
-
-    if ( is_wp_error( $result ) ) {
-        return $result;
-    }
-
-    // 4. Move specific subdirectories from temp dir to uploads
-    $upload_path = trailingslashit( $wp_upload_dir['basedir'] ) . 'myplugin/';
-
-    if ( ! file_exists( $upload_path ) ) {
-        wp_mkdir_p( $upload_path );
-    }
-
-    $versioned_assets_dir = get_versioned_fa_pro_assets_dir($fa_version);
-
-    // Example: only move some directories from the extracted folder
-    $subdirs_to_move = [
-    	'css' => $versioned_uploads_dir,
-     	'webfonts' => $versioned_uploads_dir,
-      	'svg-objects' => $versioned_assets_dir
-    ];
-
-    foreach ( $subdirs_to_move as $source_subdir => $target_subdir ) {
-        $source = trailingslashit( $temp_dir ) . $subdir_subdir;
-        $destination = trailingslashit( $target_subdir ) . $subdir;
-
-        if ( is_dir( $source ) ) {
-            // Remove any existing dir before moving
-            if ( file_exists( $destination ) ) {
-                myplugin_rrmdir( $destination );
-            }
-            rename( $source, $destination );
-        }
-    }
-
-    // 5. Clean up temp dir
-    myplugin_rrmdir( $temp_dir );
-
-    return true;
-}
-
 /**
  * Recursively delete a directory
  */
