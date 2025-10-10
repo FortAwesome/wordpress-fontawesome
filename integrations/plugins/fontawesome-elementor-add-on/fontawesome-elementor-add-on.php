@@ -246,7 +246,10 @@ function get_style_shorthand($family, $style) {
 
 function replace_font_awesome( $settings ) {
 	$upload_dir = get_upload_dir();
-	$fa_version = '7.1.0';
+	//$fa_version = '7.1.0';
+	// Seems that we have to hard code this to match something else in the system, else, nothing shows
+	// up in the icon library.
+	$fa_version = '5.15.1-pro';
 
 	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
 	$icons['fa-regular'] = [
