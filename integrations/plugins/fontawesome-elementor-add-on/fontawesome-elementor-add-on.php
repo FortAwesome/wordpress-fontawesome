@@ -282,7 +282,20 @@ function get_style_shorthands( $upload_dir, $fa_version ) {
 	return $shorthands;
 }
 
-function replace_font_awesome( $settings ) {
+function replace_font_awesome_native($settings) {
+	// remove Free
+	unset(
+		$settings['fa-solid'],
+		$settings['fa-regular'],
+		$settings['fa-brands']
+	);
+	return $settings;
+}
+
+// We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
+// on initial insertion, because of Elementor's logic in:
+// get_icon_manager_tabs()
+function replace_font_awesome_additional_tabs() {
 	$upload_dir = get_upload_dir();
 	$fa_version = FA_VERSION;
 	$style_shorthands = get_style_shorthands( $upload_dir, $fa_version );
@@ -314,13 +327,8 @@ function replace_font_awesome( $settings ) {
 			'render_callback' => 'render_font_awesome_svg_icon'
 		];
 	}
-	// remove Free
-	unset(
-		$settings['fa-solid'],
-		$settings['fa-regular'],
-		$settings['fa-brands']
-	);
-	return array_merge( $icons, $settings );
+
+	return $icons;
 }
 
 function shorthand_to_short_prefix_id_map() {
@@ -359,11 +367,14 @@ function unprefixed_icon_name($prefix, $prefixed_icon_name) {
 
 // This render_callback seems to fire on the backend in the editor, loading a saved page with
 // with an icon. When initially inserting a new icon, it uses an `<i>` tag and relies on Webfont/CSS.
-// When the Elementor experiment for inline SVGs is enabled, it bypasses this render_callback
+// When the Elementor experiment for inline SVGs is enabled, and our icon tabs are added as "native" tabs,
+// then it bypasses this render_callback
 // and uses its internal Font Awesome data manager to look up the SVG objects and render them.
 // Of course, it won't have access to FA Pro styles and icons.
-// So, to make this work on both the backend and front end, that experiment must be disabled.
-// That can be done in Elementor -> Settings --> Experiments --> Inline Font Icons.
+// So, to make this work on both the backend and front end, either that experiment must be disabled,
+// or our icon tabs must be added as "additional_tabs".
+//
+// Disabling the experiment can be done in Elementor -> Settings --> Experiments --> Inline Font Icons.
 // Or by adding this filter--see below:
 //
 // add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
@@ -442,7 +453,8 @@ function enqueue_fa_pro_css() {
 	}
 }
 
-add_filter( 'elementor/icons_manager/native', 'replace_font_awesome' );
+add_filter( 'elementor/icons_manager/native', 'replace_font_awesome_native' );
+add_filter( 'elementor/icons_manager/additional_tabs', 'replace_font_awesome_additional_tabs' );
 add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 // If inline SVG rendering is working, then we don't need to enqueue the CSS on the frontend,
 // unless we want to also have the CSS loaded for the sake of compatibility with any <i> tags that might
@@ -483,7 +495,7 @@ initialize_fontawesome_elementor_data_manager();
 
 add_action( 'activate_fontawesome-elementor-add-on/fontawesome-elementor-add-on.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
 
-// uncomment this to force the experiment off
-add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
-	$experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
-});
+// Uncomment this to force the experiment off
+// add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
+// 	$experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
+// });
