@@ -297,8 +297,11 @@ function replace_font_awesome( $settings ) {
 	foreach($style_shorthands as $style_shorthand) {
 		$short_prefix_id = $shorthand_to_short_prefix_id[$style_shorthand] ?? 'fas';
 
-		$icons["fa-$style_shorthand"] = [
-			'name' => "fa-$style_shorthand",
+		// Use fapro prefix to avoid hardcoded 'fa-' prefix in Elementor that may cause
+		// these to be handled like other Font Awesome Free icons using Elementor's built-in
+		// Font Awesome Data Manager.
+		$icons["fapro-$style_shorthand"] = [
+			'name' => "fapro-$style_shorthand",
 			'label' => "Font Awesome Pro - $style_shorthand",
 			'url' => false,
 			'enqueue' => false,
