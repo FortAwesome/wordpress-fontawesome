@@ -284,27 +284,11 @@ function get_style_shorthands( $upload_dir, $fa_version ) {
 
 function replace_font_awesome( $settings ) {
 	$upload_dir = get_upload_dir();
-	$fa_version = '7.1.0';
+	$fa_version = FA_VERSION;
 	$style_shorthands = get_style_shorthands( $upload_dir, $fa_version );
 
 	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
-
-	$shorthand_to_short_prefix_id = [
-			'solid' => 'fas',
-			'regular' => 'far',
-			'light' => 'fal',
-			'thin' => 'fat',
-			'brands' => 'fab',
-			'duotone' => 'fad',
-			'sharp-solid' => 'fass',
-			'sharp-regular' => 'fasr',
-			'sharp-light' => 'fasl',
-			'sharp-thin' => 'fast',
-			'sharp-duotone-solid' => 'fasds',
-			'sharp-duotone-regular' => 'fasdr',
-			'sharp-duotone-light' => 'fasdl',
-			'sharp-duotone-thin' => 'fasdt'
-	];
+	$shorthand_to_short_prefix_id = shorthand_to_short_prefix_id_map();
 
 	$icons = [];
 
