@@ -449,8 +449,7 @@ add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 // If inline SVG rendering is working, then we don't need to enqueue the CSS on the frontend,
 // unless we want to also have the CSS loaded for the sake of compatibility with any <i> tags that might
 // be present.
-//
-// add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
+add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 
 /**
  * Recursively delete a directory
