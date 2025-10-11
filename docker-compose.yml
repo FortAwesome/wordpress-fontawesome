@@ -243,7 +243,6 @@ services:
     environment:
       FONTAWESOME_ENV: production
       WORDPRESS_DB_HOST: wpdb:3306
-    container_name: "com.fontawesome.wordpress-latest-integration"
     networks:
       - wordpress_network
 
