@@ -212,7 +212,8 @@ function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_jso
 							$icons_by_shorthand[$style_shorthand] = [];
 						}
 
-						$icons_by_shorthand[$style_shorthand][] = $icon_name;
+						// must quote icon names in case some are numeric.
+						$icons_by_shorthand[$style_shorthand][] = "$icon_name";
 					}
 				}
 			}
@@ -244,74 +245,70 @@ function get_style_shorthand($family, $style) {
 	return "$family-$style";
 }
 
+function get_style_shorthands( $upload_dir, $fa_version ) {
+	global $wp_filesystem;
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+
+	// Initialize the filesystem
+	WP_Filesystem();
+
+	$dir = trailingslashit( $upload_dir['basedir'] ) . trailingslashit(build_metadata_relative_path($fa_version));
+	$files = $wp_filesystem->dirlist( $dir );
+
+	$shorthands = [];
+
+	if ( ! empty( $files ) ) {
+	    foreach ( $files as $file => $fileinfo ) {
+		    $shorthands[] = pathinfo( $file, PATHINFO_FILENAME );
+	    }
+	}
+
+	return $shorthands;
+}
+
 function replace_font_awesome( $settings ) {
 	$upload_dir = get_upload_dir();
-	//$fa_version = '7.1.0';
-	// Seems that we have to hard code this to match something else in the system, else, nothing shows
-	// up in the icon library.
-	$fa_version = '5.15.1-pro';
+	$fa_version = '7.1.0';
+	$style_shorthands = get_style_shorthands( $upload_dir, $fa_version );
 
 	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
-	$icons['fa-regular'] = [
-		'name' => 'fa-regular',
-		'label' => esc_html__( 'Font Awesome - Regular Pro', 'elementor-pro' ),
-		'url' => false,
-		'enqueue' => false,
-		'prefix' => 'fa-',
-		'displayPrefix' => 'far',
-		'labelIcon' => 'fab fa-font-awesome-alt',
-		'ver' => $fa_version,
-		'fetchJson' => sprintf( $json_url, 'regular' ),
-		'native' => true,
+
+	$shorthand_to_short_prefix_id = [
+			'solid' => 'fas',
+			'regular' => 'far',
+			'light' => 'fal',
+			'thin' => 'fat',
+			'brands' => 'fab',
+			'duotone' => 'fad',
+			'sharp-solid' => 'fass',
+			'sharp-regular' => 'fasr',
+			'sharp-light' => 'fasl',
+			'sharp-thin' => 'fast',
+			'sharp-duotone-solid' => 'fasds',
+			'sharp-duotone-regular' => 'fasdr',
+			'sharp-duotone-light' => 'fasdl',
+			'sharp-duotone-thin' => 'fasdt'
 	];
-	$icons['fa-solid'] = [
-		'name' => 'fa-solid',
-		'label' => esc_html__( 'Font Awesome - Solid Pro', 'elementor-pro' ),
-		'url' => false,
-		'enqueue' => false,
-		'prefix' => 'fa-',
-		'displayPrefix' => 'fas',
-		'labelIcon' => 'fab fa-font-awesome',
-		'ver' => $fa_version,
-		'fetchJson' => sprintf( $json_url, 'solid' ),
-		'native' => true,
-	];
-	$icons['fa-brands'] = [
-		'name' => 'fa-brands',
-		'label' => esc_html__( 'Font Awesome - Brands Pro', 'elementor-pro' ),
-		'url' => false,
-		'enqueue' => false,
-		'prefix' => 'fa-',
-		'displayPrefix' => 'fab',
-		'labelIcon' => 'fab fa-font-awesome-flag',
-		'ver' => $fa_version,
-		'fetchJson' => sprintf( $json_url, 'brands' ),
-		'native' => true,
-	];
-	$icons['fa-light'] = [
-		'name' => 'fa-light',
-		'label' => esc_html__( 'Font Awesome - Light Pro', 'elementor-pro' ),
-		'url' => false,
-		'enqueue' => false,
-		'prefix' => 'fa-',
-		'displayPrefix' => 'fal',
-		'labelIcon' => 'fal fa-flag',
-		'ver' => $fa_version,
-		'fetchJson' => sprintf( $json_url, 'light' ),
-		'native' => true,
-	];
-	$icons['fa-duotone'] = [
-		'name' => 'fa-duotone',
-		'label' => esc_html__( 'Font Awesome - Duotone Pro', 'elementor-pro' ),
-		'url' => false,
-		'enqueue' => false,
-		'prefix' => 'fa-',
-		'displayPrefix' => 'fad',
-		'labelIcon' => 'fad fa-flag',
-		'ver' => $fa_version,
-		'fetchJson' => sprintf( $json_url, 'duotone' ),
-		'native' => true,
-	];
+
+	$icons = [];
+
+	foreach($style_shorthands as $style_shorthand) {
+		$short_prefix_id = $shorthand_to_short_prefix_id[$style_shorthand] ?? 'fas';
+
+		$icons["fa-$style_shorthand"] = [
+			'name' => "fa-$style_shorthand",
+			'label' => "Font Awesome Pro - $style_shorthand",
+			'url' => false,
+			'enqueue' => false,
+			'prefix' => 'fa-',
+			'displayPrefix' => "$short_prefix_id",
+			'labelIcon' => "$short_prefix_id fa-font-awesome",
+			'ver' => $fa_version,
+			'fetchJson' => sprintf( $json_url, $style_shorthand ),
+			'native' => true,
+			'render_callback' => 'render_font_awesome_svg_icon'
+		];
+	}
 	// remove Free
 	unset(
 		$settings['fa-solid'],
@@ -321,13 +318,56 @@ function replace_font_awesome( $settings ) {
 	return array_merge( $icons, $settings );
 }
 
+function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
+	$value_parts = explode(' ', $icon['value'], 2);
+
+	$short_prefix_id_to_shorthand = [
+			'solid' => 'fas',
+			'regular' => 'far',
+			'light' => 'fal',
+			'thin' => 'fat',
+			'brands' => 'fab',
+			'duotone' => 'fad',
+			'sharp-solid' => 'fass',
+			'sharp-regular' => 'fasr',
+			'sharp-light' => 'fasl',
+			'sharp-thin' => 'fast',
+			'sharp-duotone-solid' => 'fasds',
+			'sharp-duotone-regular' => 'fasdr',
+			'sharp-duotone-light' => 'fasdl',
+			'sharp-duotone-thin' => 'fasdt'
+	];
+
+	$shorthand
+	//[value] => fasds fa-airplay
+	error_log('ICON: ' . print_r($icon, true));
+	error_log('ATTRS: ' . print_r($attributes, true));
+	error_log('TAG: ' . print_r($tag, true));
+	return '<span>FOOBAR</span>';
+}
+
 function enqueue_fa_pro_css() {
 	$upload_dir = get_upload_dir();
 	$fa_version = FA_VERSION;
-	$fa_pro_css_path = trailingslashit( get_versioned_selfhost_dir( $upload_dir, $fa_version ) ) . 'css/all.min.css';
-	if ( file_exists( $fa_pro_css_path ) ) {
-		$fa_pro_css_url = trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( get_versioned_selfhost_relative_path( $fa_version ) ) . 'css/all.min.css';
-		wp_enqueue_style( 'font-awesome-pro', $fa_pro_css_url, [], $fa_version );
+	$stylesheet_basenames = [
+		'all',
+		'sharp-solid',
+		'sharp-regular',
+		'sharp-light',
+		'sharp-thin',
+		'sharp-duotone-solid',
+		'sharp-duotone-regular',
+		'sharp-duotone-light',
+		'sharp-duotone-thin'
+	];
+
+	foreach($stylesheet_basenames as $stylesheet_basename) {
+		$stylesheet_rel_path = "css/$stylesheet_basename.min.css";
+		$fa_pro_css_path = trailingslashit( get_versioned_selfhost_dir( $upload_dir, $fa_version ) ) . $stylesheet_rel_path;
+		if ( file_exists( $fa_pro_css_path ) ) {
+			$fa_pro_css_url = trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( get_versioned_selfhost_relative_path( $fa_version ) ) . $stylesheet_rel_path;
+			wp_enqueue_style( "font-awesome-pro-$stylesheet_basename", $fa_pro_css_url, [], $fa_version );
+		}
 	}
 }
 
