@@ -311,6 +311,8 @@ function replace_font_awesome( $settings ) {
 			'ver' => $fa_version,
 			'fetchJson' => sprintf( $json_url, $style_shorthand ),
 			'native' => true,
+			// See comments in render_font_awesome_svg_icon function about why we need this,
+			// and when it'll actually be invoked.
 			'render_callback' => 'render_font_awesome_svg_icon'
 		];
 	}
@@ -357,6 +359,18 @@ function unprefixed_icon_name($prefix, $prefixed_icon_name) {
 	return $result;
 }
 
+// This render_callback seems to fire on the backend in the editor, loading a saved page with
+// with an icon. When initially inserting a new icon, it uses an `<i>` tag and relies on Webfont/CSS.
+// When the Elementor experiment for inline SVGs is enabled, it bypasses this render_callback
+// and uses its internal Font Awesome data manager to look up the SVG objects and render them.
+// Of course, it won't have access to FA Pro styles and icons.
+// So, to make this work on both the backend and front end, that experiment must be disabled.
+// That can be done in Elementor -> Settings --> Experiments --> Inline Font Icons.
+// Or by adding this filter--see below:
+//
+// add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
+//   $experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
+// });
 function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
 	$value_parts = explode(' ', $icon['value'], 2);
 
@@ -432,7 +446,11 @@ function enqueue_fa_pro_css() {
 
 add_filter( 'elementor/icons_manager/native', 'replace_font_awesome' );
 add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
-add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
+// If inline SVG rendering is working, then we don't need to enqueue the CSS on the frontend,
+// unless we want to also have the CSS loaded for the sake of compatibility with any <i> tags that might
+// be present.
+//
+// add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 
 /**
  * Recursively delete a directory
@@ -467,3 +485,8 @@ function initialize_fontawesome_elementor_data_manager() {
 initialize_fontawesome_elementor_data_manager();
 
 add_action( 'activate_fontawesome-elementor-add-on/fontawesome-elementor-add-on.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
+
+// uncomment this to force the experiment off
+add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
+	$experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
+});
