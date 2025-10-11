@@ -14,6 +14,14 @@ defined( 'WPINC' ) || die;
 
 define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 
+// To use this experiment, make sure there's a web distribution zip file,
+// like fontawesome-pro-7.1.0-web.zip, in /tmp, as configured by the following defines.
+// On activation of this add-on plugin, it will extract the necessary files.
+// It may also require increasing PHP memory limits and max execution time.
+// Add to php.ini:
+// memory_limit = 512M
+// max_execution_time = 600
+define( 'FA_DIST_TMP_DIR', '/tmp' );
 define('FA_VERSION', '7.1.0');
 
 require_once trailingslashit(__DIR__) . './includes/class-fontawesome-elementor-data-manager.php';
@@ -107,8 +115,12 @@ function write_metadata_file( $full_asset_path, $contents ) {
 	}
 }
 
+function get_fa_dist_zip_tmp_file_path($fa_version) {
+	return trailingslashit( FA_DIST_TMP_DIR ) . "fontawesome-pro-$fa_version-web.zip";
+}
+
 function extract_selectively($upload_dir, $fa_version ) {
-	$tmp_file = "/tmp/fontawesome-pro-$fa_version-web.zip";
+	$tmp_file = get_fa_dist_zip_tmp_file_path($fa_version);
 	$temp_dir = WP_CONTENT_DIR . '/upgrade/myplugin-temp-' . wp_generate_password( 8, false );
 
 	if ( ! wp_mkdir_p( $temp_dir ) ) {
@@ -156,6 +168,8 @@ function extract_selectively($upload_dir, $fa_version ) {
 	}
 
 	build_metadata_json_assets($upload_dir, $fa_version, trailingslashit($temp_dir) . "$prefix/metadata/icon-families.json");
+
+	$wp_filesystem->delete( $temp_dir, true );
 }
 
 function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_json_path) {
