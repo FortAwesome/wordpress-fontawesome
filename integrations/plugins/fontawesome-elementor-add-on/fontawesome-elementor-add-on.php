@@ -16,6 +16,8 @@ define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 
 define('FA_VERSION', '7.1.0');
 
+require_once trailingslashit(__DIR__) . './includes/class-fontawesome-elementor-data-manager.php';
+
 function get_upload_dir() {
 	$upload_dir = wp_upload_dir( null, true, false );
 
@@ -318,10 +320,8 @@ function replace_font_awesome( $settings ) {
 	return array_merge( $icons, $settings );
 }
 
-function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
-	$value_parts = explode(' ', $icon['value'], 2);
-
-	$short_prefix_id_to_shorthand = [
+function shorthand_to_short_prefix_id_map() {
+	return [
 			'solid' => 'fas',
 			'regular' => 'far',
 			'light' => 'fal',
@@ -337,13 +337,73 @@ function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
 			'sharp-duotone-light' => 'fasdl',
 			'sharp-duotone-thin' => 'fasdt'
 	];
+}
 
-	$shorthand
-	//[value] => fasds fa-airplay
-	error_log('ICON: ' . print_r($icon, true));
-	error_log('ATTRS: ' . print_r($attributes, true));
-	error_log('TAG: ' . print_r($tag, true));
-	return '<span>FOOBAR</span>';
+function short_prefix_id_to_shorthand_map() {
+	$data = [];
+
+	foreach (shorthand_to_short_prefix_id_map() as $shorthand => $short_prefix_id) {
+		$data[$short_prefix_id] = $shorthand;
+	}
+
+	return $data;
+}
+
+function unprefixed_icon_name($prefix, $prefixed_icon_name) {
+	$result = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $prefixed_icon_name);
+	return $result;
+}
+
+function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
+	$value_parts = explode(' ', $icon['value'], 2);
+
+	error_log("render_callback for: ", print_r($icon, true));
+
+	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
+	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? 'solid';
+	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
+	$icon_data = FortAwesome\FontAwesome_Elementor_Data_Manager::instance()->get_icon_data($shorthand, $icon_name);
+	$width = $icon_data['width'] ?? null;
+	$height = $icon_data['height'] ?? null;
+	$path_data = $icon_data['path'] ?? null;
+
+	if ( !is_integer( $width ) || !is_integer( $height ) ) {
+		return '';
+	}
+
+	$paths = [];
+
+	if ( is_string( $path_data ) ) {
+		$paths[] = $path_data;
+	} else if ( is_array( $path_data ) ) {
+		foreach($path_data as $path) {
+			if ( is_string( $path ) ) {
+				$paths[] = $path;
+			}
+		}
+	}
+
+	if ( empty( $paths ) ) {
+		return '';
+	}
+
+	$is_duotone = count( $paths ) > 1;
+
+	$svg = sprintf('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d">', esc_attr($width), esc_attr($height));
+
+	foreach($paths as $index => $path) {
+		if ( $is_duotone && $index === 0 ) {
+			$svg .= sprintf('<path opacity=".4" d="%s"/>', esc_attr($path));
+		} else {
+			$svg .= sprintf('<path d="%s"/>', esc_attr($path));
+		}
+	}
+
+	$svg .= '</svg>';
+
+	error_log("REAL_SVG for: " . print_r($icon, true));
+
+	return $svg;
 }
 
 function enqueue_fa_pro_css() {
@@ -397,8 +457,14 @@ function fontawesome_elementor_add_on_activate_plugin() {
 	$fa_version = FA_VERSION;
 	$upload_dir = get_upload_dir();
 	ensure_uploads_metadata_dir( $fa_version );
-	//myplugin_download_and_extract( $fa_version, $upload_dir );
 	extract_selectively( $upload_dir, $fa_version );
 }
+
+function initialize_fontawesome_elementor_data_manager() {
+	$data_manager = FortAwesome\FontAwesome_Elementor_Data_Manager::instance();
+	$data_manager->set_dir( get_versioned_selfhost_dir( get_upload_dir(), FA_VERSION ) );
+}
+
+initialize_fontawesome_elementor_data_manager();
 
 add_action( 'activate_fontawesome-elementor-add-on/fontawesome-elementor-add-on.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
