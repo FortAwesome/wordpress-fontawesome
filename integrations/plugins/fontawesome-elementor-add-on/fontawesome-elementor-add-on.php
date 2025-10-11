@@ -357,8 +357,6 @@ function unprefixed_icon_name($prefix, $prefixed_icon_name) {
 function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
 	$value_parts = explode(' ', $icon['value'], 2);
 
-	error_log("render_callback for: ", print_r($icon, true));
-
 	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
 	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? 'solid';
 	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
@@ -400,8 +398,6 @@ function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
 	}
 
 	$svg .= '</svg>';
-
-	error_log("REAL_SVG for: " . print_r($icon, true));
 
 	return $svg;
 }
