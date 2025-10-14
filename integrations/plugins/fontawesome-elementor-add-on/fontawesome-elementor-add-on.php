@@ -12,6 +12,8 @@
 
 defined( 'WPINC' ) || die;
 
+define('FONT_AWESOME_ELEMENTOR_PLUGIN_VERSION', '0.0.1');
+
 define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 
 // To use this experiment, make sure there's a web distribution zip file,
@@ -499,3 +501,14 @@ add_action( 'activate_fontawesome-elementor-add-on/fontawesome-elementor-add-on.
 // add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
 // 	$experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
 // });
+
+add_action('elementor/frontend/after_enqueue_scripts', function () {
+	wp_register_script(
+		'fontawesome-elementor-js',
+		plugin_dir_url( __FILE__ ) . '/js/fontawesome-elementor.js',
+		['jquery'],
+		FONT_AWESOME_ELEMENTOR_PLUGIN_VERSION,
+		[]
+	);
+	wp_enqueue_script('fontawesome-elementor-js');
+});
