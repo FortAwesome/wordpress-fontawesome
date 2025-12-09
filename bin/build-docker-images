@@ -47,7 +47,11 @@ declare -a CUSTOM_IMAGES
 count=0
 for tag in $*; do
   IMAGE_TAG=wordpress-fontawesome-dev-${tag}
-  $DOCKER build -t ${IMAGE_TAG}  -f $DOCKER_DIR/Dockerfile-${tag} $DOCKER_DIR
+  $DOCKER build \
+    --build-arg WORDPRESS_DB_NAME="$WORDPRESS_DB_NAME" \
+    --build-arg WORDPRESS_DB_USER="$WORDPRESS_DB_USER" \
+    --build-arg WORDPRESS_DB_PASSWORD="$WORDPRESS_DB_PASSWORD" \
+    -t ${IMAGE_TAG}  -f $DOCKER_DIR/Dockerfile-${tag} $DOCKER_DIR
 
   if [ $? -ne 0 ]; then
   	exit 1

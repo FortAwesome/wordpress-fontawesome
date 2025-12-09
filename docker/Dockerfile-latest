@@ -27,6 +27,10 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 
 COPY ./install-wp-tests-docker.sh /tmp
 
+ARG WORDPRESS_DB_NAME
+ARG WORDPRESS_DB_USER
+ARG WORDPRESS_DB_PASSWORD
+
 RUN /tmp/install-wp-tests-docker.sh latest
 
 # See: https://github.com/docker-library/wordpress/issues/205

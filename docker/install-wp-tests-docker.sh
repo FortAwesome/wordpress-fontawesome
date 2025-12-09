@@ -4,13 +4,9 @@ WP_VERSION=${1-latest}
 
 DB_HOST=${2-wpdb:3306}
 
-# These are hardcoded to be the same as those defined for the db container in docker-compose.yml
-# We'll use the same wordpress database for the test environment. Since the wp-tests-config.php
-# that is set up by this script uses a different table prefix for the test tables, the tables for
-# test and dev will be separated.
-DB_NAME=wordpress
-DB_USER=wordpress
-DB_PASS=wordpress
+DB_NAME=${WORDPRESS_DB_NAME}
+DB_USER=${WORDPRESS_DB_USER}
+DB_PASS=${WORDPRESS_DB_PASSWORD}
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")
