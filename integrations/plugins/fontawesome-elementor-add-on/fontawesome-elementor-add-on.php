@@ -362,11 +362,28 @@ function unprefixed_icon_name($prefix, $prefixed_icon_name) {
 function render_font_awesome_svg_icon($svg_data_dir, $icon, $attributes = [], $tag = 'i') {
 	$value_parts = explode(' ', $icon['value'], 2);
 
-	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
-	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? 'solid';
-	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
+	if ( count( $value_parts ) < 2 ) {
+		return '';
+	}
 
+	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
+	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? null;
+
+	if ( is_null( $shorthand ) ) {
+		return '';
+	}
+
+	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
 	$icon_data = get_icon_data($svg_data_dir, $shorthand, $icon_name);
+
+	return render_svg_from_icon_data( $icon_data );
+}
+
+function render_svg_from_icon_data( $icon_data ) {
+	if ( !is_array( $icon_data ) ) {
+		return '';
+	}
+
 	$width = $icon_data['width'] ?? null;
 	$height = $icon_data['height'] ?? null;
 	$path_data = $icon_data['path'] ?? null;
