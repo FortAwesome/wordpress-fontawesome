@@ -91,32 +91,6 @@ function ensure_uploads_metadata_dir( $fa_version ) {
 	}
 }
 
-function write_metadata_file( $full_asset_path, $contents ) {
-	if ( ! function_exists( 'WP_Filesystem' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-	}
-
-	if ( ! WP_Filesystem( false ) ) {
-		throw new Exception(
-			esc_html__(
-				'Failed to initialize filesystem usage for creating self-hosted assets. Please report this on the plugin support forum so it can be investigated.',
-				'font-awesome'
-			)
-		);
-	}
-
-	global $wp_filesystem;
-
-	if ( ! $wp_filesystem->put_contents( $full_asset_path, $contents ) ) {
-		throw new Exception(
-			esc_html__(
-				'Failed creating self-hosted assets. Contact your WordPress server administrator.',
-				'font-awesome'
-			)
-		);
-	}
-}
-
 function get_fa_dist_zip_tmp_file_path($fa_version) {
 	return trailingslashit( FA_DIST_TMP_DIR ) . "fontawesome-pro-$fa_version-web.zip";
 }
