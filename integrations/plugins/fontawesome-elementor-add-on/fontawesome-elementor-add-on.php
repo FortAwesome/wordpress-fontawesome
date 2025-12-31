@@ -92,7 +92,7 @@ function ensure_uploads_metadata_dir( $fa_version ) {
 }
 
 function get_fa_dist_zip_tmp_file_path($fa_version) {
-	return trailingslashit( FA_DIST_TMP_DIR ) . "fontawesome-pro-$fa_version-web.zip";
+	return trailingslashit( FA_DIST_TMP_DIR ) . "kit.zip";
 }
 
 function extract_selectively($upload_dir, $fa_version ) {
