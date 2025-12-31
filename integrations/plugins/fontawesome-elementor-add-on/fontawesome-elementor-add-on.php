@@ -292,7 +292,7 @@ function replace_font_awesome_additional_tabs() {
 		// Font Awesome Data Manager.
 		$icons["fapro-$style_shorthand"] = [
 			'name' => "fapro-$style_shorthand",
-			'label' => "Font Awesome Pro - $style_shorthand",
+			'label' => "FA Pro - $style_shorthand",
 			'url' => false,
 			'enqueue' => false,
 			'prefix' => 'fa-',
