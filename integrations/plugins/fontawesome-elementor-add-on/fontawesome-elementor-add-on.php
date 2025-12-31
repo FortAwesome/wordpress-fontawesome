@@ -26,8 +26,6 @@ define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 define( 'FA_DIST_TMP_DIR', '/tmp' );
 define('FA_VERSION', '7.1.0');
 
-require_once trailingslashit(__DIR__) . './includes/class-fontawesome-elementor-data-manager.php';
-
 function get_upload_dir() {
 	$upload_dir = wp_upload_dir( null, true, false );
 
@@ -364,7 +362,9 @@ function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
 	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
 	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? 'solid';
 	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
-	$icon_data = FortAwesome\FontAwesome_Elementor_Data_Manager::instance()->get_icon_data($shorthand, $icon_name);
+	$svg_data_dir = get_versioned_selfhost_dir( get_upload_dir(), FA_VERSION );
+
+	$icon_data = get_icon_data($svg_data_dir, $shorthand, $icon_name);
 	$width = $icon_data['width'] ?? null;
 	$height = $icon_data['height'] ?? null;
 	$path_data = $icon_data['path'] ?? null;
@@ -464,12 +464,20 @@ function fontawesome_elementor_add_on_activate_plugin() {
 	extract_selectively( $upload_dir, $fa_version );
 }
 
-function initialize_fontawesome_elementor_data_manager() {
-	$data_manager = FortAwesome\FontAwesome_Elementor_Data_Manager::instance();
-	$data_manager->set_dir( get_versioned_selfhost_dir( get_upload_dir(), FA_VERSION ) );
-}
+function get_icon_data( $dir, $style_shorthand, $icon_name ) {
+	$file_path = $dir . "/svg-objects/$style_shorthand/$icon_name.json";
 
-initialize_fontawesome_elementor_data_manager();
+	if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
+	    $json_str = file_get_contents( $file_path );
+		$data = json_decode( $json_str, true );
+
+		if ( json_last_error() === JSON_ERROR_NONE ) {
+			return $data;
+		}
+	}
+
+	return [];
+}
 
 add_action( 'activate_fontawesome-elementor-add-on/fontawesome-elementor-add-on.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
 
