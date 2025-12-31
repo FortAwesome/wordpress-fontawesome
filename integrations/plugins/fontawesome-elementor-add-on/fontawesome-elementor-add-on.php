@@ -106,7 +106,7 @@ function extract_selectively($upload_dir, $fa_version ) {
 	$dirs_for_selfhost = [ 'css', 'webfonts' ];
 	$dirs_for_temporary_use = [ 'metadata' ];
 	$dirs_for_extraction = array_merge( $dirs_for_selfhost, $dirs_for_temporary_use );
-	$prefix = "fontawesome-pro-$fa_version-web/";
+	$prefix = "";
 
 	$prefixed_dirs_for_extraction = array_map(function($item) use ($prefix) {
 	    return $prefix . $item;
