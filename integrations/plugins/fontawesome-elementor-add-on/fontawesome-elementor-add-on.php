@@ -322,7 +322,9 @@ function shorthand_to_short_prefix_id_map() {
 			'sharp-duotone-solid' => 'fasds',
 			'sharp-duotone-regular' => 'fasdr',
 			'sharp-duotone-light' => 'fasdl',
-			'sharp-duotone-thin' => 'fasdt'
+			'sharp-duotone-thin' => 'fasdt',
+			'kit-custom' => 'fak',
+			'kit-duotone-custom' => 'fakd'
 	];
 }
 
