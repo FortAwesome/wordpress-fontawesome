@@ -277,6 +277,11 @@ function replace_font_awesome_additional_tabs() {
 	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
 	$shorthand_to_short_prefix_id = shorthand_to_short_prefix_id_map();
 
+	$svg_data_dir = get_versioned_selfhost_dir( $upload_dir, $fa_version );
+	$render_callback = function ($icon, $attributes, $tag) use( $svg_data_dir ) {
+		return render_font_awesome_svg_icon($svg_data_dir, $icon, $attributes = [], $tag = 'i');
+	};
+
 	$icons = [];
 
 	foreach($style_shorthands as $style_shorthand) {
@@ -296,9 +301,7 @@ function replace_font_awesome_additional_tabs() {
 			'ver' => $fa_version,
 			'fetchJson' => sprintf( $json_url, $style_shorthand ),
 			'native' => true,
-			// See comments in render_font_awesome_svg_icon function about why we need this,
-			// and when it'll actually be invoked.
-			'render_callback' => 'render_font_awesome_svg_icon'
+			'render_callback' => $render_callback
 		];
 	}
 
@@ -356,13 +359,12 @@ function unprefixed_icon_name($prefix, $prefixed_icon_name) {
 // add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
 //   $experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
 // });
-function render_font_awesome_svg_icon($icon, $attributes = [], $tag = 'i') {
+function render_font_awesome_svg_icon($svg_data_dir, $icon, $attributes = [], $tag = 'i') {
 	$value_parts = explode(' ', $icon['value'], 2);
 
 	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
 	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? 'solid';
 	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
-	$svg_data_dir = get_versioned_selfhost_dir( get_upload_dir(), FA_VERSION );
 
 	$icon_data = get_icon_data($svg_data_dir, $shorthand, $icon_name);
 	$width = $icon_data['width'] ?? null;
