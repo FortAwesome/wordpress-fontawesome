@@ -21,7 +21,8 @@
     "support": {
         "email": "hello@fontawesome.com"
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "archive": {
         "exclude": [
             "/images",
@@ -90,5 +91,15 @@
             "symfony/flex": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
-    }
+    },
+    "require": {
+      "fortawesome/wordpress-fontawesome-lib": "*"
+    },
+    "repositories": [
+      {
+        "type": "path",
+        "url": "../wordpress-fontawesome-lib",
+        "options": { "symlink": true }
+      }
+    ]
 }

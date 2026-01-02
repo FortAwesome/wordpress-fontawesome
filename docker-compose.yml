@@ -29,6 +29,7 @@ x-dev_env_volumes: &dev_env_volumes
     # how we ignore subdirectories.
 
     - .:/var/www/html/wp-content/plugins/font-awesome
+    - ../wordpress-fontawesome-lib:/var/www/html/wp-content/plugins/wordpress-fontawesome-lib
 
     # Bind mounts for integration themes or plugins
     - ./integrations/js:/var/www/html/wp-content/js
