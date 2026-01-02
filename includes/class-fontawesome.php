@@ -16,21 +16,9 @@ use DateTimeZone;
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( __DIR__ ) . 'autoload.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-resource.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-config-controller.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-controller.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-conflict-detector.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-preference-check-controller.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-conflict-detection-controller.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-exception.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-command.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/is-gutenberg-page.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-icon-block-init.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-svg-styles-manager.php';
+require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/self-host.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -3203,6 +3191,11 @@ EOT;
 	public function is_block_editor_support_enabled() {
 		return ! $this->disable_block_editor_support;
 	}
+
+	public function create_kit_download( $kit_token ) {
+		return create_kit_download( $kit_token );
+	}
+
 }
 
 // phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed

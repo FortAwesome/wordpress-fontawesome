@@ -95,6 +95,26 @@
     "require": {
       "fortawesome/wordpress-fontawesome-lib": "*"
     },
+    "autoload": {
+      "psr-4": {
+        "FortAwesome\\": "includes/"
+      },
+      "classmap": [
+        "includes/class-fontawesome-release-provider.php",
+        "includes/class-fontawesome-metadata-provider.php",
+        "includes/class-fontawesome-api-settings.php",
+        "includes/class-fontawesome-resource.php",
+        "includes/class-fontawesome-config-controller.php",
+        "includes/class-fontawesome-api-controller.php",
+        "includes/class-fontawesome-preference-conflict-detector.php",
+        "includes/class-fontawesome-preference-check-controller.php",
+        "includes/class-fontawesome-conflict-detection-controller.php",
+        "includes/class-fontawesome-exception.php",
+        "includes/class-fontawesome-command.php",
+        "includes/class-fontawesome-svg-styles-manager.php",
+        "includes/class-fontawesome-svg-styles-manager.php"
+      ]
+    },
     "repositories": [
       {
         "type": "path",
