@@ -15,6 +15,7 @@ use Error;
 use DateTimeZone;
 
 require_once trailingslashit( __DIR__ ) . '../defines.php';
+require_once trailingslashit( __DIR__ ) . 'autoload.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-release-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-metadata-provider.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/class-fontawesome-api-settings.php';
