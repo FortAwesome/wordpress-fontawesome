@@ -13,15 +13,7 @@ echo "Adding WordPress debug configuration..."
 wp_cli config set WP_DEBUG true \
 && wp_cli config set WP_DEBUG_LOG true \
 && wp_cli config set SCRIPT_DEBUG_LOG true \
-&& wp_cli config set WP_DEBUG_DISPLAY false \
-&& wp_cli config set SAVEQUERIES true \
-&& wp_cli plugin install debug-bar \
-&& wp_cli plugin install debug-bar-console \
-&& wp_cli plugin install debug-bar-constants \
-&& wp_cli plugin install debug-bar-actions-and-filters-addon \
-&& wp_cli plugin install debug-bar-transients \
-&& wp_cli plugin install debug-bar-list-dependencies \
-&& wp_cli plugin install debug-bar-remote-requests
+&& wp_cli config set WP_DEBUG_DISPLAY false
 
 if [ "$?" == "0" ]; then
   echo "ok."
