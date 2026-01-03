@@ -63,7 +63,6 @@ x-dev_env_volumes: &dev_env_volumes
     - /var/www/html/wp-content/plugins/font-awesome/phpdoc-data
     - /var/www/html/wp-content/plugins/font-awesome/tmp
     - /var/www/html/wp-content/plugins/font-awesome/volumes
-    - /var/www/html/wp-content/plugins/font-awesome/wp-dist
     - /var/www/html/wp-content/plugins/font-awesome/images
     - /var/www/html/wp-content/plugins/font-awesome/assets
     - /var/www/html/wp-content/plugins/font-awesome/.vscode
