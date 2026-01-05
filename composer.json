@@ -76,7 +76,7 @@
     "scripts": {
         "phpcs": "phpcs --standard=.phpcs.xml",
         "phpcbf": "phpcbf --standard=.phpcs.xml",
-        "test": "phpunit",
+        "test": "@php -d extension=uopz $COMPOSER_VENDOR_DIR/bin/phpunit",
         "clean": "rm -fR wp-dist && rm -fR admin/build && rm -fR block-editor/build && rm -fR classic-editor/build && rm -fR icon-chooser/build && rm -fR vendor && rm -f font-awesome.zip",
         "build.admin": "cd admin; npm install && npm run build",
         "build.block-editor": "cd block-editor; npm install && npm run build",
