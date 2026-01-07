@@ -18,7 +18,6 @@ require_once trailingslashit( __DIR__ ) . '../defines.php';
 require_once trailingslashit( __DIR__ ) . 'autoload.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/is-gutenberg-page.php';
 require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'block-editor/font-awesome-icon-block-init.php';
-require_once trailingslashit( FONTAWESOME_DIR_PATH ) . 'includes/self-host.php';
 require_once ABSPATH . 'wp-admin/includes/screen.php';
 
 /**
@@ -3191,11 +3190,6 @@ EOT;
 	public function is_block_editor_support_enabled() {
 		return ! $this->disable_block_editor_support;
 	}
-
-	public function create_kit_download( $kit_token ) {
-		return create_kit_download( $kit_token );
-	}
-
 }
 
 // phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
