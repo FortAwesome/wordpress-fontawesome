@@ -32,6 +32,10 @@ use FontAwesomeLib\Base\Query_Resolver_Base;
 use FontAwesomeLib\Base\Auth_Token_Provider_Base;
 use FontAwesomeLib\Kit_Download;
 
+function fontawesome_elementor_addon_option_key() {
+	return 'fontawesome_elementor_addon';
+}
+
 function get_upload_dir() {
 	$upload_dir = wp_upload_dir( null, false, false );
 
@@ -357,7 +361,42 @@ function fontawesome_elementor_add_on_activate_plugin() {
         );
 	}
 
-	$kit_assets_dir = $kit_download->download_and_prepare_selfhosting($query_resolver, $token_provider, $upload_dir["basedir"]);
+	$upload_base_dir = $upload_dir["basedir"];
+
+	$kit_assets_absolute_dir = $kit_download->download_and_prepare_selfhosting($query_resolver, $token_provider, $upload_base_dir);
+
+	if (is_wp_error( $kit_assets_absolute_dir )) {
+		$kit_assets_absolute_dir->add(
+			"fontawesome_elementor_addon_download_kit_error",
+			__(
+				"Font Awesome Elementor Add-on was unable to download and prepare the Font Awesome Kit for self-hosting.",
+				"fontawesome-elementor-addon",
+			)
+		);
+
+		wp_die(
+			$kit_assets_absolute_dir,
+			'Font Awesome Elementor Add-on',
+			["back_link" => true]
+		);
+	}
+
+	$kit_assets_relative_dir = str_replace( trailingslashit( $upload_base_dir ), '', trailingslashit( $kit_assets_absolute_dir ) );
+
+	$options = [
+		"option_schema_version" => 1,
+		"kit_assets_relative_dir" => $kit_assets_relative_dir
+	];
+
+	$ok = update_option( fontawesome_elementor_addon_option_key(), $options );
+
+	if ( false === $ok ) {
+		wp_die(
+			__('Font Awesome Elementor Add-on was unable to save its configuration options.', 'fontawesome-elementor-addon'),
+			'Font Awesome Elementor Add-on',
+			["back_link" => true]
+		);
+	}
 }
 
 function get_icon_data( $dir, $style_shorthand, $icon_name ) {
