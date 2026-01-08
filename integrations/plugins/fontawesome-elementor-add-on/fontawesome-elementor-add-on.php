@@ -26,6 +26,8 @@ define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 define( 'FA_DIST_TMP_DIR', '/tmp' );
 define('FA_VERSION', '7.1.0');
 
+require_once trailingslashit( __DIR__ ) . 'autoload.php';
+
 use FontAwesomeLib\Base\Query_Resolver_Base;
 use FontAwesomeLib\Base\Auth_Token_Provider_Base;
 use FontAwesomeLib\Kit_Download;
