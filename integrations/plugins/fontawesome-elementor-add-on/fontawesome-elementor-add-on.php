@@ -26,23 +26,22 @@ define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 define( 'FA_DIST_TMP_DIR', '/tmp' );
 define('FA_VERSION', '7.1.0');
 
+use FontAwesomeLib\Base\Query_Resolver_Base;
+use FontAwesomeLib\Base\Auth_Token_Provider_Base;
+use FontAwesomeLib\Kit_Download;
+
 function get_upload_dir() {
-	$upload_dir = wp_upload_dir( null, true, false );
+	$upload_dir = wp_upload_dir( null, false, false );
 
 	if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-		throw new Exception(
-			esc_html__(
-				'Failed to get or initialize WP uploads directory.',
-				'font-awesome'
-			)
-		);
+		wp_die(
+            __('There was an error initializing the uploads directory for setting up the Font Awesome Kit', 'fontawesome-elementor-addon'),
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
 	}
 
 	return $upload_dir;
-}
-
-function get_versioned_fa_pro_assets_dir($fa_version) {
-	return trailingslashit( WP_CONTENT_DIR ) . trailingslashit( FONTAWESOME_PRO_ASSETS_DIR ) . $fa_version;
 }
 
 function get_versioned_selfhost_dir($upload_dir, $fa_version) {
@@ -59,201 +58,6 @@ function build_metadata_relative_path($fa_version, $file = '') {
 
 function build_metadata_disk_path($upload_dir, $fa_version, $file = '') {
 	return trailingslashit($upload_dir['basedir']) . build_metadata_relative_path($fa_version, $file);
-}
-
-function ensure_versioned_fa_pro_assets_dir($fa_version) {
-	$dir = get_versioned_fa_pro_assets_dir($fa_version);
-
-	if ( ! wp_mkdir_p( $dir ) ) {
-		throw new Exception(
-			esc_html__(
-				'Failed creating a directory for self-hosted assets. Contact your WordPress server administrator.',
-				'font-awesome'
-			)
-		);
-	}
-}
-
-function ensure_uploads_metadata_dir( $fa_version ) {
-	$upload_dir = get_upload_dir();
-
-	$metadata_dir = build_metadata_disk_path($upload_dir, $fa_version);
-
-	if ( ! wp_mkdir_p( $metadata_dir ) ) {
-		throw new Exception(
-			esc_html__(
-				'Failed creating a directory for self-hosted assets. Contact your WordPress server administrator.',
-				'font-awesome'
-			)
-		);
-	}
-}
-
-function get_fa_dist_zip_tmp_file_path($fa_version) {
-	return trailingslashit( FA_DIST_TMP_DIR ) . "kit.zip";
-}
-
-function extract_selectively($upload_dir, $fa_version ) {
-	$tmp_file = get_fa_dist_zip_tmp_file_path($fa_version);
-	$temp_dir = WP_CONTENT_DIR . '/upgrade/myplugin-temp-' . wp_generate_password( 8, false );
-
-	if ( ! wp_mkdir_p( $temp_dir ) ) {
-		throw new Exception("failed creating temp_dir: $temp_dir");
-	}
-	$zip = new ZipArchive;
-	$dirs_for_selfhost = [ 'css', 'webfonts' ];
-	$dirs_for_temporary_use = [ 'metadata' ];
-	$dirs_for_extraction = array_merge( $dirs_for_selfhost, $dirs_for_temporary_use );
-	$prefix = "";
-
-	$prefixed_dirs_for_extraction = array_map(function($item) use ($prefix) {
-	    return $prefix . $item;
-	}, $dirs_for_extraction);
-
-	$prefixed_dirs_for_selfhost = array_map(function($item) use ($prefix) {
-	    return $prefix . $item;
-	}, $dirs_for_selfhost);
-
-	if ( $zip->open( $tmp_file ) === TRUE ) {
-	  for ( $i = 0; $i < $zip->numFiles; $i++ ) {
-	        $entry = $zip->getNameIndex($i);
-
-	        foreach ( $prefixed_dirs_for_extraction as $dir ) {
-	            if ( strpos($entry, trailingslashit( $dir ) ) === 0 ) {
-					if (!$zip->extractTo($temp_dir, [$entry])) {
-						throw new Exception(
-						"failed extracting entry: $entry"
-						);
-					}
-	                break;
-	            }
-	        }
-	   }
-	    $zip->close();
-	}
-
-	global $wp_filesystem;
-	WP_Filesystem();
-
-	foreach ($prefixed_dirs_for_selfhost as $dir) {
-		$source = trailingslashit( $temp_dir ) . $dir;
-		$destination = trailingslashit( get_versioned_selfhost_dir($upload_dir, $fa_version) ) . str_replace($prefix, '', $dir);
-		$wp_filesystem->move($source, $destination, true);
-	}
-
-	build_metadata_json_assets($upload_dir, $fa_version, trailingslashit($temp_dir) . "$prefix/metadata/icon-families.json");
-
-	$wp_filesystem->delete( $temp_dir, true );
-}
-
-function build_metadata_json_assets($upload_dir, $fa_version, $icon_families_json_path) {
-	if ( ! function_exists( 'WP_Filesystem' ) ) {
-    	require_once ABSPATH . 'wp-admin/includes/file.php';
-	}
-
-	global $wp_filesystem;
-
-	// Initialize the API — returns false if credentials are needed
-	WP_Filesystem();
-
-	$file_path = $icon_families_json_path;
-	$svg_objects_dir = trailingslashit(get_versioned_selfhost_dir($upload_dir, $fa_version)) . '/svg-objects';
-	if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
-	    $json_str = file_get_contents( $file_path );
-	    $data = json_decode( $json_str, true );
-
-	    if ( json_last_error() === JSON_ERROR_NONE ) {
-			$icons_by_shorthand = [];
-
-			foreach ($data as $icon_name => $icon_data) {
-				foreach ($icon_data['svgs'] as $family => $style_map) {
-					foreach ($style_map as $style => $svg_data) {
-						$svg_object = [
-							"width" => $svg_data['width'],
-							"height" => $svg_data['height'],
-							"path" => $svg_data['path']
-						];
-
-						$style_shorthand = get_style_shorthand($family, $style);
-						$svg_object_json = json_encode($svg_object);
-						$family_style_dir = trailingslashit($svg_objects_dir) . $style_shorthand;
-
-						if ( ! wp_mkdir_p( $family_style_dir ) ) {
-							throw new Exception(
-								esc_html__(
-									'Failed creating a directory for self-hosted assets. Contact your WordPress server administrator.',
-									'font-awesome'
-								)
-							);
-						}
-
-						$icon_file_path = trailingslashit($family_style_dir) . "$icon_name.json";
-
-						if ( ! $wp_filesystem->put_contents( $icon_file_path, $svg_object_json, FS_CHMOD_FILE ) ) {
-							throw new Exception(
-								esc_html__(
-									'Failed creating an svg-objects file.',
-									'font-awesome'
-								)
-							);
-						}
-
-						if (!isset($icons_by_shorthand[$style_shorthand])) {
-							$icons_by_shorthand[$style_shorthand] = [];
-						}
-
-						// must quote icon names in case some are numeric.
-						$icons_by_shorthand[$style_shorthand][] = "$icon_name";
-					}
-				}
-			}
-
-			foreach ($icons_by_shorthand as $style_shorthand => $icon_names) {
-				$icon_names_json = json_encode(["icons" => $icon_names]);
-				$file_name = "$style_shorthand.js";
-				$metadata_file_path = build_metadata_disk_path($upload_dir, $fa_version, $file_name);
-
-				if ( ! $wp_filesystem->put_contents( $metadata_file_path, $icon_names_json, FS_CHMOD_FILE ) ) {
-					throw new Exception("failed creating metadata file: $metadata_file_path" );
-				}
-			}
-	    } else {
-	        error_log( 'JSON parse error: ' . json_last_error_msg() );
-	    }
-	}
-}
-
-function get_style_shorthand($family, $style) {
-	if ('classic' === $family) {
-		return $style;
-	}
-
-	if ('duotone' === $family && 'solid' === $style) {
-		return 'duotone';
-	}
-
-	return "$family-$style";
-}
-
-function get_style_shorthands( $upload_dir, $fa_version ) {
-	global $wp_filesystem;
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-
-	// Initialize the filesystem
-	WP_Filesystem();
-
-	$dir = trailingslashit( $upload_dir['basedir'] ) . trailingslashit(build_metadata_relative_path($fa_version));
-	$files = $wp_filesystem->dirlist( $dir );
-
-	$shorthands = [];
-
-	if ( ! empty( $files ) ) {
-	    foreach ( $files as $file => $fileinfo ) {
-		    $shorthands[] = pathinfo( $file, PATHINFO_FILENAME );
-	    }
-	}
-
-	return $shorthands;
 }
 
 function replace_font_awesome_native($settings) {
@@ -458,29 +262,100 @@ add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 // be present.
 add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 
-/**
- * Recursively delete a directory
- */
-function myplugin_rrmdir( $dir ) {
-    if ( ! is_dir( $dir ) ) return;
-    $items = scandir( $dir );
-    foreach ( $items as $item ) {
-        if ( $item == '.' || $item == '..' ) continue;
-        $path = $dir . '/' . $item;
-        if ( is_dir( $path ) ) {
-            myplugin_rrmdir( $path );
-        } else {
-            unlink( $path );
-        }
-    }
-    rmdir( $dir );
-}
-
 function fontawesome_elementor_add_on_activate_plugin() {
 	$fa_version = FA_VERSION;
 	$upload_dir = get_upload_dir();
-	ensure_uploads_metadata_dir( $fa_version );
-	extract_selectively( $upload_dir, $fa_version );
+
+	$api_token = getenv( 'API_TOKEN' );
+
+	if ( false === $api_token || '' === $api_token ) {
+		wp_die(
+            __('No Font Awesome API token was found. Cannot initialize a Font Awesome Kit', 'fontawesome-elementor-addon'),
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
+	}
+
+	$kit_token = getenv( 'KIT_TOKEN' );
+
+	if ( false === $kit_token || '' === $kit_token ) {
+		wp_die(
+            __('No Font Awesome Kit token was found. Cannot initialize a Font Awesome Kit', 'fontawesome-elementor-addon'),
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
+	}
+
+	$token_provider = new Auth_Token_Provider_Base($api_token);
+	$access_token = $token_provider->get_access_token();
+	$query_resolver = new Query_Resolver_Base();
+
+	// Planned workflow:
+	// 1. create_kit_download to get buildId. This will be returned to the client.
+	// 2. poll with buildId until status is "READY".
+	// 3. invoke download_and_prepare_selfhosting to download and extract the zip.
+
+	// This is what it will look to initially create a kit download:
+	$kit_download_initial = Kit_Download::create_kit_download( $query_resolver, $token_provider, $kit_token );
+
+	if (is_wp_error( $kit_download_initial )) {
+		$kit_download_initial->add(
+            "fontawesome_elementor_addon_create_kit_download_error",
+            __(
+                "Font Awesome Elementor Add-on was unable to create a Kit Download.",
+                "fontawesome-elementor-addon",
+            )
+		);
+
+		wp_die(
+            $kit_download_initial,
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
+	}
+
+	// When the client polls, it will provide the build_id and kit_token from above, which
+	// will allow it to poll and/or download the zip:
+	$kit_download = new Kit_Download(
+		$kit_download_initial->get_kit_token(),
+		$kit_download_initial->get_build_id()
+	);
+
+	$poll_result = $kit_download->poll( $query_resolver, $token_provider );
+
+	if (is_wp_error( $poll_result )) {
+		$poll_result->add(
+			"fontawesome_elementor_addon_poll_kit_download_error",
+			__(
+				"Font Awesome Elementor Add-on was unable to poll the Kit Download status.",
+				"fontawesome-elementor-addon",
+			)
+		);
+
+		wp_die(
+            $poll_result,
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
+	}
+
+	if (!$kit_download->is_ready()) {
+		$kit_download->add(
+			"fontawesome_elementor_addon_kit_not_ready_error",
+			__(
+				"Font Awesome Elementor Add-on Kit Download is not ready yet.",
+				"fontawesome-elementor-addon",
+			)
+		);
+
+		wp_die(
+            $kit_download,
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
+	}
+
+	$kit_assets_dir = $kit_download->download_and_prepare_selfhosting($query_resolver, $token_provider, $upload_dir["basedir"]);
 }
 
 function get_icon_data( $dir, $style_shorthand, $icon_name ) {
