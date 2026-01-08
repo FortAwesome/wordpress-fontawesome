@@ -414,7 +414,7 @@ function get_icon_data( $dir, $style_shorthand, $icon_name ) {
 	return [];
 }
 
-add_action( 'activate_fontawesome-elementor-add-on/fontawesome-elementor-add-on.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
+add_action( 'activate_fontawesome-elementor-addon/fontawesome-elementor-addon.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
 
 // Uncomment this to force the experiment off
 // add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
