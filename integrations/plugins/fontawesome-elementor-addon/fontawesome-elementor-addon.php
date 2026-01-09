@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name:       Font Awesome Elementor Add-on
+ * Plugin Name:       Font Awesome Elementor Addon
  * Plugin URI:        https://fontawesome.com/
  * Description:       Add Font Awesome Pro icons to Elementor.
  * Version:           0.0.1
@@ -37,17 +37,7 @@ function fontawesome_elementor_addon_option_key() {
 }
 
 function get_upload_dir() {
-	$upload_dir = wp_upload_dir( null, false, false );
-
-	if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-		wp_die(
-            __('There was an error initializing the uploads directory for setting up the Font Awesome Kit', 'fontawesome-elementor-addon'),
-            'Font Awesome Elementor Add-on',
-            ["back_link" => true]
-        );
-	}
-
-	return $upload_dir;
+	return wp_upload_dir( null, false, false );
 }
 
 function get_versioned_selfhost_dir($upload_dir, $fa_version) {
@@ -76,13 +66,110 @@ function replace_font_awesome_native($settings) {
 	return $settings;
 }
 
+function fontawesome_elementor_fake_notify_warning($notices) {
+	if (!class_exists('Elementor\Core\Admin\Notices\Base_Notice')) {
+		return $notices;
+	}
+
+	require_once trailingslashit( __DIR__ ) . 'Notice.php';
+
+	$title = __( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' );
+
+	$description = __( 'Thank you for installing the Font Awesome Elementor Addon! Start using Font Awesome icons in your Elementor designs today.', 'fontawesome-elementor-addon' );
+
+	$notice = new \FontAwesomeElementorAddon\Notice($title, $description);
+
+	return [$notice];
+
+	//$message = sprintf(
+	//	/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
+	//	esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'fontawesome-elementor-addon' ),
+	//	'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>',
+	//	'<strong>' . esc_html__( 'Elementor', 'fontawesome-elementor-addon' ) . '</strong>',
+	//	'42'
+	//);
+
+	//printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+}
+
+add_action('elementor/core/admin/notices', 'fontawesome_elementor_fake_notify_warning');
+add_action('elementor/init', function() {
+});
+
+add_filter('elementor/admin/dashboard_overview_widget/footer_actions', function($actions) {
+	$actions['fontawesome-pro'] = [
+		'title' => esc_html__( 'Upgrade to Font Awesome Pro', 'fontawesome-elementor-addon' ),
+		'link' => 'https://fontawesome.com',
+	];
+
+	return $actions;
+});
+
 // We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
 // on initial insertion, because of Elementor's logic in:
 // get_icon_manager_tabs()
 function replace_font_awesome_additional_tabs() {
 	$upload_dir = get_upload_dir();
-	$fa_version = FA_VERSION;
-	$style_shorthands = get_style_shorthands( $upload_dir, $fa_version );
+
+	if ( (isset( $upload_dir['error'] ) && false !== $upload_dir['error']) || !isset( $upload_dir['basedir'] ) || !isset( $upload_dir['basedir'] ) ) {
+		error_log("Font Awesome Elementor Addon: failed to get WP upload dir.\n");
+		return [];
+	}
+
+	$option = get_option( fontawesome_elementor_addon_option_key() );
+
+	if(!is_array($option) || !isset($option["kit_assets_relative_dir"])) {
+		error_log("Font Awesome Elementor Addon: no kit assets dir configured.\n");
+		return [];
+	}
+
+	$kit_assets_absolute_dir = trailingslashit( $upload_dir['basedir'] ) . trailingslashit( $option["kit_assets_relative_dir"] );
+
+	if (!function_exists("WP_Filesystem")) {
+    	require_once ABSPATH . "wp-admin/includes/file.php";
+    }
+
+    if (!WP_Filesystem(false)) {
+        error_log("Font Awesome Elementor Addon: WP_Filesystem could not be initialized.\n");
+		return [];
+    }
+
+    global $wp_filesystem;
+
+    if (!$wp_filesystem->is_dir($kit_assets_absolute_dir)) {
+		error_log("Font Awesome Elementor Addon: kit assets dir is not a directory: $kit_assets_absolute_dir\n");
+		return [];
+    }
+
+    $kit_json_metadata_path = trailingslashit( $kit_assets_absolute_dir ) . 'metadata/kit.json';
+
+    if (!$wp_filesystem->is_file($kit_json_metadata_path) || !$wp_filesystem->is_readable($kit_json_metadata_path)) {
+		error_log("Font Awesome Elementor Addon: kit metadata JSON not accessible: $kit_json_metadata_path\n");
+		return [];
+    }
+
+    $kit_json_metadata_str = $wp_filesystem->get_contents(
+        $kit_json_metadata_path
+    );
+
+    if (!$kit_json_metadata_str) {
+    	error_log("Font Awesome Elementor Addon: kit metadata JSON not readable: $kit_json_metadata_path\n");
+		return [];
+    }
+
+    $kit_metadata = json_decode($kit_json_metadata_str, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+   		error_log("Font Awesome Elementor Addon: kit metadata JSON could not be parsed: $kit_json_metadata_path\n");
+		return [];
+    }
+
+    if(!is_array($kit_metadata) || !isset($kit_metadata["included_family_styles"]) || !is_array($kit_metadata["included_family_styles"])) {
+  		error_log("Font Awesome Elementor Addon: kit metadata is missing expected included_family_styles property: $kit_json_metadata_path\n");
+		return [];
+    }
+
+	$included_family_styles = $kit_metadata["included_family_styles"];
 
 	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
 	$shorthand_to_short_prefix_id = shorthand_to_short_prefix_id_map();
@@ -237,6 +324,9 @@ function render_svg_from_icon_data( $icon_data ) {
 
 function enqueue_fa_pro_css() {
 	$upload_dir = get_upload_dir();
+	if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
+		// TODO: error handling
+	}
 	$fa_version = FA_VERSION;
 	$stylesheet_basenames = [
 		'all',
@@ -268,9 +358,19 @@ add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 // be present.
 add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 
-function fontawesome_elementor_add_on_activate_plugin() {
-	$fa_version = FA_VERSION;
+function fontawesome_elementor_addon_activate_plugin() {
+	error_log("DEBUG_1\n");
 	$upload_dir = get_upload_dir();
+
+	error_log("DEBUG_1\n");
+
+	if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
+			wp_die(
+            __('There was an error initializing the uploads directory for setting up the Font Awesome Kit', 'fontawesome-elementor-addon'),
+            'Font Awesome Elementor Add-on',
+            ["back_link" => true]
+        );
+	}
 
 	$api_token = getenv( 'API_TOKEN' );
 
@@ -296,6 +396,7 @@ function fontawesome_elementor_add_on_activate_plugin() {
 	$access_token = $token_provider->get_access_token();
 	$query_resolver = new Query_Resolver_Base();
 
+	error_log("DEBUG_3\n");
 	// Planned workflow:
 	// 1. create_kit_download to get buildId. This will be returned to the client.
 	// 2. poll with buildId until status is "READY".
@@ -327,6 +428,7 @@ function fontawesome_elementor_add_on_activate_plugin() {
 		$kit_download_initial->get_build_id()
 	);
 
+	error_log("DEBUG_6\n");
 	$poll_result = $kit_download->poll( $query_resolver, $token_provider );
 
 	if (is_wp_error( $poll_result )) {
@@ -365,6 +467,8 @@ function fontawesome_elementor_add_on_activate_plugin() {
 
 	$kit_assets_absolute_dir = $kit_download->download_and_prepare_selfhosting($query_resolver, $token_provider, $upload_base_dir);
 
+	error_log("DEBUG_9\n");
+
 	if (is_wp_error( $kit_assets_absolute_dir )) {
 		$kit_assets_absolute_dir->add(
 			"fontawesome_elementor_addon_download_kit_error",
@@ -390,6 +494,8 @@ function fontawesome_elementor_add_on_activate_plugin() {
 
 	$ok = update_option( fontawesome_elementor_addon_option_key(), $options );
 
+	error_log("DEBUG_12\n");
+
 	if ( false === $ok ) {
 		wp_die(
 			__('Font Awesome Elementor Add-on was unable to save its configuration options.', 'fontawesome-elementor-addon'),
@@ -414,7 +520,7 @@ function get_icon_data( $dir, $style_shorthand, $icon_name ) {
 	return [];
 }
 
-add_action( 'activate_fontawesome-elementor-addon/fontawesome-elementor-addon.php', 'fontawesome_elementor_add_on_activate_plugin', -1 );
+add_action( 'activate_fontawesome-elementor-addon/fontawesome-elementor-addon.php', 'fontawesome_elementor_addon_activate_plugin', -1 );
 
 // Uncomment this to force the experiment off
 // add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
