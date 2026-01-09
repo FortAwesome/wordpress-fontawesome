@@ -42,7 +42,7 @@ function get_upload_dir() {
 }
 
 function replace_font_awesome_native($settings) {
-	// remove Free
+	// TODO: only remove Free for the styles we're replacing with Pro
 	unset(
 		$settings['fa-solid'],
 		$settings['fa-regular'],
