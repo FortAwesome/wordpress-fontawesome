@@ -365,8 +365,8 @@ function enqueue_fa_pro_css() {
 		return;
 	}
 
-	$stylesheet_basenames = array_map(function ($family_style) {
-    	return Metadata::map_family_style_to_stylesheet_basename($family_style["family"], $family_style["style"]);
+	$stylesheet_file_stems = array_map(function ($family_style) {
+    	return Metadata::map_family_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
     }, $md["kit_metadata"]["included_family_styles"]);
 
     $relative_kit_assets_url = trailingslashit($md["upload_dir"]["baseurl"]) . $md["option"]["kit_assets_relative_dir"];
@@ -374,10 +374,10 @@ function enqueue_fa_pro_css() {
     $fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/fontawesome.min.css';
     wp_enqueue_style( "font-awesome-pro-fontawesome", $fa_pro_css_url, [], $build_id );
 
-	foreach($stylesheet_basenames as $stylesheet_basename) {
-		$stylesheet_rel_path = "css/$stylesheet_basename.min.css";
+	foreach($stylesheet_file_stem as $stylesheet_file_stem) {
+		$stylesheet_rel_path = "css/$stylesheet_file_stem.min.css";
 		$fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . $stylesheet_rel_path;
-		wp_enqueue_style( "font-awesome-pro-$stylesheet_basename", $fa_pro_css_url, [], $build_id );
+		wp_enqueue_style( "font-awesome-pro-$stylesheet_file_stem", $fa_pro_css_url, [], $build_id );
 	}
 }
 
