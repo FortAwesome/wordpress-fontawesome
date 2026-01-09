@@ -4,10 +4,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-$vendor_dir = getenv('COMPOSER_VENDOR_DIR');
+$configured_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
 
-if (is_string($vendor_dir) && $vendor_dir !== '') {
-    require_once trailingslashit($vendor_dir) . 'autoload.php';
-} else {
-	require_once trailingslashit(__DIR__) . '../vendor/autoload.php';
+$vendor_dir = $configured_vendor_dir;
+
+if (!is_string($configured_vendor_dir) || $configured_vendor_dir === '') {
+    $vendor_dir = trailingslashit(__DIR__) . '../vendor';
+}
+
+$vendor_autoload_path = trailingslashit($vendor_dir) . 'autoload.php';
+
+if (file_exists($vendor_autoload_path)) {
+	require_once $vendor_autoload_path;
 }
