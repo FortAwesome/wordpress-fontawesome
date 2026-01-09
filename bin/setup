@@ -15,6 +15,13 @@ else
   . .env.local
 fi
 
+$DIR/composer -c ${WP_CONTAINER} install
+
+if [ "$?" != "0" ]; then
+  echo "WARNING: composer install failed inside the docker container."
+  exit 1
+fi
+
 $DIR/env -c ${WP_CONTAINER} /tmp/add-hosts.sh
 
 if [ "$?" != "0" ]; then
