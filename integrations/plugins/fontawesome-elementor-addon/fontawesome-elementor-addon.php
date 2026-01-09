@@ -18,12 +18,11 @@ define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 
 // To use this experiment, make sure there's a web distribution zip file,
 // like fontawesome-pro-7.1.0-web.zip, in /tmp, as configured by the following defines.
-// On activation of this add-on plugin, it will extract the necessary files.
+// On activation of this addon plugin, it will extract the necessary files.
 // It may also require increasing PHP memory limits and max execution time.
 // Add to php.ini:
 // memory_limit = 512M
 // max_execution_time = 600
-define( 'FA_DIST_TMP_DIR', '/tmp' );
 define('FA_VERSION', '7.1.0');
 
 require_once trailingslashit( __DIR__ ) . 'autoload.php';
@@ -31,6 +30,7 @@ require_once trailingslashit( __DIR__ ) . 'autoload.php';
 use FontAwesomeLib\Base\Query_Resolver_Base;
 use FontAwesomeLib\Base\Auth_Token_Provider_Base;
 use FontAwesomeLib\Kit_Download;
+use FontAwesomeLib\Metadata;
 
 function fontawesome_elementor_addon_option_key() {
 	return 'fontawesome_elementor_addon';
@@ -92,35 +92,31 @@ function fontawesome_elementor_fake_notify_warning($notices) {
 	//printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
 }
 
-add_action('elementor/core/admin/notices', 'fontawesome_elementor_fake_notify_warning');
-add_action('elementor/init', function() {
-});
+// add_action('elementor/core/admin/notices', 'fontawesome_elementor_fake_notify_warning');
 
-add_filter('elementor/admin/dashboard_overview_widget/footer_actions', function($actions) {
-	$actions['fontawesome-pro'] = [
-		'title' => esc_html__( 'Upgrade to Font Awesome Pro', 'fontawesome-elementor-addon' ),
-		'link' => 'https://fontawesome.com',
-	];
-
-	return $actions;
-});
-
-// We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
-// on initial insertion, because of Elementor's logic in:
-// get_icon_manager_tabs()
-function replace_font_awesome_additional_tabs() {
+function fontawesome_elementor_addon_build_metadata(): array|WP_Error {
 	$upload_dir = get_upload_dir();
 
 	if ( (isset( $upload_dir['error'] ) && false !== $upload_dir['error']) || !isset( $upload_dir['basedir'] ) || !isset( $upload_dir['basedir'] ) ) {
-		error_log("Font Awesome Elementor Addon: failed to get WP upload dir.\n");
-		return [];
+		return new WP_Error(
+			"fontawesome_elementor_addon_upload_dir_error",
+			__(
+				"Font Awesome Elementor Addon: failed to get WP upload dir.",
+				"fontawesome-elementor-addon",
+			)
+		);
 	}
 
 	$option = get_option( fontawesome_elementor_addon_option_key() );
 
 	if(!is_array($option) || !isset($option["kit_assets_relative_dir"])) {
-		error_log("Font Awesome Elementor Addon: no kit assets dir configured.\n");
-		return [];
+		return new WP_Error(
+			"fontawesome_elementor_addon_option_error",
+			__(
+				"Font Awesome Elementor Addon: no kit assets dir configured in options.",
+				"fontawesome-elementor-addon",
+			)
+		);
 	}
 
 	$kit_assets_absolute_dir = trailingslashit( $upload_dir['basedir'] ) . trailingslashit( $option["kit_assets_relative_dir"] );
@@ -130,22 +126,39 @@ function replace_font_awesome_additional_tabs() {
     }
 
     if (!WP_Filesystem(false)) {
-        error_log("Font Awesome Elementor Addon: WP_Filesystem could not be initialized.\n");
-		return [];
+    	return new WP_Error(
+			"fontawesome_elementor_addon_filesystem_init_error",
+			__(
+				"Font Awesome Elementor Addon: WP_Filesystem could not be initialized.",
+				"fontawesome-elementor-addon",
+			)
+		);
     }
 
     global $wp_filesystem;
 
     if (!$wp_filesystem->is_dir($kit_assets_absolute_dir)) {
-		error_log("Font Awesome Elementor Addon: kit assets dir is not a directory: $kit_assets_absolute_dir\n");
-		return [];
+    	return new WP_Error(
+			"fontawesome_elementor_addon_kit_assets_dir_error",
+			__(
+				"Font Awesome Elementor Addon: kit assets dir is not a directory.",
+				"fontawesome-elementor-addon",
+			),
+			["dir" => $kit_assets_absolute_dir]
+		);
     }
 
     $kit_json_metadata_path = trailingslashit( $kit_assets_absolute_dir ) . 'metadata/kit.json';
 
     if (!$wp_filesystem->is_file($kit_json_metadata_path) || !$wp_filesystem->is_readable($kit_json_metadata_path)) {
-		error_log("Font Awesome Elementor Addon: kit metadata JSON not accessible: $kit_json_metadata_path\n");
-		return [];
+    	return new WP_Error(
+			"fontawesome_elementor_addon_kit_metadata_file_error",
+			__(
+				"Font Awesome Elementor Addon: kit metadata file is not accessible.",
+				"fontawesome-elementor-addon",
+			),
+			["file" => $kit_json_metadata_path]
+		);
     }
 
     $kit_json_metadata_str = $wp_filesystem->get_contents(
@@ -153,49 +166,101 @@ function replace_font_awesome_additional_tabs() {
     );
 
     if (!$kit_json_metadata_str) {
-    	error_log("Font Awesome Elementor Addon: kit metadata JSON not readable: $kit_json_metadata_path\n");
-		return [];
+    	return new WP_Error(
+			"fontawesome_elementor_addon_kit_metadata_read_error",
+			__(
+				"Font Awesome Elementor Addon: kit metadata file could not be read.",
+				"fontawesome-elementor-addon",
+			),
+			["file" => $kit_json_metadata_path]
+		);
     }
 
     $kit_metadata = json_decode($kit_json_metadata_str, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-   		error_log("Font Awesome Elementor Addon: kit metadata JSON could not be parsed: $kit_json_metadata_path\n");
-		return [];
+    	return new WP_Error(
+			"fontawesome_elementor_addon_kit_metadata_json_parse_error",
+			__(
+				"Font Awesome Elementor Addon: kit metadata JSON could not be parsed.",
+				"fontawesome-elementor-addon",
+			),
+			["file" => $kit_json_metadata_path, "json_error" => json_last_error_msg()]
+		);
     }
 
-    if(!is_array($kit_metadata) || !isset($kit_metadata["included_family_styles"]) || !is_array($kit_metadata["included_family_styles"])) {
-  		error_log("Font Awesome Elementor Addon: kit metadata is missing expected included_family_styles property: $kit_json_metadata_path\n");
-		return [];
+    // TODO: switch this validation to use JSON schema validation.
+    if(!is_array($kit_metadata) || !isset($kit_metadata["included_family_styles"]) || !is_array($kit_metadata["included_family_styles"]) || !isset($kit_metadata["fontawesome_version"])) {
+    	return new WP_Error(
+			"fontawesome_elementor_addon_kit_metadata_invalid_error",
+			__(
+				"Font Awesome Elementor Addon: kit metadata is invalid.",
+				"fontawesome-elementor-addon",
+			),
+			["file" => $kit_json_metadata_path, "metadata" => $kit_metadata]
+		);
     }
+
+    return [
+    	"kit_metadata" => $kit_metadata,
+		"kit_assets_absolute_dir" => $kit_assets_absolute_dir,
+		"option" => $option,
+		"upload_dir" => $upload_dir
+    ];
+}
+
+// We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
+// on initial insertion, because of Elementor's logic in:
+// get_icon_manager_tabs()
+function replace_font_awesome_additional_tabs() {
+	$md = fontawesome_elementor_addon_build_metadata();
+
+	if (is_wp_error( $md )) {
+		error_log("Font Awesome Elementor Addon: failed to build metadata: " . $md->get_error_message() . "\n");
+		return [];
+	}
+
+	$kit_metadata = $md["kit_metadata"];
+	$upload_dir = $md["upload_dir"];
+	$option = $md["option"];
+	$kit_assets_absolute_dir = $md["kit_assets_absolute_dir"];
 
 	$included_family_styles = $kit_metadata["included_family_styles"];
 
-	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( build_metadata_relative_path($fa_version) ) . '%s.js';
-	$shorthand_to_short_prefix_id = shorthand_to_short_prefix_id_map();
+	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( $option["kit_assets_relative_dir"] ) . '/metadata/%s.json';
 
-	$svg_data_dir = get_versioned_selfhost_dir( $upload_dir, $fa_version );
+	$svg_data_dir = trailingslashit( $kit_assets_absolute_dir ) . 'svg-objects';
 	$render_callback = function ($icon, $attributes, $tag) use( $svg_data_dir ) {
 		return render_font_awesome_svg_icon($svg_data_dir, $icon, $attributes = [], $tag = 'i');
 	};
 
 	$icons = [];
 
-	foreach($style_shorthands as $style_shorthand) {
-		$short_prefix_id = $shorthand_to_short_prefix_id[$style_shorthand] ?? 'fas';
+	foreach($included_family_styles as $family_style) {
+		if(!is_array($family_style) || !isset($family_style["prefix"]) || !isset($family_style["label"]) || !isset($family_style["shorthand"])) {
+			error_log("Font Awesome Elementor Addon: kit metadata included_family_styles entry is missing expected properties.\n");
+			continue;
+		}
+
+		$short_prefix_id = $family_style["prefix"];
+		$label = $family_style["label"];
+		$style_shorthand = $family_style["shorthand"];
+		// TODO: lookup whether the current style includes the font-awesome icon.
+		// If so, use that for the label icon.
+		$label_icon = "eicon-font-awesome";
 
 		// Use fapro prefix to avoid hardcoded 'fa-' prefix in Elementor that may cause
 		// these to be handled like other Font Awesome Free icons using Elementor's built-in
 		// Font Awesome Data Manager.
 		$icons["fapro-$style_shorthand"] = [
 			'name' => "fapro-$style_shorthand",
-			'label' => "FA Pro - $style_shorthand",
+			'label' => "$label - FA Pro",
 			'url' => false,
 			'enqueue' => false,
 			'prefix' => 'fa-',
 			'displayPrefix' => "$short_prefix_id",
-			'labelIcon' => "$short_prefix_id fa-font-awesome",
-			'ver' => $fa_version,
+			'labelIcon' => $label_icon,
+			'ver' => $kit_metadata["fontawesome_version"],
 			'fetchJson' => sprintf( $json_url, $style_shorthand ),
 			'native' => true,
 			'render_callback' => $render_callback
@@ -203,37 +268,6 @@ function replace_font_awesome_additional_tabs() {
 	}
 
 	return $icons;
-}
-
-function shorthand_to_short_prefix_id_map() {
-	return [
-			'solid' => 'fas',
-			'regular' => 'far',
-			'light' => 'fal',
-			'thin' => 'fat',
-			'brands' => 'fab',
-			'duotone' => 'fad',
-			'sharp-solid' => 'fass',
-			'sharp-regular' => 'fasr',
-			'sharp-light' => 'fasl',
-			'sharp-thin' => 'fast',
-			'sharp-duotone-solid' => 'fasds',
-			'sharp-duotone-regular' => 'fasdr',
-			'sharp-duotone-light' => 'fasdl',
-			'sharp-duotone-thin' => 'fasdt',
-			'kit-custom' => 'fak',
-			'kit-duotone-custom' => 'fakd'
-	];
-}
-
-function short_prefix_id_to_shorthand_map() {
-	$data = [];
-
-	foreach (shorthand_to_short_prefix_id_map() as $shorthand => $short_prefix_id) {
-		$data[$short_prefix_id] = $shorthand;
-	}
-
-	return $data;
 }
 
 function unprefixed_icon_name($prefix, $prefixed_icon_name) {
@@ -323,30 +357,27 @@ function render_svg_from_icon_data( $icon_data ) {
 }
 
 function enqueue_fa_pro_css() {
-	$upload_dir = get_upload_dir();
-	if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
-		// TODO: error handling
+	$md = fontawesome_elementor_addon_build_metadata();
+	$build_id = $md["kit_metadata"]["build_id"];
+
+	if (is_wp_error( $md )) {
+		error_log("Font Awesome Elementor Addon: failed to build metadata: " . $md->get_error_message() . "\n");
+		return;
 	}
-	$fa_version = FA_VERSION;
-	$stylesheet_basenames = [
-		'all',
-		'sharp-solid',
-		'sharp-regular',
-		'sharp-light',
-		'sharp-thin',
-		'sharp-duotone-solid',
-		'sharp-duotone-regular',
-		'sharp-duotone-light',
-		'sharp-duotone-thin'
-	];
+
+	$stylesheet_basenames = array_map(function ($family_style) {
+    	return Metadata::map_family_style_to_stylesheet_basename($family_style["family"], $family_style["style"]);
+    }, $md["kit_metadata"]["included_family_styles"]);
+
+    $relative_kit_assets_url = trailingslashit($md["upload_dir"]["baseurl"]) . $md["option"]["kit_assets_relative_dir"];
+
+    $fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/fontawesome.min.css';
+    wp_enqueue_style( "font-awesome-pro-fontawesome", $fa_pro_css_url, [], $build_id );
 
 	foreach($stylesheet_basenames as $stylesheet_basename) {
 		$stylesheet_rel_path = "css/$stylesheet_basename.min.css";
-		$fa_pro_css_path = trailingslashit( get_versioned_selfhost_dir( $upload_dir, $fa_version ) ) . $stylesheet_rel_path;
-		if ( file_exists( $fa_pro_css_path ) ) {
-			$fa_pro_css_url = trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( get_versioned_selfhost_relative_path( $fa_version ) ) . $stylesheet_rel_path;
-			wp_enqueue_style( "font-awesome-pro-$stylesheet_basename", $fa_pro_css_url, [], $fa_version );
-		}
+		$fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . $stylesheet_rel_path;
+		wp_enqueue_style( "font-awesome-pro-$stylesheet_basename", $fa_pro_css_url, [], $build_id );
 	}
 }
 
@@ -359,15 +390,12 @@ add_action( 'elementor/editor/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 add_action( 'elementor/frontend/after_enqueue_scripts', 'enqueue_fa_pro_css' );
 
 function fontawesome_elementor_addon_activate_plugin() {
-	error_log("DEBUG_1\n");
 	$upload_dir = get_upload_dir();
-
-	error_log("DEBUG_1\n");
 
 	if ( isset( $upload_dir['error'] ) && false !== $upload_dir['error'] ) {
 			wp_die(
             __('There was an error initializing the uploads directory for setting up the Font Awesome Kit', 'fontawesome-elementor-addon'),
-            'Font Awesome Elementor Add-on',
+            'Font Awesome Elementor Addon',
             ["back_link" => true]
         );
 	}
@@ -377,7 +405,7 @@ function fontawesome_elementor_addon_activate_plugin() {
 	if ( false === $api_token || '' === $api_token ) {
 		wp_die(
             __('No Font Awesome API token was found. Cannot initialize a Font Awesome Kit', 'fontawesome-elementor-addon'),
-            'Font Awesome Elementor Add-on',
+            'Font Awesome Elementor Addon',
             ["back_link" => true]
         );
 	}
@@ -387,7 +415,7 @@ function fontawesome_elementor_addon_activate_plugin() {
 	if ( false === $kit_token || '' === $kit_token ) {
 		wp_die(
             __('No Font Awesome Kit token was found. Cannot initialize a Font Awesome Kit', 'fontawesome-elementor-addon'),
-            'Font Awesome Elementor Add-on',
+            'Font Awesome Elementor Addon',
             ["back_link" => true]
         );
 	}
@@ -396,7 +424,6 @@ function fontawesome_elementor_addon_activate_plugin() {
 	$access_token = $token_provider->get_access_token();
 	$query_resolver = new Query_Resolver_Base();
 
-	error_log("DEBUG_3\n");
 	// Planned workflow:
 	// 1. create_kit_download to get buildId. This will be returned to the client.
 	// 2. poll with buildId until status is "READY".
@@ -409,14 +436,14 @@ function fontawesome_elementor_addon_activate_plugin() {
 		$kit_download_initial->add(
             "fontawesome_elementor_addon_create_kit_download_error",
             __(
-                "Font Awesome Elementor Add-on was unable to create a Kit Download.",
+                "Font Awesome Elementor Addon was unable to create a Kit Download.",
                 "fontawesome-elementor-addon",
             )
 		);
 
 		wp_die(
             $kit_download_initial,
-            'Font Awesome Elementor Add-on',
+            'Font Awesome Elementor Addon',
             ["back_link" => true]
         );
 	}
@@ -428,37 +455,36 @@ function fontawesome_elementor_addon_activate_plugin() {
 		$kit_download_initial->get_build_id()
 	);
 
-	error_log("DEBUG_6\n");
 	$poll_result = $kit_download->poll( $query_resolver, $token_provider );
 
 	if (is_wp_error( $poll_result )) {
 		$poll_result->add(
 			"fontawesome_elementor_addon_poll_kit_download_error",
 			__(
-				"Font Awesome Elementor Add-on was unable to poll the Kit Download status.",
+				"Font Awesome Elementor Addon was unable to poll the Kit Download status.",
 				"fontawesome-elementor-addon",
 			)
 		);
 
 		wp_die(
             $poll_result,
-            'Font Awesome Elementor Add-on',
+            'Font Awesome Elementor Addon',
             ["back_link" => true]
         );
 	}
 
 	if (!$kit_download->is_ready()) {
-		$kit_download->add(
+		$wp_error = new WP_Error(
 			"fontawesome_elementor_addon_kit_not_ready_error",
 			__(
-				"Font Awesome Elementor Add-on Kit Download is not ready yet.",
+				"Font Awesome Elementor Addon Kit Download is not ready yet.",
 				"fontawesome-elementor-addon",
 			)
 		);
 
 		wp_die(
-            $kit_download,
-            'Font Awesome Elementor Add-on',
+            $wp_error,
+            'Font Awesome Elementor Addon',
             ["back_link" => true]
         );
 	}
@@ -467,20 +493,18 @@ function fontawesome_elementor_addon_activate_plugin() {
 
 	$kit_assets_absolute_dir = $kit_download->download_and_prepare_selfhosting($query_resolver, $token_provider, $upload_base_dir);
 
-	error_log("DEBUG_9\n");
-
 	if (is_wp_error( $kit_assets_absolute_dir )) {
 		$kit_assets_absolute_dir->add(
 			"fontawesome_elementor_addon_download_kit_error",
 			__(
-				"Font Awesome Elementor Add-on was unable to download and prepare the Font Awesome Kit for self-hosting.",
+				"Font Awesome Elementor Addon was unable to download and prepare the Font Awesome Kit for self-hosting.",
 				"fontawesome-elementor-addon",
 			)
 		);
 
 		wp_die(
 			$kit_assets_absolute_dir,
-			'Font Awesome Elementor Add-on',
+			'Font Awesome Elementor Addon',
 			["back_link" => true]
 		);
 	}
@@ -492,16 +516,18 @@ function fontawesome_elementor_addon_activate_plugin() {
 		"kit_assets_relative_dir" => $kit_assets_relative_dir
 	];
 
-	$ok = update_option( fontawesome_elementor_addon_option_key(), $options );
+	$update_result = update_option( fontawesome_elementor_addon_option_key(), $options );
 
-	error_log("DEBUG_12\n");
+	if ( false === $update_result ) {
+		$existing_option = get_option( fontawesome_elementor_addon_option_key() );
 
-	if ( false === $ok ) {
-		wp_die(
-			__('Font Awesome Elementor Add-on was unable to save its configuration options.', 'fontawesome-elementor-addon'),
-			'Font Awesome Elementor Add-on',
-			["back_link" => true]
-		);
+		if ($existing_option != $options) {
+			wp_die(
+				__('Font Awesome Elementor Addon was unable to save its configuration options.', 'fontawesome-elementor-addon'),
+				'Font Awesome Elementor Addon',
+				["back_link" => true]
+			);
+		}
 	}
 }
 
