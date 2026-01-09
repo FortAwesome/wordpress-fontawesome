@@ -31,6 +31,7 @@ use FontAwesomeLib\Base\Query_Resolver_Base;
 use FontAwesomeLib\Base\Auth_Token_Provider_Base;
 use FontAwesomeLib\Kit_Download;
 use FontAwesomeLib\Metadata;
+use FontAwesomeLib\Svg_Icon;
 
 function fontawesome_elementor_addon_option_key() {
 	return 'fontawesome_elementor_addon';
@@ -38,22 +39,6 @@ function fontawesome_elementor_addon_option_key() {
 
 function get_upload_dir() {
 	return wp_upload_dir( null, false, false );
-}
-
-function get_versioned_selfhost_dir($upload_dir, $fa_version) {
-	return trailingslashit( $upload_dir['basedir'] ) . get_versioned_selfhost_relative_path( $fa_version );
-}
-
-function get_versioned_selfhost_relative_path($fa_version) {
-	return "font-awesome-pro/$fa_version";
-}
-
-function build_metadata_relative_path($fa_version, $file = '') {
-	return trailingslashit( get_versioned_selfhost_relative_path( $fa_version ) ) . 'metadata/' . $file;
-}
-
-function build_metadata_disk_path($upload_dir, $fa_version, $file = '') {
-	return trailingslashit($upload_dir['basedir']) . build_metadata_relative_path($fa_version, $file);
 }
 
 function replace_font_awesome_native($settings) {
@@ -230,8 +215,20 @@ function replace_font_awesome_additional_tabs() {
 	$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( $option["kit_assets_relative_dir"] ) . '/metadata/%s.json';
 
 	$svg_data_dir = trailingslashit( $kit_assets_absolute_dir ) . 'svg-objects';
-	$render_callback = function ($icon, $attributes, $tag) use( $svg_data_dir ) {
-		return render_font_awesome_svg_icon($svg_data_dir, $icon, $attributes = [], $tag = 'i');
+
+	if (!function_exists("WP_Filesystem")) {
+    	require_once ABSPATH . "wp-admin/includes/file.php";
+    }
+
+    if (!WP_Filesystem(false)) {
+       	error_log("Font Awesome Elementor Addon: failed to initialize WP_Filesystem.\n");
+       	return [];
+    }
+
+    global $wp_filesystem;
+
+	$render_callback = function ($icon, $attributes, $tag) use( $included_family_styles, $svg_data_dir, $wp_filesystem ) {
+		return render_font_awesome_svg_icon($wp_filesystem, $svg_data_dir, $included_family_styles, $icon, $attributes = [], $tag = 'i');
 	};
 
 	$icons = [];
@@ -242,9 +239,10 @@ function replace_font_awesome_additional_tabs() {
 			continue;
 		}
 
-		$short_prefix_id = $family_style["prefix"];
 		$label = $family_style["label"];
-		$style_shorthand = $family_style["shorthand"];
+		$family_style_shorthand = $family_style["shorthand"];
+		$short_prefix_id = $family_style["prefix"];
+
 		// TODO: lookup whether the current style includes the font-awesome icon.
 		// If so, use that for the label icon.
 		$label_icon = "eicon-font-awesome";
@@ -252,8 +250,8 @@ function replace_font_awesome_additional_tabs() {
 		// Use fapro prefix to avoid hardcoded 'fa-' prefix in Elementor that may cause
 		// these to be handled like other Font Awesome Free icons using Elementor's built-in
 		// Font Awesome Data Manager.
-		$icons["fapro-$style_shorthand"] = [
-			'name' => "fapro-$style_shorthand",
+		$icons["fapro-$family_style_shorthand"] = [
+			'name' => "fapro-$family_style_shorthand",
 			'label' => "$label - FA Pro",
 			'url' => false,
 			'enqueue' => false,
@@ -261,7 +259,7 @@ function replace_font_awesome_additional_tabs() {
 			'displayPrefix' => "$short_prefix_id",
 			'labelIcon' => $label_icon,
 			'ver' => $kit_metadata["fontawesome_version"],
-			'fetchJson' => sprintf( $json_url, $style_shorthand ),
+			'fetchJson' => sprintf( $json_url, $family_style_shorthand ),
 			'native' => true,
 			'render_callback' => $render_callback
 		];
@@ -271,8 +269,11 @@ function replace_font_awesome_additional_tabs() {
 }
 
 function unprefixed_icon_name($prefix, $prefixed_icon_name) {
-	$result = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $prefixed_icon_name);
-	return $result;
+	if (!is_string($prefixed_icon_name) || !is_string($prefix)) {
+		return '';
+	}
+
+	return preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $prefixed_icon_name);
 }
 
 // This render_callback seems to fire on the backend in the editor, loading a saved page with
@@ -290,70 +291,26 @@ function unprefixed_icon_name($prefix, $prefixed_icon_name) {
 // add_action('elementor/experiments/default-features-registered', function($experiments_manager) {
 //   $experiments_manager->set_feature_default_state('e_font_icon_svg', 'inactive');
 // });
-function render_font_awesome_svg_icon($svg_data_dir, $icon, $attributes = [], $tag = 'i') {
+function render_font_awesome_svg_icon($wp_filesystem, $svg_data_dir, $included_family_styles, $icon, $attributes = [], $tag = 'i') {
 	$value_parts = explode(' ', $icon['value'], 2);
 
 	if ( count( $value_parts ) < 2 ) {
 		return '';
 	}
 
-	$short_prefix_id_to_shorthand = short_prefix_id_to_shorthand_map();
-	$shorthand = $short_prefix_id_to_shorthand[$value_parts[0]] ?? null;
+	$family_style = Metadata::map_short_prefix_id_to_family_style($included_family_styles, $value_parts[0]);
 
-	if ( is_null( $shorthand ) ) {
+	if ( !is_array( $family_style) || !isset($family_style["shorthand"]) || !is_string($family_style["shorthand"]) ) {
 		return '';
 	}
+
+	$family_style_shorthand = $family_style["shorthand"];
 
 	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
-	$icon_data = get_icon_data($svg_data_dir, $shorthand, $icon_name);
+	$icon_data = get_icon_data($wp_filesystem, $svg_data_dir, $family_style_shorthand, $icon_name);
 
-	return render_svg_from_icon_data( $icon_data );
-}
-
-function render_svg_from_icon_data( $icon_data ) {
-	if ( !is_array( $icon_data ) ) {
-		return '';
-	}
-
-	$width = $icon_data['width'] ?? null;
-	$height = $icon_data['height'] ?? null;
-	$path_data = $icon_data['path'] ?? null;
-
-	if ( !is_integer( $width ) || !is_integer( $height ) ) {
-		return '';
-	}
-
-	$paths = [];
-
-	if ( is_string( $path_data ) ) {
-		$paths[] = $path_data;
-	} else if ( is_array( $path_data ) ) {
-		foreach($path_data as $path) {
-			if ( is_string( $path ) ) {
-				$paths[] = $path;
-			}
-		}
-	}
-
-	if ( empty( $paths ) ) {
-		return '';
-	}
-
-	$is_duotone = count( $paths ) > 1;
-
-	$svg = sprintf('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d">', esc_attr($width), esc_attr($height));
-
-	foreach($paths as $index => $path) {
-		if ( $is_duotone && $index === 0 ) {
-			$svg .= sprintf('<path opacity=".4" d="%s"/>', esc_attr($path));
-		} else {
-			$svg .= sprintf('<path d="%s"/>', esc_attr($path));
-		}
-	}
-
-	$svg .= '</svg>';
-
-	return $svg;
+	$svg_icon = new Svg_Icon($icon_data);
+	return $svg_icon->stringify();
 }
 
 function enqueue_fa_pro_css() {
@@ -374,7 +331,7 @@ function enqueue_fa_pro_css() {
     $fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/fontawesome.min.css';
     wp_enqueue_style( "font-awesome-pro-fontawesome", $fa_pro_css_url, [], $build_id );
 
-	foreach($stylesheet_file_stem as $stylesheet_file_stem) {
+	foreach($stylesheet_file_stems as $stylesheet_file_stem) {
 		$stylesheet_rel_path = "css/$stylesheet_file_stem.min.css";
 		$fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . $stylesheet_rel_path;
 		wp_enqueue_style( "font-awesome-pro-$stylesheet_file_stem", $fa_pro_css_url, [], $build_id );
@@ -531,11 +488,11 @@ function fontawesome_elementor_addon_activate_plugin() {
 	}
 }
 
-function get_icon_data( $dir, $style_shorthand, $icon_name ) {
-	$file_path = $dir . "/svg-objects/$style_shorthand/$icon_name.json";
+function get_icon_data( $wp_filesystem, $dir, $family_style_shorthand, $icon_name ) {
+	$file_path = trailingslashit($dir) . "$family_style_shorthand/$icon_name.json";
 
-	if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
-	    $json_str = file_get_contents( $file_path );
+	if ( $wp_filesystem->exists( $file_path ) && $wp_filesystem->is_readable( $file_path ) ) {
+	    $json_str = $wp_filesystem->get_contents( $file_path );
 		$data = json_decode( $json_str, true );
 
 		if ( json_last_error() === JSON_ERROR_NONE ) {
