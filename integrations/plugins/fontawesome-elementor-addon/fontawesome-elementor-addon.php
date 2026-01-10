@@ -18,17 +18,6 @@ defined( 'WPINC' ) || die;
 
 define('FONT_AWESOME_ELEMENTOR_PLUGIN_VERSION', '0.0.1');
 
-define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
-
-// To use this experiment, make sure there's a web distribution zip file,
-// like fontawesome-pro-7.1.0-web.zip, in /tmp, as configured by the following defines.
-// On activation of this addon plugin, it will extract the necessary files.
-// It may also require increasing PHP memory limits and max execution time.
-// Add to php.ini:
-// memory_limit = 512M
-// max_execution_time = 600
-define('FA_VERSION', '7.1.0');
-
 require_once trailingslashit( __DIR__ ) . 'autoload.php';
 require_once trailingslashit( __DIR__ ) . 'includes/Options.php';
 
@@ -53,34 +42,6 @@ function replace_font_awesome_native($settings) {
 	);
 	return $settings;
 }
-
-function fontawesome_elementor_fake_notify_warning($notices) {
-	if (!class_exists('Elementor\Core\Admin\Notices\Base_Notice')) {
-		return $notices;
-	}
-
-	require_once trailingslashit( __DIR__ ) . 'Notice.php';
-
-	$title = __( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' );
-
-	$description = __( 'Thank you for installing the Font Awesome Elementor Addon! Start using Font Awesome icons in your Elementor designs today.', 'fontawesome-elementor-addon' );
-
-	$notice = new \FontAwesomeElementorAddon\Notice($title, $description);
-
-	return [$notice];
-
-	//$message = sprintf(
-	//	/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
-	//	esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'fontawesome-elementor-addon' ),
-	//	'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>',
-	//	'<strong>' . esc_html__( 'Elementor', 'fontawesome-elementor-addon' ) . '</strong>',
-	//	'42'
-	//);
-
-	//printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
-}
-
-// add_action('elementor/core/admin/notices', 'fontawesome_elementor_fake_notify_warning');
 
 function fontawesome_elementor_addon_build_metadata(): array|WP_Error {
 	$upload_dir = get_upload_dir();
