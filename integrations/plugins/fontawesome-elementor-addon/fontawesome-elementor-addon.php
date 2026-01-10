@@ -26,6 +26,7 @@ define( 'FONTAWESOME_PRO_ASSETS_DIR', 'font-awesome-pro-assets' );
 define('FA_VERSION', '7.1.0');
 
 require_once trailingslashit( __DIR__ ) . 'autoload.php';
+require_once trailingslashit( __DIR__ ) . 'includes/Options.php';
 
 use FontAwesomeLib\Base\Query_Resolver_Base;
 use FontAwesomeLib\Base\Auth_Token_Provider_Base;
@@ -33,10 +34,7 @@ use FontAwesomeLib\Kit_Download;
 use FontAwesomeLib\Svg_Icon;
 use FontAwesomeLib\Family_Style;
 use FontAwesomeLib\Family_Style_Collection;
-
-function fontawesome_elementor_addon_option_key() {
-	return 'fontawesome_elementor_addon';
-}
+use FontAwesomeElementorAddon\Options;
 
 function get_upload_dir() {
 	return wp_upload_dir( null, false, false );
@@ -93,7 +91,7 @@ function fontawesome_elementor_addon_build_metadata(): array|WP_Error {
 		);
 	}
 
-	$option = get_option( fontawesome_elementor_addon_option_key() );
+	$option = get_option( Options::options_key() );
 
 	if(!is_array($option) || !isset($option["kit_assets_relative_dir"])) {
 		return new WP_Error(
@@ -476,10 +474,10 @@ function fontawesome_elementor_addon_activate_plugin() {
 		"kit_assets_relative_dir" => $kit_assets_relative_dir
 	];
 
-	$update_result = update_option( fontawesome_elementor_addon_option_key(), $options );
+	$update_result = update_option( Options::options_key(), $options );
 
 	if ( false === $update_result ) {
-		$existing_option = get_option( fontawesome_elementor_addon_option_key() );
+		$existing_option = get_option( Options::options_key() );
 
 		if ($existing_option != $options) {
 			wp_die(
