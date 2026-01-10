@@ -30,8 +30,9 @@ require_once trailingslashit( __DIR__ ) . 'autoload.php';
 use FontAwesomeLib\Base\Query_Resolver_Base;
 use FontAwesomeLib\Base\Auth_Token_Provider_Base;
 use FontAwesomeLib\Kit_Download;
-use FontAwesomeLib\Metadata;
 use FontAwesomeLib\Svg_Icon;
+use FontAwesomeLib\Family_Style;
+use FontAwesomeLib\Family_Style_Collection;
 
 function fontawesome_elementor_addon_option_key() {
 	return 'fontawesome_elementor_addon';
@@ -298,13 +299,15 @@ function render_font_awesome_svg_icon($wp_filesystem, $svg_data_dir, $included_f
 		return '';
 	}
 
-	$family_style = Metadata::map_short_prefix_id_to_family_style($included_family_styles, $value_parts[0]);
+	$family_style_collection = new Family_Style_Collection($included_family_styles);
 
-	if ( !is_array( $family_style) || !isset($family_style["shorthand"]) || !is_string($family_style["shorthand"]) ) {
+	$family_style = $family_style_collection->get_by_short_prefix_id($value_parts[0]);
+
+	$family_style_shorthand = $family_style->shorthand();
+
+	if ( !is_string( $family_style_shorthand) ) {
 		return '';
 	}
-
-	$family_style_shorthand = $family_style["shorthand"];
 
 	$icon_name = unprefixed_icon_name('fa-', $value_parts[1]);
 	$icon_data = get_icon_data($wp_filesystem, $svg_data_dir, $family_style_shorthand, $icon_name);
@@ -323,7 +326,7 @@ function enqueue_fa_pro_css() {
 	}
 
 	$stylesheet_file_stems = array_map(function ($family_style) {
-    	return Metadata::map_family_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
+    	return Family_Style::map_family_and_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
     }, $md["kit_metadata"]["included_family_styles"]);
 
     $relative_kit_assets_url = trailingslashit($md["upload_dir"]["baseurl"]) . $md["option"]["kit_assets_relative_dir"];
