@@ -46,7 +46,7 @@ function replace_font_awesome_native($settings) {
 function fontawesome_elementor_addon_build_metadata(): array|WP_Error {
 	$upload_dir = get_upload_dir();
 
-	if ( (isset( $upload_dir['error'] ) && false !== $upload_dir['error']) || !isset( $upload_dir['basedir'] ) || !isset( $upload_dir['basedir'] ) ) {
+	if ( (isset( $upload_dir['error'] ) && false !== $upload_dir['error']) || !isset( $upload_dir['basedir'] ) || !isset( $upload_dir['baseurl'] ) ) {
 		return new WP_Error(
 			"fontawesome_elementor_addon_upload_dir_error",
 			__(
