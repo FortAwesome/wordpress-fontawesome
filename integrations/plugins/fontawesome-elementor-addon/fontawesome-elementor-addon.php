@@ -1,13 +1,17 @@
 <?php
 
 /**
- * Plugin Name:       Font Awesome Elementor Addon
- * Plugin URI:        https://fontawesome.com/
- * Description:       Add Font Awesome Pro icons to Elementor.
- * Version:           0.0.1
- * Author:            Font Awesome
- * Author URI:        https://fontawesome.com/
- * License:           GPLv3
+ * Plugin Name:                Font Awesome Elementor Addon
+ * Plugin URI:                 https://fontawesome.com/
+ * Description:                Add Font Awesome Pro icons to Elementor.
+ * Version:                    0.0.1
+ * Author:                     Font Awesome
+ * Author URI:                 https://fontawesome.com/
+ * License:                    GPLv3
+ * Text Domain:                fontawesome-elementor-addon
+ * Requires Plugins:           elementor
+ * Elementor tested up to:     3.34.1
+ * Elementor Pro tested up to: 3.34.1
  */
 
 defined( 'WPINC' ) || die;
