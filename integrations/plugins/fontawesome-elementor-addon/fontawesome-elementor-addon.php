@@ -18,15 +18,11 @@ defined( 'WPINC' ) || die;
 
 add_action('elementor/editor/init', function() {
 	require_once __DIR__ . '/autoload.php';
-	require_once __DIR__ . '/includes/Plugin.php';
 	\FontAwesomeElementorAddon\Plugin::instance()->init();
 });
 
 add_action( 'activate_fontawesome-elementor-addon/fontawesome-elementor-addon.php', function() {
 	require_once __DIR__ . '/autoload.php';
-	require_once __DIR__ . '/includes/Compatibility.php';
-	require_once __DIR__ . '/includes/Setup_Kit.php';
-	require_once __DIR__ . '/includes/Options.php';
 	$api_token = getenv( 'API_TOKEN' );
 	$kit_token = getenv( 'KIT_TOKEN' );
 	if ( \FontAwesomeElementorAddon\Compatibility::is_compatible_for_activation() ) {
