@@ -126,4 +126,107 @@ class Compatibility {
 
         return true;
 	}
+
+	/**
+	 * Admin notice
+	 *
+	 * Warning when the site doesn't have a minimum required PHP version.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 */
+	public static function admin_notice_minimum_php_version(): void {
+
+		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
+
+		$message = sprintf(
+			/* translators: 1: Plugin name 2: PHP 3: Required PHP version */
+			esc_html__( '"%1$s" requires "%2$s" version %3$s or greater.', 'fontawesome-elementor-addon' ),
+			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>',
+			'<strong>' . esc_html__( 'PHP', 'fontawesome-elementor-addon' ) . '</strong>',
+			 self::MINIMUM_PHP_VERSION
+		);
+
+		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+	}
+
+	/**
+	 * Admin notice
+	 *
+	 * Warning when the site doesn't permit use of WP_Filesystem.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 */
+	public static function admin_notice_wp_filesystem_requirement(): void {
+		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
+
+		$message = sprintf(
+			/* translators: 1: Plugin name */
+			esc_html__( '"%1$s" requires that your WordPress site is configured to allow reading and writing files using WP_Filesystem.', 'fontawesome-elementor-addon' ),
+			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>'
+		);
+
+		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+	}
+
+	/**
+	 * Admin notice
+	 *
+	 * Warning when the site doesn't permit write access to wp_upload_dir.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 */
+	public static function admin_notice_wp_upload_dir_requirement(): void {
+		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
+
+		$message = sprintf(
+			/* translators: 1: Plugin name */
+			esc_html__( '"%1$s" requires that your WordPress site is configured to allow writing files under wp_upload_dir.', 'fontawesome-elementor-addon' ),
+			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>'
+		);
+
+		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+	}
+
+	/**
+	 * Admin notice
+	 *
+	 * Warning when the site doesn't permit write access to a temporary directory.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 */
+	public static function admin_notice_temp_dir_requirement(): void {
+		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
+
+		$message = sprintf(
+			/* translators: 1: Plugin name */
+			esc_html__( '"%1$s" requires that your WordPress site is configured to allow creating temporary files and directories.', 'fontawesome-elementor-addon' ),
+			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>'
+		);
+
+		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+	}
+
+	/**
+	 * Admin notice
+	 *
+	 * Warning when the site cannot access the Font Awesome API service.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 */
+	public static function admin_notice_api_service_requirement(): void {
+		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
+
+		$message = sprintf(
+			/* translators: 1: Plugin name */
+			esc_html__( '"%1$s" requires that your WordPress site can access the Font Awesome API service.', 'fontawesome-elementor-addon' ),
+			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>'
+		);
+
+		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+	}
 }
