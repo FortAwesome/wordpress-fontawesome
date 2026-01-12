@@ -58,15 +58,18 @@ final class Plugin {
 		}
 
 		// TODO: initialize any options or metadata needed
+		// TODO: add an inline style matching all of our prefixes, more specific than Elementor's FA styles
+		//  to set width to auto.
 
-		add_action( 'elementor/editor/after_register_styles', [ $this, 'register_editor_styles' ] );
-		add_action( 'elementor/editor/before_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
+		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
+		add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
+
 		add_filter( 'elementor/icons_manager/native', [ $this, 'replace_font_awesome_native' ]);
 		add_filter( 'elementor/icons_manager/additional_tabs', [ $this, 'replace_font_awesome_additional_tabs' ] );
 	}
 
-	public function register_editor_styles(): void {
-
+	public function enqueue_frontend_styles(): void {
+		$this->enqueue_font_awesome_pro_css();
 	}
 
 	public function enqueue_editor_styles(): void {
@@ -83,38 +86,107 @@ final class Plugin {
 		return $settings;
 	}
 
+	/**
+	 * Get metadata. If it has not already been read retrieved from storage, read and parse it now.
+	 * If an error occurs, returns null and schedules an admin notice.
+	 * @return array|null Kit metadata, or null on error.
+	 */
+	public function kit_metadata(): array|null {
+		static $kit_metadata = null;
+
+		if ( ! $kit_metadata ) {
+			$result = $this->load_kit_metadata();
+
+			if (is_wp_error( $result ) || !is_array($result) || !isset($result["kit_metadata"])) {
+				add_action( 'admin_notices', function () use( $result ) {
+					$this->admin_notice_error_loading_kit_metadata($result);
+				});
+				return $result;
+			}
+
+			$kit_metadata = $result["kit_metadata"];
+		}
+
+		return $kit_metadata;
+	}
+
+	public function upload_dir(): array|null {
+		static $upload_dir = null;
+
+		if (! $upload_dir ) {
+			$upload_dir = wp_upload_dir( null, false, false );
+		}
+
+		return $upload_dir;
+	}
+
+	public function kit_assets_absolute_dir(): string|null {
+		static $kit_assets_absolute_dir = null;
+
+		if (! $kit_assets_absolute_dir ) {
+			$upload_dir = $this->upload_dir();
+			$option = $this->option();
+
+			if (!is_array($upload_dir) || !is_array($option) || !isset($option["kit_assets_relative_dir"]) || !isset($upload_dir["basedir"])) {
+				return null;
+			}
+
+			$kit_assets_absolute_dir = trailingslashit( $upload_dir['basedir'] ) . trailingslashit( $option["kit_assets_relative_dir"] );
+		}
+
+		return $kit_assets_absolute_dir;
+	}
+
+	public function option(): array|null {
+		static $option = null;
+
+		if ($option) {
+			return $option;
+		}
+
+		$result = get_option( Options::options_key() );
+
+		if (!is_array($result)) {
+			// TODO: add admin notice here.
+			return null;
+		}
+
+		$option = $result;
+
+		return $option;
+	}
+
+	public function admin_notice_error_loading_kit_metadata(): void {
+		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
+
+		$message = sprintf(
+			/* translators: 1: Plugin name */
+			esc_html__( '"%1$s" could not load its settings from storage.', 'fontawesome-elementor-addon' ),
+			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>'
+		);
+
+		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
+	}
+
 	// We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
 	// on initial insertion, because of Elementor's logic in:
 	// get_icon_manager_tabs()
 	public function replace_font_awesome_additional_tabs() {
-		$md = $this->fontawesome_elementor_addon_build_metadata();
+		$kit_metadata = $this->kit_metadata();
+		$upload_dir = $this->upload_dir();
+		$kit_assets_absolute_dir = $this->kit_assets_absolute_dir();
+		$option = $this->option();
+  		$wp_filesystem = $this->wp_filesystem();
 
-		if (is_wp_error( $md )) {
-			error_log("Font Awesome Elementor Addon: failed to build metadata: " . $md->get_error_message() . "\n");
+		if (!$md || !$upload_dir || !$kit_assets_absolute_dir || !$option || is_wp_error( $wp_filesystem ) ) {
 			return [];
 		}
-
-		$kit_metadata = $md["kit_metadata"];
-		$upload_dir = $md["upload_dir"];
-		$option = $md["option"];
-		$kit_assets_absolute_dir = $md["kit_assets_absolute_dir"];
 
 		$included_family_styles = $kit_metadata["included_family_styles"];
 
 		$json_url =  trailingslashit( $upload_dir['baseurl'] ) . trailingslashit( $option["kit_assets_relative_dir"] ) . '/metadata/%s.json';
 
 		$svg_data_dir = trailingslashit( $kit_assets_absolute_dir ) . 'svg-objects';
-
-		if (!function_exists("WP_Filesystem")) {
-	    	require_once ABSPATH . "wp-admin/includes/file.php";
-	    }
-
-	    if (!WP_Filesystem(false)) {
-	       	error_log("Font Awesome Elementor Addon: failed to initialize WP_Filesystem.\n");
-	       	return [];
-	    }
-
-	    global $wp_filesystem;
 
 		$render_callback = function ($icon, $attributes, $tag) use( $included_family_styles, $svg_data_dir, $wp_filesystem ) {
 			return $this->render_font_awesome_svg_icon($wp_filesystem, $svg_data_dir, $included_family_styles, $icon, $attributes = [], $tag = 'i');
@@ -157,10 +229,42 @@ final class Plugin {
 		return $icons;
 	}
 
-	private function fontawesome_elementor_addon_build_metadata(): array|WP_Error {
-		$upload_dir = wp_upload_dir( null, false, false );
+	private function wp_filesystem():WP_Filesystem_Base|WP_Error {
+		static $_wp_filesystem = null;
 
-		if ( (isset( $upload_dir['error'] ) && false !== $upload_dir['error']) || !isset( $upload_dir['basedir'] ) || !isset( $upload_dir['baseurl'] ) ) {
+		if ( $_wp_filesystem ) {
+			return $_wp_filesystem;
+		}
+
+		if (!function_exists("WP_Filesystem")) {
+    		require_once ABSPATH . "wp-admin/includes/file.php";
+	    }
+
+	    if (!WP_Filesystem(false)) {
+	    	return new WP_Error(
+				"fontawesome_elementor_addon_filesystem_init_error",
+				__(
+					"Font Awesome Elementor Addon: WP_Filesystem could not be initialized.",
+					"fontawesome-elementor-addon",
+				)
+			);
+	    }
+
+	    global $wp_filesystem;
+
+	    $_wp_filesystem = $wp_filesystem;
+
+		return $_wp_filesystem;
+	}
+
+	/**
+	 * Load kit metadata from storage.
+	 * @return array|WP_Error array with keys 'kit_metadata', 'kit_assets_absolute_dir', 'option', and 'upload_dir' on success, WP_Error on failure.
+	 */
+	private function load_kit_metadata(): array|WP_Error {
+		$upload_dir = $this->upload_dir();
+
+		if ( !is_array($upload_dir) || (isset( $upload_dir['error'] ) && false !== $upload_dir['error']) || !isset( $upload_dir['basedir'] ) || !isset( $upload_dir['baseurl'] ) ) {
 			return new WP_Error(
 				"fontawesome_elementor_addon_upload_dir_error",
 				__(
@@ -182,23 +286,13 @@ final class Plugin {
 			);
 		}
 
-		$kit_assets_absolute_dir = trailingslashit( $upload_dir['basedir'] ) . trailingslashit( $option["kit_assets_relative_dir"] );
+		$kit_assets_absolute_dir = $this->kit_assets_absolute_dir();
 
-		if (!function_exists("WP_Filesystem")) {
-    		require_once ABSPATH . "wp-admin/includes/file.php";
-	    }
+		$wp_filesystem = $this->wp_filesystem();
 
-	    if (!WP_Filesystem(false)) {
-	    	return new WP_Error(
-					"fontawesome_elementor_addon_filesystem_init_error",
-					__(
-						"Font Awesome Elementor Addon: WP_Filesystem could not be initialized.",
-						"fontawesome-elementor-addon",
-					)
-				);
-	    }
-
-	    global $wp_filesystem;
+		if (is_wp_error( $wp_filesystem )) {
+			return $wp_filesystem;
+		}
 
 	    if (!$wp_filesystem->is_dir($kit_assets_absolute_dir)) {
 	    	return new WP_Error(
@@ -264,12 +358,7 @@ final class Plugin {
 				);
 	    }
 
-	    return [
-	    	"kit_metadata" => $kit_metadata,
-				"kit_assets_absolute_dir" => $kit_assets_absolute_dir,
-				"option" => $option,
-				"upload_dir" => $upload_dir
-	    ];
+	    return $kit_metadata;
 	}
 
 	private function unprefixed_icon_name($prefix, $prefixed_icon_name) {
@@ -319,14 +408,18 @@ final class Plugin {
 		return $svg_icon->stringify();
 	}
 
-	private function enqueue_font_awesome_pro_css() {
-		$md = $this->fontawesome_elementor_addon_build_metadata();
-		$build_id = $md["kit_metadata"]["build_id"];
+	private function style_resource_handle_prefix(): string {
+		return 'font-awesome-pro-';
+	}
 
-		if (is_wp_error( $md )) {
-			error_log("Font Awesome Elementor Addon: failed to build metadata: " . $md->get_error_message() . "\n");
+	private function enqueue_font_awesome_pro_css() {
+		$md = $this->kit_metadata();
+
+		if ( !is_array($md) ) {
 			return;
 		}
+
+		$build_id = $md["kit_metadata"]["build_id"];
 
 		$stylesheet_file_stems = array_map(function ($family_style) {
 	    	return Family_Style::map_family_and_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
