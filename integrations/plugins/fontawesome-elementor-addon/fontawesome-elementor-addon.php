@@ -16,7 +16,7 @@
 
 defined( 'WPINC' ) || die;
 
-add_action('elementor/editor/init', function() {
+add_action('elementor/init', function() {
 	require_once __DIR__ . '/autoload.php';
 	\FontAwesomeElementorAddon\Plugin::instance()->init();
 });
