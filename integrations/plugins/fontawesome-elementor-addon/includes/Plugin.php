@@ -62,10 +62,15 @@ final class Plugin {
 		//  to set width to auto.
 
 		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
-		add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
+		add_action( 'elementor/preview/enqueue_styles', [ $this, 'enqueue_preview_styles' ] );
+		add_action( 'elementor/frontend/enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
 
 		add_filter( 'elementor/icons_manager/native', [ $this, 'replace_font_awesome_native' ]);
 		add_filter( 'elementor/icons_manager/additional_tabs', [ $this, 'replace_font_awesome_additional_tabs' ] );
+	}
+
+	public function enqueue_preview_styles(): void {
+		$this->enqueue_font_awesome_pro_css();
 	}
 
 	public function enqueue_frontend_styles(): void {
@@ -178,7 +183,7 @@ final class Plugin {
 		$option = $this->option();
   		$wp_filesystem = $this->wp_filesystem();
 
-		if (!$md || !$upload_dir || !$kit_assets_absolute_dir || !$option || is_wp_error( $wp_filesystem ) ) {
+		if (!$kit_metadata || !$upload_dir || !$kit_assets_absolute_dir || !$option || is_wp_error( $wp_filesystem ) ) {
 			return [];
 		}
 
@@ -196,7 +201,6 @@ final class Plugin {
 
 		foreach($included_family_styles as $family_style) {
 			if(!is_array($family_style) || !isset($family_style["prefix"]) || !isset($family_style["label"]) || !isset($family_style["shorthand"])) {
-				error_log("Font Awesome Elementor Addon: kit metadata included_family_styles entry is missing expected properties.\n");
 				continue;
 			}
 
@@ -229,7 +233,7 @@ final class Plugin {
 		return $icons;
 	}
 
-	private function wp_filesystem():WP_Filesystem_Base|WP_Error {
+	private function wp_filesystem():\WP_Filesystem_Base|WP_Error {
 		static $_wp_filesystem = null;
 
 		if ( $_wp_filesystem ) {
@@ -414,18 +418,20 @@ final class Plugin {
 
 	private function enqueue_font_awesome_pro_css() {
 		$md = $this->kit_metadata();
+		$upload_dir = $this->upload_dir();
+		$option = $this->option();
 
-		if ( !is_array($md) ) {
+		if ( !is_array($md) || !is_array($upload_dir) || !is_array($option) ) {
 			return;
 		}
 
-		$build_id = $md["kit_metadata"]["build_id"];
+		$build_id = $md["build_id"];
 
 		$stylesheet_file_stems = array_map(function ($family_style) {
 	    	return Family_Style::map_family_and_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
-	    }, $md["kit_metadata"]["included_family_styles"]);
+	    }, $md["included_family_styles"]);
 
-	    $relative_kit_assets_url = trailingslashit($md["upload_dir"]["baseurl"]) . $md["option"]["kit_assets_relative_dir"];
+	    $relative_kit_assets_url = trailingslashit($upload_dir["baseurl"]) . $option["kit_assets_relative_dir"];
 
 	    $fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/fontawesome.min.css';
 	    wp_enqueue_style( "font-awesome-pro-fontawesome", $fa_pro_css_url, [], $build_id );
