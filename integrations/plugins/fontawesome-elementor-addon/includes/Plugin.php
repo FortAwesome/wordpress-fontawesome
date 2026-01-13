@@ -201,18 +201,6 @@ final class Plugin {
 		return $option;
 	}
 
-	public function admin_notice_error_loading_kit_metadata(): void {
-		if ( isset( $_GET['activate'] ) ) unset( $_GET['activate'] );
-
-		$message = sprintf(
-			/* translators: 1: Plugin name */
-			esc_html__( '"%1$s" could not load its settings from storage.', 'fontawesome-elementor-addon' ),
-			'<strong>' . esc_html__( 'Font Awesome Elementor Addon', 'fontawesome-elementor-addon' ) . '</strong>'
-		);
-
-		printf( '<div class="notice notice-warning is-dismissible"><p>%1$s</p></div>', $message );
-	}
-
 	// We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
 	// on initial insertion, because of Elementor's logic in:
 	// get_icon_manager_tabs()
