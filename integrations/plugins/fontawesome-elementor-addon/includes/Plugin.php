@@ -11,6 +11,7 @@ use FontAwesomeLib\Base\Auth_Token_Provider_Base;
 use FontAwesomeLib\Svg_icon;
 use FontAwesomeLib\Family_Style;
 use FontAwesomeLib\Family_Style_Collection;
+use \WP_Error;
 
 final class Plugin {
 	/**
@@ -143,14 +144,12 @@ final class Plugin {
 		if ( ! $kit_metadata ) {
 			$result = $this->load_kit_metadata();
 
-			if (is_wp_error( $result ) || !is_array($result) || !isset($result["kit_metadata"])) {
-				add_action( 'admin_notices', function () use( $result ) {
-					$this->admin_notice_error_loading_kit_metadata($result);
-				});
-				return $result;
+			if ( is_wp_error( $result ) ) {
+				$this->send_toast_notice( 'error', $result->get_error_message() );
+				return null;
 			}
 
-			$kit_metadata = $result["kit_metadata"];
+			$kit_metadata = $result;
 		}
 
 		return $kit_metadata;
@@ -391,8 +390,7 @@ final class Plugin {
 				);
 	    }
 
-	    // TODO: switch this validation to use JSON schema validation.
-	    if(!is_array($kit_metadata) || !isset($kit_metadata["included_family_styles"]) || !is_array($kit_metadata["included_family_styles"]) || !isset($kit_metadata["fontawesome_version"])) {
+	    if( !is_array($kit_metadata) || !isset($kit_metadata["included_family_styles"]) || !is_array($kit_metadata["included_family_styles"]) || !isset($kit_metadata["fontawesome_version"]) || !isset($kit_metadata["build_id"]) ) {
 	    	return new WP_Error(
 					"fontawesome_elementor_addon_kit_metadata_invalid_error",
 					__(
