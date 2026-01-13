@@ -64,11 +64,10 @@ final class Plugin {
 		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
 		add_action( 'elementor/preview/enqueue_styles', [ $this, 'enqueue_preview_styles' ] );
 		add_action( 'elementor/frontend/enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
-
 		add_filter( 'elementor/icons_manager/native', [ $this, 'replace_font_awesome_native' ]);
 		add_filter( 'elementor/icons_manager/additional_tabs', [ $this, 'replace_font_awesome_additional_tabs' ] );
-
 		add_action('wp_ajax_fontawesome_elementor_get_editor_notice', [ $this, 'setup_editor_notice_handling' ] );
+		add_action('elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_scripts' ] );
 	}
 
 	public function enqueue_preview_styles(): void {
@@ -81,6 +80,21 @@ final class Plugin {
 
 	public function enqueue_editor_styles(): void {
 		$this->enqueue_font_awesome_pro_css();
+	}
+
+	public function enqueue_editor_scripts(): void {
+		wp_enqueue_script(
+			'fontawesome-elementor-addon-editor',
+			plugins_url('js/editor.js', dirname(__FILE__) ),
+			['jquery'],
+			'0.1.0',
+	  		true
+		);
+
+		wp_localize_script('fontawesome-elementor-addon-editor', 'FontawesomeElementorAddonEditor', [
+			'nonce' => wp_create_nonce('fontawesome_elementor_addon'),
+			'ajaxUrl' => admin_url('admin-ajax.php'),
+		]);
 	}
 
 	public function setup_editor_notice_handling() {
@@ -106,6 +120,18 @@ final class Plugin {
 		return $settings;
 	}
 
+	public function send_toast_notice($type, $message): void {
+		if(!is_string($type) || !is_string($message)) {
+			return;
+		}
+
+		update_user_meta(get_current_user_id(), '_fontawesome_elementor_addon_editor_error', [
+		  'type' => $type,
+		  'message' => $message,
+		  'time' => time(),
+		]);
+	}
+
 	/**
 	 * Get metadata. If it has not already been read retrieved from storage, read and parse it now.
 	 * If an error occurs, returns null and schedules an admin notice.
@@ -113,28 +139,6 @@ final class Plugin {
 	 */
 	public function kit_metadata(): array|null {
 		static $kit_metadata = null;
-
-		update_user_meta(get_current_user_id(), '_fontawesome_elementor_addon_editor_error', [
-		  'type' => 'error',
-		  'message' => 'Your API key is missing. Go to Settings → My Addon.',
-		  'time' => time(),
-		]);
-
-		add_action('elementor/editor/after_enqueue_scripts', function () {
-			$dir = dirname(__FILE__);
-		  wp_enqueue_script(
-		    'fontawesome-elementor-addon-editor',
-		    plugins_url('js/editor.js', $dir ),
-		    ['jquery'],
-		    '0.1.0',
-		    true
-		  );
-
-		  wp_localize_script('fontawesome-elementor-addon-editor', 'FontawesomeElementorAddonEditor', [
-		    'nonce' => wp_create_nonce('fontawesome_elementor_addon'),
-		    'ajaxUrl' => admin_url('admin-ajax.php'),
-		  ]);
-		});
 
 		if ( ! $kit_metadata ) {
 			$result = $this->load_kit_metadata();
