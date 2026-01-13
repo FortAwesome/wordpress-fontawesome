@@ -15,6 +15,15 @@ use \WP_Error;
 
 final class Plugin {
 	/**
+	 * Plugin version.
+	 *
+	 * @since 0.1.0
+	 * @access private
+	 * @var string the plugin version.
+	 */
+	private $_plugin_version = '0.1.0';
+
+	/**
 	 * Instance
 	 *
 	 * @since 0.1.0
@@ -61,8 +70,8 @@ final class Plugin {
 		add_action( 'elementor/editor/after_enqueue_styles', fn () => $this->enqueue_editor_styles() );
 		add_action( 'elementor/preview/enqueue_styles', fn () => $this->enqueue_preview_styles() );
 		add_action( 'elementor/frontend/enqueue_styles', fn () => $this->enqueue_frontend_styles() );
-		add_action('wp_ajax_fontawesome_elementor_get_editor_notice', fn () => $this->setup_editor_notice_handling() );
-		add_action('elementor/editor/after_enqueue_scripts', fn () => $this->enqueue_editor_scripts() );
+		add_action( 'wp_ajax_fontawesome_elementor_get_editor_notice', fn () => $this->setup_editor_notice_handling() );
+		add_action( 'elementor/editor/after_enqueue_scripts', fn () => $this->enqueue_editor_scripts() );
 
 		add_filter( 'elementor/icons_manager/native', fn ($settings) => $this->replace_font_awesome_native($settings) );
 		add_filter( 'elementor/icons_manager/additional_tabs', fn () => $this->replace_font_awesome_additional_tabs() );
@@ -85,9 +94,9 @@ final class Plugin {
 	private function enqueue_editor_scripts(): void {
 		wp_enqueue_script(
 			'fontawesome-elementor-addon-editor',
-			plugins_url('js/editor.js', dirname(__FILE__) ),
+			plugins_url('assets/js/editor.js', dirname(__FILE__) ),
 			['jquery'],
-			'0.1.0',
+			$this->_plugin_version,
 	  		true
 		);
 
@@ -244,7 +253,7 @@ final class Plugin {
 				'name' => "fapro-$family_style_shorthand",
 				'label' => "$label - FA Pro",
 				'url' => false,
-				'enqueue' => false,
+				'enqueue' => $this->get_frontend_css_urls(),
 				'prefix' => 'fa-',
 				'displayPrefix' => "$short_prefix_id",
 				'labelIcon' => $label_icon,
@@ -437,54 +446,100 @@ final class Plugin {
 		$icon_data = $this->get_icon_data($wp_filesystem, $svg_data_dir, $family_style_shorthand, $icon_name);
 
 		$svg_icon = new Svg_Icon($icon_data);
-		return $svg_icon->stringify(["class" => "svg-inline--fa"]);
+		return $svg_icon->stringify(["class" => "fontawesome-elementor-addon-icon"]);
 	}
 
 	private function style_resource_handle_prefix(): string {
-		return 'font-awesome-pro-';
+		return "font-awesome-pro-";
+	}
+
+	private function get_css_url_common_data(): ?array {
+		$kit_metadata = $this->kit_metadata();
+		$upload_dir = $this->upload_dir();
+		$option = $this->option();
+
+		if (
+			!is_array( $upload_dir )
+			|| !isset( $upload_dir["baseurl"] )
+			|| !is_array( $option )
+			|| !isset( $option["kit_assets_relative_dir"] )
+			|| !is_array( $kit_metadata )
+			|| !isset( $kit_metadata["build_id"] )
+			|| !is_string( $kit_metadata["build_id"] )
+			|| !isset( $kit_metadata["included_family_styles"] )
+			|| !is_array( $kit_metadata["included_family_styles"] )
+			) {
+			return null;
+		}
+
+		$build_id = $kit_metadata["build_id"];
+
+  		$url = trailingslashit($upload_dir["baseurl"]) . $option["kit_assets_relative_dir"];
+
+        return [
+        	"kit_assets_relative_url" => $url,
+			"build_id" => $build_id,
+			"included_family_styles" => $kit_metadata["included_family_styles"]
+        ];
+	}
+
+	private function get_svg_css_url(): string {
+		return plugins_url('assets/css/svg.css', dirname(__FILE__) );
 	}
 
 	private function enqueue_font_awesome_svg_css(): void {
-		$kit_metadata = $this->kit_metadata();
-		$upload_dir = $this->upload_dir();
-		$option = $this->option();
-
-		if (!is_array($kit_metadata) || !is_array($upload_dir) || !is_array($option) ) {
-			return;
-		}
-
-		$build_id = $kit_metadata["build_id"];
-
-  		$relative_kit_assets_url = trailingslashit($upload_dir["baseurl"]) . $option["kit_assets_relative_dir"];
-
-    	$fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/svg.min.css';
-     	wp_enqueue_style( "font-awesome-pro-svg", $fa_pro_css_url, [], $build_id );
+     	wp_enqueue_style( "font-awesome-pro-svg", $this->get_svg_css_url(), [], $this->_plugin_version );
 	}
 
-	private function enqueue_font_awesome_pro_css() {
-		$kit_metadata = $this->kit_metadata();
-		$upload_dir = $this->upload_dir();
-		$option = $this->option();
+	private function get_webfont_css_urls(): ?array {
+		$data = $this->get_css_url_common_data();
 
-		if ( !is_array($kit_metadata) || !is_array($upload_dir) || !is_array($option) ) {
+		if ( !is_array( $data) ) {
+			return null;
+		}
+
+		$stylesheet_file_stems = array_map(function ($family_style) {
+			if (
+				!is_array( $family_style )
+				|| !isset( $family_style["family"] )
+				|| !isset( $family_style["style"] )
+				|| !is_string( $family_style["family"] )
+				|| !is_string( $family_style["style"] )
+			) {
+				return null;
+			}
+
+	    	return Family_Style::map_family_and_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
+	    }, $data["included_family_styles"]);
+
+		$filtered_stylesheet_file_stems = array_filter($stylesheet_file_stems, fn($stem) => is_string($stem) && $stem !== '');
+
+		$urls = [
+  			trailingslashit( $data["kit_assets_relative_url"] ) . 'css/fontawesome.min.css'
+		];
+
+		foreach($filtered_stylesheet_file_stems as $stylesheet_file_stem) {
+			$stylesheet_rel_path = "css/$stylesheet_file_stem.min.css";
+			$url = trailingslashit( $data["kit_assets_relative_url"] ) . $stylesheet_rel_path;
+			$urls[] = $url;
+		}
+
+		$data["webfont_css_urls"] = $urls;
+
+		return $data;
+	}
+
+	private function enqueue_font_awesome_pro_css(): void {
+		$data = $this->get_webfont_css_urls();
+
+		if ( !is_array( $data) || !isset( $data["webfont_css_urls"] ) || !is_array( $data["webfont_css_urls"] ) ) {
 			return;
 		}
 
-		$build_id = $kit_metadata["build_id"];
+		$build_id = $data["build_id"];
 
-		$stylesheet_file_stems = array_map(function ($family_style) {
-	    	return Family_Style::map_family_and_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
-	    }, $kit_metadata["included_family_styles"]);
-
-	    $relative_kit_assets_url = trailingslashit($upload_dir["baseurl"]) . $option["kit_assets_relative_dir"];
-
-	    $fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/fontawesome.min.css';
-	    wp_enqueue_style( "font-awesome-pro-fontawesome", $fa_pro_css_url, [], $build_id );
-
-		foreach($stylesheet_file_stems as $stylesheet_file_stem) {
-			$stylesheet_rel_path = "css/$stylesheet_file_stem.min.css";
-			$fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . $stylesheet_rel_path;
-			wp_enqueue_style( "font-awesome-pro-$stylesheet_file_stem", $fa_pro_css_url, [], $build_id );
+		foreach( $data["webfont_css_urls"] as $index => $url ) {
+   			wp_enqueue_style( "font-awesome-pro-$index", $url, [], $build_id );
 		}
 	}
 
@@ -501,5 +556,9 @@ final class Plugin {
 		}
 
 		return [];
+	}
+
+	private function get_frontend_css_urls() {
+		return [ $this->get_svg_css_url() ];
 	}
 }
