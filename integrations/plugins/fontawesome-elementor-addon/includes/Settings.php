@@ -87,19 +87,27 @@ class Settings {
     );
   }
 
-  public function sanitize($input) {
-    $output = [];
+  private function sanitize($input) {
+	  // Existing saved settings (may include keys not on the form)
+	  $existing = get_option(Options::options_key(), []);
+	  if (!is_array($existing)) $existing = [];
+
+		$output = $existing;
 
     // Token: plain text (trim + sanitize)
-    $output['kit_token'] = isset($input['kit_token']) ? sanitize_text_field(wp_unslash($input['kit_token'])) : '';
+    if (array_key_exists('kit_token', $input)) {
+      $output['kit_token'] = sanitize_text_field(wp_unslash($input['kit_token']));
+    }
 
     // Load: checkbox (store as 1/0)
-    $output['load'] = ! empty($input['load']) ? 1 : 0;
+    if (array_key_exists('load', $input)) {
+    	$output['load'] = ! empty($input['load']) ? 1 : 0;
+    }
 
     return $output;
   }
 
-  public function get_options() {
+  private function get_options() {
     $defaults = [
       'kit_token' => '',
       'load'  => 0,
@@ -108,7 +116,7 @@ class Settings {
     return wp_parse_args(is_array($saved) ? $saved : [], $defaults);
   }
 
-  public function render_page() {
+  private function render_page() {
     if ( ! current_user_can('manage_options') ) return;
 
     echo '<div class="wrap">';
@@ -121,7 +129,7 @@ class Settings {
     echo '</div>';
   }
 
-  public function render_kit_token_field() {
+  private function render_kit_token_field() {
     $opts = $this->get_options();
     $name = Options::options_key() . '[kit_token]';
     printf(
@@ -132,7 +140,7 @@ class Settings {
     echo '<p class="description">Paste your Kit token here.</p>';
   }
 
-  public function render_load_field() {
+  private function render_load_field() {
     $opts = $this->get_options();
     $name = Options::options_key() . '[load]';
     printf(
