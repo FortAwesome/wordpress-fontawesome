@@ -78,12 +78,12 @@ final class Plugin {
 	}
 
 	private function enqueue_preview_styles(): void {
-		$this->enqueue_font_awesome_svg_css();
+		$this->enqueue_font_awesome_style_css();
 		$this->enqueue_font_awesome_pro_css();
 	}
 
 	private function enqueue_frontend_styles(): void {
-		$this->enqueue_font_awesome_svg_css();
+		$this->enqueue_font_awesome_style_css();
 		$this->enqueue_font_awesome_pro_css();
 	}
 
@@ -483,12 +483,60 @@ final class Plugin {
         ];
 	}
 
-	private function get_svg_css_url(): string {
-		return plugins_url('assets/css/svg.css', dirname(__FILE__) );
+	private function get_style_css_url(): string {
+		return plugins_url('assets/css/style.css', dirname(__FILE__) );
 	}
 
-	private function enqueue_font_awesome_svg_css(): void {
-     	wp_enqueue_style( "font-awesome-pro-svg", $this->get_svg_css_url(), [], $this->_plugin_version );
+	private function get_style_css_resource_handle(): string {
+		return "font-awesome-pro-style";
+	}
+
+	private function enqueue_font_awesome_style_css(): void {
+     	wp_enqueue_style( $this->get_style_css_resource_handle(), $this->get_style_css_url(), [], $this->_plugin_version );
+      	$this->add_inline_style( $this->get_style_css_resource_handle() );
+	}
+
+	private function webfont_icon_element_tag(): string {
+		return 'i';
+	}
+
+	private function add_inline_style( $resource_handle ): void {
+		$kit_metadata = $this->kit_metadata();
+
+		if ( !is_array( $kit_metadata) || !isset( $kit_metadata["included_family_styles"] ) || !is_array( $kit_metadata["included_family_styles"] ) || !is_string( $resource_handle )) {
+			return;
+		}
+
+		$css_selector_parts = array_map(function ($family_style) {
+			if (
+				!is_array( $family_style )
+				|| !isset( $family_style["prefix"] )
+			) {
+				return null;
+			}
+
+	    	return "." . $family_style["prefix"];
+	    }, $kit_metadata["included_family_styles"]);
+
+		$filtered_css_selector_parts = array_filter($css_selector_parts, fn($part) => is_string($part) && $part !== '');
+
+		$is_selector = implode( ',', $filtered_css_selector_parts );
+
+		$tag = $this->webfont_icon_element_tag();
+
+		$selector = ".elementor-icon $tag:is($is_selector)";
+
+		$style = ".elementor-icon i";
+
+		$style = <<< EOT
+$selector {
+  width: var(--fa-width, 1.25em);
+}
+EOT;
+		wp_add_inline_style(
+			$resource_handle,
+			$style
+		);
 	}
 
 	private function get_webfont_css_urls(): ?array {
@@ -559,6 +607,6 @@ final class Plugin {
 	}
 
 	private function get_frontend_css_urls() {
-		return [ $this->get_svg_css_url() ];
+		return [ $this->get_style_css_url() ];
 	}
 }
