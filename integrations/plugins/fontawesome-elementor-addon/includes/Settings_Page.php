@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class Settings {
+class Settings_Page {
   const PAGE_SLUG = 'fontawesome-elementor-addon-settings';
   const SETTINGS_GROUP = 'fontawesome_elementor_addon_settings_group';
 

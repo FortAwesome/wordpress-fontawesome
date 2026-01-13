@@ -77,7 +77,7 @@ final class Plugin {
 		add_filter( 'elementor/icons_manager/additional_tabs', fn () => $this->replace_font_awesome_additional_tabs() );
 
 		if ( is_admin() ) {
-			Settings::instance()->init();
+			Settings_Page::instance()->init();
 		}
 	}
 

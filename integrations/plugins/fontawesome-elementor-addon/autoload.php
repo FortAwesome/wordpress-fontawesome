@@ -23,4 +23,4 @@ require_once __DIR__ . '/includes/Compatibility.php';
 require_once __DIR__ . '/includes/Plugin.php';
 require_once __DIR__ . '/includes/Setup_Kit.php';
 require_once __DIR__ . '/includes/Options.php';
-require_once __DIR__ . '/includes/Settings.php';
+require_once __DIR__ . '/includes/Settings_Page.php';
