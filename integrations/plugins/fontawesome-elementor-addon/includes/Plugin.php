@@ -58,28 +58,31 @@ final class Plugin {
 			return;
 		}
 
-		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
-		add_action( 'elementor/preview/enqueue_styles', [ $this, 'enqueue_preview_styles' ] );
-		add_action( 'elementor/frontend/enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
-		add_filter( 'elementor/icons_manager/native', [ $this, 'replace_font_awesome_native' ]);
-		add_filter( 'elementor/icons_manager/additional_tabs', [ $this, 'replace_font_awesome_additional_tabs' ] );
-		add_action('wp_ajax_fontawesome_elementor_get_editor_notice', [ $this, 'setup_editor_notice_handling' ] );
-		add_action('elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_scripts' ] );
+		add_action( 'elementor/editor/after_enqueue_styles', fn () => $this->enqueue_editor_styles() );
+		add_action( 'elementor/preview/enqueue_styles', fn () => $this->enqueue_preview_styles() );
+		add_action( 'elementor/frontend/enqueue_styles', fn () => $this->enqueue_frontend_styles() );
+		add_action('wp_ajax_fontawesome_elementor_get_editor_notice', fn () => $this->setup_editor_notice_handling() );
+		add_action('elementor/editor/after_enqueue_scripts', fn () => $this->enqueue_editor_scripts() );
+
+		add_filter( 'elementor/icons_manager/native', fn ($settings) => $this->replace_font_awesome_native($settings) );
+		add_filter( 'elementor/icons_manager/additional_tabs', fn () => $this->replace_font_awesome_additional_tabs() );
 	}
 
-	public function enqueue_preview_styles(): void {
+	private function enqueue_preview_styles(): void {
+		$this->enqueue_font_awesome_svg_css();
 		$this->enqueue_font_awesome_pro_css();
 	}
 
-	public function enqueue_frontend_styles(): void {
+	private function enqueue_frontend_styles(): void {
+		$this->enqueue_font_awesome_svg_css();
 		$this->enqueue_font_awesome_pro_css();
 	}
 
-	public function enqueue_editor_styles(): void {
+	private function enqueue_editor_styles(): void {
 		$this->enqueue_font_awesome_pro_css();
 	}
 
-	public function enqueue_editor_scripts(): void {
+	private function enqueue_editor_scripts(): void {
 		wp_enqueue_script(
 			'fontawesome-elementor-addon-editor',
 			plugins_url('js/editor.js', dirname(__FILE__) ),
@@ -94,7 +97,7 @@ final class Plugin {
 		]);
 	}
 
-	public function setup_editor_notice_handling() {
+	private function setup_editor_notice_handling() {
 	  check_ajax_referer('fontawesome_elementor_addon', 'nonce');
 
 	  $user_id = get_current_user_id();
@@ -107,7 +110,7 @@ final class Plugin {
 	  wp_send_json_success($notice ?: null);
 	}
 
-	public function replace_font_awesome_native($settings) {
+	private function replace_font_awesome_native($settings) {
 		unset(
 			$settings['fa-solid'],
 			$settings['fa-regular'],
@@ -116,7 +119,7 @@ final class Plugin {
 		return $settings;
 	}
 
-	public function send_toast_notice($type, $message): void {
+	private function send_toast_notice($type, $message): void {
 		if(!is_string($type) || !is_string($message)) {
 			return;
 		}
@@ -198,7 +201,7 @@ final class Plugin {
 	// We have to add ours as "additional_tabs". Otherwise, their render_callback won't be used
 	// on initial insertion, because of Elementor's logic in:
 	// get_icon_manager_tabs()
-	public function replace_font_awesome_additional_tabs() {
+	private function replace_font_awesome_additional_tabs() {
 		$kit_metadata = $this->kit_metadata();
 		$upload_dir = $this->upload_dir();
 		$kit_assets_absolute_dir = $this->kit_assets_absolute_dir();
@@ -255,6 +258,10 @@ final class Plugin {
 		return $icons;
 	}
 
+	/**
+	 * Get the WP_Filesystem instance, initializing it if necessary.
+	 * @return \WP_Filesystem_Base|WP_Error WP_Filesystem instance on success, WP_Error on failure.
+	 */
 	private function wp_filesystem():\WP_Filesystem_Base|WP_Error {
 		static $_wp_filesystem = null;
 
@@ -430,11 +437,28 @@ final class Plugin {
 		$icon_data = $this->get_icon_data($wp_filesystem, $svg_data_dir, $family_style_shorthand, $icon_name);
 
 		$svg_icon = new Svg_Icon($icon_data);
-		return $svg_icon->stringify();
+		return $svg_icon->stringify(["class" => "svg-inline--fa"]);
 	}
 
 	private function style_resource_handle_prefix(): string {
 		return 'font-awesome-pro-';
+	}
+
+	private function enqueue_font_awesome_svg_css(): void {
+		$kit_metadata = $this->kit_metadata();
+		$upload_dir = $this->upload_dir();
+		$option = $this->option();
+
+		if (!is_array($kit_metadata) || !is_array($upload_dir) || !is_array($option) ) {
+			return;
+		}
+
+		$build_id = $kit_metadata["build_id"];
+
+  		$relative_kit_assets_url = trailingslashit($upload_dir["baseurl"]) . $option["kit_assets_relative_dir"];
+
+    	$fa_pro_css_url = trailingslashit( $relative_kit_assets_url ) . 'css/svg.min.css';
+     	wp_enqueue_style( "font-awesome-pro-svg", $fa_pro_css_url, [], $build_id );
 	}
 
 	private function enqueue_font_awesome_pro_css() {
