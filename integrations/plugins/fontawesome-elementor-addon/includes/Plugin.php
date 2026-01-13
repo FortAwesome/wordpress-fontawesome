@@ -58,10 +58,6 @@ final class Plugin {
 			return;
 		}
 
-		// TODO: initialize any options or metadata needed
-		// TODO: add an inline style matching all of our prefixes, more specific than Elementor's FA styles
-		//  to set width to auto.
-
 		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
 		add_action( 'elementor/preview/enqueue_styles', [ $this, 'enqueue_preview_styles' ] );
 		add_action( 'elementor/frontend/enqueue_styles', [ $this, 'enqueue_frontend_styles' ] );
@@ -112,7 +108,6 @@ final class Plugin {
 	}
 
 	public function replace_font_awesome_native($settings) {
-		// TODO: only remove Free for the styles we're replacing with Pro
 		unset(
 			$settings['fa-solid'],
 			$settings['fa-regular'],
@@ -192,7 +187,6 @@ final class Plugin {
 		$result = get_option( Options::options_key() );
 
 		if (!is_array($result)) {
-			// TODO: add admin notice here.
 			return null;
 		}
 
