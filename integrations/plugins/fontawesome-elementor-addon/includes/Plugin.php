@@ -67,6 +67,8 @@ final class Plugin {
 
 		add_filter( 'elementor/icons_manager/native', [ $this, 'replace_font_awesome_native' ]);
 		add_filter( 'elementor/icons_manager/additional_tabs', [ $this, 'replace_font_awesome_additional_tabs' ] );
+
+		add_action('wp_ajax_fontawesome_elementor_get_editor_notice', [ $this, 'setup_editor_notice_handling' ] );
 	}
 
 	public function enqueue_preview_styles(): void {
@@ -79,6 +81,19 @@ final class Plugin {
 
 	public function enqueue_editor_styles(): void {
 		$this->enqueue_font_awesome_pro_css();
+	}
+
+	public function setup_editor_notice_handling() {
+	  check_ajax_referer('fontawesome_elementor_addon', 'nonce');
+
+	  $user_id = get_current_user_id();
+	  $notice  = get_user_meta($user_id, '_fontawesome_elementor_addon_editor_error', true);
+
+	  if ($notice) {
+	    delete_user_meta($user_id, '_fontawesome_elementor_addon_editor_error');
+	  }
+
+	  wp_send_json_success($notice ?: null);
 	}
 
 	public function replace_font_awesome_native($settings) {
@@ -98,6 +113,28 @@ final class Plugin {
 	 */
 	public function kit_metadata(): array|null {
 		static $kit_metadata = null;
+
+		update_user_meta(get_current_user_id(), '_fontawesome_elementor_addon_editor_error', [
+		  'type' => 'error',
+		  'message' => 'Your API key is missing. Go to Settings → My Addon.',
+		  'time' => time(),
+		]);
+
+		add_action('elementor/editor/after_enqueue_scripts', function () {
+			$dir = dirname(__FILE__);
+		  wp_enqueue_script(
+		    'fontawesome-elementor-addon-editor',
+		    plugins_url('js/editor.js', $dir ),
+		    ['jquery'],
+		    '0.1.0',
+		    true
+		  );
+
+		  wp_localize_script('fontawesome-elementor-addon-editor', 'FontawesomeElementorAddonEditor', [
+		    'nonce' => wp_create_nonce('fontawesome_elementor_addon'),
+		    'ajaxUrl' => admin_url('admin-ajax.php'),
+		  ]);
+		});
 
 		if ( ! $kit_metadata ) {
 			$result = $this->load_kit_metadata();
