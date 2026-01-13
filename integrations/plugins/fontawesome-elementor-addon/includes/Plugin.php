@@ -75,6 +75,10 @@ final class Plugin {
 
 		add_filter( 'elementor/icons_manager/native', fn ($settings) => $this->replace_font_awesome_native($settings) );
 		add_filter( 'elementor/icons_manager/additional_tabs', fn () => $this->replace_font_awesome_additional_tabs() );
+
+		if ( is_admin() ) {
+			Settings::instance()->init();
+		}
 	}
 
 	private function enqueue_preview_styles(): void {
