@@ -438,19 +438,19 @@ final class Plugin {
 	}
 
 	private function enqueue_font_awesome_pro_css() {
-		$md = $this->kit_metadata();
+		$kit_metadata = $this->kit_metadata();
 		$upload_dir = $this->upload_dir();
 		$option = $this->option();
 
-		if ( !is_array($md) || !is_array($upload_dir) || !is_array($option) ) {
+		if ( !is_array($kit_metadata) || !is_array($upload_dir) || !is_array($option) ) {
 			return;
 		}
 
-		$build_id = $md["build_id"];
+		$build_id = $kit_metadata["build_id"];
 
 		$stylesheet_file_stems = array_map(function ($family_style) {
 	    	return Family_Style::map_family_and_style_to_asset_file_stem($family_style["family"], $family_style["style"]);
-	    }, $md["included_family_styles"]);
+	    }, $kit_metadata["included_family_styles"]);
 
 	    $relative_kit_assets_url = trailingslashit($upload_dir["baseurl"]) . $option["kit_assets_relative_dir"];
 
