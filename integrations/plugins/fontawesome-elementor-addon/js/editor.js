@@ -1,5 +1,4 @@
 (function ($) {
-  console.log('Hello world, from Fontawesome Elementor Addon');
   function showNotice(notice) {
     if (!notice || !notice.message) return;
 
