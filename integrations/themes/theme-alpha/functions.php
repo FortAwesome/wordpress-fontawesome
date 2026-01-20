@@ -92,3 +92,10 @@ function theme_alpha_fa_classes() {
 // add_filter('filesystem_method', function() {
 //     return 'none';
 // });
+
+// add_filter( 'map_meta_cap', function( $caps, $cap, $user_id, $args ) {
+//     if ( 'unfiltered_html' === $cap ) {
+//         $caps = [ 'do_not_allow' ]; // deny this capability for everyone
+//     }
+//     return $caps;
+// }, 10, 4 );
