@@ -190,6 +190,12 @@ If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can onl
 
 
 == Changelog ==
+= 5.1.4 =
+
+* Update the icon chooser package. This is only for compatibility with other tools that may be
+  loaded on a page that also use the icon chooser package. It does not change how the icon chooser
+  functions in this plugin.
+
 = 5.1.3 =
 
 * Resolve a compatibility conflict with Toolset Types in the classic editor.
