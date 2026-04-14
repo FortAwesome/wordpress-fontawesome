@@ -136,18 +136,33 @@ class FontAwesome_Metadata_Provider {
 			$args['headers']['authorization'] = "Bearer $access_token";
 		}
 
+		$cache_key = 'font-awesome-query-' . md5( $body . '|' . ( $ignore_auth ? '1' : '0' ) );
+
 		$response = $this->post( FONTAWESOME_API_URL, $args );
 
 		if ( $response instanceof WP_Error ) {
+			$exception = ApiRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
+			$stale     = get_transient( $cache_key );
+			if ( is_string( $stale ) ) {
+				notify_admin_warning( $exception );
+				return $stale;
+			}
 			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw ApiRequestException::with_wp_error( add_failed_request_diagnostics( $response ) );
+			throw $exception;
 		}
 
 		if ( 200 === $response['response']['code'] ) {
+			set_transient( $cache_key, $response['body'], MONTH_IN_SECONDS );
 			return $response['body'];
 		} else {
+			$exception = ApiResponseException::with_wp_response( $response );
+			$stale     = get_transient( $cache_key );
+			if ( is_string( $stale ) ) {
+				notify_admin_warning( $exception );
+				return $stale;
+			}
 			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw ApiResponseException::with_wp_response( $response );
+			throw $exception;
 		}
 	}
 }

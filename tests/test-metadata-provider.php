@@ -28,6 +28,36 @@ class MetadataProviderTest extends TestCase {
 		FontAwesome_Metadata_Provider::reset();
 		remove_all_filters( 'pre_http_request' );
 		remove_all_actions( 'font_awesome_preferences' );
+		self::clear_metadata_query_cache();
+	}
+
+	/**
+	 * Clears any stale-fallback transients written by metadata_query().
+	 * Transient keys are hashes of the request body, so we flush by prefix.
+	 */
+	protected static function clear_metadata_query_cache() {
+		global $wpdb;
+		$wpdb->query(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_font-awesome-query-%' OR option_name LIKE '\\_transient\\_timeout\\_font-awesome-query-%'"
+		);
+	}
+
+	/**
+	 * Mirrors the cache key construction in
+	 * FontAwesome_Metadata_Provider::metadata_query() so tests can pre-seed
+	 * and assert the stale-fallback cache.
+	 */
+	protected static function metadata_query_cache_key( $query, $ignore_auth = false ) {
+		if ( is_string( $query ) ) {
+			$body = '{"query": ' . wp_json_encode( $query ) . '}';
+		} else {
+			$filtered          = array( 'query' => $query['query'] );
+			if ( array_key_exists( 'variables', $query ) ) {
+				$filtered['variables'] = $query['variables'];
+			}
+			$body = wp_json_encode( $filtered );
+		}
+		return 'font-awesome-query-' . md5( $body . '|' . ( $ignore_auth ? '1' : '0' ) );
 	}
 
 	protected static function build_success_response() {
@@ -356,5 +386,74 @@ class MetadataProviderTest extends TestCase {
 		$result = fa_metadata_provider()->metadata_query( $query, true );
 
 		$this->assertTrue( is_string( $result ) );
+	}
+
+	public function test_metadata_query_writes_through_on_success() {
+		$query         = 'query { releases { version } }';
+		$mock_response = self::build_success_response();
+		$famp          = $this->create_metadata_provider_with_mocked_response( $mock_response );
+
+		$famp->metadata_query( $query, true );
+
+		$cached = get_transient( self::metadata_query_cache_key( $query, true ) );
+		$this->assertIsString( $cached );
+		$this->assertEquals( $mock_response['body'], $cached );
+	}
+
+	public function test_metadata_query_serves_stale_on_wp_error() {
+		$query     = 'query { releases { version } }';
+		$stale_body = '{"data":{"releases":[{"version":"1.2.3"}]}}';
+		set_transient( self::metadata_query_cache_key( $query, true ), $stale_body, MONTH_IN_SECONDS );
+
+		$famp = $this->create_metadata_provider_with_mocked_response( new WP_Error( 'fake error' ) );
+
+		$result = $famp->metadata_query( $query, true );
+
+		$this->assertEquals( $stale_body, $result );
+	}
+
+	public function test_metadata_query_serves_stale_on_500() {
+		$query     = 'query { releases { version } }';
+		$stale_body = '{"data":{"releases":[{"version":"9.9.9"}]}}';
+		set_transient( self::metadata_query_cache_key( $query, true ), $stale_body, MONTH_IN_SECONDS );
+
+		$famp = $this->create_metadata_provider_with_mocked_response( self::build_500_response() );
+
+		$result = $famp->metadata_query( $query, true );
+
+		$this->assertEquals( $stale_body, $result );
+	}
+
+	public function test_metadata_query_throws_when_no_cache_on_failure() {
+		// Cache cleared by set_up(). A fresh failure with no prior success should
+		// still surface the exception so first-time failures aren't silently swallowed.
+		$famp = $this->create_metadata_provider_with_mocked_response( self::build_500_response() );
+
+		$caught = false;
+		try {
+			$famp->metadata_query( 'query { releases { version } }', true );
+		} catch ( ApiResponseException $e ) {
+			$caught = true;
+		}
+		$this->assertTrue( $caught );
+	}
+
+	public function test_metadata_query_ignore_auth_uses_separate_cache_key() {
+		$query = 'query { releases { version } }';
+
+		$auth_body   = '{"data":{"releases":[{"version":"auth"}]}}';
+		$noauth_body = '{"data":{"releases":[{"version":"noauth"}]}}';
+
+		set_transient( self::metadata_query_cache_key( $query, false ), $auth_body, MONTH_IN_SECONDS );
+		set_transient( self::metadata_query_cache_key( $query, true ), $noauth_body, MONTH_IN_SECONDS );
+
+		$this->assertNotEquals(
+			self::metadata_query_cache_key( $query, false ),
+			self::metadata_query_cache_key( $query, true )
+		);
+
+		$famp = $this->create_metadata_provider_with_mocked_response( self::build_500_response() );
+
+		$this->assertEquals( $noauth_body, $famp->metadata_query( $query, true ) );
 	}
 }
