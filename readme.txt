@@ -190,6 +190,10 @@ If you're using the Icon Chooser, you'll need to use a Pro Kit. (The CDN can onl
 
 
 == Changelog ==
+= 5.1.5 =
+
+* Minor update to the icon chooser, fixing a bug in the previous update.
+
 = 5.1.4 =
 
 * Update the icon chooser package. This is only for compatibility with other tools that may be
