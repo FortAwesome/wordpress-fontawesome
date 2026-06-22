@@ -22,6 +22,7 @@
   -->
 	<file>font-awesome-init.php</file>
 	<file>block-editor/font-awesome-icon-block-init.php</file>
+	<file>block-editor/font-awesome-icon-block-render-callback.php</file>
 	<file>index.php</file>
 	<file>defines.php</file>
 	<file>admin/index.php</file>
