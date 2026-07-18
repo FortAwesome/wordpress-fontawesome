@@ -1,5 +1,8 @@
 import mockSearchResult from '../support/mockSearchResult.json';
 import mockKitMetadataResponse from '../support/mockKitMetadataResponse.json';
+import mockKitRevisionResponse from '../support/mockKitRevisionResponse.json';
+import mockSearchKitResponse from '../support/mockSearchKitResponse.json';
+import mockShowcaseIconsResponse from '../support/mockShowcaseIconsResponse.json';
 import faSquareFull from '../support/square-full.json';
 
 export async function mockRoutes(page) {
@@ -27,22 +30,34 @@ export async function mockRoutes(page) {
 
     const postData = route.request().postData()
 
-    const isKitMetadataQuery = postData.includes('query KitMetadata')
-
-    if (isKitMetadataQuery) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockKitMetadataResponse)
-      })
+    // Dispatch on the GraphQL operation name. handleQuery collapses the query's
+    // whitespace to single spaces before POSTing, so these `query <Name>` prefixes
+    // appear verbatim in the request body.
+    //
+    // Kit mode (fa-icon-chooser >= 0.11.0) no longer uses the legacy top-level
+    // `search` query. It runs a KitRevision identity probe, loads kit metadata,
+    // searches the kit subset via `searchKit`, and fills its opening view via
+    // `showcaseIcons`. Non-kit / CDN mode still uses the legacy `Search` query,
+    // which falls through to the default branch below.
+    let responseBody
+    if (postData.includes('query KitRevision')) {
+      responseBody = mockKitRevisionResponse
+    } else if (postData.includes('query KitMetadata')) {
+      responseBody = mockKitMetadataResponse
+    } else if (postData.includes('query SearchKit')) {
+      responseBody = mockSearchKitResponse
+    } else if (postData.includes('query ShowcaseIcons')) {
+      responseBody = mockShowcaseIconsResponse
     } else {
-      // Assume it's a search query
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockSearchResult)
-      })
+      // Legacy top-level `search` query (non-kit / CDN mode).
+      responseBody = mockSearchResult
     }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(responseBody)
+    })
   })
 
   // Mock CDN requests
