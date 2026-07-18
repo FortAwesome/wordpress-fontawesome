@@ -188,7 +188,7 @@ class FontAwesome_Release_Provider {
 	 * @return void
 	 */
 	public static function load_releases() {
-		$query = <<< EOD
+		$query = <<<'EOD'
 query {
 	latest_version_5: release(version: "5.x") {
 		version

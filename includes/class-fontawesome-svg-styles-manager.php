@@ -147,7 +147,7 @@ class FontAwesome_SVG_Styles_Manager {
 		 * in the event that the real stylesheet fails to load, the SVG icons are sized
 		 * correctly, and aren't HUGE.
 		 */
-		$default_svg_style = <<< EOT
+		$default_svg_style = <<<'EOT'
 .svg-inline--fa {
   display: inline-block;
   height: 1em;

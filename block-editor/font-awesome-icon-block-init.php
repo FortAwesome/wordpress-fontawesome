@@ -44,7 +44,7 @@ function enqueue_font_awesome_block_editor_assets() {
 	 * result in anything rendering there, but it's better for there to be no
 	 * pseudo-elements present at all on the <svg> elements.
 	 */
-	$frontend_inline_style = <<< EOT
+	$frontend_inline_style = <<<'EOT'
    .wp-block-font-awesome-icon svg::before,
    .wp-rich-text-font-awesome-icon svg::before {content: unset;}
 EOT;

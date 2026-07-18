@@ -1963,7 +1963,7 @@ class FontAwesome {
 							 */
 							$detect_conflicts_until = fa()->detect_conflicts_until() * 1000;
 
-							$script_content = <<< EOT
+							$script_content = <<<EOT
 window.__FontAwesome__WP__KitConfig__ = {
 	detectConflictsUntil: {$detect_conflicts_until}
 }
@@ -3045,7 +3045,7 @@ EOT;
 	 * @ignore
 	 */
 	private function build_legacy_font_face_overrides_for_v4( $license_subdomain, $version ) {
-		return <<< EOT
+		return <<<EOT
 @font-face {
 font-family: "FontAwesome";
 font-display: block;
