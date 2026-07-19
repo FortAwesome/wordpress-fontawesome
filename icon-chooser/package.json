@@ -16,8 +16,7 @@
     "env": "wp-env"
   },
   "dependencies": {
-    "@fortawesome/fa-icon-chooser-react": "^0.11.0",
-    "blueimp-md5": "^2.19.0"
+    "@fortawesome/fa-icon-chooser-react": "^0.11.0"
   },
   "devDependencies": {
     "@wordpress/scripts": "wp-6.7",
