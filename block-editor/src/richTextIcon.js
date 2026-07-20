@@ -42,6 +42,14 @@ const settings = {
 
 const modalOpenEvent = createCustomEvent()
 
+// A separate event for opening the icon chooser from within the Style modal's
+// icon preview. It must be distinct from modalOpenEvent: while the Style modal
+// is open, both the top-level IconChooserModal (in Edit) and the one rendered
+// inside IconModifier are mounted. If they shared the same open event, a single
+// preview click would open both stacked choosers, and the second one's submit
+// would insert an extra icon instead of replacing the current one.
+const styleModalIconChooserOpenEvent = createCustomEvent()
+
 export function initialize() {
   registerFormatType(name, settings)
 }
@@ -209,7 +217,7 @@ function InlineUI({ value, changeValue, contentRef, handleSelect }) {
             IconChooserModal={IconChooserModal}
             context={context}
             handleSelect={handleSelect}
-            iconChooserOpenEvent={modalOpenEvent}
+            iconChooserOpenEvent={styleModalIconChooserOpenEvent}
           />
         </Modal>
       )}
