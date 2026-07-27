@@ -3161,7 +3161,7 @@ EOT;
 		);
 
 		// Enqueue the conflict detector.
-		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
 			add_action(
 				$action,
 				array( $conflict_detection_enqueue_command, 'run' ),
