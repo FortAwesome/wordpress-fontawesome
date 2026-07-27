@@ -1938,7 +1938,7 @@ class FontAwesome {
 			throw new ConfigCorruptionException();
 		}
 
-		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 			$enqueue_command = new FontAwesome_Command(
 				function () use ( $kit_token ) {
 					try {
@@ -2074,7 +2074,7 @@ EOT;
 
 		if ( 'webfont' === $options['technology'] ) {
 
-			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 				add_action(
 					$action,
 					function () use ( $all_source ) {
@@ -2123,7 +2123,7 @@ EOT;
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
 				 * that may try to declare a @font-face with a font-family of "FontAwesome".
 				 */
-				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 					add_action(
 						$action,
 						function () use ( $v4_shims_source, $v4_shims_integrity, $options, $version ) {
@@ -2172,7 +2172,7 @@ EOT;
 				}
 			}
 		} else {
-			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 				add_action(
 					$action,
 					function () use ( $all_source, $options ) {
@@ -2220,7 +2220,7 @@ EOT;
 				$v4_shims_source    = $resources['v4-shims']->source();
 				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
 
-				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 					add_action(
 						$action,
 						function () use ( $v4_shims_source ) {
@@ -2343,7 +2343,7 @@ EOT;
 		* add what we find to the new-style blocklist.
 		*/
 		if ( $this->old_remove_unregistered_clients ) {
-			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+			foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 				add_action(
 					$action,
 					function () {
@@ -2368,7 +2368,7 @@ EOT;
 		 * hopefully allowing any unregistered client to have already enqueued
 		 * itself so that our attempt to dequeue it will be successful.
 		 */
-		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' ) as $action ) {
+		foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 			add_action(
 				$action,
 				function () {
