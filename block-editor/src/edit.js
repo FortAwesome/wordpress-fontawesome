@@ -2,7 +2,7 @@ import { justifyCenter, justifyLeft, justifyRight } from '@wordpress/icons'
 import { faBrush } from '@fortawesome/free-solid-svg-icons'
 import { __ } from '@wordpress/i18n'
 import { BlockControls, useBlockProps } from '@wordpress/block-editor'
-import { Fragment, useState } from '@wordpress/element'
+import { Fragment, useMemo, useState } from '@wordpress/element'
 import { Button, ToolbarDropdownMenu, Modal, Placeholder, ToolbarButton, ToolbarGroup } from '@wordpress/components'
 import { get } from 'lodash'
 import { GLOBAL_KEY } from '../../admin/src/constants'
@@ -22,7 +22,11 @@ const defaultStylingParams = {
 export function Edit(props) {
   const { attributes, setAttributes } = props
 
-  const iconChooserOpenEvent = createCustomEvent()
+  // One event per block instance, not one per render. Creating it inline would
+  // mint a new random event type on every render, and since IconChooserModal
+  // subscribes by type, `document` would accumulate a listener and a listener-map
+  // key for every render this block ever does.
+  const iconChooserOpenEvent = useMemo(() => createCustomEvent(), [])
 
   const [justificationDropdownMenuIcon, setJustificationDropdownMenuIcon] = useState(justifyCenter)
 

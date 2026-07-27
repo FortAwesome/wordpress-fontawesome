@@ -3,14 +3,20 @@
 **Plugin version audited:** 5.1.5 (`main`)
 **Date:** 2026-07-18
 **Revised:** 2026-07-27 — the original P0 `getComputedStyle` finding was **retracted** after browser testing disproved it; see [Investigated and dismissed](#investigated-and-dismissed).
+**Revised:** 2026-07-27 (second pass) — the **cross‑frame half** of the custom‑event‑bus finding was also retracted, along with the two other cross‑frame "verify" items that rested on the same assumption. A real defect *was* found and fixed in that same code: an unbounded listener leak. See [P1 — Custom‑event bus](#p1--customevent-bus-on-the-global-document-listener-leak-fixed).
 **Scope:** Compatibility with WordPress 7.0, with emphasis on the **iframed block editor** and how the plugin's block / rich‑text format behave inside it.
 **References:**
 - [WordPress 7.0 Field Guide](https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/)
-- [PR #298 — "Add `enqueue_block_assets` to action hooks"](https://github.com/FortAwesome/wordpress-fontawesome/pull/298) (open, unmerged as of this audit)
+- [PR #298 — "Add `enqueue_block_assets` to action hooks"](https://github.com/FortAwesome/wordpress-fontawesome/pull/298) — **merged** as `d27300dd`. See the note under P0 about what it did and did not change.
 
-> **Note on methodology.** This is a **static‑analysis** audit. A dockerized WordPress 7 environment was not available, so none of the findings below have been confirmed by running the plugin in a live WP7 iframed editor. Every item marked **Verify** needs a runtime check once an environment is available. File/line references are to the current `main`.
+> **Note on methodology.** This started as a **static‑analysis** audit; a dockerized WordPress 7 environment was not available. Items still marked **Verify** have not been run against WP7. File/line references are to the current `main`.
 >
-> **One exception:** the cross‑frame `getComputedStyle` question *was* settled empirically, by reproducing the outer‑window/inner‑element shape directly in Chromium, Firefox, and WebKit (see [Investigated and dismissed](#investigated-and-dismissed)). That is the standard the other cross‑frame items should be held to before they are treated as real — **static analysis produced a false positive here, and may have produced others.**
+> **Static analysis produced two false positives here.** Both were "outer window touches inner element, therefore cross‑frame bug," and both dissolved once the actual mechanism was checked:
+>
+> 1. The `getComputedStyle` P0, disproved by reproducing the shape in Chromium, Firefox, and WebKit (see [Investigated and dismissed](#investigated-and-dismissed)).
+> 2. The custom‑event‑bus P1, disproved by reading what WP core actually puts inside the iframe (see [below](#p1--customevent-bus-on-the-global-document-listener-leak-fixed)).
+>
+> That is the standard the remaining cross‑frame items should be held to. The heuristic that generated them has a bad track record in this codebase.
 
 ---
 
@@ -18,11 +24,11 @@
 
 The plugin is in reasonably good shape for WP7. The block is already `apiVersion: 3`, and the block's own editor assets are already injected into the editor iframe. The remaining work is small and specific:
 
-1. **Runtime asset delivery into the iframe** (kit / CDN webfont / v4 shims) is what **PR #298** addresses — needed, but its blanket inclusion of the **conflict detector** should be reconsidered.
-2. **A few fragile cross‑window assumptions** (custom‑event bus on the global `document`, a web‑component registry, shared `window` globals) that are *probably* fine but must be verified in the iframe.
+1. **Runtime asset delivery into the iframe** (kit / CDN webfont / v4 shims) was addressed by **PR #298**, now merged. One duplicate‑enqueue side effect still wants confirming.
+2. **The "fragile cross‑window assumptions" are not fragile.** None of the plugin's JS can evaluate inside the editor iframe, so the custom‑event bus, the web‑component registry, and the `window[GLOBAL_KEY]` global all resolve in a single realm. See [Investigated and dismissed](#investigated-and-dismissed) for the mechanism.
 3. **Housekeeping**: bump "Tested up to", consider realigning `@wordpress/*` dev deps to `wp-7.0`.
 
-**There are no known required code fixes in the block/rich‑text JS.** An earlier revision of this audit claimed one (a cross‑frame `getComputedStyle` bug); browser testing disproved it and it has been retracted. The WP7 work is now entirely PHP‑side asset delivery plus runtime verification.
+**One real code fix came out of this audit, and it was not a WP7 issue.** Chasing the cross‑frame question through the event bus turned up an unbounded listener leak in `IconChooserModal` that had been there all along — fixed, with a regression test. Both cross‑frame findings the audit originally raised (`getComputedStyle`, the event bus) were false positives and have been retracted.
 
 There are **no PHP‑level blockers**: the plugin already requires PHP 7.4 (WP7's new minimum).
 
@@ -39,12 +45,12 @@ This plugin's block is **`apiVersion: 3`** (`block-editor/src/block.json`). That
 
 Inside the iframe, the editor content lives in a **separate document and window** from the surrounding admin page. JS that reaches for the *outer* `document`/`window` while operating on an element that lives *inside* the iframe is worth examining.
 
-**But "outer window touches inner element" is not by itself a bug** — that heuristic is what produced the false positive retracted below. Whether it breaks depends entirely on the specific API:
+**But "outer window touches inner element" is not by itself a bug** — that heuristic produced both false positives retracted below. Whether it breaks depends on two things, and *both* have to go wrong:
 
-- APIs that resolve against **the element's own document** are safe to call from any window. `getComputedStyle` is one of these (verified — see below).
-- APIs that resolve against **the receiver's document/registry** are the genuinely risky ones: event dispatch/listen pairs (`document.addEventListener` — P1 below), `customElements` registries (P1 below), `document.querySelector`, and per‑realm globals (P2 below).
+1. **Does the API resolve against the receiver's realm, or the element's?** APIs that resolve against **the element's own document** are safe to call from any window; `getComputedStyle` is one of these (verified). APIs that resolve against **the receiver's** document/registry are the ones that *could* break: event dispatch/listen pairs, `customElements` registries, `document.querySelector`, per‑realm globals.
+2. **Is there actually more than one realm in play?** A receiver‑resolved API is only a hazard if some of the plugin's code genuinely runs inside the iframe. **None of it does** — see [Investigated and dismissed](#investigated-and-dismissed). WordPress puts *styles* in the iframe, plus whatever `enqueue_block_assets` enqueues; it does not put block `editorScript` bundles there.
 
-Each candidate needs to be checked against what the API actually specifies, not assumed.
+The audit's original cross‑frame items all failed test 1 or test 2. Check both before treating a new one as real.
 
 ---
 
@@ -55,7 +61,7 @@ These are worth stating explicitly so they aren't "fixed" by mistake:
 | Area | Status | Evidence |
 |---|---|---|
 | Block API version | ✅ v3 — qualifies for the iframe | `block-editor/src/block.json` (`"apiVersion": 3`) |
-| Block's **own** editor CSS/JS reach the iframe | ✅ Already handled | `block-editor/font-awesome-icon-block-init.php:91-108` version‑gates to `enqueue_block_assets` on WP 6.3+ *specifically* so styles/scripts land inside the editor content iframe (documented in an inline comment). |
+| Block's **own** editor CSS reaches the iframe | ✅ Already handled | `block-editor/font-awesome-icon-block-init.php:91-108` version‑gates to `enqueue_block_assets` on WP 6.3+ so the block's `editorStyle` lands inside the editor content iframe. ⚠️ The inline comment there says this loads the assets "inside the editor's content iframe" — true of the **styles**, not the **script**. The bundle is registered on that hook but enqueued as the block's `editorScript`, which WP loads in the outer window only. That distinction is what the [retraction below](#investigated-and-dismissed) turns on; worth correcting the comment so the false positive isn't re‑derived from it. |
 | SVG rendering | ✅ Inline SVG via React; no DOM injection | Icons render through `@fortawesome/react-fontawesome` in the React tree — they render wherever React renders, including the iframe. |
 | FA MutationObserver in editor | ✅ Disabled | `block-editor/src/index.js:10-11` sets `config.autoAddCss = false; config.autoReplaceSvg = false`, so FA's own MutationObserver‑driven SVG replacement does **not** run in the editor. |
 | PHP minimum | ✅ Meets WP7 | `readme.txt`: `Requires PHP: 7.4` |
@@ -67,7 +73,7 @@ These are worth stating explicitly so they aren't "fixed" by mistake:
 
 ## Findings
 
-### P0 — Runtime FA assets in the iframe (this is what PR #298 is for)
+### P0 — Runtime FA assets in the iframe (addressed by PR #298, merged)
 
 **Files:** `includes/class-fontawesome.php` (multiple `add_action` loops)
 
@@ -82,57 +88,60 @@ array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts' )
 - **SVG technology:** mostly OK for *this block*, because icons are inlined by `react-fontawesome` and the SVG **styles** handle is already enqueued into the iframe via `enqueue_block_assets` (`includes/class-fontawesome.php:411-419`). Sizing/animation classes are covered.
 - **Webfont technology, kit `<i>` tags, and shortcode output rendered in the editor:** icons will **not** render correctly in the iframe without the runtime present.
 
-**PR #298** adds `'enqueue_block_assets'` to those enqueue loops (kit, CDN webfont, v4 shims, plain enqueue, and the conflict detector). `enqueue_block_assets` **does** fire inside the iframe, so this is the right mechanism.
+**PR #298** (merged as `d27300dd`) adds `'enqueue_block_assets'` to those enqueue loops: kit, CDN webfont, v4 shims, plain enqueue, blocklist removal. `enqueue_block_assets` **does** fire inside the iframe, so this is the right mechanism.
 
-**Assessment of PR #298:**
+**Assessment of PR #298 as merged:**
 - ✅ Correct approach for kit / CDN / v4‑shim delivery into the iframe.
-- ⚠️ **`enqueue_block_assets` also fires on the front end**, not just the editor. Adding it to loops that already run on `wp_enqueue_scripts` means a second enqueue on the front end. WordPress dedupes styles/scripts **by handle**, so this is normally harmless — but **verify** no duplicate inline `@font-face`/style injection or double conflict‑detector loads result.
-- ⚠️ See P1 below re: the conflict detector.
+- ✅ **The conflict detector was correctly left out.** Its enqueue loop (`includes/class-fontawesome.php:3164`) still carries only the three original hooks, so the in‑iframe scan race raised in review never shipped. The item that used to appear here as a P1 is resolved — nothing to do.
+- ⚠️ **`enqueue_block_assets` also fires on the front end**, not just the editor. Adding it to loops that already run on `wp_enqueue_scripts` means a second enqueue on the front end. WordPress dedupes styles/scripts **by handle**, so this is normally harmless — but see the duplicate‑inline‑style item directly below.
+
+**Verify — duplicated inline styles, with a concrete mechanism.** This was previously stated as a vague "check for duplicate injection"; here is the specific path that would cause it.
+
+`enqueue_font_awesome_block_editor_assets()` (`block-editor/font-awesome-icon-block-init.php:18`) runs on `enqueue_block_assets` and calls `wp_add_inline_style()` on the SVG styles handle. `enqueue_block_assets` fires **twice per editor load**: once for the outer admin page, and once inside `_wp_get_iframed_editor_assets()` (`wp-includes/block-editor.php`) while it collects the iframe's assets.
+
+That collector swaps in a fresh `WP_Styles` but then does:
+
+```php
+$wp_styles->registered = $current_wp_styles->registered;
+```
+
+PHP copies the array, but the values are `_WP_Dependency` **objects** — shared by reference. So `wp_add_inline_style()` during the iframe pass calls `add_data('after', …)` on the *same* object the outer registry holds, and the rule is appended twice.
+
+Expected impact is cosmetic (an identical CSS rule emitted twice), but it should be **confirmed rather than assumed**, and the same reasoning applies to the `@font-face` override in the v4‑shim loop (`class-fontawesome.php:2126`).
 
 ---
 
-### P1 — Conflict detector should not blanket‑run in the iframe
-
-**File:** `includes/class-fontawesome.php:3160-3170` (the enqueue loop PR #298 also modifies)
-
-The conflict‑detection scanner is currently an **admin/front‑end feature gated by `current_user_can('manage_options')`** and is *not* part of the block bundle. PR #298 adds `enqueue_block_assets` to its enqueue loop, which would cause the detector to **also load and scan inside the editor iframe**, concurrently with the outer admin page.
-
-This is the exact race condition raised in the PR review (mlwilkerson): a scan running inside the iframe and outside at the same time can duplicate work or terminate a scan prematurely.
-
-**Recommendation:** Exclude the conflict detector from the `enqueue_block_assets` change (keep it on the three original hooks), **or** make it explicitly iframe‑aware (detect the iframe context and no‑op, so only one scan runs). The webfont/kit/shim asset changes in PR #298 are independent of this and can proceed.
-
----
-
-### P1 — Custom‑event bus on the global `document` (verify)
+### P1 — Custom‑event bus on the global `document` (listener leak — FIXED)
 
 **Dispatch:** `edit.js:153`, `richTextIcon.js:185`, `richTextIcon.js:236`, `iconModifier.js:469` — all `document.dispatchEvent(...)`.
-**Listen:** `icon-chooser/src/IconChooserModal.js:20` — `document.addEventListener(openEvent.type, ...)`.
+**Listen:** `icon-chooser/src/IconChooserModal.js` — `document.addEventListener(openEvent.type, ...)`.
 **Event creation:** `block-editor/src/createCustomEvent.js` — `new Event(name, { bubbles: true, cancelable: false })`.
 
-The "open the icon chooser" signal is a custom event on the **module‑global `document`**. Both the block bundle and the icon‑chooser bundle execute in the **outer** admin window, so both `document` references resolve to the **same outer document** — the bridge *should* keep working even though the buttons' DOM is inside the iframe (dispatch target == listener target == the outer `document`; bubbling is irrelevant here).
+This finding had two halves. **The cross‑frame half was wrong** and has been moved to [Investigated and dismissed](#investigated-and-dismissed). **The cleanup half was right, and worse than it looked.**
 
-**But this is implicit and fragile.** If any portion of the icon‑chooser or its listener ends up bound to the iframe's `contentDocument`, dispatch and listen diverge and the modal silently won't open.
+`IconChooserModal` registered its listener **during render**, with no `removeEventListener`. `edit.js:25` compounded it by calling `createCustomEvent()` inline in the component body, minting a **new random event type on every render**. Since the modal subscribes *by type*, `document` gained both a listener and a permanent new entry in its listener map for every render any icon block ever performed — and `Edit` re-renders on every `setAttributes`, so each interaction in the icon styling modal added one.
 
-- **Verify** in the iframed editor: clicking "Choose Icon" (block placeholder), "Change Icon"/format‑toolbar button (rich text), and the modifier's chooser button all open the modal.
-- **Cleanup bug (independent of iframe):** `IconChooserModal.js:20` registers the listener on every render with **no `removeEventListener`** — a listener leak. Wrap in `useEffect` with a cleanup return.
+Nothing ever misbehaved: dispatch always used the same render's event object, `setOpen` is stable across renders, and `setState` on an unmounted component is a no-op in React 18. That is why the browser suite stayed green over it. The cost was pure leak — each retained closure holds `setOpen`, which holds the React fiber, so unmounted choosers stayed reachable.
+
+**Measured in the iframed editor** (Chromium, `bin/dev` env), driving 9 interactions in the styling modal:
+
+| | distinct event types | total registrations |
+|---|---|---|
+| Before | 11 | 12 |
+| After | 1 | 2 |
+
+**Fix applied:**
+- `IconChooserModal.js` — subscribe in a `useLayoutEffect` keyed on `openEvent.type`, returning a `removeEventListener` cleanup. `useLayoutEffect` rather than `useEffect` keeps registration inside the same synchronous commit that the old render-time call had, which matters because `classic-editor/src/index.js:102-109` mounts the chooser and then dispatches the open event from a `setTimeout(…, 0)` on the same click. **This is defensive, not a demonstrated fix:** a `useEffect` build was measured passing that first-click check in Chromium, WebKit and Firefox. The layout effect simply removes the dependency on React's passive-effect task beating a `setTimeout(0)`.
+- `edit.js:25` — `useMemo(() => createCustomEvent(), [])`, so the event type is per block instance rather than per render. Safe because the `Placeholder` branch and the `IconModifier` branch are mutually exclusive, so a given `Edit` never has two `IconChooserModal`s mounted on one event.
+- **Regression test:** `browser-testing/tests-using-mock-fa-api/using-pro-kit/iconChooserListeners.spec.js` patches `Document.prototype.addEventListener`, drives a fixed number of re-renders, and asserts registrations stay bounded instead of tracking render count. It fails against the pre-fix bundles.
+
+**Deliberately not changed:** the two module-scope events in `richTextIcon.js:43,51`. They must stay distinct from each other — the comment at lines 45-51 documents the double-insert bug that separation fixed — and `FormatEdit` is rendered only for the selected `RichText` (`@wordpress/block-editor` `rich-text/index.js:318`), so at most one is mounted at a time.
 
 ---
 
-### P1 — `FaIconChooser` web component & per‑window custom‑element registry (verify)
+### ~~P1 — Conflict detector should not blanket‑run in the iframe~~ — **resolved before merge**
 
-**File:** `icon-chooser/src/IconChooserModal.js` (renders `<FaIconChooser>` from `@fortawesome/fa-icon-chooser-react`, a Stencil‑generated **custom element**), instantiated once on the outer window in `icon-chooser/src/index.js:29`.
-
-Custom‑element registries are **per‑window**. The element is defined in the outer window. As long as the `Modal` renders as an **outer‑document portal** (the default for `@wordpress/components` `Modal`), the element upgrades correctly. If a future WP change renders the modal *inside* the iframe, the element won't upgrade there.
-
-**Verify:** the icon chooser modal opens and its search/grid render fully inside the iframed editor.
-
----
-
-### P2 — Shared `window[GLOBAL_KEY]` state assumes one window (verify)
-
-**File:** `admin/src/constants.js:1` defines `GLOBAL_KEY = '__FontAwesomeOfficialPlugin__'`. It's **set** on the outer window by `icon-chooser/src/index.js:31` and `admin/src/index.js:42`, and **read at module‑eval time** by the block bundle: `edit.js:15` and `richTextIcon.js:25` (`get(window, [GLOBAL_KEY, 'iconChooser'])`).
-
-If the block bundle ever evaluates in a different realm than the one where `iconChooser` was set, `IconChooserModal` is `undefined`. In practice all bundles load in the outer window, so this is expected to hold — but it's the same class of assumption as the event bus. **Verify** together with P1.
+PR #298 as merged did **not** add `enqueue_block_assets` to the conflict detector's enqueue loop; `includes/class-fontawesome.php:3164` still lists only `wp_enqueue_scripts`, `admin_enqueue_scripts`, `login_enqueue_scripts`. The concurrent in-iframe scan this item warned about cannot happen. Retained here only so the concern isn't re-raised.
 
 ---
 
@@ -148,6 +157,32 @@ The fetched field guide did **not** document a React major bump for WP7 (WP alre
 ---
 
 ## Investigated and dismissed
+
+### ~~P1/P2 — The three "cross‑frame realm" items~~ — **RETRACTED, one realm only**
+
+This covers what were separately filed as: the cross‑frame half of the **custom‑event bus** P1, the **`FaIconChooser` custom‑element registry** P1, and the **`window[GLOBAL_KEY]`** P2. All three reduced to one question — *can any of the plugin's JS evaluate inside the editor iframe?* — and the answer is no.
+
+**What WordPress actually puts in the iframe.** `_wp_get_iframed_editor_assets()` (`wp-includes/block-editor.php`) builds the iframe's `<head>`. It:
+
+1. sets `should_load_block_editor_scripts_and_styles` to `__return_false`,
+2. fires `do_action('enqueue_block_assets')`,
+3. and then, walking every registered block type, enqueues **only `editor_style_handles`**.
+
+Block **`editorScript`** handles are never enqueued into the iframe.
+
+**What that means for this plugin.** The plugin's `enqueue_block_assets` callback, `enqueue_font_awesome_block_editor_assets()` (`block-editor/font-awesome-icon-block-init.php:18`), only calls `wp_register_script`/`wp_register_style` — it registers, it does not enqueue. The block bundle reaches the page solely as the block's `editorScript` (`block.json`: `"editorScript": "font-awesome-block-editor"`), i.e. **outer window only**. `RESOURCE_HANDLE_ICON_CHOOSER` is a declared dependency of that handle, so the icon‑chooser bundle is outer‑window only for the same reason.
+
+So there is exactly one realm holding plugin JS, and consequently:
+
+- **Event bus** — `document.dispatchEvent` in the block bundle and `document.addEventListener` in the icon‑chooser bundle are the same `document`. The buttons' *DOM* lives in the iframe, but their React handlers execute in the outer realm, so they dispatch outward. Confirmed live: the regression spec has to reach through `editor.canvas` (the `[name="editor-canvas"]` frame) to click "Choose Icon", and the modal still opens.
+- **Custom‑element registry** — one window, one `customElements` registry. `<FaIconChooser>` upgrades.
+- **`window[GLOBAL_KEY]`** — set and read on the same `window`. `edit.js:15` / `richTextIcon.js:25` cannot miss what `icon-chooser/src/index.js:31` set.
+
+**Caveat.** Verified against the WP **6.6.1** source (`tmp/wordpress/wp-includes/block-editor.php`) and exercised against the local `bin/dev` container, whose editor *is* iframed. Re‑confirm `_wp_get_iframed_editor_assets()` is unchanged in WP 7.0 — if a future WP starts injecting `editorScript` into the iframe, all three items come back at once, and this section is the place to start.
+
+**What survived.** Only the listener leak, which had nothing to do with frames. See [P1 — Custom‑event bus](#p1--customevent-bus-on-the-global-document-listener-leak-fixed).
+
+---
 
 ### ~~P0 — Cross‑frame `getComputedStyle` bug~~ — **RETRACTED, not a bug**
 
@@ -201,26 +236,42 @@ This state is unreachable in practice anyway: `InlineUI` only mounts under `isOb
 
 | # | Priority | Item | Type | Location |
 |---|---|---|---|---|
-| 1 | **P0** | Deliver kit/CDN/webfont/v4‑shim runtime into the iframe | Merge PR #298 (scoped) | `includes/class-fontawesome.php` enqueue loops |
-| 2 | **P1** | Conflict detector should not blanket‑run in the iframe | Scope down PR #298 | `includes/class-fontawesome.php:3160-3170` |
-| 3 | **P1** | Custom‑event bus works across the iframe boundary | Verify + listener cleanup | dispatch: `edit.js`,`richTextIcon.js`,`iconModifier.js`; listen: `IconChooserModal.js:20` |
-| 4 | **P1** | Icon‑chooser web component upgrades inside iframe | Verify | `icon-chooser/src/IconChooserModal.js`, `index.js:29` |
-| 5 | **P2** | Shared `window[GLOBAL_KEY]` single‑window assumption | Verify | `edit.js:15`, `richTextIcon.js:25` |
-| 6 | **P2** | Bump "Tested up to: 7.0"; realign `@wordpress/*` to `wp-7.0` | Housekeeping | `readme.txt`, `*/package.json` |
-| 7 | **P3** | Confirm no React‑major regression | Verify | modal/popover flows |
+| 1 | **P0** | Deliver kit/CDN/webfont/v4‑shim runtime into the iframe | ✅ Done — PR #298 merged (`d27300dd`) | `includes/class-fontawesome.php` enqueue loops |
+| 2 | **P1** | Icon‑chooser open‑event listener leak | ✅ Fixed + regression test | `IconChooserModal.js`, `edit.js:25`, `iconChooserListeners.spec.js` |
+| 3 | **P2** | Duplicate inline style from double `enqueue_block_assets` firing | Verify (mechanism identified) | `font-awesome-icon-block-init.php:51`, `class-fontawesome.php:2126` |
+| 4 | **P2** | Bump "Tested up to: 7.0"; realign `@wordpress/*` to `wp-7.0` | Housekeeping | `readme.txt`, `*/package.json` |
+| 5 | **P2** | Re‑confirm `_wp_get_iframed_editor_assets()` unchanged in WP7 | Verify | `wp-includes/block-editor.php` |
+| 6 | **P3** | Confirm no React‑major regression | Verify | modal/popover flows |
 | — | ~~P0~~ | ~~`getComputedStyle` uses outer window on iframe node~~ | **Retracted — not a bug** | [Investigated and dismissed](#investigated-and-dismissed) |
+| — | ~~P1~~ | ~~Custom‑event bus breaks across the iframe boundary~~ | **Retracted — one realm** | [Investigated and dismissed](#investigated-and-dismissed) |
+| — | ~~P1~~ | ~~Icon‑chooser web component won't upgrade inside iframe~~ | **Retracted — one realm** | [Investigated and dismissed](#investigated-and-dismissed) |
+| — | ~~P1~~ | ~~Conflict detector blanket‑runs in the iframe~~ | **Resolved before merge** | `class-fontawesome.php:3164` keeps the original three hooks |
+| — | ~~P2~~ | ~~Shared `window[GLOBAL_KEY]` single‑window assumption~~ | **Retracted — one realm** | [Investigated and dismissed](#investigated-and-dismissed) |
 
-**No code fixes remain in the block/rich‑text JS.** Item 1 is PHP; items 2–7 are PHP, verification, or housekeeping. The one listener‑leak cleanup noted under item 3 (`IconChooserModal.js:20`) is an independent pre‑existing bug, not WP7‑related.
+**Nothing on this list blocks WP7.** Item 1 shipped. Item 2 was a real bug, but a pre‑existing one unrelated to WP7 — it just happened to be sitting in the code the cross‑frame investigation had to read. Items 3–6 are verification and housekeeping. Four of the audit's original five cross‑frame findings were false positives from the same heuristic; see the methodology note at the top before adding another.
 
 ---
 
 ## Runtime verification checklist (once a WP7 docker env is available)
 
-Run on a WP7 site where the editor is iframed (all‑v3‑blocks condition met):
+Run on a WP7 site where the editor is iframed (all‑v3‑blocks condition met).
+
+**Automated first.** The existing Playwright suite already covers the iframed editor against the local `bin/dev` container and should be re‑pointed at WP7 before any of the manual steps:
+
+```bash
+cd browser-testing
+npm run test:browser-mocked-fa-api-pro-kit-all-browsers
+npm run test:browser-mocked-fa-api-legacy-cdn-all-browsers
+```
+
+(The `test:ci:*` variants set `CI=true`, which loads `.env.ci` and targets the CI compose stack on `localhost:8888`, not the local dev env — use the non‑CI scripts above against `bin/dev`.)
+
+Then, by hand:
 
 1. Insert the **Font Awesome Icon block**; confirm the placeholder, the chosen icon, sizing, and animations render **inside the iframe** for both **SVG** and **webfont** technologies.
-2. Click **"Choose Icon"** → the icon chooser modal opens, searches, and inserts. Repeat for the **rich‑text format** ("Change Icon" toolbar button) and the **icon styling modifier**.
+2. Click **"Choose Icon"** → the icon chooser modal opens, searches, and inserts. Repeat for the **rich‑text format** ("Change Icon" toolbar button) and the **icon styling modifier**. Covered for the block placeholder by `iconChooserListeners.spec.js`; the rich‑text and modifier entry points are still manual.
 3. Confirm the **rich‑text inline icon preview** reflects the surrounding text color/size. This is a **regression check, not a fix validation** — cross‑engine testing says it already works (see [Investigated and dismissed](#investigated-and-dismissed)); this confirms it end‑to‑end with the theme's real editor styles applied.
 4. With a **kit** configured, confirm kit `<i>` tags / shortcodes render in the editor iframe (validates PR #298).
-5. With **conflict detection** enabled, run a scan from the settings page and confirm it completes without duplicate/aborted scans caused by an in‑iframe copy (validates P1).
-6. Check the browser console for cross‑frame errors and confirm no duplicate `@font-face`/inline‑style injection on the **front end** (side effect of `enqueue_block_assets`).
+5. **Classic editor**, which no automated spec covers and which the `useLayoutEffect` choice in `IconChooserModal` specifically protects: open a post in the classic editor and click the Font Awesome media button — the chooser must open on the **first** click, including on a page with multiple editors.
+6. Confirm no duplicate `@font-face`/inline‑style injection, on the **front end** and in the **editor**, per the mechanism described under P0.
+7. Re‑read `_wp_get_iframed_editor_assets()` in the WP7 tree and confirm it still enqueues only `editor_style_handles` for registered block types. The whole "one realm" argument rests on that.

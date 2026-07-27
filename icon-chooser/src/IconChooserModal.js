@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { Modal } from "@wordpress/components";
 import { FaIconChooser } from "@fortawesome/fa-icon-chooser-react";
 import { __ } from "@wordpress/i18n";
@@ -17,7 +17,23 @@ export default function (params) {
     const { onSubmit, openEvent } = props;
     const [isOpen, setOpen] = useState(false);
 
-    document.addEventListener(openEvent.type, () => setOpen(true));
+    // useLayoutEffect rather than useEffect, to keep the registration in the same
+    // synchronous commit the previous render-time addEventListener had.
+    //
+    // The classic editor mounts this component and then dispatches the open event
+    // from a setTimeout(..., 0) on the very same click (see classic-editor/src/index.js).
+    // Passive effects are flushed in a separate scheduler task, so in principle they
+    // can lose that race and swallow the first click. In practice they don't:
+    // useEffect was measured passing in Chromium, WebKit and Firefox. This is
+    // defensive -- it removes the dependency on scheduler-vs-timer ordering rather
+    // than fixing an observed failure.
+    useLayoutEffect(() => {
+      const handleOpen = () => setOpen(true);
+
+      document.addEventListener(openEvent.type, handleOpen);
+
+      return () => document.removeEventListener(openEvent.type, handleOpen);
+    }, [openEvent.type]);
 
     const closeModal = () => setOpen(false);
 
