@@ -13,7 +13,7 @@
     "test:browser-real-fa-api-pro-kit-all-browsers": "for browser in chrome webkit firefox; do npx playwright test --project=real-fa-api-pro-kit-$browser; done"
   },
   "devDependencies": {
-    "@wordpress/e2e-test-utils-playwright": "^1.31.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.51.0",
     "dotenv": "^14.3.2",
     "dotenv-expand": "^12.0.3",
     "lodash": "^4.18.0",
