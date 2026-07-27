@@ -20,7 +20,7 @@
     "@wordpress/blocks": "wp-6.7",
     "@wordpress/components": "wp-6.7",
     "@wordpress/element": "wp-6.7",
-    "@wordpress/env": "^10.0.0",
+    "@wordpress/env": "^11",
     "@wordpress/i18n": "wp-6.7",
     "@wordpress/icons": "wp-6.7",
     "@wordpress/rich-text": "wp-6.7",
