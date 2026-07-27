@@ -2,12 +2,15 @@
 
 **Plugin version audited:** 5.1.5 (`main`)
 **Date:** 2026-07-18
+**Revised:** 2026-07-27 — the original P0 `getComputedStyle` finding was **retracted** after browser testing disproved it; see [Investigated and dismissed](#investigated-and-dismissed).
 **Scope:** Compatibility with WordPress 7.0, with emphasis on the **iframed block editor** and how the plugin's block / rich‑text format behave inside it.
 **References:**
 - [WordPress 7.0 Field Guide](https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/)
 - [PR #298 — "Add `enqueue_block_assets` to action hooks"](https://github.com/FortAwesome/wordpress-fontawesome/pull/298) (open, unmerged as of this audit)
 
 > **Note on methodology.** This is a **static‑analysis** audit. A dockerized WordPress 7 environment was not available, so none of the findings below have been confirmed by running the plugin in a live WP7 iframed editor. Every item marked **Verify** needs a runtime check once an environment is available. File/line references are to the current `main`.
+>
+> **One exception:** the cross‑frame `getComputedStyle` question *was* settled empirically, by reproducing the outer‑window/inner‑element shape directly in Chromium, Firefox, and WebKit (see [Investigated and dismissed](#investigated-and-dismissed)). That is the standard the other cross‑frame items should be held to before they are treated as real — **static analysis produced a false positive here, and may have produced others.**
 
 ---
 
@@ -15,10 +18,11 @@
 
 The plugin is in reasonably good shape for WP7. The block is already `apiVersion: 3`, and the block's own editor assets are already injected into the editor iframe. The remaining work is small and specific:
 
-1. **One concrete cross‑frame bug** in the rich‑text icon UI (`window.getComputedStyle` on an iframe‑owned node). *Code fix required.*
-2. **Runtime asset delivery into the iframe** (kit / CDN webfont / v4 shims) is what **PR #298** addresses — needed, but its blanket inclusion of the **conflict detector** should be reconsidered.
-3. **A few fragile cross‑window assumptions** (custom‑event bus on the global `document`, a web‑component registry, shared `window` globals) that are *probably* fine but must be verified in the iframe.
-4. **Housekeeping**: bump "Tested up to", consider realigning `@wordpress/*` dev deps to `wp-7.0`.
+1. **Runtime asset delivery into the iframe** (kit / CDN webfont / v4 shims) is what **PR #298** addresses — needed, but its blanket inclusion of the **conflict detector** should be reconsidered.
+2. **A few fragile cross‑window assumptions** (custom‑event bus on the global `document`, a web‑component registry, shared `window` globals) that are *probably* fine but must be verified in the iframe.
+3. **Housekeeping**: bump "Tested up to", consider realigning `@wordpress/*` dev deps to `wp-7.0`.
+
+**There are no known required code fixes in the block/rich‑text JS.** An earlier revision of this audit claimed one (a cross‑frame `getComputedStyle` bug); browser testing disproved it and it has been retracted. The WP7 work is now entirely PHP‑side asset delivery plus runtime verification.
 
 There are **no PHP‑level blockers**: the plugin already requires PHP 7.4 (WP7's new minimum).
 
@@ -33,7 +37,14 @@ This plugin's block is **`apiVersion: 3`** (`block-editor/src/block.json`). That
 - On a WP7 site where all active blocks are v3, **this block renders inside the iframe**, and every cross‑frame assumption below is exercised for real.
 - The plugin has **no way to opt out** and should not try to — v3 is correct. The task is to make the block iframe‑correct.
 
-Inside the iframe, the editor content lives in a **separate document and window** from the surrounding admin page. Any JS that reaches for the *outer* `document`/`window` while operating on an element that lives *inside* the iframe is a latent bug.
+Inside the iframe, the editor content lives in a **separate document and window** from the surrounding admin page. JS that reaches for the *outer* `document`/`window` while operating on an element that lives *inside* the iframe is worth examining.
+
+**But "outer window touches inner element" is not by itself a bug** — that heuristic is what produced the false positive retracted below. Whether it breaks depends entirely on the specific API:
+
+- APIs that resolve against **the element's own document** are safe to call from any window. `getComputedStyle` is one of these (verified — see below).
+- APIs that resolve against **the receiver's document/registry** are the genuinely risky ones: event dispatch/listen pairs (`document.addEventListener` — P1 below), `customElements` registries (P1 below), `document.querySelector`, and per‑realm globals (P2 below).
+
+Each candidate needs to be checked against what the API actually specifies, not assumed.
 
 ---
 
@@ -49,34 +60,12 @@ These are worth stating explicitly so they aren't "fixed" by mistake:
 | FA MutationObserver in editor | ✅ Disabled | `block-editor/src/index.js:10-11` sets `config.autoAddCss = false; config.autoReplaceSvg = false`, so FA's own MutationObserver‑driven SVG replacement does **not** run in the editor. |
 | PHP minimum | ✅ Meets WP7 | `readme.txt`: `Requires PHP: 7.4` |
 | `useAnchor` for the inline popover | ✅ Core, iframe‑aware | `block-editor/src/richTextIcon.js:5,166` — `useAnchor` from `@wordpress/rich-text` handles cross‑iframe popover positioning in core. |
+| Inline icon preview reads surrounding text style | ✅ Verified in 3 engines | `block-editor/src/richTextIcon.js:179` — `window.getComputedStyle(contentRef.current)` returns the **iframe's** styles correctly. Do **not** "fix" this to use `ownerDocument.defaultView`; see [Investigated and dismissed](#investigated-and-dismissed). |
 | Not affected by WP7 removals | ✅ N/A | No reliance on `add_theme_support('html5','script')`, CodeMirror, or `contentOnly`/pattern‑override mechanics. The icon block has no InnerBlocks, so `"role": "content"` guidance doesn't apply. |
 
 ---
 
 ## Findings
-
-### P0 — Cross‑frame `getComputedStyle` bug (code fix required)
-
-**File:** `block-editor/src/richTextIcon.js:171`
-
-```js
-const { color, fontSize, backgroundColor } = window.getComputedStyle(contentRef.current)
-```
-
-`contentRef.current` is the editable rich‑text element, which **lives inside the iframe** in WP7. `window` here is the **outer admin window** (the module's global). Calling `outerWindow.getComputedStyle()` on an element owned by a *different* document returns empty/incorrect computed values in browsers.
-
-**Impact:** The `context` (`color`, `fontSize`, `backgroundColor`) is passed into `IconModifier` to preview the inline icon against the surrounding text's style (`block-editor/src/iconModifier.js:460-468`). In the iframed editor this preview will be blank/wrong. Functional degradation, not a crash.
-
-**Fix:** resolve the view from the element's own document:
-
-```js
-const view = contentRef.current.ownerDocument.defaultView
-const { color, fontSize, backgroundColor } = view.getComputedStyle(contentRef.current)
-```
-
-*(Same code smell, but iframe‑irrelevant, at `classic-editor/src/index.js:42` — the classic editor is not iframed. Fix for consistency only.)*
-
----
 
 ### P0 — Runtime FA assets in the iframe (this is what PR #298 is for)
 
@@ -158,6 +147,46 @@ The fetched field guide did **not** document a React major bump for WP7 (WP alre
 
 ---
 
+## Investigated and dismissed
+
+### ~~P0 — Cross‑frame `getComputedStyle` bug~~ — **RETRACTED, not a bug**
+
+**File:** `block-editor/src/richTextIcon.js:179`
+
+```js
+const { color, fontSize, backgroundColor } = window.getComputedStyle(contentRef.current)
+```
+
+The original audit flagged this as a required code fix, reasoning that `contentRef.current` lives inside the iframe while `window` is the outer admin window, so the computed values would come back empty or wrong.
+
+**That reasoning was incorrect.** Per CSSOM, `getComputedStyle(elt)` begins by taking its document from **`elt`'s node document** — the receiving window plays no part in style resolution. `window.getComputedStyle(el)` and `el.ownerDocument.defaultView.getComputedStyle(el)` are the same operation. The proposed fix was a no‑op.
+
+**Empirical confirmation.** The exact shape was reproduced — outer window holding the script, editable node inside a same‑origin `srcdoc` iframe carrying its own styles — and both call forms compared:
+
+| Engine | via outer `window` | via `ownerDocument.defaultView` |
+|---|---|---|
+| Chromium 140.0.7339.186 | `rgb(200, 100, 50)` / `37px` / `rgb(9, 8, 7)` | identical |
+| Firefox 141.0 | identical | identical |
+| WebKit 26.0 | identical | identical |
+
+All three return the iframe's styles correctly. The inline icon preview (`block-editor/src/iconModifier.js:460-468`) gets correct values in the iframed editor.
+
+**Do not apply the previously proposed fix — it is a regression on Firefox.** Computed values only degrade when the element's browsing context container is **not being rendered** (a `display:none` iframe, or a detached node), and that is a function of rendering state, not of which window is called. In that state the two forms diverge, and the "fix" is the worse of the two:
+
+```
+iframe display:none, Firefox 141:
+  window.getComputedStyle(el)                        -> rgb(0,0,0) | 16px | rgba(0,0,0,0)   (initial values)
+  el.ownerDocument.defaultView.getComputedStyle(el)  -> "" | "" | ""                        (empty strings)
+```
+
+Chromium and WebKit return correct values even while hidden. So the current code degrades to a styled-but-wrong preview in the worst case, whereas the proposed change would have produced an unstyled one.
+
+This state is unreachable in practice anyway: `InlineUI` only mounts under `isObjectActive` (`richTextIcon.js:366`) — the caret is already on an icon in a rendered editable, so the iframe is visible. The same reasoning rules out the only hard‑failure case, `getComputedStyle(null)`, which throws `TypeError` in all three engines but requires an unpopulated `contentRef.current`.
+
+**Consequence for `classic-editor/src/index.js:42`:** the earlier note recommending the same change "for consistency" is withdrawn. There is nothing to be consistent with.
+
+---
+
 ## Not applicable / no action
 
 - **HTML5 `script` theme support removal** — plugin doesn't use it.
@@ -172,14 +201,16 @@ The fetched field guide did **not** document a React major bump for WP7 (WP alre
 
 | # | Priority | Item | Type | Location |
 |---|---|---|---|---|
-| 1 | **P0** | `getComputedStyle` uses outer window on iframe node | Code fix | `block-editor/src/richTextIcon.js:171` |
-| 2 | **P0** | Deliver kit/CDN/webfont/v4‑shim runtime into the iframe | Merge PR #298 (scoped) | `includes/class-fontawesome.php` enqueue loops |
-| 3 | **P1** | Conflict detector should not blanket‑run in the iframe | Scope down PR #298 | `includes/class-fontawesome.php:3160-3170` |
-| 4 | **P1** | Custom‑event bus works across the iframe boundary | Verify + listener cleanup | dispatch: `edit.js`,`richTextIcon.js`,`iconModifier.js`; listen: `IconChooserModal.js:20` |
-| 5 | **P1** | Icon‑chooser web component upgrades inside iframe | Verify | `icon-chooser/src/IconChooserModal.js`, `index.js:29` |
-| 6 | **P2** | Shared `window[GLOBAL_KEY]` single‑window assumption | Verify | `edit.js:15`, `richTextIcon.js:25` |
-| 7 | **P2** | Bump "Tested up to: 7.0"; realign `@wordpress/*` to `wp-7.0` | Housekeeping | `readme.txt`, `*/package.json` |
-| 8 | **P3** | Confirm no React‑major regression | Verify | modal/popover flows |
+| 1 | **P0** | Deliver kit/CDN/webfont/v4‑shim runtime into the iframe | Merge PR #298 (scoped) | `includes/class-fontawesome.php` enqueue loops |
+| 2 | **P1** | Conflict detector should not blanket‑run in the iframe | Scope down PR #298 | `includes/class-fontawesome.php:3160-3170` |
+| 3 | **P1** | Custom‑event bus works across the iframe boundary | Verify + listener cleanup | dispatch: `edit.js`,`richTextIcon.js`,`iconModifier.js`; listen: `IconChooserModal.js:20` |
+| 4 | **P1** | Icon‑chooser web component upgrades inside iframe | Verify | `icon-chooser/src/IconChooserModal.js`, `index.js:29` |
+| 5 | **P2** | Shared `window[GLOBAL_KEY]` single‑window assumption | Verify | `edit.js:15`, `richTextIcon.js:25` |
+| 6 | **P2** | Bump "Tested up to: 7.0"; realign `@wordpress/*` to `wp-7.0` | Housekeeping | `readme.txt`, `*/package.json` |
+| 7 | **P3** | Confirm no React‑major regression | Verify | modal/popover flows |
+| — | ~~P0~~ | ~~`getComputedStyle` uses outer window on iframe node~~ | **Retracted — not a bug** | [Investigated and dismissed](#investigated-and-dismissed) |
+
+**No code fixes remain in the block/rich‑text JS.** Item 1 is PHP; items 2–7 are PHP, verification, or housekeeping. The one listener‑leak cleanup noted under item 3 (`IconChooserModal.js:20`) is an independent pre‑existing bug, not WP7‑related.
 
 ---
 
@@ -189,7 +220,7 @@ Run on a WP7 site where the editor is iframed (all‑v3‑blocks condition met):
 
 1. Insert the **Font Awesome Icon block**; confirm the placeholder, the chosen icon, sizing, and animations render **inside the iframe** for both **SVG** and **webfont** technologies.
 2. Click **"Choose Icon"** → the icon chooser modal opens, searches, and inserts. Repeat for the **rich‑text format** ("Change Icon" toolbar button) and the **icon styling modifier**.
-3. Confirm the **rich‑text inline icon preview** reflects the surrounding text color/size (validates the P0 `getComputedStyle` fix).
+3. Confirm the **rich‑text inline icon preview** reflects the surrounding text color/size. This is a **regression check, not a fix validation** — cross‑engine testing says it already works (see [Investigated and dismissed](#investigated-and-dismissed)); this confirms it end‑to‑end with the theme's real editor styles applied.
 4. With a **kit** configured, confirm kit `<i>` tags / shortcodes render in the editor iframe (validates PR #298).
 5. With **conflict detection** enabled, run a scan from the settings page and confirm it completes without duplicate/aborted scans caused by an in‑iframe copy (validates P1).
 6. Check the browser console for cross‑frame errors and confirm no duplicate `@font-face`/inline‑style injection on the **front end** (side effect of `enqueue_block_assets`).
