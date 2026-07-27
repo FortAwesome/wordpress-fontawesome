@@ -8,7 +8,7 @@ use Yoast\WPTestUtils\WPIntegration\TestCase;
  */
 class EscapeErrorOutputTest extends TestCase {
 	public function test_escape_stack_trace() {
-		$input    = <<<EOD
+		$input    = <<<'EOD'
 line 1
 line "2"
 line '3'

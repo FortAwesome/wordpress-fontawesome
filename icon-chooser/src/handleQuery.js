@@ -1,5 +1,4 @@
 import apiFetch from "@wordpress/api-fetch";
-import md5 from "blueimp-md5";
 import { __ } from "@wordpress/i18n";
 import * as queryCache from "../../admin/src/queryCache";
 import { prepareAccessTokenGetter } from "./accessToken";
@@ -13,15 +12,14 @@ const prepareQueryHandler = (params) => {
     try {
       const { faApiUrl, apiNonce, rootUrl } = params;
       const kitKeyPart = usingKit ? `kit-${params.kitToken}-` : "";
+      const usingCache = options?.cache === true;
+      const cacheKey = usingCache ? `icon-chooser-${kitKeyPart}${options?.cacheKey}` : null;
 
-      const cacheKey = `icon-chooser-${kitKeyPart}${md5(
-        `${query}${JSON.stringify(variables)}`,
-      )}`;
-
-      const data = queryCache.get(cacheKey);
-
-      if (data) {
-        return data;
+      if (usingCache) {
+        const data = queryCache.get(cacheKey);
+        if (data) {
+          return data;
+        }
       }
 
       // If apiFetch is from wp.apiFetch, it may already have RootURLMiddleware set up.
@@ -64,7 +62,7 @@ const prepareQueryHandler = (params) => {
       const hasErrors =
         Array.isArray(responseBody?.errors) && responseBody.errors.length > 0;
 
-      if (options?.cache && !hasErrors) {
+      if (usingCache && !hasErrors) {
         queryCache.set(cacheKey, responseBody);
       }
 

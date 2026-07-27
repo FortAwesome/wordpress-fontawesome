@@ -51,6 +51,16 @@ class EnqueueTest extends TestCase {
 		wp_script_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_script( 'font-awesome-v4shim' );
 		wp_style_is( 'font-awesome', 'enqueued' ) && wp_dequeue_style( 'font-awesome' );
 		wp_style_is( 'font-awesome-v4shim', 'enqueued' ) && wp_dequeue_style( 'font-awesome-v4shim' );
+		/**
+		 * The conflict detector script declares a dependency on the admin bundle
+		 * handle, which the real plugin registers during its admin-asset flow
+		 * (maybe_enqueue_admin_assets on admin_enqueue_scripts). These tests drive
+		 * enqueue_cdn() + wp_head() directly and never run that flow, so we register
+		 * a stub here to satisfy the dependency. Otherwise WordPress (>= 6.9.1) emits
+		 * a "dependencies that are not registered" _doing_it_wrong notice, which the
+		 * test framework treats as a failure.
+		 */
+		wp_register_script( FontAwesome::ADMIN_RESOURCE_HANDLE, 'https://example.com/fake-admin.js', array(), '1.0.0', true );
 		delete_option( FontAwesome::OPTIONS_KEY );
 		FontAwesome_Activator::activate();
 	}
@@ -84,7 +94,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<link[\s]+{$ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/css\/all\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake123\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
+				"/<link[\s]+{$ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-css\'[\s]+href=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/css\/all\.css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake123\"[\s]+crossorigin=\"anonymous\"[\s]*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -119,7 +129,6 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals('"anonymous"', $attrs['crossorigin']);
 		$this->assertEquals('"sha384-fake123"', $attrs['integrity']);
 		$this->assertTrue( array_key_exists( 'defer', $attrs ) );
-		$this->assertEquals('"text/javascript"', $attrs['type']);
 		$expected_src = "\"https://$license_subdomain.fontawesome.com/releases/v$version/js/all.js\"";
 		$actual_src = $attrs['src'];
 		$this->assertEquals(
@@ -137,7 +146,7 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals(
 			$refute ? 0 : 1,
 			preg_match(
-				"/<link[\s]+{$ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/css\/v4-shims\.css\'[\s]+type=\'text\/css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake246\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
+				"/<link[\s]+{$ignore_detection}[\s]*rel=\'stylesheet\'[\s]+id=\'font-awesome-official-v4shim-css\'[\s]+href=\'https:\/\/{$license_subdomain}\.fontawesome\.com\/releases\/v{$version}\/css\/v4-shims\.css\'[\s]+media=\'all\'[\s]+integrity=\"sha384-fake246\"[\s]+crossorigin=\"anonymous\"\s*\/>/",
 				$output
 			),
 			self::OUTPUT_MATCH_FAILURE_MESSAGE
@@ -172,7 +181,6 @@ class EnqueueTest extends TestCase {
 		$this->assertEquals('"anonymous"', $attrs['crossorigin']);
 		$this->assertEquals('"sha384-fake246"', $attrs['integrity']);
 		$this->assertTrue( array_key_exists( 'defer', $attrs ) );
-		$this->assertEquals('"text/javascript"', $attrs['type']);
 		$expected_src = "\"https://$license_subdomain.fontawesome.com/releases/v$version/js/v4-shims.js\"";
 		$actual_src = $attrs['src'];
 		$this->assertEquals(
