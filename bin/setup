@@ -7,9 +7,9 @@ source $DIR/.resolve-container.bash
 
 if [ ! -f .env.local ]; then
   echo "Missing local env file: .env.local"
-  echo "\tIt must exist and set env var WP_ADMIN_EMAIL to some real email address."
-  echo "\tThis is the address WordPress will use for its admin email."
-  echo "\tIt's not checked in to git. It's .gitignore'd."
+  echo "  It must exist and set env var WP_ADMIN_EMAIL to some real email address."
+  echo "  This is the address WordPress will use for its admin email."
+  echo "  It's not checked in to git. It's .gitignore'd."
   exit 1
 else
   . .env.local
@@ -21,7 +21,37 @@ if [ "$?" != "0" ]; then
   echo "WARNING: your docker container will not resolve the wp.test hostname"
 fi
 
+# The install request below (and, later, your browser) reach WordPress by the
+# WP_DOMAIN host name. add-hosts.sh above only maps it *inside* the container;
+# it does nothing for this host. curl works around that with --resolve below, so
+# setup succeeds regardless. Your browser has no such shortcut, though, so warn
+# when WP_DOMAIN isn't mapped on this host to avoid a silent "can't reach the
+# site" foot gun. See DEVELOPMENT.md, "Add the wp.test host name".
+WP_HOST="${WP_DOMAIN%%:*}"
+
+host_resolves() {
+  if command -v getent >/dev/null 2>&1; then
+    getent hosts "$1" >/dev/null 2>&1 && return 0
+  fi
+  grep -qiE "[[:space:]]$1([[:space:]]|\$)" /etc/hosts 2>/dev/null && return 0
+  ping -c 1 "$1" >/dev/null 2>&1 && return 0
+  return 1
+}
+
+if ! host_resolves "$WP_HOST"; then
+  echo ""
+  echo "WARNING: '$WP_HOST' does not resolve on this host."
+  echo "  Setup will still initialize WordPress, but you won't be able to reach"
+  echo "  http://$WP_DOMAIN in your browser until you map '$WP_HOST' to localhost."
+  echo "  Add this line to your /etc/hosts (see DEVELOPMENT.md,"
+  echo "  \"Add the wp.test host name\"):"
+  echo ""
+  echo "    127.0.0.1 $WP_HOST"
+  echo ""
+fi
+
 rc=`curl \
+  --resolve "$WP_DOMAIN:127.0.0.1" \
   --write-out '%{http_code}' \
   --silent \
   --output /dev/null \
@@ -34,7 +64,9 @@ rc=`curl \
   --data-urlencode "pw_weak=1"`
 
 if [ "$rc" == "200" ]; then
-  echo "SUCCESS initializing WordPress\n\tAdmin dashboard here:\n\thttp://$WP_DOMAIN/wp-admin"
+  echo "SUCCESS initializing WordPress"
+  echo "  Admin dashboard here:"
+  echo "  http://$WP_DOMAIN/wp-admin"
 else
   echo "FAIL with HTTP $rc"
   exit 1
