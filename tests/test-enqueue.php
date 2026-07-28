@@ -572,10 +572,129 @@ class EnqueueTest extends TestCase {
 		/**
 		 * We do not test the v4 font face shim inline style has the detection ignore
 		 * attr, since we can't filter the inline style tag.
-		 * 
+		 *
 		 * (Probably we'll have a separate mechanism for ignoring that, if the
 		 * conflict detector reports it.)
 		 */
+	}
+
+	/**
+	 * Regression test for JavaScript translations on the admin settings page.
+	 *
+	 * The admin bundle (font-awesome-official-admin) is not registered until the
+	 * admin_enqueue_scripts hook fires (inside maybe_enqueue_admin_assets ->
+	 * enqueue_admin_js_assets). wp_set_script_translations() must therefore run
+	 * *after* that registration, or WP_Scripts::print_translations() bails early
+	 * (empty textdomain) and never emits the inline setLocaleData script, leaving
+	 * the settings page in English regardless of the site locale.
+	 *
+	 * This drives the real admin_enqueue_scripts flow and asserts that the admin
+	 * script ends up with its textdomain associated, and that the setLocaleData
+	 * inline script is produced.
+	 */
+	public function test_admin_script_translations_are_set() {
+		// Enable conflict detection so the admin JS bundle is enqueued on
+		// admin_enqueue_scripts regardless of the current screen. This lets us
+		// exercise the real enqueue flow without standing up a settings-page
+		// screen_id.
+		$later = time() + ( 10 * 60 );
+		update_option(
+			FontAwesome::CONFLICT_DETECTION_OPTIONS_KEY,
+			array_merge(
+				FontAwesome::DEFAULT_CONFLICT_DETECTION_OPTIONS,
+				array( 'detectConflictsUntil' => $later )
+			)
+		);
+
+		// set_up() pre-registers a stub for the admin handle so unrelated tests
+		// can satisfy the conflict detector's dependency. Deregister it here so
+		// this test reproduces the real runtime, where the admin bundle is not
+		// registered until admin_enqueue_scripts fires. (Otherwise the premature,
+		// buggy wp_set_script_translations() call would find the stub already
+		// registered and the bug would be masked.)
+		wp_deregister_script( FontAwesome::ADMIN_RESOURCE_HANDLE );
+
+		// There is no real .json translation file installed in the test
+		// environment, so short-circuit the file lookup with fake translation
+		// data. print_translations() still bails on an empty textdomain, so this
+		// filter does not paper over the bug being tested.
+		$fake_translations = wp_json_encode(
+			array(
+				'domain'      => 'messages',
+				'locale_data' => array(
+					'messages' => array(
+						''             => array(
+							'domain' => 'messages',
+							'lang'   => 'ja',
+						),
+						'Settings'     => array( '設定' ),
+					),
+				),
+			)
+		);
+
+		add_filter(
+			'pre_load_script_translations',
+			function ( $translations, $file, $handle, $domain ) use ( $fake_translations ) {
+				if ( FontAwesome::ADMIN_RESOURCE_HANDLE === $handle && 'font-awesome' === $domain ) {
+					return $fake_translations;
+				}
+				return $translations;
+			},
+			10,
+			4
+		);
+
+		// Run the plugin's init. This registers the admin_enqueue_scripts
+		// callback. On the buggy code, this is also where wp_set_script_translations()
+		// was (incorrectly) called -- too early, before the admin bundle exists.
+		fa()->init();
+
+		$this->assertFalse(
+			wp_script_is( FontAwesome::ADMIN_RESOURCE_HANDLE, 'registered' ),
+			'Precondition: the admin bundle must not be registered until admin_enqueue_scripts runs.'
+		);
+
+		// A current screen must be set, since WordPress core callbacks on
+		// admin_enqueue_scripts (e.g. wp_auth_check_load) read
+		// get_current_screen()->id.
+		set_current_screen( 'settings_page_font-awesome' );
+
+		// Fire the admin_enqueue_scripts hook. This registers/enqueues the admin
+		// bundle and -- with the fix -- associates the textdomain with it.
+		do_action( 'admin_enqueue_scripts', 'settings_page_font-awesome' );
+
+		$wp_scripts = wp_scripts();
+
+		$this->assertArrayHasKey(
+			FontAwesome::ADMIN_RESOURCE_HANDLE,
+			$wp_scripts->registered,
+			'The admin bundle should be registered after admin_enqueue_scripts.'
+		);
+
+		// Root cause from the bug report: the script object's textdomain property
+		// was never set, so print_translations() returned early.
+		$this->assertEquals(
+			'font-awesome',
+			$wp_scripts->registered[ FontAwesome::ADMIN_RESOURCE_HANDLE ]->textdomain,
+			'The admin script must have its textdomain set to font-awesome.'
+		);
+
+		// With the textdomain set, print_translations() should emit the inline
+		// setLocaleData script -- the <script id="font-awesome-official-admin-js-translations">
+		// element that was reported as absent from the DOM.
+		$translations_output = $wp_scripts->print_translations( FontAwesome::ADMIN_RESOURCE_HANDLE, false );
+
+		$this->assertNotFalse(
+			$translations_output,
+			'print_translations() must not return false; otherwise no setLocaleData script is output.'
+		);
+
+		$this->assertStringContainsString(
+			'wp.i18n.setLocaleData',
+			$translations_output,
+			'The translations output should call wp.i18n.setLocaleData.'
+		);
 	}
 }
 
