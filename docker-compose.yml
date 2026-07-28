@@ -118,6 +118,10 @@ x-wordpress-defaults: &wordpress_defaults
     - "8765:80"
   extra_hosts:
     - "dockerhost:169.254.254.254"
+    # Makes host.docker.internal resolve to the docker host on Docker Engine for
+    # Linux (20.10+), where it isn't provided automatically as it is on Docker
+    # Desktop for Mac/Windows. Harmless on Docker Desktop.
+    - "host.docker.internal:host-gateway"
   command:
     - apache2-custom.sh
 
