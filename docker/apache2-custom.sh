@@ -13,12 +13,12 @@
 # trips git's "dubious ownership" guard (CVE-2022-24765) and causes other
 # permission friction.
 #
-# Set SKIP_PLUGIN_CHOWN=true to chown everything under /var/www/html EXCEPT the
-# bind-mounted host paths, so the host working copy keeps its ownership. The
-# excluded paths default to this plugin plus the integration mounts wired up in
-# docker-compose.yml; override with CHOWN_EXCLUDE_PATHS (a colon-separated list)
-# if you add or remove bind mounts there. Leave SKIP_PLUGIN_CHOWN unset to keep
-# the original blanket behavior.
+# By default (SKIP_PLUGIN_CHOWN unset or any value other than "false") we chown
+# everything under /var/www/html EXCEPT the bind-mounted host paths, so the host
+# working copy keeps its ownership. The excluded paths default to this plugin
+# plus the integration mounts wired up in docker-compose.yml; override with
+# CHOWN_EXCLUDE_PATHS (a colon-separated list) if you add or remove bind mounts
+# there. Set SKIP_PLUGIN_CHOWN=false to restore the original blanket behavior.
 
 CHOWN_ROOT="/var/www/html"
 
@@ -28,7 +28,7 @@ default_excludes=(
   "$CHOWN_ROOT/wp-content/themes"
 )
 
-if [ "$SKIP_PLUGIN_CHOWN" = "true" ]; then
+if [ "$SKIP_PLUGIN_CHOWN" != "false" ]; then
   if [ -n "$CHOWN_EXCLUDE_PATHS" ]; then
     IFS=':' read -ra excludes <<< "$CHOWN_EXCLUDE_PATHS"
   else
