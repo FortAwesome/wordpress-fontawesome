@@ -32,6 +32,15 @@ const testConfigs = [
     name: 'mock-fa-api-legacy-cdn',
     testMatch: 'tests-using-mock-fa-api/using-legacy-cdn/*.spec.js',
     dependencies: ['reset']
+  },
+  {
+    // Admin JS translations (PR #304). Runs in a forced de_DE locale with a
+    // fixture translation file; setup-i18n establishes that and its teardown
+    // reverts it, so the English-text expectations of the other cells are
+    // unaffected. Not FA-API dependent.
+    name: 'i18n',
+    testMatch: 'tests-using-mock-fa-api/i18n/*.spec.js',
+    dependencies: ['setup-i18n']
   }
 ]
 
@@ -80,6 +89,24 @@ export default defineConfig({
         storageState: authFile
       },
       dependencies: ['wp-login', 'reset']
+    },
+    {
+      name: 'setup-i18n',
+      testDir,
+      testMatch: 'setup/i18n.js',
+      use: {
+        storageState: authFile
+      },
+      dependencies: ['wp-login', 'reset'],
+      teardown: 'teardown-i18n'
+    },
+    {
+      name: 'teardown-i18n',
+      testDir,
+      testMatch: 'setup/i18nCleanup.js',
+      use: {
+        storageState: authFile
+      }
     },
     ...browserProjects
   ]

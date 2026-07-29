@@ -108,6 +108,9 @@ jobs:
       - name: Run Pro Kit Tests
         run: cd browser-testing && npm run test:ci:browser-pro-kit
 
+      - name: Run Admin i18n Tests
+        run: cd browser-testing && npm run test:ci:browser-i18n
+
       - name: Debug on failure
         if: failure()
         run: |
