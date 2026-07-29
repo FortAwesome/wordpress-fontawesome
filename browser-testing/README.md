@@ -74,6 +74,38 @@ and the Pro Kit tests like this:
 npm run test:ci:browser-pro-kit
 ```
 
+# Admin i18n Test (PR #304)
+
+`tests-using-mock-fa-api/i18n/adminTranslations.spec.js` is regression coverage
+for the admin JavaScript internationalization fix (PR #304): it verifies, in the
+browser, that the admin bundle's script translations load and are applied.
+
+Because this bug only manifests in the browser (the PHP hook ordering looked
+fine in isolation), it belongs here rather than in the PHPUnit suite.
+
+It runs as its own project (`i18n-chrome`) with a dedicated setup/teardown so it
+doesn't disturb the other cells, whose specs match UI text in **English**:
+
+- `setup/i18n.js` forces the locale to `de_DE` (via a direct `wp_options` write,
+  so no language pack download is needed) and installs a fixture JS translation
+  file (`support/admin-translations.de_DE.json`) into the WordPress container
+  under the exact name WordPress derives from the admin bundle's path.
+- `setup/i18nCleanup.js` (wired as the `setup-i18n` project's `teardown`) reverts
+  the locale and removes the fixture file.
+
+The fixture strings are intentionally prefixed with `TEST-DE —` so the browser
+assertions are unambiguous; they are test markers, not real German copy.
+
+Run it the way CI does:
+
+```bash
+npm run test:ci:browser-i18n
+```
+
+The setup installs the fixture file into the running WordPress container via
+`docker`. The container name defaults to `wordpress-ci` when `CI=true` and the
+local dev container otherwise; override with `WP_CONTAINER` if needed.
+
 # Console Output
 
 The JavaScript console output from the browser is silenced by default to avoid showing in the terminal.

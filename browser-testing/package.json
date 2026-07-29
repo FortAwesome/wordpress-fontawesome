@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test:ci:browser-pro-kit": "CI=true npm run test:browser-mocked-fa-api-pro-kit-all-browsers",
+    "test:ci:browser-i18n": "CI=true npx playwright test --project=i18n-chrome",
     "test:ci:browser-non-kit": "CI=true npm run test:browser-mocked-fa-api-legacy-cdn-all-browsers",
     "test:local:browser-pro-kit": "npm run test:browser-real-fa-api-pro-kit-all-browsers",
     "test:local:browser-non-kit": "npm run test:browser-real-fa-api-legacy-cdn-all-browsers",
