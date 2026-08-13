@@ -46,7 +46,9 @@ declare -a CUSTOM_IMAGES
 
 count=0
 for tag in $*; do
-  IMAGE_TAG=wordpress-fontawesome-dev-${tag}
+  # Docker requires repository names to be lowercase, but the upstream tags
+  # aren't always (e.g. wordpress:beta-7.1-RC2), so downcase for our image name.
+  IMAGE_TAG=wordpress-fontawesome-dev-${tag,,}
   $DOCKER build \
     --build-arg WORDPRESS_DB_NAME="$WORDPRESS_DB_NAME" \
     --build-arg WORDPRESS_DB_USER="$WORDPRESS_DB_USER" \

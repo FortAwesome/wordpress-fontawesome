@@ -2122,6 +2122,16 @@ EOT;
 				$v4_shims_integrity = $resources['v4-shims']->integrity_key();
 
 				/**
+				 * More than one of the actions below can fire in a single request: WordPress
+				 * fires 'enqueue_block_assets' from within 'wp_enqueue_scripts'. That's harmless
+				 * for wp_enqueue_style(), which is idempotent for a given handle, but
+				 * wp_add_inline_style() appends on every call, so the @font-face override would
+				 * be emitted once per action that fires. This guard keeps it to a single copy,
+				 * while still letting whichever action fires first be the one that adds it.
+				 */
+				$added_font_face_overrides = false;
+
+				/**
 				 * Enqueue v4 compatibility as late as possible, though still within the normal script enqueue hooks.
 				 * We need the @font-face override, especially to appear after any unregistered loads of Font Awesome
 				 * that may try to declare a @font-face with a font-family of "FontAwesome".
@@ -2129,7 +2139,7 @@ EOT;
 				foreach ( array( 'wp_enqueue_scripts', 'admin_enqueue_scripts', 'login_enqueue_scripts', 'enqueue_block_assets' ) as $action ) {
 					add_action(
 						$action,
-						function () use ( $v4_shims_source, $v4_shims_integrity, $options, $version ) {
+						function () use ( $v4_shims_source, $v4_shims_integrity, $options, $version, &$added_font_face_overrides ) {
                             // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 							wp_enqueue_style( self::RESOURCE_HANDLE_V4SHIM, $v4_shims_source, null, null );
 
@@ -2137,7 +2147,9 @@ EOT;
 							 * Version 6 Beta 3 is when some new compatiblity accommodations were introduced, built into all.css.
 							 * So this @font-face override is only useful for enqueuing V5. The new stuff in V6 supercedes it.
 							 */
-							if ( version_compare( $version, '6.0.0-beta3', '<' ) ) {
+							if ( ! $added_font_face_overrides && version_compare( $version, '6.0.0-beta3', '<' ) ) {
+								$added_font_face_overrides = true;
+
 								$license_subdomain = boolval( $options['usePro'] ) ? 'pro' : 'use';
 								$font_face_content = $this->build_legacy_font_face_overrides_for_v4( $license_subdomain, $version );
 								wp_add_inline_style(
