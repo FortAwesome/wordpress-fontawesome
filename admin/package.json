@@ -62,7 +62,7 @@
     "@wordpress/jest-preset-default": "wp-6.7",
     "@wordpress/keyboard-shortcuts": "wp-6.7",
     "@wordpress/scripts": "wp-6.7",
-    "decode-uri-component": "^0.4.1",
+    "decode-uri-component": "^0.5.0",
     "eslint-config-react-app": "^7.0.1",
     "lodash": "^4.17.21",
     "react": "18.3.1",
