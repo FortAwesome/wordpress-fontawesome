@@ -316,6 +316,8 @@ class ReleaseProviderIntegrationTest extends TestCase {
 			}
 		);
 
+		// Serializing our own test value, as the object cache would, to check it has no object tokens.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$this->assertFalse( strpos( serialize( $cached ), 'O:' ) );
 	}
 
