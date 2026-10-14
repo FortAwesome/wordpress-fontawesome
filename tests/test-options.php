@@ -357,7 +357,7 @@ class OptionsTest extends TestCase {
 				update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value );
 
 				set_transient(
-					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+					FontAwesome_Release_Provider::LEGACY_LAST_USED_RELEASE_TRANSIENT,
 					// A partial value is good enough here.
 					array(
 						'use_shim' => true
@@ -366,14 +366,10 @@ class OptionsTest extends TestCase {
 			},
 			function( $expected ) {
 				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
-		
-				$t = get_site_transient(
-					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
-				);
 
-				$this->assertTrue( isset( $t['use_compatibility'] ) );
-				$this->assertTrue( $t['use_compatibility'] );
-				$this->assertFalse( isset( $t['use_shim'] ) );
+				// The legacy last used release cache is never read anymore, so upgrade removes it.
+				$this->assertFalse( get_transient( FontAwesome_Release_Provider::LEGACY_LAST_USED_RELEASE_TRANSIENT ) );
+				$this->assertFalse( get_site_transient( FontAwesome_Release_Provider::LEGACY_LAST_USED_RELEASE_TRANSIENT ) );
 			}
 		);
 	}
@@ -383,7 +379,7 @@ class OptionsTest extends TestCase {
 			function( $releases_option_value ) {
 				update_option( FontAwesome_Release_Provider::OPTIONS_KEY, $releases_option_value );
 				set_site_transient(
-					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT,
+					FontAwesome_Release_Provider::LEGACY_LAST_USED_RELEASE_TRANSIENT,
 					// A partial value is good enough here.
 					array(
 						'use_shim' => true
@@ -392,14 +388,10 @@ class OptionsTest extends TestCase {
 			},
 			function( $expected ) {
 				$this->assertEquals( get_option( FontAwesome_Release_Provider::OPTIONS_KEY ), $expected );
-		
-				$t = get_site_transient(
-					FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT
-				);
 
-				$this->assertTrue( isset( $t['use_compatibility'] ) );
-				$this->assertTrue( $t['use_compatibility'] );
-				$this->assertFalse( isset( $t['use_shim'] ) );
+				// The legacy last used release cache is never read anymore, so upgrade removes it.
+				$this->assertFalse( get_transient( FontAwesome_Release_Provider::LEGACY_LAST_USED_RELEASE_TRANSIENT ) );
+				$this->assertFalse( get_site_transient( FontAwesome_Release_Provider::LEGACY_LAST_USED_RELEASE_TRANSIENT ) );
 			}
 		);
 	}

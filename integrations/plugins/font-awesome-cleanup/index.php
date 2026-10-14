@@ -138,7 +138,8 @@ function get_transients() {
 	return [
 		'font-awesome-releases',
 		'font-awesome-v3-deprecation-data',
-		'font-awesome-last-used-release'
+		'font-awesome-last-used-release',
+		'font-awesome-last-used-release-v2'
 	];
 }
 
