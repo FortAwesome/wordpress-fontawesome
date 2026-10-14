@@ -583,7 +583,11 @@ class FontAwesome {
 		if ( $should_upgrade ) {
 			$this->validate_options( $options );
 
-			$this->maybe_update_last_used_release_schema_for_upgrade();
+			/**
+			 * The last used release used to be cached under a different transient name,
+			 * in a different format. This version never reads it, so just remove it.
+			 */
+			FontAwesome_Release_Provider::delete_legacy_last_used_release();
 
 			$this->maybe_move_release_metadata_for_upgrade();
 
@@ -644,12 +648,6 @@ class FontAwesome {
 		delete_transient( 'font-awesome-releases' );
 
 		/**
-		 * Delete the old font-awesome-last-used-release site transient, if it exists.
-		 * It's no longer stored as a site (network-wide) transient.
-		 */
-		delete_site_transient( 'font-awesome-last-used-release' );
-
-		/**
 		 * Now we'll reset the release provider.
 		 *
 		 * If we've fallen through to this point, and we haven't found the release
@@ -657,30 +655,6 @@ class FontAwesome {
 		 * exception.
 		 */
 		FontAwesome_Release_Provider::reset();
-	}
-
-	/**
-	 * With 4.1.0, the name of one of the keys in the LAST_USED_RELEASE_TRANSIENT changed.
-	 * We can fix it up.
-	 *
-	 * Internal use only.
-	 *
-	 * @throws ReleaseMetadataMissingException
-	 * @ignore
-	 * @internal
-	 */
-	private function maybe_update_last_used_release_schema_for_upgrade() {
-		$last_used_transient = get_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
-		if ( ! $last_used_transient ) {
-			$last_used_transient = get_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT );
-		}
-
-		if ( $last_used_transient && isset( $last_used_transient['use_shim'] ) ) {
-			$compat = $last_used_transient['use_shim'];
-			unset( $last_used_transient['use_shim'] );
-			$last_used_transient['use_compatibility'] = $compat;
-			set_site_transient( FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT, $last_used_transient, FontAwesome_Release_Provider::LAST_USED_RELEASE_TRANSIENT_EXPIRY );
-		}
 	}
 
 	/**

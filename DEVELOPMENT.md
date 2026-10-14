@@ -881,7 +881,7 @@ bin/setup
 ...and install the plugin via the newly built `font-awesome.zip` file.
 
 - activate and deactivate the plugin: expect no errors
-    - upon deactivation, site transients like `font-awesome-last-used-release` should be deleted
+    - upon deactivation, site transients like `font-awesome-last-used-release-v2` should be deleted
     - options like `font-awesome` or `font-awesome-releases` should remain upon deactivation
     - verify these via db query, such as, from within the container:
         ```
@@ -986,7 +986,7 @@ bin/setup
                 This retrieves the main `font-awesome` option from the wpdb, which would be created upon initialization and only removed upon _uninstall_
 
             - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome-releases`
-            - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+            - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
         - If there's stuff there and you haven't activated anything yet, then it's leftover from prior db container state. An easy way to start from scratch:
             1. kill the currently running container
             1. `bin/clean` will put you back into a clean state
@@ -1001,7 +1001,7 @@ bin/setup
 
             This should now show a bunch of metadata about FA releases
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
 
             This should now just the slice of release metadata for the currently configured release
 
@@ -1016,14 +1016,14 @@ bin/setup
         (or any other available theme)
 
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
-    - Deactivate plugin-sigma and expect that the `font-awesome` option remains, but the `font-awesome-last-used-release` transient is removed:
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
+    - Deactivate plugin-sigma and expect that the `font-awesome` option remains, but the `font-awesome-last-used-release-v2` transient is removed:
         - `bin/wp -c com.fontawesome.wordpress-latest-integration plugin deactivate plugin-sigma`
         - `bin/wp -c com.fontawesome.wordpress-latest-integration option get font-awesome`
 
             This should be non-empty/truthy.
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
 
             This should be empty/falsy.
 
@@ -1032,12 +1032,12 @@ bin/setup
 
             (Using a direct `docker exec` command here instead of the `bin/wp` so we can run it as the root user inside the container)
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
             This should again be non-empty/truthy.
             Of course the `font-awesome` option should still be truthy.
     - Deactivate _and_ uninstall the Font Awesome plugin and expect that the `font-awesome` option is now gone as well:
         - `bin/wp -c com.fontawesome.wordpress-latest-integration plugin deactivate font-awesome`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
 
             This should now be empty.
 
@@ -1050,7 +1050,7 @@ bin/setup
 
     - Activate theme-mu, expect all data to be initialized:
         - `bin/wp -c com.fontawesome.wordpress-latest-integration theme activate theme-mu`
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
 
             This should again be non-empty/truthy.
 
@@ -1064,7 +1064,7 @@ bin/setup
 
             This should be empty.
 
-        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release --network`
+        - `bin/wp -c com.fontawesome.wordpress-latest-integration transient get font-awesome-last-used-release-v2 --network`
 
             This should be empty.
 

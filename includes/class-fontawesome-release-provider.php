@@ -48,11 +48,30 @@ class FontAwesome_Release_Provider {
 	 * Name of the transient that stores the cache of the last used Font Awesome
 	 * release so we won't load all of the releases metadata on each page load.
 	 *
+	 * The value must contain only scalars and arrays, never objects. When a
+	 * persistent object cache prefetches transients (as Object Cache Pro does)
+	 * they are unserialized before this plugin's classes are loaded, so any
+	 * objects in the value could not be restored.
+	 *
+	 * @since 5.2.2 renamed from LEGACY_LAST_USED_RELEASE_TRANSIENT, whose values contained objects.
+	 * @ignore
+	 * @internal
+	 */
+	const LAST_USED_RELEASE_TRANSIENT = 'font-awesome-last-used-release-v2';
+
+	/**
+	 * Name of the transient used by versions prior to 5.2.2 to store the last used
+	 * release. Its value contains FontAwesome_Resource objects.
+	 *
+	 * This plugin no longer reads or writes it, except to delete it. It must
+	 * never be written in the new format, since an older version of this plugin
+	 * would read it after a downgrade.
+	 *
 	 * @since 4.0.0-rc4
 	 * @ignore
 	 * @internal
 	 */
-	const LAST_USED_RELEASE_TRANSIENT = 'font-awesome-last-used-release';
+	const LEGACY_LAST_USED_RELEASE_TRANSIENT = 'font-awesome-last-used-release';
 
 	/**
 	 * Expiry time for the releases transient.
@@ -407,26 +426,19 @@ EOD;
 		}
 
 		// If this is the same query as last time, then our LAST_USED_RELEASE_TRANSIENT should be current.
-		$last_used_transient = self::get_last_used_release();
+		$cached_resources = self::resources_from_last_used_release( self::get_last_used_release(), $version, $flags );
 
-		if ( $last_used_transient ) {
-			// For simplicity, we're require that it's exactly what we're looking for, else we'll re-build and overwrite it.
-			if (
-				$version === $last_used_transient['version']
-				&& $flags['use_pro'] === $last_used_transient['use_pro']
-				&& $flags['use_svg'] === $last_used_transient['use_svg']
-				&& $flags['use_compatibility'] === $last_used_transient['use_compatibility']
-				&& is_array( $last_used_transient['resources'] )
-				/**
-				 * Checking for all because we only want to use a newer transient whose
-				 * resources is key/value array. So if it's the older version that is
-				 * just a list, we'll fall through and rebuild it below.
-				 */
-				&& isset( $last_used_transient['resources']['all'] )
-			) {
-				return new FontAwesome_ResourceCollection( $version, $last_used_transient['resources'] );
-			}
+		if ( is_array( $cached_resources ) ) {
+			return new FontAwesome_ResourceCollection( $version, $cached_resources );
 		}
+
+		/**
+		 * We're about to rebuild the cache, which happens after an upgrade and whenever
+		 * the configuration changes. This is a convenient time to remove the legacy
+		 * transient, whose value contains objects that can't be prefetched by some
+		 * persistent object caches.
+		 */
+		self::delete_legacy_last_used_release();
 
 		$provider = self::instance();
 
@@ -440,17 +452,75 @@ EOD;
 			$resources['v4-shims'] = $provider->build_resource( $version, 'v4-shims', $flags );
 		}
 
+		$cacheable_resources = array();
+
+		foreach ( $resources as $key => $resource ) {
+			$cacheable_resources[ $key ] = array(
+				'source'        => $resource->source(),
+				'integrity_key' => $resource->integrity_key(),
+			);
+		}
+
 		$transient_value = array(
 			'version'           => $version,
 			'use_pro'           => $flags['use_pro'],
 			'use_svg'           => $flags['use_svg'],
 			'use_compatibility' => $flags['use_compatibility'],
-			'resources'         => $resources,
+			'resources'         => $cacheable_resources,
 		);
 
 		self::update_last_used_release( $transient_value );
 
 		return new FontAwesome_ResourceCollection( $version, $resources );
+	}
+
+	/**
+	 * Converts a cached last used release value into an array of FontAwesome_Resource
+	 * objects, if it matches exactly the given version and flags.
+	 *
+	 * For simplicity, we require that it's exactly what we're looking for, with
+	 * exactly the expected shape. Otherwise, this returns null and the caller
+	 * should rebuild and overwrite it. This includes the case where some caching
+	 * layer has given us back something unexpected, such as a __PHP_Incomplete_Class.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 * @return array|null
+	 */
+	private static function resources_from_last_used_release( $cached, $version, $flags ) {
+		if (
+			! is_array( $cached )
+			|| ! isset( $cached['version'], $cached['use_pro'], $cached['use_svg'], $cached['use_compatibility'], $cached['resources'] )
+			|| $version !== $cached['version']
+			|| $flags['use_pro'] !== $cached['use_pro']
+			|| $flags['use_svg'] !== $cached['use_svg']
+			|| $flags['use_compatibility'] !== $cached['use_compatibility']
+			|| ! is_array( $cached['resources'] )
+			|| ! isset( $cached['resources']['all'] )
+			|| ( $flags['use_compatibility'] && ! isset( $cached['resources']['v4-shims'] ) )
+		) {
+			return null;
+		}
+
+		$resources = array();
+
+		foreach ( $cached['resources'] as $key => $resource ) {
+			if (
+				! is_array( $resource )
+				|| ! isset( $resource['source'] )
+				|| ! is_string( $resource['source'] )
+				|| ! array_key_exists( 'integrity_key', $resource )
+				|| ! ( is_null( $resource['integrity_key'] ) || is_string( $resource['integrity_key'] ) )
+			) {
+				return null;
+			}
+
+			$resources[ $key ] = new FontAwesome_Resource( $resource['source'], $resource['integrity_key'] );
+		}
+
+		return $resources;
 	}
 
 	/**
@@ -611,7 +681,26 @@ EOD;
 	 * @ignore
 	 */
 	public static function delete_last_used_release() {
+		self::delete_legacy_last_used_release();
+
 		return delete_transient( self::LAST_USED_RELEASE_TRANSIENT );
+	}
+
+	/**
+	 * Deletes the transient used by versions prior to 5.2.2, along with the
+	 * site transient used by even older versions.
+	 *
+	 * Deleting does not read the value, so it does not depend on whether
+	 * that value can be unserialized.
+	 *
+	 * Internal use only, not part of this plugin's public API.
+	 *
+	 * @internal
+	 * @ignore
+	 */
+	public static function delete_legacy_last_used_release() {
+		delete_transient( self::LEGACY_LAST_USED_RELEASE_TRANSIENT );
+		delete_site_transient( self::LEGACY_LAST_USED_RELEASE_TRANSIENT );
 	}
 }
 
